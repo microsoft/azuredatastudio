@@ -29,6 +29,7 @@ import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
+import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBody as isErrorResponseBodyWithError } from '../../azureResource/utils';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -402,6 +403,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
 
+		// ADAL is being deprecated so just ignoring these for now
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		Logger.piiSanitized('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }], []);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequiredAdal(tenant, resource);
@@ -410,8 +413,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error(`Response returned error : ${response.data}`);
 			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. [Open developer tools]({0}) for more details.", 'command:workbench.action.toggleDevTools'), 'Token retrieval failed', undefined);
 		}
+		// ADAL is being deprecated so just ignoring these for now
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const accessTokenString = response.data.access_token;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const refreshTokenString = response.data.refresh_token;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const expiresOnString = response.data.expires_on;
 		return this.getTokenHelperAdal(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
 	}
@@ -476,7 +483,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 
-			const tenantResponse = await this.httpClient.sendGetRequestAsync<any>(tenantUri, {
+			const tenantResponse = await this.httpClient.sendGetRequestAsync<AzureListOperationResponse<TenantResponse[]> | ErrorResponseBodyWithError>(tenantUri, {
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${token}`
@@ -484,9 +491,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			});
 
 			const data = tenantResponse.data;
-			if (data.error) {
-				Logger.error(`Error fetching tenants :${data.error.code} - ${data.error.message}`);
-				throw new Error(`${data.error.code} - ${data.error.message}`);
+			if (isErrorResponseBodyWithError(data)) {
+				Logger.error(`Error fetching tenants :${data.error?.code} - ${data.error?.message}`);
+				throw new Error(`${data.error?.code} - ${data.error?.message}`);
 			}
 			const tenants: Tenant[] = data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
@@ -530,6 +537,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 				Logger.error(`Headers: ${JSON.stringify(tenantResponse.headers)}`);
 				throw new Error('Error with tenant response');
 			}
+			// ADAL is being deprecated so just ignoring these for now
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
@@ -792,6 +801,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// Intercept response and print out the response for future debugging
 		const response = await axios.post(url, qs.stringify(postData), config);
+		// ADAL is being deprecated so just ignoring these for now
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		Logger.piiSanitized('POST request ', [{ name: 'data', objOrArray: postData }, { name: 'response', objOrArray: response.data }], [], url);
 		return response;
 	}
@@ -806,6 +817,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const response = await axios.get(url, config);
+		// ADAL is being deprecated so just ignoring these for now
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
 		return response;
 	}

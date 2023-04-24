@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "перейти по ссылке"
+		"dist/client": {
+			"markdownServer.name": "Сервер языка Markdown"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "Исключить \"{0}\" из проверки ссылки."
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "Не удалось найти ссылки на файлы. Не указаны ресурсы.",
 			"progress.title": "Поиск ссылок на файлы"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "Переименование не поддерживается в расположении"
+		"dist/preview/documentRenderer": {
+			"preview.notFound": "Не удается найти {0}",
+			"preview.securityMessage.label": "Предупреждение безопасности об отключении содержимого",
+			"preview.securityMessage.text": "Некоторое содержимое в этом документе было отключено",
+			"preview.securityMessage.title": "В предварительном просмотре Markdown было отключено потенциально опасное или ненадежное содержимое. Чтобы разрешить ненадежное содержимое или включить сценарии, измените параметры безопасности предварительного просмотра Markdown"
 		},
 		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Предварительный просмотр] {0}",
 			"onPreviewStyleLoadError": "Не удалось загрузить 'markdown.styles': {0}",
 			"preview.clickOpenFailed": "Не удалось открыть {0}",
 			"previewTitle": "Открыть {0} для предварительного просмотра"
-		},
-		"dist/preview/previewContentProvider": {
-			"preview.notFound": "Не удается найти {0}",
-			"preview.securityMessage.label": "Предупреждение безопасности об отключении содержимого",
-			"preview.securityMessage.text": "Некоторое содержимое в этом документе было отключено",
-			"preview.securityMessage.title": "В предварительном просмотре Markdown было отключено потенциально опасное или ненадежное содержимое. Чтобы разрешить ненадежное содержимое или включить сценарии, измените параметры безопасности предварительного просмотра Markdown"
 		},
 		"dist/preview/security": {
 			"disable.description": "Разрешить все содержимое и выполнение сценариев. Не рекомендуется",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "Не влияет на уровень безопасности содержимого"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "Включить/отключить перетаскивание в редакторе Markdown для вставки смещения. Требуется включить `#workbenck.experimental.editor.dropIntoEditor.enabled#`.",
+			"configuration.markdown.editor.drop.enabled": "Включение или отключение перетаскивания в редактор Markdown editor для вставки смены. Требуется включить \"#editor.dropIntoEditor.enabled#\".",
+			"configuration.markdown.editor.pasteLinks.enabled": "Включение или отключение вставки файлов в Markdown editor вставляет ссылки Markdown. Требуется включить \"#editor.experimental.pasteActions.enabled#\".",
+			"configuration.markdown.experimental.validate.enabled.description": "Включение или отключение всех отчетов об ошибках в файлах Markdown.",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "Проверка ссылок на другие файлы в файлах Markdown, например `[link](/path/to/file.md)`. Проверяет наличие целевых файлов. Требуется включить `#markdown.experimental.validate.enabled#`.",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "Проверьте фрагментарную часть ссылок на заголовки в других файлах в файлах Markdown, например. [link](/path/to/file.md#header). Наследует значение параметра от #markdown.experimental.validate.fragmentLinks.enabled# по умолчанию.",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "Проверка фрагментарных ссылок на заголовки в текущем файле Markdown, например [link](#header). Требуется включить #markdown.experimental.validate.enabled#.",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "Настройка ссылок, которые не нужно проверять. Например, \"/about\" не будет проверять ссылку \"[about](/about)\", а стандартная маска \"/assets/**/*.svg\" позволит пропустить проверку любых ссылок на файлы \".svg\" в каталоге \"assets\".",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "Проверка ссылок в файлах Markdown, например `[link][ref]`. Требуется включить `#markdown.experimental.validate.enabled#`.",
 			"configuration.markdown.links.openLocation.beside": "Открытые ссылки рядом с активным редактором.",
 			"configuration.markdown.links.openLocation.currentGroup": "Откройте ссылки в группе активного редактора.",
 			"configuration.markdown.links.openLocation.description": "Определяет, где следует открывать ссылки в файлах Markdown.",
@@ -74,8 +81,9 @@
 			"markdown.showLockedPreviewToSide.title": "Открыть заблокированную область предварительного просмотра сбоку",
 			"markdown.showPreviewSecuritySelector.title": "Изменить параметры безопасности для предварительного просмотра",
 			"markdown.showSource.title": "Показать источник",
-			"markdown.styles.dec": "Список URL-адресов или локальных путей к таблицам стилей CSS, используемых из области предварительного просмотра Markdown. Относительные пути интерпретируются относительно папки, открытой в проводнике. Если папка не открыта, они интерпретируются относительно расположения файла Markdown. Все символы \"\\\" должны записываться в виде \"\\\\\".",
-			"markdown.trace.desc": "Включить ведение журнала отладки для расширения Markdown.",
+			"markdown.styles.dec": "Список URL-адресов или локальных путей к таблицам стилей CSS, используемых из области предварительного просмотра Markdown. Относительные пути интерпретируются относительно папки, открытой в проводнике. Если папка не открыта, они интерпретируются относительно расположения файла Markdown. Все символы \\ должны записываться в виде \\\\.",
+			"markdown.trace.extension.desc": "Включить ведение журнала отладки для расширения Markdown.",
+			"markdown.trace.server.desc": "Отслеживает связь между VS Code и языковым сервером Markdown.",
 			"workspaceTrust": "Требуется для загрузки стилей, настроенных в рабочей области."
 		}
 	}

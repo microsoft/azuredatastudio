@@ -9,6 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/AADHelper": {
+			"pasteCodePlaceholder": "在此处粘贴授权代码...",
+			"pasteCodePrompt": "提供授权代码以完成登录流。",
+			"pasteCodeTitle": "Microsoft 身份验证",
 			"signOut": "你已被注销，因为未能读取存储的身份验证信息。"
 		},
 		"package": {

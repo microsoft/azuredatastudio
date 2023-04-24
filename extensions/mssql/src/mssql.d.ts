@@ -387,6 +387,21 @@ declare module 'mssql' {
 		deleteFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
 
 		/**
+		 * Exclude a folder and its contents from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		excludeFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Move a folder and its contents within a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Path of the folder, typically relative to the .sqlproj file
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		moveFolder(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
 		 * Add a post-deployment script to a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
