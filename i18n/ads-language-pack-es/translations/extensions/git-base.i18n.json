@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "Nombre de rama",
-			"error": "$(error) Error: {0}",
+			"error": "{0} Error: {1}",
 			"none found": "No se encontraron repositorios remotos.",
 			"pick url": "Elija una dirección URL desde la que se va a clonar.",
 			"provide url": "Proporcionar la dirección URL del repositorio",
