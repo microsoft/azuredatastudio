@@ -9,9 +9,10 @@ import * as constants from '../common/constants';
 import { getSqlProjectsInWorkspace, validateSqlCmdVariableName } from '../common/utils';
 import { DbServerValues, populateResultWithVars } from './utils';
 import { AddDatabaseReferenceSettings } from '../controllers/projectController';
-import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Project } from '../models/project';
 import { getSystemDatabase, getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
+import { ProjectType } from 'mssql';
 
 
 
@@ -28,6 +29,11 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 		[constants.projectLabel, constants.systemDatabase, constants.dacpacText] :
 		[constants.systemDatabase, constants.dacpacText];
 
+	// only add nupkg database reference option
+	if (project.sqlProjStyle === ProjectType.SdkStyle) {
+		referenceTypes.push(constants.nupkgText);
+	}
+
 	const referenceType = await vscode.window.showQuickPick(
 		referenceTypes,
 		{ title: constants.referenceType, ignoreFocusOut: true });
@@ -43,6 +49,8 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 			return addSystemDatabaseReference(project);
 		case constants.dacpacText:
 			return addDacpacReference(project);
+		case constants.nupkgText:
+			return addNupkgReference();
 		default:
 			console.log(`Unknown reference type ${referenceType}`);
 			return undefined;
@@ -179,6 +187,72 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 
 	const referenceSettings: IDacpacReferenceSettings = {
 		dacpacFileLocation: dacPacLocation,
+		suppressMissingDependenciesErrors: suppressErrors
+	};
+
+	populateResultWithVars(referenceSettings, dbServerValues);
+
+	return referenceSettings;
+}
+
+
+async function addNupkgReference(): Promise<INugetPackageReferenceSettings | undefined> {
+	// (steps continued from addDatabaseReferenceQuickpick)
+	// 2. Prompt for location
+	const location = await promptLocation();
+	if (!location) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 3. Prompt for NuGet package name
+	const nupkgName = await vscode.window.showInputBox(
+		{
+			title: constants.nupkgText,
+			placeHolder: constants.nupkgNamePlaceholder,
+			validateInput: (value) => {
+				return value ? undefined : constants.nameMustNotBeEmpty;
+			},
+			ignoreFocusOut: true
+		});
+
+	if (!nupkgName) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 4. Prompt for NuGet package version
+	const nupkgVersion = await vscode.window.showInputBox(
+		{
+			title: constants.version,
+			placeHolder: constants.versionPlaceholder,
+			validateInput: (value) => {
+				return value ? undefined : constants.versionMustNotBeEmpty;
+			},
+			ignoreFocusOut: true
+		});
+
+	if (!nupkgVersion) {
+		// User cancelled
+		return undefined;
+	}
+
+
+	// 5. Prompt for db/server values
+	const dbServerValues = await promptDbServerValues(location, path.parse(nupkgName).name);
+	if (!dbServerValues) {
+		// User cancelled
+		return;
+	}
+
+	// 6. Prompt suppress unresolved ref errors
+	const suppressErrors = await promptSuppressUnresolvedRefErrors();
+
+	// 7. Construct result
+
+	const referenceSettings: INugetPackageReferenceSettings = {
+		packageName: nupkgName,
+		packageVersion: nupkgVersion,
 		suppressMissingDependenciesErrors: suppressErrors
 	};
 
