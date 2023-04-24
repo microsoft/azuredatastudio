@@ -24,6 +24,33 @@ export function createContext(): TestContext {
 		key: undefined!,
 		displayInfo: undefined!,
 		properties: {
+			azureAuthType: 0,
+			providerSettings: {
+				scopes: [],
+				displayName: '',
+				id: '',
+				clientId: '',
+				loginEndpoint: '',
+				portalEndpoint: '',
+				redirectUri: '',
+				resources: {
+					windowsManagementResource: {
+						id: '',
+						resource: '',
+						endpoint: ''
+					},
+					azureManagementResource: {
+						id: '',
+						resource: '',
+						endpoint: ''
+					}
+				}
+			},
+			isMsAccount: false,
+			owningTenant: {
+				id: '',
+				displayName: ''
+			},
 			tenants: [{
 				id: '',
 				displayName: ''
