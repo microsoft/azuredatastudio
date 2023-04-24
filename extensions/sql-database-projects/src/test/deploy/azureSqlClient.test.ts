@@ -96,7 +96,7 @@ export function createContext(): TestContext {
 	};
 }
 
-describe.skip('Azure SQL client', function (): void {
+describe('Azure SQL client', function (): void {
 
 	it('Should return accounts successfully', async function (): Promise<void> {
 		const testContext = createContext();
