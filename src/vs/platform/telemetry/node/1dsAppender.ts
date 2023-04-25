@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type { AppInsightsCore } from '@microsoft/1ds-core-js';
 import type { IPayloadData, IXHROverride } from '@microsoft/1ds-post-js';
 import * as https from 'https';
-import { AbstractOneDataSystemAppender, IAppInsightsCore } from 'vs/platform/telemetry/common/1dsAppender';
+import { AbstractOneDataSystemAppender } from 'vs/platform/telemetry/common/1dsAppender';
 
 
 export class OneDataSystemAppender extends AbstractOneDataSystemAppender {
@@ -14,7 +15,7 @@ export class OneDataSystemAppender extends AbstractOneDataSystemAppender {
 		isInternalTelemetry: boolean,
 		eventPrefix: string,
 		defaultData: { [key: string]: any } | null,
-		iKeyOrClientFactory: string | (() => IAppInsightsCore), // allow factory function for testing
+		iKeyOrClientFactory: string | (() => AppInsightsCore), // allow factory function for testing
 	) {
 		// Override the way events get sent since node doesn't have XHTMLRequest
 		const customHttpXHROverride: IXHROverride = {

@@ -41,6 +41,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { DisposableStore } from 'vs/base/common/lifecycle';
+import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -583,7 +584,7 @@ export class EditDataEditor extends EditorPane {
 					newInput.results.onRestoreViewStateEmitter.fire();
 				}
 				if (newInput.savedViewState) {
-					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
+					this._sqlEditor.getControl().restoreViewState(<ICodeEditorViewState>newInput.savedViewState);
 				}
 			});
 	}

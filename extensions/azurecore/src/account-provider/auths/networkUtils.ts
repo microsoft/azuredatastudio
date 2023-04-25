@@ -4,16 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { NetworkResponse } from '@azure/msal-common';
 import * as https from 'https';
 
-export function getNetworkResponse<Body>(headers: Record<string, string>, body: Body, statusCode: number): NetworkResponse<Body> {
-	return {
-		headers: headers,
-		body: body,
-		status: statusCode
-	};
-}
+export declare type NetworkRequestOptions = {
+	headers?: Record<string, string>;
+	body?: string;
+};
 
 /*
  * Utility function that converts a URL object into an ordinary options object as expected by the

@@ -79,7 +79,7 @@ export class FileEncryptionHelper {
 		return cipherText;
 	}
 
-	fileOpener = async (content: string): Promise<string> => {
+	fileOpener = async (content: string, resetOnError?: boolean): Promise<string> => {
 		try {
 			if (!this._keyBuffer || !this._ivBuffer) {
 				await this.init();
@@ -97,13 +97,15 @@ export class FileEncryptionHelper {
 			return `${decipherIv.update(plaintext, this._binaryEncoding, 'utf8')}${decipherIv.final('utf8')}`;
 		} catch (ex) {
 			Logger.error(`FileEncryptionHelper: Error occurred when decrypting data, IV/KEY will be reset: ${ex}`);
-			// Reset IV/Keys if crypto cannot encrypt/decrypt data.
-			// This could be a possible case of corruption of expected iv/key combination
-			await this.deleteEncryptionKey(this._ivCredId);
-			await this.deleteEncryptionKey(this._keyCredId);
-			this._ivBuffer = undefined;
-			this._keyBuffer = undefined;
-			await this.init();
+			if (resetOnError) {
+				// Reset IV/Keys if crypto cannot encrypt/decrypt data.
+				// This could be a possible case of corruption of expected iv/key combination
+				await this.deleteEncryptionKey(this._ivCredId);
+				await this.deleteEncryptionKey(this._keyCredId);
+				this._ivBuffer = undefined;
+				this._keyBuffer = undefined;
+				await this.init();
+			}
 			// Throw error so cache file can be reset to empty.
 			throw new Error(`Decryption failed with error: ${ex}`);
 		}

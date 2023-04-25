@@ -669,7 +669,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._azureTenantDropdown.enable();
 				// Populate username as 'email' of selected azure account in dropdown, as username is required,
 				// and email of Azure account selected applies as username in most cases.
-				this._userNameInputBox.value = this._azureAccountList.find(a => a.displayInfo.displayName === this._azureAccountDropdown.value)?.displayInfo.email!
+				this._userNameInputBox.value = this.userName ?? this._azureAccountList.find(a => a.displayInfo.displayName === this._azureAccountDropdown.value)?.displayInfo.email!
 					?? this._azureAccountList[0]?.displayInfo?.email ?? '';
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
@@ -783,7 +783,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			selectedAccount = this._azureAccountList[0];
 		}
 
-		if (this.authenticationType === AuthenticationType.AzureMFAAndUser) {
+		if (this.authenticationType === AuthenticationType.AzureMFAAndUser && this._userNameInputBox.value === '') {
 			// Populate username as 'email' of selected azure account in dropdown, as username is required,
 			// and email of Azure account selected applies as username in most cases.
 			this._userNameInputBox.value = selectedAccount?.displayInfo?.email! ?? '';
@@ -813,7 +813,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
+				let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
+				this._azureTenantDropdown.setOptions(options);
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
+				this.onAzureTenantSelected(0);
 			}
 			this._tableContainer.classList.add(hideTenantsClassName);
 		}

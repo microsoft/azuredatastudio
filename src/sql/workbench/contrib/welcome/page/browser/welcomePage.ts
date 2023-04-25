@@ -382,7 +382,7 @@ class WelcomePage extends Disposable {
 		newButton.onDidClick(() => {
 			this.contextMenuService.showContextMenu({
 				getAnchor: () => newButtonHtmlElement,
-				getActions: () => NewActionItems.map(command => new MenuItemAction(command, undefined, {}, this.contextKeyService, this.commandService))
+				getActions: () => NewActionItems.map(command => new MenuItemAction(command, undefined, {}, undefined, this.contextKeyService, this.commandService))
 			});
 		});
 
