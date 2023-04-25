@@ -1796,10 +1796,6 @@ declare module 'azdata' {
 		 */
 		parentNodePath: string;
 		/**
-		 * flag to indicate if the node supports filtering
-		 */
-		isFilteringSupported?: boolean;
-		/**
 		 * list of filters that are supported by the node
 		 */
 		defaultFilters?: NodeInfoFilterDefinition[];
