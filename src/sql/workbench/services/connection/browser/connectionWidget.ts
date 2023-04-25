@@ -813,7 +813,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
+				let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
+				this._azureTenantDropdown.setOptions(options);
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
+				this.onAzureTenantSelected(0);
 			}
 			this._tableContainer.classList.add(hideTenantsClassName);
 		}
