@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
 import { ObjectManagement } from 'mssql';
-import { AADAuthenticationTypeDisplayText, ColumnTypeDisplayName, ContainedUserText, DatabaseTypeDisplayName, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, TableTypeDisplayName, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, ViewTypeDisplayName, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
+import * as localizedConstants from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -36,7 +36,7 @@ export async function refreshParentNode(context: azdata.ObjectExplorerContext): 
 			await parentNode?.refresh();
 		}
 		catch (err) {
-			await vscode.window.showErrorMessage(RefreshObjectExplorerError(getErrorMessage(err)));
+			await vscode.window.showErrorMessage(localizedConstants.RefreshObjectExplorerError(getErrorMessage(err)));
 		}
 	}
 }
@@ -48,27 +48,33 @@ export async function refreshNode(context: azdata.ObjectExplorerContext): Promis
 			await node?.refresh();
 		}
 		catch (err) {
-			await vscode.window.showErrorMessage(RefreshObjectExplorerError(getErrorMessage(err)));
+			await vscode.window.showErrorMessage(localizedConstants.RefreshObjectExplorerError(getErrorMessage(err)));
 		}
 	}
 }
 
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
+		case ObjectManagement.NodeType.ApplicationRole:
+			return inTitle ? localizedConstants.ApplicationRoleTypeDisplayNameInTitle : localizedConstants.ApplicationRoleTypeDisplayName;
+		case ObjectManagement.NodeType.DatabaseRole:
+			return inTitle ? localizedConstants.DatabaseRoleTypeDisplayNameInTitle : localizedConstants.DatabaseRoleTypeDisplayName;
 		case ObjectManagement.NodeType.ServerLevelLogin:
-			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
+			return inTitle ? localizedConstants.LoginTypeDisplayNameInTitle : localizedConstants.LoginTypeDisplayName;
+		case ObjectManagement.NodeType.ServerLevelServerRole:
+			return inTitle ? localizedConstants.ServerRoleTypeDisplayNameInTitle : localizedConstants.ServerRoleTypeDisplayName;
 		case ObjectManagement.NodeType.User:
-			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
+			return inTitle ? localizedConstants.UserTypeDisplayNameInTitle : localizedConstants.UserTypeDisplayName;
 		case ObjectManagement.NodeType.Table:
-			return TableTypeDisplayName;
+			return localizedConstants.TableTypeDisplayName;
 		case ObjectManagement.NodeType.View:
-			return ViewTypeDisplayName;
+			return localizedConstants.ViewTypeDisplayName;
 		case ObjectManagement.NodeType.Column:
-			return ColumnTypeDisplayName;
+			return localizedConstants.ColumnTypeDisplayName;
 		case ObjectManagement.NodeType.Database:
-			return DatabaseTypeDisplayName;
+			return localizedConstants.DatabaseTypeDisplayName;
 		default:
-			throw new Error(`Unkown node type: ${type}`);
+			throw new Error(`Unknown node type: ${type}`);
 	}
 }
 
@@ -77,19 +83,19 @@ export function getAuthenticationTypeDisplayName(authType: ObjectManagement.Auth
 
 	switch (authType) {
 		case ObjectManagement.AuthenticationType.Windows:
-			return WindowsAuthenticationTypeDisplayText;
+			return localizedConstants.WindowsAuthenticationTypeDisplayText;
 		case ObjectManagement.AuthenticationType.AzureActiveDirectory:
-			return AADAuthenticationTypeDisplayText;
+			return localizedConstants.AADAuthenticationTypeDisplayText;
 		default:
-			return SQLAuthenticationTypeDisplayText;
+			return localizedConstants.SQLAuthenticationTypeDisplayText;
 	}
 }
 
 export function getAuthenticationTypeByDisplayName(displayValue: string): ObjectManagement.AuthenticationType {
 	switch (displayValue) {
-		case WindowsAuthenticationTypeDisplayText:
+		case localizedConstants.WindowsAuthenticationTypeDisplayText:
 			return ObjectManagement.AuthenticationType.Windows;
-		case AADAuthenticationTypeDisplayText:
+		case localizedConstants.AADAuthenticationTypeDisplayText:
 			return ObjectManagement.AuthenticationType.AzureActiveDirectory;
 		default:
 			return ObjectManagement.AuthenticationType.Sql;
@@ -99,23 +105,23 @@ export function getAuthenticationTypeByDisplayName(displayValue: string): Object
 export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
 	switch (userType) {
 		case ObjectManagement.UserType.WithLogin:
-			return UserWithLoginText;
+			return localizedConstants.UserWithLoginText;
 		case ObjectManagement.UserType.WithWindowsGroupLogin:
-			return UserWithWindowsGroupLoginText;
+			return localizedConstants.UserWithWindowsGroupLoginText;
 		case ObjectManagement.UserType.Contained:
-			return ContainedUserText;
+			return localizedConstants.ContainedUserText;
 		default:
-			return UserWithNoConnectAccess;
+			return localizedConstants.UserWithNoConnectAccess;
 	}
 }
 
 export function getUserTypeByDisplayName(userTypeDisplayName: string): ObjectManagement.UserType {
 	switch (userTypeDisplayName) {
-		case UserWithLoginText:
+		case localizedConstants.UserWithLoginText:
 			return ObjectManagement.UserType.WithLogin;
-		case UserWithWindowsGroupLoginText:
+		case localizedConstants.UserWithWindowsGroupLoginText:
 			return ObjectManagement.UserType.WithWindowsGroupLogin;
-		case ContainedUserText:
+		case localizedConstants.ContainedUserText:
 			return ObjectManagement.UserType.Contained;
 		default:
 			return ObjectManagement.UserType.NoConnectAccess;

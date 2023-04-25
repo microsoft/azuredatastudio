@@ -61,39 +61,35 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn, objectType };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
+	async search(contextId: string, searchText: string, objectTypes: ObjectManagement.NodeType[]): Promise<ObjectManagement.SearchResultItem[]> {
+		const params: contracts.SearchObjectRequestParams = { contextId, searchText, objectTypes };
+		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
+	}
 }
 
 export class TestObjectManagementService implements IObjectManagementService {
 	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
+		let obj;
 		if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
-			return Promise.resolve(this.getLoginView(isNewObject, objectUrn));
+			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.User) {
-			return Promise.resolve(this.getUserView(isNewObject, objectUrn));
+			obj = this.getUserView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
+			obj = this.getServerRoleView(isNewObject, objectUrn);
 		}
 		else {
 			throw Error('Not implemented');
 		}
+		return this.delayAndResolve(obj);
 	}
 	save(contextId: string, object: ObjectManagement.SqlObject): Thenable<void> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve();
-			}, 3000);
-		});
+		return this.delayAndResolve();
 	}
 	script(contextId: string, object: ObjectManagement.SqlObject): Thenable<string> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve('test script');
-			}, 1000);
-		});
+		return this.delayAndResolve('test script');
 	}
 	disposeView(contextId: string): Thenable<void> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve();
-			}, 100);
-		});
+		return this.delayAndResolve();
 	}
 	async rename(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string, newName: string): Promise<void> {
 		return this.delayAndResolve();
@@ -101,6 +97,14 @@ export class TestObjectManagementService implements IObjectManagementService {
 	async drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Promise<void> {
 		return this.delayAndResolve();
 	}
+
+	async search(contextId: string, searchText: string, objectTypes: ObjectManagement.NodeType[]): Promise<ObjectManagement.SearchResultItem[]> {
+		const items = [];
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test1', type: ObjectManagement.NodeType.ServerLevelLogin });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test2', type: ObjectManagement.NodeType.ServerLevelLogin });
+		return this.delayAndResolve(items);
+	}
+
 	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
 		const serverRoles = ['sysadmin', 'public', 'bulkadmin', 'dbcreator', 'diskadmin', 'processadmin', 'securityadmin', 'serveradmin'];
 		const languages = ['<default>', 'English'];
@@ -160,6 +164,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		}
 		return login;
 	}
+
 	private getUserView(isNewObject: boolean, name: string): ObjectManagement.UserViewInfo {
 		let viewInfo: ObjectManagement.UserViewInfo;
 		const languages = ['<default>', 'English'];
@@ -213,11 +218,34 @@ export class TestObjectManagementService implements IObjectManagementService {
 		}
 		return viewInfo;
 	}
-	private delayAndResolve(): Promise<void> {
+
+	private getServerRoleView(isNewObject: boolean, name: string): ObjectManagement.ServerRoleViewInfo {
+		return isNewObject ? <ObjectManagement.ServerRoleViewInfo>{
+			objectInfo: {
+				name: '',
+				members: [],
+				owner: '',
+				memberships: []
+			},
+			isFixedRole: false,
+			serverRoles: ['server role1', 'server role2', 'server role3', 'server role4'],
+		} : <ObjectManagement.ServerRoleViewInfo>{
+			objectInfo: {
+				name: 'server role1',
+				members: ['login1', 'server role2'],
+				owner: 'login1',
+				memberships: ['server role3', 'server role4']
+			},
+			isFixedRole: false,
+			serverRoles: ['server role2', 'server role3', 'server role4']
+		};
+	}
+
+	private delayAndResolve(obj?: any): Promise<any> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
-				resolve();
-			}, 3000);
+				resolve(obj);
+			}, 1000);
 		});
 	}
 }

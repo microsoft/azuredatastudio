@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
@@ -79,12 +79,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
-			ariaLabel: localizedConstants.NameText,
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.name,
-			width: DefaultInputWidth
-		}).component();
+		this.nameInput = this.createInputBox(localizedConstants.NameText, this.objectInfo.name, this.options.isNewObject);
 		this.disposables.push(this.nameInput.onTextChanged(async () => {
 			this.objectInfo.name = this.nameInput.value!;
 			this.onObjectValueChange();

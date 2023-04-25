@@ -15,6 +15,12 @@ export const TableTypeDisplayName: string = localize('objectManagement.TableDisp
 export const ViewTypeDisplayName: string = localize('objectManagement.ViewDisplayName', "view");
 export const ColumnTypeDisplayName: string = localize('objectManagement.ColumnDisplayName', "column");
 export const DatabaseTypeDisplayName: string = localize('objectManagement.DatabaseDisplayName', "database");
+export const ServerRoleTypeDisplayName: string = localize('objectManagement.ServerRoleTypeDisplayName', "server role");
+export const ServerRoleTypeDisplayNameInTitle: string = localize('objectManagement.ServerRoleTypeDisplayNameInTitle', "Server Role");
+export const ApplicationRoleTypeDisplayName: string = localize('objectManagement.ApplicationRoleTypeDisplayName', "application role");
+export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectManagement.ApplicationRoleTypeDisplayNameInTitle', "Application Role");
+export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
+export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
 
 // Shared Strings
 export const HelpText: string = localize('objectManagement.helpText', "Help");
@@ -26,6 +32,9 @@ export const RenameObjectDialogTitle: string = localize('objectManagement.rename
 export const ScriptText: string = localize('objectManagement.scriptText', "Script");
 export const NoActionScriptedMessage: string = localize('objectManagement.noActionScriptedMessage', "There is no action to be scripted.");
 export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
+export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
+export const AddText = localize('objectManagement.addText', "Add");
+export const RemoveText = localize('objectManagement.removeText', "Remove");
 
 
 export function RefreshObjectExplorerError(error: string): string {
@@ -128,6 +137,9 @@ export const PasswordCannotBeEmptyError = localize('objectManagement.passwordCan
 export const PasswordsNotMatchError = localize('objectManagement.passwordsNotMatchError', "Password must match the confirm password.");
 export const InvalidPasswordError = localize('objectManagement.invalidPasswordError', "Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy");
 export const LoginNotSelectedError = localize('objectManagement.loginNotSelectedError', "Login is not selected.");
+export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
+export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
+export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Type");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -158,4 +170,3 @@ export const UserWithNoConnectAccess = localize('objectManagement.user.userWithN
 export const DefaultSchemaText = localize('objectManagement.user.defaultSchemaLabel', "Default schema");
 export const LoginText = localize('objectManagement.user.loginLabel', "Login");
 export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
-export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");

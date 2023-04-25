@@ -1612,6 +1612,16 @@ export namespace DropObjectRequest {
 	export const type = new RequestType<DropObjectRequestParams, void, void, void>('objectManagement/drop');
 }
 
+export interface SearchObjectRequestParams {
+	contextId: string;
+	searchText: string | undefined;
+	objectTypes: mssql.ObjectManagement.NodeType[];
+}
+
+export namespace SearchObjectRequest {
+	export const type = new RequestType<SearchObjectRequestParams, mssql.ObjectManagement.SearchResultItem[], void, void>('objectManagement/search');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------

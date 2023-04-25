@@ -17,6 +17,7 @@ import * as constants from '../constants';
 import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
+import { ServerRoleDialog } from './ui/serverRoleDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -52,6 +53,9 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	switch (context.nodeInfo!.objectType) {
 		case FolderType.ServerLevelLogins:
 			newObjectType = ObjectManagement.NodeType.ServerLevelLogin;
+			break;
+		case FolderType.ServerLevelServerRoles:
+			newObjectType = ObjectManagement.NodeType.ServerLevelServerRole;
 			break;
 		case FolderType.Users:
 			newObjectType = ObjectManagement.NodeType.User;
@@ -218,6 +222,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new LoginDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.ServerLevelServerRole:
+			return new ServerRoleDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}

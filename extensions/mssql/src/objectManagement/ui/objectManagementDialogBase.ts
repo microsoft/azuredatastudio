@@ -223,8 +223,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected createLabelInputContainer(label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
 		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: input.required }).component();
-		const row = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, input]).component();
-		return row;
+		return this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, input]).component()
 	}
 
 	protected createCheckbox(label: string, checked: boolean = false, enabled: boolean = true): azdata.CheckBoxComponent {
@@ -292,6 +291,19 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			}
 			this.onObjectValueChange();
 		}));
+		return table;
+	}
+
+	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][]): azdata.TableComponent {
+		const table = this.modelView.modelBuilder.table().withProps(
+			{
+				ariaLabel: ariaLabel,
+				data: data,
+				columns: columns,
+				width: DefaultTableWidth,
+				height: getTableHeight(data.length)
+			}
+		).component();
 		return table;
 	}
 

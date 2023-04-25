@@ -8,6 +8,7 @@
  */
 export const enum FolderType {
 	ServerLevelLogins = 'ServerLevelLogins',
+	ServerLevelServerRoles = 'ServerLevelServerRoles',
 	Users = 'Users'
 }
 
@@ -17,6 +18,12 @@ export const CreateUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/sta
 export const AlterUserDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-user-transact-sql';
 export const CreateLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-login-transact-sql';
 export const AlterLoginDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-login-transact-sql';
+export const CreateServerRoleDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-server-role-transact-sql';
+export const AlterServerRoleDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-server-role-transact-sql';
+export const CreateApplicationRoleDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-application-role-transact-sql';
+export const AlterApplicationRoleDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-application-role-transact-sql';
+export const CreateDatabaseRoleDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/create-role-transact-sql';
+export const AlterDatabaseRoleDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-role-transact-sql';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
