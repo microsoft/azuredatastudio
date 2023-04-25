@@ -713,7 +713,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getNonDefaultsOnly?: boolean, ignoreConnectionName?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, ignoreConnectionName?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
@@ -772,7 +772,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 			let finalTitle = searchResult[0]?.title;
 			if (finalTitle) {
-				if (getNonDefaultsOnly) {
+				if (getOptionsOnly) {
 					finalTitle = finalTitle.substring(originalTitle.length);
 				}
 				result = finalTitle;

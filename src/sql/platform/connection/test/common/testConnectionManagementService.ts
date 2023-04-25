@@ -354,7 +354,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean, ignoreConnectionName?: boolean): string {
+	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, ignoreConnectionName?: boolean): string {
 		return undefined!;
 	}
 
