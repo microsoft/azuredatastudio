@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "リンク先を表示"
+		"dist/client": {
+			"markdownServer.name": "Markdown 言語サーバー"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "リンクの検証から '{0}' を除外します。"
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "ファイル参照の検索に失敗しました。リソースが指定されていません。",
 			"progress.title": "ファイル参照の検索中"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "場所で名前の変更はサポートされていません"
+		"dist/preview/documentRenderer": {
+			"preview.notFound": "{0} が見つかりません",
+			"preview.securityMessage.label": "セキュリティが無効なコンテンツの警告",
+			"preview.securityMessage.text": "このドキュメントで一部のコンテンツが無効になっています",
+			"preview.securityMessage.title": "安全でない可能性があるか保護されていないコンテンツは、Markdown プレビューで無効化されています。保護されていないコンテンツを許可するかスクリプトを有効にするには、Markdown プレビューのセキュリティ設定を変更してください"
 		},
 		"dist/preview/preview": {
 			"lockedPreviewTitle": "[プレビュー] {0}",
 			"onPreviewStyleLoadError": "'markdown.styles' を読み込むことができません: {0}",
 			"preview.clickOpenFailed": "{0} を開くことができません。",
 			"previewTitle": "プレビュー {0}"
-		},
-		"dist/preview/previewContentProvider": {
-			"preview.notFound": "{0} が見つかりません",
-			"preview.securityMessage.label": "セキュリティが無効なコンテンツの警告",
-			"preview.securityMessage.text": "このドキュメントで一部のコンテンツが無効になっています",
-			"preview.securityMessage.title": "安全でない可能性があるか保護されていないコンテンツは、Markdown プレビューで無効化されています。保護されていないコンテンツを許可するかスクリプトを有効にするには、Markdown プレビューのセキュリティ設定を変更してください"
 		},
 		"dist/preview/security": {
 			"disable.description": "すべてのコンテンツとスクリプトの実行を許可します。推奨されません。",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "コンテンツのセキュリティ レベルに影響しません"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "シフトを挿入するには、マークダウン エディターへのドロップを有効または無効にします。`#workbenck.experimental.editor.dropIntoEditor.enabled#`' を有効にする必要があります。",
+			"configuration.markdown.editor.drop.enabled": "シフトを挿入するには、マークダウン エディターへのドロップを有効または無効にします。`#editor.dropIntoEditor.enabled#` を有効にする必要があります。",
+			"configuration.markdown.editor.pasteLinks.enabled": "Markdown エディターへのファイルの貼り付け機能を有効または無効にすると、Markdown リンクが挿入されます。'#editor.experimental.pasteActions.enabled#' を有効にする必要があります。",
+			"configuration.markdown.experimental.validate.enabled.description": "Markdown ファイル内のすべてのエラー報告を有効または無効にします。",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "Markdown ファイル内の他のファイルへのリンク (例: `[link](/path/to/file.md)`) を検証します。これにより、ターゲット ファイルが存在するかどうかが確認されます。`#markdown.experimental.validate.enabled#` を有効にする必要があります。",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "マークダウン ファイルで、他のファイルのヘッダーへのリンクのフラグメント部分を検証します。例: '[link](/path/to/file.md#header)'。既定では、'#markdown.experimental.validate.fragmentLinks.enabled#' から設定値を継承します。",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "現在のマークダウン ファイルで、ヘッダーへのフラグメント リンクを検証します (例: `[link](#header)`)。`#markdown.experimental.validate.enabled#` を有効にする必要があります。",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "検証しないリンクを校正します。たとえば、`/about` を指定すると、リンク `[about](/about)` が検証されません。glob `/assets/**/*.svg` を指定すると、`assets` ディレクトリ下の `.svg` ファイルへのリンクの検証をスキップできます。",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "Markdown ファイルの参照リンクを検証します (例: `[link][ref]`)。 `#markdown.experimental.validate.enabled#` を有効にする必要があります。",
 			"configuration.markdown.links.openLocation.beside": "アクティブなエディターの横にあるリンクを開きます。",
 			"configuration.markdown.links.openLocation.currentGroup": "アクティブなエディター グループ内にリンクを開きます。",
 			"configuration.markdown.links.openLocation.description": "マークダウン ファイル内のリンクを開く場所を制御します。",
@@ -75,7 +82,8 @@
 			"markdown.showPreviewSecuritySelector.title": "プレビュー のセキュリティ設定を変更",
 			"markdown.showSource.title": "ソースの表示",
 			"markdown.styles.dec": "Markdown プレビューから使用する CSS スタイル シートへの URL またはローカル パスの一覧。相対パスは、エクスプローラーで開いているフォルダーを基準に解釈されます。開いているフォルダーがない場合は、Markdown ファイルの場所を基準にして解釈されます。すべての '\\' は '\\\\' として記述する必要があります。",
-			"markdown.trace.desc": "Markdown 拡張機能のデバッグ ログを有効にします。",
+			"markdown.trace.extension.desc": "Markdown 拡張機能のデバッグ ログを有効にします。",
+			"markdown.trace.server.desc": "VS Code と Markdown 言語サーバー間の通信をトレースします。",
 			"workspaceTrust": "ワークスペースに構成されているスタイルを読み込むのに必要です。"
 		}
 	}

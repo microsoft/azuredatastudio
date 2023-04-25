@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "Visita il collegamento"
+		"dist/client": {
+			"markdownServer.name": "Server di linguaggio Markdown"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "Escludere '{0}' dalla convalida dei collegamenti."
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "La ricerca dei riferimenti a file non è riuscita. Non è stata specificata alcuna risorsa.",
 			"progress.title": "Ricerca di riferimenti a file"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "Ridenominazione non supportata nel percorso"
+		"dist/preview/documentRenderer": {
+			"preview.notFound": "{0} non è stato trovato",
+			"preview.securityMessage.label": "Avviso di sicurezza contenuto disabilitato",
+			"preview.securityMessage.text": "Alcuni contenuti sono stati disabilitati in questo documento",
+			"preview.securityMessage.title": "I contenuti potenzialmente non sicuri sono stati disabilitati nell'anteprima Markdown. Modificare l'impostazione di sicurezza dell'anteprima Markdown per consentire la visualizzazione di contenuto non sicuri o abilitare gli script"
 		},
 		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Anteprima] {0}",
 			"onPreviewStyleLoadError": "Impossibile caricare 'markdown.styles': {0}",
 			"preview.clickOpenFailed": "Non è stato possibile aprire {0}",
 			"previewTitle": "Anteprima {0}"
-		},
-		"dist/preview/previewContentProvider": {
-			"preview.notFound": "{0} non è stato trovato",
-			"preview.securityMessage.label": "Avviso di sicurezza contenuto disabilitato",
-			"preview.securityMessage.text": "Alcuni contenuti sono stati disabilitati in questo documento",
-			"preview.securityMessage.title": "I contenuti potenzialmente non sicuri sono stati disabilitati nell'anteprima Markdown. Modificare l'impostazione di sicurezza dell'anteprima Markdown per consentire la visualizzazione di contenuto non sicuri o abilitare gli script"
 		},
 		"dist/preview/security": {
 			"disable.description": "Consente l'esecuzione di tutti i contenuti e script. Scelta non consigliata",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "Non influisce sul livello di sicurezza del contenuto"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "Abilitare/Disabilitare l'inserimento nell'editor markdown per inserire il turno. Richiede l'abilitazione di `#workbenck.experimental.editor.dropIntoEditor.enabled#`.",
+			"configuration.markdown.editor.drop.enabled": "Abilita/disabilita l'inserimento nel Markdown editor per inserire il turno. Richiede l'abilitazione di '#editor.dropIntoEditor.enabled#'.",
+			"configuration.markdown.editor.pasteLinks.enabled": "L'abilitazione/disabilitazione dell'operazione per incollare i file in un Markdown editor inserisce i collegamenti Markdown. Richiede l'abilitazione di '#editor.experimental.pasteActions.enabled#'.",
+			"configuration.markdown.experimental.validate.enabled.description": "Abilitare/disabilitare tutte le segnalazioni di errori nei file Markdown.",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "Consente di convalidare i collegamenti ad altri file in file Markdown, ad esempio '[link](/path/to/file.md)'. Verifica l'esistenza dei file di destinazione. Richiede l'abilitazione di '#markdown.experimental.validate.enabled#'.",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "Convalidare la parte di frammento dei collegamenti alle intestazioni in altri file in file Markdown, ad esempio '[link](/path/to/file.md#header)'. Eredita il valore dell'impostazione da '#markdown.experimental.validate.fragmentLinks.enabled#' per impostazione predefinita.",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "Convalidare i collegamenti di frammento alle intestazioni nel file Markdown corrente, ad esempio '[link](#header)'. È necessario abilitare '#markdown.experimental.validate.enabled#'.",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "Configurare i collegamenti che non devono essere convalidati. Ad esempio, '/about' non convalida il collegamento '[about](/about)', mentre il GLOB '/assets/**/*.svg' consente di ignorare la convalida per qualsiasi collegamento ai file '.svg' nella directory 'assets'.",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "Consente di convalidare i collegamenti di riferimento nei file Markdown, ad esempio '[link][ref]'.  Richiede l'abilitazione di '#markdown.experimental.validate.enabled#'.",
 			"configuration.markdown.links.openLocation.beside": "Apre i collegamenti accanto all'editor attivo.",
 			"configuration.markdown.links.openLocation.currentGroup": "Apre i collegamenti nel gruppo di editor attivo.",
 			"configuration.markdown.links.openLocation.description": "Controlla dove aprire i collegamenti nei file Markdown.",
@@ -75,7 +82,8 @@
 			"markdown.showPreviewSecuritySelector.title": "Modifica impostazioni di sicurezza anteprima",
 			"markdown.showSource.title": "Mostra origine",
 			"markdown.styles.dec": "Elenco di URL o percorsi locali dei fogli di stile CSS da usare dall'anteprima Markdown. I percorsi relativi vengono interpretati come relativi alla cartella aperta in Esplora risorse. Se non è presente alcuna cartella aperta, vengono interpretati come relativi al percorso del file Markdown. Tutti i caratteri '\\' devono essere scritti come '\\\\'.",
-			"markdown.trace.desc": "Abilita la registrazione debug per l'estensione Markdown.",
+			"markdown.trace.extension.desc": "Abilita la registrazione debug per l'estensione Markdown.",
+			"markdown.trace.server.desc": "Traccia le comunicazioni tra VS Code e il server di linguaggio Markdown.",
 			"workspaceTrust": "Necessario per il caricamento degli stili configurati nell'area di lavoro."
 		}
 	}

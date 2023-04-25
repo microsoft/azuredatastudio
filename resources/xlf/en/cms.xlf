@@ -95,14 +95,11 @@
     <trans-unit id="cms.connectionOptions.applicationName.displayName">
       <source xml:lang="en">Application name</source>
     </trans-unit>
-    <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-      <source xml:lang="en">Attach DB filename</source>
-    </trans-unit>
-    <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+    <trans-unit id="cms.connectionOptions.attachDbFilename.description">
       <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
     </trans-unit>
-    <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-      <source xml:lang="en">Attached DB file name</source>
+    <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+      <source xml:lang="en">Attach DB filename</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
       <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -120,10 +117,10 @@
       <source xml:lang="en">Authentication type</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-      <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
+      <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-      <source xml:lang="en">Column encryption</source>
+      <source xml:lang="en">Always Encrypted</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.commandTimeout.description">
       <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
@@ -166,6 +163,27 @@
     </trans-unit>
     <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
       <source xml:lang="en">Current language</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
+      <source xml:lang="en">Azure Attestation</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
+      <source xml:lang="en">Host Guardian Service</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+      <source xml:lang="en">None</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.description">
+      <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.displayName">
+      <source xml:lang="en">Attestation protocol</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.description">
+      <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.displayName">
+      <source xml:lang="en">Attestation URL</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
       <source xml:lang="en">Optional (False)</source>
@@ -278,6 +296,12 @@
     <trans-unit id="cms.connectionOptions.replication.displayName">
       <source xml:lang="en">Replication</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.secureEnclaves.description">
+      <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.secureEnclaves.displayName">
+      <source xml:lang="en">Secure enclaves</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.serverDescription.description">
       <source xml:lang="en">Description of the SQL Server instance</source>
     </trans-unit>
@@ -289,6 +313,9 @@
     </trans-unit>
     <trans-unit id="cms.connectionOptions.serverName.displayName">
       <source xml:lang="en">Server</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.serverName.placeholder">
+      <source xml:lang="en">e.g. tcp:servername,1433</source>
     </trans-unit>
     <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
       <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
@@ -320,8 +347,14 @@
     <trans-unit id="cms.description">
       <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
     </trans-unit>
+    <trans-unit id="cms.disabled">
+      <source xml:lang="en">Disabled</source>
+    </trans-unit>
     <trans-unit id="cms.displayName">
       <source xml:lang="en">SQL Server Central Management Servers</source>
+    </trans-unit>
+    <trans-unit id="cms.enabled">
+      <source xml:lang="en">Enabled</source>
     </trans-unit>
     <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
       <source xml:lang="en">Should column definitions be aligned?</source>

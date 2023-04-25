@@ -9,6 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/AADHelper": {
+			"pasteCodePlaceholder": "Autorisierungscode hier einfügen...",
+			"pasteCodePrompt": "Geben Sie den Autorisierungscode an, um den Anmeldefluss abzuschließen.",
+			"pasteCodeTitle": "Microsoft Authentication",
 			"signOut": "Sie wurden abgemeldet, weil beim Lesen der gespeicherten Authentifizierungsinformationen ein Fehler aufgetreten ist."
 		},
 		"package": {

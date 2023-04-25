@@ -334,6 +334,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.blob.resourceGroup.select.prompt">
       <source xml:lang="en">Select a resource group value first.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.blob.storage.folder.info">
+      <source xml:lang="en">When uploading database backups to your blob container, ensure that backup files from different databases are stored in separate folders. Only the root of the container and folders at most one level deep are supported.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.storage.folder.warning">
+      <source xml:lang="en">There are multiple databases with the same backup location selected. Ensure that backup files from different databases are stored in separate folders.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.blob.storage.header.text">
       <source xml:lang="en">Azure Storage Blob Container details</source>
     </trans-unit>
@@ -506,7 +512,7 @@ This may take some time.</source>
       <source xml:lang="en">3. Verify that all log backups have been restored on the target database. The "Log backups pending restore" value should be zero.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cutover.type">
-      <source xml:lang="en">Mode</source>
+      <source xml:lang="en">Migration mode</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.description">
       <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.</source>
@@ -598,6 +604,18 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.loading.tables">
       <source xml:lang="en">Loading tables list...</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.migration.context.menu.tool.tip">
+      <source xml:lang="en">Click this column to activate the context command menu</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration.duration.tool.tip">
+      <source xml:lang="en">The duration of the migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration.finish.time.tool.tip">
+      <source xml:lang="en">The fininish time for the migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration.migration.mode.tool.tip">
+      <source xml:lang="en">In Azure Database Migration Service, you can migrate your databases offline or while they are online. In an offline migration, application downtime starts when the migration starts. To limit downtime to the time it takes you to cut over to the new environment after the migration, use an online migration.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.description">
       <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
     </trans-unit>
@@ -625,29 +643,53 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.migration.service.created.successfully">
       <source xml:lang="en">Successfully created a Database Migration Service.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.migration.start.time.tool.tip">
+      <source xml:lang="en">The start time for the migration</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.migration.status">
       <source xml:lang="en">Database migration status</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.status.label">
       <source xml:lang="en">Database migration status: {0}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.migration.target.instance.database.name.tool.tip">
+      <source xml:lang="en">The target database name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration.target.instance.server.name.tool.tip">
+      <source xml:lang="en">The target server name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration.target.type.tool.tip">
+      <source xml:lang="en">The azure resource target type [SQL Managed Instance, SQL Virtual Machine, SQL Database]</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.missing.tables">
-      <source xml:lang="en">0 tables found.</source>
+      <source xml:lang="en">0 tables found on source database.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.description">
       <source xml:lang="en">Select the location of the database backups to use during migration.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.schema.migration.dacpac">
+      <source xml:lang="en">SQL Server dacpac extension</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.schema.migration.help">
+      <source xml:lang="en">Make sure to migrate the database schema from source to target by using the {0} or the {1} in Azure Data Studio before selecting the list of tables to migrate.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.schema.migration.project">
+      <source xml:lang="en">SQL Database Projects extension</source>
+    </trans-unit>
     <trans-unit id="sql.migration.database.status.column">
       <source xml:lang="en">Migration status</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.status.tool.tip">
+      <source xml:lang="en">The current status of the migration</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.table.refresh.label">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.table.selection.description">
-      <source xml:lang="en">To migrate to the Azure SQL target, select tables in each database for migration.</source>
+      <source xml:lang="en">For each database below, click Edit to select the tables to migrate from source to target. Then, before clicking Next, validate the provided configuration by clicking 'Run validation'.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.table.selection.label">
-      <source xml:lang="en">Migration table selection</source>
+      <source xml:lang="en">Table selection</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.table.source.column.label">
       <source xml:lang="en">Source database</source>
@@ -1042,6 +1084,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.mins">
       <source xml:lang="en">{0} mins</source>
     </trans-unit>
+    <trans-unit id="sql.migration.missing.table.name.column">
+      <source xml:lang="en">Table name</source>
+    </trans-unit>
     <trans-unit id="sql.migration.missing.targetPassword.error">
       <source xml:lang="en">To continue, enter a valid target password.</source>
     </trans-unit>
@@ -1297,6 +1342,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
+    <trans-unit id="sql.migration.restart.migration.wizard">
+      <source xml:lang="en">Restart migration wizard</source>
+    </trans-unit>
     <trans-unit id="sql.migration.restore.backupset.status.none">
       <source xml:lang="en">None</source>
     </trans-unit>
@@ -1443,6 +1491,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.database.to.migrate">
       <source xml:lang="en">Select the databases to migrate.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.select.migration.tables">
+      <source xml:lang="en">Select tables for migration</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.prompt">
       <source xml:lang="en">Click on SQL Server instance or any of the databases on the left to view its details.</source>
@@ -1954,10 +2005,16 @@ This may take some time.</source>
     <trans-unit id="sql.migration.source.databases">
       <source xml:lang="en">Source databases</source>
     </trans-unit>
-    <trans-unit id="sql.migration.source.details.sqlAuth">
+    <trans-unit id="sql.migration.source.details.sqlAuth.db">
+      <source xml:lang="en">Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance from the self-hosted integration runtime.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.source.details.sqlAuth.nonDb">
       <source xml:lang="en">Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.source.details.windowAuth">
+    <trans-unit id="sql.migration.source.details.windowAuth.db">
+      <source xml:lang="en">Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance from the self-hosted integration runtime.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.source.details.windowAuth.nonDb">
       <source xml:lang="en">Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.</source>
     </trans-unit>
     <trans-unit id="sql.migration.source.login">
@@ -2026,8 +2083,14 @@ This may take some time.</source>
     <trans-unit id="sql.migration.src.database">
       <source xml:lang="en">Source database</source>
     </trans-unit>
+    <trans-unit id="sql.migration.src.database.tool.tip">
+      <source xml:lang="en">Name of the source database</source>
+    </trans-unit>
     <trans-unit id="sql.migration.src.server">
       <source xml:lang="en">Source name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.src.server.tool.tip">
+      <source xml:lang="en">Name of the source server</source>
     </trans-unit>
     <trans-unit id="sql.migration.start.login.migration.button">
       <source xml:lang="en">Migrate</source>
@@ -2222,7 +2285,7 @@ This may take some time.</source>
       <source xml:lang="en">Table migration status: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.table.missing.count">
-      <source xml:lang="en">Missing target tables excluded from list: {0}</source>
+      <source xml:lang="en">Tables missing on target: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.table.select.label">
       <source xml:lang="en">Select tables for {0}</source>
@@ -2595,6 +2658,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.wizard.sku.choose_a_target">
       <source xml:lang="en">Choose your Azure SQL target</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.sku.choose_a_target.help">
+      <source xml:lang="en">Not sure which Azure SQL target is right for you? Learn more</source>
+    </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.error">
       <source xml:lang="en">An error occurred while generating SKU recommendations for the server '{0}'.</source>
     </trans-unit>
@@ -2639,6 +2705,15 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.yes">
       <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="sql.retry.migration.prompt">
+      <source xml:lang="en">Do you want to retry the failed table migrations?</source>
+    </trans-unit>
+    <trans-unit id="sql.retry.migration.summary">
+      <source xml:lang="en">Please resolve any errors before retrying the migration.</source>
+    </trans-unit>
+    <trans-unit id="sql.retry.migration.title">
+      <source xml:lang="en">The migration failed with the following errors:</source>
     </trans-unit>
     <trans-unit id="total.databases.selected">
       <source xml:lang="en">{0} of {1} databases selected</source>

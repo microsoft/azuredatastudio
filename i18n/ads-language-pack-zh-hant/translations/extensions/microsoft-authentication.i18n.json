@@ -9,6 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/AADHelper": {
+			"pasteCodePlaceholder": "在這裡貼上授權碼...",
+			"pasteCodePrompt": "提供授權碼以完成登入流程。",
+			"pasteCodeTitle": "Microsoft 驗證",
 			"signOut": "因為讀取儲存的驗證資訊失敗，所以已將您登出。"
 		},
 		"package": {

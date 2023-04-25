@@ -44,7 +44,6 @@
 			"derivedDescription": "Trova file con elementi di pari livello e nome identico ma estensione diversa.",
 			"derivedLabel": "File con elementi di pari livello in base al nome",
 			"dirty": "un indicatore per il momento in cui l'editor attivo contiene modifiche non salvate",
-			"falseDescription": "Disabilita il criterio.",
 			"fileDescription": "Trova tutti i file di un'estensione di file specifica.",
 			"fileLabel": "File in base all'estensione",
 			"filesDescription": "Trova tutti i file con qualsiasi estensione di file.",
@@ -61,8 +60,7 @@
 			"topFolderDescription": "Trova una cartella di primo livello con un nome specifico.",
 			"topFolderLabel": "Cartella in base al nome (primo livello)",
 			"topFoldersDescription": "Trova più cartelle di primo livello.",
-			"topFoldersLabel": "Cartella con più nomi (primo livello)",
-			"trueDescription": "Abilita il criterio."
+			"topFoldersLabel": "Cartella con più nomi (primo livello)"
 		},
 		"package": {
 			"description": "Offre funzionalità (IntelliSense avanzato, correzione automatica) nei file di configurazione come quelli degli elementi consigliati per impostazioni, avvio ed estensioni.",

@@ -9,6 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/AADHelper": {
+			"pasteCodePlaceholder": "Pegue aquí el código de autorización...",
+			"pasteCodePrompt": "Proporcione el código de autorización para completar el flujo de inicio de sesión.",
+			"pasteCodeTitle": "Autenticación de Microsoft",
 			"signOut": "Se ha cerrado la sesión porque se ha producido un error al leer la información de autenticación almacenada."
 		},
 		"package": {
