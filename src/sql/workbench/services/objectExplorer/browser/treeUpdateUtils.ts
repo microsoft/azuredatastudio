@@ -486,7 +486,7 @@ export class TreeUpdateUtils {
 		// Map the indices of profiles that share the same server info
 		for (let i = 0; i < inputList.length; i++) {
 			// do not add if the profile is still loading as that will result in erroneous entries.
-			if (inputList[i].hasServerCapabilities && inputList[i].hasLoaded()) {
+			if (inputList[i].serverCapabilities && inputList[i].hasLoaded()) {
 				let titleKey = inputList[i].getServerInfo();
 				if (profileListMap.has(titleKey)) {
 					let profilesForKey = profileListMap.get(titleKey);
