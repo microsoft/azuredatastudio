@@ -119,7 +119,6 @@ export class OpenExistingDialog extends DialogBase {
 
 		this.locationRadioButtonFormComponent = {
 			title: constants.LocationSelectorTitle,
-			required: true,
 			component: view.modelBuilder.flexContainer()
 				.withItems([this.localRadioButton, this.remoteGitRepoRadioButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '15px' } })
 				.withProps({ ariaRole: 'radiogroup' })
@@ -192,7 +191,7 @@ export class OpenExistingDialog extends DialogBase {
 		};
 
 		this.filePathTextBox = view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.LocationSelectorTitle,
+			ariaLabel: constants.ProjectFileTitle,
 			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
@@ -212,9 +211,10 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(localProjectBrowseFolderButton.onDidClick(() => this.onBrowseButtonClick()));
 
 		const flexContainer = this.createHorizontalContainer(view, [this.filePathTextBox, localProjectBrowseFolderButton]);
-		void flexContainer.updateCssStyles({ 'margin-top': '-10px' });
 		this.filePathAndButtonComponent = {
-			component: flexContainer
+			component: flexContainer,
+			title: constants.ProjectFileTitle,
+			required: true
 		};
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([

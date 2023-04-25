@@ -135,7 +135,7 @@ declare module 'mssql' {
 		connectionName?: string;
 		projectFilePath: string;
 		targetScripts: string[];
-		folderStructure: ExtractTarget;
+		extractTarget: ExtractTarget;
 		dataSchemaProvider: string;
 	}
 
@@ -236,13 +236,13 @@ declare module 'mssql' {
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode, includePermissions?: boolean): Thenable<DacFxResult>;
-		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
-		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -353,6 +353,19 @@ declare module 'mssql' {
 		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus>;
 
 		/**
+		 * Add a nuget package database reference to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param packageName Name of the referenced nuget package
+		 * @param packageVersion Version of the referenced nuget package
+		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+		 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+			 If this is set, DatabaseVariable must also be set.
+		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+		 */
+		addNugetPackageReference(projectUri: string, packageName: string, packageVersion: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+
+		/**
 		 * Delete a database reference from a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the reference to be deleted. Name of the System DB, path of the sqlproj, or path of the dacpac
@@ -372,6 +385,21 @@ declare module 'mssql' {
 		 * @param path Path of the folder, typically relative to the .sqlproj file
 		 */
 		deleteFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Exclude a folder and its contents from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		excludeFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Move a folder and its contents within a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param destinationPath Path of the folder, typically relative to the .sqlproj file
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		moveFolder(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a post-deployment script to a project
@@ -626,6 +654,10 @@ declare module 'mssql' {
 		 * Array of SQL project references contained in the project
 		 */
 		sqlProjectReferences: SqlProjectReference[];
+		/**
+		 * Array of NuGet package references contained in the project
+		 */
+		nugetPackageReferences: NugetPackageReference[];
 	}
 
 	export interface GetFoldersResult extends azdata.ResultStatus {
@@ -722,6 +754,11 @@ declare module 'mssql' {
 
 	export interface DacpacReference extends UserDatabaseReference {
 		dacpacPath: string;
+	}
+
+	export interface NugetPackageReference extends UserDatabaseReference {
+		packageName: string;
+		packageVersion: string;
 	}
 
 	export const enum SystemDatabase {
@@ -853,6 +890,19 @@ declare module 'mssql' {
 
 	// Object Management - Begin.
 	export namespace ObjectManagement {
+
+		/**
+		 * Object types.
+		 */
+		export const enum NodeType {
+			Column = "Column",
+			Database = "Database",
+			ServerLevelLogin = "ServerLevelLogin",
+			Table = "Table",
+			User = "User",
+			View = "View"
+		}
+
 		/**
 		 * Base interface for all the objects.
 		 */
@@ -941,7 +991,7 @@ declare module 'mssql' {
 		/**
 		 * The authentication types.
 		 */
-		export enum AuthenticationType {
+		export const enum AuthenticationType {
 			Windows = 'Windows',
 			Sql = 'Sql',
 			AzureActiveDirectory = 'AAD'
@@ -1064,7 +1114,7 @@ declare module 'mssql' {
 		/**
 		 * User types.
 		 */
-		export enum UserType {
+		export const enum UserType {
 			/**
 			 * User with a server level login.
 			 */
@@ -1166,69 +1216,48 @@ declare module 'mssql' {
 
 	export interface IObjectManagementService {
 		/**
-		 * Initialize the login view and return the information to render the view.
+		 * Initialize the object view and return the information to render the view.
+		 * @param contextId The context id of the view, generated by the extension and will be used in subsequent save/script/dispose operations.
+		 * @param objectType The object type.
 		 * @param connectionUri The original connection's URI.
-		 * @param contextId The context id of the view, generated by the extension and will be used in subsequent create/update/dispose operations.
-		 * @param isNewObject Whether the view is for creating a new login object.
-		 * @param name Name of the login. Only applicable when isNewObject is false.
+		 * @param database The target database.
+		 * @param isNewObject Whether the view is for creating a new object.
+		 * @param parentUrn The parent object's URN.
+		 * @param objectUrn The object's URN.
 		 */
-		initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.LoginViewInfo>;
+		initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>>;
 		/**
-		 * Create a login.
-		 * @param contextId The login view's context id.
-		 * @param login The login information.
+		 * Save an object.
+		 * @param contextId The object view's context id.
+		 * @param object The object to be saved.
 		 */
-		createLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
+		save(contextId: string, object: ObjectManagement.SqlObject): Thenable<void>;
 		/**
-		 * Update a login.
-		 * @param contextId The login view's context id.
-		 * @param login The login information.
+		 * Script an object.
+		 * @param contextId The object view's context id.
+		 * @param object The object to be scripted.
 		 */
-		updateLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
+		script(contextId: string, object: ObjectManagement.SqlObject): Thenable<string>;
 		/**
-		 * Dispose the login view.
+		 * Dispose a view.
 		 * @param contextId The id of the view.
 		 */
-		disposeLoginView(contextId: string): Thenable<void>;
-		/**
-		 * Initialize the user view and return the information to render the view.
-		 * @param connectionUri The original connection's URI.
-		 * @param database Name of the database.
-		 * @param contextId The id of the view, generated by the extension and will be used in subsequent create/update/dispose operations.
-		 * @param isNewObject Whether the view is for creating a new user object.
-		 * @param name Name of the user. Only applicable when isNewObject is false.
-		 */
-		initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.UserViewInfo>;
-		/**
-		 * Create a user.
-		 * @param contextId Id of the view.
-		 * @param user The user information.
-		 */
-		createUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
-		/**
-		 * Update a user.
-		 * @param contextId Id of the view.
-		 * @param user The user information.
-		 */
-		updateUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
-		/**
-		 * Dispose the user view.
-		 * @param contextId The id of the view.
-		 */
-		disposeUserView(contextId: string): Thenable<void>;
+		disposeView(contextId: string): Thenable<void>;
 		/**
 		 * Rename an object.
 		 * @param connectionUri The URI of the server connection.
+		 * @param objectType The object type.
 		 * @param objectUrn SMO Urn of the object to be renamed. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 * @param newName The new name of the object.
 		 */
-		rename(connectionUri: string, objectUrn: string, newName: string): Thenable<void>;
+		rename(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string, newName: string): Thenable<void>;
 		/**
 		 * Drop an object.
 		 * @param connectionUri The URI of the server connection.
+		 * @param objectType The object type.
 		 * @param objectUrn SMO Urn of the object to be dropped. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 */
-		drop(connectionUri: string, objectUrn: string): Thenable<void>;
+		drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Thenable<void>;
 	}
 	// Object Management - End.
 }

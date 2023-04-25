@@ -515,7 +515,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -524,7 +524,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -555,7 +555,7 @@ export interface SavePublishProfileParams {
 	profilePath: string;
 	databaseName: string;
 	connectionString: string;
-	sqlCommandVariableValues?: Record<string, string>;
+	sqlCommandVariableValues?: Map<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 }
 
@@ -665,6 +665,16 @@ export namespace MoveSqlObjectScriptRequest {
 export namespace GetSqlObjectScriptsRequest {
 	export const type = new RequestType<SqlProjectParams, mssql.GetScriptsResult, void, void>('sqlProjects/getSqlObjectScripts');
 }
+
+
+export namespace ExcludeFolderRequest {
+	export const type = new RequestType<FolderParams, azdata.ResultStatus, void, void>('sqlProjects/excludeFolder');
+}
+
+export namespace MoveFolderRequest {
+	export const type = new RequestType<MoveFolderParams, azdata.ResultStatus, void, void>('sqlProjects/moveFolder');
+}
+
 
 //#endregion
 
@@ -790,6 +800,10 @@ export namespace AddSystemDatabaseReferenceRequest {
 	export const type = new RequestType<AddSystemDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addSystemDatabaseReference');
 }
 
+export namespace AddNugetPackageReferenceRequest {
+	export const type = new RequestType<AddNugetPackageReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/addNugetPackageReference');
+}
+
 export namespace DeleteDatabaseReferenceRequest {
 	export const type = new RequestType<DeleteDatabaseReferenceParams, azdata.ResultStatus, void, void>('sqlprojects/deleteDatabaseReference');
 }
@@ -837,6 +851,18 @@ export interface AddDacpacReferenceParams extends AddUserDatabaseReferenceParams
 	 * Path to the .dacpac file
 	 */
 	dacpacPath: string;
+}
+
+export interface AddNugetPackageReferenceParams extends AddUserDatabaseReferenceParams {
+	/**
+	 * NuGet package name
+	 */
+	packageName: string;
+
+	/**
+	 * NuGet package version
+	 */
+	packageVersion: string;
 }
 
 export interface AddDatabaseReferenceParams extends SqlProjectParams {
@@ -892,6 +918,13 @@ export interface FolderParams extends SqlProjectParams {
 	 * Path of the folder, typically relative to the .sqlproj file
 	 */
 	path: string;
+}
+
+export interface MoveFolderParams extends FolderParams {
+	/**
+	 * Path of the folder, typically relative to the .sqlproj file
+	 */
+	destinationPath: string;
 }
 
 export interface CreateSqlProjectParams extends SqlProjectParams {
@@ -1518,85 +1551,51 @@ export namespace ExecutionPlanComparisonRequest {
 // ------------------------------- < Execution Plan > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------
-export interface InitializeLoginViewRequestParams {
+export interface InitializeViewRequestParams {
 	connectionUri: string;
-	contextId: string;
-	isNewObject: boolean;
-	name: string | undefined;
-}
-
-export namespace InitializeLoginViewRequest {
-	export const type = new RequestType<InitializeLoginViewRequestParams, mssql.ObjectManagement.LoginViewInfo, void, void>('objectManagement/initializeLoginView');
-}
-
-export interface CreateLoginRequestParams {
-	contextId: string;
-	login: mssql.ObjectManagement.Login;
-}
-
-export namespace CreateLoginRequest {
-	export const type = new RequestType<CreateLoginRequestParams, void, void, void>('objectManagement/createLogin');
-}
-
-export interface UpdateLoginRequestParams {
-	contextId: string;
-	login: mssql.ObjectManagement.Login;
-}
-
-export namespace UpdateLoginRequest {
-	export const type = new RequestType<UpdateLoginRequestParams, void, void, void>('objectManagement/updateLogin');
-}
-
-export interface DisposeLoginViewRequestParams {
-	contextId: string;
-}
-
-export namespace DisposeLoginViewRequest {
-	export const type = new RequestType<DisposeLoginViewRequestParams, void, void, void>('objectManagement/disposeLoginView');
-}
-
-export interface InitializeUserViewRequestParams {
-	connectionUri: string;
-	contextId: string;
-	isNewObject: boolean;
 	database: string;
-	name: string | undefined;
-}
-
-export namespace InitializeUserViewRequest {
-	export const type = new RequestType<InitializeUserViewRequestParams, mssql.ObjectManagement.UserViewInfo, void, void>('objectManagement/initializeUserView');
-}
-
-export interface CreateUserRequestParams {
 	contextId: string;
-	user: mssql.ObjectManagement.User;
+	isNewObject: boolean;
+	objectType: string;
+	parentUrn: string;
+	objectUrn?: string;
 }
 
-export namespace CreateUserRequest {
-	export const type = new RequestType<CreateUserRequestParams, void, void, void>('objectManagement/createUser');
+export namespace InitializeViewRequest {
+	export const type = new RequestType<InitializeViewRequestParams, mssql.ObjectManagement.ObjectViewInfo<mssql.ObjectManagement.SqlObject>, void, void>('objectManagement/initializeView');
 }
 
-export interface UpdateUserRequestParams {
+export interface SaveObjectRequestParams {
 	contextId: string;
-	user: mssql.ObjectManagement.User;
+	object: mssql.ObjectManagement.SqlObject;
 }
 
-export namespace UpdateUserRequest {
-	export const type = new RequestType<UpdateUserRequestParams, void, void, void>('objectManagement/updateUser');
+export namespace SaveObjectRequest {
+	export const type = new RequestType<SaveObjectRequestParams, void, void, void>('objectManagement/save');
 }
 
-export interface DisposeUserViewRequestParams {
+export interface ScriptObjectRequestParams {
+	contextId: string;
+	object: mssql.ObjectManagement.SqlObject;
+}
+
+export namespace ScriptObjectRequest {
+	export const type = new RequestType<ScriptObjectRequestParams, string, void, void>('objectManagement/script');
+}
+
+export interface DisposeViewRequestParams {
 	contextId: string;
 }
 
-export namespace DisposeUserViewRequest {
-	export const type = new RequestType<DisposeUserViewRequestParams, void, void, void>('objectManagement/disposeUserView');
+export namespace DisposeViewRequest {
+	export const type = new RequestType<DisposeViewRequestParams, void, void, void>('objectManagement/disposeView');
 }
 
 export interface RenameObjectRequestParams {
 	connectionUri: string;
 	newName: string;
 	objectUrn: string;
+	objectType: mssql.ObjectManagement.NodeType;
 }
 
 export namespace RenameObjectRequest {
@@ -1606,11 +1605,13 @@ export namespace RenameObjectRequest {
 export interface DropObjectRequestParams {
 	connectionUri: string;
 	objectUrn: string;
+	objectType: mssql.ObjectManagement.NodeType;
 }
 
 export namespace DropObjectRequest {
 	export const type = new RequestType<DropObjectRequestParams, void, void, void>('objectManagement/drop');
 }
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------

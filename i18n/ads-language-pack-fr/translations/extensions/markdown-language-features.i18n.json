@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "suivre le lien"
+		"dist/client": {
+			"markdownServer.name": "Serveur de langage Markdown"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "Excluez '{0}' de la validation de lien."
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "Échec de la recherche des références de fichiers. Aucune ressource fournie.",
 			"progress.title": "Recherche des références de fichiers"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "Renommage non pris en charge à l’emplacement"
+		"dist/preview/documentRenderer": {
+			"preview.notFound": "{0} est introuvable",
+			"preview.securityMessage.label": "Avertissement de sécurité de contenu désactivé",
+			"preview.securityMessage.text": "Du contenu a été désactivé dans ce document",
+			"preview.securityMessage.title": "Le contenu potentiellement dangereux ou non sécurisé a été désactivé dans l'aperçu Markdown. Changez les paramètres de sécurité de l'aperçu Markdown pour autoriser le contenu non sécurisé ou activer les scripts"
 		},
 		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Aperçu] {0}",
 			"onPreviewStyleLoadError": "Impossible de charger 'markdown.styles' : {0}",
 			"preview.clickOpenFailed": "Impossible d'ouvrir {0}",
 			"previewTitle": "Prévisualiser {0}"
-		},
-		"dist/preview/previewContentProvider": {
-			"preview.notFound": "{0} est introuvable",
-			"preview.securityMessage.label": "Avertissement de sécurité de contenu désactivé",
-			"preview.securityMessage.text": "Du contenu a été désactivé dans ce document",
-			"preview.securityMessage.title": "Le contenu potentiellement dangereux ou non sécurisé a été désactivé dans l'aperçu Markdown. Changez les paramètres de sécurité de l'aperçu Markdown pour autoriser le contenu non sécurisé ou activer les scripts"
 		},
 		"dist/preview/security": {
 			"disable.description": "Autorisez tout le contenu et l’exécution des scripts. Non recommandé",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "N'affecte pas le niveau de sécurité de contenu"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "Activez/désactivez la suppression dans l’éditeur Markdown pour insérer un shift. Nécessite l’activation de « #workbench.experimental.editor.dropIntoEditor.enabled# ».",
+			"configuration.markdown.editor.drop.enabled": "Activez/désactivez la suppression dans l’éditeur Markdown pour insérer un shift. Nécessite l’activation de ' #editor.dropIntoEditor.enabled#'.",
+			"configuration.markdown.editor.pasteLinks.enabled": "Activer/désactiver le collage de fichiers dans un éditeur Markdown insère des liens Markdown. Cela nécessite l’activation de « #editor.experimental.pasteActions.enabled# ».",
+			"configuration.markdown.experimental.validate.enabled.description": "Activez/désactivez tous les rapports d’erreurs dans les fichiers Markdown.",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "Validez les liens vers d’autres fichiers dans les fichiers Markdown, par exemple `[link](/path/to/file.md)`. Cette opération vérifie que les fichiers cibles existent. Nécessite l’activation de `#markdown.experimental.validate.enabled#`.",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "Validez la partie fragment des liens vers des en-têtes dans d’autres fichiers dans les fichiers Markdown, par exemple '[link](/path/to/file.md#header)'. Hérite la valeur de paramètre de '#markdown.experimental.validate.fragmentLinks.enabled#' par défaut.",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "Validez les liens de fragment vers les en-têtes dans le fichier Markdown actuel, par exemple `[link](#header)`. Nécessite l’activation de `#markdown.experimental.validate.enabled#`.",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "Configurez les liens qui ne doivent pas être validés. Par exemple, « /about » ne valide pas le lien «[about](/about) », tandis que le glob « /assets/**/*.svg » vous permet d’ignorer la validation de tout lien vers les fichiers « .svg » sous le répertoire « assets ».",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "Validez les liens de référence dans les fichiers Markdown, par exemple `[link][ref]`.  Nécessite l’activation de `#markdown.experimental.validate.enabled#`.",
 			"configuration.markdown.links.openLocation.beside": "Ouvrez les liens à côté de l'éditeur actif.",
 			"configuration.markdown.links.openLocation.currentGroup": "Ouvrez les liens dans le groupe d'éditeurs actif.",
 			"configuration.markdown.links.openLocation.description": "Contrôle l'emplacement où doivent s'ouvrir les liens dans les fichiers Markdown.",
@@ -75,7 +82,8 @@
 			"markdown.showPreviewSecuritySelector.title": "Changer les paramètres de sécurité de l'aperçu",
 			"markdown.showSource.title": "Afficher la source",
 			"markdown.styles.dec": "Liste d'URL ou de chemins locaux de feuilles de style CSS à utiliser dans l'aperçu Markdown. Les chemins relatifs sont interprétés par rapport au dossier ouvert dans l'Explorateur. Si aucun dossier n'est ouvert, ils sont interprétés par rapport à l'emplacement du fichier Markdown. Tous les signes '\\' doivent être écrits sous la forme '\\\\'.",
-			"markdown.trace.desc": "Active la journalisation du débogage pour l'extension Markdown.",
+			"markdown.trace.extension.desc": "Active la journalisation du débogage pour l'extension Markdown.",
+			"markdown.trace.server.desc": "Trace la communication entre VS Code et le serveur de langage Markdown.",
 			"workspaceTrust": "Requis pour le chargement des styles configurés dans l’espace de travail."
 		}
 	}

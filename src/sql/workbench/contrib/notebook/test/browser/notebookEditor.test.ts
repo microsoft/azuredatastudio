@@ -730,7 +730,8 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ITextResourceConfigurationService),
 		instantiationService.get(IThemeService),
 		instantiationService.get(IEditorGroupsService),
-		instantiationService.get(IEditorService)
+		instantiationService.get(IEditorService),
+		instantiationService.get(IFileService)
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);

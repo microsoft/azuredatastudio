@@ -198,7 +198,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			this.clientApplication = new PublicClientApplication(msalConfiguration);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
-				simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
+				simpleTokenCache, this._context, this.clientApplication, this._cachePluginProvider,
+				this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
