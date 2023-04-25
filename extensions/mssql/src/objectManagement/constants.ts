@@ -7,6 +7,8 @@
  * The folder types in object explorer.
  */
 export const enum FolderType {
+	ApplicationRoles = 'ApplicationRoles',
+	DatabaseRoles = 'DatabaseRoles',
 	ServerLevelLogins = 'ServerLevelLogins',
 	ServerLevelServerRoles = 'ServerLevelServerRoles',
 	Users = 'Users'

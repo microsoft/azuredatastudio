@@ -6,40 +6,39 @@ import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterServerRoleDocUrl, CreateServerRoleDocUrl } from '../constants';
+import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
 
-export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagement.ServerRoleInfo, ObjectManagement.ServerRoleViewInfo> {
+export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
-	private membershipSection: azdata.GroupContainer;
+	private ownedSchemasSection: azdata.GroupContainer;
 	private memberSection: azdata.GroupContainer;
 
 	// General section content
 	private nameInput: azdata.InputBoxComponent;
 	private ownerInput: azdata.InputBoxComponent;
 
+	// Owned Schemas section content
+	private ownedSchemaTable: azdata.TableComponent;
+
 	// Member section content
 	private memberTable: azdata.TableComponent;
 	private addMemberButton: azdata.ButtonComponent;
 	private removeMemberButton: azdata.ButtonComponent;
-
-	// Membership section content
-	private membershipTable: azdata.TableComponent;
-
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
 	}
 
 	protected override get docUrl(): string {
-		return this.options.isNewObject ? CreateServerRoleDocUrl : AlterServerRoleDocUrl;
+		return this.options.isNewObject ? CreateDatabaseRoleDocUrl : AlterDatabaseRoleDocUrl;
 	}
 
 	protected async initializeUI(): Promise<void> {
 		this.initializeGeneralSection();
+		this.initializeOwnedSchemasSection();
 		this.initializeMemberSection();
-		this.initializeMembershipSection();
-		this.formContainer.addItems([this.generalSection, this.memberSection, this.membershipSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection]);
 	}
 
 	private initializeGeneralSection(): void {
@@ -72,8 +71,12 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);
 	}
 
-	private initializeMembershipSection(): void {
-		this.membershipTable = this.createTableList(localizedConstants.MembershipSectionHeader, localizedConstants.ServerRoleTypeDisplayNameInTitle, this.viewInfo.serverRoles, this.objectInfo.memberships);
-		this.membershipSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.membershipTable]);
+	private initializeOwnedSchemasSection(): void {
+		const ownedSchemaData = this.viewInfo.schemas.map(name => {
+			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
+			return [{ enabled: !isSelected, checked: isSelected }, name];
+		});
+		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, localizedConstants.SchemaText, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
+		this.ownedSchemasSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.ownedSchemaTable]);
 	}
 }

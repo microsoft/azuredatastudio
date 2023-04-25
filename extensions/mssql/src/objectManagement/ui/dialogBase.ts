@@ -7,16 +7,9 @@
 // 1. include server properties and other properties in the telemetry.
 
 import * as azdata from 'azdata';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
-import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
-import { getErrorMessage } from '../../utils';
-import { TelemetryActions, ObjectManagementViewName } from '../constants';
 import * as localizedConstants from '../localizedConstants';
-import { deepClone, getNodeTypeDisplayName, refreshNode } from '../utils';
-import { TelemetryReporter } from '../../telemetry';
-import { providerId } from '../../constants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
@@ -30,50 +23,18 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultTa
 	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
 }
 
-function getDialogName(type: ObjectManagement.NodeType, isNewObject: boolean): string {
-	return isNewObject ? `New${type}` : `${type}Properties`
-}
-
-export interface ObjectManagementDialogOptions {
-	connectionUri: string;
-	database?: string;
-	objectType: ObjectManagement.NodeType;
-	isNewObject: boolean;
-	parentUrn: string;
-	objectUrn?: string;
-	objectExplorerContext?: azdata.ObjectExplorerContext;
-	width?: azdata.window.DialogWidth;
-	objectName?: string;
-}
-
-export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> {
+export abstract class DialogBase {
 	protected readonly disposables: vscode.Disposable[] = [];
 	protected readonly dialogObject: azdata.window.Dialog;
-	private _contextId: string;
-	private _viewInfo: ViewInfoType;
-	private _originalObjectInfo: ObjectInfoType;
+
 	private _modelView: azdata.ModelView;
 	private _loadingComponent: azdata.LoadingComponent;
 	private _formContainer: azdata.DivContainer;
-	private _helpButton: azdata.window.Button;
-	private _scriptButton: azdata.window.Button;
 
-	constructor(protected readonly objectManagementService: IObjectManagementService, protected readonly options: ObjectManagementDialogOptions) {
-		this.options.width = this.options.width || 'narrow';
-		const objectTypeDisplayName = getNodeTypeDisplayName(options.objectType, true);
-		const dialogTitle = options.isNewObject ? localizedConstants.NewObjectDialogTitle(objectTypeDisplayName) : localizedConstants.ObjectPropertiesDialogTitle(objectTypeDisplayName, options.objectName);
-		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, getDialogName(options.objectType, options.isNewObject), options.width);
+	constructor(title: string, name: string, width: azdata.window.DialogWidth) {
+		this.dialogObject = azdata.window.createModelViewDialog(title, name, width);
 		this.dialogObject.okButton.label = localizedConstants.OkText;
 		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => { await this.dispose(reason); }));
-		this._helpButton = azdata.window.createButton(localizedConstants.HelpText, 'left');
-		this.disposables.push(this._helpButton.onClick(async () => {
-			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.docUrl));
-		}));
-		this._scriptButton = azdata.window.createButton(localizedConstants.ScriptText, 'left');
-		this.disposables.push(this._scriptButton.onClick(async () => { await this.onScriptButtonClick(); }));
-		this.dialogObject.customButtons = [this._helpButton, this._scriptButton];
-		this.updateLoadingStatus(true);
-		this._contextId = generateUuid();
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
 			if (!confirmed) {
@@ -81,56 +42,26 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			}
 			return await this.runValidation();
 		});
+		this.onLoadingStatusChanged(true);
 	}
 
-	protected abstract initializeUI(): Promise<void>;
-	protected abstract get docUrl(): string;
+	protected async onConfirmation(): Promise<boolean> { return true; }
 
-	protected validateInput(): Promise<string[]> {
-		const errors: string[] = [];
-		if (!this.objectInfo.name) {
-			errors.push(localizedConstants.NameCannotBeEmptyError);
-		}
-		return Promise.resolve(errors);
-	}
+	protected abstract initialize(): Promise<void>;
 
-	protected postInitializeData(): void {
+	protected get formContainer(): azdata.DivContainer { return this._formContainer; }
 
-	}
-	protected onObjectValueChange(): void {
-		this.dialogObject.okButton.enabled = this.isDirty;
-	}
+	protected get modelView(): azdata.ModelView { return this._modelView; }
 
-	protected async onConfirmation(): Promise<boolean> {
-		return true;
-	}
+	protected onObjectValueChange(): void { }
 
-	protected get viewInfo(): ViewInfoType {
-		return this._viewInfo;
-	}
-
-	protected get objectInfo(): ObjectInfoType {
-		return this._viewInfo.objectInfo;
-	}
-
-	protected get originalObjectInfo(): ObjectInfoType {
-		return this._originalObjectInfo;
-	}
-
-	protected get formContainer(): azdata.DivContainer {
-		return this._formContainer;
-	}
-
-	protected get modelView(): azdata.ModelView {
-		return this._modelView;
-	}
+	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
 	public async open(): Promise<void> {
 		try {
-			const initializeViewPromise = new Promise<void>((async resolve => {
+			const initializeDialogPromise = new Promise<void>((async resolve => {
 				await this.dialogObject.registerContent(async view => {
 					this._modelView = view;
-					resolve();
 					this._formContainer = this.createFormContainer([]);
 					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
 						loading: true,
@@ -142,73 +73,21 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 						}
 					}).component();
 					await view.initializeModel(this._loadingComponent);
+					resolve();
 				});
 			}));
 			azdata.window.openDialog(this.dialogObject);
-			await this.initializeData();
-			await initializeViewPromise;
-			await this.initializeUI();
-			this._originalObjectInfo = deepClone(this.objectInfo);
-			const typeDisplayName = getNodeTypeDisplayName(this.options.objectType);
-			this.dialogObject.registerOperation({
-				displayName: this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
-					: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName),
-				description: '',
-				isCancelable: false,
-				operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
-					const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
-					try {
-						if (JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo)) {
-							const startTime = Date.now();
-							await this.objectManagementService.save(this._contextId, this.objectInfo);
-							if (this.options.isNewObject && this.options.objectExplorerContext) {
-								await refreshNode(this.options.objectExplorerContext);
-							}
-
-							TelemetryReporter.sendTelemetryEvent(actionName, {
-								objectType: this.options.objectType
-							}, {
-								elapsedTimeMs: Date.now() - startTime
-							});
-							operation.updateStatus(azdata.TaskStatus.Succeeded);
-						}
-					}
-					catch (err) {
-						operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));
-						TelemetryReporter.createErrorEvent2(ObjectManagementViewName, actionName, err).withAdditionalProperties({
-							objectType: this.options.objectType
-						}).send();
-					} finally {
-						await this.disposeView();
-					}
-				}
-			});
-			this.updateLoadingStatus(false);
+			await initializeDialogPromise;
+			await this.initialize();
+			this.onLoadingStatusChanged(false);
 		} catch (err) {
-			const actionName = this.options.isNewObject ? TelemetryActions.OpenNewObjectDialog : TelemetryActions.OpenPropertiesDialog;
-			TelemetryReporter.createErrorEvent2(ObjectManagementViewName, actionName, err).withAdditionalProperties({
-				objectType: this.options.objectType
-			}).send();
-			void vscode.window.showErrorMessage(getErrorMessage(err));
 			azdata.window.closeDialog(this.dialogObject);
+			throw err;
 		}
 	}
 
-	private async dispose(reason: azdata.window.CloseReason): Promise<void> {
+	protected async dispose(reason: azdata.window.CloseReason): Promise<void> {
 		this.disposables.forEach(disposable => disposable.dispose());
-		if (reason !== 'ok') {
-			await this.disposeView();
-		}
-	}
-
-	private async disposeView(): Promise<void> {
-		await this.objectManagementService.disposeView(this._contextId);
-	}
-
-	private async initializeData(): Promise<void> {
-		const viewInfo = await this.objectManagementService.initializeView(this._contextId, this.options.objectType, this.options.connectionUri, this.options.database, this.options.isNewObject, this.options.parentUrn, this.options.objectUrn);
-		this._viewInfo = viewInfo as ViewInfoType;
-		this.postInitializeData();
 	}
 
 	protected async runValidation(showErrorMessage: boolean = true): Promise<boolean> {
@@ -379,45 +258,9 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		}
 	}
 
-	private updateLoadingStatus(isLoading: boolean): void {
-		this._scriptButton.enabled = !isLoading;
-		this._helpButton.enabled = !isLoading;
-		this.dialogObject.okButton.enabled = isLoading ? false : this.isDirty;
+	protected onLoadingStatusChanged(isLoading: boolean): void {
 		if (this._loadingComponent) {
 			this._loadingComponent.loading = isLoading;
 		}
-	}
-
-	private async onScriptButtonClick(): Promise<void> {
-		this.updateLoadingStatus(true);
-		try {
-			const isValid = await this.runValidation();
-			if (!isValid) {
-				return;
-			}
-			let message: string;
-			const script = await this.objectManagementService.script(this._contextId, this.objectInfo);
-			if (script) {
-				message = localizedConstants.ScriptGeneratedText;
-				await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
-			} else {
-				message = localizedConstants.NoActionScriptedMessage;
-			}
-			this.dialogObject.message = {
-				text: message,
-				level: azdata.window.MessageLevel.Information
-			};
-		} catch (err) {
-			this.dialogObject.message = {
-				text: localizedConstants.ScriptError(getErrorMessage(err)),
-				level: azdata.window.MessageLevel.Error
-			};
-		} finally {
-			this.updateLoadingStatus(false);
-		}
-	}
-
-	private get isDirty(): boolean {
-		return JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
 	}
 }

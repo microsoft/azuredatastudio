@@ -18,10 +18,12 @@ import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
 import { ServerRoleDialog } from './ui/serverRoleDialog';
+import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
+import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
-	const service = getObjectManagementService(appContext, false);
+	const service = getObjectManagementService(appContext, true);
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
@@ -51,6 +53,12 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	}
 	let newObjectType: ObjectManagement.NodeType;
 	switch (context.nodeInfo!.objectType) {
+		case FolderType.ApplicationRoles:
+			newObjectType = ObjectManagement.NodeType.ApplicationRole;
+			break;
+		case FolderType.DatabaseRoles:
+			newObjectType = ObjectManagement.NodeType.DatabaseRole;
+			break;
 		case FolderType.ServerLevelLogins:
 			newObjectType = ObjectManagement.NodeType.ServerLevelLogin;
 			break;
@@ -218,12 +226,16 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 	switch (dialogOptions.objectType) {
+		case ObjectManagement.NodeType.ApplicationRole:
+			return new ApplicationRoleDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.DatabaseRole:
+			return new DatabaseRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelLogin:
 			return new LoginDialog(service, dialogOptions);
-		case ObjectManagement.NodeType.User:
-			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.User:
+			return new UserDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}

@@ -33,7 +33,7 @@ export const ScriptText: string = localize('objectManagement.scriptText', "Scrip
 export const NoActionScriptedMessage: string = localize('objectManagement.noActionScriptedMessage', "There is no action to be scripted.");
 export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
-export const AddText = localize('objectManagement.addText', "Add");
+export const AddText = localize('objectManagement.addText', "Add…");
 export const RemoveText = localize('objectManagement.removeText', "Remove");
 
 
@@ -140,6 +140,7 @@ export const LoginNotSelectedError = localize('objectManagement.loginNotSelected
 export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
 export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
 export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Type");
+export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

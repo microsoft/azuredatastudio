@@ -70,12 +70,16 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 export class TestObjectManagementService implements IObjectManagementService {
 	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 		let obj;
-		if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
+		if (objectType === ObjectManagement.NodeType.ApplicationRole) {
+			obj = this.getApplicationRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
+			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			obj = this.getLoginView(isNewObject, objectUrn);
-		} else if (objectType === ObjectManagement.NodeType.User) {
-			obj = this.getUserView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
 			obj = this.getServerRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.User) {
+			obj = this.getUserView(isNewObject, objectUrn);
 		}
 		else {
 			throw Error('Not implemented');
@@ -238,6 +242,42 @@ export class TestObjectManagementService implements IObjectManagementService {
 			},
 			isFixedRole: false,
 			serverRoles: ['server role2', 'server role3', 'server role4']
+		};
+	}
+
+	private getApplicationRoleView(isNewObject: boolean, name: string): ObjectManagement.ApplicationRoleViewInfo {
+		return isNewObject ? <ObjectManagement.ApplicationRoleViewInfo>{
+			objectInfo: {
+				name: '',
+				defaultSchema: 'dbo',
+				ownedSchemas: [],
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		} : <ObjectManagement.ApplicationRoleViewInfo>{
+			objectInfo: {
+				name: 'app role1',
+				defaultSchema: 'dbo',
+				ownedSchemas: ['dbo'],
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		};
+	}
+
+	private getDatabaseRoleView(isNewObject: boolean, name: string): ObjectManagement.DatabaseRoleViewInfo {
+		return isNewObject ? <ObjectManagement.DatabaseRoleViewInfo>{
+			objectInfo: {
+				name: '',
+				members: [],
+				ownedSchemas: []
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		} : <ObjectManagement.DatabaseRoleViewInfo>{
+			objectInfo: {
+				name: 'db role1',
+				members: [],
+				ownedSchemas: ['dbo']
+			},
+			schemas: ['dbo', 'sys', 'admin']
 		};
 	}
 

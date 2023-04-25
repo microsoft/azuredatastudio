@@ -130,7 +130,7 @@ export function getUserTypeByDisplayName(userTypeDisplayName: string): ObjectMan
 
 // https://docs.microsoft.com/sql/relational-databases/security/password-policy
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
-	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
+	const containsUserName = password && userName && password.toUpperCase().includes(userName.toUpperCase());
 	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
 	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
 	const hasNumbers = /\d/.test(password) ? 1 : 0;
