@@ -1798,7 +1798,7 @@ declare module 'azdata' {
 		/**
 		 * list of filters that are supported by the node
 		 */
-		defaultFilters?: NodeInfoFilterDefinition[];
+		filterDefinitions?: NodeInfoFilterDefinition[];
 		/**
 		 * list of properties to filter children nodes on
 		 */
