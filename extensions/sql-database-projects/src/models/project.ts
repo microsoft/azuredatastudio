@@ -509,6 +509,24 @@ export class Project implements ISqlProject {
 		await this.readFolders();
 	}
 
+	public async excludeFolder(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeFolder(this.projectFilePath, relativeFolderPath);
+		this.throwIfFailed(result);
+
+		await this.readFolders();
+	}
+
+	public async moveFolder(relativeSourcePath: string, relativeDestinationPath: string): Promise<void> {
+		const result = await this.sqlProjService.moveFolder(this.projectFilePath, relativeSourcePath, relativeDestinationPath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+		await this.readFolders();
+	}
+
 	//#endregion
 
 	//#region SQL object scripts

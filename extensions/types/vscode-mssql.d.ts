@@ -530,10 +530,10 @@ declare module 'vscode-mssql' {
 		/**
 		 * Move a folder and its contents within a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Path of the folder, typically relative to the .sqlproj file
-		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 * @param sourcePath Source path of the folder, typically relative to the .sqlproj file
+		 * @param destinationPath Destination path of the folder, typically relative to the .sqlproj file
 		 */
-		moveFolder(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+		moveFolder(projectUri: string, sourcePath: string, destinationPath: string): Promise<ResultStatus>;
 
 		/**
 		 * Add a post-deployment script to a project

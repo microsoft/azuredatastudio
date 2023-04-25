@@ -810,9 +810,7 @@ export class ProjectsController {
 					await project.excludeSqlObjectScript(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.folder:
-					// TODO: not yet supported in DacFx
-					//await project.excludeFolder(fileEntry.relativePath);
-					void vscode.window.showErrorMessage(constants.excludeFolderNotSupported);
+					await project.excludeFolder(fileEntry.relativePath);
 					break;
 				case constants.DatabaseProjectItemType.preDeploymentScript:
 					await project.excludePreDeploymentScript(fileEntry.relativePath);
