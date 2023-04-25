@@ -1799,10 +1799,6 @@ declare module 'azdata' {
 		 * list of filters that are supported by the node
 		 */
 		filterDefinitions?: NodeInfoFilterDefinition[];
-		/**
-		 * list of properties to filter children nodes on
-		 */
-		filters?: NodeInfoFilter[];
 	}
 
 	export interface NodeInfoFilterDefinition {
@@ -1820,8 +1816,11 @@ declare module 'azdata' {
 		description: string;
 	}
 
-	export interface NodeInfoFilterChoiceDefiinition extends NodeInfoFilterDefinition {
-
+	export interface NodeInfoFilterChoiceDefinition extends NodeInfoFilterDefinition {
+		/**
+		 * The list of choices for the filter property if the type is choice
+		 */
+		choices: string[];
 	}
 
 	export interface NodeInfoFilter {
