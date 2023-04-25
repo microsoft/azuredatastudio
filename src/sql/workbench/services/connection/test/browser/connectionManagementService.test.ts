@@ -2195,10 +2195,13 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	profile.options['testOption2'] = '50';
 	profile.options['testOption3'] = 'default';
 	profile.connectionName = 'New Connection Name';
+	profile.options['connectionName'] = profile.connectionName;
 	generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
 	profile.options['testOption1'] = undefined;
 	profile.options['testOption2'] = undefined;
 	profile.options['testOption3'] = undefined;
+	profile.connectionName = 'new name';
+	profile.options['connectionName'] = profile.connectionName;
 	emptyGeneratedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
 	expectedNonDefaultOption = ' (connectionName=New Connection Name; testOption1=test value; testOption2=50)';
 
@@ -2209,16 +2212,16 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	// We should expect that the string now contains connectionName, when we specify ignoreConnectionName
 	result = connectionManagementService.getEditorConnectionProfileTitle(generatedProfile, false, true);
 
-	assert.notEqual(result, `${profileServerInfo}${expectedNonDefaultOption}`, `getEditorConnectionProfileTitle did not include connectionName in options when it should`);
+	assert.equal(result, `${profileServerInfo}${expectedNonDefaultOption}`, `getEditorConnectionProfileTitle did not include connectionName in options when it should`);
 
 	connectionStoreMock.setup(x => x.getRecentlyUsedConnections(undefined)).returns(() => {
 		return [generatedProfile, emptyGeneratedProfile];
 	});
 
-	// We should expect that the string contains only the differing options against server info when we ask for options only and specify ignoreConnectionName
+	// We should expect that the string contains only the differing options (including Connection Name) against server info when we ask for options only and specify ignoreConnectionName
 	result = connectionManagementService.getEditorConnectionProfileTitle(generatedProfile, true, true);
 
-	assert.equal(result, expectedNonDefaultOption, `getEditorConnectionProfileTitle did not include differing options only based against server info`);
+	assert.equal(result, expectedNonDefaultOption, `getEditorConnectionProfileTitle did not include only options with connectionName`);
 
 });
 
