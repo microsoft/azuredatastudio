@@ -24,7 +24,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
@@ -365,7 +365,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
 			Logger.error('Failed to acquireTokenSilent', e);
-			if (e instanceof InteractionRequiredAuthError) {
+			if (e instanceof AuthError && this.accountNeedsRefresh(e)) {
 				// build refresh token request
 				const tenant: Tenant = {
 					id: tenantId,
@@ -632,7 +632,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 	//#endregion
 
-
 	//#region interaction handling
 	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | null> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
@@ -652,6 +651,17 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return result?.response;
 		}
 		return undefined;
+	}
+
+	/**
+	 * Determines whether the account needs to be refreshed based on received error instance
+	 * and STS error codes from errorMessage.
+	 * @param error AuthError instance
+	 */
+	private accountNeedsRefresh(error: AuthError): boolean {
+		return error instanceof InteractionRequiredAuthError
+			|| error.errorMessage.includes(Constants.AADSTS70043)
+			|| error.errorMessage.includes(Constants.AADSTS50173);
 	}
 
 	/**
