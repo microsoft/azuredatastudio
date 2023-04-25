@@ -1227,7 +1227,7 @@ declare module 'mssql' {
 			loginNames: string[];
 			collationNames: string[];
 			compatibilityLevels: string[];
-			containmentOptions: string[];
+			containmentTypes: string[];
 			recoveryModels: string[];
 		}
 	}

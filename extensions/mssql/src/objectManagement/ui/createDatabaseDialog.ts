@@ -103,7 +103,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
 
 		// Hide Containment Type for Azure SQL DB
-		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentOptions, this.viewInfo.containmentOptions[0]);
+		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
 		this.disposables.push(containmentDropbox.onValueChanged(async () => {
 			this.objectInfo.containmentType = containmentDropbox.value as string;
 			this.onObjectValueChange();
