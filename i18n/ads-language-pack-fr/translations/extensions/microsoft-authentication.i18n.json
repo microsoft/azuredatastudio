@@ -9,6 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/AADHelper": {
+			"pasteCodePlaceholder": "Collez le code d’autorisation ici...",
+			"pasteCodePrompt": "Fournissez le code d’autorisation pour terminer le flux de connexion.",
+			"pasteCodeTitle": "Microsoft Authentication",
 			"signOut": "Vous avez été déconnecté en raison de l'échec de la lecture des informations d'authentification stockées."
 		},
 		"package": {

@@ -12,6 +12,7 @@ import { AddDatabaseReferenceSettings } from '../controllers/projectController';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Project } from '../models/project';
 import { getSystemDatabase, getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 
 
@@ -96,6 +97,10 @@ async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Prom
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 	referenceSettings.suppressMissingDependenciesErrors = suppressErrors;
 
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.projectLabel })
+		.send();
+
 	return referenceSettings;
 }
 
@@ -116,6 +121,10 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 
 	// 4. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.systemDatabase })
+		.send();
 
 	return {
 		databaseVariableLiteralValue: dbName,
@@ -183,6 +192,10 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 	};
 
 	populateResultWithVars(referenceSettings, dbServerValues);
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.dacpacText })
+		.send();
 
 	return referenceSettings;
 }

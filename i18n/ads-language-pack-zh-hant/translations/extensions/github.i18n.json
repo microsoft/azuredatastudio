@@ -11,11 +11,11 @@
 		"dist/publish": {
 			"ignore": "選取要包含在存放庫中的檔案。",
 			"openingithub": "在 GitHub 上開啟",
-			"pick folder": "挑選要發佈至 GitHub 的資料夾",
-			"publishing_done": "已成功將 '{0}' 存放庫發行到 GitHub。",
+			"pick folder": "挑選要發布至 GitHub 的資料夾",
+			"publishing_done": "已成功將 '{0}' 存放庫發布到 GitHub。",
 			"publishing_firstcommit": "正在建立第一個提交",
-			"publishing_private": "正在發行到私人 GitHub 存放庫",
-			"publishing_public": "正在發行到公用 GitHub 存放庫",
+			"publishing_private": "正在發布到私人 GitHub 存放庫",
+			"publishing_public": "正在發布到公用 GitHub 存放庫",
 			"publishing_uploading": "正在上傳檔案"
 		},
 		"dist/pushErrorHandler": {
@@ -39,8 +39,8 @@
 			"config.gitProtocol": "控制要用來複製 GitHub 存放庫的通訊協定",
 			"description": "適用於 VS Code 的 GitHub 功能",
 			"displayName": "GitHub",
-			"welcome.publishFolder": "您也可以直接將此資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "您也可以直接將工作區資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)"
+			"welcome.publishFolder": "您也可以直接將此資料夾發布到 GitHub 存放庫。發布之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發布至 GitHub](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "您也可以直接將工作區資料夾發布到 GitHub 存放庫。發布之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發布至 GitHub](command:github.publish)"
 		}
 	}
 }

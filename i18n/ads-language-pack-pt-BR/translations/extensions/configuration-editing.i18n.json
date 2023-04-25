@@ -44,7 +44,6 @@
 			"derivedDescription": "Corresponder arquivos que têm irmãos com o mesmo nome, mas com uma extensão diferente.",
 			"derivedLabel": "Arquivos com Irmãos por Nome",
 			"dirty": "um indicador para quando o editor ativo tem alterações não salvas",
-			"falseDescription": "Desabilitar o padrão.",
 			"fileDescription": "Corresponder todos os arquivos de uma extensão de arquivo específica.",
 			"fileLabel": "Arquivos por Extensão",
 			"filesDescription": "Comparar todos os arquivos com qualquer uma das extensões de arquivo.",
@@ -61,8 +60,7 @@
 			"topFolderDescription": "Corresponder uma pasta de nível superior com um nome específico.",
 			"topFolderLabel": "Pasta por Nome (Nível Superior)",
 			"topFoldersDescription": "Corresponder várias pastas de nível superior.",
-			"topFoldersLabel": "Pastas com Vários Nomes (Nível Superior)",
-			"trueDescription": "Habilitar o padrão."
+			"topFoldersLabel": "Pastas com Vários Nomes (Nível Superior)"
 		},
 		"package": {
 			"description": "Fornece recursos (IntelliSense avançado, correção automática) em arquivos de configuração, como arquivos de recomendação de extensão, de inicialização e de configuração.",

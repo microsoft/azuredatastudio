@@ -742,7 +742,7 @@ export async function fileContainsCreateTableStatement(fullPath: string, project
  * @param serverInfo server information
  * @returns target platform for the database project
  */
-export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.ServerInfo): Promise<SqlTargetPlatform | undefined> {
+export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.IServerInfo): Promise<SqlTargetPlatform | undefined> {
 	const isCloud = serverInfo.isCloud;
 
 	let targetPlatform;

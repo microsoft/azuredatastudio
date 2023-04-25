@@ -644,7 +644,7 @@ Default Skipped Commands:
       <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
     </trans-unit>
     <trans-unit id="queryEditorNullBackground">
-      <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+      <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
     </trans-unit>
     <trans-unit id="tileBorder">
       <source xml:lang="en">The border color of tiles</source>
@@ -1878,6 +1878,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboard.configureDashboardTooltip">
+      <source xml:lang="en">Learn more about how to configure the dashboard</source>
+    </trans-unit>
     <trans-unit id="dashboard.generalTabGroupHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -4176,6 +4179,15 @@ Error: {1}</source>
     <trans-unit id="serverTree.newConnection">
       <source xml:lang="en">New Connection</source>
     </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification">
+      <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+      <source xml:lang="en">Don't Reload</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification.reload">
+      <source xml:lang="en">Reload</source>
+    </trans-unit>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
     </trans-unit>
@@ -4194,7 +4206,7 @@ Error: {1}</source>
       <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
     </trans-unit>
     <trans-unit id="serverTree.useAsyncServerTree">
-      <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
+      <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext"><body>
@@ -4477,13 +4489,13 @@ Error: {1}</source>
       <source xml:lang="en">Parse Query</source>
     </trans-unit>
     <trans-unit id="queryActions.notConnected">
-      <source xml:lang="en">Please connect to a server</source>
+      <source xml:lang="en">Please connect to a server before running this action.</source>
     </trans-unit>
     <trans-unit id="queryActions.parseSyntaxFailure">
-      <source xml:lang="en">Command failed: </source>
+      <source xml:lang="en">Failed to parse the query: {0}</source>
     </trans-unit>
     <trans-unit id="queryActions.parseSyntaxSuccess">
-      <source xml:lang="en">Commands completed successfully</source>
+      <source xml:lang="en">Successfully parsed the query.</source>
     </trans-unit>
     <trans-unit id="queryActions.queryResultsCopySuccess">
       <source xml:lang="en">Successfully copied query and results.</source>
@@ -4618,6 +4630,9 @@ Error: {1}</source>
       <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="changeConnectionDatabaseLabel">
+      <source xml:lang="en">Change</source>
+    </trans-unit>
+    <trans-unit id="changeConnectionDatabaseTooltip">
       <source xml:lang="en">Change Connection</source>
     </trans-unit>
     <trans-unit id="changeDatabase.failed">
@@ -4653,8 +4668,14 @@ Error: {1}</source>
     <trans-unit id="query.multiSelectionNotSupported">
       <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
     </trans-unit>
-    <trans-unit id="queryEditor.exportSqlAsNotebook">
+    <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+      <source xml:lang="en">To Notebook</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
       <source xml:lang="en">Export as Notebook</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.parse">
+      <source xml:lang="en">Parse</source>
     </trans-unit>
     <trans-unit id="runQueryLabel">
       <source xml:lang="en">Run</source>
