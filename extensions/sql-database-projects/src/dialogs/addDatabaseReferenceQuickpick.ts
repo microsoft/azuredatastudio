@@ -208,7 +208,6 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 	return referenceSettings;
 }
 
-
 async function addNupkgReference(): Promise<INugetPackageReferenceSettings | undefined> {
 	// (steps continued from addDatabaseReferenceQuickpick)
 	// 2. Prompt for location
@@ -272,74 +271,8 @@ async function addNupkgReference(): Promise<INugetPackageReferenceSettings | und
 	populateResultWithVars(referenceSettings, dbServerValues);
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
-		.withAdditionalProperties({ referenceType: constants.dacpacText })
+		.withAdditionalProperties({ referenceType: constants.nupkgText })
 		.send();
-
-	return referenceSettings;
-}
-
-
-async function addNupkgReference(): Promise<INugetPackageReferenceSettings | undefined> {
-	// (steps continued from addDatabaseReferenceQuickpick)
-	// 2. Prompt for location
-	const location = await promptLocation();
-	if (!location) {
-		// User cancelled
-		return undefined;
-	}
-
-	// 3. Prompt for NuGet package name
-	const nupkgName = await vscode.window.showInputBox(
-		{
-			title: constants.nupkgText,
-			placeHolder: constants.nupkgNamePlaceholder,
-			validateInput: (value) => {
-				return value ? undefined : constants.nameMustNotBeEmpty;
-			},
-			ignoreFocusOut: true
-		});
-
-	if (!nupkgName) {
-		// User cancelled
-		return undefined;
-	}
-
-	// 4. Prompt for NuGet package version
-	const nupkgVersion = await vscode.window.showInputBox(
-		{
-			title: constants.version,
-			placeHolder: constants.versionPlaceholder,
-			validateInput: (value) => {
-				return value ? undefined : constants.versionMustNotBeEmpty;
-			},
-			ignoreFocusOut: true
-		});
-
-	if (!nupkgVersion) {
-		// User cancelled
-		return undefined;
-	}
-
-
-	// 5. Prompt for db/server values
-	const dbServerValues = await promptDbServerValues(location, path.parse(nupkgName).name);
-	if (!dbServerValues) {
-		// User cancelled
-		return;
-	}
-
-	// 6. Prompt suppress unresolved ref errors
-	const suppressErrors = await promptSuppressUnresolvedRefErrors();
-
-	// 7. Construct result
-
-	const referenceSettings: INugetPackageReferenceSettings = {
-		packageName: nupkgName,
-		packageVersion: nupkgVersion,
-		suppressMissingDependenciesErrors: suppressErrors
-	};
-
-	populateResultWithVars(referenceSettings, dbServerValues);
 
 	return referenceSettings;
 }
