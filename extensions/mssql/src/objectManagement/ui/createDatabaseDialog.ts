@@ -12,27 +12,10 @@ import { CreateDatabaseDocUrl } from '../constants';
 const DefaultValue = '<default>';
 
 export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
-	private _model: ObjectManagement.CreateDatabaseViewInfo;
-
 	private _nameInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-
-		// TODO: Replace with real data
-		let databaseNames = ['TestDB'];
-		let loginNames = ['sa', 'TestLogin'];
-		let collationNames = ['SQL_Latin1_General_CP1_CI_AS', 'French_CI_AS', 'Modern_Spanish_CI_AS'];
-		let compatibilityLevels = ['SQL Server 2019 (150)', 'SQL Server 2017 (140)', 'SQL Server 2016 (130)'];
-		this._model = {
-			objectInfo: {
-				name: undefined
-			},
-			databaseNames,
-			loginNames,
-			collationNames,
-			compatibilityLevels
-		}
 	}
 
 	protected override get docUrl(): string {
@@ -48,7 +31,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
-		if (this._model.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
+		if (this.viewInfo.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
 			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
@@ -79,7 +62,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
 
 		// Hide Owner field for Azure SQL DB
-		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this._model.loginNames], DefaultValue);
+		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue);
 		this.disposables.push(ownerDropbox.onValueChanged(async () => {
 			this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
 			this.onObjectValueChange();
@@ -94,7 +77,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	private initializeOptionsSection(): azdata.GroupContainer {
-		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this._model.collationNames], DefaultValue);
+		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue);
 		this.disposables.push(collationDropbox.onValueChanged(async () => {
 			this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
 			this.onObjectValueChange();
@@ -112,7 +95,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const recoveryContainer = this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox);
 
-		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this._model.compatibilityLevels, this._model.compatibilityLevels[0]);
+		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
 		this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
 			this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
 			this.onObjectValueChange();
