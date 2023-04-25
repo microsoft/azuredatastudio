@@ -12,6 +12,7 @@ import { AddDatabaseReferenceSettings } from '../controllers/projectController';
 import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Project } from '../models/project';
 import { getSystemDatabase, getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { ProjectType } from 'mssql';
 
 
@@ -104,6 +105,10 @@ async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Prom
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 	referenceSettings.suppressMissingDependenciesErrors = suppressErrors;
 
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.projectLabel })
+		.send();
+
 	return referenceSettings;
 }
 
@@ -124,6 +129,10 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 
 	// 4. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.systemDatabase })
+		.send();
 
 	return {
 		databaseVariableLiteralValue: dbName,
@@ -191,6 +200,80 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 	};
 
 	populateResultWithVars(referenceSettings, dbServerValues);
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.dacpacText })
+		.send();
+
+	return referenceSettings;
+}
+
+
+async function addNupkgReference(): Promise<INugetPackageReferenceSettings | undefined> {
+	// (steps continued from addDatabaseReferenceQuickpick)
+	// 2. Prompt for location
+	const location = await promptLocation();
+	if (!location) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 3. Prompt for NuGet package name
+	const nupkgName = await vscode.window.showInputBox(
+		{
+			title: constants.nupkgText,
+			placeHolder: constants.nupkgNamePlaceholder,
+			validateInput: (value) => {
+				return value ? undefined : constants.nameMustNotBeEmpty;
+			},
+			ignoreFocusOut: true
+		});
+
+	if (!nupkgName) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 4. Prompt for NuGet package version
+	const nupkgVersion = await vscode.window.showInputBox(
+		{
+			title: constants.version,
+			placeHolder: constants.versionPlaceholder,
+			validateInput: (value) => {
+				return value ? undefined : constants.versionMustNotBeEmpty;
+			},
+			ignoreFocusOut: true
+		});
+
+	if (!nupkgVersion) {
+		// User cancelled
+		return undefined;
+	}
+
+
+	// 5. Prompt for db/server values
+	const dbServerValues = await promptDbServerValues(location, path.parse(nupkgName).name);
+	if (!dbServerValues) {
+		// User cancelled
+		return;
+	}
+
+	// 6. Prompt suppress unresolved ref errors
+	const suppressErrors = await promptSuppressUnresolvedRefErrors();
+
+	// 7. Construct result
+
+	const referenceSettings: INugetPackageReferenceSettings = {
+		packageName: nupkgName,
+		packageVersion: nupkgVersion,
+		suppressMissingDependenciesErrors: suppressErrors
+	};
+
+	populateResultWithVars(referenceSettings, dbServerValues);
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.dacpacText })
+		.send();
 
 	return referenceSettings;
 }

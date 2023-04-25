@@ -20,14 +20,33 @@ import * as Constants from '../constants';
 import { getProxyEnabledHttpClient } from '../utils';
 import { HttpClient } from '../account-provider/auths/httpClient';
 import { NetworkRequestOptions } from '@azure/msal-common';
+import { ErrorResponseBody } from '@azure/arm-subscriptions/esm/models';
 
 const localize = nls.loadMessageBundle();
+
+/**
+ * Specialized version of the ErrorResponseBody that is required to have the error
+ * information for easier typing support, without it how do we know it's an error
+ * response?
+ * https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/subscription/arm-subscriptions/src/models/index.ts#L180
+ */
+export type ErrorResponseBodyWithError = Required<ErrorResponseBody>;
+
+/**
+ * Checks if the body object given is an error response, that is has a non-undefined
+ * property named error which contains detailed about the error.
+ * @param body The body object to check
+ * @returns True if the body is an ErrorResponseBodyWithError
+ */
+export function isErrorResponseBody(body: any): body is ErrorResponseBodyWithError {
+	return 'error' in body && body.error;
+}
 
 /**
  * Shape of list operation responses
  * e.g. https://learn.microsoft.com/en-us/rest/api/storagerp/srp_json_list_operations#response-body
  */
-declare type AzureListOperationResponse<T> = {
+export declare type AzureListOperationResponse<T> = {
 	value: T;
 }
 

@@ -29,7 +29,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
 
 			if (!isString(model)) {
-				if (model.options && this.hasServerCapabilities()) {
+				if (model.options && this.serverCapabilities) {
 					this.serverCapabilities.connectionOptions.forEach(option => {
 						let value = model.options[option.name];
 						this.options[option.name] = value;
@@ -136,7 +136,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	private getServerInfo() {
 		let title = '';
-		if (this.hasServerCapabilities()) {
+		if (this.serverCapabilities) {
 			title = this.serverName;
 			// Only show database name if the provider supports it.
 			if (this.serverCapabilities.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
@@ -153,7 +153,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	public get title(): string {
 		let label = '';
 
-		if (this.hasServerCapabilities()) {
+		if (this.serverCapabilities) {
 			if (this.connectionName) {
 				label = this.connectionName;
 			} else {
@@ -167,10 +167,6 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			return localize('loading', "Loading...");
 		}
 		return label;
-	}
-
-	public hasServerCapabilities(): boolean {
-		return (this.serverCapabilities !== undefined);
 	}
 
 	public hasLoaded(): boolean {
@@ -187,7 +183,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	public isPasswordRequired(): boolean {
 		// if there is no provider capabilities metadata assume a password is not required
-		if (!this.hasServerCapabilities()) {
+		if (!this.serverCapabilities) {
 			return false;
 		}
 
@@ -218,7 +214,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	public getOptionsKey(getOriginalOptions?: boolean): string {
 		let useFullOptions = false;
 		let idNames = [];
-		if (this.hasServerCapabilities()) {
+		if (this.serverCapabilities) {
 			useFullOptions = this.serverCapabilities.useFullOptions;
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				// All options enabled, use every property besides password.
@@ -299,7 +295,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	}
 
 	public getSpecialTypeOptionName(type: string): string | undefined {
-		if (this.hasServerCapabilities()) {
+		if (this.serverCapabilities) {
 			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
@@ -315,7 +311,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this.hasServerCapabilities() ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
+		let optionMetadata = this.serverCapabilities ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -361,7 +357,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
 		let connectionOptions: azdata.ConnectionOption[] = [];
 
-		if (this.hasServerCapabilities()) {
+		if (this.serverCapabilities) {
 			this.serverCapabilities.connectionOptions.forEach(element => {
 				if (((!needSpecial && element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
