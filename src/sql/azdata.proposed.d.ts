@@ -1819,7 +1819,7 @@ declare module 'azdata' {
 		 */
 		type: NodeInfoFilterDataType;
 		/**
-		 * The list of options for the filter property if the type is enum
+		 * The list of options for the filter property if the type is choice
 		 */
 		options?: string[];
 		/**
@@ -1840,7 +1840,7 @@ declare module 'azdata' {
 		/**
 		 * The operator of the filter property
 		 */
-		operator?: NodeInfoFilterOperators;
+		operator: NodeInfoFilterOperators;
 		/**
 		 * The applied values of the filter property
 		 */
@@ -1852,7 +1852,7 @@ declare module 'azdata' {
 		number = 1,
 		boolean = 2,
 		date = 3,
-		enum = 4
+		choice = 4
 	}
 
 	export enum NodeInfoFilterOperators {
