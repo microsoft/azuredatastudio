@@ -1802,11 +1802,30 @@ declare module 'azdata' {
 		/**
 		 * list of filters that are supported by the node
 		 */
-		defaultFilters?: NodeInfoFilter[];
+		defaultFilters?: NodeInfoFilterDefinition[];
 		/**
 		 * list of properties to filter children nodes on
 		 */
 		filters?: NodeInfoFilter[];
+	}
+
+	export interface NodeInfoFilterDefinition {
+		/**
+		 * The name of the filter property
+		 */
+		name: string;
+		/**
+		 * The type of the filter property
+		 */
+		type: NodeInfoFilterDataType;
+		/**
+		 * The list of options for the filter property if the type is enum
+		 */
+		options?: string[];
+		/**
+		 * The description of the filter property
+		 */
+		description: string;
 	}
 
 	export interface NodeInfoFilter {
@@ -1826,14 +1845,6 @@ declare module 'azdata' {
 		 * The applied values of the filter property
 		 */
 		values: string[];
-		/**
-		 * The list of options for the filter property if the type is enum
-		 */
-		options?: string[];
-		/**
-		 * The description of the filter property
-		 */
-		description: string;
 	}
 
 	export enum NodeInfoFilterDataType {
