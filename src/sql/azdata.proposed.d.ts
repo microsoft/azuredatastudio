@@ -1815,13 +1815,13 @@ declare module 'azdata' {
 		 */
 		type: NodeInfoFilterDataType;
 		/**
-		 * The list of options for the filter property if the type is choice
-		 */
-		options?: string[];
-		/**
 		 * The description of the filter property
 		 */
 		description: string;
+	}
+
+	export interface NodeInfoFilterChoiceDefiinition extends NodeInfoFilterDefinition {
+
 	}
 
 	export interface NodeInfoFilter {
