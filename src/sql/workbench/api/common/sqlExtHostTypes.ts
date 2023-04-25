@@ -483,7 +483,7 @@ export enum NodeInfoFilterDataType {
 	number = 1,
 	boolean = 2,
 	date = 3,
-	enum = 4
+	choice = 4
 }
 
 export enum NodeInfoFilterOperators {
