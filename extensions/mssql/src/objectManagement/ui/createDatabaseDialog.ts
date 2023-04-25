@@ -77,7 +77,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	private initializeOptionsSection(): azdata.GroupContainer {
-		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue);
+		let collationDropbox = this.createDropdown(localizedConstants.CollationText, this.viewInfo.collationNames, undefined);
 		this.disposables.push(collationDropbox.onValueChanged(async () => {
 			this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
 			this.onObjectValueChange();
@@ -86,8 +86,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
 
 		// Hide Recovery Model for Azure SQL DB
-		let recoveryOptions = ['Simple', 'Bulk-logged', 'Full'];
-		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, recoveryOptions, recoveryOptions[0]);
+		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
 		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
 			this.objectInfo.recoveryModel = recoveryDropbox.value as string;
 			this.onObjectValueChange();
@@ -104,8 +103,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
 
 		// Hide Containment Type for Azure SQL DB
-		let containmentOptions = ['None', 'Partial'];
-		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, containmentOptions, containmentOptions[0]);
+		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentOptions, this.viewInfo.containmentOptions[0]);
 		this.disposables.push(containmentDropbox.onValueChanged(async () => {
 			this.objectInfo.containmentType = containmentDropbox.value as string;
 			this.onObjectValueChange();
