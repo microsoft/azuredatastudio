@@ -713,29 +713,69 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getNonDefaultsOnly?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getNonDefaultsOnly?: boolean, ignoreConnectionName?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-			if (!getNonDefaultsOnly) {
-				let totalConnections = [];
-				let recentConnections = this.getRecentConnections();
-				if (recentConnections) {
-					totalConnections = totalConnections.concat(recentConnections);
+			let compareKey = tempProfile.getInitialOptionsKey();
+			let hasInitialValues = false;
+			if ((profile instanceof ConnectionProfile)) {
+				//get the initial connection key for the profile as it may have been changed from recent.
+				if ((profile as ConnectionProfile).getInitialOptionsKey() !== tempProfile.getInitialOptionsKey()) {
+					hasInitialValues = true;
 				}
-				let initialSearch = totalConnections.filter(inputProfile => inputProfile.matches(tempProfile));
-				if (initialSearch.length === 0) {
-					totalConnections.push(tempProfile);
+			}
+			let originalTitle = tempProfile.title
+			let totalConnections: ConnectionProfile[] = [];
+			let recentConnections = this.getRecentConnections();
+			if (recentConnections) {
+				totalConnections = totalConnections.concat(recentConnections);
+			}
+			if (hasInitialValues) {
+				compareKey = (profile as ConnectionProfile).getInitialOptionsKey();
+			}
+			let initialSearch = totalConnections.filter(inputProfile => {
+				return inputProfile.getInitialOptionsKey() === compareKey;
+			});
+
+			if (initialSearch.length === 0) {
+				totalConnections.push(tempProfile);
+			}
+			else {
+				originalTitle = initialSearch[0].title;
+			}
+
+			let newConnectionTitles = [];
+			if (ignoreConnectionName) {
+				// Generate titles based on base server info alone.
+				for (let i = 0; i < totalConnections.length; i++) {
+					totalConnections[i].title = totalConnections[i].getServerInfo();
 				}
+				if (initialSearch.length !== 0) {
+					originalTitle = initialSearch[0].getServerInfo();
+				}
+				else {
+					originalTitle = tempProfile.getServerInfo();
+				}
+				TreeUpdateUtils.getEditorConnectionTitles(totalConnections);
+				newConnectionTitles = totalConnections;
+			}
+			else {
+				// Generate titles based on title (can be base or ConnectionName)
 				let containerGroup = new ConnectionProfileGroup('containerGroup');
 				containerGroup.addConnections(totalConnections);
 				TreeUpdateUtils.alterTreeChildrenTitles([containerGroup]);
-				let newConnectionTitles = containerGroup.connections;
-				let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.matches(tempProfile));
-				result = searchResult[0]?.title;
+				newConnectionTitles = containerGroup.connections;
 			}
-			else {
-				result = tempProfile.getNonDefaultOptionsString();
+			let searchResult = newConnectionTitles.filter(inputProfile => {
+				return inputProfile.getInitialOptionsKey() === compareKey;
+			});
+			let finalTitle = searchResult[0]?.title;
+			if (finalTitle) {
+				if (getNonDefaultsOnly) {
+					finalTitle = finalTitle.substring(originalTitle.length);
+				}
+				result = finalTitle;
 			}
 		}
 		return result;

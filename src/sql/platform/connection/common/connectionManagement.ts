@@ -383,9 +383,10 @@ export interface IConnectionManagementService {
 	 * Gets the formatted title of the connection profile for display.
 	 * @param profile The connection profile to change the password.
 	 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
+	 * @param ignoreConnectionName Provide if you want to not let the user created connection name take into account for the title.
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): string;
+	getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean, ignoreConnectionName?: boolean): string;
 }
 
 export enum RunQueryOnConnectionMode {

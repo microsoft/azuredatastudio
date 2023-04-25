@@ -513,9 +513,10 @@ declare module 'azdata' {
 		 * Gets the formatted title of the connection profile for display
 		 * @param profile The connection profile we want to get the full display info for (without non default options).
 		 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
+		 * @param ignoreConnectionName Provide if you want to not let the user created connection name take into account for the title.
 		 * @returns The title formatted with connection name in front, server info in the middle, with non default options at the end.
 		 */
-		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): Thenable<string>;
+		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean, ignoreConnectionName?: boolean): Thenable<string>;
 	}
 
 	/*

@@ -68,6 +68,8 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
+		connectionProfile.connectionName = undefined;
+		let additionalOptions = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile, true, true);
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
@@ -82,6 +84,11 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
 			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+		}
+
+		if (additionalOptions.length > 0) {
+			tooltip += additionalOptions;
+			text += additionalOptions;
 		}
 
 		this.statusItem.update({

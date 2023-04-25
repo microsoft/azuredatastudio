@@ -134,7 +134,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		this.options[name] = value;
 	}
 
-	private getServerInfo() {
+	public getServerInfo() {
 		let title = '';
 		if (this.hasServerCapabilities()) {
 			title = this.serverName;
@@ -357,11 +357,12 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	 * Get all non specialValueType (or if distinct connections share same connection name, everything but connectionName and password).
 	 * Also allows for getting the non default options for this profile. (this function is used for changing the title).
 	 * @param needSpecial include all the special options key besides connection name or password in case we have multiple
-	 * distinct connections sharing the same connection name.
+	 * distinct connections sharing the same connection name (for connection trees mainly).
 	 * @param getNonDefault get only the non default options (for individual connections) to be used for identfying different properties
 	 * among connections sharing the same title.
+	 * @param includeConnectionName used for editor connection name generation (not used by connection trees), include the connection name as part of the list.
 	 */
-	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
+	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean, includeConnectionName: boolean): azdata.ConnectionOption[] {
 		let connectionOptions: azdata.ConnectionOption[] = [];
 
 		if (this.hasServerCapabilities()) {
@@ -370,7 +371,8 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
 					element.specialValueType !== ConnectionOptionSpecialType.userName) || needSpecial) &&
-					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
+					((!includeConnectionName && element.specialValueType !== ConnectionOptionSpecialType.connectionName)
+						|| includeConnectionName) &&
 					element.specialValueType !== ConnectionOptionSpecialType.password) {
 					if (getNonDefault) {
 						let value = this.getOptionValue(element.name);
@@ -394,7 +396,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	 */
 	public getNonDefaultOptionsString(): string {
 		let parts: string = "";
-		let nonDefaultOptions = this.getConnectionOptionsList(false, true);
+		let nonDefaultOptions = this.getConnectionOptionsList(false, true, false);
 		nonDefaultOptions.forEach(element => {
 			let value = this.getOptionValue(element.name);
 			if (parts.length === 0) {

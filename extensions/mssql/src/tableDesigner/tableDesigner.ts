@@ -28,7 +28,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
 			// append non default options to end to let users know exact connection.
-			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, true);
 			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			if (nonDefaultOptions !== '') {
 				titleString += `${nonDefaultOptions}`;
@@ -65,7 +65,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			let titleString = `${server} - ${database} - ${schema}.${name}`;
 			// append non default options to end to let users know exact connection.
-			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, true);
 			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
 			if (nonDefaultOptions !== '') {
 				titleString += `${nonDefaultOptions}`;
