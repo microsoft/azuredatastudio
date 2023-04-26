@@ -1803,9 +1803,9 @@ declare module 'azdata' {
 
 	export interface NodeFilterProperty {
 		/**
-		 * The name of the filter property
+		 * The name of the filter property displayed to the user
 		 */
-		name: string;
+		displayName: string;
 		/**
 		 * The type of the filter property
 		 */
