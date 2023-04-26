@@ -35,7 +35,7 @@
     "@azure/ms-rest-js" "^2.2.0"
     tslib "^1.10.0"
 
-"@azure/ms-rest-js@^2.0.4", "@azure/ms-rest-js@^2.2.0", "@azure/ms-rest-js@^2.6.6":
+"@azure/ms-rest-js@^2.0.4", "@azure/ms-rest-js@^2.2.0":
   version "2.6.6"
   resolved "https://registry.yarnpkg.com/@azure/ms-rest-js/-/ms-rest-js-2.6.6.tgz#a2ae4a515565ae1b73729b52b25875853bb3240a"
   integrity sha512-WYIda8VvrkZE68xHgOxUXvjThxNf1nnGPPe0rAljqK5HJHIZ12Pi3YhEDOn3Ge7UnwaaM3eFO0VtAy4nGVI27Q==

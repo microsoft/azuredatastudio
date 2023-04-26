@@ -12,16 +12,17 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { SystemDatabase } from 'mssql';
+import { ProjectType, SystemDatabase } from 'mssql';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
 
 export enum ReferenceType {
 	project,
 	systemDb,
-	dacpac
+	dacpac,
+	nupkg
 }
 
 export class AddDatabaseReferenceDialog {
@@ -35,6 +36,9 @@ export class AddDatabaseReferenceDialog {
 	private systemDatabaseFormComponent: azdataType.FormComponent | undefined;
 	public dacpacTextbox: azdataType.InputBoxComponent | undefined;
 	private dacpacFormComponent: azdataType.FormComponent | undefined;
+	public nupkgNameTextbox: azdataType.InputBoxComponent | undefined;
+	public nupkgVersionTextbox: azdataType.InputBoxComponent | undefined;
+	private nupkgFormComponent: azdataType.FormComponentGroup | undefined;
 	public locationDropdown: azdataType.DropDownComponent | undefined;
 	public databaseNameTextbox: azdataType.InputBoxComponent | undefined;
 	public databaseVariableTextbox: azdataType.InputBoxComponent | undefined;
@@ -50,7 +54,7 @@ export class AddDatabaseReferenceDialog {
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred = new Deferred();
 
-	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
+	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings | INugetPackageReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
@@ -106,6 +110,7 @@ export class AddDatabaseReferenceDialog {
 			const radioButtonGroup = this.createRadioButtons();
 			this.systemDatabaseFormComponent = this.createSystemDatabaseDropdown();
 			this.dacpacFormComponent = this.createDacpacTextbox();
+			this.nupkgFormComponent = this.createNupkgFormComponentGroup();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
 			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProps({
@@ -150,7 +155,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	public async addReferenceClick(): Promise<void> {
-		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
+		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings | INugetPackageReferenceSettings;
 
 		if (this.currentReferenceType === ReferenceType.systemDb) {
 			const systemDbRef: ISystemDatabaseReferenceSettings = {
@@ -170,7 +175,7 @@ export class AddDatabaseReferenceDialog {
 				};
 
 				referenceSettings = projRef;
-			} else { // this.currentReferenceType === ReferenceType.dacpac
+			} else if (this.currentReferenceType === ReferenceType.dacpac) {
 				const dacpacRef: IDacpacReferenceSettings = {
 					databaseName: ensureSetOrDefined(this.databaseNameTextbox?.value),
 					dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
@@ -178,6 +183,14 @@ export class AddDatabaseReferenceDialog {
 				};
 
 				referenceSettings = dacpacRef;
+			} else { // this.currentReferenceType === ReferenceType.nupkg
+				const nupkgRef: INugetPackageReferenceSettings = {
+					packageName: <string>this.nupkgNameTextbox?.value,
+					packageVersion: <string>this.nupkgVersionTextbox?.value,
+					suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				}
+
+				referenceSettings = nupkgRef;
 			}
 
 			const dbServerValues: DbServerValues = {
@@ -206,8 +219,10 @@ export class AddDatabaseReferenceDialog {
 				label: constants.projectLabel
 			}).component();
 
-		this.projectRadioButton.onDidClick(() => {
-			this.projectRadioButtonClick();
+		this.projectRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.projectRadioButtonClick();
+			}
 		});
 
 		this.systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
@@ -216,8 +231,10 @@ export class AddDatabaseReferenceDialog {
 				label: constants.systemDatabase
 			}).component();
 
-		this.systemDatabaseRadioButton.onDidClick(() => {
-			this.systemDbRadioButtonClick();
+		this.systemDatabaseRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.systemDbRadioButtonClick();
+			}
 		});
 
 		const dacpacRadioButton = this.view!.modelBuilder.radioButton()
@@ -226,8 +243,22 @@ export class AddDatabaseReferenceDialog {
 				label: constants.dacpacText
 			}).component();
 
-		dacpacRadioButton.onDidClick(() => {
-			this.dacpacRadioButtonClick();
+		dacpacRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.dacpacRadioButtonClick();
+			}
+		});
+
+		const nupkgRadioButton = this.view!.modelBuilder.radioButton()
+			.withProps({
+				name: 'referenceType',
+				label: constants.nupkgText
+			}).component();
+
+		nupkgRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.nupkgRadioButtonClick();
+			}
 		});
 
 		if (this.projectDropdown?.values?.length) {
@@ -241,9 +272,16 @@ export class AddDatabaseReferenceDialog {
 			this.projectRadioButton.enabled = false;
 		}
 
+		const radioButtons = [this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton];
+
+		// only add the nupkg radio button for SDK-style projects
+		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
+			radioButtons.push(nupkgRadioButton);
+		}
+
 		let flexRadioButtonsModel: azdataType.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton])
+			.withItems(radioButtons)
 			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceRadioButtonsGroupTitle })
 			.component();
 
@@ -256,6 +294,7 @@ export class AddDatabaseReferenceDialog {
 	public projectRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.projectFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
@@ -269,6 +308,7 @@ export class AddDatabaseReferenceDialog {
 	public systemDbRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent, 2);
 
 		// update dropdown values because only different database, same server is a valid location for system db references
@@ -284,11 +324,26 @@ export class AddDatabaseReferenceDialog {
 	public dacpacRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.dacpacFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
 
 		this.currentReferenceType = ReferenceType.dacpac;
+		this.updateEnabledInputBoxes();
+		this.tryEnableAddReferenceButton();
+		this.updateExampleUsage();
+	}
+
+	public nupkgRadioButtonClick(): void {
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
+		this.formBuilder!.insertFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent, 2);
+
+		this.locationDropdown!.values = constants.locationDropdownValues;
+
+		this.currentReferenceType = ReferenceType.nupkg;
 		this.updateEnabledInputBoxes();
 		this.tryEnableAddReferenceButton();
 		this.updateExampleUsage();
@@ -353,6 +408,34 @@ export class AddDatabaseReferenceDialog {
 			component: databaseRow,
 			title: constants.dacpacText
 		};
+	}
+
+	private createNupkgFormComponentGroup(): azdataType.FormComponentGroup {
+		this.nupkgNameTextbox = this.view!.modelBuilder.inputBox().withProps({
+			ariaLabel: constants.nupkgText,
+			placeHolder: constants.nupkgNamePlaceholder,
+			required: true
+		}).component();
+
+		this.nupkgVersionTextbox = this.view!.modelBuilder.inputBox().withProps({
+			ariaLabel: constants.version,
+			placeHolder: constants.versionPlaceholder,
+			required: true
+		}).component();
+
+		return {
+			components: [
+				{
+					title: constants.nupkgText,
+					component: this.nupkgNameTextbox
+				},
+				{
+					title: constants.version,
+					component: this.nupkgVersionTextbox
+				}
+			],
+			title: ''
+		}
 	}
 
 	private createLoadDacpacButton(): azdataType.ButtonComponent {
@@ -458,6 +541,12 @@ export class AddDatabaseReferenceDialog {
 					const dacpacName = this.dacpacTextbox!.value ? path.parse(this.dacpacTextbox!.value!).name : '';
 					this.databaseNameTextbox!.value = dacpacName;
 					this.databaseVariableTextbox!.value = dacpacName ? `${dacpacName}` : '';
+					break;
+				}
+				case ReferenceType.nupkg: {
+					const nupkgName = this.nupkgNameTextbox!.value ? path.parse(this.nupkgNameTextbox!.value!).name : '';
+					this.databaseNameTextbox!.value = nupkgName;
+					this.databaseVariableTextbox!.value = nupkgName ? `${nupkgName}` : '';
 					break;
 				}
 			}
@@ -597,6 +686,10 @@ export class AddDatabaseReferenceDialog {
 				this.dialog.okButton.enabled = this.dacpacRequiredFieldsFilled();
 				break;
 			}
+			case ReferenceType.nupkg: {
+				this.dialog.okButton.enabled = this.nupkgRequiredFieldsFilled();
+				break;
+			}
 		}
 	}
 
@@ -611,6 +704,14 @@ export class AddDatabaseReferenceDialog {
 	private projectRequiredFieldsFilled(): boolean {
 		return !!this.projectDropdown?.value &&
 			((this.locationDropdown?.value === constants.sameDatabase)
+				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
+				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
+	}
+
+	private nupkgRequiredFieldsFilled(): boolean {
+		return !!this.nupkgNameTextbox?.value
+			&& !!this.nupkgVersionTextbox?.value
+			&& ((this.locationDropdown?.value === constants.sameDatabase)
 				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
 				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
 	}

@@ -209,7 +209,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		content = this.getToolbarContent(tabId);
 		if (tabId === this.homeTabId) {
 			const configureDashboardCommand = MenuRegistry.getCommand('configureDashboard');
-			const configureDashboardAction = new ToolbarAction(configureDashboardCommand.id, configureDashboardCommand.title.toString(), TaskRegistry.getOrCreateTaskIconClassName(configureDashboardCommand), this.runAction, this, this.logService);
+			const configureDashboardAction = new ToolbarAction(configureDashboardCommand.id, configureDashboardCommand.title.toString(), nls.localize('dashboard.configureDashboardTooltip', "Learn more about how to configure the dashboard"), TaskRegistry.getOrCreateTaskIconClassName(configureDashboardCommand), this.runAction, this, this.logService);
 			content.push({ action: configureDashboardAction });
 		}
 		this.toolbar.setContent(content);
@@ -272,7 +272,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		_tasks.forEach(a => {
 			const iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
 			const title = typeof a.title === 'string' ? a.title : a.title.value;
-			toolbarActions.push(new ToolbarAction(a.id, title, iconClassName, this.runAction, this, this.logService));
+			toolbarActions.push(new ToolbarAction(a.id, title, title, iconClassName, this.runAction, this, this.logService));
 		});
 
 		let content: ITaskbarContent[] = [];

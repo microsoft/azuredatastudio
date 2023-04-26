@@ -122,6 +122,11 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://graph.windows.net/',
 				azureResourceId: AzureResource.Graph
 			},
+			msGraphResource: {
+				id: SettingIds.msgraph,
+				endpoint: 'https://graph.microsoft.us/',
+				azureResourceId: AzureResource.MsGraph
+			},
 			armResource: {
 				id: SettingIds.arm,
 				endpoint: 'https://management.usgovcloudapi.net/',

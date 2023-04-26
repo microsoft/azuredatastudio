@@ -49,8 +49,8 @@ describe('Publish profile tests', function (): void {
 
 		const result = await load(vscode.Uri.file(profilePath), testContext.dacFxService.object);
 		should(result.databaseName).equal('targetDb');
-		should(Object.keys(result.sqlCmdVariables).length).equal(1);
-		should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(result.sqlCmdVariables.size).equal(1);
+		should(result.sqlCmdVariables.get('ProdDatabaseName')).equal('MyProdDatabase');
 		should(result.connectionId).equal('connId');
 		should(result.connection).equal('testserver (default)');
 		should(result.options).equal(mockDacFxOptionsResult.deploymentOptions);
@@ -74,8 +74,8 @@ describe('Publish profile tests', function (): void {
 
 		const result = await load(vscode.Uri.file(profilePath), testContext.dacFxService.object);
 		should(result.databaseName).equal('targetDb');
-		should(Object.keys(result.sqlCmdVariables).length).equal(1);
-		should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(result.sqlCmdVariables.size).equal(1);
+		should(result.sqlCmdVariables.get('ProdDatabaseName')).equal('MyProdDatabase');
 		should(result.connectionId).equal('connId');
 		should(result.connection).equal('testserver (testUser)');
 		should(result.options).equal(mockDacFxOptionsResult.deploymentOptions);
@@ -89,10 +89,10 @@ describe('Publish profile tests', function (): void {
 		});
 
 		const result = await load(vscode.Uri.file(profilePath), testContext.dacFxService.object);
-		should(Object.keys(result.sqlCmdVariables).length).equal(1);
+		should(result.sqlCmdVariables.size).equal(1);
 
 		// the profile has both Value and DefaultValue, but Value should be the one used
-		should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(result.sqlCmdVariables.get('ProdDatabaseName')).equal('MyProdDatabase');
 	});
 
 	it('Should throw error when connecting does not work', async function (): Promise<void> {

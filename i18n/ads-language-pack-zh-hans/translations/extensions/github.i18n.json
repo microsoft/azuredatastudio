@@ -9,13 +9,13 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/publish": {
-			"ignore": "选择应包含在存储库中的文件。",
+			"ignore": "选择应包含在仓库中的文件。",
 			"openingithub": "在 GitHub 上打开",
 			"pick folder": "选择一个要发布到 GitHub 的文件夹",
-			"publishing_done": "已将“{0}”存储库成功发布到 GitHub。",
+			"publishing_done": "已将“{0}”仓库成功发布到 GitHub。",
 			"publishing_firstcommit": "正在创建第一个提交",
-			"publishing_private": "正在发布到专用 GitHub 存储库",
-			"publishing_public": "正在发布到公共 GitHub 存储库",
+			"publishing_private": "正在发布到专用 GitHub 仓库",
+			"publishing_public": "正在发布到公共 GitHub 仓库",
 			"publishing_uploading": "正在上传文件"
 		},
 		"dist/pushErrorHandler": {
@@ -36,11 +36,11 @@
 		},
 		"package": {
 			"config.gitAuthentication": "控制是否在 VS Code 中为 git 命令启用自动 GitHub 身份验证。",
-			"config.gitProtocol": "控制用于克隆 GitHub 存储库的协议",
+			"config.gitProtocol": "控制用于克隆 GitHub 仓库的协议",
 			"description": "适用于 VS Code 的 GitHub 功能",
 			"displayName": "GitHub",
-			"welcome.publishFolder": "你还可直接将此文件夹发布到 GitHub 存储库。发布后，你将有权访问由 Git 和 GitHub 提供支持的源代码管理功能。\r\n[$(github) 发布到 GitHub](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "你还可直接将工作区文件夹发布到 GitHub 存储库。发布后，你将有权访问由 Git 和 GitHub 提供支持的源代码管理功能。\r\n[$(github) 发布到 GitHub](command:github.publish)"
+			"welcome.publishFolder": "你还可直接将此文件夹发布到 GitHub 仓库。发布后，你将有权访问由 Git 和 GitHub 提供支持的源代码管理功能。\r\n[$(github) 发布到 GitHub](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "你还可直接将工作区文件夹发布到 GitHub 仓库。发布后，你将有权访问由 Git 和 GitHub 提供支持的源代码管理功能。\r\n[$(github) 发布到 GitHub](command:github.publish)"
 		}
 	}
 }

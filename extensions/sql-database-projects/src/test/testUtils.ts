@@ -43,9 +43,7 @@ export async function getTestProjectPath(test: Mocha.Runnable | undefined): Prom
 
 export async function createTestSqlProjFile(test: Mocha.Runnable | undefined, contents: string, folderPath?: string): Promise<string> {
 	folderPath = folderPath ?? path.join(await generateTestFolderPath(test), 'TestProject');
-	const macroDict: Record<string, string> = {
-		'PROJECT_DSP': constants.defaultDSP
-	};
+	const macroDict: Map<string, string> = new Map([['PROJECT_DSP', constants.defaultDSP]]);
 	contents = templates.macroExpansion(contents, macroDict);
 	return await createTestFile(test, contents, 'TestProject.sqlproj', folderPath);
 }

@@ -42,14 +42,14 @@ export class ConnectionStore {
 		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
 		try {
-			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.GLOBAL, '[]');
+			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.APPLICATION, '[]');
 			this.mru = JSON.parse(configRaw);
 		} catch (e) {
 			this.mru = [];
 		}
 
 		this.storageService.onWillSaveState(() =>
-			this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.GLOBAL, StorageTarget.MACHINE));
+			this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.APPLICATION, StorageTarget.MACHINE));
 	}
 
 	/**
@@ -67,6 +67,7 @@ export class ConnectionStore {
 		}
 
 		cred.push(CRED_ITEMTYPE_PREFIX.concat(itemType));
+		// Use basic info for credentials so that passwords can be shared among similar profiles for now.
 		cred.push(CRED_ID_PREFIX.concat(connectionProfileInstance.getConnectionInfoId()));
 		return cred.join(CRED_SEPARATOR);
 	}
@@ -150,6 +151,17 @@ export class ConnectionStore {
 	}
 
 	/**
+	 * Checks to see if a connection profile edit is not identical to an existing saved profile.
+	 *
+	 * @param profile the profile group that is being edited.
+	 * @param matcher the profile matching function for the actual connection we want to edit.
+	 * @returns a boolean value indicating if there's an identical profile to the edit.
+	 */
+	public isDuplicateEdit(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<boolean> {
+		return this.connectionConfig.isDuplicateEdit(profile, matcher);
+	}
+
+	/**
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *
@@ -217,7 +229,7 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -235,7 +247,7 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -270,6 +282,8 @@ export class ConnectionStore {
 
 	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
 		if (conn.password) {
+			// Credentials are currently shared between profiles with the same basic details.
+			// Credentials are currently not cleared upon deletion of a profile.
 			const credentialId = this.formatCredentialId(conn);
 			return this.credentialService.saveCredential(credentialId, conn.password);
 		} else {

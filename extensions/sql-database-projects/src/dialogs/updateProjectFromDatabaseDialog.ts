@@ -445,7 +445,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createFolderStructureRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.folderStructureDropDown = view.modelBuilder.dropDown().withProps({
 			values: [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
-			value: constants.schemaObjectType,			//TODO: Read this value from project info after fixing https://github.com/microsoft/azuredatastudio/issues/20332
+			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
@@ -481,14 +481,18 @@ export class UpdateProjectFromDatabaseDialog {
 		await this.compareActionRadioButton.updateProperties({ checked: true });
 		this.action = UpdateProjectAction.Compare;
 
-		this.compareActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Compare;
-			this.tryEnableUpdateButton();
+		this.compareActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Compare;
+				this.tryEnableUpdateButton();
+			}
 		});
 
-		this.updateActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Update;
-			this.tryEnableUpdateButton();
+		this.updateActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Update;
+				this.tryEnableUpdateButton();
+			}
 		});
 
 		let radioButtons = view.modelBuilder.flexContainer()
@@ -556,7 +560,7 @@ export class UpdateProjectFromDatabaseDialog {
 			connectionDetails: connectionDetails,
 			ownerUri: ownerUri,
 			projectFilePath: '',
-			folderStructure: mssql.ExtractTarget.schemaObjectType,
+			extractTarget: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			packageFilePath: '',
@@ -566,7 +570,7 @@ export class UpdateProjectFromDatabaseDialog {
 		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Project,
 			projectFilePath: this.projectFileDropdown!.value! as string,
-			folderStructure: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
+			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
 			dataSchemaProvider: '',
 			connectionDetails: connectionDetails,

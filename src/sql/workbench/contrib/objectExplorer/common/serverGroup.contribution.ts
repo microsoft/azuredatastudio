@@ -42,6 +42,7 @@ const serverGroupConfig: IConfigurationNode = {
 };
 
 export const NODE_EXPANSION_CONFIG = 'serverTree.nodeExpansionTimeout';
+export const USE_ASYNC_SERVER_TREE_CONFIG = 'serverTree.useAsyncServerTree';
 const serverTreeConfig: IConfigurationNode = {
 	'id': 'serverTree',
 	'title': localize('serverTree.configuration.title', "Server Tree"),
@@ -50,7 +51,7 @@ const serverTreeConfig: IConfigurationNode = {
 		'serverTree.useAsyncServerTree': {
 			'type': 'boolean',
 			'default': true,
-			'description': localize('serverTree.useAsyncServerTree', "Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.")
+			'description': localize('serverTree.useAsyncServerTree', "Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.")
 		},
 		'serverTree.nodeExpansionTimeout': {
 			'type': 'number',
