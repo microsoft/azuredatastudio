@@ -496,7 +496,9 @@ export enum NodeFilterOperator {
 	Between = 6,
 	NotBetween = 7,
 	Contains = 8,
-	NotContains = 9
+	NotContains = 9,
+	IsNull = 10,
+	IsNotNull = 11
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

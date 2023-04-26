@@ -1861,7 +1861,7 @@ declare module 'azdata' {
 		Contains = 8,
 		NotContains = 9,
 		IsNull = 10,
-		IsNotNull = 11,
+		IsNotNull = 11
 	}
 
 	export namespace window {
