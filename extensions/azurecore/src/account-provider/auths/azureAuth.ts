@@ -362,6 +362,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 			forceRefresh: true
 		};
 		try {
+			const tenant: Tenant = {
+				id: tenantId,
+				displayName: ''
+			};
+			return await this.handleInteractionRequiredMsal(tenant, resource);
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
 			Logger.error('Failed to acquireTokenSilent', e);

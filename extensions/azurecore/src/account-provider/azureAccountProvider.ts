@@ -150,7 +150,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
 				try {
 					// Fetch cached token from local cache if token is available and valid.
-					let accessToken = await this.msalCacheProvider.getTokenFromLocalCache(account.key.accountId, tenantId, resource);
+					//TODO: change this line back after testing
+					let accessToken = undefined;
 					if (this.isValidToken(accessToken)) {
 						return accessToken;
 					} // else fallback to fetching a new token.
