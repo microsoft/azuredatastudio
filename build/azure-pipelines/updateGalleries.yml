@@ -34,6 +34,7 @@ steps:
     ContainerName: marketplace
     BlobPrefix: 'v1/extensionsGallery-insider.json'
     AdditionalArgumentsForBlobCopy: '--cache-control="max-age=0" --overwrite=true'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/release/extensions')
 
 - powershell: |
     git checkout extensions/rc1
