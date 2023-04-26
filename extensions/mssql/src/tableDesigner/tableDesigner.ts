@@ -27,11 +27,11 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
 			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
-			// append non default options to end to let users know exact connection.
-			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, true);
-			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
-			if (nonDefaultOptions !== '') {
-				titleString += `${nonDefaultOptions}`;
+			// append distinguishing options to end to let users know exact connection.
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, true);
+			distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+			if (distinguishingOptions !== '') {
+				titleString += `${distinguishingOptions}`;
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
@@ -64,11 +64,11 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
 			let titleString = `${server} - ${database} - ${schema}.${name}`;
-			// append non default options to end to let users know exact connection.
-			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, true);
-			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
-			if (nonDefaultOptions !== '') {
-				titleString += `${nonDefaultOptions}`;
+			// append distinguishing options to end to let users know exact connection.
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, true);
+			distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+			if (distinguishingOptions !== '') {
+				titleString += `${distinguishingOptions}`;
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
