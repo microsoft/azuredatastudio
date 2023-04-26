@@ -776,12 +776,12 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			this.serviceContextChangedEvent.event(
 				async (e) => {
 					if (e.connectionId === await getSourceConnectionId()) {
-						await this.updateServiceContext(this._serviceContextButton);
+						await this.updateServiceButtonContext(this._serviceContextButton);
 						await this.refresh();
 					}
 				}
 			));
-		await this.updateServiceContext(this._serviceContextButton);
+		await this.updateServiceButtonContext(this._serviceContextButton);
 
 		return this._serviceContextButton;
 	}

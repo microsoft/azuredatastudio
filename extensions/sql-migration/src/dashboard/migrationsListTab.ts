@@ -78,7 +78,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		}
 	}
 
-	public async refresh(): Promise<void> {
+	public async refresh(iniotialize?: boolean): Promise<void> {
 		if (this.isRefreshing ||
 			this._refreshLoader === undefined) {
 
@@ -90,6 +90,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			this._refreshLoader.loading = true;
 
 			await this.statusBar.clearError();
+
+			if (iniotialize) {
+				await this.updateServiceButtonContext(this._serviceContextButton);
+			}
 
 			await this._statusTable.updateProperty('data', []);
 			this._migrations = await getCurrentMigrations();
@@ -180,12 +184,11 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			this.serviceContextChangedEvent.event(
 				async (e) => {
 					if (e.connectionId === await getSourceConnectionId()) {
-						await this.updateServiceContext(this._serviceContextButton);
-						await this.refresh();
+						await this.refresh(true);
 					}
 				}
 			));
-		await this.updateServiceContext(this._serviceContextButton);
+		await this.updateServiceButtonContext(this._serviceContextButton);
 
 		this._searchBox = this.view.modelBuilder.inputBox()
 			.withProps({
