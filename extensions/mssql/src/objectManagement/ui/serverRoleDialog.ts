@@ -73,7 +73,7 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 	}
 
 	private initializeMembershipSection(): void {
-		this.membershipTable = this.createTableList(localizedConstants.MembershipSectionHeader, localizedConstants.ServerRoleTypeDisplayNameInTitle, this.viewInfo.serverRoles, this.objectInfo.memberships);
+		this.membershipTable = this.createTableList<string>(localizedConstants.MembershipSectionHeader, [localizedConstants.ServerRoleTypeDisplayNameInTitle], this.viewInfo.serverRoles, this.objectInfo.memberships);
 		this.membershipSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.membershipTable]);
 	}
 }

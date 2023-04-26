@@ -211,12 +211,13 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	}
 
 	private initializeServerRolesSection(): void {
-		const serverRolesData = this.viewInfo.serverRoles.map(name => {
-			const isRoleSelected = this.objectInfo.serverRoles.indexOf(name) !== -1;
-			const isRoleSelectionEnabled = name !== PublicServerRoleName;
-			return [{ enabled: isRoleSelectionEnabled, checked: isRoleSelected }, name];
-		});
-		this.serverRoleTable = this.createTableList(localizedConstants.ServerRoleSectionHeader, localizedConstants.ServerRoleTypeDisplayNameInTitle, this.viewInfo.serverRoles, this.objectInfo.serverRoles, serverRolesData);
+		this.serverRoleTable = this.createTableList(localizedConstants.ServerRoleSectionHeader,
+			[localizedConstants.ServerRoleTypeDisplayNameInTitle],
+			this.viewInfo.serverRoles,
+			this.objectInfo.serverRoles,
+			(item) => {
+				return item !== PublicServerRoleName
+			});
 		this.serverRoleSection = this.createGroup(localizedConstants.ServerRoleSectionHeader, [this.serverRoleTable]);
 	}
 

@@ -7,6 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
+import { FindObjectDialog } from './findObjectDialog';
 
 export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
 	// Sections
@@ -51,10 +52,25 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 			this.objectInfo.owner = newValue;
 		}, this.objectInfo.owner, !this.viewInfo.isFixedRole);
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, this.ownerInput);
+		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, async () => {
+			const dialog = new FindObjectDialog(this.objectManagementService, {
+				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+				multiSelect: false,
+				contextId: this.contextId,
+				title: localizedConstants.SelectDatabaseRoleOwnerDialogTitle
+			});
+			await dialog.open();
+			const result = await dialog.waitForClose();
+			if (result.selectedObjects.length > 0) {
+				this.ownerInput.value = result.selectedObjects[0].name;
+			}
+		});
+		const buttonContainer = this.createButtonContainer([browseOwnerButton]);
 
 		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [
 			nameContainer,
-			ownerContainer
+			ownerContainer,
+			buttonContainer
 		], false);
 	}
 
@@ -65,18 +81,47 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 				value: localizedConstants.NameText
 			}
 		], this.objectInfo.members.map(m => [m]));
-		this.addMemberButton = this.createButton(localizedConstants.AddText, async () => { });
-		this.removeMemberButton = this.createButton(localizedConstants.RemoveText, async () => { });
+		this.addMemberButton = this.createButton(localizedConstants.AddText, async () => {
+			const dialog = new FindObjectDialog(this.objectManagementService, {
+				objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+				multiSelect: true,
+				contextId: this.contextId,
+				title: localizedConstants.SelectDatabaseRoleMemberDialogTitle
+			});
+			await dialog.open();
+			const result = await dialog.waitForClose();
+			this.addMembers(result.selectedObjects.map(r => r.name));
+		});
+		this.removeMemberButton = this.createButton(localizedConstants.RemoveText, async () => {
+			if (this.memberTable.selectedRows.length === 1) {
+				this.removeMember(this.memberTable.selectedRows[0]);
+			}
+		});
 		const buttonContainer = this.createButtonContainer([this.addMemberButton, this.removeMemberButton]);
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);
 	}
 
-	private initializeOwnedSchemasSection(): void {
-		const ownedSchemaData = this.viewInfo.schemas.map(name => {
-			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
-			return [{ enabled: !isSelected, checked: isSelected }, name];
+	private addMembers(names: string[]): void {
+		names.forEach(n => {
+			if (this.objectInfo.members.indexOf(n) === -1) {
+				this.objectInfo.members.push(n);
+			}
 		});
-		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, localizedConstants.SchemaText, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
+		this.updateMembersTable();
+	}
+
+	private removeMember(idx: number): void {
+		this.objectInfo.members.splice(idx, 1);
+		this.updateMembersTable();
+	}
+
+	private updateMembersTable(): void {
+		this.onFormFieldChange();
+		this.setTableListData(this.memberTable, this.objectInfo.members.map(m => [m]));
+	}
+
+	private initializeOwnedSchemasSection(): void {
+		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader, [localizedConstants.SchemaText], this.viewInfo.schemas, this.objectInfo.ownedSchemas);
 		this.ownedSchemasSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.ownedSchemaTable]);
 	}
 }

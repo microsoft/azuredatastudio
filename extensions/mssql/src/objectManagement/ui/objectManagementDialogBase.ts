@@ -32,7 +32,7 @@ export interface ObjectManagementDialogOptions {
 	objectName?: string;
 }
 
-export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends DialogBase {
+export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends DialogBase<void> {
 	private _contextId: string;
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
@@ -43,7 +43,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(getNodeTypeDisplayName(options.objectType, true)) :
 			localizedConstants.ObjectPropertiesDialogTitle(getNodeTypeDisplayName(options.objectType, true), options.objectName),
 			getDialogName(options.objectType, options.isNewObject),
-			options.width || 'narrow'
+			options.width || 'narrow', 'flyout'
 		);
 		this._helpButton = azdata.window.createButton(localizedConstants.HelpText, 'left');
 		this.disposables.push(this._helpButton.onClick(async () => {
@@ -61,7 +61,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected postInitializeData(): void { }
 
-	protected override onObjectValueChange(): void {
+	protected override onFormFieldChange(): void {
 		this._scriptButton.enabled = this.isDirty;
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
@@ -128,6 +128,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected get originalObjectInfo(): ObjectInfoType {
 		return this._originalObjectInfo;
+	}
+
+	protected get contextId(): string {
+		return this._contextId;
 	}
 
 	protected override async dispose(reason: azdata.window.CloseReason): Promise<void> {

@@ -20,18 +20,26 @@ export function getTableHeight(rowCount: number, minRowCount: number = DefaultTa
 	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
 }
 
-export abstract class DialogBase {
+export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
+export type TableListItemValueGetter<T> = (item: T) => string[];
+export type TableListItemComparer<T> = (item1: T, item2: T) => boolean;
+export const DefaultTableListItemEnabledStateGetter: TableListItemEnabledStateGetter<any> = (item: any) => true;
+export const DefaultTableListItemValueGetter: TableListItemValueGetter<any> = (item: any) => [item?.toString() ?? ''];
+export const DefaultTableListItemComparer: TableListItemComparer<any> = (item1: any, item2: any) => item1 === item2;
+
+
+export abstract class DialogBase<DialogResult> {
 	protected readonly disposables: vscode.Disposable[] = [];
 	protected readonly dialogObject: azdata.window.Dialog;
 
 	private _modelView: azdata.ModelView;
 	private _loadingComponent: azdata.LoadingComponent;
 	private _formContainer: azdata.DivContainer;
+	private _closePromise: Promise<DialogResult | undefined>;
 
-	constructor(title: string, name: string, width: azdata.window.DialogWidth) {
-		this.dialogObject = azdata.window.createModelViewDialog(title, name, width);
+	constructor(title: string, name: string, width: azdata.window.DialogWidth, style: azdata.window.DialogStyle) {
+		this.dialogObject = azdata.window.createModelViewDialog(title, name, width, style);
 		this.dialogObject.okButton.label = localizedConstants.OkText;
-		this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => { await this.dispose(reason); }));
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
 			if (!confirmed) {
@@ -39,7 +47,20 @@ export abstract class DialogBase {
 			}
 			return await this.runValidation();
 		});
+		this._closePromise = new Promise<DialogResult | undefined>(resolve => {
+			this.disposables.push(this.dialogObject.onClosed(async (reason: azdata.window.CloseReason) => {
+				await this.dispose(reason);
+				const result = reason === 'ok' ? this.dialogResult : undefined;
+				resolve(result);
+			}));
+		});
 	}
+
+	public waitForClose(): Promise<DialogResult | undefined> {
+		return this._closePromise;
+	}
+
+	protected get dialogResult(): DialogResult | undefined { return undefined; }
 
 	protected async onConfirmation(): Promise<boolean> { return true; }
 
@@ -49,7 +70,7 @@ export abstract class DialogBase {
 
 	protected get modelView(): azdata.ModelView { return this._modelView; }
 
-	protected onObjectValueChange(): void { }
+	protected onFormFieldChange(): void { }
 
 	protected validateInput(): Promise<string[]> { return Promise.resolve([]); }
 
@@ -113,7 +134,7 @@ export abstract class DialogBase {
 		}).component();
 		this.disposables.push(checkbox.onChanged(async () => {
 			await handler(checkbox.checked!);
-			this.onObjectValueChange();
+			this.onFormFieldChange();
 			await this.runValidation(false);
 		}));
 		return checkbox;
@@ -127,7 +148,7 @@ export abstract class DialogBase {
 		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width }).component();
 		this.disposables.push(inputbox.onTextChanged(async () => {
 			await textChangeHandler(inputbox.value!);
-			this.onObjectValueChange();
+			this.onFormFieldChange();
 			await this.runValidation(false);
 		}));
 		return inputbox;
@@ -141,48 +162,60 @@ export abstract class DialogBase {
 		}).withItems(items).component();
 	}
 
-	protected createFormContainer(items: azdata.Component[]): azdata.DivContainer {
-		return this.modelView.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
-			CSSStyles: { 'padding': '10px' }
-		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
-	}
-
-	protected createTableList(ariaLabel: string, valueColumnName: string, listValues: string[], selectedValues: string[], data?: any[][]): azdata.TableComponent {
-		let tableData = data;
-		if (tableData === undefined) {
-			tableData = listValues.map(name => {
-				const isSelected = selectedValues.indexOf(name) !== -1;
-				return [isSelected, name];
-			});
-		}
+	protected createTableList<T>(ariaLabel: string,
+		columnNames: string[],
+		allItems: T[],
+		selectedItems: T[],
+		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
+		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
+		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): azdata.TableComponent {
+		const data = this.getDataForTableList(allItems, selectedItems, enabledStateGetter, rowValueGetter, itemComparer);
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,
-				data: tableData,
+				data: data,
 				columns: [
 					{
 						value: localizedConstants.SelectedText,
 						type: azdata.ColumnType.checkBox,
 						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
-					}, {
-						value: valueColumnName,
-					}
+					}, ...columnNames.map(name => {
+						return { value: name };
+					})
 				],
 				width: DefaultTableWidth,
-				height: getTableHeight(tableData.length)
+				height: getTableHeight(data.length)
 			}
 		).component();
 		this.disposables.push(table.onCellAction!((arg: azdata.ICheckboxCellActionEventArgs) => {
-			const name = listValues[arg.row];
-			const idx = selectedValues.indexOf(name);
+			const item = allItems[arg.row];
+			const idx = selectedItems.findIndex(i => itemComparer(i, item));
 			if (arg.checked && idx === -1) {
-				selectedValues.push(name);
+				selectedItems.push(item);
 			} else if (!arg.checked && idx !== -1) {
-				selectedValues.splice(idx, 1)
+				selectedItems.splice(idx, 1)
 			}
-			this.onObjectValueChange();
+			this.onFormFieldChange();
 		}));
 		return table;
+	}
+
+	protected setTableListData(table: azdata.TableComponent, data: any[][]) {
+		table.data = data;
+		table.height = getTableHeight(data.length);
+	}
+
+	protected getDataForTableList<T>(
+		allItems: T[],
+		selectedItems: T[],
+		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
+		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
+		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): any[][] {
+		return allItems.map(item => {
+			const idx = selectedItems.findIndex(i => itemComparer(i, item));
+			const stateColumnValue = { checked: idx !== -1, enabled: enabledStateGetter(item) };
+			return [stateColumnValue, ...rowValueGetter(item)];
+		});
 	}
 
 	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][]): azdata.TableComponent {
@@ -216,7 +249,7 @@ export abstract class DialogBase {
 		}).component();
 		this.disposables.push(dropdown.onValueChanged(async () => {
 			await handler(<string>dropdown.value!);
-			this.onObjectValueChange();
+			this.onFormFieldChange();
 			await this.runValidation(false);
 		}));
 		return dropdown;
@@ -235,8 +268,14 @@ export abstract class DialogBase {
 		return button;
 	}
 
-	protected createButtonContainer(items: azdata.ButtonComponent[]): azdata.FlexContainer {
-		return this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', justifyContent: 'flex-end' }).withItems(items, { flex: '0 0 auto' }).component();
+	protected createButtonContainer(items: azdata.ButtonComponent[], justifyContent: azdata.JustifyContentType = 'flex-end'): azdata.FlexContainer {
+		return this.modelView.modelBuilder.flexContainer().withProps({
+			CSSStyles: { 'margin': '5px 0' }
+		}).withLayout({
+			flexFlow: 'horizontal',
+			flexWrap: 'nowrap',
+			justifyContent: justifyContent
+		}).withItems(items, { flex: '0 0 auto' }).component();
 	}
 
 	protected removeItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component): void {
@@ -259,5 +298,11 @@ export abstract class DialogBase {
 		if (this._loadingComponent) {
 			this._loadingComponent.loading = isLoading;
 		}
+	}
+
+	private createFormContainer(items: azdata.Component[]): azdata.DivContainer {
+		return this.modelView.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
+			CSSStyles: { 'padding': '10px' }
+		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
 	}
 }

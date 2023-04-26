@@ -33,6 +33,7 @@ export const ScriptText: string = localize('objectManagement.scriptText', "Scrip
 export const NoActionScriptedMessage: string = localize('objectManagement.noActionScriptedMessage', "There is no action to be scripted.");
 export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
+export const BrowseText = localize('objectManagement.browseText', "Browse…");
 export const AddText = localize('objectManagement.addText', "Add…");
 export const RemoveText = localize('objectManagement.removeText', "Remove");
 
@@ -139,7 +140,6 @@ export const InvalidPasswordError = localize('objectManagement.invalidPasswordEr
 export const LoginNotSelectedError = localize('objectManagement.loginNotSelectedError', "Login is not selected.");
 export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
 export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
-export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Type");
 export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
 
 // Login
@@ -171,3 +171,17 @@ export const UserWithNoConnectAccess = localize('objectManagement.user.userWithN
 export const DefaultSchemaText = localize('objectManagement.user.defaultSchemaLabel', "Default schema");
 export const LoginText = localize('objectManagement.user.loginLabel', "Login");
 export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
+
+// Database Role
+export const SelectDatabaseRoleMemberDialogTitle = localize('objectManagement.databaseRole.SelectDatabaseRoleMemberDialogTitle', "Select Database User Members");
+export const SelectDatabaseRoleOwnerDialogTitle = localize('objectManagement.databaseRole.SelectDatabaseRoleOwnerDialogTitle', "Select Database Role Owner");
+
+// Find Object Dialog
+export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Object Type");
+export const FilterText = localize('objectManagement.filterText', "Filter");
+export const FindText = localize('objectManagement.findText', "Find");
+export const ObjectsText = localize('objectManagement.objectsLabel', "Objects");
+export const LoadingObjectsText = localize('objectManagement.loadingObjectsLabel', "Loading objects…");
+export function LoadingObjectsCompletedText(count: number): string {
+	return localize('objectManagement.loadingObjectsCompletedLabel', "Loading objects completed, {0} objects found", count);
+}

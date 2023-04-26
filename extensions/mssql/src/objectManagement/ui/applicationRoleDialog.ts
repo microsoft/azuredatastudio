@@ -79,11 +79,7 @@ export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectMana
 	}
 
 	private initializeOwnedSchemasSection(): void {
-		const ownedSchemaData = this.viewInfo.schemas.map(name => {
-			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
-			return [{ enabled: !isSelected, checked: isSelected }, name];
-		});
-		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, localizedConstants.SchemaText, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
+		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader, [localizedConstants.SchemaText], this.viewInfo.schemas, this.objectInfo.ownedSchemas);
 		this.ownedSchemasSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 }

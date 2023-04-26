@@ -134,16 +134,15 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private initializeOwnedSchemaSection(): void {
-		const ownedSchemaData = this.viewInfo.schemas.map(name => {
-			const isSelected = this.objectInfo.ownedSchemas.indexOf(name) !== -1;
-			return [{ enabled: !isSelected, checked: isSelected }, name];
+		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader, [localizedConstants.SchemaText], this.viewInfo.schemas, this.objectInfo.ownedSchemas, (item) => {
+			// It is not allowed to have unassigned schema.
+			return this.objectInfo.ownedSchemas.indexOf(item) === -1;
 		});
-		this.ownedSchemaTable = this.createTableList(localizedConstants.OwnedSchemaSectionHeader, localizedConstants.SchemaText, this.viewInfo.schemas, this.objectInfo.ownedSchemas, ownedSchemaData);
 		this.ownedSchemaSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 
 	private initializeMembershipSection(): void {
-		this.membershipTable = this.createTableList(localizedConstants.MembershipSectionHeader, localizedConstants.DatabaseRoleTypeDisplayNameInTitle, this.viewInfo.databaseRoles, this.objectInfo.databaseRoles);
+		this.membershipTable = this.createTableList<string>(localizedConstants.MembershipSectionHeader, [localizedConstants.DatabaseRoleTypeDisplayNameInTitle], this.viewInfo.databaseRoles, this.objectInfo.databaseRoles);
 		this.membershipSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.membershipTable]);
 	}
 

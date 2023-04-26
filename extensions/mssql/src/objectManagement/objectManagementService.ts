@@ -106,6 +106,17 @@ export class TestObjectManagementService implements IObjectManagementService {
 		const items = [];
 		items.push(<ObjectManagement.SearchResultItem>{ name: 'test1', type: ObjectManagement.NodeType.ServerLevelLogin });
 		items.push(<ObjectManagement.SearchResultItem>{ name: 'test2', type: ObjectManagement.NodeType.ServerLevelLogin });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test3', type: ObjectManagement.NodeType.ServerLevelLogin });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test4', type: ObjectManagement.NodeType.ServerLevelLogin });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test5', type: ObjectManagement.NodeType.ServerLevelLogin });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test6', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test7', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test8', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test9', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test10', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test11', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test12', type: ObjectManagement.NodeType.ServerLevelServerRole });
+		items.push(<ObjectManagement.SearchResultItem>{ name: 'test13', type: ObjectManagement.NodeType.ServerLevelServerRole });
 		return this.delayAndResolve(items);
 	}
 
@@ -267,6 +278,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return isNewObject ? <ObjectManagement.DatabaseRoleViewInfo>{
 			objectInfo: {
 				name: '',
+				owner: '',
 				members: [],
 				ownedSchemas: []
 			},
@@ -274,6 +286,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} : <ObjectManagement.DatabaseRoleViewInfo>{
 			objectInfo: {
 				name: 'db role1',
+				owner: '',
 				members: [],
 				ownedSchemas: ['dbo']
 			},
