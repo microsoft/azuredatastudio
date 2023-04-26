@@ -188,6 +188,11 @@ declare module 'sqldbproj' {
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
 
 		/**
+		 * Gets an array of all database sources specified in the project.
+		 */
+		getDatabaseSourceValues(): string[];
+
+		/**
 		 * Appends given database source to the DatabaseSource property element.
 		 * If property element does not exist, then new one will be created.
 		 *

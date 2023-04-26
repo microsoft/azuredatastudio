@@ -6,7 +6,7 @@
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata, AzureNetworkResponse, HttpClientResponse } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata, AzureNetworkResponse } from 'azurecore';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AppContext } from '../appContext';
@@ -38,7 +38,7 @@ export type ErrorResponseBodyWithError = Required<ErrorResponseBody>;
  * @param body The body object to check
  * @returns True if the body is an ErrorResponseBodyWithError
  */
-export function isErrorResponseBody(body: any): body is ErrorResponseBodyWithError {
+export function isErrorResponseBodyWithError(body: any): body is ErrorResponseBodyWithError {
 	return 'error' in body && body.error;
 }
 
@@ -462,21 +462,21 @@ export async function makeHttpRequest<B>(
 		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
-	let response: AzureNetworkResponse<HttpClientResponse<B>> | undefined = undefined;
+	let response: AzureNetworkResponse<B | ErrorResponseBodyWithError> | undefined = undefined;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await httpClient.sendGetRequestAsync<HttpClientResponse<B>>(requestUrl, {
+			response = await httpClient.sendGetRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, {
 				headers: reqHeaders
 			});
 			break;
 		case HttpRequestMethod.POST:
-			response = await httpClient.sendPostRequestAsync<HttpClientResponse<B>>(requestUrl, networkRequestOptions);
+			response = await httpClient.sendPostRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.PUT:
-			response = await httpClient.sendPutRequestAsync<HttpClientResponse<B>>(requestUrl, networkRequestOptions);
+			response = await httpClient.sendPutRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await httpClient.sendDeleteRequestAsync<HttpClientResponse<B>>(requestUrl, {
+			response = await httpClient.sendDeleteRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, {
 				headers: reqHeaders
 			});
 			break;
@@ -497,22 +497,18 @@ export async function makeHttpRequest<B>(
 	} else if (response.status < 200 || response.status > 299) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
-		if (response.data && response.data.error) {
-			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
+		const data = response.data;
+		if (isErrorResponseBodyWithError(data)) {
+			errorMessage.push(`${data.error.code} : ${data.error.message}`);
 		}
 		const error = new Error(errorMessage.join(EOL));
 		if (!ignoreErrors) {
 			throw error;
 		}
 		result.errors.push(error);
-	}
-
-	if (response) {
-		result.response = {
-			headers: response.headers,
-			data: response.data.body,
-			status: response.status
-		};
+	} else {
+		// We know this isn't an error response at this point
+		result.response = response as AzureNetworkResponse<B>;
 	}
 
 	return result;
