@@ -924,14 +924,13 @@ export class ProjectsController {
 		}
 
 		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(node.relativeProjectUri.fsPath!)), newFileName);
+		const result = await project.move(node, newFilePath);
 
-		const renameResult = await project.move(node, newFilePath);
-
-		if (renameResult?.success) {
+		if (result?.success) {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename);
 		} else {
 			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.rename);
-			void vscode.window.showErrorMessage(constants.errorRenamingFile(node.entryKey!, newFilePath, renameResult?.errorMessage));
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(node.entryKey!, newFilePath, result?.errorMessage));
 		}
 
 		this.refreshProjectsTree(context);
