@@ -1832,10 +1832,6 @@ declare module 'azdata' {
 		 */
 		name: string;
 		/**
-		 * The type of the filter property
-		 */
-		type: NodeFilterPropertyDataType;
-		/**
 		 * The operator of the filter property
 		 */
 		operator: NodeFilterOperator;
