@@ -1816,7 +1816,10 @@ declare module 'azdata' {
 		description: string;
 	}
 
-	export interface NodeInfoFilterChoiceDefinition extends NodeFilterProperty {
+	/**
+	 * NodeFilterChoiceProperty is used to define the choices for the filter property if the type is choice
+	 */
+	export interface NodeFilterChoiceProperty extends NodeFilterProperty {
 		/**
 		 * The list of choices for the filter property if the type is choice
 		 */
