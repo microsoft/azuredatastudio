@@ -19,7 +19,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, NugetPackageReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
-import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
+import { FolderNode, NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 import { GetFoldersResult, GetScriptsResult, ProjectType, SystemDatabase } from 'mssql';
 
 /**
@@ -1009,7 +1009,10 @@ export class Project implements ISqlProject {
 			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
 		} else if (node instanceof NoneNode || node instanceof PublishProfileNode) {
 			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, destinationRelativePath, originalRelativePath);
-		} else {
+		} else if (node instanceof FolderNode) {
+			result = await this.sqlProjService.moveFolder(this.projectFilePath, originalRelativePath, destinationRelativePath);
+		}
+		else {
 			result = { success: false, errorMessage: constants.unhandledMoveNode }
 		}
 

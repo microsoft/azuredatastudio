@@ -879,7 +879,7 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), sqlcmdVarNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a sqlcmd variable');
-			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 
 			// try moving a database reference
@@ -887,7 +887,7 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), dbRefNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a database reference');
-			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 
 			// try moving a folder
@@ -895,7 +895,7 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), folderNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a folder');
-			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 		});
 

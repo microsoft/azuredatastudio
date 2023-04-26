@@ -317,6 +317,7 @@ export const databaseProject = localize('databaseProject', "Database project");
 export const dacpacMustBeOnSameDrive = localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file.");
 export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
 export const referenceType = localize('referenceType', "Reference type");
+export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "Excluding folders is not yet supported");
 export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
 export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
 
@@ -531,16 +532,6 @@ export const PublishProfileElements = localize('publishProfileElements', "Publis
 
 //#endregion
 
-
-
-/**
- * Well-known database source values that are allowed to be sent in telemetry.
- *
- * 'dsct-oracle-to-ms-sql' is the name of an extension which allows users to migrate from Oracle to Microsoft SQL platform.
- * When looking at telemetry, we would like to know if a built or deployed database originated from the DSCT extension.
- */
-export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
-
 export function defaultOutputPath(configuration: string) { return path.join('.', 'bin', configuration); }
 
 /**
@@ -687,7 +678,7 @@ export function errorExtracting(path: string, error: string) { return localize('
 //#endregion
 
 //#region move
-export const onlyMoveSqlFilesSupported = localize('onlyMoveSqlFilesSupported', "Only moving .sql files is supported");
+export const onlyMoveFilesFoldersSupported = localize('onlyMoveFilesFoldersSupported', "Only moving files and folders are supported");
 export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetweenProjectsNotSupported', "Moving files between projects is not supported");
 export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
 export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }

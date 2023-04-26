@@ -798,29 +798,27 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = await this.getProjectFromContext(node);
 
-		const fileEntry = this.getFileProjectEntry(project, node);
-
-		if (fileEntry) {
+		if (node.entryKey) {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 
 			switch (node.type) {
 				case constants.DatabaseProjectItemType.sqlObjectScript:
 				case constants.DatabaseProjectItemType.table:
 				case constants.DatabaseProjectItemType.externalStreamingJob:
-					await project.excludeSqlObjectScript(fileEntry.relativePath);
+					await project.excludeSqlObjectScript(node.entryKey);
 					break;
 				case constants.DatabaseProjectItemType.folder:
-					await project.excludeFolder(fileEntry.relativePath);
+					await project.excludeFolder(node.entryKey);
 					break;
 				case constants.DatabaseProjectItemType.preDeploymentScript:
-					await project.excludePreDeploymentScript(fileEntry.relativePath);
+					await project.excludePreDeploymentScript(node.entryKey);
 					break;
 				case constants.DatabaseProjectItemType.postDeploymentScript:
-					await project.excludePostDeploymentScript(fileEntry.relativePath);
+					await project.excludePostDeploymentScript(node.entryKey);
 					break;
 				case constants.DatabaseProjectItemType.noneFile:
 				case constants.DatabaseProjectItemType.publishProfile:
-					await project.excludeNoneItem(fileEntry.relativePath);
+					await project.excludeNoneItem(node.entryKey);
 					break;
 				default:
 					throw new Error(constants.unhandledExcludeType(node.type));
@@ -903,25 +901,21 @@ export class ProjectsController {
 	public async rename(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const node = context.element as BaseProjectTreeItem;
 		const project = await this.getProjectFromContext(node);
-		const file = this.getFileProjectEntry(project, node);
-		const baseName = path.basename(node.friendlyName);
-		let fileExtension: string;
 
-		if (utils.isPublishProfile(baseName)) {
-			fileExtension = constants.publishProfileExtension;
-		} else {
-			fileExtension = constants.sqlFileExtension;
-		}
+		const originalAbsolutePath = utils.getPlatformSafeFileEntryPath(node.projectFileUri.fsPath);
+		const originalName = path.basename(node.friendlyName);
+		const originalExt = path.extname(node.friendlyName);
 
 		// need to use quickpick because input box isn't supported in treeviews
 		// https://github.com/microsoft/vscode/issues/117502 and https://github.com/microsoft/vscode/issues/97190
 		const newFileName = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewName,
-				value: path.basename(baseName, fileExtension),
+				value: originalName,
+				valueSelection: [0, path.basename(originalName, originalExt).length],
 				ignoreFocusOut: true,
-				validateInput: async (value) => {
-					return await this.fileAlreadyExists(value, file?.fsUri.fsPath!) ? constants.fileAlreadyExists(value) : undefined;
+				validateInput: async (newName) => {
+					return await this.fileAlreadyExists(newName, originalAbsolutePath) ? constants.fileAlreadyExists(newName) : undefined;
 				}
 			});
 
@@ -929,7 +923,7 @@ export class ProjectsController {
 			return;
 		}
 
-		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(file?.relativePath!)), `${newFileName}${fileExtension}`);
+		const newFilePath = path.join(path.dirname(utils.getPlatformSafeFileEntryPath(node.relativeProjectUri.fsPath!)), newFileName);
 
 		const renameResult = await project.move(node, newFilePath);
 
@@ -937,14 +931,14 @@ export class ProjectsController {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.rename);
 		} else {
 			TelemetryReporter.sendErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.rename);
-			void vscode.window.showErrorMessage(constants.errorRenamingFile(file?.relativePath!, newFilePath, utils.getErrorMessage(renameResult?.errorMessage)));
+			void vscode.window.showErrorMessage(constants.errorRenamingFile(node.entryKey!, newFilePath, renameResult?.errorMessage));
 		}
 
 		this.refreshProjectsTree(context);
 	}
 
 	private fileAlreadyExists(newFileName: string, previousFilePath: string): Promise<boolean> {
-		return utils.exists(path.join(path.dirname(previousFilePath), `${newFileName}.sql`));
+		return utils.exists(path.join(path.dirname(previousFilePath), newFileName));
 	}
 
 	/**
@@ -1487,21 +1481,6 @@ export class ProjectsController {
 
 	//#region Helper methods
 
-	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
-		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
-
-		if (fileOrFolder) {
-			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
-
-			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
-			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');
-			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
-		}
-		const projectRelativeUri = vscode.Uri.file(path.basename(context.projectFileUri.fsPath, constants.sqlprojExtension));
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(projectRelativeUri, context.relativeProjectUri)));
-	}
-
 	private async getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Promise<Project> {
 		if ('element' in context) {
 			context = context.element;
@@ -1891,7 +1870,7 @@ export class ProjectsController {
 
 		// only moving files is supported
 		if (!sourceFileNode || !(sourceFileNode instanceof FileNode)) {
-			void vscode.window.showErrorMessage(constants.onlyMoveSqlFilesSupported);
+			void vscode.window.showErrorMessage(constants.onlyMoveFilesFoldersSupported);
 			return;
 		}
 
