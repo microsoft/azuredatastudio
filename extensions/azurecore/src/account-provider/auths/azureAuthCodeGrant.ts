@@ -249,7 +249,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
 
 			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
-			//TODO: addServerListeners is not returning a reject if the external window is closed
+			//TODO: need a callback from openExternal if the external window is closed
 			const authCode = await this.addServerListeners(server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
 
 			authCodeRequest.code = authCode;

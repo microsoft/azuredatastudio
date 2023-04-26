@@ -83,6 +83,10 @@ export class SimpleWebServer {
 				reject(new Error('Server error'));
 			});
 
+			this.server.addListener('close', () => {
+				reject(new Error('Server closed'));
+			});
+
 			this.server.on('close', () => {
 				reject(new Error('Server closed'));
 			});
