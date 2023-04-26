@@ -154,9 +154,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 
 	protected override onLoadingStatusChanged(isLoading: boolean): void {
 		super.onLoadingStatusChanged(isLoading);
-		this._scriptButton.enabled = !isLoading;
 		this._helpButton.enabled = !isLoading;
-		this.dialogObject.okButton.enabled = isLoading ? false : this.isDirty;
+		this.dialogObject.okButton.enabled = this._scriptButton.enabled = isLoading ? false : this.isDirty;
 	}
 
 	private async onScriptButtonClick(): Promise<void> {
