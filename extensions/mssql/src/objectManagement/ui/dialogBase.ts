@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// TODO:
-// 1. include server properties and other properties in the telemetry.
-
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
@@ -42,7 +39,6 @@ export abstract class DialogBase {
 			}
 			return await this.runValidation();
 		});
-		this.onLoadingStatusChanged(true);
 	}
 
 	protected async onConfirmation(): Promise<boolean> { return true; }
@@ -59,6 +55,7 @@ export abstract class DialogBase {
 
 	public async open(): Promise<void> {
 		try {
+			this.onLoadingStatusChanged(true);
 			const initializeDialogPromise = new Promise<void>((async resolve => {
 				await this.dialogObject.registerContent(async view => {
 					this._modelView = view;

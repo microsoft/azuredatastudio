@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
@@ -101,17 +101,9 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
-			ariaLabel: localizedConstants.NameText,
-			enabled: this.options.isNewObject,
-			value: this.objectInfo.name,
-			width: DefaultInputWidth
-		}).component();
-		this.disposables.push(this.nameInput.onTextChanged(async () => {
-			this.objectInfo.name = this.nameInput.value!;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
+		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+			this.objectInfo.name = newValue;
+		}, this.objectInfo.name, this.options.isNewObject);
 
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 		const authTypes = [];
@@ -171,17 +163,20 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 				this.enforcePasswordExpirationCheckbox.checked = enforcePolicy;
 				this.mustChangePasswordCheckbox.checked = enforcePolicy;
 			}, this.objectInfo.enforcePasswordPolicy);
+
 			this.enforcePasswordExpirationCheckbox = this.createCheckbox(localizedConstants.EnforcePasswordExpirationText, async (checked) => {
 				const enforceExpiration = checked;
 				this.objectInfo.enforcePasswordExpiration = enforceExpiration;
 				this.mustChangePasswordCheckbox.enabled = enforceExpiration;
 				this.mustChangePasswordCheckbox.checked = enforceExpiration;
 			}, this.objectInfo.enforcePasswordPolicy);
+
 			this.mustChangePasswordCheckbox = this.createCheckbox(localizedConstants.MustChangePasswordText, async (checked) => {
 				this.objectInfo.mustChangePassword = checked;
 			}, this.objectInfo.mustChangePassword);
 
 			items.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
+
 			if (!this.options.isNewObject) {
 				this.lockedOutCheckbox = this.createCheckbox(localizedConstants.LoginLockedOutText, async (checked) => {
 					this.objectInfo.isLockedOut = checked;

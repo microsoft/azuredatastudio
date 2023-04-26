@@ -23,7 +23,7 @@ import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
-	const service = getObjectManagementService(appContext, true);
+	const service = getObjectManagementService(appContext, false);
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
@@ -51,22 +51,22 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	if (!connectionUri) {
 		return;
 	}
-	let newObjectType: ObjectManagement.NodeType;
+	let objectType: ObjectManagement.NodeType;
 	switch (context.nodeInfo!.objectType) {
 		case FolderType.ApplicationRoles:
-			newObjectType = ObjectManagement.NodeType.ApplicationRole;
+			objectType = ObjectManagement.NodeType.ApplicationRole;
 			break;
 		case FolderType.DatabaseRoles:
-			newObjectType = ObjectManagement.NodeType.DatabaseRole;
+			objectType = ObjectManagement.NodeType.DatabaseRole;
 			break;
 		case FolderType.ServerLevelLogins:
-			newObjectType = ObjectManagement.NodeType.ServerLevelLogin;
+			objectType = ObjectManagement.NodeType.ServerLevelLogin;
 			break;
 		case FolderType.ServerLevelServerRoles:
-			newObjectType = ObjectManagement.NodeType.ServerLevelServerRole;
+			objectType = ObjectManagement.NodeType.ServerLevelServerRole;
 			break;
 		case FolderType.Users:
-			newObjectType = ObjectManagement.NodeType.User;
+			objectType = ObjectManagement.NodeType.User;
 			break;
 		default:
 			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
@@ -78,7 +78,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			connectionUri: connectionUri,
 			isNewObject: true,
 			database: context.connectionProfile!.databaseName!,
-			objectType: newObjectType,
+			objectType: objectType,
 			objectName: '',
 			parentUrn: parentUrn,
 			objectExplorerContext: context
@@ -90,7 +90,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
-		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
+		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(getNodeTypeDisplayName(objectType), getErrorMessage(err)));
 	}
 }
 
@@ -99,7 +99,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	if (!connectionUri) {
 		return;
 	}
-	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo!.nodeType);
 	try {
 		const parentUrn = await getParentUrn(context);
 		const options: ObjectManagementDialogOptions = {
@@ -119,7 +118,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
-		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
+		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
 	}
 }
 
