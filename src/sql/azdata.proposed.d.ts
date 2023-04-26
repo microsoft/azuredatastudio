@@ -1838,7 +1838,7 @@ declare module 'azdata' {
 		/**
 		 * The applied values of the filter property
 		 */
-		values: string[];
+		values: string | string[] | number | boolean | undefined;
 	}
 
 	export enum NodeFilterPropertyDataType {
@@ -1859,7 +1859,9 @@ declare module 'azdata' {
 		Between = 6,
 		NotBetween = 7,
 		Contains = 8,
-		NotContains = 9
+		NotContains = 9,
+		IsNull = 10,
+		IsNotNull = 11,
 	}
 
 	export namespace window {
