@@ -19,7 +19,8 @@ let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 const mockToken: Token = {
 	key: 'someUniqueId',
 	token: 'test_token',
-	tokenType: 'Bearer'
+	tokenType: 'Bearer',
+	expiresOn: new Date().getTime() / 1000 + (60 * 60) // 1 hour from now.
 };
 let mockAccessToken: AccessToken;
 let mockRefreshToken: RefreshToken;

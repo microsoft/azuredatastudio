@@ -44,7 +44,6 @@
 			"derivedDescription": "Ordnet Dateien zu, die gleichgeordnete Elemente mit dem gleichen Namen und einer anderen Erweiterung besitzen.",
 			"derivedLabel": "Dateien mit gleichgeordneten Elementen nach Name",
 			"dirty": "ein Indikator für den Fall, dass der aktive Editor nicht gespeicherte Änderungen aufweist",
-			"falseDescription": "Deaktiviert das Muster.",
 			"fileDescription": "Ordnet alle Dateien mit einer bestimmten Erweiterung zu.",
 			"fileLabel": "Dateien nach Erweiterung",
 			"filesDescription": "Ordnet alle Dateien mit einer der Dateierweiterungen zu.",
@@ -61,8 +60,7 @@
 			"topFolderDescription": "Ordnet einen Ordner auf oberster Ebene einem bestimmten Namen zu.",
 			"topFolderLabel": "Ordner nach Name (oberste Ebene)",
 			"topFoldersDescription": "Ordnet mehrere Ordner auf oberster Ebene zu.",
-			"topFoldersLabel": "Ordner mit mehreren Namen (oberste Ebene)",
-			"trueDescription": "Aktiviert das Muster."
+			"topFoldersLabel": "Ordner mit mehreren Namen (oberste Ebene)"
 		},
 		"package": {
 			"description": "Stellt Funktionen (erweitertes IntelliSense, automatische Korrektur) in Konfigurationsdateien wie Einstellungs-, Start- und Erweiterungsempfehlungsdateien bereit.",

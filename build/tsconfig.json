@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"target": "es2017",
 		"module": "commonjs",
+		"alwaysStrict": true,
 		"removeComments": false,
 		"preserveConstEnums": true,
 		"sourceMap": false,

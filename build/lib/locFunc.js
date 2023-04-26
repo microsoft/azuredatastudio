@@ -179,6 +179,7 @@ const VSCODEExtensions = [
     "github-authentication",
     "html",
     "image-preview",
+    "ipynb",
     "javascript",
     "json",
     "json-language-features",

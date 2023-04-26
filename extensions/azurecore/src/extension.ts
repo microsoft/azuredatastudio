@@ -233,14 +233,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.CreateResourceGroupResult> {
 			return azureResourceUtils.createResourceGroup(account, subscription, resourceGroupName, location, ignoreErrors);
 		},
-		makeAzureRestRequest(account: azurecore.AzureAccount,
+		makeAzureRestRequest<B>(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
 			path: string,
 			requestType: azurecore.HttpRequestMethod,
 			requestBody: any,
 			ignoreErrors: boolean,
 			host: string = 'https://management.azure.com',
-			requestHeaders: { [key: string]: string } = {}): Promise<azurecore.AzureRestResponse> {
+			requestHeaders: Record<string, string> = {}): Promise<azurecore.AzureRestResponse<B>> {
 			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,

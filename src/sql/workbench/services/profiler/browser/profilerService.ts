@@ -72,7 +72,7 @@ export class ProfilerService implements IProfilerService {
 		@IStorageService private _storageService: IStorageService
 	) {
 		this._context = new Memento('ProfilerEditor', this._storageService);
-		this._memento = this._context.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+		this._memento = this._context.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 	}
 
 	public registerProvider(providerId: string, provider: azdata.ProfilerProvider): void {

@@ -87,7 +87,8 @@ export class ConnectionService {
 				workstationId: undefined,
 				profileName: profile.profileName,
 				expiresOn: undefined,
-				tenantId: profile.tenantId
+				tenantId: profile.tenantId,
+				commandTimeout: undefined
 			};
 			let connectionUrl = '';
 			try {

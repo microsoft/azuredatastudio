@@ -26,11 +26,18 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
+			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
+			// append non default options to end to let users know exact connection.
+			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
+			if (nonDefaultOptions !== '') {
+				titleString += `${nonDefaultOptions}`;
+			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
-				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+				tooltip: titleString,
 				server: context.connectionProfile!.serverName,
 				database: context.connectionProfile!.databaseName,
 				isNewTable: true,
@@ -56,11 +63,18 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
+			let titleString = `${server} - ${database} - ${schema}.${name}`;
+			// append non default options to end to let users know exact connection.
+			let nonDefaultOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			nonDefaultOptions = nonDefaultOptions.replace('(', '[').replace(')', ']');
+			if (nonDefaultOptions !== '') {
+				titleString += `${nonDefaultOptions}`;
+			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
-				tooltip: `${server} - ${database} - ${schema}.${name}`,
+				tooltip: titleString,
 				server: server,
 				database: database,
 				isNewTable: false,
