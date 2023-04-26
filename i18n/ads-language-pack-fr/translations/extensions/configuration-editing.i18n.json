@@ -44,7 +44,6 @@
 			"derivedDescription": "Faites correspondre les fichiers ayant des frères portant le même nom, mais avec une extension distincte.",
 			"derivedLabel": "Fichiers avec frères par nom",
 			"dirty": "un indicateur pour quand l’éditeur actif a des modifications non enregistrées.",
-			"falseDescription": "Désactivez le modèle.",
 			"fileDescription": "Faites correspondre tous les fichiers ayant une extension de fichier spécifique.",
 			"fileLabel": "Fichiers par extension",
 			"filesDescription": "Faites correspondre tous les fichiers, indépendamment de leurs extensions.",
@@ -61,8 +60,7 @@
 			"topFolderDescription": "Faites correspondre un dossier de premier niveau portant un nom spécifique.",
 			"topFolderLabel": "Dossier par nom (premier niveau)",
 			"topFoldersDescription": "Faites correspondre plusieurs dossiers de premier niveau.",
-			"topFoldersLabel": "Dossiers avec plusieurs noms (premier niveau)",
-			"trueDescription": "Activez le modèle."
+			"topFoldersLabel": "Dossiers avec plusieurs noms (premier niveau)"
 		},
 		"package": {
 			"description": "Fournit des fonctionnalités (IntelliSense avancé, correction automatique) dans les fichiers de configuration comme les fichiers de paramètres, de lancement et de recommandation d'extension.",

@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "追蹤連結"
+		"dist/client": {
+			"markdownServer.name": "Markdown 語言伺服器"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "從連結驗證排除'{0}'。"
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "尋找檔案參考失敗。未提供任何資源。",
 			"progress.title": "正在尋找檔案參考"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "位置不支援重新命名"
+		"dist/preview/documentRenderer": {
+			"preview.notFound": "找不到 {0}",
+			"preview.securityMessage.label": "內容已停用安全性警告",
+			"preview.securityMessage.text": "此文件中的部分內容已停用",
+			"preview.securityMessage.title": "Markdown 預覽中已停用可能不安全或無防護的內容。請將 Markdown 預覽的安全性設定變更為允許無防護的內容，或啟用指令碼"
 		},
 		"dist/preview/preview": {
 			"lockedPreviewTitle": "[預覽] {0}",
 			"onPreviewStyleLoadError": "無法載入 ‘markdown.style' 樣式:{0}",
 			"preview.clickOpenFailed": "無法開啟 {0}",
 			"previewTitle": "預覽 {0}"
-		},
-		"dist/preview/previewContentProvider": {
-			"preview.notFound": "找不到 {0}",
-			"preview.securityMessage.label": "內容已停用安全性警告",
-			"preview.securityMessage.text": "此文件中的部分內容已停用",
-			"preview.securityMessage.title": "Markdown 預覽中已停用可能不安全或無防護的內容。請將 Markdown 預覽的安全性設定變更為允許無防護的內容，或啟用指令碼"
 		},
 		"dist/preview/security": {
 			"disable.description": "允許所有內容與指令碼執行。不建議",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "不影響內容安全性層級"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "啟用/停用放入 Markdown 編輯器以插入班次。需要啟用 `#workbenck.experimental.editor.dropIntoEditor.enabled#`。",
+			"configuration.markdown.editor.drop.enabled": "將啟用/停用放入 Markdown editor 以插入班次。需要啟用 `#editor.dropIntoEditor.enabled#`。",
+			"configuration.markdown.editor.pasteLinks.enabled": "啟用/停用將檔案貼到 Markdown 編輯器時插入 Markdown 連結。需要啟用 `#editor.experimental.pasteActions.enabled#`。",
+			"configuration.markdown.experimental.validate.enabled.description": "啟用/停用 Markdown 檔案中的所有錯誤報告。",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "驗證 Markdown 檔案中其他檔案的連結，例如 `[link](/path/to/file.md)`。這會檢查目標檔案是否存在。需要啟用 `#markdown.experimental.validate.enabled#`。",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "驗證 Markdown 檔案中其他檔案中標題連結的片段部分，例如 '[link](/path/to/file.md#header)'。根據預設，從 '#markdown.experimental.validate.fragmentLinks.enabled#' 繼承設定值。",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "驗證目前 Markdown 檔案中標頭的片段連結，例如 `[link](#header)`。需要啟用 `#markdown.experimental.validate.enabled#`。",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "設定不應驗證的連結。例如，`/about` 不會驗證連結 `[about](/about)`，而 glob `/assets/**/*.svg` 可讓您略過驗證 'assets' 目錄下之 '.svg' 檔案的任何連結。",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "驗證 Markdown 檔案中的參考連結，例如 `[link][ref]`。需要啟用 `#markdown.experimental.validate.enabled#`。",
 			"configuration.markdown.links.openLocation.beside": "開啟使用中編輯器旁邊的連結。",
 			"configuration.markdown.links.openLocation.currentGroup": "在使用中的編輯器群組開啟連結。",
 			"configuration.markdown.links.openLocation.description": "控制應在何處開啟 Markdown 檔案中的連結。",
@@ -75,7 +82,8 @@
 			"markdown.showPreviewSecuritySelector.title": "變更預覽的安全性設定",
 			"markdown.showSource.title": "顯示來源",
 			"markdown.styles.dec": "可從 Markdown 預覽使用之 CSS 樣式表的 URL 或本機路徑清單。相對路徑指的是相對於在總管中開啟的資料夾。若沒有開啟的資料夾，相對路徑則是相對於 Markdown 檔案的位置。所有 '\\' 都必須寫成 '\\\\'。",
-			"markdown.trace.desc": "允許 Markdown 延伸模組進行偵錯記錄。",
+			"markdown.trace.extension.desc": "允許 Markdown 延伸模組進行偵錯記錄。",
+			"markdown.trace.server.desc": "追蹤 VS Code 與 Markdown 語言伺服器之間的通訊。",
 			"workspaceTrust": "載入工作區中設定的樣式時所需。"
 		}
 	}

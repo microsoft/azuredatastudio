@@ -70,14 +70,16 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 				priority: RegisteredEditorPriority.builtin
 			},
 			{},
-			(editorInput, group) => {
-				const executionPlanGraphInfo = {
-					graphFileContent: undefined,
-					graphFileType: undefined
-				};
-				const executionPlanInput = this._register(this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo));
+			{
+				createEditorInput: (editorInput, group) => {
+					const executionPlanGraphInfo = {
+						graphFileContent: undefined,
+						graphFileType: undefined
+					};
+					const executionPlanInput = this._register(this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo));
 
-				return { editor: executionPlanInput, options: editorInput.options, group: group };
+					return { editor: executionPlanInput, options: editorInput.options, group: group };
+				}
 			}
 		));
 	}

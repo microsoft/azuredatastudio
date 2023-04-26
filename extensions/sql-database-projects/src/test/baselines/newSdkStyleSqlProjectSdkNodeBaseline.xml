@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build">
-  <Sdk Name="Microsoft.Build.Sql" Version="0.1.7-preview" />
+  <Sdk Name="Microsoft.Build.Sql" Version="0.1.9-preview" />
   <PropertyGroup>
     <Name>TestProjectName</Name>
     <ProjectGuid>{2C283C5D-9E4A-4313-8FF9-4E0CEE20B063}</ProjectGuid>

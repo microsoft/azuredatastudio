@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
@@ -185,7 +185,10 @@ export class SummaryPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.component();
 
-		const networkShare = this.migrationStateModel._databaseBackup.networkShares[0];
+		const networkShare = this.migrationStateModel._databaseBackup.networkShares?.length > 0
+			? this.migrationStateModel._databaseBackup.networkShares[0]
+			: <NetworkShare>{};
+
 		switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 			case NetworkContainerType.NETWORK_SHARE:
 				flexContainer.addItems([

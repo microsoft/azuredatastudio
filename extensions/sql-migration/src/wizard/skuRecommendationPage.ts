@@ -246,6 +246,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
+		const learnMoreLink = this._view.modelBuilder.hyperlink()
+			.withProps({
+				label: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP,
+				ariaLabel: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET_HELP,
+				url: 'https://learn.microsoft.com/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview',
+				showLinkIcon: true,
+			}).component();
+
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProps({
 			cards: [],
 			iconHeight: '35px',
@@ -354,7 +362,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.component();
 
 		const component = this._view.modelBuilder.divContainer()
-			.withItems([chooseYourTargetText, this._rbgLoader])
+			.withItems([chooseYourTargetText, learnMoreLink, this._rbgLoader])
 			.component();
 		return component;
 	}

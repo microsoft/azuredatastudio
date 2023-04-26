@@ -97,7 +97,7 @@ export class AzureResourceService {
 		}
 
 		for (const extension of extensions.all) {
-			const contributes = extension.packageJSON && extension.packageJSON.contributes;
+			const contributes = extension.packageJSON.contributes as { [key: string]: string } | undefined;
 			if (!contributes) {
 				continue;
 			}

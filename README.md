@@ -4,7 +4,7 @@
 [![Build Status](https://dev.azure.com/ms/azuredatastudio/_apis/build/status/AzureDataStudio-Localization-CI?branchName=main)](https://dev.azure.com/ms/azuredatastudio/_build/latest?definitionId=453&branchName=main)
 [![Twitter Follow](https://img.shields.io/twitter/follow/azuredatastudio?style=social)](https://twitter.com/azuredatastudio)
 
-Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
+Azure Data Studio is a data management and development tool with connectivity to popular cloud and on-premises databases. Azure Data Studio supports Windows, macOS, and Linux, with immediate capability to connect to Azure SQL and SQL Server.  Browse the [extension library](wiki/List-of-Extensions) for additional database support options including MySQL, PostreSQL, and MongoDB.
 
 ## **Download the latest Azure Data Studio release**
 
@@ -18,18 +18,18 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 |         |.rpm             |[64 bit][linux-rpm] |
 |Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64] |
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2228644
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2228645
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2228646
-[win-user-arm64]: https://go.microsoft.com/fwlink/?linkid=2229004
-[win-system-arm64]: https://go.microsoft.com/fwlink/?linkid=2228647
-[win-zip-arm64]: https://go.microsoft.com/fwlink/?linkid=2229005
-[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2228649
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2228179
-[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2228648
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2229006
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2228650
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2228180
+[win-user]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/stable
+[win-system]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/stable
+[win-zip]: https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/stable
+[win-user-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-user/stable
+[win-system-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64/stable
+[win-zip-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/win32-arm64-archive/stable
+[linux-zip]: https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/stable
+[linux-deb]: https://azuredatastudio-update.azurewebsites.net/latest/linux-deb-x64/stable
+[linux-rpm]: https://azuredatastudio-update.azurewebsites.net/latest/linux-rpm-x64/stable
+[osx-universal]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/stable
+[osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/stable
+[osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/stable
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 
@@ -58,10 +58,9 @@ Go to our [download page](https://aka.ms/getazuredatastudio) for more specific i
 [in-osx-zip]: https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider
 [in-osx-arm64]: https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/insider
 
-
-See the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) for additional details of what's in this release.
-Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
-
+Please visit our [download page](https://aka.ms/getazuredatastudio) for more specific installation instructions.
+Check out the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) or [release notes](https://learn.microsoft.com/sql/azure-data-studio/release-notes-azure-data-studio) for additional details of what's in the each release.
+The [Azure Data Studio documentation](https://learn.microsoft.com/sql/azure-data-studio) includes complete details on getting started, connection quickstarts, and feature tutorials.
 
 ## **Feature Highlights**
 

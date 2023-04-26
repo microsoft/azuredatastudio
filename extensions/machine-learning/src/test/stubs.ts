@@ -22,7 +22,7 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	getLocations(_account?: azdata.Account, _subscription?: azurecore.azureResource.AzureResourceSubscription, _ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
 		throw new Error('Method not implemented.');
 	}
-	makeAzureRestRequest(_account: azdata.Account, _subscription: azurecore.azureResource.AzureResourceSubscription, _serviceUrl: string, _requestType: azurecore.HttpRequestMethod, _requestBody?: any, _ignoreErrors?: boolean): Promise<azurecore.AzureRestResponse> {
+	makeAzureRestRequest<B>(_account: azdata.Account, _subscription: azurecore.azureResource.AzureResourceSubscription, _serviceUrl: string, _requestType: azurecore.HttpRequestMethod, _requestBody?: any, _ignoreErrors?: boolean): Promise<azurecore.AzureRestResponse<B>> {
 		throw new Error('Method not implemented.');
 	}
 	getFileShares(_account: azdata.Account, _subscription: azurecore.azureResource.AzureResourceSubscription, _storageAccount: azurecore.azureResource.AzureGraphResource, _ignoreErrors?: boolean): Promise<azurecore.GetFileSharesResult> {

@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
-import { INetworkModule, NetworkRequestOptions, NetworkResponse } from '@azure/msal-common';
+import { AzureNetworkResponse } from 'azurecore';
 import * as http from 'http';
 import * as https from 'https';
-import { NetworkUtils } from './networkUtils';
+import { TextEncoder } from 'util';
+import { NetworkRequestOptions, urlToHttpOptions } from './networkUtils';
 
 /**
  * http methods
@@ -38,7 +38,7 @@ export enum ProxyStatus {
 /**
  * This class implements the API for network requests.
  */
-export class HttpClient implements INetworkModule {
+export class HttpClient {
 	private proxyUrl: string;
 	private customAgentOptions: http.AgentOptions | https.AgentOptions;
 	static readonly AUTHORIZATION_PENDING: string = 'authorization_pending';
@@ -58,12 +58,13 @@ export class HttpClient implements INetworkModule {
 	 */
 	async sendGetRequestAsync<T>(
 		url: string,
-		options?: NetworkRequestOptions
-	): Promise<NetworkResponse<T>> {
+		options?: NetworkRequestOptions,
+		cancellationToken?: number | undefined
+	): Promise<AzureNetworkResponse<T>> {
 		if (this.proxyUrl) {
-			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.GET, options, this.customAgentOptions as http.AgentOptions);
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.GET, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
 		} else {
-			return networkRequestViaHttps(url, HttpMethod.GET, options, this.customAgentOptions as https.AgentOptions);
+			return networkRequestViaHttps(url, HttpMethod.GET, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
 		}
 	}
 
@@ -76,7 +77,7 @@ export class HttpClient implements INetworkModule {
 		url: string,
 		options?: NetworkRequestOptions,
 		cancellationToken?: number
-	): Promise<NetworkResponse<T>> {
+	): Promise<AzureNetworkResponse<T>> {
 		if (this.proxyUrl) {
 			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.POST, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
 		} else {
@@ -93,7 +94,7 @@ export class HttpClient implements INetworkModule {
 		url: string,
 		options?: NetworkRequestOptions,
 		cancellationToken?: number
-	): Promise<NetworkResponse<T>> {
+	): Promise<AzureNetworkResponse<T>> {
 		if (this.proxyUrl) {
 			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.PUT, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
 		} else {
@@ -109,7 +110,7 @@ export class HttpClient implements INetworkModule {
 	async sendDeleteRequestAsync<T>(
 		url: string,
 		options?: NetworkRequestOptions
-	): Promise<NetworkResponse<T>> {
+	): Promise<AzureNetworkResponse<T>> {
 		if (this.proxyUrl) {
 			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.DELETE, options, this.customAgentOptions as http.AgentOptions);
 		} else {
@@ -126,7 +127,7 @@ const networkRequestViaProxy = <T>(
 	options?: NetworkRequestOptions,
 	agentOptions?: http.AgentOptions,
 	timeout?: number
-): Promise<NetworkResponse<T>> => {
+): Promise<AzureNetworkResponse<T>> => {
 	const destinationUrl = new URL(destinationUrlString);
 	const proxyUrl = new URL(proxyUrlString);
 
@@ -151,9 +152,10 @@ const networkRequestViaProxy = <T>(
 	// compose a request string for the socket
 	let postRequestStringContent: string = '';
 	if (httpMethod === HttpMethod.POST || httpMethod === HttpMethod.PUT) {
-		const body = options?.body || '';
+		// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
+		const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
 		postRequestStringContent =
-			'Content-Type: application/x-www-form-urlencoded\r\n' +
+			'Content-Type: application/json\r\n' +
 			`Content-Length: ${body.length}\r\n` +
 			`\r\n${body}`;
 	}
@@ -163,7 +165,7 @@ const networkRequestViaProxy = <T>(
 		postRequestStringContent +
 		'\r\n';
 
-	return new Promise<NetworkResponse<T>>(((resolve, reject) => {
+	return new Promise<AzureNetworkResponse<T>>(((resolve, reject) => {
 		const request = http.request(tunnelRequestOptions);
 
 		if (tunnelRequestOptions.timeout) {
@@ -231,10 +233,14 @@ const networkRequestViaProxy = <T>(
 
 					// check if the value of the header is supposed to be a JSON object
 					try {
+						// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						const object = JSON.parse(headerValue);
 
 						// if it is, then convert it from a string to a JSON object
 						if (object && (typeof object === 'object')) {
+							// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 							headerValue = object;
 						}
 					} catch (e) {
@@ -245,17 +251,17 @@ const networkRequestViaProxy = <T>(
 				});
 
 				const parsedHeaders = Object.fromEntries(entries) as Record<string, string>;
-				const networkResponse = NetworkUtils.getNetworkResponse(
-					parsedHeaders,
-					parseBody(httpStatusCode, statusMessage, parsedHeaders, body) as T,
-					httpStatusCode
-				);
+				const networkResponse: AzureNetworkResponse<T> = {
+					headers: parsedHeaders,
+					data: parseBody(httpStatusCode, statusMessage, parsedHeaders, body) as T,
+					status: httpStatusCode
+				};
 
 
 				if (((httpStatusCode < HttpStatus.SUCCESS_RANGE_START) || (httpStatusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
 					// @ts-ignore
-					networkResponse.body['error'] !== HttpClient.AUTHORIZATION_PENDING) {
+					networkResponse.data['error'] !== HttpClient.AUTHORIZATION_PENDING) {
 					request.destroy();
 				}
 				resolve(networkResponse);
@@ -281,16 +287,17 @@ const networkRequestViaHttps = <T>(
 	options?: NetworkRequestOptions,
 	agentOptions?: https.AgentOptions,
 	timeout?: number
-): Promise<NetworkResponse<T>> => {
+): Promise<AzureNetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
-	const body: string = options?.body || '';
+	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
+	const body = (new TextEncoder()).encode(options?.body || '');
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
 	let customOptions: https.RequestOptions = {
 		method: httpMethod,
 		headers: optionHeaders,
-		...NetworkUtils.urlToHttpOptions(url)
+		...urlToHttpOptions(url)
 	};
 
 	if (timeout) {
@@ -309,17 +316,17 @@ const networkRequestViaHttps = <T>(
 		};
 	}
 
-	return new Promise<NetworkResponse<T>>((resolve, reject) => {
+	return new Promise<AzureNetworkResponse<T>>((resolve, reject) => {
 		const request = https.request(customOptions);
 
 		if (timeout) {
 			request.on('timeout', () => {
 				request.destroy();
-				reject(new Error('Request time out'));
+				reject(new Error('Request timed out'));
 			});
 		}
 
-		if (isPostRequest) {
+		if (isPostRequest || isPutRequest) {
 			request.write(body);
 		}
 
@@ -340,16 +347,16 @@ const networkRequestViaHttps = <T>(
 				const dataBody = Buffer.concat([...data]).toString();
 
 				const parsedHeaders = headers as Record<string, string>;
-				const networkResponse = NetworkUtils.getNetworkResponse(
-					parsedHeaders,
-					parseBody(statusCode, statusMessage, parsedHeaders, dataBody) as T,
-					statusCode
-				);
+				const networkResponse: AzureNetworkResponse<T> = {
+					headers: parsedHeaders,
+					data: parseBody(statusCode, statusMessage, parsedHeaders, dataBody) as T,
+					status: statusCode
+				};
 
 				if (((statusCode < HttpStatus.SUCCESS_RANGE_START) || (statusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
 					// @ts-ignore
-					networkResponse.body['error'] !== HttpClient.AUTHORIZATION_PENDING) {
+					networkResponse.data['error'] !== HttpClient.AUTHORIZATION_PENDING) {
 					request.destroy();
 				}
 				resolve(networkResponse);
@@ -364,7 +371,7 @@ const networkRequestViaHttps = <T>(
 };
 
 /**
- * Check if extra parsing is needed on the repsonse from the server
+ * Check if extra parsing is needed on the response from the server
  * @param statusCode {number} the status code of the response from the server
  * @param statusMessage {string | undefined} the status message of the response from the server
  * @param headers {Record<string, string>} the headers of the response from the server
@@ -380,7 +387,7 @@ const parseBody = (statusCode: number, statusMessage: string | undefined, header
 	 * Server error responses (500 - 599)
 	 */
 
-	let parsedBody;
+	let parsedBody: unknown;
 	try {
 		parsedBody = JSON.parse(body);
 	} catch (error) {
@@ -399,7 +406,7 @@ const parseBody = (statusCode: number, statusMessage: string | undefined, header
 
 		parsedBody = {
 			error: errorType,
-			error_description: `${errorDescriptionHelper} error occured.\nHttp status code: ${statusCode}\nHttp status message: ${statusMessage || 'Unknown'}\nHeaders: ${JSON.stringify(headers)}`
+			error_description: `${errorDescriptionHelper} error occurred.\nHttp status code: ${statusCode}\nHttp status message: ${statusMessage || 'Unknown'}\nHeaders: ${JSON.stringify(headers)}`
 		};
 	}
 

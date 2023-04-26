@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { AppContext } from './appContext';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { IAzureResourceSubscriptionService } from './azureResource/interfaces';
-import { azureResource } from 'azurecore';
+import { AzureAccountProperties, azureResource } from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
@@ -56,7 +56,7 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 									type: item.type,
 									typeDisplayName: utils.getResourceTypeDisplayName(item.type),
 									iconPath: utils.getResourceTypeIcon(this._appContext, item.type),
-									portalEndpoint: account.properties.providerSettings.settings.portalEndpoint
+									portalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 								};
 							});
 						items.push(...newItems);

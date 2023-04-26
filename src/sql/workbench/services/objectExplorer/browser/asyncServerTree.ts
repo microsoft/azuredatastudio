@@ -8,16 +8,15 @@ import { IListService, IWorkbenchAsyncDataTreeOptions, WorkbenchAsyncDataTree } 
 import { FuzzyScore } from 'vs/base/common/filters';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IAsyncDataTreeNode, IAsyncDataTreeUpdateChildrenOptions, IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
+import { IAsyncDataTreeNode, IAsyncDataTreeUpdateChildrenOptions } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IAsyncDataSource, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGroup, ServerTreeElement, FuzzyScore> {
 
@@ -32,14 +31,13 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IKeybindingService keybindingService: IKeybindingService,
-		@IAccessibilityService accessibilityService: IAccessibilityService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super(
 			user, container, delegate,
 			renderers, dataSource, options,
-			contextKeyService, listService,
-			themeService, configurationService, keybindingService, accessibilityService);
+			instantiationService, contextKeyService, listService,
+			themeService, configurationService);
 
 		// Adding support for expand/collapse on enter/space
 		this.onKeyDown(e => {
@@ -55,13 +53,6 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 				}
 			}
 		})
-	}
-
-	// Overriding the setInput method to dispose the original input when a new input is set
-	override async setInput(input: ConnectionProfileGroup, viewState?: IAsyncDataTreeViewState): Promise<void> {
-		const originalInput = this.getInput();
-		await super.setInput(input, viewState);
-		originalInput?.dispose();
 	}
 
 	/**

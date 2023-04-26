@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export interface INewConnectionProfileGroup {
@@ -19,7 +18,7 @@ export interface IConnectionProfileGroup extends INewConnectionProfileGroup {
 	id?: string;
 }
 
-export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
+export class ConnectionProfileGroup implements IConnectionProfileGroup {
 
 	private _childGroups: ConnectionProfileGroup[] = [];
 	private _childConnections: ConnectionProfile[] = [];
@@ -35,7 +34,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		public color?: string,
 		public description?: string
 	) {
-		super();
 		this.parentId = parent ? parent.id : undefined;
 		if (ConnectionProfileGroup.isRoot(this.name)) {
 			this.name = '';
@@ -126,8 +124,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
 		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
 		this._childConnections.forEach((conn) => {
-			conn.parent = this;
-			conn.groupId = this.id;
 			allChildren.push(conn);
 		});
 
@@ -148,7 +144,6 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		connections?.forEach((conn) => {
 			this._childConnections = this._childConnections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
-			this._register(conn);
 			this._childConnections.push(conn);
 		});
 
@@ -158,9 +153,53 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		groups?.forEach((group) => {
 			this._childGroups = this._childGroups.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
-			this._register(group);
 			this._childGroups.push(group);
 		});
+	}
+
+	/**
+	 * Remove the given connections from the group.
+	 */
+	public removeConnections(connections: ConnectionProfile[]): void {
+		const connectionIdsToRemove = connections.map(conn => conn.id);
+		this._childConnections = this._childConnections.filter((conn) => { return !connectionIdsToRemove.includes(conn.id); });
+	}
+
+	/**
+	 * Gets the matching connection from the group if it exists
+	 */
+	public getMatchingConnection(connection: ConnectionProfile): ConnectionProfile | undefined {
+		return this._childConnections.find((conn) => connection.matches(conn));
+	}
+
+	/**
+	 * Adds the given connection to the group if it doesn't already exist, otherwise replaces the matching connection.
+	 */
+	public addOrReplaceConnection(connection: ConnectionProfile): void {
+		const matchingConnection = this.getMatchingConnection(connection);
+		connection.parent = this;
+		connection.groupId = this.id;
+		if (matchingConnection) {
+			this.replaceConnection(connection, matchingConnection.id);
+		} else {
+			this._childConnections.push(connection);
+		}
+	}
+
+	/**
+	 * Replaces the connection with the given id with the given connection
+	 * @param connection The connection to replace with
+	 * @param oldConnectionId The id of the existing connection to replace
+	 */
+	public replaceConnection(connection: ConnectionProfile, oldConnectionId: string): void {
+		const oldConnectionIndex = this._childConnections.findIndex((conn) => conn.id === oldConnectionId);
+		if (oldConnectionIndex !== -1) {
+			this._childConnections[oldConnectionIndex] = connection;
+			connection.parent = this;
+			connection.groupId = this.id;
+		} else {
+			throw new Error(`Could not find connection with id ${oldConnectionId} in group ${this.name}`);
+		}
 	}
 
 	public getParent(): ConnectionProfileGroup | undefined {

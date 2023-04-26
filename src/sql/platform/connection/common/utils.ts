@@ -6,7 +6,7 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes'
+import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;

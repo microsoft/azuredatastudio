@@ -217,7 +217,10 @@ function getClientOptions(context: AppContext): ClientOptions {
 	return {
 		documentSelector: ['sql'],
 		synchronize: {
-			configurationSection: Constants.extensionConfigSectionName
+			configurationSection: [
+				Constants.extensionConfigSectionName,
+				Constants.telemetryConfigSectionName
+			]
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as json from 'gulp-json-editor';
 const buffer = require('gulp-buffer');
 import * as filter from 'gulp-filter';

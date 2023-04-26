@@ -6,7 +6,7 @@
 import { promises as fs, constants as fsConstants } from 'fs';
 import { Logger } from '../../utils/Logger';
 
-export type ReadWriteHook = (contents: string) => Promise<string>;
+export type ReadWriteHook = (contents: string, resetOnError?: boolean) => Promise<string>;
 const noOpHook: ReadWriteHook = async (contents): Promise<string> => {
 	return contents;
 };
@@ -15,8 +15,9 @@ export class AlreadyInitializedError extends Error {
 
 }
 
+type DbMap = { [key: string]: string };
 export class FileDatabase {
-	private db: { [key: string]: string } = {};
+	private db: DbMap = {};
 	private isDirty = false;
 	private isSaving = false;
 	private isInitialized = false;
@@ -96,7 +97,7 @@ export class FileDatabase {
 		try {
 			await fs.access(this.dbPath, fsConstants.R_OK | fsConstants.R_OK);
 			fileContents = await fs.readFile(this.dbPath, { encoding: 'utf8' });
-			fileContents = await this.readHook(fileContents);
+			fileContents = await this.readHook(fileContents, true);
 		} catch (ex) {
 			Logger.error(`Error occurred when initializing File Database from file system cache, ADAL cache will be reset: ${ex}`);
 			await this.createFile();
@@ -106,7 +107,7 @@ export class FileDatabase {
 		}
 
 		try {
-			this.db = JSON.parse(fileContents);
+			this.db = JSON.parse(fileContents) as DbMap;
 		} catch (ex) {
 			Logger.error(`Error occurred when reading file database contents as JSON, ADAL cache will be reset: ${ex}`);
 			await this.createFile();

@@ -42,6 +42,20 @@ const handleNeverUsed = async (): Promise<void> => {
 	}
 };
 
+type CloudConsoleSettingsResponse = {
+	properties?: {
+		preferredShellType?: string,
+		preferredLocation?: string
+	}
+}
+
+type CloudConsoleRequestResponse = {
+	properties?: {
+		provisioningState: string,
+		uri: string
+	}
+}
+
 export class AzureTerminalService implements IAzureTerminalService {
 	private readonly apiVersion = '?api-version=2018-10-01';
 
@@ -66,7 +80,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 		const metadata = account.properties.providerSettings;
 		const userSettingsUri = this.getConsoleUserSettingsUri(metadata.settings.armResource.endpoint);
 
-		let userSettingsResult: AxiosResponse<any>;
+		let userSettingsResult: AxiosResponse<CloudConsoleSettingsResponse>;
 		try {
 			userSettingsResult = await axios.get(userSettingsUri, settings);
 		} catch (ex) {// Log as info as exception is handled
@@ -83,7 +97,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 			settings.headers!['x-ms-console-preferred-location'] = preferredLocation;
 		}
 
-		let provisionResult: AxiosResponse<any>;
+		let provisionResult: AxiosResponse<CloudConsoleRequestResponse>;
 		try {
 			provisionResult = await axios.put(consoleRequestUri, {}, settings);
 		} catch (ex) {// Log as info as exception is handled
@@ -93,7 +107,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 		}
 
 		if (provisionResult.data?.properties?.provisioningState !== 'Succeeded') {
-			throw new Error(provisionResult.data);
+			throw new Error(JSON.stringify(provisionResult.data));
 		}
 		const consoleUri = provisionResult.data.properties.uri;
 
@@ -140,6 +154,13 @@ export class AzureTerminalService implements IAzureTerminalService {
 
 	public getConsoleUserSettingsUri(armEndpoint: string): string {
 		return `${armEndpoint}/providers/Microsoft.Portal/userSettings/cloudconsole${this.apiVersion}`;
+	}
+}
+
+type TerminalResponse = {
+	socketUri?: string | undefined;
+	error?: {
+		message: string
 	}
 }
 
@@ -222,7 +243,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 
 	private async establishTerminal(dimensions: vscode.TerminalDimensions | undefined): Promise<string | undefined> {
-		let terminalResult: AxiosResponse<any>;
+		let terminalResult: AxiosResponse<TerminalResponse>;
 		try {
 			const url = dimensions ?
 				`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`
@@ -247,8 +268,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		}
 
 		if (!terminalUri) {
-			Logger.error(terminalResult);
-			throw Error(terminalResult.data);
+			throw Error(JSON.stringify(terminalResult.data));
 		}
 
 		return terminalUri;
