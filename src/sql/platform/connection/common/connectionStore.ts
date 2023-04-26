@@ -304,6 +304,12 @@ export class ConnectionStore {
 		return this.convertToConnectionGroup(groups, profilesInConfiguration);
 	}
 
+	public getAllConnectionsFromConfig(): ConnectionProfile[] {
+		let profilesInConfiguration: ConnectionProfile[] | undefined;
+		profilesInConfiguration = this.connectionConfig.getConnections(true);
+		return profilesInConfiguration;
+	}
+
 	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections?: ConnectionProfile[], parent?: ConnectionProfileGroup): ConnectionProfileGroup[] {
 		const result: ConnectionProfileGroup[] = [];
 		const children = groups.filter(g => g.parentId === (parent ? parent.id : undefined));
