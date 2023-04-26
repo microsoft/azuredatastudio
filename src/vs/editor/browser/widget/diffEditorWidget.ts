@@ -1150,8 +1150,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		const foreignModified = this._modifiedEditorState.getForeignViewZones(this._modifiedEditor.getWhitespaces());
 
 		// {{SQL CARBON EDIT}}
-		// const diffDecorations = this._strategy.getEditorsDiffDecorations(lineChanges, this._options.ignoreTrimWhitespace, this._options.renderIndicators, foreignOriginal, foreignModified, this._originalEditor, this._modifiedEditor, this._options.reverse); // {{ SQL CARBON TODO }} - The last 3 args are different in the updated version below.
-		const diffDecorations = this._strategy.getEditorsDiffDecorations(lineChanges, this._options.ignoreTrimWhitespace, this._options.renderIndicators, this._options.renderMarginRevertIcon, foreignOriginal, foreignModified);
+		const diffDecorations = this._strategy.getEditorsDiffDecorations(lineChanges, this._options.ignoreTrimWhitespace, this._options.renderIndicators, this._options.renderMarginRevertIcon, foreignOriginal, foreignModified, this._options.reverse);
 
 		try {
 			this._currentlyChangingViewZones = true;
