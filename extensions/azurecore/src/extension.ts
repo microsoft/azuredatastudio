@@ -54,6 +54,8 @@ import { AzureResourceSynapseSqlPoolProvider } from './azureResource/providers/s
 import { AzureResourceSynapseWorkspaceProvider } from './azureResource/providers/synapseWorkspace/synapseWorkspaceProvider';
 import { AzureResourceSynapseWorkspaceService } from './azureResource/providers/synapseWorkspace/synapseWorkspaceService';
 import { AzureResourceSynapseService } from './azureResource/providers/synapseSqlPool/synapseSqlPoolService';
+import { CosmosDbNoSqlProvider } from './azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlProvider';
+import { CosmosDbNoSqlService } from './azureResource/providers/cosmosdb/nosql/cosmosDbNoSqlService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -162,6 +164,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
 				new PostgresServerProvider(new PostgresServerService(), extensionContext),
 				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext),
+				new CosmosDbNoSqlProvider(new CosmosDbNoSqlService(), extensionContext),
 				new MysqlFlexibleServerProvider(new MysqlFlexibleServerService(), extensionContext)
 			];
 			if (arcFeaturedEnabled) {
