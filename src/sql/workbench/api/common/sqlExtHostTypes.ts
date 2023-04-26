@@ -478,25 +478,25 @@ export enum AzureResource {
 	Custom = 12 // Handles custom resource URIs as received from server endpoint.
 }
 
-export enum NodeInfoFilterDataType {
-	string = 0,
-	number = 1,
-	boolean = 2,
-	date = 3,
-	choice = 4
+export enum NodeFilterPropertyDataType {
+	String = 0,
+	Number = 1,
+	Boolean = 2,
+	Date = 3,
+	Choice = 4
 }
 
-export enum NodeInfoFilterOperators {
-	equals = 0,
-	notEquals = 1,
-	lessThan = 2,
-	lessThanOrEquals = 3,
-	greaterThan = 4,
-	greaterThanOrEquals = 5,
-	between = 6,
-	notBetween = 7,
-	contains = 8,
-	notContains = 9,
+export enum NodeFilterOperator {
+	Equals = 0,
+	NotEquals = 1,
+	LessThan = 2,
+	LessThanOrEquals = 3,
+	GreaterThan = 4,
+	GreaterThanOrEquals = 5,
+	Between = 6,
+	NotBetween = 7,
+	Contains = 8,
+	NotContains = 9
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

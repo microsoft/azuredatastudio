@@ -601,7 +601,7 @@ declare module 'azdata' {
 		/**
 		 * Filter for expanding node.
 		 */
-		filters?: NodeInfoFilter[];
+		filters?: NodeFilter[];
 	}
 	// End Object Explorer interfaces  ----------------------------
 
@@ -1798,10 +1798,10 @@ declare module 'azdata' {
 		/**
 		 * list of filters that are supported by the node
 		 */
-		filterDefinitions?: NodeInfoFilterDefinition[];
+		filterableProperties?: NodeFilterProperty[];
 	}
 
-	export interface NodeInfoFilterDefinition {
+	export interface NodeFilterProperty {
 		/**
 		 * The name of the filter property
 		 */
@@ -1809,21 +1809,21 @@ declare module 'azdata' {
 		/**
 		 * The type of the filter property
 		 */
-		type: NodeInfoFilterDataType;
+		type: NodeFilterPropertyDataType;
 		/**
 		 * The description of the filter property
 		 */
 		description: string;
 	}
 
-	export interface NodeInfoFilterChoiceDefinition extends NodeInfoFilterDefinition {
+	export interface NodeInfoFilterChoiceDefinition extends NodeFilterProperty {
 		/**
 		 * The list of choices for the filter property if the type is choice
 		 */
 		choices: string[];
 	}
 
-	export interface NodeInfoFilter {
+	export interface NodeFilter {
 		/**
 		 * The name of the filter property
 		 */
@@ -1831,36 +1831,36 @@ declare module 'azdata' {
 		/**
 		 * The type of the filter property
 		 */
-		type: NodeInfoFilterDataType;
+		type: NodeFilterPropertyDataType;
 		/**
 		 * The operator of the filter property
 		 */
-		operator: NodeInfoFilterOperators;
+		operator: NodeFilterOperator;
 		/**
 		 * The applied values of the filter property
 		 */
 		values: string[];
 	}
 
-	export enum NodeInfoFilterDataType {
-		string = 0,
-		number = 1,
-		boolean = 2,
-		date = 3,
-		choice = 4
+	export enum NodeFilterPropertyDataType {
+		String = 0,
+		Number = 1,
+		Boolean = 2,
+		Date = 3,
+		Choice = 4
 	}
 
-	export enum NodeInfoFilterOperators {
-		equals = 0,
-		notEquals = 1,
-		lessThan = 2,
-		lessThanOrEquals = 3,
-		greaterThan = 4,
-		greaterThanOrEquals = 5,
-		between = 6,
-		notBetween = 7,
-		contains = 8,
-		notContains = 9,
+	export enum NodeFilterOperator {
+		Equals = 0,
+		NotEquals = 1,
+		LessThan = 2,
+		LessThanOrEquals = 3,
+		GreaterThan = 4,
+		GreaterThanOrEquals = 5,
+		Between = 6,
+		NotBetween = 7,
+		Contains = 8,
+		NotContains = 9
 	}
 
 	export namespace window {
