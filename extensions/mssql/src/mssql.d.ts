@@ -1214,12 +1214,12 @@ declare module 'mssql' {
 		}
 
 		export interface Database extends SqlObject {
-			name: string;
 			owner?: string;
 			collationName?: string;
 			recoveryModel?: string;
 			compatibilityLevel?: string;
 			containmentType?: string;
+			isAzure: boolean;
 		}
 
 		export interface CreateDatabaseViewInfo extends ObjectViewInfo<Database> {
