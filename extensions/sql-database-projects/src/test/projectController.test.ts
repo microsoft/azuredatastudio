@@ -318,7 +318,7 @@ describe('ProjectsController', function (): void {
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 				// confirm result
-				should(proj.files.length).equal(2, 'number of file entries'); // LowerFolder and the contained scripts should be deleted
+				should(proj.files.length).equal(0, 'number of file entries'); // LowerFolder and the contained scripts should be excluded
 				should(proj.folders.find(f => f.relativePath === 'UpperFolder')).not.equal(undefined, 'UpperFolder should still be there');
 				should(proj.preDeployScripts.length).equal(0, 'Pre deployment scripts');
 				should(proj.postDeployScripts.length).equal(0, 'Post deployment scripts');
@@ -942,7 +942,7 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should rename a sql object file', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('newName');
+			sinon.stub(vscode.window, 'showInputBox').resolves('newName.sql');
 			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
 			const projController = new ProjectsController(testContext.outputChannel);
@@ -966,12 +966,12 @@ describe('ProjectsController', function (): void {
 			const projTreeRoot = new ProjectRootTreeItem(proj);
 
 			// try to rename a file from the root folder
-			sinon.stub(vscode.window, 'showInputBox').resolves('predeployNewName');
+			sinon.stub(vscode.window, 'showInputBox').resolves('predeployNewName.sql');
 			const preDeployScriptNode = projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql');
 			await projController.rename(createWorkspaceTreeItem(preDeployScriptNode!));
 
 			sinon.restore();
-			sinon.stub(vscode.window, 'showInputBox').resolves('postdeployNewName');
+			sinon.stub(vscode.window, 'showInputBox').resolves('postdeployNewName.sql');
 			const postDeployScriptNode = projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql');
 			await projController.rename(createWorkspaceTreeItem(postDeployScriptNode!));
 
@@ -984,8 +984,32 @@ describe('ProjectsController', function (): void {
 			should(await utils.exists(path.join(proj.projectFolderPath, 'postdeployNewName.sql'))).be.true('The moved post deploy script file should exist');
 		});
 
+		it('Should rename a folder', async function (): Promise<void> {
+			this.timeout(999_999);
+			let proj = await testUtils.createTestSqlProject(this.test);
+			await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
-		// TODO: add test for renaming a file in a folder after fix from DacFx for slashes is brought over
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projTreeRoot = new ProjectRootTreeItem(proj);
+
+			sinon.stub(vscode.window, 'showInputBox').resolves('RenamedFolder');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+			(proj.files.length).should.equal(1, 'Starting number of files');
+			(proj.folders.length).should.equal(1, 'Starting number of folders');
+
+			// rename folder
+			const folderNode = projTreeRoot.children.find(f => f.friendlyName === 'SomeFolder');
+			await projController.rename(createWorkspaceTreeItem(folderNode!));
+
+			// reload project and verify files were renamed
+			proj = await Project.openProject(proj.projectFilePath);
+
+			should(await utils.exists(path.join(proj.projectFolderPath, 'RenamedFolder\\MyTable.sql'))).be.true('File should exist in new location');
+			(proj.files.length).should.equal(1, 'Number of files should not have changed');
+			(proj.folders.length).should.equal(1, 'Number of folders should not have changed');
+			should(proj.folders.find(f => f.relativePath === 'RenamedFolder') !== undefined).be.true('The folder path should have been updated');
+			should(proj.files.find(f => f.relativePath === 'RenamedFolder\\MyTable.sql') !== undefined).be.true('Path of the script in the folder should have been updated');
+		});
 	});
 
 	describe('SqlCmd Variables', function (): void {
