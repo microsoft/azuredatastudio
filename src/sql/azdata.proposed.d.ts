@@ -599,7 +599,7 @@ declare module 'azdata' {
 		securityToken?: accounts.AccountSecurityToken | undefined;
 
 		/**
-		 * Filter for expanding node.
+		 * Filters to apply to the child nodes being returned
 		 */
 		filters?: NodeFilter[];
 	}
