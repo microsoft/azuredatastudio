@@ -12,7 +12,7 @@ trigger:
       - extensionsGallery-insider.json
 
 steps:
-- task: AzureFileCopy@4
+- task: AzureFileCopy@5
   displayName: 'Update extensionsGallery.json'
   inputs:
     SourcePath: extensionsGallery.json
@@ -24,7 +24,7 @@ steps:
     AdditionalArgumentsForBlobCopy: '--cache-control="max-age=0" --overwrite=true'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/release/extensions')
 
-- task: AzureFileCopy@4
+- task: AzureFileCopy@5
   displayName: 'Update extensionsGallery-insider.json'
   inputs:
     SourcePath: 'extensionsGallery-insider.json'
@@ -41,7 +41,7 @@ steps:
   displayName: 'Checkout RC1 branch'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/extensions/rc1')
 
-- task: AzureFileCopy@4
+- task: AzureFileCopy@5
   displayName: 'Update extensionsGallery-test.json'
   inputs:
     SourcePath: extensionsGallery.json

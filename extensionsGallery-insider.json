@@ -4036,14 +4036,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.4.3",
-							"lastUpdated": "04/11/2023",
+							"version": "1.4.4",
+							"lastUpdated": "04/19/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.4.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.4.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4394,34 +4394,34 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.0",
-							"lastUpdated": "04/13/2023",
+							"version": "0.4.1",
+							"lastUpdated": "04/25/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23103.2/dsct-oracle-to-ms-sql-0.4.0.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/dsct-oracle-to-ms-sql-0.4.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23103.2/dsctIcon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/dsctIcon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23103.2/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23103.2/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23103.2/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23103.2/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/LICENSE.rtf"
 								}
 							],
 							"properties": [
@@ -4650,14 +4650,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.8",
-							"lastUpdated": "03/20/2023",
+							"version": "0.2.9",
+							"lastUpdated": "04/26/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.8.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.9.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
