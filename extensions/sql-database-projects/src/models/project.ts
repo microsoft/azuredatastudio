@@ -13,7 +13,7 @@ import * as vscodeMssql from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { Uri, window } from 'vscode';
-import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, LegacyStyle, SdkStyle } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings, IUserDatabaseReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -121,9 +121,9 @@ export class Project implements ISqlProject {
 
 	public get sqlProjStyleName(): string {
 		if (utils.getAzdataApi()) {
-			return this.sqlProjStyle === mssql.ProjectType.SdkStyle ? SdkStyle : LegacyStyle;
+			return this.sqlProjStyle === mssql.ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
 		} else {
-			return this.sqlProjStyle === vscodeMssql.ProjectType.SdkStyle ? SdkStyle : LegacyStyle;
+			return this.sqlProjStyle === vscodeMssql.ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
 		}
 	}
 
