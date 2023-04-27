@@ -1796,7 +1796,7 @@ declare module 'azdata' {
 		 */
 		parentNodePath: string;
 		/**
-		 * list of filters that are supported by the node
+		 * Filterable properties that this node supports
 		 */
 		filterableProperties?: NodeFilterProperty[];
 	}
