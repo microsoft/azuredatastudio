@@ -267,16 +267,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Attach DB filename]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Anexar o nome do arquivo de BD]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachedDBFileName.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachDbFilename.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the primary file, including the full path name, of an attachable database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -285,11 +276,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachedDBFileName.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Attached DB file name]]></Val>
+          <Val><![CDATA[Attach DB filename]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nome do arquivo de BD anexado]]></Val>
+            <Val><![CDATA[Anexar o nome do arquivo de BD]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -341,19 +332,25 @@
       </Item>
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.columnEncryptionSetting.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Default column encryption setting for all the commands on the connection]]></Val>
+          <Val><![CDATA[Enables or disables Always Encrypted for the connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A configuração de criptografia de coluna padrão para todos os comandos na conexão]]></Val>
+            <Val><![CDATA[Habilita ou desabilita o Always Encrypted para a conexão]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Default column encryption setting for all the commands on the connection]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.columnEncryptionSetting.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Column encryption]]></Val>
+          <Val><![CDATA[Always Encrypted]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Criptografia de coluna]]></Val>
+            <Val><![CDATA[Always Encrypted]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Column encryption]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -479,6 +476,69 @@
           <Val><![CDATA[Current language]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Idioma atual]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Attestation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Atestado do Azure]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Host Guardian Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Serviço Guardião de Host]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[None]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nenhum]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifica um protocolo para atestar um enclave do lado do servidor usado com Always Encrypted com enclaves Seguros]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Attestation protocol]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Protocolo de atestado]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationUrl.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifica um ponto de extremidade para atestar um enclave do lado do servidor usado com Always Encrypted com enclaves Seguros]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationUrl.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Attestation URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[URL do Atestado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -819,6 +879,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.secureEnclaves.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enables or disables Secure enclaves for the connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilita ou desabilita enclaves Seguros para a conexão]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.secureEnclaves.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Enclaves seguros]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverDescription.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Description of the SQL Server instance]]></Val>
@@ -851,6 +929,15 @@
           <Val><![CDATA[Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Servidor]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverName.placeholder" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[e.g. tcp:servername,1433]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[por exemplo. tcp:servername,1433]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -948,11 +1035,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/cms/package.cms.disabled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Desabilitado]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/cms/package.cms.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Servidores de Gerenciamento Central do SQL Server]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/package.cms.enabled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilitado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
