@@ -546,6 +546,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.noActionScriptedMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[There is no action to be scripted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[スクリプトを作成するアクションはありません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.noConnectionUriError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to retrieve the connection information, please reconnect and try again.]]></Val>
@@ -641,6 +650,33 @@
           <Val><![CDATA[Rename {0} '{1}' to '{2}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} '{1}' の名前を '{2}' に変更します]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.scriptError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while generating script. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[スクリプトの生成中にエラーが発生しました。{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.scriptGenerated" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Script has been generated successfully. You can close the dialog to view it in the newly opened editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[スクリプトが正常に生成されました。このダイアログを閉じると、エディターが新しく開いてスクリプトが表示されます。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.scriptText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Script]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[スクリプト]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1107,16 +1143,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Attach DB filename]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[添付 DB ファイル名]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.attachedDBFileName.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.attachDbFilename.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the primary file, including the full path name, of an attachable database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1125,11 +1152,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.attachedDBFileName.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Attached DB file name]]></Val>
+          <Val><![CDATA[Attach DB filename]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[添付された DB ファイルの名前]]></Val>
+            <Val><![CDATA[添付 DB ファイル名]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1376,10 +1403,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[セキュリティで保護されたエンクレーブが設定された Always Encrypted で使用されるサーバー側エンクレーブを構成証明するためのプロトコルを指定します。]]></Val>
+            <Val><![CDATA[セキュリティで保護されたエンクレーブでの Always Encrypted で使用する、サーバー側エンクレーブ構成証明用のプロトコルを指定します]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1397,10 +1427,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationUrl.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[セキュリティで保護されたエンクレーブが設定された Always Encrypted で使用されるサーバー側エンクレーブを構成証明するためのエンドポイントを指定します。]]></Val>
+            <Val><![CDATA[セキュリティで保護されたエンクレーブによる Always Encrypted で使用する、サーバー側エンクレーブ構成証明用のエンドポイントを指定します]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1790,6 +1823,15 @@
           <Val><![CDATA[Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[サーバー]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.serverName.placeholder" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[e.g. tcp:servername,1433]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[例: tcp:servername,1433]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2589,38 +2631,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/mssql/package.title.newApplicationRole" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/mssql/package.title.newObject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[New Application Role]]></Val>
+          <Val><![CDATA[New]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新しいアプリケーション ロール]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/mssql/package.title.newDatabaseRole" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Database Role]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新しいデータベース ロール]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/mssql/package.title.newLogin" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Login]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新しいログイン]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/mssql/package.title.newServerRole" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Server Role]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新しいサーバー ロール]]></Val>
+            <Val><![CDATA[新規]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2630,15 +2645,6 @@
           <Val><![CDATA[New Table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新しいテーブル]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/mssql/package.title.newUser" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New User]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新しいユーザー]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

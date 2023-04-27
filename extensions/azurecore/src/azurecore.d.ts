@@ -287,13 +287,6 @@ declare module 'azurecore' {
 		status: number;
 	};
 
-	export interface HttpClientResponse<B> {
-		body: B;
-		headers: any;
-		status: Number;
-		error: any;
-	}
-
 	export interface IExtension {
 		/**
 		 * Gets the list of subscriptions for the specified AzureAccount
