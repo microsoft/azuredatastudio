@@ -185,10 +185,10 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Move a post-deployment script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MovePostDeploymentScriptRequest.type, params);
 	}
@@ -196,10 +196,10 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Move a pre-deployment script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MovePreDeploymentScriptRequest.type, params);
 	}
@@ -350,10 +350,10 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Move a SQL object script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveSqlObjectScriptRequest.type, params);
 	}
@@ -454,10 +454,10 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Move a SQL object script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
 	}

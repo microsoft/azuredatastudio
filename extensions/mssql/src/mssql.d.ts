@@ -449,7 +449,7 @@ declare module 'mssql' {
 		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
 		 */
-		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Move a pre-deployment script in a project
@@ -457,7 +457,7 @@ declare module 'mssql' {
 		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
 		 */
-		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Close a SQL project
@@ -564,7 +564,7 @@ declare module 'mssql' {
 		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
 		 */
-		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Get all the database references in a project
@@ -635,7 +635,7 @@ declare module 'mssql' {
 		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the item, including extension, relative to the .sqlproj
 		 */
-		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 	}
 
 
