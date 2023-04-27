@@ -591,24 +591,28 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	public async loadResourceGroupDropdown(): Promise<void> {
 		try {
 			this._resourceGroupDropdown.loading = true;
-
-			this.migrationStateModel._sqlMigrationServices = await utils.getAzureSqlMigrationServices(
-				this.migrationStateModel._azureAccount,
-				this.migrationStateModel._sqlMigrationServiceSubscription);
-
-			this.migrationStateModel._resourceGroups = utils.getServiceResourceGroupsByLocation(
-				this.migrationStateModel._sqlMigrationServices,
-				this.migrationStateModel._location);
-
+			const account = this.migrationStateModel._azureAccount;
+			const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
+			const serviceId = this.migrationStateModel._sqlMigrationService?.id;
 			const resourceGroup = this.migrationStateModel._sqlMigrationServiceResourceGroup?.name ??
-				this.migrationStateModel._sqlMigrationService !== undefined
-				? getFullResourceGroupFromId(this.migrationStateModel._sqlMigrationService!.id)
+				serviceId !== undefined
+				? getFullResourceGroupFromId(serviceId!)
 				: undefined;
 
+			const migrationServices = await utils.getAzureSqlMigrationServices(
+				account,
+				subscription);
+
+			const resourceGroups = utils.getServiceResourceGroupsByLocation(
+				migrationServices,
+				this.migrationStateModel._location);
+
 			this._resourceGroupDropdown.values = utils.getResourceDropdownValues(
-				this.migrationStateModel._resourceGroups,
+				resourceGroups,
 				constants.RESOURCE_GROUP_NOT_FOUND);
 
+			this.migrationStateModel._sqlMigrationServices = migrationServices;
+			this.migrationStateModel._resourceGroups = resourceGroups;
 			utils.selectDefaultDropdownValue(this._resourceGroupDropdown, resourceGroup, false);
 		} catch (e) {
 			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadResourceGroupDropdown', e);
