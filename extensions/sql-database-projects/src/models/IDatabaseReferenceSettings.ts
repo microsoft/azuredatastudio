@@ -4,10 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Uri } from 'vscode';
-import * as mssql from 'mssql';
-import * as vscodeMssql from 'vscode-mssql';
-
-export type SystemDatabase = mssql.SystemDatabase | vscodeMssql.SystemDatabase;
+import { SystemDatabase } from '../common/typeHelper';
 
 export interface IDatabaseReferenceSettings {
 	databaseVariableLiteralValue?: string;

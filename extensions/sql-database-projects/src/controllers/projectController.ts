@@ -198,18 +198,13 @@ export class ProjectsController {
 		}
 
 		const sqlProjectsService = await utils.getSqlProjectsService();
-		try {
-			if (utils.getAzdataApi()) {
-				const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
-				await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
-			} else {
-				const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
-				await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
-			}
-		} catch (e) {
-			throw (console.log);
+		if (utils.getAzdataApi()) {
+			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+		} else {
+			const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
 		}
-
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 

@@ -11,6 +11,9 @@ declare module 'sqldbproj' {
 		vsCodeName = 'ms-mssql.sql-database-projects-vscode'
 	}
 
+	export const SdkStyle = 'SdkStyle';
+	export const LegacyStyle = 'LegacyStyle';
+
 	/**
 	 * sql database projects extension
 	 */

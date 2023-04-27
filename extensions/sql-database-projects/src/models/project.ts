@@ -13,7 +13,7 @@ import * as vscodeMssql from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { Uri, window } from 'vscode';
-import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, LegacyStyle, SdkStyle } from 'sqldbproj';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings, IUserDatabaseReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -121,9 +121,10 @@ export class Project implements ISqlProject {
 
 	public get sqlProjStyleName(): string {
 		if (utils.getAzdataApi()) {
-			return this.sqlProjStyle === mssql.ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
+			return this.sqlProjStyle === mssql.ProjectType.SdkStyle ? SdkStyle : LegacyStyle;
+		} else {
+			return this.sqlProjStyle === vscodeMssql.ProjectType.SdkStyle ? SdkStyle : LegacyStyle;
 		}
-		return this.sqlProjStyle === vscodeMssql.ProjectType.SdkStyle ? 'SdkStyle' : 'LegacyStyle';
 	}
 
 	public get isCrossPlatformCompatible(): boolean {
@@ -239,14 +240,14 @@ export class Project implements ISqlProject {
 	//#region Reader helpers
 
 	private async readProjectProperties(): Promise<void> {
-		/*let result;
 		let sqlProjService;
-		if(utils.getAzdataApi()) {
+		if (utils.getAzdataApi()) {
 			sqlProjService = this.sqlProjService as mssql.ISqlProjectsService;
 		} else {
 			sqlProjService = this.sqlProjService as vscodeMssql.ISqlProjectsService;
-		}*/
-		const result = await this.sqlProjService.getProjectProperties(this.projectFilePath);
+		}
+
+		const result = await sqlProjService.getProjectProperties(this.projectFilePath);
 		this.throwIfFailed(result);
 
 		this._projectGuid = result.projectGuid;
@@ -385,13 +386,14 @@ export class Project implements ISqlProject {
 	}
 
 	private async readNoneItems(): Promise<void> {
-		/*let sqlProjService;
-		if(utils.getAzdataApi()) {
+		let sqlProjService;
+		if (utils.getAzdataApi()) {
 			sqlProjService = (await utils.getSqlProjectsService()) as mssql.ISqlProjectsService;
 		} else {
 			sqlProjService = (await utils.getSqlProjectsService()) as vscodeMssql.ISqlProjectsService;
-		}*/
-		var result: GetScriptsResult = await this.sqlProjService.getNoneItems(this.projectFilePath);
+		}
+
+		var result: GetScriptsResult = await sqlProjService.getNoneItems(this.projectFilePath);
 		this.throwIfFailed(result);
 
 		const noneItemEntries: FileProjectEntry[] = [];
@@ -459,7 +461,7 @@ export class Project implements ISqlProject {
 				systemDbReference.suppressMissingDependencies));
 		}
 
-		/*for (const nupkgReference of databaseReferencesResult.nugetPackageReferences) {
+		for (const nupkgReference of databaseReferencesResult.nugetPackageReferences) {
 			this._databaseReferences.push(new NugetPackageReferenceProjectEntry({
 				packageName: nupkgReference.packageName,
 				packageVersion: nupkgReference.packageVersion,
@@ -471,7 +473,7 @@ export class Project implements ISqlProject {
 				serverName: nupkgReference.serverVariable?.varName,
 				serverVariable: nupkgReference.serverVariable?.value
 			}));
-		}*/
+		}
 	}
 
 	//#endregion
@@ -865,13 +867,13 @@ export class Project implements ISqlProject {
 		if (reference instanceof SqlProjectReferenceProjectEntry) {
 			referenceName = (<IProjectReferenceSettings>settings).projectName;
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
-		} else {//if (reference instanceof DacpacReferenceProjectEntry) {
+		} else if (reference instanceof DacpacReferenceProjectEntry) {
 			referenceName = (<IDacpacReferenceSettings>settings).dacpacFileLocation.fsPath;
 			result = await this.sqlProjService.addDacpacReference(this.projectFilePath, reference.pathForSqlProj(), settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
-		} /*else {// nupkg reference
+		} else {// nupkg reference
 			referenceName = (<INugetPackageReferenceSettings>settings).packageName;
 			result = await this.sqlProjService.addNugetPackageReference(this.projectFilePath, reference.packageName, (<INugetPackageReferenceSettings>settings).packageVersion, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
-		}*/
+		}
 
 		if (!result.success && result.errorMessage) {
 			throw new Error(constants.errorAddingDatabaseReference(referenceName, result.errorMessage));

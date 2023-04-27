@@ -16,7 +16,7 @@ import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
-import { SystemDatabase } from '../models/IDatabaseReferenceSettings';
+import { SystemDatabase } from './typeHelper';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -159,7 +159,7 @@ export function convertSlashesForSqlProj(filePath: string): string {
  * @returns
  */
 export function systemDatabaseToString(systemDb: SystemDatabase): string {
-	if (systemDb === mssql.SystemDatabase.Master || vscodeMssql.SystemDatabase.Master) {
+	if (systemDb === mssql.SystemDatabase.Master || systemDb === vscodeMssql.SystemDatabase.Master) {
 		return constants.master;
 	} else {
 		return constants.msdb;
