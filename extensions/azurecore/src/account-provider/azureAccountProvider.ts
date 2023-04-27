@@ -163,7 +163,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				if (getTenantIgnoreList().includes(tenantId)) {
 					// Tenant found in ignore list, don't fetch access token.
 					Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted.`);
-					throw new Error(localize('tenantIgnoredError', `Token not acquired as tenant found in ignore list in setting: ${Constants.AzureTenantConfigFilterSetting}`));
+					throw new Error(localize('tenantIgnoredError', 'Token not acquired as tenant found in ignore list in setting: {0}', Constants.AzureTenantConfigFilterSetting));
 				} else {
 					let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
 					if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
