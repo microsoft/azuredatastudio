@@ -1026,18 +1026,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private async populateResourceInstanceDropdown(): Promise<void> {
 		try {
 			this._azureResourceDropdown.loading = true;
-			let targetName = '';
-			switch (this.migrationStateModel._targetType) {
-				case MigrationTargetType.SQLMI:
-					targetName = (this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance)?.name;
-					break;
-				case MigrationTargetType.SQLVM:
-					targetName = (this.migrationStateModel._targetServerInstance as SqlVMServer)?.name;
-					break;
-				case MigrationTargetType.SQLDB:
-					targetName = (this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer)?.name;
-					break;
-			}
+			const targetName = this.migrationStateModel.migrationTargetServerName;
 
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:

@@ -345,6 +345,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				r.state === ValidateIrState.Succeeded)
 	}
 
+	public get migrationTargetServerName(): string {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				return (this._targetServerInstance as azurecore.azureResource.AzureSqlManagedInstance)?.name;
+			case MigrationTargetType.SQLVM:
+				return (this._targetServerInstance as SqlVMServer)?.name;
+			case MigrationTargetType.SQLDB:
+				return (this._targetServerInstance as AzureSqlDatabaseServer)?.name;
+			default:
+				return '';
+		}
+	}
+
 	public get isBackupContainerNetworkShare(): boolean {
 		return this._databaseBackup?.networkContainerType === NetworkContainerType.NETWORK_SHARE;
 	}
