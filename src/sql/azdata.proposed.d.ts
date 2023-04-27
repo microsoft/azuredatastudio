@@ -1838,7 +1838,7 @@ declare module 'azdata' {
 		/**
 		 * The applied values of the filter property
 		 */
-		values: string | string[] | number | boolean | undefined;
+		value: string | string[] | number | boolean | undefined;
 	}
 
 	export enum NodeFilterPropertyDataType {
