@@ -605,6 +605,11 @@ declare module 'azdata' {
 		 * Authentication token for the current session.
 		 */
 		securityToken?: accounts.AccountSecurityToken | undefined;
+
+		/**
+		 * Filters to apply to the child nodes being returned
+		 */
+		filters?: NodeFilter[];
 	}
 	// End Object Explorer interfaces  ----------------------------
 
@@ -1793,6 +1798,73 @@ declare module 'azdata' {
 		 * The path of the parent node.
 		 */
 		parentNodePath: string;
+		/**
+		 * Filterable properties that this node supports
+		 */
+		filterableProperties?: NodeFilterProperty[];
+	}
+
+	export interface NodeFilterProperty {
+		/**
+		 * The name of the filter property displayed to the user
+		 */
+		displayName: string;
+		/**
+		 * The type of the filter property
+		 */
+		type: NodeFilterPropertyDataType;
+		/**
+		 * The description of the filter property
+		 */
+		description: string;
+	}
+
+	/**
+	 * NodeFilterChoiceProperty is used to define the choices for the filter property if the type is choice
+	 */
+	export interface NodeFilterChoiceProperty extends NodeFilterProperty {
+		/**
+		 * The list of choices for the filter property if the type is choice
+		 */
+		choices: string[];
+	}
+
+	export interface NodeFilter {
+		/**
+		 * The name of the filter property
+		 */
+		name: string;
+		/**
+		 * The operator of the filter property
+		 */
+		operator: NodeFilterOperator;
+		/**
+		 * The applied values of the filter property
+		 */
+		value: string | string[] | number | boolean | undefined;
+	}
+
+	export enum NodeFilterPropertyDataType {
+		String = 0,
+		Number = 1,
+		Boolean = 2,
+		Date = 3,
+		Choice = 4
+	}
+
+	export enum NodeFilterOperator {
+		Equals = 0,
+		NotEquals = 1,
+		LessThan = 2,
+		LessThanOrEquals = 3,
+		GreaterThan = 4,
+		GreaterThanOrEquals = 5,
+		Between = 6,
+		NotBetween = 7,
+		Contains = 8,
+		NotContains = 9,
+		IsNull = 10,
+		IsNotNull = 11
 	}
 
 	export namespace window {
