@@ -156,9 +156,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._networkShareButton.onDidChangeCheckedState(async checked => {
 				if (checked) {
 					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.NETWORK_SHARE;
-					await utils.updateControlDisplay(this._dmsInfoContainer, true);
 					this.migrationStateModel.refreshDatabaseBackupPage = true;
-					await this.loadStatus();
+
+					const hasService = this.migrationStateModel._sqlMigrationService !== undefined;
+					await utils.updateControlDisplay(this._dmsInfoContainer, hasService);
+					if (hasService) {
+						await this.loadStatus();
+					}
 				}
 			}));
 
@@ -399,15 +403,16 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 							dms => dms.name === value
 								&& dms.properties.resourceGroup.toLowerCase() === resourceGroupName);
 
-						const showShirStatus = this.migrationStateModel.isSqlDbTarget
-							|| this.migrationStateModel.isBackupContainerNetworkShare;
+						const showShirStatus = selectedDms !== undefined &&
+							(this.migrationStateModel.isSqlDbTarget ||
+								this.migrationStateModel.isBackupContainerNetworkShare);
 
+						this.migrationStateModel._sqlMigrationService = selectedDms;
 						await utils.updateControlDisplay(
 							this._dmsInfoContainer,
 							showShirStatus);
 
-						this.migrationStateModel._sqlMigrationService = selectedDms;
-						if (selectedDms && showShirStatus) {
+						if (showShirStatus) {
 							await this.loadStatus();
 						}
 					} else {
@@ -634,51 +639,58 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}
 	}
 
+	private _loadStatusRefCount = 0;
 	private async loadStatus(): Promise<void> {
 		try {
+			this._loadStatusRefCount++;
 			this._statusLoadingComponent.loading = true;
-
-			if (this.migrationStateModel._sqlMigrationService) {
-				if (this.migrationStateModel._sqlMigrationService?.properties?.integrationRuntimeState) {
-					this.migrationStateModel._sqlMigrationService.properties.integrationRuntimeState = undefined;
+			const service = this.migrationStateModel._sqlMigrationService;
+			if (service) {
+				const account = this.migrationStateModel._azureAccount;
+				const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
+				const resourceGroup = service.properties.resourceGroup;
+				const location = service.location;
+				const serviceName = service.name;
+				if (service?.properties?.integrationRuntimeState) {
+					service.properties.integrationRuntimeState = undefined;
 				}
 
 				const migrationService = await getSqlMigrationService(
-					this.migrationStateModel._azureAccount,
-					this.migrationStateModel._sqlMigrationServiceSubscription,
-					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
-					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService.name);
-				this.migrationStateModel._sqlMigrationService = migrationService;
+					account,
+					subscription,
+					resourceGroup,
+					location,
+					serviceName);
 
 				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
-					this.migrationStateModel._azureAccount,
-					this.migrationStateModel._sqlMigrationServiceSubscription,
-					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
-					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService.name);
-				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(
+					account,
+					subscription,
+					resourceGroup,
+					location,
+					serviceName);
+
+				const nodeNames = migrationServiceMonitoringStatus.nodes.map(
 					node => node.nodeName);
 
 				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
-					this.migrationStateModel._azureAccount,
-					this.migrationStateModel._sqlMigrationServiceSubscription,
-					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
-					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name);
+					account,
+					subscription,
+					resourceGroup,
+					location,
+					serviceName);
 
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.SERVICE_READY(
-							this.migrationStateModel._sqlMigrationService!.name,
-							this.migrationStateModel._nodeNames.join(', ')),
+							serviceName,
+							nodeNames.join(', ')),
 						style: 'success'
 					});
 				} else {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.SERVICE_NOT_READY(
-							this.migrationStateModel._sqlMigrationService!.name),
+							serviceName),
 						style: 'error'
 					});
 				}
@@ -704,11 +716,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					]];
 
 				await this._authKeyTable.setDataValues(data);
+				this.migrationStateModel._sqlMigrationService = migrationService;
+				this.migrationStateModel._nodeNames = nodeNames;
 			}
 		} catch (e) {
 			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadStatus', e);
 		} finally {
-			this._statusLoadingComponent.loading = false;
+			this._loadStatusRefCount--;
+			this._statusLoadingComponent.loading = this._loadStatusRefCount > 0;
 		}
 	}
 }
