@@ -22,6 +22,7 @@ import { AzureDeviceCode } from './auths/azureDeviceCode';
 import { filterAccounts } from '../azureResource/utils';
 import * as Constants from '../constants';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
+import { getTenantIgnoreList } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -159,29 +160,35 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 					Logger.info(`Could not fetch access token from cache: ${e}, fetching new access token instead.`);
 				}
 				tenantId = tenantId || account.properties.owningTenant.id;
-				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
-				if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
-					const token: Token = {
-						key: authResult.account.homeAccountId,
-						token: authResult.accessToken,
-						tokenType: authResult.tokenType,
-						expiresOn: authResult.account.idTokenClaims.exp!,
-						tenantId: tenantId,
-						resource: resource
-					};
-					try {
-						await this.msalCacheProvider.writeTokenToLocalCache(token);
-					} catch (e) {
-						Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
-					}
-					return token;
+				if (getTenantIgnoreList().includes(tenantId)) {
+					// Tenant found in ignore list, don't fetch access token.
+					Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted.`);
+					throw new Error(localize('tenantIgnoredError', `Token not acquired as tenant found in ignore list in setting: ${Constants.AzureTenantConfigFilterSetting}`));
 				} else {
-					Logger.error(`MSAL: getToken call failed`);
-					// Throw error with MSAL-specific code/message, else throw generic error message
-					if (this.isProviderError(authResult)) {
-						throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
+					let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
+					if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
+						const token: Token = {
+							key: authResult.account.homeAccountId,
+							token: authResult.accessToken,
+							tokenType: authResult.tokenType,
+							expiresOn: authResult.account.idTokenClaims.exp!,
+							tenantId: tenantId,
+							resource: resource
+						};
+						try {
+							await this.msalCacheProvider.writeTokenToLocalCache(token);
+						} catch (e) {
+							Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
+						}
+						return token;
 					} else {
-						throw new Error(localize('genericTokenError', 'Failed to get token'));
+						Logger.error(`MSAL: getToken call failed`);
+						// Throw error with MSAL-specific code/message, else throw generic error message
+						if (this.isProviderError(authResult)) {
+							throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
+						} else {
+							throw new Error(localize('genericTokenError', 'Failed to get token'));
+						}
 					}
 				}
 			} else { // fallback to ADAL as default

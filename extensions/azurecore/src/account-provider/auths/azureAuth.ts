@@ -330,12 +330,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return null;
 		}
 
-		// The user wants to ignore this tenant.
-		if (getTenantIgnoreList().includes(tenantId)) {
-			Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted.`);
-			return null;
-		}
-
 		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
 		const endpoint = resource.endpoint.endsWith('/') ? resource.endpoint : resource.endpoint + '/';
 
