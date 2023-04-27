@@ -78,7 +78,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		}
 	}
 
-	public async refresh(iniotialize?: boolean): Promise<void> {
+	public async refresh(initialize?: boolean): Promise<void> {
 		if (this.isRefreshing ||
 			this._refreshLoader === undefined) {
 
@@ -91,7 +91,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 
 			await this.statusBar.clearError();
 
-			if (iniotialize) {
+			if (initialize) {
 				await this.updateServiceButtonContext(this._serviceContextButton);
 			}
 

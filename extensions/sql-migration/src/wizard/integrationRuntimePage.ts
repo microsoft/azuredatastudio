@@ -639,18 +639,22 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}
 	}
 
-	private _loadStatusRefCount = 0;
+	private _lastIn = 0;
 	private async loadStatus(): Promise<void> {
+		const callSequence = ++this._lastIn;
+		let serviceName = '';
 		try {
-			this._loadStatusRefCount++;
-			this._statusLoadingComponent.loading = true;
+			if (callSequence === this._lastIn) {
+				this._statusLoadingComponent.loading = true;
+			}
+
 			const service = this.migrationStateModel._sqlMigrationService;
 			if (service) {
 				const account = this.migrationStateModel._azureAccount;
 				const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
 				const resourceGroup = service.properties.resourceGroup;
 				const location = service.location;
-				const serviceName = service.name;
+				serviceName = service.name;
 				if (service?.properties?.integrationRuntimeState) {
 					service.properties.integrationRuntimeState = undefined;
 				}
@@ -662,6 +666,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					location,
 					serviceName);
 
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
+
 				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
 					account,
 					subscription,
@@ -672,6 +679,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				const nodeNames = migrationServiceMonitoringStatus.nodes.map(
 					node => node.nodeName);
 
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
+
 				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
 					account,
 					subscription,
@@ -679,18 +689,18 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					location,
 					serviceName);
 
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
+
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_READY(
-							serviceName,
-							nodeNames.join(', ')),
+						text: constants.SERVICE_READY(serviceName, nodeNames.join(', ')),
 						style: 'success'
 					});
 				} else {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_NOT_READY(
-							serviceName),
+						text: constants.SERVICE_NOT_READY(serviceName),
 						style: 'error'
 					});
 				}
@@ -715,15 +725,26 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 						}
 					]];
 
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
+
 				await this._authKeyTable.setDataValues(data);
+
 				this.migrationStateModel._sqlMigrationService = migrationService;
+				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;
 				this.migrationStateModel._nodeNames = nodeNames;
 			}
 		} catch (e) {
+			await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+				text: constants.SERVICE_ERROR_NOT_READY(serviceName, e.message),
+				style: 'error'
+			});
+
 			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadStatus', e);
 		} finally {
-			this._loadStatusRefCount--;
-			this._statusLoadingComponent.loading = this._loadStatusRefCount > 0;
+			if (callSequence === this._lastIn) {
+				this._statusLoadingComponent.loading = false;
+			}
 		}
 	}
 }
