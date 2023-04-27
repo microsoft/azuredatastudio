@@ -330,8 +330,7 @@ describe('ProjectsController', function (): void {
 				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
-			it.only('Should exclude a folder', async function (): Promise<void> {
-				this.timeout(999_999);
+			it('Should exclude a folder', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
 				await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
@@ -1009,7 +1008,6 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should rename a folder', async function (): Promise<void> {
-			this.timeout(999_999);
 			let proj = await testUtils.createTestSqlProject(this.test);
 			await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
 

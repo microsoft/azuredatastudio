@@ -350,7 +350,7 @@ describe('Project: sdk style project content operations', function (): void {
 	});
 
 	// skipped because exclude folder not yet supported
-	it.skip('Should handle excluding glob included folders', async function (): Promise<void> {
+	it('Should handle excluding glob included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath(this.test);
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
 		await testUtils.createDummyFileStructureWithPrePostDeployScripts(this.test, false, undefined, path.dirname(projFilePath));
@@ -362,23 +362,16 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.noneDeployScripts.length).equal(2);
 
 		// try to exclude a glob included folder
-		//await project.excludeFolder('folder1\\');
+		await project.excludeFolder('folder1');
 
 		// verify folder and contents are excluded
 		should(project.folders.length).equal(1);
 		should(project.files.length).equal(6);
 		should(project.noneDeployScripts.length).equal(1, 'Script.PostDeployment2.sql should have been excluded');
-		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
-
-		// verify sqlproj has glob exclude for folder, but not for files and inner folder
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
-		should(projFileText.includes('<Build Remove="folder1\\file1.sql" />')).equal(false, projFileText);
-		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(false, projFileText);
+		should(project.folders.find(f => f.relativePath === 'folder1')).equal(undefined);
 	});
 
-	// skipped because exclude folder not yet supported
-	it.skip('Should handle excluding nested glob included folders', async function (): Promise<void> {
+	it('Should handle excluding folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
 		await testUtils.createDummyFileStructureWithPrePostDeployScripts(this.test, false, undefined, path.dirname(projFilePath));
@@ -389,59 +382,15 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.folders.length).equal(3);
 
 		// try to exclude a glob included folder
-		//await project.excludeFolder('folder1\\nestedFolder\\');
+		await project.excludeFolder('folder1\\nestedFolder');
 
 		// verify folder and contents are excluded
 		should(project.folders.length).equal(2);
 		should(project.files.length).equal(11);
-		should(project.files.find(f => f.relativePath === 'folder1\\nestedFolder\\')).equal(undefined);
-
-		// verify sqlproj has glob exclude for folder, but not for files
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(true, projFileText);
-		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\otherFile1.sql" />')).equal(false, projFileText);
+		should(project.folders.find(f => f.relativePath === 'folder1\\nestedFolder')).equal(undefined);
 	});
 
-	// skipped because exclude folder not yet supported
-	it.skip('Should handle excluding explicitly included folders', async function (): Promise<void> {
-		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
-		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
-		await testUtils.createDummyFileStructure(this.test, false, undefined, path.dirname(projFilePath));
-
-		const project: Project = await Project.openProject(projFilePath);
-
-		should(project.files.length).equal(11);
-		should(project.folders.length).equal(2);
-		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
-		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
-
-		// try to exclude an explicitly included folder without trailing \ in sqlproj
-		//await project.excludeFolder('folder1\\');
-
-		// verify folder and contents are excluded
-		should(project.folders.length).equal(1);
-		should(project.files.length).equal(6);
-		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
-
-		// try to exclude an explicitly included folder with trailing \ in sqlproj
-		//await project.excludeFolder('folder2\\');
-
-		// verify folder and contents are excluded
-		should(project.folders.length).equal(0);
-		should(project.files.length).equal(1);
-		should(project.files.find(f => f.relativePath === 'folder2\\')).equal(undefined);
-
-		// make sure both folders are removed from sqlproj and remove entry is added
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes('<Folder Include="folder1" />')).equal(false, projFileText);
-		should(projFileText.includes('<Folder Include="folder2\\" />')).equal(false, projFileText);
-
-		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
-		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(true, projFileText);
-	});
-
-	// TODO: skipped until fix for folder trailing slashes comes in from DacFx
-	it.skip('Should handle deleting explicitly included folders', async function (): Promise<void> {
+	it('Should handle deleting explicitly included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
 		await testUtils.createDummyFileStructureWithPrePostDeployScripts(this.test, false, undefined, path.dirname(projFilePath));
@@ -450,32 +399,24 @@ describe('Project: sdk style project content operations', function (): void {
 
 		should(project.files.length).equal(13);
 		should(project.folders.length).equal(3);
-		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
-		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+		should(project.folders.find(f => f.relativePath === 'folder1')!).not.equal(undefined);
+		should(project.folders.find(f => f.relativePath === 'folder2')!).not.equal(undefined);
 
 		// try to delete an explicitly included folder with the trailing \ in sqlproj
-		await project.deleteFolder('folder2\\');
+		await project.deleteFolder('folder2');
 
 		// verify the project not longer has folder2 and its contents
 		should(project.folders.length).equal(2);
 		should(project.files.length).equal(8);
-		should(project.files.find(f => f.relativePath === 'folder2\\')).equal(undefined);
+		should(project.folders.find(f => f.relativePath === 'folder2')).equal(undefined);
 
 		// try to delete an explicitly included folder without trailing \ in sqlproj
-		await project.deleteFolder('folder1\\');
+		await project.deleteFolder('folder1');
 
 		// verify the project not longer has folder1 and its contents
 		should(project.folders.length).equal(0);
 		should(project.files.length).equal(1);
-		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
-
-		// make sure both folders are removed from sqlproj and Build Remove entries were not added
-		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes('<Folder Include="folder1" />')).equal(false, projFileText);
-		should(projFileText.includes('<Folder Include="folder2\\" />')).equal(false, projFileText);
-
-		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
-		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
+		should(project.folders.find(f => f.relativePath === 'folder1')).equal(undefined);
 	});
 
 	// TODO: remove once DacFx exposes both absolute and relative outputPath

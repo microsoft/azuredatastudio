@@ -499,6 +499,8 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		// Note: adding a folder does not necessarily mean adding the contents of the folder.
+		// SDK projects must still adjust their globs, and Legacy projects must still include each file.
 		await this.readFolders();
 	}
 
@@ -506,6 +508,10 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.deleteFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		await this.readFilesInProject();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
 		await this.readFolders();
 	}
 
@@ -513,6 +519,10 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.excludeFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		await this.readFilesInProject();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
 		await this.readFolders();
 	}
 
