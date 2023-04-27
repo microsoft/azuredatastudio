@@ -847,9 +847,8 @@ export class Project implements ISqlProject {
 		}
 
 		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
+		let result, referenceName;
 
-		let result;
-		let referenceName;
 		if (reference instanceof SqlProjectReferenceProjectEntry) {
 			referenceName = (<IProjectReferenceSettings>settings).projectName;
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
@@ -1012,17 +1011,16 @@ export class Project implements ISqlProject {
 		let result;
 
 		if (node instanceof SqlObjectFileNode) {
-			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof PreDeployNode) {
-			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof PostDeployNode) {
-			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof NoneNode || node instanceof PublishProfileNode) {
-			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, destinationRelativePath, originalRelativePath);
+			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, originalRelativePath, destinationRelativePath);
 		} else if (node instanceof FolderNode) {
 			result = await this.sqlProjService.moveFolder(this.projectFilePath, originalRelativePath, destinationRelativePath);
-		}
-		else {
+		} else {
 			result = { success: false, errorMessage: constants.unhandledMoveNode }
 		}
 
