@@ -24,8 +24,6 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 
 	// Member section content
 	private memberTable: azdata.TableComponent;
-	private addMemberButton: azdata.ButtonComponent;
-	private removeMemberButton: azdata.ButtonComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -50,9 +48,8 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 
 		this.ownerInput = this.createInputBox(localizedConstants.OwnerText, async (newValue) => {
 			this.objectInfo.owner = newValue;
-		}, this.objectInfo.owner, !this.viewInfo.isFixedRole);
-		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, this.ownerInput);
-		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, async () => {
+		}, this.objectInfo.owner, true, 'text', 210);
+		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
 				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
 				multiSelect: false,
@@ -65,13 +62,10 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 				this.ownerInput.value = result.selectedObjects[0].name;
 			}
 		});
-		const buttonContainer = this.createButtonContainer([browseOwnerButton]);
+		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, this.ownerInput);
+		ownerContainer.addItems([browseOwnerButton], { flex: '0 0 auto' });
 
-		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [
-			nameContainer,
-			ownerContainer,
-			buttonContainer
-		], false);
+		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [nameContainer, ownerContainer], false);
 	}
 
 	private initializeMemberSection(): void {
@@ -81,23 +75,23 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 				value: localizedConstants.NameText
 			}
 		], this.objectInfo.members.map(m => [m]));
-		this.addMemberButton = this.createButton(localizedConstants.AddText, async () => {
-			const dialog = new FindObjectDialog(this.objectManagementService, {
-				objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
-				multiSelect: true,
-				contextId: this.contextId,
-				title: localizedConstants.SelectDatabaseRoleMemberDialogTitle
+		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
+			async () => {
+				const dialog = new FindObjectDialog(this.objectManagementService, {
+					objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+					multiSelect: true,
+					contextId: this.contextId,
+					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle
+				});
+				await dialog.open();
+				const result = await dialog.waitForClose();
+				this.addMembers(result.selectedObjects.map(r => r.name));
+			},
+			async () => {
+				if (this.memberTable.selectedRows.length === 1) {
+					this.removeMember(this.memberTable.selectedRows[0]);
+				}
 			});
-			await dialog.open();
-			const result = await dialog.waitForClose();
-			this.addMembers(result.selectedObjects.map(r => r.name));
-		});
-		this.removeMemberButton = this.createButton(localizedConstants.RemoveText, async () => {
-			if (this.memberTable.selectedRows.length === 1) {
-				this.removeMember(this.memberTable.selectedRows[0]);
-			}
-		});
-		const buttonContainer = this.createButtonContainer([this.addMemberButton, this.removeMemberButton]);
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);
 	}
 
@@ -116,8 +110,8 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 	}
 
 	private updateMembersTable(): void {
+		this.setTableData(this.memberTable, this.objectInfo.members.map(m => [m]));
 		this.onFormFieldChange();
-		this.setTableListData(this.memberTable, this.objectInfo.members.map(m => [m]));
 	}
 
 	private initializeOwnedSchemasSection(): void {

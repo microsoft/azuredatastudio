@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as mssql from 'mssql';
-import { DefaultTableListItemEnabledStateGetter, DialogBase, TableListItemComparer, TableListItemValueGetter } from './dialogBase';
+import { DefaultTableListItemEnabledStateGetter, DefaultTableMaxHeight, DialogBase, TableListItemComparer, TableListItemValueGetter } from './dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { getNodeTypeDisplayName } from '../utils';
 import { getErrorMessage } from '../../utils';
@@ -31,6 +31,8 @@ const ObjectRowValueGetter: TableListItemValueGetter<mssql.ObjectManagement.Sear
 		return [item.name, getNodeTypeDisplayName(item.type, true)];
 	};
 
+const ObjectsTableMaxHeight = 700;
+
 export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private objectTypesTable: azdata.TableComponent;
 	private findButton: azdata.ButtonComponent;
@@ -41,7 +43,8 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private allObjects: mssql.ObjectManagement.SearchResultItem[] = [];
 
 	constructor(private readonly objectManagementService: mssql.IObjectManagementService, private readonly options: FindObjectDialogOptions) {
-		super(options.title, 'FindObjectDialog', 'narrow', 'flyout');
+		super(options.title, 'FindObjectDialog');
+		this.dialogObject.okButton.label = localizedConstants.SelectText;
 		this.result = {
 			selectedObjects: []
 		};
@@ -50,10 +53,15 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 
 	protected override async initialize(): Promise<void> {
 		this.dialogObject.okButton.enabled = false;
-		this.objectTypesTable = this.createTableList<string>(localizedConstants.ObjectTypeText, [localizedConstants.ObjectTypeText], this.options.objectTypes, this.selectedObjectTypes, undefined, (item) => {
-			return [getNodeTypeDisplayName(item, true)];
-		});
-		this.findButton = this.createButton(localizedConstants.FindText, async () => {
+		this.objectTypesTable = this.createTableList<string>(localizedConstants.ObjectTypeText,
+			[localizedConstants.ObjectTypeText],
+			this.options.objectTypes,
+			this.selectedObjectTypes,
+			DefaultTableMaxHeight,
+			DefaultTableListItemEnabledStateGetter, (item) => {
+				return [getNodeTypeDisplayName(item, true)];
+			});
+		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();
 		});
 		const buttonContainer = this.createButtonContainer([this.findButton]);
@@ -61,8 +69,13 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 
 		if (this.options.multiSelect) {
 			this.objectsTable = this.createTableList<mssql.ObjectManagement.SearchResultItem>(localizedConstants.ObjectsText,
-				[localizedConstants.NameText, localizedConstants.ObjectTypeText], this.allObjects, this.result.selectedObjects, DefaultTableListItemEnabledStateGetter,
-				ObjectRowValueGetter, ObjectComparer);
+				[localizedConstants.NameText, localizedConstants.ObjectTypeText],
+				this.allObjects,
+				this.result.selectedObjects,
+				ObjectsTableMaxHeight,
+				DefaultTableListItemEnabledStateGetter,
+				ObjectRowValueGetter,
+				ObjectComparer);
 		} else {
 			this.objectsTable = this.createTable(localizedConstants.ObjectsText, [{
 				value: localizedConstants.NameText,
@@ -94,7 +107,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.dialogObject.okButton.enabled = false;
 		this.objectsLoadingComponent.loading = true;
 		try {
-			const results = await this.objectManagementService.search(this.options.contextId, '', <mssql.ObjectManagement.NodeType[]>this.selectedObjectTypes);
+			const results = await this.objectManagementService.search(this.options.contextId, <mssql.ObjectManagement.NodeType[]>this.selectedObjectTypes);
 			this.allObjects.splice(0, this.allObjects.length, ...results);
 			let data;
 			if (this.options.multiSelect) {
@@ -103,7 +116,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			else {
 				data = this.allObjects.map(item => ObjectRowValueGetter(item));
 			}
-			this.setTableListData(this.objectsTable, data);
+			this.setTableData(this.objectsTable, data, ObjectsTableMaxHeight);
 			this.objectsLoadingComponent.loadingCompletedText = localizedConstants.LoadingObjectsCompletedText(results.length);
 		} catch (err) {
 			this.dialogObject.message = {

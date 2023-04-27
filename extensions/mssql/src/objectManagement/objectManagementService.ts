@@ -61,8 +61,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn, objectType };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
-	async search(contextId: string, searchText: string, objectTypes: ObjectManagement.NodeType[]): Promise<ObjectManagement.SearchResultItem[]> {
-		const params: contracts.SearchObjectRequestParams = { contextId, searchText, objectTypes };
+	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Promise<ObjectManagement.SearchResultItem[]> {
+		const params: contracts.SearchObjectRequestParams = { contextId, searchText, objectTypes, schema };
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
 	}
 }
@@ -102,22 +102,20 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve();
 	}
 
-	async search(contextId: string, searchText: string, objectTypes: ObjectManagement.NodeType[]): Promise<ObjectManagement.SearchResultItem[]> {
-		const items = [];
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test1', type: ObjectManagement.NodeType.ServerLevelLogin });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test2', type: ObjectManagement.NodeType.ServerLevelLogin });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test3', type: ObjectManagement.NodeType.ServerLevelLogin });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test4', type: ObjectManagement.NodeType.ServerLevelLogin });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test5', type: ObjectManagement.NodeType.ServerLevelLogin });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test6', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test7', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test8', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test9', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test10', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test11', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test12', type: ObjectManagement.NodeType.ServerLevelServerRole });
-		items.push(<ObjectManagement.SearchResultItem>{ name: 'test13', type: ObjectManagement.NodeType.ServerLevelServerRole });
+	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText: string, schema: string): Promise<ObjectManagement.SearchResultItem[]> {
+		const items: ObjectManagement.SearchResultItem[] = [];
+		objectTypes.forEach(type => {
+			items.push(...this.generateSearchResult(type, 15));
+		});
 		return this.delayAndResolve(items);
+	}
+
+	private generateSearchResult(objectType: ObjectManagement.NodeType, count: number): ObjectManagement.SearchResultItem[] {
+		let items: ObjectManagement.SearchResultItem[] = [];
+		for (let i = 0; i < count; i++) {
+			items.push(<ObjectManagement.SearchResultItem>{ name: `${objectType} ${i}`, type: objectType });
+		}
+		return items;
 	}
 
 	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
@@ -243,16 +241,16 @@ export class TestObjectManagementService implements IObjectManagementService {
 				memberships: []
 			},
 			isFixedRole: false,
-			serverRoles: ['server role1', 'server role2', 'server role3', 'server role4'],
+			serverRoles: ['ServerLevelServerRole 1', 'ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
 		} : <ObjectManagement.ServerRoleViewInfo>{
 			objectInfo: {
-				name: 'server role1',
-				members: ['login1', 'server role2'],
-				owner: 'login1',
-				memberships: ['server role3', 'server role4']
+				name: 'ServerLevelServerRole 1',
+				members: ['ServerLevelLogin 1', 'ServerLevelServerRole 2'],
+				owner: 'ServerLevelLogin 2',
+				memberships: ['ServerLevelServerRole 3', 'ServerLevelServerRole 4']
 			},
 			isFixedRole: false,
-			serverRoles: ['server role2', 'server role3', 'server role4']
+			serverRoles: ['ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4']
 		};
 	}
 
@@ -267,6 +265,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} : <ObjectManagement.ApplicationRoleViewInfo>{
 			objectInfo: {
 				name: 'app role1',
+				password: '******************',
 				defaultSchema: 'dbo',
 				ownedSchemas: ['dbo'],
 			},

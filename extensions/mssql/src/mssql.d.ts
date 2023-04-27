@@ -1302,10 +1302,6 @@ declare module 'mssql' {
 			 * List of all the schemas in the database.
 			 */
 			schemas: string[];
-			/**
-			 * Whether the database role is a fixed role.
-			 */
-			isFixedRole: boolean;
 		}
 
 		/**
@@ -1320,6 +1316,10 @@ declare module 'mssql' {
 			 * type of the object.
 			 */
 			type: NodeType;
+			/**
+			 * schema of the object.
+			 */
+			schema: string | undefined;
 		}
 	}
 
@@ -1370,10 +1370,11 @@ declare module 'mssql' {
 		/**
 		 * Search for objects.
 		 * @param contextId The object view's context id.
-		 * @param searchText Search text.
 		 * @param objectTypes The object types to search for.
+		 * @param searchText Search text.
+		 * @param schema Schema to search in.
 		 */
-		search(contextId: string, searchText: string, objectTypes: ObjectManagement.NodeType[]): Thenable<ObjectManagement.SearchResultItem[]>;
+		search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
 }

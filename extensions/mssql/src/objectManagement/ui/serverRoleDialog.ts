@@ -7,6 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterServerRoleDocUrl, CreateServerRoleDocUrl } from '../constants';
+import { FindObjectDialog } from './findObjectDialog';
 
 export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagement.ServerRoleInfo, ObjectManagement.ServerRoleViewInfo> {
 	// Sections
@@ -20,8 +21,6 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 
 	// Member section content
 	private memberTable: azdata.TableComponent;
-	private addMemberButton: azdata.ButtonComponent;
-	private removeMemberButton: azdata.ButtonComponent;
 
 	// Membership section content
 	private membershipTable: azdata.TableComponent;
@@ -38,8 +37,12 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 	protected async initializeUI(): Promise<void> {
 		this.initializeGeneralSection();
 		this.initializeMemberSection();
-		this.initializeMembershipSection();
-		this.formContainer.addItems([this.generalSection, this.memberSection, this.membershipSection]);
+		const sections: azdata.Component[] = [this.generalSection, this.memberSection];
+		if (!this.viewInfo.isFixedRole) {
+			this.initializeMembershipSection();
+			sections.push(this.membershipSection);
+		}
+		this.formContainer.addItems(sections);
 	}
 
 	private initializeGeneralSection(): void {
@@ -50,9 +53,22 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 
 		this.ownerInput = this.createInputBox(localizedConstants.OwnerText, async (newValue) => {
 			this.objectInfo.owner = newValue;
-		}, this.objectInfo.owner, !this.viewInfo.isFixedRole);
+		}, this.objectInfo.owner, !this.viewInfo.isFixedRole, 'text', 210);
+		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
+			const dialog = new FindObjectDialog(this.objectManagementService, {
+				objectTypes: [ObjectManagement.NodeType.ServerLevelLogin, ObjectManagement.NodeType.ServerLevelServerRole],
+				multiSelect: false,
+				contextId: this.contextId,
+				title: localizedConstants.SelectServerRoleOwnerDialogTitle
+			});
+			await dialog.open();
+			const result = await dialog.waitForClose();
+			if (result.selectedObjects.length > 0) {
+				this.ownerInput.value = result.selectedObjects[0].name;
+			}
+		}, !this.viewInfo.isFixedRole);
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, this.ownerInput);
-
+		ownerContainer.addItems([browseOwnerButton], { flex: '0 0 auto' });
 		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [
 			nameContainer,
 			ownerContainer
@@ -66,10 +82,43 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 				value: localizedConstants.NameText
 			}
 		], this.objectInfo.members.map(m => [m]));
-		this.addMemberButton = this.createButton(localizedConstants.AddText, async () => { });
-		this.removeMemberButton = this.createButton(localizedConstants.RemoveText, async () => { });
-		const buttonContainer = this.createButtonContainer([this.addMemberButton, this.removeMemberButton]);
+		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
+			async () => {
+				const dialog = new FindObjectDialog(this.objectManagementService, {
+					objectTypes: [ObjectManagement.NodeType.ServerLevelLogin, ObjectManagement.NodeType.ServerLevelServerRole],
+					multiSelect: true,
+					contextId: this.contextId,
+					title: localizedConstants.SelectServerRoleMemberDialogTitle
+				});
+				await dialog.open();
+				const result = await dialog.waitForClose();
+				this.addMembers(result.selectedObjects.map(r => r.name));
+			},
+			async () => {
+				if (this.memberTable.selectedRows.length === 1) {
+					this.removeMember(this.memberTable.selectedRows[0]);
+				}
+			});
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);
+	}
+
+	private addMembers(names: string[]): void {
+		names.forEach(n => {
+			if (this.objectInfo.members.indexOf(n) === -1) {
+				this.objectInfo.members.push(n);
+			}
+		});
+		this.updateMembersTable();
+	}
+
+	private removeMember(idx: number): void {
+		this.objectInfo.members.splice(idx, 1);
+		this.updateMembersTable();
+	}
+
+	private updateMembersTable(): void {
+		this.setTableData(this.memberTable, this.objectInfo.members.map(m => [m]));
+		this.onFormFieldChange();
 	}
 
 	private initializeMembershipSection(): void {

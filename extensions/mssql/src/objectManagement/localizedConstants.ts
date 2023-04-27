@@ -34,8 +34,11 @@ export const NoActionScriptedMessage: string = localize('objectManagement.noActi
 export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
 export const BrowseText = localize('objectManagement.browseText', "Browse…");
+export const BrowseOwnerButtonAriaLabel = localize('objectManagement.browseForOwnerText', "Browse for an owner");
 export const AddText = localize('objectManagement.addText', "Add…");
 export const RemoveText = localize('objectManagement.removeText', "Remove");
+export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
+export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
 
 
 export function RefreshObjectExplorerError(error: string): string {
@@ -173,13 +176,18 @@ export const LoginText = localize('objectManagement.user.loginLabel', "Login");
 export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
 
 // Database Role
-export const SelectDatabaseRoleMemberDialogTitle = localize('objectManagement.databaseRole.SelectDatabaseRoleMemberDialogTitle', "Select Database User Members");
-export const SelectDatabaseRoleOwnerDialogTitle = localize('objectManagement.databaseRole.SelectDatabaseRoleOwnerDialogTitle', "Select Database Role Owner");
+export const SelectDatabaseRoleMemberDialogTitle = localize('objectManagement.databaseRole.SelectMemberDialogTitle', "Select Database Role Members");
+export const SelectDatabaseRoleOwnerDialogTitle = localize('objectManagement.databaseRole.SelectOwnerDialogTitle', "Select Database Role Owner");
+
+// Server Role
+export const SelectServerRoleMemberDialogTitle = localize('objectManagement.serverRole.SelectMemberDialogTitle', "Select Server Role Members");
+export const SelectServerRoleOwnerDialogTitle = localize('objectManagement.serverRole.SelectOwnerDialogTitle', "Select Server Role Owner");
 
 // Find Object Dialog
 export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Object Type");
 export const FilterText = localize('objectManagement.filterText', "Filter");
 export const FindText = localize('objectManagement.findText', "Find");
+export const SelectText = localize('objectManagement.selectText', "Select");
 export const ObjectsText = localize('objectManagement.objectsLabel', "Objects");
 export const LoadingObjectsText = localize('objectManagement.loadingObjectsLabel', "Loading objects…");
 export function LoadingObjectsCompletedText(count: number): string {

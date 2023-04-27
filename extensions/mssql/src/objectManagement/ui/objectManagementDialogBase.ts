@@ -14,6 +14,7 @@ import { ObjectManagementViewName, TelemetryActions } from '../constants';
 import { TelemetryReporter } from '../../telemetry';
 import { getErrorMessage } from '../../utils';
 import { providerId } from '../../constants';
+import { equals } from '../../util/objects';
 
 
 function getDialogName(type: ObjectManagement.NodeType, isNewObject: boolean): string {
@@ -86,7 +87,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			operation: async (operation: azdata.BackgroundOperation): Promise<void> => {
 				const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 				try {
-					if (JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo)) {
+					if (this.isDirty) {
 						const startTime = Date.now();
 						await this.objectManagementService.save(this._contextId, this.objectInfo);
 						if (this.options.objectExplorerContext) {
@@ -188,6 +189,6 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	private get isDirty(): boolean {
-		return JSON.stringify(this.objectInfo) !== JSON.stringify(this._originalObjectInfo);
+		return !equals(this.objectInfo, this._originalObjectInfo, false);
 	}
 }

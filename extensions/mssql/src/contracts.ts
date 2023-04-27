@@ -1615,6 +1615,7 @@ export namespace DropObjectRequest {
 export interface SearchObjectRequestParams {
 	contextId: string;
 	searchText: string | undefined;
+	schema: string | undefined;
 	objectTypes: mssql.ObjectManagement.NodeType[];
 }
 

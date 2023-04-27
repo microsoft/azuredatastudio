@@ -12,7 +12,7 @@ export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
 export const DefaultTableMaxHeight = 400;
-export const DefaultTableMinRowCount = 2;
+export const DefaultTableMinRowCount = 1;
 export const TableRowHeight = 25;
 export const TableColumnHeaderHeight = 30;
 
@@ -37,7 +37,7 @@ export abstract class DialogBase<DialogResult> {
 	private _formContainer: azdata.DivContainer;
 	private _closePromise: Promise<DialogResult | undefined>;
 
-	constructor(title: string, name: string, width: azdata.window.DialogWidth, style: azdata.window.DialogStyle) {
+	constructor(title: string, name: string, width: azdata.window.DialogWidth = 'narrow', style: azdata.window.DialogStyle = 'flyout') {
 		this.dialogObject = azdata.window.createModelViewDialog(title, name, width, style);
 		this.dialogObject.okButton.label = localizedConstants.OkText;
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
@@ -123,7 +123,9 @@ export abstract class DialogBase<DialogResult> {
 
 	protected createLabelInputContainer(label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
 		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: input.required }).component();
-		return this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent, input]).component()
+		const container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
+		container.addItem(input, { flex: '1 1 auto' });
+		return container;
 	}
 
 	protected createCheckbox(label: string, handler: (checked: boolean) => Promise<void>, checked: boolean = false, enabled: boolean = true): azdata.CheckBoxComponent {
@@ -166,6 +168,7 @@ export abstract class DialogBase<DialogResult> {
 		columnNames: string[],
 		allItems: T[],
 		selectedItems: T[],
+		maxHeight: number = DefaultTableMaxHeight,
 		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
 		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
 		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): azdata.TableComponent {
@@ -184,7 +187,7 @@ export abstract class DialogBase<DialogResult> {
 					})
 				],
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length)
+				height: getTableHeight(data.length, DefaultTableMinRowCount, maxHeight)
 			}
 		).component();
 		this.disposables.push(table.onCellAction!((arg: azdata.ICheckboxCellActionEventArgs) => {
@@ -200,9 +203,9 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected setTableListData(table: azdata.TableComponent, data: any[][]) {
+	protected setTableData(table: azdata.TableComponent, data: any[][], maxHeight: number = DefaultTableMaxHeight) {
 		table.data = data;
-		table.height = getTableHeight(data.length);
+		table.height = getTableHeight(data.length, DefaultTableMinRowCount, maxHeight);
 	}
 
 	protected getDataForTableList<T>(
@@ -218,17 +221,37 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
-	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][]): azdata.TableComponent {
+	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][], maxHeight: number = DefaultTableMaxHeight): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,
 				data: data,
 				columns: columns,
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length)
+				height: getTableHeight(data.length, DefaultTableMinRowCount, maxHeight)
 			}
 		).component();
 		return table;
+	}
+
+	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: () => Promise<void>, removeHandler: () => void): azdata.FlexContainer {
+		let addButton: azdata.ButtonComponent;
+		let removeButton: azdata.ButtonComponent;
+		const updateButtons = () => {
+			removeButton.enabled = table.selectedRows.length > 0;
+		}
+		addButton = this.createButton(localizedConstants.AddText, addButtonAriaLabel, async () => {
+			await addHandler();
+			updateButtons();
+		});
+		removeButton = this.createButton(localizedConstants.RemoveText, removeButtonAriaLabel, async () => {
+			await removeHandler();
+			updateButtons();
+		}, false);
+		this.disposables.push(table.onRowSelected(() => {
+			updateButtons();
+		}));
+		return this.createButtonContainer([addButton, removeButton]);
 	}
 
 	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
@@ -255,9 +278,10 @@ export abstract class DialogBase<DialogResult> {
 		return dropdown;
 	}
 
-	protected createButton(label: string, handler: () => Promise<void>, enabled: boolean = true): azdata.ButtonComponent {
+	protected createButton(label: string, ariaLabel: string, handler: () => Promise<void>, enabled: boolean = true): azdata.ButtonComponent {
 		const button = this.modelView.modelBuilder.button().withProps({
 			label: label,
+			ariaLabel: ariaLabel,
 			enabled: enabled,
 			secondary: true,
 			CSSStyles: { 'min-width': '70px', 'margin-left': '5px' }
