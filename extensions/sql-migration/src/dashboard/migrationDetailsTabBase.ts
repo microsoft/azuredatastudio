@@ -147,7 +147,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				await this.refresh();
 				const dialog = new ConfirmCutoverDialog(this.model);
 				await dialog.initialize();
-
+				await this.refresh();
 				if (this.model.CutoverError) {
 					await this.statusBar.showError(
 						loc.MIGRATION_CUTOVER_ERROR,
