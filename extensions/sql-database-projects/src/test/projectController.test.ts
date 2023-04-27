@@ -330,6 +330,30 @@ describe('ProjectsController', function (): void {
 				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
+			it.only('Should exclude a folder', async function (): Promise<void> {
+				this.timeout(999_999);
+				let proj = await testUtils.createTestSqlProject(this.test);
+				await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
+
+				const projController = new ProjectsController(testContext.outputChannel);
+				const projTreeRoot = new ProjectRootTreeItem(proj);
+
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+				(proj.files.length).should.equal(1, 'Starting number of files');
+				(proj.folders.length).should.equal(1, 'Starting number of folders');
+
+				// exclude folder
+				const folderNode = projTreeRoot.children.find(f => f.friendlyName === 'SomeFolder');
+				await projController.exclude(createWorkspaceTreeItem(folderNode!));
+
+				// reload project and verify files were renamed
+				proj = await Project.openProject(proj.projectFilePath);
+
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should still exist on disk');
+				(proj.files.length).should.equal(0, 'Number of files should not have changed');
+				(proj.folders.length).should.equal(0, 'Number of folders should not have changed');
+			});
+
 			// TODO: move test to DacFx and fix delete
 			it.skip('Should delete folders with excluded items', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(this.test, templates.newSqlProjectTemplate);
@@ -1024,7 +1048,7 @@ describe('ProjectsController', function (): void {
 			should(project.sqlCmdVariables.size).equal(2, 'The project should start with 2 sqlcmd variables');
 
 			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Cancel'));
-			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0] /* LowerFolder */));
 
 			// reload project
 			project = await Project.openProject(project.projectFilePath);
