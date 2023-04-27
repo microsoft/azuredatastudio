@@ -75,7 +75,7 @@ function prepareDebPackage(arch) {
 		let size = 0;
 		const control = code.pipe(es.through(
 			function (f) { size += f.isDirectory() ? 4096 : f.contents.length; },
-			async function () {
+			function () {
 				const that = this;
 				gulp.src('resources/linux/debian/control.template', { base: '.' })
 					.pipe(replace('@@NAME@@', product.applicationName))
