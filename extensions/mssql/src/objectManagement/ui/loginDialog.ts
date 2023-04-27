@@ -9,7 +9,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, isValidSQLPassword } from '../utils';
-import { DefaultTableMaxHeight } from './dialogBase';
+import { DefaultMaxTableHeight } from './dialogBase';
 
 export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
@@ -216,7 +216,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 			[localizedConstants.ServerRoleTypeDisplayNameInTitle],
 			this.viewInfo.serverRoles,
 			this.objectInfo.serverRoles,
-			DefaultTableMaxHeight,
+			DefaultMaxTableHeight,
 			(item) => {
 				return item !== PublicServerRoleName
 			});

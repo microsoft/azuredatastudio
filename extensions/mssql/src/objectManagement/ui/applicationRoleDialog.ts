@@ -6,8 +6,9 @@ import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
+import { AlterApplicationRoleDocUrl, CreateApplicationRoleDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
+import { DefaultMaxTableHeight } from './dialogBase';
 
 export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectManagement.ApplicationRoleInfo, ObjectManagement.ApplicationRoleViewInfo> {
 	// Sections
@@ -32,7 +33,7 @@ export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectMana
 	}
 
 	protected override get docUrl(): string {
-		return this.options.isNewObject ? CreateDatabaseRoleDocUrl : AlterDatabaseRoleDocUrl;
+		return this.options.isNewObject ? CreateApplicationRoleDocUrl : AlterApplicationRoleDocUrl;
 	}
 
 	protected override async validateInput(): Promise<string[]> {
@@ -79,7 +80,15 @@ export class ApplicationRoleDialog extends ObjectManagementDialogBase<ObjectMana
 	}
 
 	private initializeOwnedSchemasSection(): void {
-		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader, [localizedConstants.SchemaText], this.viewInfo.schemas, this.objectInfo.ownedSchemas);
+		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader,
+			[localizedConstants.SchemaText],
+			this.viewInfo.schemas,
+			this.objectInfo.ownedSchemas,
+			DefaultMaxTableHeight,
+			(item) => {
+				// It is not allowed to have unassigned schema.
+				return this.objectInfo.ownedSchemas.indexOf(item) === -1;
+			});
 		this.ownedSchemasSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 }

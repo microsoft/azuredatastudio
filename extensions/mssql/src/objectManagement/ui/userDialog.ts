@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword } from '../utils';
-import { DefaultTableMaxHeight } from './dialogBase';
+import { DefaultMaxTableHeight } from './dialogBase';
 
 export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
 	private generalSection: azdata.GroupContainer;
@@ -139,7 +139,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultTableMaxHeight,
+			DefaultMaxTableHeight,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;

@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as mssql from 'mssql';
-import { DefaultTableListItemEnabledStateGetter, DefaultTableMaxHeight, DialogBase, TableListItemComparer, TableListItemValueGetter } from './dialogBase';
+import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableHeight, DialogBase, TableListItemComparer, TableListItemValueGetter } from './dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { getNodeTypeDisplayName } from '../utils';
 import { getErrorMessage } from '../../utils';
@@ -57,7 +57,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			[localizedConstants.ObjectTypeText],
 			this.options.objectTypes,
 			this.selectedObjectTypes,
-			DefaultTableMaxHeight,
+			DefaultMaxTableHeight,
 			DefaultTableListItemEnabledStateGetter, (item) => {
 				return [getNodeTypeDisplayName(item, true)];
 			});

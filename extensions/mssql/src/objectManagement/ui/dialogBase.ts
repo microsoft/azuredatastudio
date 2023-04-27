@@ -11,12 +11,12 @@ import * as localizedConstants from '../localizedConstants';
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
-export const DefaultTableMaxHeight = 400;
-export const DefaultTableMinRowCount = 1;
+export const DefaultMaxTableHeight = 400;
+export const DefaultMinTableRowCount = 1;
 export const TableRowHeight = 25;
 export const TableColumnHeaderHeight = 30;
 
-export function getTableHeight(rowCount: number, minRowCount: number = DefaultTableMinRowCount, maxHeight: number = DefaultTableMaxHeight): number {
+export function getTableHeight(rowCount: number, minRowCount: number = DefaultMinTableRowCount, maxHeight: number = DefaultMaxTableHeight): number {
 	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
 }
 
@@ -168,7 +168,7 @@ export abstract class DialogBase<DialogResult> {
 		columnNames: string[],
 		allItems: T[],
 		selectedItems: T[],
-		maxHeight: number = DefaultTableMaxHeight,
+		maxHeight: number = DefaultMaxTableHeight,
 		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
 		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
 		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): azdata.TableComponent {
@@ -187,7 +187,7 @@ export abstract class DialogBase<DialogResult> {
 					})
 				],
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length, DefaultTableMinRowCount, maxHeight)
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxHeight)
 			}
 		).component();
 		this.disposables.push(table.onCellAction!((arg: azdata.ICheckboxCellActionEventArgs) => {
@@ -203,9 +203,9 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected setTableData(table: azdata.TableComponent, data: any[][], maxHeight: number = DefaultTableMaxHeight) {
+	protected setTableData(table: azdata.TableComponent, data: any[][], maxHeight: number = DefaultMaxTableHeight) {
 		table.data = data;
-		table.height = getTableHeight(data.length, DefaultTableMinRowCount, maxHeight);
+		table.height = getTableHeight(data.length, DefaultMinTableRowCount, maxHeight);
 	}
 
 	protected getDataForTableList<T>(
@@ -221,14 +221,14 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
-	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][], maxHeight: number = DefaultTableMaxHeight): azdata.TableComponent {
+	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][], maxHeight: number = DefaultMaxTableHeight): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,
 				data: data,
 				columns: columns,
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length, DefaultTableMinRowCount, maxHeight)
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxHeight)
 			}
 		).component();
 		return table;

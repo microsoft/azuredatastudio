@@ -8,6 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
+import { DefaultMaxTableHeight } from './dialogBase';
 
 export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
 	// Sections
@@ -115,7 +116,15 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 	}
 
 	private initializeOwnedSchemasSection(): void {
-		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader, [localizedConstants.SchemaText], this.viewInfo.schemas, this.objectInfo.ownedSchemas);
+		this.ownedSchemaTable = this.createTableList<string>(localizedConstants.OwnedSchemaSectionHeader,
+			[localizedConstants.SchemaText],
+			this.viewInfo.schemas,
+			this.objectInfo.ownedSchemas,
+			DefaultMaxTableHeight,
+			(item) => {
+				// It is not allowed to have unassigned schema.
+				return this.objectInfo.ownedSchemas.indexOf(item) === -1;
+			});
 		this.ownedSchemasSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.ownedSchemaTable]);
 	}
 }

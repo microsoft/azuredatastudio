@@ -90,6 +90,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
+		console.error(err);
 		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(getNodeTypeDisplayName(objectType), getErrorMessage(err)));
 	}
 }
@@ -118,6 +119,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
+		console.error(err);
 		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
 	}
 }
@@ -163,6 +165,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DeleteObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
+				console.error(err);
 				return;
 			}
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
@@ -215,6 +218,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
+				console.error(err);
 				return;
 			}
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
