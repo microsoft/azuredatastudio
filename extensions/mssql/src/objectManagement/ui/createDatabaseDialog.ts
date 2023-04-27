@@ -9,8 +9,6 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
 
-const DefaultValue = '<default>';
-
 export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
 	private _nameInput: azdata.InputBoxComponent;
 
@@ -61,32 +59,34 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
 
+		return this.createGroup(localizedConstants.GeneralSectionHeader, [
+			nameContainer
+		], false);
+	}
+
+	private initializeOptionsSection(): azdata.GroupContainer {
 		// Hide Owner field for Azure SQL DB
-		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue);
+		let ownerEnabled = this.viewInfo.loginNames?.length > 0;
+		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, this.viewInfo.loginNames, undefined, ownerEnabled);
 		this.disposables.push(ownerDropbox.onValueChanged(async () => {
-			this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
+			this.objectInfo.owner = ownerDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox);
 
-		return this.createGroup(localizedConstants.GeneralSectionHeader, [
-			nameContainer,
-			ownerContainer,
-		], false);
-	}
-
-	private initializeOptionsSection(): azdata.GroupContainer {
-		let collationDropbox = this.createDropdown(localizedConstants.CollationText, this.viewInfo.collationNames, undefined);
+		var collationEnabled = this.viewInfo.collationNames?.length > 0;
+		let collationDropbox = this.createDropdown(localizedConstants.CollationText, this.viewInfo.collationNames, undefined, collationEnabled);
 		this.disposables.push(collationDropbox.onValueChanged(async () => {
-			this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
+			this.objectInfo.collationName = collationDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
 
 		// Hide Recovery Model for Azure SQL DB
-		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
+		var recoveryEnabled = this.viewInfo.recoveryModels?.length > 0;
+		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, undefined, recoveryEnabled);
 		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
 			this.objectInfo.recoveryModel = recoveryDropbox.value as string;
 			this.onObjectValueChange();
@@ -94,7 +94,8 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const recoveryContainer = this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox);
 
-		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
+		var compatibilityEnabled = this.viewInfo.compatibilityLevels?.length > 0;
+		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, undefined, compatibilityEnabled);
 		this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
 			this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
 			this.onObjectValueChange();
@@ -103,7 +104,8 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
 
 		// Hide Containment Type for Azure SQL DB
-		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
+		var containmentEnabled = this.viewInfo.containmentTypes?.length > 0;
+		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, undefined, containmentEnabled);
 		this.disposables.push(containmentDropbox.onValueChanged(async () => {
 			this.objectInfo.containmentType = containmentDropbox.value as string;
 			this.onObjectValueChange();
@@ -111,6 +113,6 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}));
 		const containmentContainer = this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox);
 
-		return this.createGroup(localizedConstants.OptionsSectionHeader, [collationContainer, recoveryContainer, compatibilityContainer, containmentContainer], true, true);
+		return this.createGroup(localizedConstants.OptionsSectionHeader, [ownerContainer, collationContainer, recoveryContainer, compatibilityContainer, containmentContainer], true, true);
 	}
 }
