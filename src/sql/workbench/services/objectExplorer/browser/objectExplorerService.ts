@@ -804,7 +804,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
-			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, nodeInfo.isFilteringSupported, nodeInfo.defaultFilters, nodeInfo.filters, {
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, nodeInfo.defaultFilters, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
