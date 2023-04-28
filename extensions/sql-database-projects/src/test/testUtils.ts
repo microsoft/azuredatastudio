@@ -13,9 +13,8 @@ import should = require('should');
 import { AssertionError } from 'assert';
 import { Project } from '../models/project';
 import { Uri } from 'vscode';
-import { exists, getAzdataApi, getSqlProjectsService } from '../common/utils';
+import { exists, getSqlProjectsService } from '../common/utils';
 import * as mssql from 'mssql';
-import * as vscodeMssql from 'vscode-mssql';
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
