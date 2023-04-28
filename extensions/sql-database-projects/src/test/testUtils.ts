@@ -34,18 +34,7 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 
 export async function createTestSqlProject(test: Mocha.Runnable | undefined): Promise<Project> {
 	const projPath = await getTestProjectPath(test);
-	let projectType;
-	let sqlProjService;
-
-	if (getAzdataApi()) {
-		projectType = mssql.ProjectType.SdkStyle;
-		sqlProjService = (await getSqlProjectsService()) as mssql.ISqlProjectsService;
-		await sqlProjService.createProject(projPath, projectType);
-	} else {
-		projectType = vscodeMssql.ProjectType.SdkStyle;
-		sqlProjService = (await getSqlProjectsService()) as vscodeMssql.ISqlProjectsService;
-		await sqlProjService.createProject(projPath, projectType);
-	}
+	await (await getSqlProjectsService() as mssql.ISqlProjectsService).createProject(projPath, mssql.ProjectType.SdkStyle);
 	return await Project.openProject(projPath);
 }
 
