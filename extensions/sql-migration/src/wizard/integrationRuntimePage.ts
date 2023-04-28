@@ -15,6 +15,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
 import * as styles from '../constants/styles';
+import { RegisterSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/registerSqlMigrationServiceDialog';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -510,7 +511,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(this._dmsStatusInfoBox.onDidClick(async () => {
-			const dialog = new CreateSqlMigrationServiceDialog();				////
+			const dialog = new RegisterSqlMigrationServiceDialog();				////
 			await dialog.registerExistingDms(
 				this.migrationStateModel,
 				this.migrationStateModel._sqlMigrationService!);
