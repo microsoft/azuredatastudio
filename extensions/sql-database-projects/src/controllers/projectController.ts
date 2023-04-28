@@ -1863,11 +1863,11 @@ export class ProjectsController {
 	 * @param target
 	 */
 	public async moveFile(projectUri: vscode.Uri, source: any, target: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		const sourceFileNode = source as FileNode;
+		const sourceFileNode = source as FileNode | FolderNode;
 		const project = await this.getProjectFromContext(sourceFileNode);
 
 		// only moving files is supported
-		if (!sourceFileNode || !(sourceFileNode instanceof FileNode)) {
+		if (!sourceFileNode || !(sourceFileNode instanceof FileNode || sourceFileNode instanceof FolderNode)) {
 			void vscode.window.showErrorMessage(constants.onlyMoveFilesFoldersSupported);
 			return;
 		}
