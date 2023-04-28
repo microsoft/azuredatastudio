@@ -202,9 +202,8 @@ export class ProjectsController {
 			const projectStyle = creationParams.sdkStyle ? mssql.ProjectType.SdkStyle : mssql.ProjectType.LegacyStyle;
 			await (sqlProjectsService as mssql.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
 		} else {
-			throw new Error(constants.errorNotSupportedInVsCode('createProject'));
-			//const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
-			//await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
+			const projectStyle = creationParams.sdkStyle ? mssqlVscode.ProjectType.SdkStyle : mssqlVscode.ProjectType.LegacyStyle;
+			await (sqlProjectsService as mssqlVscode.ISqlProjectsService).createProject(newProjFilePath, projectStyle, targetPlatform);
 		}
 
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);

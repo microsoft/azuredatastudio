@@ -656,11 +656,6 @@ export async function deleteMigration(account: azdata.Account, subscription: Sub
 	}
 }
 
-export async function getLocationDisplayName(location: string): Promise<string> {
-	const api = await getAzureCoreAPI();
-	return api.getRegionDisplayName(location);
-}
-
 export async function validateIrSqlDatabaseMigrationSettings(
 	migration: MigrationStateModel,
 	sourceServerName: string,
@@ -674,7 +669,7 @@ export async function validateIrSqlDatabaseMigrationSettings(
 
 	const api = await getAzureCoreAPI();
 	const account = migration._azureAccount;
-	const subscription = migration._targetSubscription;
+	const subscription = migration._sqlMigrationServiceSubscription;
 	const serviceId = migration._sqlMigrationService?.id;
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const path = encodeURI(`${serviceId}/validateIr?api-version=${DMSV2_API_VERSION}`);
@@ -735,11 +730,12 @@ export async function validateIrDatabaseMigrationSettings(
 
 	const api = await getAzureCoreAPI();
 	const account = migration._azureAccount;
-	const subscription = migration._targetSubscription;
+	const serviceSubscription = migration._sqlMigrationServiceSubscription;
+	const targetSubscription = migration._targetSubscription;
 	const serviceId = migration._sqlMigrationService?.id;
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const path = encodeURI(`${serviceId}/validateIr?api-version=${DMSV2_API_VERSION}`);
-	const storage = await getStorageAccountAccessKeys(account, subscription, networkShare.storageAccount);
+	const storage = await getStorageAccountAccessKeys(account, targetSubscription, networkShare.storageAccount);
 
 	const requestBody: ValdiateIrDatabaseMigrationRequest = {
 		sourceDatabaseName: sourceDatabaseName ?? '',
@@ -775,7 +771,7 @@ export async function validateIrDatabaseMigrationSettings(
 
 	const response = await api.makeAzureRestRequest<any>(
 		account,
-		subscription,
+		serviceSubscription,
 		path,
 		azurecore.HttpRequestMethod.POST,
 		requestBody,
