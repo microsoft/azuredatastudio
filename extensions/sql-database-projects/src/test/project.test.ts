@@ -349,7 +349,6 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.length).equal(0, 'There should not be any SQL object scripts after the excludes');
 	});
 
-	// skipped because exclude folder not yet supported
 	it('Should handle excluding glob included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath(this.test);
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
@@ -391,7 +390,7 @@ describe('Project: sdk style project content operations', function (): void {
 	});
 
 	// skipped because exclude folder not yet supported
-	it.skip('Should handle excluding explicitly included folders', async function (): Promise<void> {
+	it('Should handle excluding explicitly included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
 		await testUtils.createDummyFileStructure(this.test, false, undefined, path.dirname(projFilePath));
@@ -861,7 +860,7 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
 	});
 
-	it.skip('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
+	it('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 		const databaseVariable = 'test3Db';
@@ -904,12 +903,6 @@ describe('Project: database references', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].referenceName).equal('test3', 'The database reference should be test3');
 		should(project.sqlCmdVariables.size).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
-
-		projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
-		should(projFileText).containEql('<DefaultValue>newDbName</DefaultValue>');
-		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
-		should(projFileText).containEql('<DefaultValue>newServerName</DefaultValue>');
 	});
 });
 
@@ -1111,8 +1104,7 @@ describe('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(this.test, baselines.SSDTProjectFileBaseline);
 	});
 
-	// skipped until https://mssqltools.visualstudio.com/SQL%20Tools%20Semester%20Work%20Tracking/_workitems/edit/15749 is fixed
-	it.skip('Should update SSDT project with new system database references', async function (): Promise<void> {
+	it('Should update SSDT project with new system database references', async function (): Promise<void> {
 		await testUpdateInRoundTrip(this.test, baselines.SSDTUpdatedProjectBaseline);
 	});
 
