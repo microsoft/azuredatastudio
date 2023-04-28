@@ -1857,7 +1857,7 @@ export class ProjectsController {
 	//#endregion
 
 	/**
-	 * Move a file in the project tree
+	 * Move a file or folder in the project tree
 	 * @param projectUri URI of the project
 	 * @param source
 	 * @param target
@@ -1866,14 +1866,13 @@ export class ProjectsController {
 		const sourceFileNode = source as FileNode | FolderNode;
 		const project = await this.getProjectFromContext(sourceFileNode);
 
-		// only moving files is supported
+		// only moving files and folders are supported
 		if (!sourceFileNode || !(sourceFileNode instanceof FileNode || sourceFileNode instanceof FolderNode)) {
 			void vscode.window.showErrorMessage(constants.onlyMoveFilesFoldersSupported);
 			return;
 		}
 
-		// Moving files to the SQLCMD variables and Database references folders isn't allowed
-		// TODO: should there be an error displayed if a file attempting to move a file to sqlcmd variables or database references? Or just silently fail and do nothing?
+		// Moving files/folders to the SQLCMD variables and Database references folders isn't allowed
 		if (!target.element.fileSystemUri) {
 			return;
 		}
@@ -1906,7 +1905,7 @@ export class ProjectsController {
 			return;
 		}
 
-		// Move the file
+		// Move the file/folder
 		const moveResult = await project.move(sourceFileNode, newPath);
 
 		if (moveResult?.success) {
