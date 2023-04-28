@@ -20,7 +20,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, NugetPackageReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
-import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
+import { FolderNode, NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 import { ProjectType, GetScriptsResult, GetFoldersResult } from '../common/typeHelper';
 
 
@@ -531,6 +531,9 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		// Note: adding a folder does not mean adding the contents of the folder.
+		// SDK projects may still need to adjust their include/exclude globs, and Legacy projects must still include each file
+		// in order for the contents of the folders to be added.
 		await this.readFolders();
 	}
 
@@ -538,6 +541,32 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.deleteFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		await this.readFilesInProject();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+		await this.readFolders();
+	}
+
+	public async excludeFolder(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeFolder(this.projectFilePath, relativeFolderPath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+		await this.readFolders();
+	}
+
+	public async moveFolder(relativeSourcePath: string, relativeDestinationPath: string): Promise<void> {
+		const result = await this.sqlProjService.moveFolder(this.projectFilePath, relativeSourcePath, relativeDestinationPath);
+		this.throwIfFailed(result);
+
+		await this.readFilesInProject();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
 		await this.readFolders();
 	}
 
@@ -861,9 +890,8 @@ export class Project implements ISqlProject {
 		}
 
 		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
+		let result, referenceName;
 
-		let result;
-		let referenceName;
 		if (reference instanceof SqlProjectReferenceProjectEntry) {
 			referenceName = (<IProjectReferenceSettings>settings).projectName;
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
@@ -1026,13 +1054,15 @@ export class Project implements ISqlProject {
 		let result;
 
 		if (node instanceof SqlObjectFileNode) {
-			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof PreDeployNode) {
-			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof PostDeployNode) {
-			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof NoneNode || node instanceof PublishProfileNode) {
-			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, destinationRelativePath, originalRelativePath);
+			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, originalRelativePath, destinationRelativePath);
+		} else if (node instanceof FolderNode) {
+			result = await this.sqlProjService.moveFolder(this.projectFilePath, originalRelativePath, destinationRelativePath);
 		} else {
 			result = { success: false, errorMessage: constants.unhandledMoveNode }
 		}
