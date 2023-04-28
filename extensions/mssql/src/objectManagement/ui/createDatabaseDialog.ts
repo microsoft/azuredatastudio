@@ -88,7 +88,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 		// Hide Recovery Model for Azure SQL DB
 		var recoveryEnabled = this.viewInfo.recoveryModels?.length > 0;
-		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, undefined, recoveryEnabled);
+		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0], recoveryEnabled);
 		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
 			this.objectInfo.recoveryModel = recoveryDropbox.value as string;
 			this.onObjectValueChange();
@@ -97,7 +97,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const recoveryContainer = this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox);
 
 		var compatibilityEnabled = this.viewInfo.compatibilityLevels?.length > 0;
-		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, undefined, compatibilityEnabled);
+		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0], compatibilityEnabled);
 		this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
 			this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
 			this.onObjectValueChange();
@@ -107,7 +107,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 		// Hide Containment Type for Azure SQL DB
 		var containmentEnabled = this.viewInfo.containmentTypes?.length > 0;
-		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, undefined, containmentEnabled);
+		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0], containmentEnabled);
 		this.disposables.push(containmentDropbox.onValueChanged(async () => {
 			this.objectInfo.containmentType = containmentDropbox.value as string;
 			this.onObjectValueChange();
