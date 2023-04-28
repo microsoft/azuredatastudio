@@ -504,14 +504,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 				} as Tenant;
 			});
 
-			const ignoreList = getTenantIgnoreList();
-			tenants.forEach((tenant, i) => {
-				if (ignoreList.includes(tenant.id)) {
-					Logger.verbose(`Tenant: ${tenant.id} found in ignore list, it will not be used for accessing resources.`);
-					tenants.splice(i);
-				}
-			});
-
 			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
 			// remove home tenant from list of tenants
