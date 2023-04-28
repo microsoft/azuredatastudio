@@ -82,16 +82,12 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return new Date(stringDate1) > new Date(stringDate2) ? -sortDir : sortDir;
 	}
 
-	protected async updateServiceContext(button: azdata.ButtonComponent): Promise<void> {
+	protected async updateServiceButtonContext(button: azdata.ButtonComponent): Promise<void> {
 		const label = await getSelectedServiceStatus();
-		if (button.label !== label ||
-			button.title !== label) {
-
-			button.label = label;
-			button.title = label;
-
-			await this.refresh();
-		}
+		await button.updateProperty('label', '');
+		await button.updateProperty('title', '');
+		await button.updateProperty('label', label);
+		await button.updateProperty('title', label);
 	}
 
 	protected createNewLoginMigrationButton(): azdata.ButtonComponent {

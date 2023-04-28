@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SystemDatabase } from 'mssql';
 import { Uri } from 'vscode';
+import { SystemDatabase } from '../common/typeHelper';
 
 export interface IDatabaseReferenceSettings {
 	databaseVariableLiteralValue?: string;
