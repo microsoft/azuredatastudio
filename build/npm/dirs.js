@@ -14,7 +14,6 @@ exports.dirs = [
 	'extensions/arc',
 	'extensions/azcli',
 	'extensions/azurecore',
-	'extensions/azurehybridtoolkit',
 	'extensions/azuremonitor',
 	'extensions/cms',
 	'extensions/configuration-editing',

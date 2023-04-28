@@ -272,10 +272,7 @@ export class WizardController {
 		stateModel: MigrationStateModel,
 		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
 
-		const resourceGroup = this._getResourceGroupByName(
-			stateModel._resourceGroups,
-			stateModel._sqlMigrationService?.properties.resourceGroup);
-
+		const resourceGroup = stateModel._sqlMigrationServiceResourceGroup;
 		const subscription = this._getSubscriptionFromResourceId(
 			stateModel._subscriptions,
 			resourceGroup?.id);
@@ -294,13 +291,6 @@ export class WizardController {
 				migrationService: stateModel._sqlMigrationService,
 			},
 			serviceContextChangedEvent);
-	}
-
-	private _getResourceGroupByName(
-		resourceGroups: azureResource.AzureResourceResourceGroup[],
-		displayName?: string): azureResource.AzureResourceResourceGroup | undefined {
-
-		return resourceGroups.find(rg => rg.name === displayName);
 	}
 
 	private _getLocationByValue(

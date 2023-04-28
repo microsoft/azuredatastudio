@@ -759,6 +759,12 @@ export function AUTH_KEY_REFRESHED(keyName: string): string {
 export function SERVICE_NOT_READY(serviceName: string): string {
 	return localize('sql.migration.service.not.ready', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.", serviceName);
 }
+export function SERVICE_ERROR_NOT_READY(serviceName: string, error: string): string {
+	return localize('sql.migration.service.error.not.ready',
+		"The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.",
+		serviceName,
+		error);
+}
 export function SERVICE_READY(serviceName: string, host: string): string {
 	return localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}", serviceName, host);
 }
