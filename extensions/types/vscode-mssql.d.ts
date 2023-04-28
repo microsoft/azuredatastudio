@@ -530,10 +530,10 @@ declare module 'vscode-mssql' {
 		/**
 		 * Move a folder and its contents within a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Path of the folder, typically relative to the .sqlproj file
-		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 * @param sourcePath Source path of the folder, typically relative to the .sqlproj file
+		 * @param destinationPath Destination path of the folder, typically relative to the .sqlproj file
 		 */
-		moveFolder(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+		moveFolder(projectUri: string, sourcePath: string, destinationPath: string): Promise<ResultStatus>;
 
 		/**
 		 * Add a post-deployment script to a project
@@ -580,18 +580,18 @@ declare module 'vscode-mssql' {
 		/**
 		 * Move a post-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+		movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<ResultStatus>;
 
 		/**
 		 * Move a pre-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+		movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<ResultStatus>;
 
 		/**
 		 * Close a SQL project
@@ -695,10 +695,10 @@ declare module 'vscode-mssql' {
 		/**
 		 * Move a SQL object script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+		moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<ResultStatus>;
 
 		/**
 		 * Get all the database references in a project
@@ -766,10 +766,10 @@ declare module 'vscode-mssql' {
 		/**
 		 * Move a None item in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<ResultStatus>;
+		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<ResultStatus>;
 	}
 
 	/**
