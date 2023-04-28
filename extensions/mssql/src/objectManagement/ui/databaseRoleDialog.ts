@@ -125,6 +125,6 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;
 			});
-		this.ownedSchemasSection = this.createGroup(localizedConstants.MembershipSectionHeader, [this.ownedSchemaTable]);
+		this.ownedSchemasSection = this.createGroup(localizedConstants.OwnedSchemaSectionHeader, [this.ownedSchemaTable]);
 	}
 }
