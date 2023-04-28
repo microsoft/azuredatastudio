@@ -12,7 +12,9 @@ import * as extractZip from 'extract-zip';
 import * as constants from '../common/constants';
 import { HttpClient } from '../common/httpClient';
 import { DBProjectConfigurationKey } from './netcoreTool';
-import { ProjectType } from 'mssql';
+import { ProjectType } from '../common/typeHelper';
+import * as mssql from 'mssql';
+import * as vscodeMssql from 'vscode-mssql';
 
 const buildDirectory = 'BuildDirectory';
 const sdkName = 'Microsoft.Build.Sql';
@@ -136,10 +138,18 @@ export class BuildHelper {
 		// Right now SystemDacpacsLocation and NETCoreTargetsPath get set to the same thing, but separating them out for if we move
 		// the system dacpacs somewhere else and also so that the variable name makes more sense if building from the commandline,
 		// since SDK style projects don't to specify the targets path, just where the system dacpacs are
-		if (sqlProjStyle === ProjectType.SdkStyle) {
-			return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+		if (utils.getAzdataApi()) {
+			if (sqlProjStyle === mssql.ProjectType.SdkStyle) {
+				return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+			} else {
+				return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+			}
 		} else {
-			return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+			if (sqlProjStyle === vscodeMssql.ProjectType.SdkStyle) {
+				return ` build ${projectPath} /p:NetCoreBuild=true /p:SystemDacpacsLocation=${buildDirPath}`;
+			} else {
+				return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath} /p:SystemDacpacsLocation=${buildDirPath}`;
+			}
 		}
 	}
 }
