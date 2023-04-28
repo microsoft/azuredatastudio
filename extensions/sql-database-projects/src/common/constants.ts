@@ -166,6 +166,7 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+export const versionMustNotBeEmpty = localize('versionMustNotBeEmpty', "Version must not be empty");
 
 //#endregion
 
