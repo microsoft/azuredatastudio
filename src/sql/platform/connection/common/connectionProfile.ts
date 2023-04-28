@@ -41,10 +41,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	// title from ProviderConnectionInfo cannot be changed, in order to show different dynamic options appended, we must override the title with our own.
 	private _title?: string;
 
-	// After connecting, the database name will be changed for the profile.
-	// in order for connection profile matches to work (from stored profiles), we will need to save the profile's initial URI.
-	private _savedUri?: string;
-
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined) {
@@ -211,21 +207,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public override set title(value: string) {
 		this._title = value;
-	}
-
-	public saveOriginalUri(): void {
-		if (!this._savedUri) {
-			this._savedUri = this.getOptionsKey();
-		}
-	}
-
-	public getInitialOptionsKey(): string {
-		if (this._savedUri) {
-			return this._savedUri;
-		}
-		else {
-			return this.getOptionsKey();
-		}
 	}
 
 	public override clone(): ConnectionProfile {

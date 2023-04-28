@@ -157,8 +157,6 @@ export class ConnectionStatusManager {
 
 		//Check if the existing connection database name is different the one in the summary
 		if (connection.connectionProfile.databaseName !== summary.connectionSummary.databaseName) {
-			//Save the original URI, for comparison purposes after connecting.
-			connection.connectionProfile.saveOriginalUri();
 			//Add the ownerUri with database name to the map if not already exists
 			connection.connectionProfile.databaseName = summary.connectionSummary.databaseName!;
 			let prefix = Utils.getUriPrefix(summary.ownerUri);

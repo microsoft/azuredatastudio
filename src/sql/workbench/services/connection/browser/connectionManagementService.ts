@@ -717,26 +717,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-			let compareKey = tempProfile.getInitialOptionsKey();
-			let hasInitialValues = false;
-			if ((profile instanceof ConnectionProfile)) {
-				//get the initial connection key for the profile as it may have been changed from recent.
-				if ((profile as ConnectionProfile).getInitialOptionsKey() !== tempProfile.getInitialOptionsKey()) {
-					hasInitialValues = true;
-				}
-			}
 			let originalTitle = tempProfile.title
 			let totalConnections: ConnectionProfile[] = [];
 			let configConnections = this.getAllConnectionsFromConfig();
+			let activeConnections = this.getActiveConnections();
+
+			if (activeConnections) {
+				activeConnections.forEach(activeConnection => {
+					configConnections = configConnections.filter(profile => profile.id !== activeConnection.id)
+				});
+				totalConnections = totalConnections.concat(activeConnections);
+			}
 
 			if (configConnections) {
 				totalConnections = totalConnections.concat(configConnections);
 			}
-			if (hasInitialValues) {
-				compareKey = (profile as ConnectionProfile).getInitialOptionsKey();
-			}
+
 			let initialSearch = totalConnections.filter(inputProfile => {
-				return inputProfile.getInitialOptionsKey() === compareKey;
+				return inputProfile.id === tempProfile.id;
 			});
 
 			if (initialSearch.length === 0) {
@@ -763,7 +761,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			newConnectionTitles = totalConnections;
 
 			let searchResult = newConnectionTitles.filter(inputProfile => {
-				return inputProfile.getInitialOptionsKey() === compareKey;
+				return inputProfile.id === tempProfile.id;
 			});
 			let finalTitle = searchResult[0]?.title;
 			if (finalTitle) {
