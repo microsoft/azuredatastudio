@@ -17,6 +17,7 @@ export const anyProviderName = '*';
 export const connectionProviderContextKey = 'connectionProvider';
 
 export const applicationName = 'azdata';
+export const mssqlApplicationNameOption = 'applicationName';
 
 export const defaultEngine = 'defaultEngine';
 

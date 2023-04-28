@@ -13,6 +13,7 @@ import { isString } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { URI } from 'vs/base/common/uri';
+import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 
 export interface IconPath {
 	light: URI;
@@ -65,10 +66,17 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				let capabilities = this.capabilitiesService.getCapabilities(this.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
 					const options = capabilities.connection.connectionOptions;
+					// MSSQL Provider doesn't treat appName as special type anymore.
 					let appNameOption = options.find(option => option.specialValueType === interfaces.ConnectionOptionSpecialType.appName);
 					if (appNameOption) {
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;
+					} else if (this.providerName.includes(Constants.mssqlProviderName)) {
+						// Update AppName here for MSSQL provider to be able to match connection URI with STS.
+						appNameOption = options.find(option => option.name === Constants.mssqlApplicationNameOption);
+						if (appNameOption) {
+							this.options[Constants.mssqlApplicationNameOption] = adjustForMssqlAppName(model.options[Constants.mssqlApplicationNameOption]);
+						}
 					}
 					// Set values for advanced options received in model.
 					Object.keys(model.options).forEach(a => {

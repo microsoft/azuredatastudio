@@ -41,6 +41,7 @@ export interface SqlArgs {
 	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
 	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
 	showDashboard?: boolean;
+	applicationName?: string;
 }
 
 //#region decorators
@@ -307,7 +308,10 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 							Constants.AuthenticationType.Integrated;
 
 		profile.connectionName = '';
-		profile.setOptionValue('applicationName', Constants.applicationName);
+		const applicationName = args.applicationName
+			? args.applicationName + '-' + Constants.applicationName
+			: Constants.applicationName;
+		profile.setOptionValue('applicationName', applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
 		profile.setOptionValue('groupId', profile.groupId);
 		return this._connectionManagementService ? this.tryMatchSavedProfile(profile) : profile;

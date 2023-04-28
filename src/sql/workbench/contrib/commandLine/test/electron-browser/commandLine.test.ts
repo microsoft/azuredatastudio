@@ -95,6 +95,7 @@ class TestParsedArgs implements NativeParsedArgs, SqlArgs {
 	wait?: boolean;
 	waitMarkerFilePath?: string;
 	authenticationType?: string;
+	applicationName?: string;
 }
 suite('commandLineService tests', () => {
 
@@ -196,12 +197,14 @@ suite('commandLineService tests', () => {
 		args.database = 'mydatabase';
 		args.user = 'myuser';
 		args.authenticationType = Constants.AuthenticationType.SqlLogin;
+		args.applicationName = 'myapplication';
 
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
 		let originalProfile: IConnectionProfile = undefined;
-		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin), 'connection', true))
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(
+			p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin && p.options['applicationName'] === 'myapplication-azdata'), 'connection', true))
 			.returns((conn) => {
 				originalProfile = conn;
 				return Promise.resolve('unused');
@@ -212,6 +215,7 @@ suite('commandLineService tests', () => {
 		const logService = new NullLogService();
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
 		await contribution.processCommandLine(args);
+		assert.equal(originalProfile.options['applicationName'], 'myapplication-azdata', 'Application Name not received as expected.');
 		connectionManagementService.verifyAll();
 	});
 
