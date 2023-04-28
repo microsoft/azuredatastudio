@@ -541,7 +541,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.deleteFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
+		await this.readSqlObjectScripts();
 		await this.readPreDeployScripts();
 		await this.readPostDeployScripts();
 		await this.readNoneItems();
@@ -552,7 +552,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.excludeFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
+		await this.readSqlObjectScripts();
 		await this.readPreDeployScripts();
 		await this.readPostDeployScripts();
 		await this.readNoneItems();
@@ -563,7 +563,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.moveFolder(this.projectFilePath, relativeSourcePath, relativeDestinationPath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
+		await this.readSqlObjectScripts();
 		await this.readPreDeployScripts();
 		await this.readPostDeployScripts();
 		await this.readNoneItems();
