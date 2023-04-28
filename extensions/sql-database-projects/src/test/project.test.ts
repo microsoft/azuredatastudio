@@ -390,6 +390,36 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.folders.find(f => f.relativePath === 'folder1\\nestedFolder')).equal(undefined);
 	});
 
+	// skipped because exclude folder not yet supported
+	it.skip('Should handle excluding explicitly included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
+		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructure(this.test, false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.length).equal(11);
+		should(project.folders.length).equal(2);
+		should(project.folders.find(f => f.relativePath === 'folder1')!).not.equal(undefined);
+		should(project.folders.find(f => f.relativePath === 'folder2')!).not.equal(undefined);
+
+		// try to exclude an explicitly included folder without trailing \ in sqlproj
+		await project.excludeFolder('folder1');
+
+		// verify folder and contents are excluded
+		should(project.folders.length).equal(1);
+		should(project.files.length).equal(6);
+		should(project.folders.find(f => f.relativePath === 'folder1')).equal(undefined);
+
+		// try to exclude an explicitly included folder with trailing \ in sqlproj
+		await project.excludeFolder('folder2');
+
+		// verify folder and contents are excluded
+		should(project.folders.length).equal(0);
+		should(project.files.length).equal(1);
+		should(project.folders.find(f => f.relativePath === 'folder2')).equal(undefined);
+	});
+
 	it('Should handle deleting explicitly included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath(this.test,);
 		const projFilePath = await testUtils.createTestSqlProjFile(this.test, baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);

@@ -446,16 +446,16 @@ declare module 'mssql' {
 		/**
 		 * Move a post-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
 		movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Move a pre-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
 		movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
@@ -561,8 +561,8 @@ declare module 'mssql' {
 		/**
 		 * Move a SQL object script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
 		moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
@@ -632,8 +632,8 @@ declare module 'mssql' {
 		/**
 		 * Move a None item in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
 		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 	}

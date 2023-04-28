@@ -499,8 +499,9 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
-		// Note: adding a folder does not necessarily mean adding the contents of the folder.
-		// SDK projects must still adjust their globs, and Legacy projects must still include each file.
+		// Note: adding a folder does not mean adding the contents of the folder.
+		// SDK projects may still need to adjust their include/exclude globs, and Legacy projects must still include each file
+		// in order for the contents of the folders to be added.
 		await this.readFolders();
 	}
 
