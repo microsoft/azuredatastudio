@@ -78,6 +78,19 @@ export const LocalCacheSuffix = '.local';
 
 export const LockFileSuffix = '.lockfile';
 
+/////// MSAL ERROR CODES, ref: https://learn.microsoft.com/en-us/azure/active-directory/develop/reference-aadsts-error-codes
+/**
+ * The refresh token has expired or is invalid due to sign-in frequency checks by conditional access.
+ * The token was issued on {issueDate} and the maximum allowed lifetime for this request is {time}.
+ */
+export const AADSTS70043 = 'AADSTS70043';
+/**
+ * FreshTokenNeeded - The provided grant has expired due to it being revoked, and a fresh auth token is needed.
+ * Either an admin or a user revoked the tokens for this user, causing subsequent token refreshes to fail and
+ * require reauthentication. Have the user sign in again.
+ */
+export const AADSTS50173 = 'AADSTS50173';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
 }

@@ -532,16 +532,6 @@ export const PublishProfileElements = localize('publishProfileElements', "Publis
 
 //#endregion
 
-
-
-/**
- * Well-known database source values that are allowed to be sent in telemetry.
- *
- * 'dsct-oracle-to-ms-sql' is the name of an extension which allows users to migrate from Oracle to Microsoft SQL platform.
- * When looking at telemetry, we would like to know if a built or deployed database originated from the DSCT extension.
- */
-export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
-
 export function defaultOutputPath(configuration: string) { return path.join('.', 'bin', configuration); }
 
 /**
