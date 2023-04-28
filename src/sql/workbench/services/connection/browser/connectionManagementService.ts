@@ -713,6 +713,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
+	public getRecentConnectionTreeTitle(profile: interfaces.IConnectionProfile): string {
+		let result = '';
+		if (profile) {
+			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
+			let recentConnections = this.getRecentConnections();
+			let currentConnectionProfileGroup = new ConnectionProfileGroup('tempGroup');
+			currentConnectionProfileGroup.addConnections(recentConnections);
+			TreeUpdateUtils.alterTreeChildrenTitles([currentConnectionProfileGroup]);
+			recentConnections = currentConnectionProfileGroup.connections;
+			let searchResult = recentConnections.filter(profile => profile.id === tempProfile.id);
+			if (searchResult.length === 0) {
+				result = tempProfile.title;
+			}
+			else {
+				result = searchResult[0].title;
+			}
+		}
+		return result;
+	}
+
 	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
 		let result = '';
 		if (profile) {

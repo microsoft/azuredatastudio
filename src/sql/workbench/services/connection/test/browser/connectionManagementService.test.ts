@@ -2126,9 +2126,14 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	capabilitiesService.capabilities['MSSQL'] = mainProvider;
 
 	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+	const connectionStatusManagerMock = TypeMoq.Mock.ofType(ConnectionStatusManager, TypeMoq.MockBehavior.Loose);
+	connectionStatusManagerMock.setup(x => x.getActiveConnectionProfiles(undefined)).returns(() => {
+		return [];
+	});
 	const testInstantiationService = new TestInstantiationService();
 	testInstantiationService.stub(IStorageService, new TestStorageService());
 	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
 	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, capabilitiesService, undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 
 	// We should expect that options by themselves are empty if no other profiles exist.
