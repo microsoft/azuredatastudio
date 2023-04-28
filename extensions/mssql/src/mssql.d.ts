@@ -895,9 +895,12 @@ declare module 'mssql' {
 		 * Object types.
 		 */
 		export const enum NodeType {
+			ApplicationRole = "ApplicationRole",
 			Column = "Column",
 			Database = "Database",
+			DatabaseRole = "DatabaseRole",
 			ServerLevelLogin = "ServerLevelLogin",
+			ServerLevelServerRole = "ServerLevelServerRole",
 			Table = "Table",
 			User = "User",
 			View = "View"
@@ -1213,6 +1216,112 @@ declare module 'mssql' {
 			databaseRoles: string[];
 		}
 
+		/**
+		 * Interface representing the server role object.
+		 */
+		export interface ServerRoleInfo extends SqlObject {
+			/**
+			 * Name of the server principal that owns the server role.
+			 */
+			owner: string;
+			/**
+			 * Name of the server principals that are members of the server role.
+			 */
+			members: string[];
+			/**
+			 * Server roles that the server role is a member of.
+			 */
+			memberships: string[];
+		}
+
+		/**
+		 * Interface representing the information required to render the server role view.
+		 */
+		export interface ServerRoleViewInfo extends ObjectViewInfo<ServerRoleInfo> {
+			/**
+			 * Whether the server role is a fixed role.
+			 */
+			isFixedRole: boolean;
+			/**
+			 * List of all the server roles.
+			 */
+			serverRoles: string[];
+		}
+
+		/**
+		 * Interface representing the application role object.
+		 */
+		export interface ApplicationRoleInfo extends SqlObject {
+			/**
+			 * Default schema of the application role.
+			 */
+			defaultSchema: string;
+			/**
+			 * Schemas owned by the application role.
+			 */
+			ownedSchemas: string[];
+			/**
+			 * Password of the application role.
+			 */
+			password: string;
+		}
+
+		/**
+		 * Interface representing the information required to render the application role view.
+		 */
+		export interface ApplicationRoleViewInfo extends ObjectViewInfo<ApplicationRoleInfo> {
+			/**
+			 * List of all the schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Interface representing the database role object.
+		 */
+		export interface DatabaseRoleInfo extends SqlObject {
+			/**
+			 * Name of the database principal that owns the database role.
+			 */
+			owner: string;
+			/**
+			 * Schemas owned by the database role.
+			 */
+			ownedSchemas: string[];
+			/**
+			 * Name of the user or database role that are members of the database role.
+			 */
+			members: string[];
+		}
+
+		/**
+		 * Interface representing the information required to render the database role view.
+		 */
+		export interface DatabaseRoleViewInfo extends ObjectViewInfo<DatabaseRoleInfo> {
+			/**
+			 * List of all the schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Interface representing an item in the search result.
+		 */
+		export interface SearchResultItem {
+			/**
+			 * name of the object.
+			 */
+			name: string;
+			/**
+			 * type of the object.
+			 */
+			type: NodeType;
+			/**
+			 * schema of the object.
+			 */
+			schema: string | undefined;
+		}
+
 		export interface Database extends SqlObject {
 			owner?: string;
 			collationName?: string;
@@ -1276,6 +1385,14 @@ declare module 'mssql' {
 		 * @param objectUrn SMO Urn of the object to be dropped. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 */
 		drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Thenable<void>;
+		/**
+		 * Search for objects.
+		 * @param contextId The object view's context id.
+		 * @param objectTypes The object types to search for.
+		 * @param searchText Search text.
+		 * @param schema Schema to search in.
+		 */
+		search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
 }

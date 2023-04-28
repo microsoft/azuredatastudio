@@ -15,6 +15,12 @@ export const TableTypeDisplayName: string = localize('objectManagement.TableDisp
 export const ViewTypeDisplayName: string = localize('objectManagement.ViewDisplayName', "view");
 export const ColumnTypeDisplayName: string = localize('objectManagement.ColumnDisplayName', "column");
 export const DatabaseTypeDisplayName: string = localize('objectManagement.DatabaseDisplayName', "database");
+export const ServerRoleTypeDisplayName: string = localize('objectManagement.ServerRoleTypeDisplayName', "server role");
+export const ServerRoleTypeDisplayNameInTitle: string = localize('objectManagement.ServerRoleTypeDisplayNameInTitle', "Server Role");
+export const ApplicationRoleTypeDisplayName: string = localize('objectManagement.ApplicationRoleTypeDisplayName', "application role");
+export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectManagement.ApplicationRoleTypeDisplayNameInTitle', "Application Role");
+export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
+export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
 export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
 
 // Shared Strings
@@ -27,6 +33,13 @@ export const RenameObjectDialogTitle: string = localize('objectManagement.rename
 export const ScriptText: string = localize('objectManagement.scriptText', "Script");
 export const NoActionScriptedMessage: string = localize('objectManagement.noActionScriptedMessage', "There is no action to be scripted.");
 export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
+export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
+export const BrowseText = localize('objectManagement.browseText', "Browse…");
+export const BrowseOwnerButtonAriaLabel = localize('objectManagement.browseForOwnerText', "Browse for an owner");
+export const AddText = localize('objectManagement.addText', "Add…");
+export const RemoveText = localize('objectManagement.removeText', "Remove");
+export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
+export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
 
 
 export function RefreshObjectExplorerError(error: string): string {
@@ -144,6 +157,9 @@ export const PasswordCannotBeEmptyError = localize('objectManagement.passwordCan
 export const PasswordsNotMatchError = localize('objectManagement.passwordsNotMatchError', "Password must match the confirm password.");
 export const InvalidPasswordError = localize('objectManagement.invalidPasswordError', "Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy");
 export const LoginNotSelectedError = localize('objectManagement.loginNotSelectedError', "Login is not selected.");
+export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
+export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
+export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
 export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
 export const OwnerText = localize('objectManagement.ownerLabel', "Owner");
 export const CollationText = localize('objectManagement.collationLabel', "Collation");
@@ -180,7 +196,25 @@ export const UserWithNoConnectAccess = localize('objectManagement.user.userWithN
 export const DefaultSchemaText = localize('objectManagement.user.defaultSchemaLabel', "Default schema");
 export const LoginText = localize('objectManagement.user.loginLabel', "Login");
 export const OwnedSchemaSectionHeader = localize('objectManagement.user.ownedSchemasLabel', "Owned Schemas");
-export const MembershipSectionHeader = localize('objectManagement.user.membershipLabel', "Membership");
+
+// Database Role
+export const SelectDatabaseRoleMemberDialogTitle = localize('objectManagement.databaseRole.SelectMemberDialogTitle', "Select Database Role Members");
+export const SelectDatabaseRoleOwnerDialogTitle = localize('objectManagement.databaseRole.SelectOwnerDialogTitle', "Select Database Role Owner");
+
+// Server Role
+export const SelectServerRoleMemberDialogTitle = localize('objectManagement.serverRole.SelectMemberDialogTitle', "Select Server Role Members");
+export const SelectServerRoleOwnerDialogTitle = localize('objectManagement.serverRole.SelectOwnerDialogTitle', "Select Server Role Owner");
+
+// Find Object Dialog
+export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Object Type");
+export const FilterText = localize('objectManagement.filterText', "Filter");
+export const FindText = localize('objectManagement.findText', "Find");
+export const SelectText = localize('objectManagement.selectText', "Select");
+export const ObjectsText = localize('objectManagement.objectsLabel', "Objects");
+export const LoadingObjectsText = localize('objectManagement.loadingObjectsLabel', "Loading objects…");
+export function LoadingObjectsCompletedText(count: number): string {
+	return localize('objectManagement.loadingObjectsCompletedLabel', "Loading objects completed, {0} objects found", count);
+}
 
 // Create Database
 export const CreateDatabaseTitle = localize('objectManagement.createDatabaseTitle', "Create Database");

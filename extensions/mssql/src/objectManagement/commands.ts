@@ -17,6 +17,9 @@ import * as constants from '../constants';
 import { getNodeTypeDisplayName, refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
+import { ServerRoleDialog } from './ui/serverRoleDialog';
+import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
+import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { CreateDatabaseDialog } from './ui/createDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
@@ -52,13 +55,22 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	if (!connectionUri) {
 		return;
 	}
-	let newObjectType: ObjectManagement.NodeType;
+	let objectType: ObjectManagement.NodeType;
 	switch (context.nodeInfo!.objectType) {
+		case FolderType.ApplicationRoles:
+			objectType = ObjectManagement.NodeType.ApplicationRole;
+			break;
+		case FolderType.DatabaseRoles:
+			objectType = ObjectManagement.NodeType.DatabaseRole;
+			break;
 		case FolderType.ServerLevelLogins:
-			newObjectType = ObjectManagement.NodeType.ServerLevelLogin;
+			objectType = ObjectManagement.NodeType.ServerLevelLogin;
+			break;
+		case FolderType.ServerLevelServerRoles:
+			objectType = ObjectManagement.NodeType.ServerLevelServerRole;
 			break;
 		case FolderType.Users:
-			newObjectType = ObjectManagement.NodeType.User;
+			objectType = ObjectManagement.NodeType.User;
 			break;
 		default:
 			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
@@ -70,7 +82,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			connectionUri: connectionUri,
 			isNewObject: true,
 			database: context.connectionProfile!.databaseName!,
-			objectType: newObjectType,
+			objectType: objectType,
 			objectName: '',
 			parentUrn: parentUrn,
 			objectExplorerContext: context
@@ -82,7 +94,8 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenNewObjectDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
-		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.LoginTypeDisplayName, getErrorMessage(err)));
+		console.error(err);
+		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(getNodeTypeDisplayName(objectType), getErrorMessage(err)));
 	}
 }
 
@@ -91,7 +104,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	if (!connectionUri) {
 		return;
 	}
-	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo!.nodeType);
 	try {
 		const parentUrn = await getParentUrn(context);
 		const options: ObjectManagementDialogOptions = {
@@ -111,7 +123,8 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenPropertiesDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
-		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
+		console.error(err);
+		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
 	}
 }
 
@@ -156,6 +169,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DeleteObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
+				console.error(err);
 				return;
 			}
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
@@ -208,6 +222,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
+				console.error(err);
 				return;
 			}
 			operation.updateStatus(azdata.TaskStatus.Succeeded);
@@ -218,8 +233,14 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 	switch (dialogOptions.objectType) {
+		case ObjectManagement.NodeType.ApplicationRole:
+			return new ApplicationRoleDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.DatabaseRole:
+			return new DatabaseRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelLogin:
 			return new LoginDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.ServerLevelServerRole:
+			return new ServerRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		default:
