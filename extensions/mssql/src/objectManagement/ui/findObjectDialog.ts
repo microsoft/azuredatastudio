@@ -106,6 +106,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private async onFindObjectButtonClick(): Promise<void> {
 		this.dialogObject.okButton.enabled = false;
 		this.objectsLoadingComponent.loading = true;
+		this.findButton.enabled = false;
 		try {
 			const results = await this.objectManagementService.search(this.options.contextId, <mssql.ObjectManagement.NodeType[]>this.selectedObjectTypes);
 			this.allObjects.splice(0, this.allObjects.length, ...results);
@@ -124,6 +125,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 				level: azdata.window.MessageLevel.Error
 			};
 		}
+		this.findButton.enabled = true;
 		this.objectsLoadingComponent.loading = false;
 	}
 
