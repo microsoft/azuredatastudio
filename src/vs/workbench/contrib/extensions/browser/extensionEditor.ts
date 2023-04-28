@@ -908,12 +908,15 @@ export class ExtensionEditor extends EditorPane {
 		if (extension.repository) {
 			resources.push([localize('repository', "Repository"), URI.parse(extension.repository)]);
 		}
-		if (extension.url && extension.licenseUrl) {
+		// {{SQL CARBON EDIT}} Our gallery doesn't have marketplace URLs so skip that check so we show the license link
+		if (/*extension.url &&*/ extension.licenseUrl) {
 			resources.push([localize('license', "License"), URI.parse(extension.licenseUrl)]);
 		}
+		/* {{SQL CARBON EDIT}} Our gallery doesn't have publisher links since we don't have a publicly-viewable gallery
 		if (extension.publisherUrl) {
 			resources.push([extension.publisherDisplayName, extension.publisherUrl]);
 		}
+		*/
 		if (resources.length || extension.publisherSponsorLink) {
 			const extensionResourcesContainer = append(container, $('.resources-container.additional-details-element'));
 			append(extensionResourcesContainer, $('.additional-details-title', undefined, localize('resources', "Extension Resources")));
