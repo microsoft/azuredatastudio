@@ -9,6 +9,8 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
 
+const DefaultValue = '<default>';
+
 export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
 	private _nameInput: azdata.InputBoxComponent;
 
@@ -67,18 +69,18 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	private initializeOptionsSection(): azdata.GroupContainer {
 		// Hide Owner field for Azure SQL DB
 		let ownerEnabled = this.viewInfo.loginNames?.length > 0;
-		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, this.viewInfo.loginNames, undefined, ownerEnabled);
+		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue, ownerEnabled);
 		this.disposables.push(ownerDropbox.onValueChanged(async () => {
-			this.objectInfo.owner = ownerDropbox.value as string;
+			this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox);
 
 		var collationEnabled = this.viewInfo.collationNames?.length > 0;
-		let collationDropbox = this.createDropdown(localizedConstants.CollationText, this.viewInfo.collationNames, undefined, collationEnabled);
+		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue, collationEnabled);
 		this.disposables.push(collationDropbox.onValueChanged(async () => {
-			this.objectInfo.collationName = collationDropbox.value as string;
+			this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
 			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
