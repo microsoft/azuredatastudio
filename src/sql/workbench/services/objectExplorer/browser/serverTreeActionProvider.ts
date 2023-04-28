@@ -167,7 +167,7 @@ export class ServerTreeActionProvider {
 
 			const treeNode = this._objectExplorerService.getObjectExplorerNode(context.profile);
 
-			if (treeNode?.defaultFilters?.length > 0) {
+			if (treeNode?.filterProperties?.length > 0) {
 				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, context.profile));
 			}
 			if (treeNode.filters?.length > 0) {
@@ -230,7 +230,7 @@ export class ServerTreeActionProvider {
 		if (!this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
 
-			if (treeNode?.defaultFilters?.length > 0) {
+			if (treeNode?.filterProperties?.length > 0) {
 				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, undefined));
 			}
 			if (treeNode?.filters?.length > 0) {
