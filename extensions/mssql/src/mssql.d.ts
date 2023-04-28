@@ -1027,17 +1027,9 @@ declare module 'mssql' {
 		 */
 		export interface LoginViewInfo extends ObjectViewInfo<Login> {
 			/**
-			 * Whether Windows Authentication is supported.
+			 * The authentication types supported by the server.
 			 */
-			supportWindowsAuthentication: boolean;
-			/**
-			 * Whether Azure Active Directory Authentication is supported.
-			 */
-			supportAADAuthentication: boolean;
-			/**
-			 * Whether SQL Authentication is supported.
-			 */
-			supportSQLAuthentication: boolean;
+			authenticationTypes: AuthenticationType[];
 			/**
 			 * Whether the locked out state can be changed.
 			 */
@@ -1119,21 +1111,25 @@ declare module 'mssql' {
 		 */
 		export const enum UserType {
 			/**
-			 * User with a server level login.
+			 * Mapped to a server login.
 			 */
-			WithLogin = 'WithLogin',
+			LoginMapped = 'LoginMapped',
 			/**
-			 * User based on a Windows user/group that has no login, but can connect to the Database Engine through membership in a Windows group.
+			 * Mapped to a Windows user or group.
 			 */
-			WithWindowsGroupLogin = 'WithWindowsGroupLogin',
+			WindowsUser = 'WindowsUser',
 			/**
-			 * Contained user, authentication is done within the database.
+			 * Authenticate with password.
 			 */
-			Contained = 'Contained',
+			SqlAuthentication = 'SqlAuthentication',
+			/**
+			 * Authenticate with Azure Active Directory.
+			 */
+			AADAuthentication = 'AADAuthentication',
 			/**
 			 * User that cannot authenticate.
 			 */
-			NoConnectAccess = 'NoConnectAccess'
+			NoLoginAccess = 'NoLoginAccess'
 		}
 
 		/**
@@ -1167,11 +1163,6 @@ declare module 'mssql' {
 			 */
 			defaultLanguage: string | undefined;
 			/**
-			 * Authentication type.
-			 * Only applicable when user type is 'Contained'.
-			 */
-			authenticationType: AuthenticationType | undefined;
-			/**
 			 * Password of the user.
 			 * Only applicable when the user type is 'Contained' and the authentication type is 'Sql'.
 			 */
@@ -1183,21 +1174,9 @@ declare module 'mssql' {
 		 */
 		export interface UserViewInfo extends ObjectViewInfo<User> {
 			/**
-			 * Whether contained user is supported.
+			 * All user types supported by the database.
 			 */
-			supportContainedUser: boolean;
-			/**
-			 * Whether Windows authentication is supported.
-			 */
-			supportWindowsAuthentication: boolean;
-			/**
-			 * Whether Azure Active Directory authentication is supported.
-			 */
-			supportAADAuthentication: boolean;
-			/**
-			 * Whether SQL Authentication is supported.
-			 */
-			supportSQLAuthentication: boolean;
+			userTypes: UserType[];
 			/**
 			 * All languages supported by the database.
 			 */

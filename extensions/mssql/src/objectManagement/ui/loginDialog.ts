@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
-import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, isValidSQLPassword } from '../utils';
+import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableHeight } from './dialogBase';
 
 export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
@@ -107,20 +107,14 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		}, this.objectInfo.name, this.options.isNewObject);
 
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
-		const authTypes = [];
-		if (this.viewInfo.supportWindowsAuthentication) {
-			authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
-		}
-		if (this.viewInfo.supportSQLAuthentication) {
-			authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
-		}
-		if (this.viewInfo.supportAADAuthentication) {
-			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
-		}
-		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, async (newValue) => {
-			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(newValue);
-			this.setViewByAuthenticationType();
-		}, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.options.isNewObject);
+		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText,
+			async (newValue) => {
+				this.objectInfo.authenticationType = localizedConstants.getAuthenticationTypeByDisplayName(newValue);
+				this.setViewByAuthenticationType();
+			},
+			this.viewInfo.authenticationTypes.map(authType => localizedConstants.getAuthenticationTypeDisplayName(authType)),
+			localizedConstants.getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
+			this.options.isNewObject);
 
 		const authTypeContainer = this.createLabelInputContainer(localizedConstants.AuthTypeText, this.authTypeDropdown);
 
