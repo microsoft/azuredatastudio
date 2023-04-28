@@ -17,6 +17,8 @@ import { URI } from 'vs/base/common/uri';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
+import { getLabelWithFilteredSuffix } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -59,7 +61,8 @@ export class ServerTreeRenderer implements IRenderer {
 
 	constructor(
 		isCompact: boolean,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		// isCompact defaults to false unless explicitly set by instantiation call.
 		if (isCompact) {
@@ -163,9 +166,9 @@ export class ServerTreeRenderer implements IRenderer {
 		if (treeNode.icon && !instanceOfSqlThemeIcon(treeNode.icon)) {
 			iconRenderer.putIcon(templateData.icon, treeNode.icon);
 		}
-
-		templateData.label.textContent = treeNode.label;
-		templateData.root.title = treeNode.label;
+		const nodeLabel = treeNode.filters.length > 0 ? getLabelWithFilteredSuffix(treeNode.label) : treeNode.label;
+		templateData.label.textContent = nodeLabel;
+		templateData.root.title = nodeLabel;
 	}
 
 	private getIconPath(connection: ConnectionProfile): IconPath | undefined {
@@ -224,10 +227,10 @@ export class ServerTreeRenderer implements IRenderer {
 
 		let iconPath = this.getIconPath(connection);
 		this.renderServerIcon(templateData.icon, iconPath, isConnected);
-
-		let label = connection.title;
+		const treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
+		let label = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.title;
 		templateData.label.textContent = label;
-		templateData.root.title = connection.serverInfo;
+		templateData.root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.serverInfo;
 		templateData.connectionProfile = connection;
 	}
 

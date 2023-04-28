@@ -23,8 +23,14 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
+import { localize } from 'vs/nls';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const DefaultConnectionIconClass = 'server-page';
+
+export function getLabelWithFilteredSuffix(label: string): string {
+	return localize('filteredTreeElementName', "{0} (filtered)", label);
+}
 
 export interface ConnectionProfileGroupDisplayOptions {
 	showColor: boolean;
@@ -96,7 +102,8 @@ class ConnectionProfileTemplate extends Disposable {
 	constructor(
 		container: HTMLElement,
 		private _isCompact: boolean,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
@@ -122,6 +129,11 @@ class ConnectionProfileTemplate extends Disposable {
 		let label = element.title;
 		this._label.textContent = label;
 		this._root.title = element.serverInfo;
+
+		const treeNode = this._objectExplorerService.getObjectExplorerNode(element);
+		if (treeNode?.filters?.length > 0) {
+			this._label.textContent = getLabelWithFilteredSuffix(this._label.textContent);
+		}
 	}
 }
 
@@ -192,7 +204,8 @@ class TreeNodeTemplate extends Disposable {
 			iconRenderer.putIcon(this._icon, element.icon);
 		}
 
-		this._label.textContent = element.label;
+		this._label.textContent = element.filters.length > 0 ? getLabelWithFilteredSuffix(element.label) :
+			element.label;
 		this._root.title = element.label;
 	}
 }
