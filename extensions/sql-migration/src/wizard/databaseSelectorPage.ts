@@ -229,7 +229,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				value: constants.XEVENTS_ASSESSMENT_DESCRIPTION,
 				width: this.TABLE_WIDTH,
 				CSSStyles: { ...styles.BODY_CSS },
-				links: [{ text: constants.XEVENTS_ASSESSMENT_HELPLINK, url: 'aka.ms/sql-migration-xe-assess' }]
+				links: [{ text: constants.XEVENTS_ASSESSMENT_HELPLINK, url: 'https://aka.ms/sql-migration-xe-assess' }]
 			}).component();
 
 		const xEventsInstructions = this._view.modelBuilder.text()
