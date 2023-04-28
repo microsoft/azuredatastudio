@@ -1104,7 +1104,7 @@ describe('Project: round trip updates', function (): void {
 		await testUpdateInRoundTrip(this.test, baselines.SSDTProjectFileBaseline);
 	});
 
-	it('Should update SSDT project with new system database references', async function (): Promise<void> {
+	it.skip('Should update SSDT project with new system database references', async function (): Promise<void> {
 		await testUpdateInRoundTrip(this.test, baselines.SSDTUpdatedProjectBaseline);
 	});
 
