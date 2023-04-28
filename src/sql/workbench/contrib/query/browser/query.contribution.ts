@@ -201,7 +201,7 @@ actionRegistry.registerWorkbenchAction(
 		ParseSyntaxAction,
 		ParseSyntaxCommandId,
 		ParseSyntaxAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KeyP }
+		{ primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyP }
 	),
 	ParseSyntaxAction.LABEL
 );
