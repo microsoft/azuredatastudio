@@ -9,6 +9,8 @@ import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
 import { Project } from '../project';
 import * as utils from '../../common/utils';
+import * as mssql from 'mssql';
+import * as vscodeMssql from 'vscode-mssql';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension, CollapseProjectNodesKey, errorPrefix } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
@@ -16,7 +18,6 @@ import { FileProjectEntry } from '../projectEntry';
 import { EntryType } from 'sqldbproj';
 import { DBProjectConfigurationKey } from '../../tools/netcoreTool';
 import { SqlCmdVariablesTreeItem } from './sqlcmdVariableTreeItem';
-import { ProjectType } from 'mssql';
 
 /**
  * TreeNode root that represents an entire project
@@ -60,7 +61,13 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get type(): DatabaseProjectItemType {
-		return this.project.sqlProjStyle === ProjectType.SdkStyle ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
+		let projectType;
+		if (utils.getAzdataApi()) {
+			projectType = this.project.sqlProjStyle === mssql.ProjectType.SdkStyle ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
+		} else {
+			projectType = this.project.sqlProjStyle === vscodeMssql.ProjectType.SdkStyle ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
+		}
+		return projectType;
 	}
 
 	/**

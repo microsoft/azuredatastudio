@@ -6,12 +6,12 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import { getSqlProjectsInWorkspace, validateSqlCmdVariableName } from '../common/utils';
+import { getSqlProjectsInWorkspace, getSystemDatabase, validateSqlCmdVariableName } from '../common/utils';
 import { DbServerValues, populateResultWithVars } from './utils';
 import { AddDatabaseReferenceSettings } from '../controllers/projectController';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Project } from '../models/project';
-import { getSystemDatabase, getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
+import { getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 
