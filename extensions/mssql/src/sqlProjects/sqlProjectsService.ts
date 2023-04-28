@@ -415,7 +415,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Add a SQL object script to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the file, including extension, relative to the .sqlproj
 	 */
 	public async addNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -425,7 +425,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Delete a SQL object script from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the file, including extension, relative to the .sqlproj
 	 */
 	public async deleteNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -435,7 +435,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	/**
 	 * Exclude a SQL object script from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the file, including extension, relative to the .sqlproj
 	 */
 	public async excludeNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
