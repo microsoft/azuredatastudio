@@ -67,54 +67,61 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 	}
 
 	private initializeOptionsSection(): azdata.GroupContainer {
-		// Hide Owner field for Azure SQL DB
-		let ownerEnabled = this.viewInfo.loginNames?.length > 0;
-		let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue, ownerEnabled);
-		this.disposables.push(ownerDropbox.onValueChanged(async () => {
-			this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
-		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox);
+		let containers: azdata.Component[] = [];
 
-		var collationEnabled = this.viewInfo.collationNames?.length > 0;
-		let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue, collationEnabled);
-		this.disposables.push(collationDropbox.onValueChanged(async () => {
-			this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
-		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox);
+		if (this.viewInfo.loginNames?.length > 0) {
+			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue);
+			this.disposables.push(ownerDropbox.onValueChanged(async () => {
+				this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
+				this.onObjectValueChange();
+				await this.runValidation(false);
+			}));
+			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
+		}
 
-		// Hide Recovery Model for Azure SQL DB
-		var recoveryEnabled = this.viewInfo.recoveryModels?.length > 0;
-		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0], recoveryEnabled);
-		this.disposables.push(recoveryDropbox.onValueChanged(async () => {
-			this.objectInfo.recoveryModel = recoveryDropbox.value as string;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
-		const recoveryContainer = this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox);
+		if (this.viewInfo.collationNames?.length > 0) {
+			let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue);
+			this.disposables.push(collationDropbox.onValueChanged(async () => {
+				this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
+				this.onObjectValueChange();
+				await this.runValidation(false);
+			}));
+			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
+		}
 
-		var compatibilityEnabled = this.viewInfo.compatibilityLevels?.length > 0;
-		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0], compatibilityEnabled);
-		this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
-			this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
-		const compatibilityContainer = this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox);
+		if (this.viewInfo.recoveryModels?.length > 0) {
+			this.objectInfo.recoveryModel = this.viewInfo.recoveryModels[0];
+			let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
+			this.disposables.push(recoveryDropbox.onValueChanged(async () => {
+				this.objectInfo.recoveryModel = recoveryDropbox.value as string;
+				this.onObjectValueChange();
+				await this.runValidation(false);
+			}));
+			containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
+		}
 
-		// Hide Containment Type for Azure SQL DB
-		var containmentEnabled = this.viewInfo.containmentTypes?.length > 0;
-		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0], containmentEnabled);
-		this.disposables.push(containmentDropbox.onValueChanged(async () => {
-			this.objectInfo.containmentType = containmentDropbox.value as string;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
-		const containmentContainer = this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox);
+		if (this.viewInfo.compatibilityLevels?.length > 0) {
+			this.objectInfo.compatibilityLevel = this.viewInfo.compatibilityLevels[0];
+			let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
+			this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
+				this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
+				this.onObjectValueChange();
+				await this.runValidation(false);
+			}));
+			containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
+		}
 
-		return this.createGroup(localizedConstants.OptionsSectionHeader, [ownerContainer, collationContainer, recoveryContainer, compatibilityContainer, containmentContainer], true, true);
+		if (this.viewInfo.containmentTypes?.length > 0) {
+			this.objectInfo.containmentType = this.viewInfo.containmentTypes[0];
+			let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
+			this.disposables.push(containmentDropbox.onValueChanged(async () => {
+				this.objectInfo.containmentType = containmentDropbox.value as string;
+				this.onObjectValueChange();
+				await this.runValidation(false);
+			}));
+			containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
+		}
+
+		return this.createGroup(localizedConstants.OptionsSectionHeader, containers, true, true);
 	}
 }
