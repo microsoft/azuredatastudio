@@ -30,7 +30,7 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 		[constants.projectLabel, constants.systemDatabase, constants.dacpacText] :
 		[constants.systemDatabase, constants.dacpacText];
 
-	// only add nupkg database reference option
+	// only add nupkg database reference option if project is SDK-style
 	if (project.sqlProjStyle === ProjectType.SdkStyle) {
 		referenceTypes.push(constants.nupkgText);
 	}
