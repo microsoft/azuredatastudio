@@ -27,7 +27,7 @@ import { Event } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
@@ -71,7 +71,7 @@ export class QueryEditor extends EditorPane {
 
 	private textResourceEditor: TextResourceEditor;
 	private textFileEditor: TextFileEditor;
-	private currentTextEditor: BaseTextEditor<ICodeEditorViewState>;
+	private currentTextEditor: AbstractTextCodeEditor<ICodeEditorViewState>;
 
 	private textResourceEditorContainer: HTMLElement;
 	private textFileEditorContainer: HTMLElement;
@@ -100,6 +100,7 @@ export class QueryEditor extends EditorPane {
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 	private _toggleActualExecutionPlanMode: actions.ToggleActualExecutionPlanModeAction;
 	private _exportAsNotebookAction: actions.ExportAsNotebookAction;
+	private _parseQueryAction: actions.ParseSyntaxTaskbarAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -211,6 +212,7 @@ export class QueryEditor extends EditorPane {
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._toggleActualExecutionPlanMode = this.instantiationService.createInstance(actions.ToggleActualExecutionPlanModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
+		this._parseQueryAction = this.instantiationService.createInstance(actions.ParseSyntaxTaskbarAction);
 		this.setTaskbarContent();
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
@@ -269,6 +271,8 @@ export class QueryEditor extends EditorPane {
 				this.removeResultsEditor();
 			}
 		}
+
+		this._parseQueryAction.enabled = this.input.state.connected && !this.input.state.executing;
 	}
 
 	/**
@@ -332,6 +336,7 @@ export class QueryEditor extends EditorPane {
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._estimatedQueryPlanAction },
 				{ action: this._toggleActualExecutionPlanMode },
+				{ action: this._parseQueryAction }
 			);
 			if (previewFeaturesEnabled) {
 				content.push(

@@ -37,12 +37,21 @@ export const TenantSection = 'tenant';
 
 export const AzureTenantConfigSection = AzureSection + '.' + TenantSection + '.' + ConfigSection;
 
+export const Filter = 'filter';
+
 export const NoSystemKeyChainSection = 'noSystemKeychain';
+
+export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
+
+export const piiLogging = 'piiLogging';
 
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
 export const Bearer = 'Bearer';
+
+/** HTTP Client */
+export const httpConfigSectionName = 'http';
 
 /**
  * Use SHA-256 algorithm
@@ -61,7 +70,13 @@ export const dataGridProviderId = 'azure-resources';
 
 export const AzureTokenFolderName = 'Azure Accounts';
 
-export const DefaultAuthLibrary = 'ADAL';
+export const MSALCacheName = 'accessTokenCache';
+
+export const DefaultAuthLibrary = 'MSAL';
+
+export const LocalCacheSuffix = '.local';
+
+export const LockFileSuffix = '.lockfile';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'

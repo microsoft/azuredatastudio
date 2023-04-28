@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "ブランチ名",
-			"error": "$(error) エラー: {0}",
+			"error": "{0} エラー: {1}",
 			"none found": "リモート リポジトリが見つかりません。",
 			"pick url": "複製元の URL を選択します。",
 			"provide url": "リポジトリ URL を指定する",

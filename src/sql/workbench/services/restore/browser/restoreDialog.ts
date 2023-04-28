@@ -50,6 +50,7 @@ import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -161,7 +162,8 @@ export class RestoreDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
-		@IQuickInputService private _quickInputService: IQuickInputService
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@ITableService private readonly _tableService: ITableService
 	) {
 		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
 		// view model
@@ -317,6 +319,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 		this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
+		this._register(this._tableService.registerTable(this._restorePlanTable));
 
 		// Content in general tab
 		const generalTab = DOM.$('.restore-dialog');
@@ -366,6 +369,7 @@ export class RestoreDialog extends Modal {
 		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer, this._accessibilityService, this._quickInputService,
 			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false }));
 		this._fileListTable.setSelectionModel(new RowSelectionModel());
+		this._register(this._tableService.registerTable(this._fileListTable));
 
 		// Content in options tab
 		const optionsContentElement = DOM.$('.restore-dialog');

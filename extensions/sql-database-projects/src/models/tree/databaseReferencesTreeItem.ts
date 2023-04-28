@@ -26,7 +26,6 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	 */
 	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, databaseReferences: IDatabaseReferenceProjectEntry[]) {
 		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri);
-
 		this.construct(databaseReferences);
 	}
 
@@ -44,9 +43,13 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 		return this.references;
 	}
 
+	public get type(): constants.DatabaseProjectItemType {
+		return constants.DatabaseProjectItemType.referencesRoot;
+	}
+
 	public get treeItem(): vscode.TreeItem {
 		const refFolderItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.Collapsed);
-		refFolderItem.contextValue = constants.DatabaseProjectItemType.referencesRoot;
+		refFolderItem.contextValue = this.type;
 		refFolderItem.iconPath = IconPathHelper.referenceGroup;
 
 		return refFolderItem;
@@ -55,17 +58,22 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 	constructor(private reference: IDatabaseReferenceProjectEntry, referencesNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri) {
-		super(vscode.Uri.file(path.join(referencesNodeRelativeProjectUri.fsPath, reference.databaseName)), sqlprojUri);
+		super(vscode.Uri.file(path.join(referencesNodeRelativeProjectUri.fsPath, reference.referenceName)), sqlprojUri);
+		this.entryKey = this.friendlyName;
 	}
 
 	public get children(): BaseProjectTreeItem[] {
 		return [];
 	}
 
+	public get type(): constants.DatabaseProjectItemType {
+		return constants.DatabaseProjectItemType.reference;
+	}
+
 	public get treeItem(): vscode.TreeItem {
 		const refItem = new vscode.TreeItem(this.relativeProjectUri, vscode.TreeItemCollapsibleState.None);
-		refItem.label = this.reference.databaseName;
-		refItem.contextValue = constants.DatabaseProjectItemType.reference;
+		refItem.label = this.reference.referenceName;
+		refItem.contextValue = this.type;
 		refItem.iconPath = IconPathHelper.referenceDatabase;
 
 		return refItem;

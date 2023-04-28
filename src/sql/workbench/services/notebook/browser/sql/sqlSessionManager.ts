@@ -608,7 +608,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._rowsMap.set(key, rows.concat(queryResult.rows));
 
 			// Convert rows to data resource and html and send to cell model to be saved
-			let dataResourceRows = this.convertRowsToDataResource(queryResult.rows);
+			let dataResourceRows = this.convertRowsToDataResource(resultSet.columnInfo, queryResult.rows);
 			let saveData = this._dataToSaveMap.get(key);
 			saveData['application/vnd.dataresource+json'].data = saveData['application/vnd.dataresource+json'].data.concat(dataResourceRows);
 			let htmlRows = this.convertRowsToHtml(queryResult.rows, key);
@@ -702,11 +702,12 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return htmlTable;
 	}
 
-	private convertRowsToDataResource(rows: ICellValue[][]): any[] {
+	private convertRowsToDataResource(columns: IColumn[], rows: ICellValue[][]): IDataResourceRow[] {
 		return rows.map(row => {
-			let rowObject: { [key: string]: any; } = {};
+			let rowObject = {};
 			row.forEach((val, index) => {
-				rowObject[index] = val.displayValue;
+				let columnName = columns[index].columnName;
+				rowObject[columnName] = val.displayValue;
 			});
 			return rowObject;
 		});
@@ -775,7 +776,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 export interface IDataResource {
 	schema: IDataResourceFields;
-	data: any[];
+	data: IDataResourceRow[];
 }
 
 export interface IDataResourceFields {
@@ -785,6 +786,20 @@ export interface IDataResourceFields {
 export interface IDataResourceSchema {
 	name: string;
 	type?: string;
+}
+
+export interface IDataResourceRow {
+	[key: string]: any;
+}
+
+/**
+ * Determines whether a row from a query result set uses column name keys to access its cell data, rather than ordinal number.
+ * @param row The data row to inspect.
+ * @param columnNames The array of column names from the result set's column schema. Column names can be in any order.
+ */
+export function rowHasColumnNameKeys(row: IDataResourceRow, columnNames: string[]): boolean {
+	let columnNameSet = new Set(columnNames);
+	return Object.keys(row).every(rowKey => columnNameSet.has(rowKey));
 }
 
 class ExternalScriptMagic {

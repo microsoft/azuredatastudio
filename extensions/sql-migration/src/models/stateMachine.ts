@@ -8,12 +8,12 @@ import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as contracts from '../service/contracts';
 import * as features from '../service/features';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, VirtualMachineInstanceView } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
-import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder } from '../api/utils';
+import { hashString, deepClone, getBlobContainerNameWithFolder, Blob, getLastBackupFileNameWithoutFolder, MigrationTargetType } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, getSourceConnectionProfile, getSourceConnectionServerInfo, getSourceConnectionString, getSourceConnectionUri, getTrustServerCertificateValue, SourceDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 import { LoginMigrationModel } from './loginMigrationModel';
@@ -57,12 +57,6 @@ export enum ServiceTier {
 	BusinessCritical = 'BusinessCritical',
 }
 
-export enum MigrationTargetType {
-	SQLVM = 'AzureSqlVirtualMachine',
-	SQLMI = 'AzureSqlManagedInstance',
-	SQLDB = 'AzureSqlDatabase'
-}
-
 export enum MigrationSourceAuthenticationType {
 	Integrated = 'WindowsAuthentication',
 	Sql = 'SqlAuthentication'
@@ -101,7 +95,7 @@ export enum Page {
 export enum WizardEntryPoint {
 	Default = 'Default',
 	SaveAndClose = 'SaveAndClose',
-	RetryMigration = 'RetryMigration',
+	RestartMigration = 'RestartMigration',
 }
 
 export enum PerformanceDataSourceOptions {
@@ -156,6 +150,8 @@ export interface SavedInfo {
 	blobs: Blob[];
 	targetDatabaseNames: string[];
 	sqlMigrationService: SqlMigrationService | undefined;
+	serviceSubscription: azurecore.azureResource.AzureResourceSubscription | null;
+	serviceResourceGroup: azurecore.azureResource.AzureResourceResourceGroup | null;
 	serverAssessment: ServerAssessment | null;
 	skuRecommendation: SkuRecommendationSavedInfo | null;
 }
@@ -207,6 +203,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetPassword!: string;
 	public _sourceTargetMapping: Map<string, TargetDatabaseInfo | undefined> = new Map();
 
+	public _sqlMigrationServiceSubscription!: azurecore.azureResource.AzureResourceSubscription;
 	public _sqlMigrationServiceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _sqlMigrationService!: SqlMigrationService | undefined;
 	public _sqlMigrationServices!: SqlMigrationService[];
@@ -267,7 +264,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuEnableElastic!: boolean;
 
 	public refreshDatabaseBackupPage!: boolean;
-	public retryMigration!: boolean;
+	public restartMigration!: boolean;
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
@@ -347,6 +344,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			&& results.every(r =>
 				r.errors.length === 0 &&
 				r.state === ValidateIrState.Succeeded)
+	}
+
+	public get migrationTargetServerName(): string {
+		switch (this._targetType) {
+			case MigrationTargetType.SQLMI:
+				return (this._targetServerInstance as azurecore.azureResource.AzureSqlManagedInstance)?.name;
+			case MigrationTargetType.SQLVM:
+				return (this._targetServerInstance as SqlVMServer)?.name;
+			case MigrationTargetType.SQLDB:
+				return (this._targetServerInstance as AzureSqlDatabaseServer)?.name;
+			default:
+				return '';
+		}
 	}
 
 	public get isBackupContainerNetworkShare(): boolean {
@@ -933,10 +943,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this.extensionContext.extensionPath;
 	}
 
-	public getLocationDisplayName(location: string): Promise<string> {
-		return getLocationDisplayName(location);
-	}
-
 	public async getManagedDatabases(): Promise<string[]> {
 		return (
 			await getSqlManagedInstanceDatabases(this._azureAccount,
@@ -947,7 +953,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async startTdeMigration(
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
+		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => Promise<void>): Promise<OperationResult<TdeMigrationDbResult[]>> {
 
 		const tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
 		const connectionString = await getSourceConnectionString();
@@ -1113,7 +1119,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				requestBody.properties.sourceDatabaseName = this._databasesForMigration[i];
 				const response = await startDatabaseMigration(
 					this._azureAccount,
-					this._targetSubscription,
+					this._sqlMigrationServiceSubscription,
 					this._sqlMigrationService?.location!,
 					this._targetServerInstance,
 					this._targetDatabaseNames[i],
@@ -1127,8 +1133,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {
 					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
-				} else if (this.retryMigration) {
-					wizardEntryPoint = WizardEntryPoint.RetryMigration;
+				} else if (this.restartMigration) {
+					wizardEntryPoint = WizardEntryPoint.RestartMigration;
 				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
@@ -1137,9 +1143,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						{
 							'sessionId': this._sessionId,
 							'tenantId': this._azureAccount.properties.tenants[0].id,
-							'subscriptionId': this._targetSubscription?.id,
-							'resourceGroup': this._resourceGroup?.name,
-							'location': this._targetServerInstance.location,
+							'subscriptionId': this._sqlMigrationServiceSubscription?.id,
+							'resourceGroup': this._sqlMigrationServiceResourceGroup?.name,
+							'location': this._location.name,
 							'targetType': this._targetType,
 							'hashedServerName': hashString(this._assessmentApiResponse?.assessmentResult?.name),
 							'hashedDatabaseName': hashString(this._databasesForMigration[i]),
@@ -1173,7 +1179,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			finally {
 				// kill existing data collection if user start migration
 				await this.refreshPerfDataCollection();
-				if ((!this.resumeAssessment || this.retryMigration) && this._perfDataCollectionIsCollecting) {
+				if ((!this.resumeAssessment || this.restartMigration) && this._perfDataCollectionIsCollecting) {
 					void this.stopPerfDataCollection();
 					void vscode.window.showInformationMessage(
 						constants.AZURE_RECOMMENDATION_STOP_POPUP);
@@ -1203,12 +1209,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			sqlMigrationService: undefined,
 			serverAssessment: null,
 			skuRecommendation: null,
+			serviceResourceGroup: null,
+			serviceSubscription: null,
 		};
 		switch (currentPage) {
 			case Page.Summary:
 
 			case Page.IntegrationRuntime:
 				saveInfo.sqlMigrationService = this._sqlMigrationService;
+				saveInfo.serviceSubscription = this._sqlMigrationServiceSubscription;
+				saveInfo.serviceResourceGroup = this._sqlMigrationServiceResourceGroup;
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
 
@@ -1288,6 +1298,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._databaseBackup.subscription = this.savedInfo.subscription || undefined!;
 
 			this._sqlMigrationService = this.savedInfo.sqlMigrationService;
+			this._sqlMigrationServiceSubscription = this.savedInfo.serviceSubscription || undefined!;
+			this._sqlMigrationServiceResourceGroup = this.savedInfo.serviceResourceGroup || undefined!;
 
 			const savedAssessmentResults = this.savedInfo.serverAssessment;
 			if (savedAssessmentResults) {
@@ -1334,14 +1346,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case MigrationTargetType.SQLMI:
 				const sqlMi = this._targetServerInstance as SqlManagedInstance;
 				this._targetServerName = sqlMi.properties.fullyQualifiedDomainName;
+				break;
 			case MigrationTargetType.SQLDB:
 				const sqlDb = this._targetServerInstance as AzureSqlDatabaseServer;
 				this._targetServerName = sqlDb.properties.fullyQualifiedDomainName;
+				break;
 			case MigrationTargetType.SQLVM:
 				// For sqlvm, we need to use ip address from the network interface to connect to the server
 				const sqlVm = this._targetServerInstance as SqlVMServer;
 				const networkInterfaces = Array.from(sqlVm.networkInterfaces.values());
 				this._targetServerName = NetworkInterfaceModel.getIpAddress(networkInterfaces);
+				break;
 		}
 	}
 

@@ -99,7 +99,7 @@ export class WizardController {
 
 		// kill existing data collection if user relaunches the wizard via new migration or retry existing migration
 		await this._model.refreshPerfDataCollection();
-		if ((!this._model.resumeAssessment || this._model.retryMigration) && this._model._perfDataCollectionIsCollecting) {
+		if ((!this._model.resumeAssessment || this._model.restartMigration) && this._model._perfDataCollectionIsCollecting) {
 			void this._model.stopPerfDataCollection();
 			void vscode.window.showInformationMessage(loc.AZURE_RECOMMENDATION_STOP_POPUP);
 		}
@@ -107,7 +107,7 @@ export class WizardController {
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
-		if (this._model.retryMigration || this._model.resumeAssessment) {
+		if (this._model.resumeAssessment || this._model.restartMigration) {
 			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime) {
 				this._model.refreshDatabaseBackupPage = true;
 			}
@@ -272,10 +272,7 @@ export class WizardController {
 		stateModel: MigrationStateModel,
 		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
 
-		const resourceGroup = this._getResourceGroupByName(
-			stateModel._resourceGroups,
-			stateModel._sqlMigrationService?.properties.resourceGroup);
-
+		const resourceGroup = stateModel._sqlMigrationServiceResourceGroup;
 		const subscription = this._getSubscriptionFromResourceId(
 			stateModel._subscriptions,
 			resourceGroup?.id);
@@ -294,13 +291,6 @@ export class WizardController {
 				migrationService: stateModel._sqlMigrationService,
 			},
 			serviceContextChangedEvent);
-	}
-
-	private _getResourceGroupByName(
-		resourceGroups: azureResource.AzureResourceResourceGroup[],
-		displayName?: string): azureResource.AzureResourceResourceGroup | undefined {
-
-		return resourceGroups.find(rg => rg.name === displayName);
 	}
 
 	private _getLocationByValue(

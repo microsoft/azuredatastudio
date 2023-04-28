@@ -79,6 +79,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: Constants.HdfsItems.File,
 			nodeSubType: this.getSubType(),

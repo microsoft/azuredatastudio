@@ -125,7 +125,7 @@ export class OptionsDialog extends Modal {
 	private fillInOptions(container: HTMLElement, options: azdata.ServiceOption[]): void {
 		for (let i = 0; i < options.length; i++) {
 			let option: azdata.ServiceOption = options[i];
-			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input', `option-${option.name}`);
+			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input', `option-${option.name}`, option.isRequired);
 			const optionElement = OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
 			this.disposableStore.add(optionElement.optionWidget);
 		}
@@ -217,7 +217,7 @@ export class OptionsDialog extends Modal {
 	/**
 	 * Registers on selection change event for connection options configured with 'onSelectionChange' property.
 	 */
-	private registerOnSelectionChangeEvents(options: { [name: string]: any }, container: HTMLElement): void {
+	private registerOnSelectionChangeEvents(optionValues: { [name: string]: any }, container: HTMLElement): void {
 		//Register on selection change event for all advanced options
 		for (let optionName in this._optionElements) {
 			let widget: Widget = this._optionElements[optionName].optionWidget;
@@ -237,10 +237,23 @@ export class OptionsDialog extends Modal {
 						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
 						if (widget) {
 							createCSSRule(`.hide-${widget.id} .option-${widget.id}`, `display: none;`);
-							this._onValueChangeEvent(container, selectedValue, event.values, widget, defaultValue, optionAction.action);
+							this._onValueChangeEvent(container, selectedValue, event.values, widget, defaultValue, optionAction);
 						}
 					});
 				}));
+				event?.dependentOptionActions?.forEach((optionAction) => {
+					if (this._optionValues[optionAction.optionName] && optionAction.required) {
+						let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
+						// Append required indicator when not present.
+						if (element && element.childElementCount === 1) {
+							DialogHelper.appendRequiredIndicator(element);
+						}
+					}
+					// Force selection event if option value is available.
+					if (this.optionValues[option.name]) {
+						widget.selectWithOptionName(this.optionValues[option.name], false, true);
+					}
+				});
 			});
 			// Clear selection change actions once event is registered.
 			option.onSelectionChange = undefined;
@@ -253,10 +266,17 @@ export class OptionsDialog extends Modal {
 	}
 
 	private _onValueChangeEvent(container: HTMLElement, selectedValue: string, acceptedValues: string[],
-		widget: AdsWidget, defaultValue: string, action: string): void {
-		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Show)
-			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Hide)) {
+		widget: AdsWidget, defaultValue: string, optionAction: azdata.DependentOptionAction): void {
+		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Show)
+			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && optionAction.action === Actions.Hide)) {
 			container.classList.remove(`hide-${widget.id}`);
+			if (optionAction.required) {
+				let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
+				// Append required indicator when not present.
+				if (element && element.childElementCount === 1) {
+					DialogHelper.appendRequiredIndicator(element);
+				}
+			}
 		} else {
 			// Support more Widget classes here as needed.
 			if (widget instanceof SelectBox) {
@@ -264,6 +284,13 @@ export class OptionsDialog extends Modal {
 			} else if (widget instanceof InputBox) {
 				widget.value = defaultValue;
 			}
+
+			// Reset required indicator if present.
+			let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName);
+			if (element && element!.hasChildNodes && element.childElementCount > 1) {
+				element!.children.item(1).remove();
+			}
+
 			container.classList.add(`hide-${widget.id}`);
 			widget.hideMessage();
 		}

@@ -34,6 +34,10 @@
         <source xml:lang="en">Are you sure you want to cancel this migration?</source>
         <target state="translated">Annullare la migrazione?</target>
       </trans-unit>
+      <trans-unit id="sql.delete.migration.confirmation">
+        <source xml:lang="en">Are you sure you want to delete this migration?</source>
+        <target state="translated">Eliminare questa migrazione?</target>
+      </trans-unit>
       <trans-unit id="sql.login.migration.aad.domain.name.input.box.label">
         <source xml:lang="en">Azure Active Directory Domain Name (only required to migrate Windows Authenication Logins)</source>
         <target state="translated">Nome di dominio di Azure Active Directory (necessario solo per eseguire la migrazione degli account di accesso per l'autenticazione di Windows)</target>
@@ -462,6 +466,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
         <target state="translated">La migrazione non è in corso e non è possibile eseguirne il cutover.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cannot.delete">
+        <source xml:lang="en">Migration is currently in progress and cannot be deleted.</source>
+        <target state="translated">La migrazione è attualmente in corso e non può essere eliminata.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.cannot.retry">
         <source xml:lang="en">Migration cannot be retried.</source>
         <target state="translated">Non è possibile ripetere la migrazione.</target>
@@ -877,6 +885,14 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       <trans-unit id="sql.migration.default.database">
         <source xml:lang="en">Default database</source>
         <target state="translated">Database predefinito</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.delete.error">
+        <source xml:lang="en">An error occurred while deleting the migration.</source>
+        <target state="translated">Si è verificato un errore durante l'eliminazione della migrazione.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.delete.migration">
+        <source xml:lang="en">Delete migration</source>
+        <target state="translated">Eliminare migrazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.description">
         <source xml:lang="en">Description</source>
@@ -3405,6 +3421,10 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
         <target state="translated">Dettagli di Database</target>
+      </trans-unit>
+      <trans-unit id="delete-migration-menu">
+        <source xml:lang="en">Delete migration</source>
+        <target state="translated">Eliminare migrazione</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Azure SQL migration description</source>

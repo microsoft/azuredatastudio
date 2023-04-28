@@ -75,11 +75,11 @@ declare module 'dataworkspace' {
 		isValidBasename(name: string | null | undefined): boolean;
 
 		/**
-		 * Returns specific error message if file name is invalid
+		 * Returns specific error message if file name is invalid otherwise returns undefined
 		 * Logic is copied from src\vs\base\common\extpath.ts
 		 * @param name filename to check
 		 */
-		isValidBasenameErrorMessage(name: string | null | undefined): string;
+		isValidBasenameErrorMessage(name: string | null | undefined): string | undefined;
 	}
 
 	/**

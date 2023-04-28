@@ -1121,7 +1121,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Switching from Kusto to another kernel should set the currentKernelAlias to undefined
 			if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
 				this._currentKernelAlias = undefined;
-			} else {
+			} else if (this._currentKernelAlias) {
 				// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
 				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 			}

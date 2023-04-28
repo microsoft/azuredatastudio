@@ -41,7 +41,8 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 					}
 				}
 			},
-			ariaLabel: option.displayName
+			ariaLabel: option.displayName,
+			placeholder: option.placeholder
 		}, option.name);
 		optionWidget.value = optionValue;
 		inputElement = findElement(rowContainer, 'input');
@@ -54,7 +55,8 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 			validationOptions: {
 				validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
 			},
-			ariaLabel: option.displayName
+			ariaLabel: option.displayName,
+			placeholder: option.placeholder
 		}, option.name);
 		optionWidget.value = optionValue;
 		if (option.valueType === ServiceOptionType.password) {

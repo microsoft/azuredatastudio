@@ -122,6 +122,11 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://graph.windows.net/',
 				azureResourceId: AzureResource.Graph
 			},
+			msGraphResource: {
+				id: SettingIds.msgraph,
+				endpoint: 'https://graph.microsoft.us/',
+				azureResourceId: AzureResource.MsGraph
+			},
 			armResource: {
 				id: SettingIds.arm,
 				endpoint: 'https://management.usgovcloudapi.net/',
@@ -152,6 +157,11 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: '',
 				endpointSuffix: '.core.usgovcloudapi.net/',
 				azureResourceId: AzureResource.AzureStorage
+			},
+			azureKustoResource: {
+				id: SettingIds.kusto,
+				endpoint: 'https://kusto.kusto.usgovcloudapi.net',
+				azureResourceId: AzureResource.AzureKusto,
 			},
 			powerBiResource: {
 				id: SettingIds.powerbi,
@@ -216,6 +226,11 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: '',
 				endpointSuffix: '.core.chinacloudapi.cn',
 				azureResourceId: AzureResource.AzureStorage
+			},
+			azureKustoResource: {
+				id: SettingIds.kusto,
+				endpoint: 'https://kusto.kusto.chinacloudapi.cn',
+				azureResourceId: AzureResource.AzureKusto,
 			},
 			powerBiResource: {
 				id: SettingIds.powerbi,

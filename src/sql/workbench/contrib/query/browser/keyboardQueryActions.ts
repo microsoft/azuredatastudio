@@ -521,8 +521,6 @@ export class RunQueryShortcutAction extends Action {
  * Action class that parses the query string in the current SQL text document.
  */
 export class ParseSyntaxAction extends Action {
-
-	public static ID = 'parseQueryAction';
 	public static LABEL = nls.localize('parseSyntaxLabel', "Parse Query");
 
 	constructor(
@@ -537,7 +535,7 @@ export class ParseSyntaxAction extends Action {
 		this.enabled = true;
 	}
 
-	public override run(): Promise<void> {
+	public override async run(): Promise<void> {
 		const editor = this.editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			if (!editor.isSelectionEmpty()) {
@@ -546,29 +544,25 @@ export class ParseSyntaxAction extends Action {
 					if (text === '') {
 						text = editor.getAllText();
 					}
-					this.queryManagementService.parseSyntax(editor.input.uri, text).then(result => {
-						if (result && result.parseable) {
-							this.notificationService.notify({
-								severity: Severity.Info,
-								message: nls.localize('queryActions.parseSyntaxSuccess', "Commands completed successfully")
-							});
-						} else if (result && result.errors.length > 0) {
-							let errorMessage = nls.localize('queryActions.parseSyntaxFailure', "Command failed: ");
-							this.notificationService.error(`${errorMessage}${result.errors[0]}`);
-
-						}
-					});
+					const result = await this.queryManagementService.parseSyntax(editor.input.uri, text);
+					if (result && result.parseable) {
+						this.notificationService.notify({
+							severity: Severity.Info,
+							message: nls.localize('queryActions.parseSyntaxSuccess', "Successfully parsed the query.")
+						});
+					} else if (result && result.errors.length > 0) {
+						this.notificationService.error(
+							nls.localize('queryActions.parseSyntaxFailure', "Failed to parse the query: {0}",
+								result.errors.map((err, idx) => `${idx + 1}. ${err} `).join(' ')));
+					}
 				} else {
 					this.notificationService.notify({
 						severity: Severity.Error,
-						message: nls.localize('queryActions.notConnected', "Please connect to a server")
+						message: nls.localize('queryActions.notConnected', "Please connect to a server before running this action.")
 					});
 				}
 			}
-
 		}
-
-		return Promise.resolve(null);
 	}
 
 	/**

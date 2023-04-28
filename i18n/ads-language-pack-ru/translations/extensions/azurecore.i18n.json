@@ -153,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Ресурсы Azure (предварительная версия)",
+			"azure.credStoreSaveFailedError": "Не удалось сохранить ключи для кэша маркеров в хранилище учетных данных, что может привести к проблемам с сохранением маркера доступа Azure и нестабильности подключения. Вполне вероятно, что SqlTools достиг предела хранения учетных данных в Windows. Очистите по крайней мере 2 записи учетных данных, которые начинаются с «Microsoft.SqlTools|» в диспетчере учетных данных Windows и перезагрузите.",
 			"azure.unableToOpenAzureLink": "Не удается открыть ссылку, отсутствуют обязательные значения",
 			"azurecore.australiacentral": "Центральная Австралия",
 			"azurecore.australiacentral2": "Центральная Австралия — 2",
@@ -168,6 +169,7 @@
 			"azurecore.centralindia": "Центральная Индия",
 			"azurecore.centralus": "Центральная часть США",
 			"azurecore.centraluseuap": "Центральная часть США (EUAP)",
+			"azurecore.deprecated": "Предупреждение. ADAL не рекомендуется и будет удален в будущем выпуске. Вместо этого используйте MSAL.",
 			"azurecore.eastasia": "Восточная Азия",
 			"azurecore.eastus": "Восточная часть США",
 			"azurecore.eastus2": "Восточная часть США — 2",

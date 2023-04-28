@@ -59,7 +59,7 @@ export interface Login {
 export class LoginMigrationModel {
 	public resultsPerStep: Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>;
 	public collectedSourceLogins: boolean = false;
-	public collectedTargetLogins: boolean = false;;
+	public collectedTargetLogins: boolean = false;
 	public loginsOnSource: LoginTableInfo[] = [];
 	public loginsOnTarget: string[] = [];
 	public loginMigrationsResult!: contracts.StartLoginMigrationResult;

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { binarySearch } from 'vs/base/common/arrays';
-import * as Errors from 'vs/base/common/errors';
+import { errorHandler, ErrorNoTelemetry } from 'vs/base/common/errors';
 import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
 import { safeStringify } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -56,7 +56,7 @@ export default abstract class BaseErrorTelemetry {
 		this._flushDelay = flushDelay;
 
 		// (1) check for unexpected but handled errors
-		const unbind = Errors.errorHandler.addListener((err) => this._onErrorEvent(err));
+		const unbind = errorHandler.addListener((err) => this._onErrorEvent(err));
 		this._disposables.add(toDisposable(unbind));
 
 		// (2) install implementation-specific error listeners
@@ -85,13 +85,13 @@ export default abstract class BaseErrorTelemetry {
 		}
 
 		// If it's the no telemetry error it doesn't get logged
-		if (err instanceof Errors.ErrorNoTelemetry) {
+		if (ErrorNoTelemetry.isErrorNoTelemetry(err)) {
 			return;
 		}
 
 		// work around behavior in workerServer.ts that breaks up Error.stack
-		let callstack = Array.isArray(err.stack) ? err.stack.join('\n') : err.stack;
-		let msg = err.message ? err.message : safeStringify(err);
+		const callstack = Array.isArray(err.stack) ? err.stack.join('\n') : err.stack;
+		const msg = err.message ? err.message : safeStringify(err);
 
 		// errors without a stack are not useful telemetry
 		if (!callstack) {

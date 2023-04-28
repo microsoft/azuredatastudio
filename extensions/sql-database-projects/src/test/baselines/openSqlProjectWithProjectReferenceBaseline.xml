@@ -95,12 +95,18 @@
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReferencedProject\TestProject.sqlproj">
-      <Name>TestProjectName</Name>
+    <SqlCmdVariable Include="ReferencedTestProjectName">
+      <DefaultValue>MyReferencedTestDatabase</DefaultValue>
+      <Value>$(SqlCmdVar__1)</Value>
+    </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReferencedProject\ReferencedTestProject.sqlproj">
+      <Name>ReferencedTestProjectName</Name>
       <Project>{f9008554-068f-4f91-979a-58bd1f7c8f6e}</Project>
       <Private>True</Private>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
-      <DatabaseSqlCmdVariable>TestProjectName</DatabaseSqlCmdVariable>
+      <DatabaseSqlCmdVariable>ReferencedTestProjectName</DatabaseSqlCmdVariable>
     </ProjectReference>
   </ItemGroup>
   <Target Name="BeforeBuild">

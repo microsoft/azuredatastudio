@@ -82,7 +82,6 @@ export default class MainController implements vscode.Disposable {
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.addDatabaseReference', async (node: WorkspaceTreeItem) => { return this.projectsController.addDatabaseReference(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openContainingFolder', async (node: WorkspaceTreeItem) => { return this.projectsController.openContainingFolder(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: WorkspaceTreeItem) => { return this.projectsController.editProjectFile(node); }));
-		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.convertToSdkStyleProject', async (node: WorkspaceTreeItem) => { return this.projectsController.convertToSdkStyleProject(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { return this.projectsController.delete(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.rename', async (node: WorkspaceTreeItem) => { return this.projectsController.rename(node); }));

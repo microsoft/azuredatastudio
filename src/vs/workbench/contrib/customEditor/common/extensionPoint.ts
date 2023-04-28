@@ -9,19 +9,30 @@ import { CustomEditorPriority, CustomEditorSelector } from 'vs/workbench/contrib
 import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { languagesExtPoint } from 'vs/workbench/services/language/common/languageService';
 
-namespace Fields {
-	export const viewType = 'viewType';
-	export const displayName = 'displayName';
-	export const selector = 'selector';
-	export const priority = 'priority';
-}
+const Fields = Object.freeze({
+	viewType: 'viewType',
+	displayName: 'displayName',
+	selector: 'selector',
+	priority: 'priority',
+});
 
+// {{SQL CARBON TODO}} - BEGIN - Removing computed properties. Review for correctness
+/*
 export interface ICustomEditorsExtensionPoint {
 	readonly [Fields.viewType]: string;
 	readonly [Fields.displayName]: string;
 	readonly [Fields.selector]?: readonly CustomEditorSelector[];
 	readonly [Fields.priority]?: string;
 }
+*/
+
+export interface ICustomEditorsExtensionPoint {
+	readonly viewType: string;
+	readonly displayName: string;
+	readonly selector?: readonly CustomEditorSelector[];
+	readonly priority?: string;
+}
+// {{SQL CARBON TODO}} - END - Removing computed properties. Review for correctness
 
 const CustomEditorsContribution: IJSONSchema = {
 	description: nls.localize('contributes.customEditors', 'Contributed custom editors.'),

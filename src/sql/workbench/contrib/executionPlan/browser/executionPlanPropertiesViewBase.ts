@@ -27,6 +27,7 @@ import { deepClone } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 export abstract class ExecutionPlanPropertiesViewBase extends Disposable implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -71,7 +72,8 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@ITableService private _tableService: ITableService
 	) {
 		super();
 		const sashContainer = DOM.$('.properties-sash');
@@ -190,6 +192,8 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._register(copyHandler.onCopy(e => {
 			this._instantiationService.createInstance(CopyTableData).run(this.getCopyString());
 		}));
+		this._register(this._tableService.registerTable(this._tableComponent));
+
 
 		new ResizeObserver((e) => {
 			this.resizeSash.layout();

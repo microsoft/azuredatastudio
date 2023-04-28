@@ -5,7 +5,7 @@
 
 import * as path from 'path';
 import * as utils from '../common/utils';
-import { IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, IUserDatabaseReferenceSettings } from './IDatabaseReferenceSettings';
 import { EntryType, IDatabaseReferenceProjectEntry, IFileProjectEntry, IProjectEntry } from 'sqldbproj';
 import { Uri } from 'vscode';
 
@@ -43,26 +43,35 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 	}
 }
 
-export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+abstract class UserDatabaseReferenceProjectEntry extends FileProjectEntry {
+	databaseSqlCmdVariableValue?: string;
+	databaseSqlCmdVariableName?: string;
 	databaseVariableLiteralValue?: string;
-	databaseSqlCmdVariable?: string;
-	serverName?: string;
-	serverSqlCmdVariable?: string;
+	serverSqlCmdVariableName?: string;
+	serverSqlCmdVariableValue?: string;
 	suppressMissingDependenciesErrors: boolean;
 
-	constructor(settings: IDacpacReferenceSettings) {
-		super(settings.dacpacFileLocation, '', EntryType.DatabaseReference);
-		this.databaseSqlCmdVariable = settings.databaseVariable;
-		this.databaseVariableLiteralValue = settings.databaseName;
-		this.serverName = settings.serverName;
-		this.serverSqlCmdVariable = settings.serverVariable;
+	constructor(settings: IUserDatabaseReferenceSettings, uri: Uri) {
+		super(uri, /* relativePath doesn't get set for database references */ '', EntryType.DatabaseReference);
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
+		this.databaseVariableLiteralValue = settings.databaseVariableLiteralValue;
+		this.databaseSqlCmdVariableName = settings.databaseName;
+		this.databaseSqlCmdVariableValue = settings.databaseVariable;
+
+		this.serverSqlCmdVariableName = settings.serverName;
+		this.serverSqlCmdVariableValue = settings.serverVariable;
+	}
+}
+
+export class DacpacReferenceProjectEntry extends UserDatabaseReferenceProjectEntry implements IDatabaseReferenceProjectEntry {
+	constructor(settings: IDacpacReferenceSettings) {
+		super(settings, settings.dacpacFileLocation,);
 	}
 
 	/**
 	 * File name that gets displayed in the project tree
 	 */
-	public get databaseName(): string {
+	public get referenceName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
@@ -73,55 +82,53 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 }
 
 export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
-		super(uri, '', EntryType.DatabaseReference);
+	constructor(public referenceName: string, public databaseVariableLiteralValue: string | undefined, public suppressMissingDependenciesErrors: boolean) {
+		super(Uri.file(referenceName), referenceName, EntryType.DatabaseReference);
 	}
 
 	/**
-	 * File name that gets displayed in the project tree
+	 * Returns the name of the system database - this is used for deleting the system database reference
 	 */
-	public get databaseName(): string {
-		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
-	}
-
 	public override pathForSqlProj(): string {
-		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
-	}
-
-	public ssdtPathForSqlProj(): string {
-		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.convertSlashesForSqlProj(this.ssdtUri.path.substring(1));
+		return this.referenceName;
 	}
 }
 
-export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
-	projectName: string;
-	projectGuid: string;
-	databaseVariableLiteralValue?: string;
-	databaseSqlCmdVariable?: string;
-	serverName?: string;
-	serverSqlCmdVariable?: string;
-	suppressMissingDependenciesErrors: boolean;
+export class SqlProjectReferenceProjectEntry extends UserDatabaseReferenceProjectEntry implements IDatabaseReferenceProjectEntry {
+	public projectName: string;
+	public projectGuid: string;
 
 	constructor(settings: IProjectReferenceSettings) {
-		super(settings.projectRelativePath!, '', EntryType.DatabaseReference);
+		super(settings, settings.projectRelativePath!);
+
 		this.projectName = settings.projectName;
 		this.projectGuid = settings.projectGuid;
-		this.databaseSqlCmdVariable = settings.databaseVariable;
-		this.databaseVariableLiteralValue = settings.databaseName;
-		this.serverName = settings.serverName;
-		this.serverSqlCmdVariable = settings.serverVariable;
-		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 	}
 
-	public get databaseName(): string {
+	public get referenceName(): string {
 		return this.projectName;
 	}
 
 	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
+	}
+}
+
+export class NugetPackageReferenceProjectEntry extends UserDatabaseReferenceProjectEntry implements IDatabaseReferenceProjectEntry {
+	packageName: string;
+
+	constructor(settings: INugetPackageReferenceSettings) {
+		super(settings, Uri.file(settings.packageName));
+		this.packageName = settings.packageName;
+	}
+
+	public get referenceName(): string {
+		return this.packageName;
+	}
+
+	public override pathForSqlProj(): string {
+		return this.packageName;
 	}
 }
 
@@ -135,9 +142,4 @@ export enum DatabaseReferenceLocation {
 	sameDatabase,
 	differentDatabaseSameServer,
 	differentDatabaseDifferentServer
-}
-
-export enum SystemDatabase {
-	master,
-	msdb
 }

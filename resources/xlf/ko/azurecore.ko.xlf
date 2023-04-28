@@ -465,6 +465,10 @@
         <source xml:lang="en">Azure Resources (Preview)</source>
         <target state="translated">Azure 리소스(미리 보기)</target>
       </trans-unit>
+      <trans-unit id="azure.credStoreSaveFailedError">
+        <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+        <target state="translated">토큰 캐시에 대한 키를 자격 증명 저장소에 저장할 수 없습니다. 이로 인해 Azure 액세스 토큰 지속성 문제가 발생할 수 있으며 연결이 불안정해질 수 있습니다. SqlTools가 Windows의 자격 증명 저장 한도에 도달한 것 같습니다. Windows 자격 증명 관리자 "Microsoft.SqlTools|"로 시작하는 자격 증명을 2개 이상 지우고 다시 로드하세요.</target>
+      </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
         <target state="translated">링크를 열 수 없음, 필요한 값이 없음</target>
@@ -524,6 +528,10 @@
       <trans-unit id="azurecore.centraluseuap">
         <source xml:lang="en">Central US EUAP</source>
         <target state="translated">미국 중부 EUAP</target>
+      </trans-unit>
+      <trans-unit id="azurecore.deprecated">
+        <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+        <target state="translated">경고: ADAL은 더 이상 사용되지 않으며 향후 릴리스에서 제거될 예정입니다. 대신 MSAL을 사용하세요.</target>
       </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>

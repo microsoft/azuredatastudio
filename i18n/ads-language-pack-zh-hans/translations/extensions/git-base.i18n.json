@@ -10,15 +10,15 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "分支名称",
-			"error": "$(error) 错误: {0}",
+			"error": "{0} 错误: {1}",
 			"none found": "未找到远程存储库。",
 			"pick url": "选择要从中进行克隆的 URL。",
-			"provide url": "提供存储库 URL",
-			"provide url or pick": "提供存储库 URL 或选择存储库源。",
+			"provide url": "提供仓库 URL",
+			"provide url or pick": "提供仓库 URL 或选择仓库源。",
 			"recently opened": "最近打开",
 			"remote sources": "远程源",
-			"type to filter": "存储库名称",
-			"type to search": "存储库名称(键入内容进行搜索)",
+			"type to filter": "仓库名称",
+			"type to search": "仓库名称(键入内容进行搜索)",
 			"url": "URL"
 		},
 		"package": {

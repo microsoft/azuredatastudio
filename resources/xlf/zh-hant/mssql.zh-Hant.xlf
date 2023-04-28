@@ -50,6 +50,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">重新整理安全性權杖時，在帳戶 '{1}'中找不到租用戶 '{0}'</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">筆記本轉換要求未傳回任何結果</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">找不到 URI {0} 的文件</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} AAD 權杖重新更新失敗，請重新連接以啟用 {0}</target>
@@ -57,6 +65,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">編輯器權杖重新整理失敗，將會停用自動編譯，直到編輯器中斷連線並重新連線為止</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">不支援的平台 {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">資料行</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">登入</target>
@@ -90,6 +110,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">OK</source>
         <target state="translated">確定</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">資料表</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">使用者</target>
@@ -97,6 +121,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">使用者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">檢視</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Windows 驗證</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">未選取登入。</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">名稱不能空白。</target>
@@ -230,6 +262,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0} - 新增 (預覽)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">無法擷取連線資訊，請重新連線，然後再試一次。</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">重新整理物件總管時發生錯誤。{0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">請輸入新名稱</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">將 {0} '{1}' 重新命名為 '{2}' 時發生錯誤。{3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">將 {0} '{1}' 重新命名為 '{2}'</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,7 +651,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">指定通訊協定，以證明與安全記憶體保護區一起使用 Always Encrypted 的伺服器端記憶體保護區</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">證明通訊協定</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
@@ -609,8 +659,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">指定端點，以證明與安全記憶體保護區一起使用 Always Encrypted 的伺服器端記憶體保護區</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">記憶體保護區證明 URL</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">證明 URL</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,12 +811,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">複寫</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="translated">啟用或停用連線的安全記憶體庫</target>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">啟用或停用連線的安全隔離區</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
-        <target state="translated">安全記憶體庫</target>
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">安全隔離區</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
@@ -814,7 +864,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.enableSqlAuthenticationProvider">
         <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">當使用者選取 'AzureMFA' 驗證，則針對 'Active Directory Interactive' 驗證模式啟用使用 SQL 驗證提供者。這會在擷取存取權杖時啟用伺服器端資源端點整合。此選項僅支援 'MSAL' Azure 驗證程式庫。值變更時，需要重新啟動 Azure Data Studio。</target>
       </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
@@ -942,11 +992,11 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
         <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">[實驗性] 是否應該平行處理對 SQL Tools Service 的要求。這是為了發現探索平行處理所有要求時可能的問題。預設值為 false。值變更時，需要重新啟動 Azure Data Studio。</target>
       </trans-unit>
       <trans-unit id="mssql.piiLogging">
         <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
-        <target state="new">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</target>
+        <target state="translated">[選用] 是否應在記錄檔中記錄個人識別資訊 (PII)。</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -1149,8 +1199,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">新使用者</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">屬性</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">屬性 (預覽)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">重新命名</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>
