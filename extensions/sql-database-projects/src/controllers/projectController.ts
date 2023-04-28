@@ -1494,14 +1494,14 @@ export class ProjectsController {
 
 		if (fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
+			const allFileEntries = project.sqlObjectScripts.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts).concat(project.publishProfiles);
 
 			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
 			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(fileOrFolder.projectFileUri, fileOrFolder.fileSystemUri)), '/');
 			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
 		}
 		const projectRelativeUri = vscode.Uri.file(path.basename(context.projectFileUri.fsPath, constants.sqlprojExtension));
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(projectRelativeUri, context.relativeProjectUri)));
+		return project.sqlObjectScripts.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(projectRelativeUri, context.relativeProjectUri)));
 	}
 
 	private async getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Promise<Project> {
@@ -1831,7 +1831,7 @@ export class ProjectsController {
 	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
 		const project = await Project.openProject(projectFilePath);
 
-		return project.files
+		return project.sqlObjectScripts
 			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
 			.map(f => f.fsUri.fsPath);
 	}
