@@ -38,7 +38,7 @@ import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabi
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
-import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName, mssqlCmsProviderName } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
 import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
@@ -1251,8 +1251,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					});
 				}
 			}
-			// Fix Application Name for MSSQL Provider, to handle special case as we need to apply custom application name in ADS Core connection profile.
-			if (model.providerName.includes(mssqlProviderName) && model.options[mssqlApplicationNameOption] && !model.options[mssqlApplicationNameOption].endsWith(applicationName)) {
+			// Fix Application Name for MSSQL/MSSQL-CMS Providers, to handle special case as we need to apply custom application name in ADS Core connection profile.
+			if ((model.providerName === mssqlProviderName || model.providerName === mssqlCmsProviderName)
+				&& model.options[mssqlApplicationNameOption] && !model.options[mssqlApplicationNameOption].endsWith(applicationName)) {
 				model.options[mssqlApplicationNameOption] = adjustForMssqlAppName(model.options[mssqlApplicationNameOption]);
 			}
 			model.connectionName = this.connectionName;

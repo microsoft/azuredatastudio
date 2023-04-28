@@ -71,8 +71,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					if (appNameOption) {
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;
-					} else if (this.providerName.includes(Constants.mssqlProviderName)) {
-						// Update AppName here for MSSQL provider to be able to match connection URI with STS.
+					} else if (this.providerName === Constants.mssqlProviderName || this.providerName === Constants.mssqlCmsProviderName) {
+						// Update AppName here for MSSQL and MSSQL-CMS provider to be able to match connection URI with STS.
 						appNameOption = options.find(option => option.name === Constants.mssqlApplicationNameOption);
 						if (appNameOption) {
 							this.options[Constants.mssqlApplicationNameOption] = adjustForMssqlAppName(model.options[Constants.mssqlApplicationNameOption]);
