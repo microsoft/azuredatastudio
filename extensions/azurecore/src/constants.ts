@@ -47,8 +47,6 @@ export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
 
 export const piiLogging = 'piiLogging';
 
-export const TenantIgnoredErrorCode = 'TENANT_IGNORED_ERROR';
-
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 

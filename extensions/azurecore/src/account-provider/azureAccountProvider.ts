@@ -23,6 +23,7 @@ import { filterAccounts } from '../azureResource/utils';
 import * as Constants from '../constants';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import { getTenantIgnoreList } from '../utils';
+import { TenantIgnoredError } from '../utils/TenantIgnoredError';
 
 const localize = nls.loadMessageBundle();
 
@@ -162,7 +163,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				if (getTenantIgnoreList().includes(tenantId)) {
 					// Tenant found in ignore list, don't fetch access token.
 					Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted. Please remove tenant from setting: '${Constants.AzureTenantConfigFilterSetting}' if you want to re-enable tenant for authentication.`);
-					throw new Error(localize('tenantIgnoredError', '{0}: Tenant found in ignore list, authentication not attempted. You can remove tenant {1} from ignore list in settings.json file: {2} if you wish to access resources from this tenant.', Constants.TenantIgnoredErrorCode, tenantId, Constants.AzureTenantConfigFilterSetting));
+					throw new TenantIgnoredError(localize('tenantIgnoredError', 'Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.', tenantId, Constants.AzureTenantConfigFilterSetting));
 				} else {
 					let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
 					if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
@@ -232,7 +233,13 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const azureAccount = account as AzureAccount;
 		const response: MultiTenantTokenResponse = {};
 		for (const tenant of azureAccount.properties.tenants) {
-			response[tenant.id] = await this._getAccountSecurityToken(account, tenant.id, resource);
+			try {
+				response[tenant.id] = await this._getAccountSecurityToken(account, tenant.id, resource);
+			} catch (e) {
+				if (!(e instanceof TenantIgnoredError)) {
+					throw e;
+				}
+			}
 		}
 
 		return response;

@@ -13,7 +13,7 @@
 	"azure.resource.connectsqlserver.title": "Connect",
 	"azure.resource.connectsqldb.title": "Add to Servers",
 	"azure.resource.view.title": "Azure (Preview)",
-	"azure.tenant.config.filter.description": "The list of ignored tenant IDs for which authentication will not be attempted.",
+	"azure.tenant.config.filter.description": "The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.",
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
 	"azure.openInAzurePortal.title": "Open in Azure Portal",
 	"config.azureAccountConfigurationSection": "Azure Account Configuration",

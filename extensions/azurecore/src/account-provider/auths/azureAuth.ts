@@ -697,7 +697,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const confirmIgnoreTenantItem: ConsentMessageItem = {
-			title: localize('azurecore.confirmIgnoreTenantDialog.IConfirm', "I confirm"),
+			title: localize('azurecore.confirmIgnoreTenantDialog.confirm', "Confirm"),
 			booleanResult: false,
 			action: async (tenantId: string) => {
 				tenantIgnoreList.push(tenantId);
@@ -707,7 +707,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		};
 		const confirmIgnoreTenantDialog = async () => {
-			const confirmMessage = localize('azurecore.confirmIgnoreTenantDialog.body', "Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. \n\nTo allow tenant again, you will need to remove tenant from the exclude list, i.e. this setting: '{2}' \n\nDo you wish to proceed?", tenant.displayName, tenant.id, Constants.AzureTenantConfigFilterSetting);
+			const confirmMessage = localize('azurecore.confirmIgnoreTenantDialog.body', "Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. \n\nTo allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.\n\nDo you wish to proceed?", tenant.displayName, tenant.id, Constants.AzureTenantConfigFilterSetting);
 			let confirmation = await vscode.window.showInformationMessage(confirmMessage, { modal: true }, cancelAndAuthenticate, confirmIgnoreTenantItem);
 
 			if (confirmation?.action) {
