@@ -134,7 +134,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return accounts;
 	}
 
-
 	getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Thenable<MultiTenantTokenResponse | undefined> {
 		return this._getSecurityToken(account, resource);
 	}
@@ -162,8 +161,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				tenantId = tenantId || account.properties.owningTenant.id;
 				if (getTenantIgnoreList().includes(tenantId)) {
 					// Tenant found in ignore list, don't fetch access token.
-					Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted.`);
-					throw new Error(localize('tenantIgnoredError', 'Token not acquired as tenant found in ignore list in setting: {0}', Constants.AzureTenantConfigFilterSetting));
+					Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted. Please remove tenant from setting: '${Constants.AzureTenantConfigFilterSetting}' if you want to re-enable tenant for authentication.`);
+					throw new Error(localize('tenantIgnoredError', '{0}: Tenant found in ignore list, authentication not attempted. You can remove tenant {1} from ignore list in settings.json file: {2} if you wish to access resources from this tenant.', Constants.TenantIgnoredErrorCode, tenantId, Constants.AzureTenantConfigFilterSetting));
 				} else {
 					let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
 					if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {

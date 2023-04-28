@@ -503,6 +503,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
+
+			const ignoreList = getTenantIgnoreList();
+			tenants.forEach((tenant, i) => {
+				if (ignoreList.includes(tenant.id)) {
+					Logger.verbose(`Tenant: ${tenant.id} found in ignore list, it will not be used for accessing resources.`);
+					tenants.splice(i);
+				}
+			});
+
 			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
 			// remove home tenant from list of tenants
@@ -667,7 +676,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
-			action?: (tenantId: string) => Promise<void>;
+			action?: (tenantId: string) => Promise<boolean>;
 		}
 
 		const openItem: ConsentMessageItem = {
@@ -681,23 +690,50 @@ export abstract class AzureAuth implements vscode.Disposable {
 			booleanResult: false
 		};
 
+		const cancelAndAuthenticate: ConsentMessageItem = {
+			title: localize('azurecore.consentDialog.authenticate', "Cancel and Authenticate"),
+			isCloseAffordance: true,
+			booleanResult: true
+		};
+
 		const dontAskAgainItem: ConsentMessageItem = {
 			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
 			booleanResult: false,
 			action: async (tenantId: string) => {
+				return await confirmIgnoreTenantDialog();
+			}
+		};
+
+		const confirmIgnoreTenantItem: ConsentMessageItem = {
+			title: localize('azurecore.confirmIgnoreTenantDialog.IConfirm', "I confirm"),
+			booleanResult: false,
+			action: async (tenantId: string) => {
 				tenantIgnoreList.push(tenantId);
 				await updateTenantIgnoreList(tenantIgnoreList);
+				return false;
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
-		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+		const confirmIgnoreTenantDialog = async () => {
+			const confirmMessage = localize('azurecore.confirmIgnoreTenantDialog.body', "Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. \n\nTo allow tenant again, you will need to remove tenant from the exclude list, i.e. this setting: '{2}' \n\nDo you wish to proceed?", tenant.displayName, tenant.id, Constants.AzureTenantConfigFilterSetting);
+			let confirmation = await vscode.window.showInformationMessage(confirmMessage, { modal: true }, cancelAndAuthenticate, confirmIgnoreTenantItem);
 
-		if (result?.action) {
-			await result.action(tenant.id);
+			if (confirmation?.action) {
+				await confirmation.action(tenant.id);
+			}
+
+			return confirmation?.booleanResult || false;
 		}
 
-		return result?.booleanResult || false;
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+
+		let response = false;
+		if (result?.action) {
+			response = await result.action(tenant.id);
+		}
+
+		return response;
 	}
 	//#endregion
 
