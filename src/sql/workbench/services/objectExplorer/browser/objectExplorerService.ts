@@ -182,8 +182,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	// Cache of tree nodes for each connection by session ids
 	private _treeNodeCache: Map<string, Map<string, TreeNode>> = new Map<string, Map<string, TreeNode>>();
 
-
-	private _nodeFilterCache: Map<string, azdata.NodeFilter[]> = new Map<string, azdata.NodeFilter[]>();
+	// Cache of node filters for each connection by session ids
+	private _nodeFilterCache: Map<string, Map<string, azdata.NodeFilter[]>> = new Map<string, Map<string, azdata.NodeFilter[]>>();
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -240,6 +240,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				return;
 			}
 			this._treeNodeCache.delete(session.sessionId);
+			this._nodeFilterCache.delete(session.sessionId);
 			await this.closeSession(connection.providerName, session);
 			delete this._activeObjectExplorerNodes[connectionUri];
 			delete this._sessions[session.sessionId!];
@@ -349,6 +350,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				let server = this.toTreeNode(session.rootNode, undefined);
 				this._treeNodeCache.set(sessionId, new Map<string, TreeNode>());
 				this._treeNodeCache.get(sessionId)!.set(this.getTreeNodeCacheKey(server.toNodeInfo()), server);
+				this._nodeFilterCache.set(sessionId, new Map<string, azdata.NodeFilter[]>());
 				server.connection = connection;
 				server.session = session;
 				this._activeObjectExplorerNodes[connection!.id] = server;
@@ -478,10 +480,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
-
+			const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
 			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
 			if (node.filters) {
-				this._nodeFilterCache.set(this.getNodeFilterCacheKey(node), node.filters);
+				sessionFilterCache.set(this.getNodeFilterCacheKey(node), node.filters);
 			}
 
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
@@ -773,9 +775,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					sessionTreeNodeCache.set(cacheKey, treeNode);
 				}
 
+				const filterCacheKey = this.getNodeFilterCacheKey(treeNode);
+				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
 				// Making sure we retain the filters for the node.
-				if (this._nodeFilterCache.has(this.getNodeFilterCacheKey(treeNode))) {
-					treeNode.filters = this._nodeFilterCache.get(this.getNodeFilterCacheKey(treeNode)) ?? [];
+				if (sessionFilterCache.has(filterCacheKey)) {
+					treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
 				} else {
 					treeNode.filters = [];
 				}
