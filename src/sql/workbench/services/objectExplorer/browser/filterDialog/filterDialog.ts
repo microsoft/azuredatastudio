@@ -162,7 +162,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 				valueSetter: (context: any, row: number, item: any, column: Slick.Column<Slick.SlickData>, value: string): void => {
 					item[column.field].value = value;
 					if (column.field === 'operator') {
-						const index = item.index;
+						const index = item.filterPropertyIndex;
 						const nodeOperator = this._treeNode.filterProperties[index].type;
 						if (nodeOperator === NodeFilterPropertyDataType.Date || nodeOperator === NodeFilterPropertyDataType.Number) {
 							if (value === BETWEEN_SELECT_BOX || value === NOT_BETWEEN_SELECT_BOX) {
@@ -185,22 +185,26 @@ export class ObjectExplorerServiceDialog extends Modal {
 										value: '',
 										values: []
 									},
-									index: -1
+									filterPropertyIndex: tableData[row].filterPropertyIndex
 								};
+								const activeElement = this.filterTable.activeCell;
 								tableData.splice(row + 1, 0, newRow);
 								dataProvider.clear();
 								dataProvider.push(tableData);
 								this.filterTable.rerenderGrid();
 								this.filterTable.layout(new DOM.Dimension(600, (dataProvider.getItems().length + 2) * TableRowHeight));
+								this.filterTable.setActiveCell(activeElement.row, activeElement.cell);
 							} else {
 								const tableData = this.filterTable.getData().getItems();
 								if (tableData.length > row + 1) {
 									if (tableData[row + 1].operator.value === AND_SELECT_BOX) {
+										const activeElement = this.filterTable.activeCell;
 										tableData.splice(row + 1, 1);
 										dataProvider.clear();
 										dataProvider.push(tableData);
 										this.filterTable.rerenderGrid();
 										this.filterTable.layout(new DOM.Dimension(600, (dataProvider.getItems().length + 2) * TableRowHeight));
+										this.filterTable.setActiveCell(activeElement.row, activeElement.cell);
 									}
 								}
 							}
@@ -285,6 +289,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 			tableData.push(row);
 
 			if (appliedFilter?.operator === NodeFilterOperator.Between || appliedFilter?.operator === NodeFilterOperator.NotBetween) {
+				row.value.value = appliedFilter.value[0];
 				const andRow: Slick.SlickData = {
 					property: {
 						value: ''
@@ -310,20 +315,18 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 		// Sets up the editor for the value column
 		(<any>dataProvider).getItemMetadata = (row: number) => {
-			var metaData: { columns: { value: { editor: any } } };
-
 			const rowData = dataProvider.getItem(row);
 
 			const filterProperty = this._treeNode.filterProperties[rowData.filterPropertyIndex];
-
+			let editor;
 			if (rowData.operator.value === AND_SELECT_BOX) {
 				if (filterProperty.type === NodeFilterPropertyDataType.Number) {
-					metaData.columns.value.editor = this._tableCellEditorFactory.getTextEditorClass(this, 'number');
+					editor = this._tableCellEditorFactory.getTextEditorClass(this, 'number');
 				} else if (filterProperty.type === NodeFilterPropertyDataType.Date) {
-					metaData.columns.value.editor = this._tableCellEditorFactory.getTextEditorClass(this, 'date');
+					editor = this._tableCellEditorFactory.getTextEditorClass(this, 'date');
 				}
 			} else {
-				let editor;
+
 				if (filterProperty.type === NodeFilterPropertyDataType.String) {
 					editor = this._tableCellEditorFactory.getTextEditorClass(this, 'text');
 				} else if (filterProperty.type === NodeFilterPropertyDataType.Date) {
@@ -335,9 +338,15 @@ export class ObjectExplorerServiceDialog extends Modal {
 				} else if (filterProperty.type === NodeFilterPropertyDataType.Choice) {
 					editor = this._tableCellEditorFactory.getDropdownEditorClass(this, (<azdata.NodeFilterChoiceProperty>filterProperty).choices, false);
 				}
-				(<any>metaData.columns.value).editor = editor;
+
 			}
-			return metaData;
+			return {
+				columns: {
+					value: {
+						editor: editor
+					}
+				}
+			};
 		}
 
 		this.filterTable = new Table(filter, this._accessibilityService, this._quickInputService, {
