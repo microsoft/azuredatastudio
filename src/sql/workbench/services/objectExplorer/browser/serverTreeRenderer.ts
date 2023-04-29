@@ -166,7 +166,7 @@ export class ServerTreeRenderer implements IRenderer {
 		if (treeNode.icon && !instanceOfSqlThemeIcon(treeNode.icon)) {
 			iconRenderer.putIcon(templateData.icon, treeNode.icon);
 		}
-		const nodeLabel = treeNode.filters.length > 0 ? getLabelWithFilteredSuffix(treeNode.label) : treeNode.label;
+		const nodeLabel = treeNode.filters?.length > 0 ? getLabelWithFilteredSuffix(treeNode.label) : treeNode.label;
 		templateData.label.textContent = nodeLabel;
 		templateData.root.title = nodeLabel;
 	}
