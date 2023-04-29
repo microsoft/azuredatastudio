@@ -285,11 +285,10 @@ suite('SQL Connection Tree Action tests', () => {
 
 	test('AddServerAction - test if show connection dialog is called', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
-
 		let connectionTreeAction: AddServerAction = new AddServerAction(AddServerAction.ID, AddServerAction.LABEL, connectionManagementService.object);
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 		return connectionTreeAction.run(conProfGroup).then((value) => {
-			connectionManagementService.verify(x => x.showConnectionDialog(undefined, undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
+			connectionManagementService.verify(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 	});
 
