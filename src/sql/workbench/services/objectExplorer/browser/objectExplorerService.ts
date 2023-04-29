@@ -483,7 +483,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
 			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
 			if (node.filters && sessionFilterCache) {
-				sessionFilterCache.set(this.getNodeFilterCacheKey(node), node.filters);
+				sessionFilterCache.set(this.getTreeNodeCacheKey(node), node.filters);
 			}
 
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
@@ -775,7 +775,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					sessionTreeNodeCache.set(cacheKey, treeNode);
 				}
 
-				const filterCacheKey = this.getNodeFilterCacheKey(treeNode);
+				const filterCacheKey = this.getTreeNodeCacheKey(treeNode);
 				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
 				// Making sure we retain the filters for the node.
 				if (sessionFilterCache?.has(filterCacheKey)) {
