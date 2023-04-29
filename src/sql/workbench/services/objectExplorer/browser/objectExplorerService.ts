@@ -778,7 +778,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				const filterCacheKey = this.getNodeFilterCacheKey(treeNode);
 				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
 				// Making sure we retain the filters for the node.
-				if (sessionFilterCache.has(filterCacheKey)) {
+				if (sessionFilterCache?.has(filterCacheKey)) {
 					treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
 				} else {
 					treeNode.filters = [];
