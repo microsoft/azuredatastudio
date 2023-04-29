@@ -152,7 +152,13 @@ CommandsRegistry.registerCommand('azdata.connect',
 				showFirewallRuleOnError: true
 			});
 		} else {
-			connectionManagementService.showConnectionDialog();
+			connectionManagementService.showConnectionDialog(undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				params: undefined,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 		}
 	});
 

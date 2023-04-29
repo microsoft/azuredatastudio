@@ -186,7 +186,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			connectButton.label = localize('serverTree.newConnection', "New Connection");
 			this._register(attachButtonStyler(connectButton, this._themeService));
 			this._register(connectButton.onDidClick(() => {
-				this._connectionManagementService.showConnectionDialog();
+				this._connectionManagementService.showConnectionDialog(undefined, {
+					showDashboard: true,
+					saveTheConnection: true,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true
+				});
 			}));
 		}
 
