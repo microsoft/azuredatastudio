@@ -18,20 +18,14 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeyboardNavigationLabelProvider } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
+import { ServerTreeRenderer, getLabelWithFilteredSuffix } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
-import { localize } from 'vs/nls';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const DefaultConnectionIconClass = 'server-page';
-
-export function getLabelWithFilteredSuffix(label: string): string {
-	return localize('filteredTreeElementName', "{0} (filtered)", label);
-}
-
 export interface ConnectionProfileGroupDisplayOptions {
 	showColor: boolean;
 }

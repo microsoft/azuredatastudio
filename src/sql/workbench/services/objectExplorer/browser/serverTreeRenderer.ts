@@ -17,8 +17,8 @@ import { URI } from 'vs/base/common/uri';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
-import { getLabelWithFilteredSuffix } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { localize } from 'vs/nls';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -38,6 +38,10 @@ export interface IObjectExplorerTemplateData {
 	label: HTMLSpanElement;
 	icon: HTMLElement;
 	treeNode: TreeNode;
+}
+
+export function getLabelWithFilteredSuffix(label: string): string {
+	return localize('filteredTreeElementName', "{0} (filtered)", label);
 }
 
 /**
