@@ -17,7 +17,6 @@ import { URI } from 'vs/base/common/uri';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
-import { localize } from 'vs/nls';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -165,11 +164,7 @@ export class ServerTreeRenderer implements IRenderer {
 			iconRenderer.putIcon(templateData.icon, treeNode.icon);
 		}
 
-		if (treeNode.filters?.length > 0) {
-			templateData.label.textContent = localize('objectExplorer.ITreefilteredNodeLabel', "{0} (filtered)", treeNode.label);
-		} else {
-			templateData.label.textContent = treeNode.label;
-		}
+		templateData.label.textContent = treeNode.label;
 		templateData.root.title = treeNode.label;
 	}
 

@@ -93,15 +93,6 @@ export class TreeNode {
 	 */
 	public children?: TreeNode[];
 
-	/**
-	 * Filterable properties that this node supports
-	 */
-	public filterProperties?: azdata.NodeFilterProperty[];
-
-	/**
-	 * Filters that are currently applied to this node children.
-	 */
-	public filters?: azdata.NodeFilter[];
 
 	public connection?: ConnectionProfile;
 
@@ -113,13 +104,10 @@ export class TreeNode {
 
 	public icon?: IconPath | SqlThemeIcon;
 
-	public forceRefresh: boolean = false;
-
 	constructor(nodeTypeId: string, objectType: string, label: string, isAlwaysLeaf: boolean, nodePath: string, parentNodePath: string,
 		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
 		iconType?: string | SqlThemeIcon,
 		icon?: IconPath | SqlThemeIcon,
-		filterProperties?: azdata.NodeFilterProperty[],
 		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.objectType = objectType;
@@ -134,7 +122,6 @@ export class TreeNode {
 		this.nodeSubType = nodeSubType;
 		this.nodeStatus = nodeStatus;
 		this.icon = icon;
-		this.filterProperties = filterProperties;
 	}
 	public getConnectionProfile(): ConnectionProfile | undefined {
 		let currentNode: TreeNode = this;

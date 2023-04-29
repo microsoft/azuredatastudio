@@ -23,8 +23,6 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
-import { localize } from 'vs/nls';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const DefaultConnectionIconClass = 'server-page';
 
@@ -98,8 +96,7 @@ class ConnectionProfileTemplate extends Disposable {
 	constructor(
 		container: HTMLElement,
 		private _isCompact: boolean,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
@@ -125,11 +122,6 @@ class ConnectionProfileTemplate extends Disposable {
 		let label = element.title;
 		this._label.textContent = label;
 		this._root.title = element.serverInfo;
-
-		const treeNode = this._objectExplorerService.getObjectExplorerNode(element);
-		if (treeNode?.filters?.length > 0) {
-			this._label.textContent = localize('objectExplorer.filteredNodeLabel', "{0} (filtered)", this._label.textContent);
-		}
 	}
 }
 
@@ -199,11 +191,8 @@ class TreeNodeTemplate extends Disposable {
 		if (element.icon && !instanceOfSqlThemeIcon(element.icon)) {
 			iconRenderer.putIcon(this._icon, element.icon);
 		}
-		if (element.filters.length > 0) {
-			this._label.textContent = localize('objectExplorer.filteredNodeLabel', "{0} (filtered)", element.label);
-		} else {
-			this._label.textContent = element.label;
-		}
+
+		this._label.textContent = element.label;
 		this._root.title = element.label;
 	}
 }
