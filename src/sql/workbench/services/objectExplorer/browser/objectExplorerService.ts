@@ -482,7 +482,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
 			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
-			if (node.filters) {
+			if (node.filters && sessionFilterCache) {
 				sessionFilterCache.set(this.getNodeFilterCacheKey(node), node.filters);
 			}
 
