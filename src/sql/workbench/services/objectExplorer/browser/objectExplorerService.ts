@@ -1056,11 +1056,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 	}
 
-	private getTreeNodeCacheKey(node: azdata.NodeInfo): string {
-		return node.nodePath;
-	}
-
-	private getNodeFilterCacheKey(node: TreeNode): string {
+	private getTreeNodeCacheKey(node: azdata.NodeInfo | TreeNode): string {
 		return node.nodePath;
 	}
 }
