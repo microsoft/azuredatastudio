@@ -40,12 +40,6 @@
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\azurehybridtoolkit.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\azurehybridtoolkit.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
           "SourceFile": "resources\\xlf\\en\\cms.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\cms.xlf.lcl",
           "CopyOption": "LangIDOnPath",

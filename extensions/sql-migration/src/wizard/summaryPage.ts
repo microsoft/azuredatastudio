@@ -100,8 +100,7 @@ export class SummaryPage extends MigrationWizardPage {
 				createInformationRow(
 					this._view,
 					constants.LOCATION,
-					await this.migrationStateModel.getLocationDisplayName(
-						this.migrationStateModel._targetServerInstance.location)),
+					this.migrationStateModel._location.displayName),
 				createInformationRow(
 					this._view,
 					constants.RESOURCE_GROUP,
@@ -140,16 +139,15 @@ export class SummaryPage extends MigrationWizardPage {
 				constants.IR_PAGE_TITLE),
 			createInformationRow(
 				this._view, constants.SUBSCRIPTION,
-				this.migrationStateModel._targetSubscription.name),
+				this.migrationStateModel._sqlMigrationServiceSubscription.name),
 			createInformationRow(
 				this._view,
 				constants.LOCATION,
-				await this.migrationStateModel.getLocationDisplayName(
-					this.migrationStateModel._sqlMigrationService?.location!)),
+				this.migrationStateModel._location.displayName),
 			createInformationRow(
 				this._view,
 				constants.RESOURCE_GROUP,
-				this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
+				this.migrationStateModel._sqlMigrationServiceResourceGroup.name),
 			createInformationRow(
 				this._view,
 				constants.IR_PAGE_TITLE,
