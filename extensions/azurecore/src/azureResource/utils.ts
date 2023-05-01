@@ -21,6 +21,7 @@ import { getProxyEnabledHttpClient } from '../utils';
 import { HttpClient } from '../account-provider/auths/httpClient';
 import { NetworkRequestOptions } from '@azure/msal-common';
 import { ErrorResponseBody } from '@azure/arm-subscriptions/esm/models';
+import { TenantIgnoredError } from '../utils/TenantIgnoredError';
 
 const localize = nls.loadMessageBundle();
 
@@ -178,18 +179,20 @@ export async function getResourceGroups(appContext: AppContext, account?: AzureA
 
 			result.resourceGroups.push(...await service.getResources([subscription], new TokenCredentials(token, tokenType), account));
 		} catch (err) {
-			const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
-				account.displayInfo.displayName,
-				account.displayInfo.userId,
-				subscription.id,
-				subscription.name,
-				tenant.id,
-				err instanceof Error ? err.message : err));
-			console.warn(error);
-			if (!ignoreErrors) {
-				throw error;
+			if (!(err instanceof TenantIgnoredError)) {
+				const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+					account.displayInfo.displayName,
+					account.displayInfo.userId,
+					subscription.id,
+					subscription.name,
+					tenant.id,
+					err instanceof Error ? err.message : err));
+				console.warn(error);
+				if (!ignoreErrors) {
+					throw error;
+				}
+				result.errors.push(error);
 			}
-			result.errors.push(error);
 		}
 	}));
 	return result;
@@ -282,8 +285,10 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 			resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		} catch (err) {
 			console.error(err);
-			const error = new Error(unableToFetchTokenError(tenant.id));
-			result.errors.push(error);
+			if (!(err instanceof TenantIgnoredError)) {
+				const error = new Error(unableToFetchTokenError(tenant.id));
+				result.errors.push(error);
+			}
 			continue;
 		}
 

@@ -87,7 +87,7 @@ describe('ProjectsController', function (): void {
 				});
 
 				const project = await Project.openProject(projFilePath);
-				should(project.files.length).equal(7, `The 7 template files for an edge project should be present. Actual: ${project.files.length}`);
+				should(project.sqlObjectScripts.length).equal(7, `The 7 template files for an edge project should be present. Actual: ${project.sqlObjectScripts.length}`);
 			});
 
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
@@ -98,9 +98,9 @@ describe('ProjectsController', function (): void {
 					const projController = new ProjectsController(testContext.outputChannel);
 					const project = new Project('FakePath');
 
-					should(project.files.length).equal(0);
+					should(project.sqlObjectScripts.length).equal(0);
 					await projController.addItemPrompt(new Project('FakePath'), '', { itemType: ItemType.script });
-					should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
+					should(project.sqlObjectScripts.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 					should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 					sinon.restore();
 				}
@@ -114,10 +114,10 @@ describe('ProjectsController', function (): void {
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
-				should(project.files.length).equal(0, 'There should be no files');
+				should(project.sqlObjectScripts.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 
-				should(project.files.length).equal(1, 'File should be successfully added');
+				should(project.sqlObjectScripts.length).equal(1, 'File should be successfully added');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 				const msg = constants.fileAlreadyExists(tableName);
 				should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
@@ -130,9 +130,9 @@ describe('ProjectsController', function (): void {
 				const projController = new ProjectsController(testContext.outputChannel);
 				const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
-				should(project.files.length).equal(0, 'There should be no files');
+				should(project.sqlObjectScripts.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '');
-				should(project.files.length).equal(0, 'File should not have been added');
+				should(project.sqlObjectScripts.length).equal(0, 'File should not have been added');
 				should(spy.called).be.false(`showErrorMessage should not have been called called. Actual '${spy.getCall(0)?.args[0]}'`);
 			});
 
@@ -144,9 +144,9 @@ describe('ProjectsController', function (): void {
 				const projController = new ProjectsController(testContext.outputChannel);
 				let project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
 
-				should(project.files.length).equal(0, 'There should be no files');
+				should(project.sqlObjectScripts.length).equal(0, 'There should be no files');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
-				should(project.files.length).equal(1, 'File should be successfully added');
+				should(project.sqlObjectScripts.length).equal(1, 'File should be successfully added');
 
 				// exclude item
 				const projTreeRoot = new ProjectRootTreeItem(project);
@@ -154,7 +154,7 @@ describe('ProjectsController', function (): void {
 
 				// reload project
 				project = await Project.openProject(project.projectFilePath);
-				should(project.files.length).equal(0, 'File should be successfully excluded');
+				should(project.sqlObjectScripts.length).equal(0, 'File should be successfully excluded');
 				should(spy.called).be.false(`showErrorMessage not called with expected message. Actual '${spy.getCall(0)?.args[0]}'`);
 
 				// add item back
@@ -163,7 +163,7 @@ describe('ProjectsController', function (): void {
 
 				// reload project
 				project = await Project.openProject(project.projectFilePath);
-				should(project.files.length).equal(1, 'File should be successfully re-added');
+				should(project.sqlObjectScripts.length).equal(1, 'File should be successfully re-added');
 			});
 
 			it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
@@ -219,7 +219,7 @@ describe('ProjectsController', function (): void {
 
 				// reload project
 				project = await Project.openProject(project.projectFilePath);
-				should(project.folders.length).equal(beforeFolderCount + 1, `Folder count should be increased by one after adding the folder ${folderName}. before folders: ${JSON.stringify(beforeFolders)}/n after folders: ${JSON.stringify(project.files.map(f => f.relativePath))}`);
+				should(project.folders.length).equal(beforeFolderCount + 1, `Folder count should be increased by one after adding the folder ${folderName}. before folders: ${JSON.stringify(beforeFolders)}/n after folders: ${JSON.stringify(project.sqlObjectScripts.map(f => f.relativePath))}`);
 				sinon.restore();
 			}
 
@@ -254,7 +254,7 @@ describe('ProjectsController', function (): void {
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 				// confirm result
-				should(proj.files.length).equal(3, 'number of file entries'); // lowerEntry and the contained scripts should be deleted
+				should(proj.sqlObjectScripts.length).equal(3, 'number of file entries'); // lowerEntry and the contained scripts should be deleted
 				should(proj.folders[0].relativePath).equal('UpperFolder');
 				should(proj.preDeployScripts.length).equal(0, 'Pre Deployment scripts should have been deleted');
 				should(proj.postDeployScripts.length).equal(0, 'Post Deployment scripts should have been deleted');
@@ -318,7 +318,7 @@ describe('ProjectsController', function (): void {
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 				// confirm result
-				should(proj.files.length).equal(2, 'number of file entries'); // LowerFolder and the contained scripts should be deleted
+				should(proj.sqlObjectScripts.length).equal(0, 'number of file entries'); // LowerFolder and the contained scripts should be excluded
 				should(proj.folders.find(f => f.relativePath === 'UpperFolder')).not.equal(undefined, 'UpperFolder should still be there');
 				should(proj.preDeployScripts.length).equal(0, 'Pre deployment scripts');
 				should(proj.postDeployScripts.length).equal(0, 'Post deployment scripts');
@@ -328,6 +328,29 @@ describe('ProjectsController', function (): void {
 				should(await utils.exists(preDeployEntry.fsUri.fsPath)).equal(true, 'pre-deployment script is supposed to still exist on disk');
 				should(await utils.exists(postDeployEntry.fsUri.fsPath)).equal(true, 'post-deployment script is supposed to still exist on disk');
 				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
+			});
+
+			it('Should exclude a folder', async function (): Promise<void> {
+				let proj = await testUtils.createTestSqlProject(this.test);
+				await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
+
+				const projController = new ProjectsController(testContext.outputChannel);
+				const projTreeRoot = new ProjectRootTreeItem(proj);
+
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+				(proj.sqlObjectScripts.length).should.equal(1, 'Starting number of scripts');
+				(proj.folders.length).should.equal(1, 'Starting number of folders');
+
+				// exclude folder
+				const folderNode = projTreeRoot.children.find(f => f.friendlyName === 'SomeFolder');
+				await projController.exclude(createWorkspaceTreeItem(folderNode!));
+
+				// reload project and verify files were renamed
+				proj = await Project.openProject(proj.projectFilePath);
+
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should still exist on disk');
+				(proj.sqlObjectScripts.length).should.equal(0, 'Number of scripts should not have changed');
+				(proj.folders.length).should.equal(0, 'Number of folders should not have changed');
 			});
 
 			// TODO: move test to DacFx and fix delete
@@ -352,7 +375,7 @@ describe('ProjectsController', function (): void {
 				proj = await Project.openProject(proj.projectFilePath);
 
 				// Confirm result
-				should(proj.files.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
+				should(proj.sqlObjectScripts.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
 				should(await utils.exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
 				should(await utils.exists(lowerFolder.relativeProjectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
 				should(await utils.exists(upperFolder.relativeProjectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
@@ -369,7 +392,7 @@ describe('ProjectsController', function (): void {
 
 				// change the sql project file
 				await fs.writeFile(sqlProjPath, baselines.newProjectFileWithScriptBaseline);
-				should(project.files.length).equal(0);
+				should(project.sqlObjectScripts.length).equal(0);
 
 				// call reload project
 				const projTreeRoot = new ProjectRootTreeItem(project);
@@ -381,7 +404,7 @@ describe('ProjectsController', function (): void {
 				treeProvider.load([project]);
 
 				// check that the new project is in the tree
-				should(project.files.length).equal(1);
+				should(project.sqlObjectScripts.length).equal(1);
 				should(treeProvider.getChildren()[0].children.find(c => c.friendlyName === 'Script1.sql')).not.equal(undefined);
 			});
 
@@ -396,7 +419,7 @@ describe('ProjectsController', function (): void {
 				sinon.stub(utils, 'sanitizeStringForFilename').returns(preDeployScriptName);
 				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
 				await projController.addItemPrompt(project, '', { itemType: ItemType.preDeployScript });
-				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
+				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.sqlObjectScripts.length}`);
 
 				sinon.restore();
 				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
@@ -812,10 +835,10 @@ describe('ProjectsController', function (): void {
 			should(actual).equal(constants.autorestPostDeploymentScriptName, `Unexpected post-deployment script name: ${actual}, expected ${constants.autorestPostDeploymentScriptName}`);
 
 			const expectedScripts = fileList.filter(f => path.extname(f.fsPath) === '.sql');
-			should(project.files.filter(f => f.type === EntryType.File).length).equal(expectedScripts.length, 'Unexpected number of scripts in project');
+			should(project.sqlObjectScripts.filter(f => f.type === EntryType.File).length).equal(expectedScripts.length, 'Unexpected number of scripts in project');
 
 			const expectedFolders = fileList.filter(f => path.extname(f.fsPath) === '' && f.fsPath.toUpperCase() !== newProjFolder.toUpperCase());
-			should(project.files.filter(f => f.type === EntryType.Folder).length).equal(expectedFolders.length, 'Unexpected number of folders in project');
+			should(project.sqlObjectScripts.filter(f => f.type === EntryType.Folder).length).equal(expectedFolders.length, 'Unexpected number of folders in project');
 		});
 	});
 
@@ -839,7 +862,7 @@ describe('ProjectsController', function (): void {
 
 			// reload project and verify file was moved
 			proj = await Project.openProject(proj.projectFilePath);
-			should(proj.files.find(f => f.relativePath === 'UpperFolder\\script1.sql') !== undefined).be.true('The file path should have been updated');
+			should(proj.sqlObjectScripts.find(f => f.relativePath === 'UpperFolder\\script1.sql') !== undefined).be.true('The file path should have been updated');
 			should(await utils.exists(path.join(proj.projectFolderPath, 'UpperFolder', 'script1.sql'))).be.true('The moved file should exist');
 		});
 
@@ -861,7 +884,7 @@ describe('ProjectsController', function (): void {
 
 				// reload project and verify file was not moved
 				proj = await Project.openProject(proj.projectFilePath);
-				should(proj.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to ${folder}`);
+				should(proj.sqlObjectScripts.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to ${folder}`);
 				should(spy.notCalled).be.true('showErrorMessage should not have been called.');
 				spy.restore();
 			}
@@ -879,7 +902,7 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), sqlcmdVarNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a sqlcmd variable');
-			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 
 			// try moving a database reference
@@ -887,7 +910,7 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), dbRefNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a database reference');
-			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 
 			// try moving a folder
@@ -895,7 +918,7 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), folderNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a folder');
-			should(spy.calledWith(constants.onlyMoveSqlFilesSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveSqlFilesSupported}' Actual '${spy.getCall(0).args[0]}'`);
+			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 		});
 
@@ -920,7 +943,7 @@ describe('ProjectsController', function (): void {
 
 			// verify script1.sql was not moved
 			proj1 = await Project.openProject(proj1.projectFilePath);
-			should(proj1.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to proj2`);
+			should(proj1.sqlObjectScripts.find(f => f.relativePath === 'script1.sql') !== undefined).be.true(`The file path should not have been updated when trying to move script1.sql to proj2`);
 		});
 	});
 
@@ -937,12 +960,12 @@ describe('ProjectsController', function (): void {
 
 			// reload project and verify file was not renamed
 			proj = await Project.openProject(proj.projectFilePath);
-			should(proj.files.find(f => f.relativePath === 'script1.sql') !== undefined).be.true('The file path should not have been updated');
+			should(proj.sqlObjectScripts.find(f => f.relativePath === 'script1.sql') !== undefined).be.true('The file path should not have been updated');
 			should(await utils.exists(path.join(proj.projectFolderPath, 'script1.sql'))).be.true('The moved file should exist');
 		});
 
 		it('Should rename a sql object file', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('newName');
+			sinon.stub(vscode.window, 'showInputBox').resolves('newName.sql');
 			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
 			const projController = new ProjectsController(testContext.outputChannel);
@@ -953,7 +976,7 @@ describe('ProjectsController', function (): void {
 
 			// reload project and verify file was renamed
 			proj = await Project.openProject(proj.projectFilePath);
-			should(proj.files.find(f => f.relativePath === 'newName.sql') !== undefined).be.true('The file path should have been updated');
+			should(proj.sqlObjectScripts.find(f => f.relativePath === 'newName.sql') !== undefined).be.true('The file path should have been updated');
 			should(await utils.exists(path.join(proj.projectFolderPath, 'newName.sql'))).be.true('The moved file should exist');
 		});
 
@@ -966,12 +989,12 @@ describe('ProjectsController', function (): void {
 			const projTreeRoot = new ProjectRootTreeItem(proj);
 
 			// try to rename a file from the root folder
-			sinon.stub(vscode.window, 'showInputBox').resolves('predeployNewName');
+			sinon.stub(vscode.window, 'showInputBox').resolves('predeployNewName.sql');
 			const preDeployScriptNode = projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql');
 			await projController.rename(createWorkspaceTreeItem(preDeployScriptNode!));
 
 			sinon.restore();
-			sinon.stub(vscode.window, 'showInputBox').resolves('postdeployNewName');
+			sinon.stub(vscode.window, 'showInputBox').resolves('postdeployNewName.sql');
 			const postDeployScriptNode = projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql');
 			await projController.rename(createWorkspaceTreeItem(postDeployScriptNode!));
 
@@ -984,8 +1007,31 @@ describe('ProjectsController', function (): void {
 			should(await utils.exists(path.join(proj.projectFolderPath, 'postdeployNewName.sql'))).be.true('The moved post deploy script file should exist');
 		});
 
+		it('Should rename a folder', async function (): Promise<void> {
+			let proj = await testUtils.createTestSqlProject(this.test);
+			await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
-		// TODO: add test for renaming a file in a folder after fix from DacFx for slashes is brought over
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projTreeRoot = new ProjectRootTreeItem(proj);
+
+			sinon.stub(vscode.window, 'showInputBox').resolves('RenamedFolder');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+			(proj.sqlObjectScripts.length).should.equal(1, 'Starting number of scripts');
+			(proj.folders.length).should.equal(1, 'Starting number of folders');
+
+			// rename folder
+			const folderNode = projTreeRoot.children.find(f => f.friendlyName === 'SomeFolder');
+			await projController.rename(createWorkspaceTreeItem(folderNode!));
+
+			// reload project and verify files were renamed
+			proj = await Project.openProject(proj.projectFilePath);
+
+			should(await utils.exists(path.join(proj.projectFolderPath, 'RenamedFolder\\MyTable.sql'))).be.true('File should exist in new location');
+			(proj.sqlObjectScripts.length).should.equal(1, 'Number of scripts should not have changed');
+			(proj.folders.length).should.equal(1, 'Number of folders should not have changed');
+			should(proj.folders.find(f => f.relativePath === 'RenamedFolder') !== undefined).be.true('The folder path should have been updated');
+			should(proj.sqlObjectScripts.find(f => f.relativePath === 'RenamedFolder\\MyTable.sql') !== undefined).be.true('Path of the script in the folder should have been updated');
+		});
 	});
 
 	describe('SqlCmd Variables', function (): void {
@@ -1000,7 +1046,7 @@ describe('ProjectsController', function (): void {
 			should(project.sqlCmdVariables.size).equal(2, 'The project should start with 2 sqlcmd variables');
 
 			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Cancel'));
-			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0]));
+			await projController.delete(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!.children[0] /* LowerFolder */));
 
 			// reload project
 			project = await Project.openProject(project.projectFilePath);
@@ -1091,7 +1137,7 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 	sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 	// confirm setup
-	should(proj.files.length).equal(3, 'number of file entries');
+	should(proj.sqlObjectScripts.length).equal(3, 'number of file entries');
 	should(proj.folders.length).equal(2, 'number of folder entries');
 	should(proj.preDeployScripts.length).equal(1, 'number of pre-deployment script entries');
 	should(proj.postDeployScripts.length).equal(1, 'number of post-deployment script entries');

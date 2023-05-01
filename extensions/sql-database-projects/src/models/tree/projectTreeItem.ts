@@ -106,7 +106,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		}
 
 		// sql object scripts
-		for (const entry of this.project.files) {
+		for (const entry of this.project.sqlObjectScripts) {
 			let newNode: fileTree.FileNode;
 
 			if (entry.sqlObjectType === ExternalStreamingJob) {
