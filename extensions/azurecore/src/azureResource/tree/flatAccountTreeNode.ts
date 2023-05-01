@@ -187,8 +187,12 @@ class FlatAccountTreeNodeLoader {
 			let tenants = this._account.properties.tenants;
 			// Filter out tenants that we can't authenticate to.
 			tenants = tenants.filter(async tenant => {
-				const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
-				return token !== undefined;
+				try {
+					const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
+					return token !== undefined;
+				} catch (e) {
+					return false;
+				}
 			});
 
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
