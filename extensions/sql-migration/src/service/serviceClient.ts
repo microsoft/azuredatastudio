@@ -89,9 +89,9 @@ export class ServiceClient {
 		}
 		catch (error) {
 			const errorStr = localize('downloadingServiceFailed', "Failed to download binaries for {0}. Use the following link to troubleshoot: {1}", constants.serviceName, "https://aka.ms/dms-migrations-troubleshooting#azure-data-studio-limitations");
-			const errorStrWithLink = localize('downloadingServiceFailed', "Failed to download binaries for {0}. Use this [link troubleshoot]({1}).", constants.serviceName, "https://aka.ms/dms-migrations-troubleshooting#azure-data-studio-limitations");
+			const errorStrWithLink = localize('downloadingServiceFailedWithLinkMarkup', "Failed to download binaries for {0}. Use this [link to troubleshoot]({1}).", constants.serviceName, "https://aka.ms/dms-migrations-troubleshooting#azure-data-studio-limitations");
 			this.outputChannel.appendLine(errorStr);
-			await vscode.window.showErrorMessage(errorStrWithLink);
+			void vscode.window.showErrorMessage(errorStrWithLink);
 			logError(TelemetryViews.SqlServerDashboard, errorStr, error);
 			throw error;
 		}
