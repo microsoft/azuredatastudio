@@ -916,6 +916,10 @@ declare module 'mssql' {
 			name: string;
 		}
 
+		export interface SecurityPrincipalObject extends SqlObject {
+			securablePermissions: SecurablePermissions[];
+		}
+
 		/**
 		 * Base interface for the object view information
 		 */
@@ -1072,9 +1076,13 @@ declare module 'mssql' {
 		 */
 		export interface Permission {
 			/**
-			 * Name of the permission.
+			 * Type of the permission.
 			 */
-			name: string;
+			type: string;
+			/**
+			 * Name of the grantor.
+			 */
+			grantor: string;
 			/**
 			 * Whether the permission is granted or denied.
 			 */
@@ -1083,7 +1091,7 @@ declare module 'mssql' {
 			 * Whether the pincipal can grant this permission to other principals.
 			 * The value will be ignored if the grant property is set to false.
 			 */
-			withGrant: boolean;
+			withGrant?: boolean;
 		}
 
 		/**
@@ -1091,13 +1099,25 @@ declare module 'mssql' {
 		 */
 		export interface SecurablePermissions {
 			/**
-			 * The securable.
+			 * The securable name.
 			 */
-			securable: SqlObject;
+			securableName: string;
 			/**
-			 * The Permissions.
+			 * The securable type.
+			 */
+			securableType: string;
+			/**
+			 * The schema name of the object if applicable.
+			 */
+			schema: string | undefined;
+			/**
+			 * The permissions.
 			 */
 			permissions: Permission[];
+			/**
+			 * The effective permissions.
+			 */
+			effectivePermissions: string[];
 		}
 
 		/**

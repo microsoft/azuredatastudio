@@ -39,7 +39,7 @@ export const AddText = localize('objectManagement.addText', "Add…");
 export const RemoveText = localize('objectManagement.removeText', "Remove");
 export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
 export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
-
+export const SecurablesText = localize('objectManagement.securablesText', "Securables");
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
