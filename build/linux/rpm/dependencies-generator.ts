@@ -57,6 +57,7 @@ export function getDependencies(buildDir: string, applicationName: string, arch:
 		return !bundledDeps.some(bundledDep => dependency.startsWith(bundledDep));
 	});
 
+	/* {{SQL CARBON EDIT}} - Not needed for SQL
 	const referenceGeneratedDeps = referenceGeneratedDepsByArch[arch];
 	if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
 		const failMessage = 'The dependencies list has changed. '
@@ -68,7 +69,7 @@ export function getDependencies(buildDir: string, applicationName: string, arch:
 			console.warn(failMessage);
 		}
 	}
-
+	*/
 	return sortedDependencies;
 }
 
