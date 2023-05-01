@@ -20,7 +20,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { DacpacReferenceProjectEntry, FileProjectEntry, NugetPackageReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 import { ResultStatus } from 'azdata';
 import { BaseProjectTreeItem } from './tree/baseTreeItem';
-import { NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
+import { FolderNode, NoneNode, PostDeployNode, PreDeployNode, PublishProfileNode, SqlObjectFileNode } from './tree/fileFolderTreeItem';
 import { ProjectType, GetScriptsResult, GetFoldersResult } from '../common/typeHelper';
 
 
@@ -42,7 +42,7 @@ export class Project implements ISqlProject {
 	private _projectFilePath: string;
 	private _projectFileName: string;
 	private _projectGuid: string | undefined;
-	private _files: FileProjectEntry[] = [];
+	private _sqlObjectScripts: FileProjectEntry[] = [];
 	private _folders: FileProjectEntry[] = [];
 	private _dataSources: DataSource[] = [];
 	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
@@ -83,8 +83,8 @@ export class Project implements ISqlProject {
 		return this._projectGuid;
 	}
 
-	public get files(): FileProjectEntry[] {
-		return this._files;
+	public get sqlObjectScripts(): FileProjectEntry[] {
+		return this._sqlObjectScripts;
 	}
 
 	public get folders(): FileProjectEntry[] {
@@ -233,7 +233,7 @@ export class Project implements ISqlProject {
 
 		await this.readNoneItems(); // also populates list of publish profiles, determined by file extension
 
-		await this.readFilesInProject(); // get SQL object scripts
+		await this.readSqlObjectScripts(); // get SQL object scripts
 		await this.readFolders(); // get folders
 	}
 
@@ -297,7 +297,7 @@ export class Project implements ISqlProject {
 	 * Gets all the files specified by <Build Inlude="..."> and removes all the files specified by <Build Remove="...">
 	 * and all files included by the default glob of the folder of the sqlproj if it's an sdk style project
 	 */
-	private async readFilesInProject(): Promise<void> {
+	private async readSqlObjectScripts(): Promise<void> {
 		const filesSet: Set<string> = new Set();
 
 		var result: GetScriptsResult = await this.sqlProjService.getSqlObjectScripts(this.projectFilePath);
@@ -311,17 +311,17 @@ export class Project implements ISqlProject {
 		}
 
 		// create a FileProjectEntry for each file
-		const fileEntries: FileProjectEntry[] = [];
+		const sqlObjectScriptEntries: FileProjectEntry[] = [];
 		for (let f of Array.from(filesSet.values())) {
 
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
 			const containsCreateTableStatement: boolean = await utils.fileContainsCreateTableStatement(fullPath, this.getProjectTargetVersion());
 
-			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, undefined, containsCreateTableStatement));
+			sqlObjectScriptEntries.push(this.createFileProjectEntry(f, EntryType.File, undefined, containsCreateTableStatement));
 		}
 
-		this._files = fileEntries;
+		this._sqlObjectScripts = sqlObjectScriptEntries;
 	}
 
 	private async readFolders(): Promise<void> {
@@ -479,7 +479,7 @@ export class Project implements ISqlProject {
 	//#endregion
 
 	private resetProject(): void {
-		this._files = [];
+		this._sqlObjectScripts = [];
 		this._databaseReferences = [];
 		this._sqlCmdVariables = new Map();
 		this._preDeployScripts = [];
@@ -531,6 +531,9 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.addFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		// Note: adding a folder does not mean adding the contents of the folder.
+		// SDK projects may still need to adjust their include/exclude globs, and Legacy projects must still include each file
+		// in order for the contents of the folders to be added.
 		await this.readFolders();
 	}
 
@@ -538,6 +541,32 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.deleteFolder(this.projectFilePath, relativeFolderPath);
 		this.throwIfFailed(result);
 
+		await this.readSqlObjectScripts();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+		await this.readFolders();
+	}
+
+	public async excludeFolder(relativeFolderPath: string): Promise<void> {
+		const result = await this.sqlProjService.excludeFolder(this.projectFilePath, relativeFolderPath);
+		this.throwIfFailed(result);
+
+		await this.readSqlObjectScripts();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
+		await this.readFolders();
+	}
+
+	public async moveFolder(relativeSourcePath: string, relativeDestinationPath: string): Promise<void> {
+		const result = await this.sqlProjService.moveFolder(this.projectFilePath, relativeSourcePath, relativeDestinationPath);
+		this.throwIfFailed(result);
+
+		await this.readSqlObjectScripts();
+		await this.readPreDeployScripts();
+		await this.readPostDeployScripts();
+		await this.readNoneItems();
 		await this.readFolders();
 	}
 
@@ -550,7 +579,7 @@ export class Project implements ISqlProject {
 		this.throwIfFailed(result);
 
 		if (reloadAfter) {
-			await this.readFilesInProject();
+			await this.readSqlObjectScripts();
 			await this.readFolders();
 		}
 	}
@@ -560,7 +589,7 @@ export class Project implements ISqlProject {
 			await this.addSqlObjectScript(path, false /* reloadAfter */);
 		}
 
-		await this.readFilesInProject();
+		await this.readSqlObjectScripts();
 		await this.readFolders();
 	}
 
@@ -568,7 +597,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.deleteSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
+		await this.readSqlObjectScripts();
 		await this.readFolders();
 	}
 
@@ -576,7 +605,7 @@ export class Project implements ISqlProject {
 		const result = await this.sqlProjService.excludeSqlObjectScript(this.projectFilePath, relativePath);
 		this.throwIfFailed(result);
 
-		await this.readFilesInProject();
+		await this.readSqlObjectScripts();
 		await this.readFolders();
 	}
 
@@ -689,7 +718,7 @@ export class Project implements ISqlProject {
 		// Check if file already has been added to sqlproj
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
 
-		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
+		const existingEntry = this.sqlObjectScripts.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
 		if (existingEntry) {
 			return existingEntry;
 		}
@@ -729,7 +758,7 @@ export class Project implements ISqlProject {
 
 		if (path.extname(filePath) === constants.sqlFileExtension) {
 			result = await this.sqlProjService.addSqlObjectScript(this.projectFilePath, normalizedRelativeFilePath)
-			await this.readFilesInProject();
+			await this.readSqlObjectScripts();
 		} else {
 			result = await this.sqlProjService.addNoneItem(this.projectFilePath, normalizedRelativeFilePath);
 			await this.readNoneItems();
@@ -861,9 +890,8 @@ export class Project implements ISqlProject {
 		}
 
 		const databaseLiteral = settings.databaseVariable ? undefined : settings.databaseName;
+		let result, referenceName;
 
-		let result;
-		let referenceName;
 		if (reference instanceof SqlProjectReferenceProjectEntry) {
 			referenceName = (<IProjectReferenceSettings>settings).projectName;
 			result = await this.sqlProjService.addSqlProjectReference(this.projectFilePath, reference.pathForSqlProj(), reference.projectGuid, settings.suppressMissingDependenciesErrors, settings.databaseVariable, settings.serverVariable, databaseLiteral)
@@ -1026,13 +1054,15 @@ export class Project implements ISqlProject {
 		let result;
 
 		if (node instanceof SqlObjectFileNode) {
-			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.moveSqlObjectScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof PreDeployNode) {
-			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePreDeploymentScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof PostDeployNode) {
-			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, destinationRelativePath, originalRelativePath)
+			result = await this.sqlProjService.movePostDeploymentScript(this.projectFilePath, originalRelativePath, destinationRelativePath)
 		} else if (node instanceof NoneNode || node instanceof PublishProfileNode) {
-			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, destinationRelativePath, originalRelativePath);
+			result = await this.sqlProjService.moveNoneItem(this.projectFilePath, originalRelativePath, destinationRelativePath);
+		} else if (node instanceof FolderNode) {
+			result = await this.sqlProjService.moveFolder(this.projectFilePath, originalRelativePath, destinationRelativePath);
 		} else {
 			result = { success: false, errorMessage: constants.unhandledMoveNode }
 		}

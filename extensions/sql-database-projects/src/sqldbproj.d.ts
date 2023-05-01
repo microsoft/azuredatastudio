@@ -246,9 +246,9 @@ declare module 'sqldbproj' {
 		readonly projectFileName: string;
 
 		/**
-		 * Files and folders that are included in the project
+		 * SQL object scripts in this project
 		 */
-		readonly files: IFileProjectEntry[];
+		readonly sqlObjectScripts: IFileProjectEntry[];
 
 		/**
 		 * SqlCmd variables and their values
