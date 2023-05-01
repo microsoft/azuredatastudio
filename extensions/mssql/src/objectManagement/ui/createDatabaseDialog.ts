@@ -31,8 +31,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		const errors: string[] = [];
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
-		}
-		if (this.viewInfo.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
+		} else if (this.viewInfo.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
 			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
