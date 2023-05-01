@@ -205,6 +205,41 @@ function getSqlDbConnectionProfile(
 	};
 }
 
+function getSqlServerConnectionProfile(
+	connectionProfile: azdata.connection.ConnectionProfile): azdata.IConnectionProfile {
+	return {
+		id: generateGuid(),
+		providerName: 'MSSQL',
+		connectionName: '',
+		serverName: connectionProfile.serverName,
+		databaseName: connectionProfile.databaseName,
+		userName: connectionProfile.userName,
+		password: connectionProfile.password,
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
+		savePassword: false,
+		saveProfile: false,
+		options: {
+			conectionName: '',
+			server: connectionProfile.serverName,
+			database: connectionProfile.databaseName,
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
+			user: connectionProfile.userName,
+			password: connectionProfile.password,
+			connectionTimeout: 60,
+			columnEncryptionSetting: connectionProfile.options.columnEncryptionSetting,
+			// when connecting to a target Azure SQL DB, use true/false
+			encrypt: connectionProfile.options.encrypt,
+			trustServerCertificate: connectionProfile.options.trustServer,
+			connectRetryCount: '1',
+			connectRetryInterval: '10',
+			applicationName: 'azdata',
+			azureTenantId: connectionProfile.azureTenantId,
+			originalDatabase: connectionProfile.databaseName,
+			databaseDisplayName: connectionProfile.databaseName
+		},
+	};
+}
+
 export function getTargetConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
@@ -333,6 +368,70 @@ export async function collectTargetDatabaseTableInfo(
 	throw new Error(result.errorMessage);
 }
 
+export async function collectSourceAndTargetTableInfo(
+	sourceDatabase: string,
+	targetServer: AzureSqlDatabaseServer,
+	targetDatabaseName: string,
+	tenantId: string,
+	targetUserName: string,
+	targetPassword: string): Promise<[TableInfo[], TableInfo[]]> {
+
+	// Get source connection
+	let sourceSqlConnectionProfile = await getSourceConnectionProfile();
+	sourceSqlConnectionProfile.password = (await getSourceConnectionCredentials()).password;
+	sourceSqlConnectionProfile.databaseName = sourceDatabase;
+
+	const sourceSqlConnectionProfileWithDatabase = getSqlServerConnectionProfile(sourceSqlConnectionProfile);
+	const sourceResult = await azdata.connection.connect(sourceSqlConnectionProfileWithDatabase, false, false);
+
+	// Get target connection
+	const targetConnectionProfile = getSqlDbConnectionProfile(
+		targetServer.properties.fullyQualifiedDomainName,
+		tenantId,
+		targetDatabaseName,
+		targetUserName,
+		targetPassword);
+	const targetResult = await azdata.connection.connect(targetConnectionProfile, false, false);
+
+	if (targetResult.connected && targetResult.connectionId && sourceResult.connected && sourceResult.connectionId) {
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+			'MSSQL',
+			azdata.DataProviderType.QueryProvider);
+
+		const sourceOwnerUri = await azdata.connection.getUriForConnection(sourceResult.connectionId);
+		const targetOwnerUri = await azdata.connection.getUriForConnection(targetResult.connectionId);
+
+		const sourceResultPromise = queryProvider.runQueryAndReturn(
+			sourceOwnerUri,
+			query_database_tables_sql);
+
+		const targetResultPromise = queryProvider.runQueryAndReturn(
+			targetOwnerUri,
+			query_database_tables_sql);
+
+		return await Promise.all([sourceResultPromise, targetResultPromise]).then((results) => {
+			const sourceResults = results[0].rows.map(row => {
+				return {
+					databaseName: getSqlString(row[0]),
+					tableName: getSqlString(row[1]),
+					rowCount: getSqlNumber(row[2]),
+					selectedForMigration: false,
+				};
+			}) ?? [];
+
+			const targetResults = results[1].rows.map(row => {
+				return {
+					databaseName: getSqlString(row[0]),
+					tableName: getSqlString(row[1]),
+					rowCount: getSqlNumber(row[2]),
+					selectedForMigration: false,
+				};
+			}) ?? [];
+			return [sourceResults, targetResults];
+		});
+	}
+	throw new Error("Source connection error: " + (sourceResult.errorMessage ? sourceResult.errorMessage : "") + ". Target connection error: " + (targetResult.errorMessage ? targetResult.errorMessage : ""));
+}
 export async function collectTargetDatabaseInfo(
 	targetServer: AzureSqlDatabaseServer,
 	userName: string,

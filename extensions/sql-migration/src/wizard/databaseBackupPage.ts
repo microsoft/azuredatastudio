@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
-import { getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
+import { AzureSqlDatabaseServer, getStorageAccountAccessKeys, SqlVMServer } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent, ValidateIrState, ValidationResult } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -18,7 +18,7 @@ import { logError, TelemetryViews } from '../telemetry';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
 import { ValidateIrDialog } from '../dialog/validationResults/validateIrDialog';
-import { canTargetConnectToStorageAccount, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri } from '../api/sqlUtils';
+import { canTargetConnectToStorageAccount, collectSourceAndTargetTableInfo, getSourceConnectionCredentials, getSourceConnectionProfile, getSourceConnectionQueryProvider, getSourceConnectionUri, TableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -80,6 +80,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _refreshButton!: azdata.ButtonComponent;
 	private _databaseTable!: azdata.TableComponent;
 	private _migrationTableSection!: azdata.FlexContainer;
+	//private tableInfoPromises: Promise<[TableInfo[], TableInfo[]]>[] = [];
+	private _tableInfoPromises: Promise<void>[] = [];
+	private _targetTableMap!: Map<string, TableInfo>;
+	private _tableSelectionMap!: Map<string, TableInfo>;
+	private _tableInfoPreloadComplete: Map<string, boolean> = new Map();
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
@@ -845,6 +850,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (isSqlDbTarget) {
 				this.wizardPage.title = constants.DATABASE_TABLE_SELECTION_LABEL;
 				this.wizardPage.description = constants.DATABASE_TABLE_SELECTION_LABEL;
+				if (this.migrationStateModel._didUpdateDatabasesForMigration ||
+					this.migrationStateModel._didDatabaseMappingChange) {
+					this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
+						if (targetDatabaseInfo !== undefined && this._tableInfoPreloadComplete.get(sourceDatabaseName) !== false && targetDatabaseInfo.sourceTables.size === 0) {
+							this._tableInfoPreloadComplete.set(sourceDatabaseName, false);
+							this._tableInfoPromises.push(this._preloadAllTableMappingInfo(sourceDatabaseName, targetDatabaseInfo));
+						}
+					});
+				}
 				await this._loadTableData();
 			}
 			try {
@@ -1302,6 +1316,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 
 			await this.validateFields();
+			await Promise.all(this._tableInfoPromises);
 			this.updateValidationResultUI(true);
 		}
 	}
@@ -1791,12 +1806,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._refreshLoading.loading = true;
 		this.wizard.message = { text: '' };
 		const data: any[][] = [];
-
 		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
 			if (sourceDatabaseName) {
 				const tableCount = targetDatabaseInfo?.sourceTables.size ?? 0;
 				const hasTables = tableCount > 0;
-
 				let selectedCount = 0;
 				targetDatabaseInfo?.sourceTables.forEach(
 					tableInfo => selectedCount += tableInfo.selectedForMigration ? 1 : 0);
@@ -1808,15 +1821,84 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					<azdata.HyperlinkColumnCellValue>{				// table selection
 						icon: hasSelectedTables
 							? IconPathHelper.completedMigration
-							: IconPathHelper.edit,
+							: this._tableInfoPreloadComplete.get(sourceDatabaseName) === true
+								? IconPathHelper.edit
+								: IconPathHelper.inProgressMigration,
 						title: hasTables
 							? constants.TABLE_SELECTION_COUNT(selectedCount, tableCount)
-							: constants.TABLE_SELECTION_EDIT,
+							: this._tableInfoPreloadComplete.get(sourceDatabaseName) === true
+								? constants.TABLE_SELECTION_EDIT
+								: constants.SERVER_OBJECTS_IN_PROGRESS_TABLES_LABEL,
 					}]);
 			}
 		});
 
 		await this._databaseTable.updateProperty('data', data);
 		this._refreshLoading.loading = false;
+	}
+
+
+	private async _preloadAllTableMappingInfo(sourceDatabaseName: string, targetDatabaseInfo: TargetDatabaseInfo): Promise<void> {
+		try {
+			if (sourceDatabaseName) {
+				if (targetDatabaseInfo) {
+					return collectSourceAndTargetTableInfo(
+						sourceDatabaseName,
+						this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer,
+						targetDatabaseInfo.databaseName,
+						this.migrationStateModel._azureTenant.id,
+						this.migrationStateModel._targetUserName,
+						this.migrationStateModel._targetPassword).then(
+							async (results) => { await this._updateTableMappingInfo(sourceDatabaseName, targetDatabaseInfo, results); }
+						);
+				}
+			}
+		}
+		catch (error) {
+			this.wizard.message = {
+				text: constants.DATABASE_TABLE_CONNECTION_ERROR,
+				description: constants.DATABASE_TABLE_CONNECTION_ERROR_MESSAGE(error.message),
+				level: azdata.window.MessageLevel.Error
+			};
+		}
+	}
+	private async _updateTableMappingInfo(sourceDatabaseName: string, targetDatabaseInfo: TargetDatabaseInfo, tableMappingInfo: [TableInfo[], TableInfo[]]): Promise<void> {
+
+		this._targetTableMap = new Map();
+		tableMappingInfo[1].forEach(table =>
+			this._targetTableMap.set(
+				table.tableName, {
+				databaseName: table.databaseName,
+				rowCount: table.rowCount,
+				selectedForMigration: false,
+				tableName: table.tableName,
+			}));
+
+		this._tableSelectionMap = new Map();
+		tableMappingInfo[0].forEach(table => {
+			// If the source table doesn't exist in the target, set isSelected to false.
+			// Otherwise, set it to true as default.
+			var isSelected = false;
+			var sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
+			if (sourceTable === null || sourceTable === undefined) {
+				sourceTable = this._targetTableMap.get(table.tableName);
+				isSelected = sourceTable === null || sourceTable === undefined ? false : true;
+			} else {
+				isSelected = sourceTable.selectedForMigration;
+			}
+
+			const tableInfo: TableInfo = {
+				databaseName: table.databaseName,
+				rowCount: table.rowCount,
+				selectedForMigration: isSelected,
+				tableName: table.tableName,
+			};
+			this._tableSelectionMap.set(table.tableName, tableInfo);
+		});
+
+		// save table selection changes to migration source target map
+		targetDatabaseInfo.sourceTables = this._tableSelectionMap;
+		this._tableInfoPreloadComplete.set(sourceDatabaseName, true);
+		await this._loadTableData();
 	}
 }
