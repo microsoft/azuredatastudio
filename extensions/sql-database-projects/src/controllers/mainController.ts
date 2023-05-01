@@ -106,7 +106,7 @@ export default class MainController implements vscode.Disposable {
 					isNewTable: false,
 					tableScriptPath: filePath,
 					projectFilePath: projectPath,
-					allScripts: project.files.filter(entry => entry.type === EntryType.File && path.extname(entry.fsUri.fsPath).toLowerCase() === constants.sqlFileExtension)
+					allScripts: project.sqlObjectScripts.filter(entry => entry.type === EntryType.File && path.extname(entry.fsUri.fsPath).toLowerCase() === constants.sqlFileExtension)
 						.map(entry => entry.fsUri.fsPath),
 					targetVersion: targetVersion
 				}, {
