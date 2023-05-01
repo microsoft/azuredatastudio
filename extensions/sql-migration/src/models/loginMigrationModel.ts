@@ -159,8 +159,21 @@ export class LoginMigrationModel {
 	}
 
 	private setErrorCountMapPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
-		const errorCount = result.exceptionMap ? Object.keys(result.exceptionMap).length : 0;
-		this.errorCountMap.set(LoginMigrationStep[step], errorCount);
+		let errorBuckets: Map<string, number> = new Map<string, number>();
+
+		if (!result.exceptionMap) {
+			return;
+		}
+
+		for (const exceptions of Object.values(result.exceptionMap)) {
+			for (const exception of exceptions) {
+				// Get the value for the key, or the default value of t0 if he key is not in the map
+				const errorCount = errorBuckets.get(exception.ErrorCodeString) ?? 0;
+				errorBuckets.set(exception.ErrorCodeString, errorCount + 1)
+			}
+		}
+
+		this.errorCountMap.set(LoginMigrationStep[step], errorBuckets);
 	}
 
 	private setDurationPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
