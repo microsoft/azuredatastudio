@@ -272,7 +272,7 @@ describe('Manage Package Dialog', () => {
 			modelBuilder: {
 				listView: undefined!,
 				radioCardGroup: undefined!,
-				doughnutChart: undefined!,
+				chart: undefined!,
 				navContainer: undefined!,
 				divContainer: undefined!,
 				flexContainer: () => flexBuilder,

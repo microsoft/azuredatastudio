@@ -1936,10 +1936,10 @@ declare module 'azdata' {
 	}
 
 	export interface ModelBuilder {
-		doughnutChart(): ComponentBuilder<DoughnutChartComponent, DoughnutChartComponentProperties>;
+		chart(): ComponentBuilder<ChartComponent, ChartComponentProperties>;
 	}
 
-	export interface DoughnutChartComponentProperties extends ComponentProperties {
+	export interface ChartComponentProperties extends ComponentProperties {
 		data: number[];
 		labels: string[];
 		colors?: string[];
@@ -1947,7 +1947,7 @@ declare module 'azdata' {
 
 	export type ChartClickEvent = { label: string };
 
-	export interface DoughnutChartComponent extends Component, DoughnutChartComponentProperties {
+	export interface ChartComponent extends Component, ChartComponentProperties {
 		onDidClick: vscode.Event<ChartClickEvent>;
 	}
 }

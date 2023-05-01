@@ -7,20 +7,20 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, OnDestroy, Ele
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { DoughnutChart } from 'sql/base/browser/ui/chart/doughnutChart/doughnutChart.component';
+import { Chart } from 'sql/base/browser/ui/chart/chart.component';
 import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-chart',
-	templateUrl: decodeURI(require.toUrl('./doughnutChart.component.html'))
+	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class DoughnutChartComponent extends ComponentBase<azdata.DoughnutChartComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent extends ComponentBase<azdata.ChartComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild(DoughnutChart) private _chart: DoughnutChart;
+	@ViewChild(Chart) private _chart: Chart;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,

@@ -8,10 +8,10 @@ import { } from 'ng2-charts';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 @Component({
-	selector: 'doughnutChart-component',
-	templateUrl: decodeURI(require.toUrl('./doughnutChart.component.html'))
+	selector: 'chart-component',
+	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
-export class DoughnutChart extends Disposable {
+export class Chart extends Disposable {
 
 	private dougnutChartLabels: string[] = [];
 	private doughnutChartData: number[] = [];

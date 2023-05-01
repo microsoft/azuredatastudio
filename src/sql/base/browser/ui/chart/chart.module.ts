@@ -5,17 +5,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartsModule } from 'ng2-charts';
-import { DoughnutChart } from 'sql/base/browser/ui/chart/doughnutChart/doughnutChart.component';
+import { Chart } from 'sql/base/browser/ui/chart/chart.component';
 
 
 @NgModule({
 	declarations: [
-		DoughnutChart
+		Chart
 	],
 	imports: [
 		CommonModule,
 		ChartsModule
 	],
-	exports: [DoughnutChart]
+	exports: [Chart]
 })
 export class ChartModule { }

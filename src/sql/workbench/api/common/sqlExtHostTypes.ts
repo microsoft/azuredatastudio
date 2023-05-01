@@ -181,7 +181,7 @@ export enum ModelComponentTypes {
 	PropertiesContainer,
 	InfoBox,
 	Slider,
-	DoughnutChart
+	Chart
 }
 
 export enum ModelViewAction {
