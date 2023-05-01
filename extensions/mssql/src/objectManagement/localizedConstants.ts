@@ -219,7 +219,7 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 		case ObjectManagement.NodeType.Database:
 			return DatabaseTypeDisplayName;
 		default:
-			throw new Error(`Unknown node type: ${type}`);
+			return type;
 	}
 }
 

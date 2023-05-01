@@ -221,7 +221,7 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
-	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][], maxHeight: number = DefaultMaxTableHeight): azdata.TableComponent {
+	protected createTable(ariaLabel: string, columns: string[], data: any[][], maxHeight: number = DefaultMaxTableHeight): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,

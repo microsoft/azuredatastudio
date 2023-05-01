@@ -10,7 +10,8 @@ import * as localizedConstants from '../localizedConstants';
 import { getErrorMessage } from '../../utils';
 
 export interface FindObjectDialogOptions {
-	objectTypes: mssql.ObjectManagement.NodeType[];
+	objectTypes: string[];
+	showSchemaColumn: boolean;
 	multiSelect: boolean;
 	contextId: string;
 	title: string;
@@ -22,13 +23,18 @@ export interface FindObjectDialogResult {
 
 const ObjectComparer: TableListItemComparer<mssql.ObjectManagement.SearchResultItem> =
 	(item1, item2) => {
-		return item1.name === item2.name && item1.type === item2.type;
+		return item1.name === item2.name && item1.type === item2.type && item1.schema === item2.schema;
 	};
 
-const ObjectRowValueGetter: TableListItemValueGetter<mssql.ObjectManagement.SearchResultItem> =
-	(item) => {
-		return [item.name, localizedConstants.getNodeTypeDisplayName(item.type, true)];
+function ObjectRowValueGetter(showSchemaColumn: boolean): TableListItemValueGetter<mssql.ObjectManagement.SearchResultItem> {
+	return (item) => {
+		const row = [item.name, localizedConstants.getNodeTypeDisplayName(item.type, true)];
+		if (showSchemaColumn) {
+			row.splice(1, 0, item.schema);
+		}
+		return row;
 	};
+}
 
 const ObjectsTableMaxHeight = 700;
 
@@ -65,22 +71,22 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		});
 		const buttonContainer = this.createButtonContainer([this.findButton]);
 		const objectTypeSection = this.createGroup(localizedConstants.ObjectTypeText, [this.objectTypesTable, buttonContainer]);
+		const columns = [localizedConstants.NameText, localizedConstants.ObjectTypeText];
+		if (this.options.showSchemaColumn) {
+			columns.splice(1, 0, localizedConstants.SchemaText);
+		}
 
 		if (this.options.multiSelect) {
 			this.objectsTable = this.createTableList<mssql.ObjectManagement.SearchResultItem>(localizedConstants.ObjectsText,
-				[localizedConstants.NameText, localizedConstants.ObjectTypeText],
+				columns,
 				this.allObjects,
 				this.result.selectedObjects,
 				ObjectsTableMaxHeight,
 				DefaultTableListItemEnabledStateGetter,
-				ObjectRowValueGetter,
+				ObjectRowValueGetter(this.options.showSchemaColumn),
 				ObjectComparer);
 		} else {
-			this.objectsTable = this.createTable(localizedConstants.ObjectsText, [{
-				value: localizedConstants.NameText,
-			}, {
-				value: localizedConstants.ObjectTypeText
-			}], []);
+			this.objectsTable = this.createTable(localizedConstants.ObjectsText, columns, []);
 			this.disposables.push(this.objectsTable.onRowSelected(async () => {
 				if (this.objectsTable.selectedRows.length > 0) {
 					this.result.selectedObjects = [this.allObjects[this.objectsTable.selectedRows[0]]];
@@ -111,10 +117,10 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			this.allObjects.splice(0, this.allObjects.length, ...results);
 			let data;
 			if (this.options.multiSelect) {
-				data = this.getDataForTableList(this.allObjects, this.result.selectedObjects, DefaultTableListItemEnabledStateGetter, ObjectRowValueGetter, ObjectComparer);
+				data = this.getDataForTableList(this.allObjects, this.result.selectedObjects, DefaultTableListItemEnabledStateGetter, ObjectRowValueGetter(this.options.showSchemaColumn), ObjectComparer);
 			}
 			else {
-				data = this.allObjects.map(item => ObjectRowValueGetter(item));
+				data = this.allObjects.map(item => ObjectRowValueGetter(this.options.showSchemaColumn)(item));
 			}
 			this.setTableData(this.objectsTable, data, ObjectsTableMaxHeight);
 			this.objectsLoadingComponent.loadingCompletedText = localizedConstants.LoadingObjectsCompletedText(results.length);

@@ -916,12 +916,15 @@ declare module 'mssql' {
 			name: string;
 		}
 
+		/**
+		 * Base interface for all the security principal objects. e.g. Login, Server Role, Database Role...
+		 */
 		export interface SecurityPrincipalObject extends SqlObject {
 			securablePermissions: SecurablePermissions[];
 		}
 
 		/**
-		 * Base interface for the object view information
+		 * Base interface for the object view information.
 		 */
 		export interface ObjectViewInfo<T extends SqlObject> {
 			/**
@@ -930,10 +933,32 @@ declare module 'mssql' {
 			objectInfo: T;
 		}
 
+		export interface SecurableTypeMetadata {
+			/**
+			 * Name of the securable type.
+			 */
+			name: string;
+			/**
+			 * Display name of the securable type.
+			 */
+			displayName: string;
+			/**
+			 * Permissions supported by the securable type.
+			 */
+			permissions: string[];
+		}
+
+		/**
+		 * Base interface for security principal object's view information.
+		 */
+		export interface SecurityPrincipalViewInfo<T extends SecurityPrincipalObject> extends ObjectViewInfo<T> {
+			SecurableTypeMetadata: SecurableTypeMetadata[];
+		}
+
 		/**
 		 * Server level login.
 		 */
-		export interface Login extends SqlObject {
+		export interface Login extends SecurityPrincipalObject {
 			/**
 			 * Authentication type.
 			 */
@@ -1029,7 +1054,7 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the login view.
 		 */
-		export interface LoginViewInfo extends ObjectViewInfo<Login> {
+		export interface LoginViewInfo extends SecurityPrincipalViewInfo<Login> {
 			/**
 			 * The authentication types supported by the server.
 			 */
@@ -1066,7 +1091,7 @@ declare module 'mssql' {
 		/**
 		 * The permission information a principal has on a securable.
 		 */
-		export interface Permission {
+		export interface SecurablePermissionItem {
 			/**
 			 * Type of the permission.
 			 */
@@ -1105,9 +1130,9 @@ declare module 'mssql' {
 			/**
 			 * The permissions.
 			 */
-			permissions: Permission[];
+			permissions: SecurablePermissionItem[];
 			/**
-			 * The effective permissions.
+			 * The effective permissions. Includes all permissions granted to the principal, including those granted through role memberships.
 			 */
 			effectivePermissions: string[];
 		}
@@ -1155,7 +1180,7 @@ declare module 'mssql' {
 		/**
 		 * Database user.
 		 */
-		export interface User extends SqlObject {
+		export interface User extends SecurityPrincipalObject {
 			/**
 			 * Type of the user.
 			 */
@@ -1192,7 +1217,7 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the user view.
 		 */
-		export interface UserViewInfo extends ObjectViewInfo<User> {
+		export interface UserViewInfo extends SecurityPrincipalViewInfo<User> {
 			/**
 			 * All user types supported by the database.
 			 */
@@ -1218,7 +1243,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the server role object.
 		 */
-		export interface ServerRoleInfo extends SqlObject {
+		export interface ServerRoleInfo extends SecurityPrincipalObject {
 			/**
 			 * Name of the server principal that owns the server role.
 			 */
@@ -1236,7 +1261,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the information required to render the server role view.
 		 */
-		export interface ServerRoleViewInfo extends ObjectViewInfo<ServerRoleInfo> {
+		export interface ServerRoleViewInfo extends SecurityPrincipalViewInfo<ServerRoleInfo> {
 			/**
 			 * Whether the server role is a fixed role.
 			 */
@@ -1250,7 +1275,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the application role object.
 		 */
-		export interface ApplicationRoleInfo extends SqlObject {
+		export interface ApplicationRoleInfo extends SecurityPrincipalObject {
 			/**
 			 * Default schema of the application role.
 			 */
@@ -1268,7 +1293,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the information required to render the application role view.
 		 */
-		export interface ApplicationRoleViewInfo extends ObjectViewInfo<ApplicationRoleInfo> {
+		export interface ApplicationRoleViewInfo extends SecurityPrincipalViewInfo<ApplicationRoleInfo> {
 			/**
 			 * List of all the schemas in the database.
 			 */
@@ -1278,7 +1303,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the database role object.
 		 */
-		export interface DatabaseRoleInfo extends SqlObject {
+		export interface DatabaseRoleInfo extends SecurityPrincipalObject {
 			/**
 			 * Name of the database principal that owns the database role.
 			 */
@@ -1296,7 +1321,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the information required to render the database role view.
 		 */
-		export interface DatabaseRoleViewInfo extends ObjectViewInfo<DatabaseRoleInfo> {
+		export interface DatabaseRoleViewInfo extends SecurityPrincipalViewInfo<DatabaseRoleInfo> {
 			/**
 			 * List of all the schemas in the database.
 			 */
