@@ -124,7 +124,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
 		if (showConnectDialogOnStartup && !commandName && !profile && !this._connectionManagementService.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
-			await this._connectionManagementService.showConnectionDialog();
+			await this._connectionManagementService.showConnectionDialog(undefined, {
+				showDashboard: true,
+				saveTheConnection: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 			return;
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
@@ -235,7 +240,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			}
 
 			const connectionProfile = this.readProfileFromArgs(args);
-			await this._connectionManagementService.showConnectionDialog(undefined, undefined, connectionProfile);
+			await this._connectionManagementService.showConnectionDialog(undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			}, connectionProfile);
 		} catch (err) {
 			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}

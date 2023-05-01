@@ -140,7 +140,7 @@ suite('commandLineService tests', () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
-		connectionManagementService.setup((c) => c.showConnectionDialog())
+		connectionManagementService.setup((c) => c.showConnectionDialog(undefined, TypeMoq.It.isAny()))
 			.returns(() => new Promise<void>((resolve, reject) => { resolve(); }))
 			.verifiable();
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => false);
