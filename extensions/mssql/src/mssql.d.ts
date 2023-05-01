@@ -1328,7 +1328,6 @@ declare module 'mssql' {
 			recoveryModel?: string;
 			compatibilityLevel?: string;
 			containmentType?: string;
-			isAzure: boolean;
 		}
 
 		export interface CreateDatabaseViewInfo extends ObjectViewInfo<Database> {
