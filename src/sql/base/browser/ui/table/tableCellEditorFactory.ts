@@ -106,7 +106,10 @@ export class TableCellEditorFactory {
 			public applyValue(item: Slick.SlickData, state: string): void {
 				const activeCell = this._args.grid.getActiveCell();
 				if (inputType === 'date') {
-					state = new Date(state).toLocaleDateString('en-US', { timeZone: 'UTC' });
+					// Usually, the date picker will return the date in the local time zone and change the date to the previous day.
+					// We need to convert the date to UTC time zone to avoid this behavior so that the date will be the same as the
+					// date picked in the date picker.
+					state = new Date(state).toLocaleDateString(window.navigator.language, { timeZone: 'UTC' });
 				}
 				self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
 			}
