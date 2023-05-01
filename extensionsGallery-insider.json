@@ -4841,14 +4841,14 @@
 					},
 					"versions": [
 						{
-							"version": "7.1.0",
-							"lastUpdated": "02/01/2023",
+							"version": "7.2.1",
+							"lastUpdated": "04/30/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.2.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4856,7 +4856,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/README.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
@@ -4864,11 +4864,11 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/package.json"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/LICENSE"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/LICENSE"
 								}
 							],
 							"properties": [
