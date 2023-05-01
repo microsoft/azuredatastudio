@@ -945,14 +945,28 @@ declare module 'mssql' {
 			/**
 			 * Permissions supported by the securable type.
 			 */
-			permissions: string[];
+			permissions: PermissionMetata[];
+		}
+
+		/**
+		 * Permission
+		 */
+		export interface PermissionMetata {
+			/**
+			 * Name of the permission.
+			 */
+			name: string;
+			/**
+			 * Display name of the permission.
+			 */
+			displayName: string;
 		}
 
 		/**
 		 * Base interface for security principal object's view information.
 		 */
 		export interface SecurityPrincipalViewInfo<T extends SecurityPrincipalObject> extends ObjectViewInfo<T> {
-			SecurableTypeMetadata: SecurableTypeMetadata[];
+			supportedSecurableTypes: SecurableTypeMetadata[];
 		}
 
 		/**
@@ -1093,9 +1107,9 @@ declare module 'mssql' {
 		 */
 		export interface SecurablePermissionItem {
 			/**
-			 * Type of the permission.
+			 * name of the permission.
 			 */
-			type: string;
+			permission: string;
 			/**
 			 * Name of the grantor.
 			 */
@@ -1108,7 +1122,7 @@ declare module 'mssql' {
 			 * Whether the pincipal can grant this permission to other principals.
 			 * The value will be ignored if the grant property is set to false.
 			 */
-			withGrant: boolean | undefined;
+			withGrant?: boolean;
 		}
 
 		/**
@@ -1118,15 +1132,15 @@ declare module 'mssql' {
 			/**
 			 * The securable name.
 			 */
-			securableName: string;
+			name: string;
 			/**
 			 * The securable type.
 			 */
-			securableType: string;
+			type: string;
 			/**
 			 * The schema name of the object if applicable.
 			 */
-			schema: string | undefined;
+			schema?: string;
 			/**
 			 * The permissions.
 			 */
