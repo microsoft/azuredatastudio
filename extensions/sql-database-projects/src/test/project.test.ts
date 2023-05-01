@@ -33,7 +33,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		(project.files.map(f => f.relativePath)).should.deepEqual([
+		(project.sqlObjectScripts.map(f => f.relativePath)).should.deepEqual([
 			'..\\Test\\Test.sql',
 			'MyExternalStreamingJob.sql',
 			'Tables\\Action History.sql',
@@ -118,18 +118,18 @@ describe('Project: sqlproj content operations', function (): void {
 		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
 
 		(project.folders.length).should.equal(0);
-		(project.files.length).should.equal(0);
+		(project.sqlObjectScripts.length).should.equal(0);
 
 		await project.addFolder(folderPath);
 		await project.addScriptItem(scriptPath, scriptContents);
 		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, ItemType.externalStreamingJob);
 
 		(project.folders.length).should.equal(1);
-		(project.files.length).should.equal(2);
+		(project.sqlObjectScripts.length).should.equal(2);
 
 		should(project.folders.find(f => f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
-		should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
-		should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		should(project.sqlObjectScripts.find(f => f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(project.sqlObjectScripts.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
 		// TODO: support for tagged entries not supported in DacFx.Projects
 		//should(project.files.find(f => f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 	});
@@ -138,7 +138,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = await testUtils.createTestSqlProject(this.test);
 
 		// initial setup
-		(project.files.length).should.equal(0, 'initial number of scripts');
+		(project.sqlObjectScripts.length).should.equal(0, 'initial number of scripts');
 
 		// create files on disk
 		const tablePath = path.join(project.projectFolderPath, 'MyTable.sql');
@@ -151,7 +151,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addSqlObjectScripts(['MyTable.sql', 'MyView.sql']);
 
 		// verify result
-		(project.files.length).should.equal(2, 'Number of scripts after adding');
+		(project.sqlObjectScripts.length).should.equal(2, 'Number of scripts after adding');
 	});
 
 	// TODO: move to DacFx once script contents supported
@@ -261,7 +261,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// Try adding project root folder itself - this is silently ignored
 		await project.addFolder(path.dirname(projFilePath));
-		should.equal(project.files.length, 0, 'Nothing should be added to the project');
+		should.equal(project.sqlObjectScripts.length, 0, 'Nothing should be added to the project');
 
 		// Try adding a parent of the project folder
 		await testUtils.shouldThrowSpecificError(
@@ -288,8 +288,8 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addExistingItem(txtFile);
 
 		// Validate files should have been added to project
-		(project.files.length).should.equal(1, `SQL script object count: ${project.files.map(x => x.relativePath).join('; ')}`);
-		(project.files[0].relativePath).should.equal('test.sql');
+		(project.sqlObjectScripts.length).should.equal(1, `SQL script object count: ${project.sqlObjectScripts.map(x => x.relativePath).join('; ')}`);
+		(project.sqlObjectScripts[0].relativePath).should.equal('test.sql');
 
 		should(project.folders.length).equal(1, 'folders');
 		(project.folders[0].relativePath).should.equal('foo');
@@ -336,7 +336,7 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.preDeployScripts.length).equal(1, 'Script.PreDeployment1.sql should have been added');
 		should(project.noneDeployScripts.length).equal(1, 'Script.PreDeployment2.sql should have been added');
 		should(project.preDeployScripts.length).equal(1, 'Script.PostDeployment1.sql should have been added');
-		should(project.files.length).equal(0, 'There should not be any SQL object scripts');
+		should(project.sqlObjectScripts.length).equal(0, 'There should not be any SQL object scripts');
 
 		// exclude the pre/post/none deploy script
 		await project.excludePreDeploymentScript('Script.PreDeployment1.sql');
@@ -346,7 +346,7 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.preDeployScripts.length).equal(0, 'Script.PreDeployment1.sql should have been removed');
 		should(project.noneDeployScripts.length).equal(0, 'Script.PreDeployment2.sql should have been removed');
 		should(project.postDeployScripts.length).equal(0, 'Script.PostDeployment1.sql should have been removed');
-		should(project.files.length).equal(0, 'There should not be any SQL object scripts after the excludes');
+		should(project.sqlObjectScripts.length).equal(0, 'There should not be any SQL object scripts after the excludes');
 	});
 
 	it('Should handle excluding glob included folders', async function (): Promise<void> {
@@ -356,7 +356,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.length).equal(13);
+		should(project.sqlObjectScripts.length).equal(13);
 		should(project.folders.length).equal(3);
 		should(project.noneDeployScripts.length).equal(2);
 
@@ -365,7 +365,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify folder and contents are excluded
 		should(project.folders.length).equal(1);
-		should(project.files.length).equal(6);
+		should(project.sqlObjectScripts.length).equal(6);
 		should(project.noneDeployScripts.length).equal(1, 'Script.PostDeployment2.sql should have been excluded');
 		should(project.folders.find(f => f.relativePath === 'folder1')).equal(undefined);
 	});
@@ -377,7 +377,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.length).equal(13);
+		should(project.sqlObjectScripts.length).equal(13);
 		should(project.folders.length).equal(3);
 
 		// try to exclude a glob included folder
@@ -385,7 +385,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify folder and contents are excluded
 		should(project.folders.length).equal(2);
-		should(project.files.length).equal(11);
+		should(project.sqlObjectScripts.length).equal(11);
 		should(project.folders.find(f => f.relativePath === 'folder1\\nestedFolder')).equal(undefined);
 	});
 
@@ -397,7 +397,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.length).equal(11);
+		should(project.sqlObjectScripts.length).equal(11);
 		should(project.folders.length).equal(2);
 		should(project.folders.find(f => f.relativePath === 'folder1')!).not.equal(undefined);
 		should(project.folders.find(f => f.relativePath === 'folder2')!).not.equal(undefined);
@@ -407,7 +407,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify folder and contents are excluded
 		should(project.folders.length).equal(1);
-		should(project.files.length).equal(6);
+		should(project.sqlObjectScripts.length).equal(6);
 		should(project.folders.find(f => f.relativePath === 'folder1')).equal(undefined);
 
 		// try to exclude an explicitly included folder with trailing \ in sqlproj
@@ -415,7 +415,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify folder and contents are excluded
 		should(project.folders.length).equal(0);
-		should(project.files.length).equal(1);
+		should(project.sqlObjectScripts.length).equal(1);
 		should(project.folders.find(f => f.relativePath === 'folder2')).equal(undefined);
 	});
 
@@ -426,7 +426,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.length).equal(13);
+		should(project.sqlObjectScripts.length).equal(13);
 		should(project.folders.length).equal(3);
 		should(project.folders.find(f => f.relativePath === 'folder1')!).not.equal(undefined);
 		should(project.folders.find(f => f.relativePath === 'folder2')!).not.equal(undefined);
@@ -436,7 +436,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify the project not longer has folder2 and its contents
 		should(project.folders.length).equal(2);
-		should(project.files.length).equal(8);
+		should(project.sqlObjectScripts.length).equal(8);
 		should(project.folders.find(f => f.relativePath === 'folder2')).equal(undefined);
 
 		// try to delete an explicitly included folder without trailing \ in sqlproj
@@ -444,7 +444,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify the project not longer has folder1 and its contents
 		should(project.folders.length).equal(0);
-		should(project.files.length).equal(1);
+		should(project.sqlObjectScripts.length).equal(1);
 		should(project.folders.find(f => f.relativePath === 'folder1')).equal(undefined);
 	});
 

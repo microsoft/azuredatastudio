@@ -53,15 +53,15 @@ describe('Project Tree tests', function (): void {
 
 		// nested entries before explicit top-level folder entry
 		// also, ordering of files/folders at all levels
-		proj.files.push(proj.createFileProjectEntry(path.join('someFolder', 'bNestedTest.sql'), EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry(path.join('someFolder', 'bNestedTest.sql'), EntryType.File));
 		proj.folders.push(proj.createFileProjectEntry(path.join('someFolder', 'bNestedFolder'), EntryType.Folder));
-		proj.files.push(proj.createFileProjectEntry(path.join('someFolder', 'aNestedTest.sql'), EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry(path.join('someFolder', 'aNestedTest.sql'), EntryType.File));
 		proj.folders.push(proj.createFileProjectEntry(path.join('someFolder', 'aNestedFolder'), EntryType.Folder));
 		proj.folders.push(proj.createFileProjectEntry('someFolder', EntryType.Folder));
 
 		// duplicate files
-		proj.files.push(proj.createFileProjectEntry('duplicate.sql', EntryType.File));
-		proj.files.push(proj.createFileProjectEntry('duplicate.sql', EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('duplicate.sql', EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('duplicate.sql', EntryType.File));
 
 		// duplicate folders
 		proj.folders.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
@@ -101,11 +101,11 @@ describe('Project Tree tests', function (): void {
 
 		// nested entries before explicit top-level folder entry
 		// also, ordering of files/folders at all levels
-		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
 		proj.folders.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder2', EntryType.Folder));
 		proj.folders.push(proj.createFileProjectEntry('someFolder1', EntryType.Folder));
 		proj.folders.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder1', EntryType.Folder));
-		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyFile2.sql', EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('someFolder1\\MyFile2.sql', EntryType.File));
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.relativeProjectUri.path)).deepEqual([
@@ -125,9 +125,9 @@ describe('Project Tree tests', function (): void {
 
 		// nested entries before explicit top-level folder entry
 		// also, ordering of files/folders at all levels
-		proj.files.push(proj.createFileProjectEntry('..\\someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
-		proj.files.push(proj.createFileProjectEntry('..\\..\\someFolder2\\MyFile2.sql', EntryType.File));
-		proj.files.push(proj.createFileProjectEntry('..\\..\\someFolder3', EntryType.Folder)); // folder should not be counted (same as SSDT)
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('..\\someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('..\\..\\someFolder2\\MyFile2.sql', EntryType.File));
+		proj.sqlObjectScripts.push(proj.createFileProjectEntry('..\\..\\someFolder3', EntryType.Folder)); // folder should not be counted (same as SSDT)
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.relativeProjectUri.path)).deepEqual([

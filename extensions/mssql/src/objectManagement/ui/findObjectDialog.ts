@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as mssql from 'mssql';
 import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableHeight, DialogBase, TableListItemComparer, TableListItemValueGetter } from './dialogBase';
 import * as localizedConstants from '../localizedConstants';
-import { getNodeTypeDisplayName } from '../utils';
 import { getErrorMessage } from '../../utils';
 
 export interface FindObjectDialogOptions {
@@ -28,7 +27,7 @@ const ObjectComparer: TableListItemComparer<mssql.ObjectManagement.SearchResultI
 
 const ObjectRowValueGetter: TableListItemValueGetter<mssql.ObjectManagement.SearchResultItem> =
 	(item) => {
-		return [item.name, getNodeTypeDisplayName(item.type, true)];
+		return [item.name, localizedConstants.getNodeTypeDisplayName(item.type, true)];
 	};
 
 const ObjectsTableMaxHeight = 700;
@@ -59,7 +58,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			this.selectedObjectTypes,
 			DefaultMaxTableHeight,
 			DefaultTableListItemEnabledStateGetter, (item) => {
-				return [getNodeTypeDisplayName(item, true)];
+				return [localizedConstants.getNodeTypeDisplayName(item, true)];
 			});
 		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();
