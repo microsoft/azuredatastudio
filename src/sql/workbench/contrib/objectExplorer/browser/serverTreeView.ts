@@ -877,7 +877,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			if (node instanceof ConnectionProfile) {
 				connectionProfile = node;
 				await TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, {
-					params: undefined,
 					saveTheConnection: true,
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true,

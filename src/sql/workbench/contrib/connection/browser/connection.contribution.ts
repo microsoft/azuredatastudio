@@ -147,7 +147,6 @@ CommandsRegistry.registerCommand('azdata.connect',
 			connectionManagementService.connect(connectionProfile, undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
-				params: undefined,
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			});
@@ -155,7 +154,6 @@ CommandsRegistry.registerCommand('azdata.connect',
 			connectionManagementService.showConnectionDialog(undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
-				params: undefined,
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			});

@@ -242,7 +242,6 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			await this._connectionManagementService.showConnectionDialog(undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
-				params: undefined,
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			}, connectionProfile);

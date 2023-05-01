@@ -269,23 +269,6 @@
 			}
 		},
 		{
-			"type": "pwa-chrome",
-			"request": "attach",
-			"name": "Attach to VS Code",
-			"browserAttachLocation": "workspace",
-			"port": 9222,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "2_attach"
-			},
-			"resolveSourceMapLocations": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"perScriptSourcemaps": "yes"
-		},
-		{
 			"type": "node",
 			"request": "launch",
 			"name": "Run Smoke Tests",
