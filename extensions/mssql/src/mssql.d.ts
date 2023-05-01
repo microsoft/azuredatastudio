@@ -1108,7 +1108,7 @@ declare module 'mssql' {
 			 * Whether the pincipal can grant this permission to other principals.
 			 * The value will be ignored if the grant property is set to false.
 			 */
-			withGrant?: boolean;
+			withGrant: boolean | undefined;
 		}
 
 		/**
