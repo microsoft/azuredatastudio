@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DefaultInputWidth, ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
+import { DefaultInputWidth } from './dialogBase';
 
 const DefaultValue = '<default>';
 
@@ -26,7 +27,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		return true;
 	}
 
-	protected async validateInput(): Promise<string[]> {
+	protected override async validateInput(): Promise<string[]> {
 		const errors: string[] = [];
 		if (!this.objectInfo.name) {
 			errors.push(localizedConstants.NameCannotBeEmptyError);
@@ -56,7 +57,6 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		}).component();
 		this.disposables.push(this._nameInput.onTextChanged(async () => {
 			this.objectInfo.name = this._nameInput.value;
-			this.onObjectValueChange();
 			await this.runValidation(false);
 		}));
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
@@ -70,55 +70,45 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		let containers: azdata.Component[] = [];
 
 		if (this.viewInfo.loginNames?.length > 0) {
-			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue);
-			this.disposables.push(ownerDropbox.onValueChanged(async () => {
+			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
-				this.onObjectValueChange();
 				await this.runValidation(false);
-			}));
+			}, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
 
 		if (this.viewInfo.collationNames?.length > 0) {
-			let collationDropbox = this.createDropdown(localizedConstants.CollationText, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue);
-			this.disposables.push(collationDropbox.onValueChanged(async () => {
+			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
-				this.onObjectValueChange();
 				await this.runValidation(false);
-			}));
+			}, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
 
 		if (this.viewInfo.recoveryModels?.length > 0) {
 			this.objectInfo.recoveryModel = this.viewInfo.recoveryModels[0];
-			let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
-			this.disposables.push(recoveryDropbox.onValueChanged(async () => {
+			let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async () => {
 				this.objectInfo.recoveryModel = recoveryDropbox.value as string;
-				this.onObjectValueChange();
 				await this.runValidation(false);
-			}));
+			}, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 		}
 
 		if (this.viewInfo.compatibilityLevels?.length > 0) {
 			this.objectInfo.compatibilityLevel = this.viewInfo.compatibilityLevels[0];
-			let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
-			this.disposables.push(compatibilityDropbox.onValueChanged(async () => {
+			let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async () => {
 				this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
-				this.onObjectValueChange();
 				await this.runValidation(false);
-			}));
+			}, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
 		}
 
 		if (this.viewInfo.containmentTypes?.length > 0) {
 			this.objectInfo.containmentType = this.viewInfo.containmentTypes[0];
-			let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
-			this.disposables.push(containmentDropbox.onValueChanged(async () => {
+			let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async () => {
 				this.objectInfo.containmentType = containmentDropbox.value as string;
-				this.onObjectValueChange();
 				await this.runValidation(false);
-			}));
+			}, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
 		}
 
