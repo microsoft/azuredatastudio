@@ -679,7 +679,7 @@ export function errorExtracting(path: string, error: string) { return localize('
 //#endregion
 
 //#region move
-export const onlyMoveSqlFilesSupported = localize('onlyMoveSqlFilesSupported', "Only moving .sql files is supported");
+export const onlyMoveFilesFoldersSupported = localize('onlyMoveFilesFoldersSupported', "Only moving files and folders are supported");
 export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetweenProjectsNotSupported', "Moving files between projects is not supported");
 export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
 export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }
