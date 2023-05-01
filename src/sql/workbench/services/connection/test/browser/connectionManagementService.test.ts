@@ -2132,8 +2132,7 @@ test('getEditorConnectionProfileTitle should return a correctly formatted title 
 	});
 	const testInstantiationService = new TestInstantiationService();
 	testInstantiationService.stub(IStorageService, new TestStorageService());
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
+	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object).withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
 	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, capabilitiesService, undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 
 	// We should expect that options by themselves are empty if no other profiles exist.
