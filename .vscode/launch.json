@@ -279,7 +279,8 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"presentation": {
-				"group": "2_attach"
+				"group": "2_attach",
+				"hidden": true
 			},
 			"resolveSourceMapLocations": [
 				"${workspaceFolder}/out/**/*.js"
