@@ -733,11 +733,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
+	private findParentConnection(profile: interfaces.IConnectionProfile): string {
+		let activeConnections = this.getActiveConnections();
+		for (let i = 0; i < activeConnections.length; i++) {
+			let activeProfileKey = activeConnections[i].getOptionsKey();
+			activeProfileKey = activeProfileKey.replace(/database:\w*/, 'database:' + profile.databaseName);
+			let trimProfileKey = profile.getOptionsKey().replace(/databaseDisplayName:\w*\|?/, '');
+			if (activeProfileKey === trimProfileKey) {
+				return activeConnections[i].id;
+			}
+		}
+		return '';
+	}
+
 	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-			let originalTitle = tempProfile.title
+			let trimTitle = tempProfile.getServerInfo();
+			let idToFind = tempProfile.id;
+			let isChild = false;
 			let totalConnections: ConnectionProfile[] = [];
 			let configConnections = this.getAllConnectionsFromConfig();
 			let activeConnections = this.getActiveConnections();
@@ -758,10 +773,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 
 			if (initialSearch.length === 0) {
-				totalConnections.push(tempProfile);
-			}
-			else {
-				originalTitle = initialSearch[0].title;
+				let id = this.findParentConnection(tempProfile)
+				if (id !== '') {
+					isChild = true;
+					let parentProfile = activeConnections.filter(profile => profile.id === id);
+					trimTitle = parentProfile[0].getServerInfo();
+					idToFind = parentProfile[0].id;
+				}
+				else {
+					// Profile is not a child of an existing profile nor is it a recognized stored profile, return it's normal title.
+					return '';
+				}
 			}
 
 			let newConnectionTitles = [];
@@ -770,23 +792,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			for (let i = 0; i < totalConnections.length; i++) {
 				totalConnections[i].title = totalConnections[i].getServerInfo();
 			}
-			if (initialSearch.length !== 0) {
-				originalTitle = initialSearch[0].getServerInfo();
-			}
-			else {
-				originalTitle = tempProfile.getServerInfo();
-			}
 
 			TreeUpdateUtils.getEditorConnectionTitles(totalConnections);
 			newConnectionTitles = totalConnections;
 
-			let searchResult = newConnectionTitles.filter(inputProfile => {
-				return inputProfile.id === tempProfile.id;
-			});
+			let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.id === idToFind);
 			let finalTitle = searchResult[0]?.title;
 			if (finalTitle) {
 				if (getOptionsOnly) {
-					finalTitle = finalTitle.substring(originalTitle.length);
+					finalTitle = finalTitle.substring(trimTitle.length);
+				}
+				else if (!getOptionsOnly && isChild) {
+					finalTitle = tempProfile.getServerInfo() + finalTitle.substring(trimTitle.length);
 				}
 				result = finalTitle;
 			}
