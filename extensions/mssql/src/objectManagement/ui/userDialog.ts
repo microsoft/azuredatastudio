@@ -7,7 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
-import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, getUserTypeByDisplayName, getUserTypeDisplayName, isValidSQLPassword } from '../utils';
+import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableHeight } from './dialogBase';
 
 export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
@@ -18,8 +18,6 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	private nameInput: azdata.InputBoxComponent;
 	private typeDropdown: azdata.DropDownComponent;
 	private typeContainer: azdata.FlexContainer;
-	private authTypeDropdown: azdata.DropDownComponent;
-	private authTypeContainer: azdata.FlexContainer;
 	private loginDropdown: azdata.DropDownComponent;
 	private loginContainer: azdata.FlexContainer;
 	private passwordInput: azdata.InputBoxComponent;
@@ -46,7 +44,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		if (this.objectInfo.type === ObjectManagement.UserType.Contained && this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
+		if (this.objectInfo.type === ObjectManagement.UserType.SqlAuthentication) {
 			if (!this.objectInfo.password) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}
@@ -57,10 +55,8 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
-		} else if (this.objectInfo.type === ObjectManagement.UserType.WithLogin) {
-			if (!this.objectInfo.loginName) {
-				errors.push(localizedConstants.LoginNotSelectedError);
-			}
+		} else if (this.objectInfo.type === ObjectManagement.UserType.LoginMapped && !this.objectInfo.loginName) {
+			errors.push(localizedConstants.LoginNotSelectedError);
 		}
 		return errors;
 	}
@@ -86,35 +82,20 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			this.objectInfo.defaultSchema = newValue;
 		}, this.viewInfo.schemas, this.objectInfo.defaultSchema!);
 		this.defaultSchemaContainer = this.createLabelInputContainer(localizedConstants.DefaultSchemaText, this.defaultSchemaDropdown);
-
-		// only supporting user with login for initial preview
-		const userTypes = [localizedConstants.UserWithLoginText, localizedConstants.UserWithWindowsGroupLoginText, localizedConstants.ContainedUserText, localizedConstants.UserWithNoConnectAccess];
-		this.typeDropdown = this.createDropdown(localizedConstants.UserTypeText, async (newValue) => {
-			this.objectInfo.type = getUserTypeByDisplayName(newValue);
-			this.setViewByUserType();
-		}, userTypes, getUserTypeDisplayName(this.objectInfo.type), this.options.isNewObject);
+		this.typeDropdown = this.createDropdown(localizedConstants.UserTypeText,
+			async (newValue) => {
+				this.objectInfo.type = localizedConstants.getUserTypeByDisplayName(newValue);
+				this.setViewByUserType();
+			},
+			this.viewInfo.userTypes.map(userType => localizedConstants.getUserTypeDisplayName(userType)),
+			localizedConstants.getUserTypeDisplayName(this.objectInfo.type),
+			this.options.isNewObject);
 		this.typeContainer = this.createLabelInputContainer(localizedConstants.UserTypeText, this.typeDropdown);
 
 		this.loginDropdown = this.createDropdown(localizedConstants.LoginText, async (newValue) => {
 			this.objectInfo.loginName = newValue;
 		}, this.viewInfo.logins, this.objectInfo.loginName, this.options.isNewObject);
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
-
-		const authTypes = [];
-		if (this.viewInfo.supportWindowsAuthentication) {
-			authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
-		}
-		if (this.viewInfo.supportSQLAuthentication) {
-			authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
-		}
-		if (this.viewInfo.supportAADAuthentication) {
-			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
-		}
-		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, async (newValue) => {
-			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(newValue);
-			this.setViewByAuthenticationType();
-		}, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.options.isNewObject);
-		this.authTypeContainer = this.createLabelInputContainer(localizedConstants.AuthTypeText, this.authTypeDropdown);
 
 		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, async (newValue) => {
 			this.objectInfo.password = newValue;
@@ -128,7 +109,6 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			this.defaultSchemaContainer,
 			this.typeContainer,
 			this.loginContainer,
-			this.authTypeContainer,
 			this.passwordContainer,
 			this.confirmPasswordContainer
 		], false);
@@ -161,30 +141,24 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	}
 
 	private setViewByUserType(): void {
-		if (this.typeDropdown.value === localizedConstants.UserWithLoginText) {
-			this.removeItem(this.generalSection, this.authTypeContainer);
-			this.removeItem(this.formContainer, this.advancedSection);
-			this.addItem(this.generalSection, this.loginContainer);
-		} else if (this.typeDropdown.value === localizedConstants.ContainedUserText) {
-			this.removeItem(this.generalSection, this.loginContainer);
-			this.addItem(this.generalSection, this.authTypeContainer);
-			this.addItem(this.formContainer, this.advancedSection);
-		} else {
-			this.removeItem(this.generalSection, this.loginContainer);
-			this.removeItem(this.generalSection, this.authTypeContainer);
-			this.removeItem(this.formContainer, this.advancedSection);
-		}
-		this.setViewByAuthenticationType();
-	}
-
-	private setViewByAuthenticationType(): void {
-		const showPassword = this.typeDropdown.value === localizedConstants.ContainedUserText && this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText;
-		if (showPassword) {
-			this.addItem(this.generalSection, this.passwordContainer);
-			this.addItem(this.generalSection, this.confirmPasswordContainer);
-		} else {
-			this.removeItem(this.generalSection, this.passwordContainer);
-			this.removeItem(this.generalSection, this.confirmPasswordContainer);
+		this.removeItem(this.generalSection, this.loginContainer);
+		this.removeItem(this.generalSection, this.passwordContainer);
+		this.removeItem(this.generalSection, this.confirmPasswordContainer);
+		this.removeItem(this.formContainer, this.advancedSection);
+		switch (this.objectInfo.type) {
+			case ObjectManagement.UserType.LoginMapped:
+				this.addItem(this.generalSection, this.loginContainer);
+				break;
+			case ObjectManagement.UserType.AADAuthentication:
+				this.addItem(this.formContainer, this.advancedSection);
+				break;
+			case ObjectManagement.UserType.SqlAuthentication:
+				this.addItem(this.generalSection, this.passwordContainer);
+				this.addItem(this.generalSection, this.confirmPasswordContainer);
+				this.addItem(this.formContainer, this.advancedSection);
+				break;
+			default:
+				break;
 		}
 	}
 }

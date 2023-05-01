@@ -14,7 +14,7 @@ import * as localizedConstants from './localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as constants from '../constants';
-import { getNodeTypeDisplayName, refreshParentNode } from './utils';
+import { refreshParentNode } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
 import { ServerRoleDialog } from './ui/serverRoleDialog';
@@ -91,7 +91,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(getNodeTypeDisplayName(objectType), getErrorMessage(err)));
+		await vscode.window.showErrorMessage(localizedConstants.OpenNewObjectDialogError(localizedConstants.getNodeTypeDisplayName(objectType), getErrorMessage(err)));
 	}
 }
 
@@ -120,7 +120,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
+		await vscode.window.showErrorMessage(localizedConstants.OpenObjectPropertiesDialogError(localizedConstants.getNodeTypeDisplayName(context.nodeInfo!.nodeType), context.nodeInfo!.label, getErrorMessage(err)));
 	}
 }
 
@@ -137,7 +137,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		default:
 			break;
 	}
-	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo!.nodeType);
+	const nodeTypeDisplayName = localizedConstants.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
 	let confirmMessage = localizedConstants.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
 	if (additionalConfirmationMessage) {
 		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
@@ -179,7 +179,7 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	if (!connectionUri) {
 		return;
 	}
-	const nodeTypeDisplayName = getNodeTypeDisplayName(context.nodeInfo!.nodeType);
+	const nodeTypeDisplayName = localizedConstants.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
 	const originalName = context.nodeInfo!.metadata!.name;
 	const newName = await vscode.window.showInputBox({
 		title: localizedConstants.RenameObjectDialogTitle,
