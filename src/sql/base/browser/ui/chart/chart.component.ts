@@ -56,10 +56,10 @@ export type ChartType = keyof ChartData;
 export class Chart<T extends ChartType> extends Disposable {
 
 	public chartDataset: any[] = [
-		/*{
+		{
 			data: [],
 			label: ''
-		}*/
+		}
 	];
 	public chartLabels: string[] = [];
 	public chartColors: any[] = [];
