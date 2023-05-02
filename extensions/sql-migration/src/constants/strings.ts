@@ -748,7 +748,7 @@ export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and
 export const SERVICE_STEP2 = localize('sql.migration.ir.setup.step2', "Step 2: Use the keys below to register your integration runtime");
 export function SERVICE_STEP3(testConnectionButton: boolean) {
 	return testConnectionButton
-		? localize('sql.migration.ir.setup.step3', "Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime")
+		? localize('sql.migration.ir.setup.step3', "Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime")
 		: localize('sql.migration.ir.setup.step3.alternate', "Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime")
 }
 export const SERVICE_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection status");
