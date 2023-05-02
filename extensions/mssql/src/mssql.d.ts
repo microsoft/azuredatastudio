@@ -1115,9 +1115,9 @@ declare module 'mssql' {
 			 */
 			grantor: string;
 			/**
-			 * Whether the permission is granted or denied.
+			 * Whether the permission is granted or denied. Undefined means not specified.
 			 */
-			grant: boolean;
+			grant?: boolean;
 			/**
 			 * Whether the pincipal can grant this permission to other principals.
 			 * The value will be ignored if the grant property is set to false.

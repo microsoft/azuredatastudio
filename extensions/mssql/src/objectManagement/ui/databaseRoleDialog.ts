@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
 import { DefaultMaxTableHeight } from './dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
 
-export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
+export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemasSection: azdata.GroupContainer;
@@ -27,18 +28,19 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 	private memberTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, options, true);
 	}
 
 	protected override get docUrl(): string {
 		return this.options.isNewObject ? CreateDatabaseRoleDocUrl : AlterDatabaseRoleDocUrl;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemasSection();
 		this.initializeMemberSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection, this.securableSection]);
 	}
 
 	private initializeGeneralSection(): void {
@@ -55,7 +57,8 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
 				multiSelect: false,
 				contextId: this.contextId,
-				title: localizedConstants.SelectDatabaseRoleOwnerDialogTitle
+				title: localizedConstants.SelectDatabaseRoleOwnerDialogTitle,
+				showSchemaColumn: false
 			});
 			await dialog.open();
 			const result = await dialog.waitForClose();
@@ -70,19 +73,15 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 	}
 
 	private initializeMemberSection(): void {
-		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [
-			{
-				type: azdata.ColumnType.text,
-				value: localizedConstants.NameText
-			}
-		], this.objectInfo.members.map(m => [m]));
+		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [localizedConstants.NameText], this.objectInfo.members.map(m => [m]));
 		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
 					objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
 					multiSelect: true,
 					contextId: this.contextId,
-					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle
+					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
+					showSchemaColumn: false
 				});
 				await dialog.open();
 				const result = await dialog.waitForClose();

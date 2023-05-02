@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterServerRoleDocUrl, CreateServerRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
+import { PrincipalDialogBase } from './principalDialogBase';
 
-export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagement.ServerRoleInfo, ObjectManagement.ServerRoleViewInfo> {
+export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.ServerRoleInfo, ObjectManagement.ServerRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private membershipSection: azdata.GroupContainer;
@@ -27,20 +28,22 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, options, false);
 	}
 
 	protected override get docUrl(): string {
 		return this.options.isNewObject ? CreateServerRoleDocUrl : AlterServerRoleDocUrl;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeMemberSection();
 		const sections: azdata.Component[] = [this.generalSection, this.memberSection];
 		if (!this.viewInfo.isFixedRole) {
 			this.initializeMembershipSection();
 			sections.push(this.membershipSection);
+			sections.push(this.securableSection);
 		}
 		this.formContainer.addItems(sections);
 	}
@@ -76,12 +79,7 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 	}
 
 	private initializeMemberSection(): void {
-		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [
-			{
-				type: azdata.ColumnType.text,
-				value: localizedConstants.NameText
-			}
-		], this.objectInfo.members.map(m => [m]));
+		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [localizedConstants.NameText], this.objectInfo.members.map(m => [m]));
 		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {

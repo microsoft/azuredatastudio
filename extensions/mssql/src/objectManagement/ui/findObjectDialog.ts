@@ -11,10 +11,10 @@ import { getErrorMessage } from '../../utils';
 
 export interface FindObjectDialogOptions {
 	objectTypes: string[];
-	showSchemaColumn: boolean;
 	multiSelect: boolean;
 	contextId: string;
 	title: string;
+	showSchemaColumn?: boolean;
 }
 
 export interface FindObjectDialogResult {

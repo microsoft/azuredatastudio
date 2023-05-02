@@ -238,7 +238,8 @@ export abstract class DialogBase<DialogResult> {
 		let addButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
 		const updateButtons = () => {
-			removeButton.enabled = table.selectedRows.length > 0;
+			this.onFormFieldChange();
+			removeButton.enabled = table.selectedRows.length === 1;
 		}
 		addButton = this.createButton(localizedConstants.AddText, addButtonAriaLabel, async () => {
 			await addHandler();
@@ -246,6 +247,9 @@ export abstract class DialogBase<DialogResult> {
 		});
 		removeButton = this.createButton(localizedConstants.RemoveText, removeButtonAriaLabel, async () => {
 			await removeHandler();
+			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
+				table.selectedRows = [table.data.length - 1];
+			}
 			updateButtons();
 		}, false);
 		this.disposables.push(table.onRowSelected(() => {

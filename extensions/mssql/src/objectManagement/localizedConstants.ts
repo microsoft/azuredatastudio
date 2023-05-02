@@ -38,9 +38,19 @@ export const BrowseText = localize('objectManagement.browseText', "Browse…");
 export const BrowseOwnerButtonAriaLabel = localize('objectManagement.browseForOwnerText', "Browse for an owner");
 export const AddText = localize('objectManagement.addText', "Add…");
 export const RemoveText = localize('objectManagement.removeText', "Remove");
-export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
+export const AddMemberAriaLabel = localize('objectManagement.addMembersText', "Add members");
 export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
+export const AddSecurableAriaLabel = localize('objectManagement.addSecurablesText', "Add securables");
+export const RemoveSecurableAriaLabel = localize('objectManagement.removeSecurablesText', "Remove selected securable");
 export const SecurablesText = localize('objectManagement.securablesText', "Securables");
+export const ExplicitPermissionsTableLabel = localize('objectManagement.explicitPermissionsTableLabel', "Explicit permissions");
+export const EffectivePermissionsTableLabel = localize('objectManagement.effectivePermissionsTableLabel', "Effective permissions");
+export const PermissionColumnHeader = localize('objectManagement.permissionColumnHeader', "Permission");
+export const GrantorColumnHeader = localize('objectManagement.grantorColumnHeader', "Grantor");
+export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', "Grant");
+export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
+export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
+export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
@@ -145,6 +155,7 @@ export const LoginNotSelectedError = localize('objectManagement.loginNotSelected
 export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
 export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
 export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
+
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

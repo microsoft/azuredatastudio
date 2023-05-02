@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableHeight } from './dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
 
-export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
+export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemaSection: azdata.GroupContainer;
 	private membershipSection: azdata.GroupContainer;
@@ -31,7 +32,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	private membershipTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, options, true);
 	}
 
 	protected override get docUrl(): string {
@@ -61,12 +62,13 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		return errors;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemaSection();
 		this.initializeMembershipSection();
 		this.initializeAdvancedSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.advancedSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.securableSection, this.advancedSection]);
 		setTimeout(() => {
 			this.setViewByUserType();
 		}, 100);

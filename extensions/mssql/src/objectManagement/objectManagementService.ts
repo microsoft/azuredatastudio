@@ -72,24 +72,24 @@ const ServerLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
 		name: 'Server',
 		displayName: 'Server',
 		permissions: [{
-			name: 'View server state',
-			displayName: 'View server state'
+			name: 'CONNECT SQL',
+			displayName: 'CONNECT SQL'
 		}, {
-			name: 'View any database',
-			displayName: 'View any database'
+			name: 'VIEW ANY DATABASE',
+			displayName: 'VIEW ANY DATABASE'
 		}]
 	}, {
 		name: 'Server Role',
 		displayName: 'Server Role',
 		permissions: [{
-			name: 'Alter',
-			displayName: 'Alter'
+			name: 'ALTER',
+			displayName: 'ALTER'
 		}, {
-			name: 'Control',
-			displayName: 'Control'
+			name: 'CONTROL',
+			displayName: 'CONTROL'
 		}, {
-			name: 'Take ownership',
-			displayName: 'Take ownership'
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
 		}]
 	}
 ];
@@ -99,24 +99,24 @@ const DatabaseLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
 		name: 'Aggregate Function',
 		displayName: 'Aggregate Function',
 		permissions: [{
-			name: 'Execute',
-			displayName: 'Execute'
+			name: 'EXECUTE',
+			displayName: 'EXECUTE'
 		}, {
-			name: 'Alter',
-			displayName: 'Alter'
+			name: 'ALTER',
+			displayName: 'ALTER'
 		}]
 	}, {
 		name: 'Application Role',
 		displayName: 'Application Role',
 		permissions: [{
-			name: 'Alter',
-			displayName: 'Alter'
+			name: 'ALTER',
+			displayName: 'ALTER'
 		}, {
-			name: 'Control',
-			displayName: 'Control'
+			name: 'CONTROL',
+			displayName: 'CONTROL'
 		}, {
-			name: 'Take ownership',
-			displayName: 'Take ownership'
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
 		}]
 	}
 ]
@@ -129,11 +129,13 @@ const ServerLevelPermissions: ObjectManagement.SecurablePermissions[] = [
 			{
 				permission: 'CONNECT SQL',
 				grant: true,
-				grantor: 'sa'
+				grantor: 'sa',
+				withGrant: undefined
 			}, {
 				permission: 'VIEW ANY DATABASE',
 				grant: false,
-				grantor: 'sa'
+				grantor: 'sa',
+				withGrant: undefined
 			}
 		],
 		effectivePermissions: ['CONNECT SQL', 'VIEW ANY DATABASE']
@@ -148,7 +150,8 @@ const DatabaseLevelPermissions: ObjectManagement.SecurablePermissions[] = [
 			{
 				permission: 'SELECT',
 				grant: true,
-				grantor: ''
+				grantor: '',
+				withGrant: undefined
 			}
 		],
 		effectivePermissions: ['SELECT']
@@ -159,7 +162,8 @@ const DatabaseLevelPermissions: ObjectManagement.SecurablePermissions[] = [
 			{
 				permission: 'ALTER',
 				grant: true,
-				grantor: ''
+				grantor: '',
+				withGrant: undefined
 			}
 		],
 		effectivePermissions: ['ALTER']

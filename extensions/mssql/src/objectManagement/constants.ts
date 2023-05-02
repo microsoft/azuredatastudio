@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ObjectManagement } from 'mssql'
-
 /**
  * The folder types in object explorer.
  */
@@ -39,40 +37,3 @@ export const enum TelemetryActions {
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
-
-export const ServerLevelSecurables: ObjectManagement.SecurableType[] = [
-	ObjectManagement.SecurableType.AvailabilityGroup,
-	ObjectManagement.SecurableType.Endpoint,
-	ObjectManagement.SecurableType.Login,
-	ObjectManagement.SecurableType.Server,
-	ObjectManagement.SecurableType.ServerRole
-];
-
-export const DatabaseLevelSecurables: ObjectManagement.SecurableType[] = [
-	ObjectManagement.SecurableType.AggregateFunction,
-	ObjectManagement.SecurableType.ApplicationRole,
-	ObjectManagement.SecurableType.Assembly,
-	ObjectManagement.SecurableType.AsymmetricKey,
-	ObjectManagement.SecurableType.Certificate,
-	ObjectManagement.SecurableType.DatabaseRole,
-	ObjectManagement.SecurableType.Database,
-	ObjectManagement.SecurableType.ExternalDataSource,
-	ObjectManagement.SecurableType.ExternalFileFormat,
-	ObjectManagement.SecurableType.FullTextCatalog,
-	ObjectManagement.SecurableType.InlineFunction,
-	ObjectManagement.SecurableType.Queue,
-	ObjectManagement.SecurableType.ScalarFunction,
-	ObjectManagement.SecurableType.Schema,
-	ObjectManagement.SecurableType.SecurityPolicy,
-	ObjectManagement.SecurableType.Sequence,
-	ObjectManagement.SecurableType.StoredProcedure,
-	ObjectManagement.SecurableType.SymmetricKey,
-	ObjectManagement.SecurableType.Synonym,
-	ObjectManagement.SecurableType.Table,
-	ObjectManagement.SecurableType.TableValuedFunction,
-	ObjectManagement.SecurableType.UserDefinedDataType,
-	ObjectManagement.SecurableType.UserDefinedTableType,
-	ObjectManagement.SecurableType.User,
-	ObjectManagement.SecurableType.View,
-	ObjectManagement.SecurableType.XmlSchemaCollection
-];

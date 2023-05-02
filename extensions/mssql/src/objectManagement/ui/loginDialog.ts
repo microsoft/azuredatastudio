@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableHeight } from './dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
 
-export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
+export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
@@ -33,7 +34,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, options, false);
 	}
 
 	protected override get docUrl(): string {
@@ -81,7 +82,8 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.objectInfo.password = this.objectInfo.password ?? '';
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		const sections: azdata.Component[] = [];
 		this.initializeGeneralSection();
 		sections.push(this.generalSection);
@@ -93,6 +95,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 		this.initializeServerRolesSection();
 		sections.push(this.serverRoleSection);
+		sections.push(this.securableSection);
 
 		if (this.viewInfo.supportAdvancedOptions) {
 			this.initializeAdvancedSection();

@@ -723,6 +723,10 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		switch (action) {
 			case ModelViewAction.AppendData:
 				this.appendData(args[0]);
+				break;
+			case ModelViewAction.SetActiveCell:
+				this._table.grid.setActiveCell(args[0], args[1]);
+				break;
 		}
 	}
 
