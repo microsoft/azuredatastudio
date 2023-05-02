@@ -10,7 +10,7 @@ import { MigrationTargetType } from '../api/utils';
 import * as contracts from '../service/contracts';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, PerformanceDataSourceOptions, StateChangeEvent, AssessmentRuleId } from '../models/stateMachine';
-import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
+import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
 import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
 import * as constants from '../constants/strings';

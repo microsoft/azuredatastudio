@@ -60,3 +60,9 @@ Run the following commands sequentially in the context of this directory:
 - `yarn install` - to install the dependencies
 - `yarn build` - to build the code
 - `vsce package` - to produce an extension installation package
+
+## License
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt).

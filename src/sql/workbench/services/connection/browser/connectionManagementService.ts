@@ -492,7 +492,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				saveTheConnection: saveConnection,
 				showConnectionDialogOnError: true,
 				showDashboard: purpose === 'dashboard',
-				params: undefined,
 				showFirewallRuleOnError: true,
 			};
 			return this.connect(connection, ownerUri, options).then(connectionResult => {
@@ -524,7 +523,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			options = {
 				saveTheConnection: true,
 				showDashboard: false,
-				params: undefined,
 				showConnectionDialogOnError: false,
 				showFirewallRuleOnError: true
 			};
@@ -574,7 +572,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			options = {
 				saveTheConnection: false,
 				showDashboard: false,
-				params: undefined,
 				showConnectionDialogOnError: false,
 				showFirewallRuleOnError: true
 			};

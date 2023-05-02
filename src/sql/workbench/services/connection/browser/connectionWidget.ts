@@ -38,10 +38,11 @@ import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabi
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
-import { AuthenticationType, Actions } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName, mssqlCmsProviderName } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
 import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
+import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -967,15 +968,18 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					if (accountName) {
 						// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
 						// The OR case can be removed once we no longer support ADAL
-						account = this._azureAccountList.find(account => account.key.accountId === this.getModelValue(accountName)
+						account = this._azureAccountList?.find(account => account.key.accountId === this.getModelValue(accountName)
 							|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
-						this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
-					} else {
+						if (account) {
+							this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
+						}
+					}
+					if (!account) {
 						// If account was not filled in from received configuration, select the first account.
 						this._azureAccountDropdown.select(0);
 						account = this._azureAccountList[0];
 						if (this._azureAccountList.length > 0) {
-							accountName = account.key.accountId;
+							accountName = account?.key?.accountId;
 						} else {
 							this._logService.debug('fillInConnectionInputs: No accounts available');
 						}
@@ -1249,6 +1253,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						model.options[this._customOptions[i].name] = widget.value;
 					});
 				}
+			}
+			// Fix Application Name for MSSQL/MSSQL-CMS Providers, to handle special case as we need to apply custom application name in ADS Core connection profile.
+			if ((model.providerName === mssqlProviderName || model.providerName === mssqlCmsProviderName)
+				&& model.options[mssqlApplicationNameOption] && !model.options[mssqlApplicationNameOption].endsWith(applicationName)) {
+				model.options[mssqlApplicationNameOption] = adjustForMssqlAppName(model.options[mssqlApplicationNameOption]);
 			}
 			model.connectionName = this.connectionName;
 			if (this._serverGroupSelectBox) {

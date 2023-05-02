@@ -903,6 +903,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "applicationName",
+          "displayName": "%mssql.connectionOptions.applicationName.displayName%",
+          "description": "%mssql.connectionOptions.applicationName.description%",
+          "groupName": "%mssql.connectionOptions.groupName.initialization%",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "applicationIntent",
           "displayName": "%mssql.connectionOptions.applicationIntent.displayName%",
           "description": "%mssql.connectionOptions.applicationIntent.description%",

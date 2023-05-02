@@ -172,7 +172,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
-				params: undefined,
 				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
 				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
 			});
@@ -247,7 +246,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
 			saveTheConnection: saveConnection,
 			showDashboard: showDashboard,
-			params: undefined,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		}).then((result) => {

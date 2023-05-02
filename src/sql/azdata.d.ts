@@ -2879,7 +2879,7 @@ declare module 'azdata' {
 		 * @param title The title shown in the editor tab
 		 * @param options Options to configure the editor
 		 * @param name The name used to identify the editor in telemetry
-		 */
+		*/
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.ModelViewPanel {
