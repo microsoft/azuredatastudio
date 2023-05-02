@@ -72,7 +72,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
 				await this.runValidation(false);
-			}, [DefaultValue, ...this.viewInfo.loginNames], DefaultValue);
+			}, this.viewInfo.loginNames, this.viewInfo.loginNames[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
 
@@ -80,7 +80,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
 				await this.runValidation(false);
-			}, [DefaultValue, ...this.viewInfo.collationNames], DefaultValue);
+			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
 
