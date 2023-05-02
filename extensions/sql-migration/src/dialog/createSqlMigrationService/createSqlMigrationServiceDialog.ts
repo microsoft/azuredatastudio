@@ -13,7 +13,7 @@ import * as os from 'os';
 import { azureResource } from 'azurecore';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
-import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
+import { createAuthenticationKeyTable, createRegistrationInstructions } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
 import * as utils from '../../api/utils';
 import * as styles from '../../constants/styles';
@@ -410,56 +410,7 @@ export class CreateSqlMigrationServiceDialog {
 	}
 
 	private createServiceStatus(): azdata.FlexContainer {
-
-		const setupIRHeadingText = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_CONTAINER_HEADING,
-			CSSStyles: {
-				...styles.LABEL_CSS
-			}
-		}).component();
-
-		const setupIRdescription1 = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_CONTAINER_DESCRIPTION1,
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
-		const setupIRdescription2 = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_CONTAINER_DESCRIPTION2,
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
-		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_STEP1,
-			CSSStyles: {
-				...styles.BODY_CSS
-			},
-			links: [
-				{
-					text: constants.SERVICE_STEP1_LINK,
-					url: 'https://www.microsoft.com/download/details.aspx?id=39717'
-				}
-			]
-		}).component();
-
-		const irSetupStep2Text = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_STEP2,
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
-		const irSetupStep3Text = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_STEP3,
-			CSSStyles: {
-				'margin-top': '10px',
-				'margin-bottom': '10px',
-				...styles.BODY_CSS
-			}
-		}).component();
+		const instructions = createRegistrationInstructions(this._view, true);
 
 		this._connectionStatus = this._view.modelBuilder.infoBox().withProps({
 			text: '',
@@ -484,13 +435,8 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
-				setupIRHeadingText,
-				setupIRdescription1,
-				setupIRdescription2,
-				irSetupStep1Text,
-				irSetupStep2Text,
+				instructions,
 				this.migrationServiceAuthKeyTable,
-				irSetupStep3Text,
 				this._connectionStatus,
 				this._refreshLoadingComponent
 			], {

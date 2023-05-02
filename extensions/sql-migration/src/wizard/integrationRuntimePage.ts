@@ -507,11 +507,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const authenticationKeysLabel = this._view.modelBuilder.text()
-			.withProps({
-				value: constants.AUTHENTICATION_KEYS,
-				CSSStyles: { ...styles.LABEL_CSS }
-			}).component();
+		// const authenticationKeysLabel = this._view.modelBuilder.text()
+		// 	.withProps({
+		// 		value: constants.AUTHENTICATION_KEYS,
+		// 		CSSStyles: { ...styles.LABEL_CSS }
+		// 	}).component();
 
 		this._copy1 = this._view.modelBuilder.button()
 			.withProps({
@@ -554,11 +554,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				ariaLabel: constants.REFRESH_KEY2,
 			}).component();
 
+		const instructions = createRegistrationInstructions(this._view, false);
+
 		this._authKeyTable = createAuthenticationKeyTable(this._view);
 
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
-			authenticationKeysLabel,
+			// authenticationKeysLabel,
+			instructions,
 			this._authKeyTable]);
 
 		container.addItems([
@@ -786,4 +789,69 @@ export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.De
 			CSSStyles: { 'margin-top': '5px', 'width': WIZARD_INPUT_COMPONENT_WIDTH }
 		}).component();
 	return authKeyTable;
+}
+
+export function createRegistrationInstructions(view: azdata.ModelView, testConnectionButton: boolean): azdata.FlexContainer {
+	const setupIRHeadingText = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_CONTAINER_HEADING,
+		CSSStyles: {
+			...styles.LABEL_CSS
+		}
+	}).component();
+
+	const setupIRdescription1 = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_CONTAINER_DESCRIPTION1,
+		CSSStyles: {
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	const setupIRdescription2 = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_CONTAINER_DESCRIPTION2,
+		CSSStyles: {
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	const irSetupStep1Text = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_STEP1,
+		CSSStyles: {
+			...styles.BODY_CSS
+		},
+		links: [
+			{
+				text: constants.SERVICE_STEP1_LINK,
+				url: 'https://www.microsoft.com/download/details.aspx?id=39717'
+			}
+		]
+	}).component();
+
+	const irSetupStep2Text = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_STEP2,
+		CSSStyles: {
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	const irSetupStep3Text = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_STEP3(testConnectionButton),
+		CSSStyles: {
+			'margin-top': '10px',
+			'margin-bottom': '10px',
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	return view.modelBuilder.flexContainer().withItems(
+		[
+			setupIRHeadingText,
+			setupIRdescription1,
+			setupIRdescription2,
+			irSetupStep1Text,
+			irSetupStep2Text,
+			irSetupStep3Text,
+		]
+	).withLayout({
+		flexFlow: 'column'
+	}).component();
 }
