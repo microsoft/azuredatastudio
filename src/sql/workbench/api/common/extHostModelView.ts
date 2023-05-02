@@ -281,9 +281,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart(): azdata.ComponentBuilder<azdata.ChartComponent, azdata.ChartComponentProperties> {
+	chart<T extends azdata.ChartType>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ChartComponent, azdata.ChartComponentProperties> = this.getComponentBuilder(new ChartComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+		let builder: ComponentBuilderImpl<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> = this.getComponentBuilder(new ChartComponentWrapper<T>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -2242,7 +2242,7 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper extends ComponentWrapper implements azdata.ChartComponent {
+class ChartComponentWrapper<T extends azdata.ChartType> extends ComponentWrapper implements azdata.ChartComponent<T> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};
@@ -2250,28 +2250,20 @@ class ChartComponentWrapper extends ComponentWrapper implements azdata.ChartComp
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
 	}
 
-	public get data(): number[] {
-		return this.properties['data'];
+	public set chartType(v: T) {
+		this.setProperty('chartType', v);
 	}
 
-	public set data(v: number[]) {
-		this.setProperty('data', v);
+	public get chartType(): T {
+		return this.properties['chartType'];
 	}
 
-	public get labels(): string[] {
-		return this.properties['labels'];
+	public set chartData(v: azdata.ChartData[T]) {
+		this.setProperty('chartData', v);
 	}
 
-	public set labels(v: string[]) {
-		this.setProperty('labels', v);
-	}
-
-	public get colors(): string[] {
-		return this.properties['colors'];
-	}
-
-	public set colors(v: string[]) {
-		this.setProperty('colors', v);
+	public get chartData(): azdata.ChartData[T] {
+		return this.properties['chartData'];
 	}
 
 	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {

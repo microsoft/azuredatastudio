@@ -10,17 +10,59 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 import { Chart } from 'sql/base/browser/ui/chart/chart.component';
 import { ILogService } from 'vs/platform/log/common/log';
 
+export interface ChartData {
+	line: {
+		dataset: number[],
+		datasetLabel: string,
+		backgroundColor?: string;
+	};
+	doughnut: {
+		dataset: number[],
+		labels: string[],
+		colors?: string[];
+	};
+	bar: {
+		dataset: number[],
+		labels: string[],
+		datasetLabel: string,
+		colors?: string | string[];
+	};
+	horizontalBar: {
+		dataset: number[],
+		labels: string[],
+		datasetLabel: string,
+		colors?: string | string[];
+	};
+	pie: {
+		dataset: number[],
+		labels: string[],
+		colors?: string[];
+	};
+	radar: {
+		dataset: number[],
+		datasetLabel: string,
+		backgroundColor?: string;
+	};
+	polarArea: {
+		dataset: number[],
+		labels: string[],
+		colors?: string[];
+	};
+}
+
+export type ChartType = keyof ChartData;
+
 @Component({
 	selector: 'modelview-chart',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class ChartComponent extends ComponentBase<azdata.ChartComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent<T extends ChartType> extends ComponentBase<azdata.ChartComponentProperties<T>> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild(Chart) private _chart: Chart;
+	@ViewChild(Chart) private _chart: Chart<T>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -39,27 +81,20 @@ export default class ChartComponent extends ComponentBase<azdata.ChartComponentP
 
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		if (this.data) {
-			this._chart.data = this.data;
+		if (this.chartType) {
+			this._chart.type = this.chartType;
 		}
-		if (this.labels) {
-			this._chart.labels = this.labels;
-		}
-		if (this.colors) {
-			this._chart.colors = this.colors;
+		if (this.chartData) {
+			this._chart.data = this.chartData;
 		}
 	}
 
-	public get data(): number[] | undefined {
-		return this.getProperties().data ?? undefined;
+	public get chartType(): ChartType | undefined {
+		return this.getProperties().chartType ?? undefined;
 	}
 
-	public get labels(): string[] | undefined {
-		return this.getProperties().labels ?? undefined;
-	}
-
-	public get colors(): string[] | undefined {
-		return this.getProperties().colors ?? undefined;
+	public get chartData(): ChartData[T] | undefined {
+		return this.getProperties().chartData ?? undefined;
 	}
 
 	public setLayout(layout: any): void {

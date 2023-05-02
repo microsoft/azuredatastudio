@@ -1,10 +1,10 @@
 <div style="display: block; width: 100%; height: 100%; position: relative;">
-	<canvas baseChart tabindex="0"
-		[data]="doughnutChartData"
-		[labels]="dougnutChartLabels"
-		[chartType]="doughnutChartType"
-		[colors]="doughnutChartColors"
-		[options]="doughnutChartOptions"
+	<canvas baseChart tabindex="0" aria-label="chart"
+		[datasets]="chartDataseta"
+		[labels]="chartLabels"
+		[chartType]="chartType"
+		[colors]="chartColors"
+		[options]="chartOptions"
 		(chartHover)="chartHovered($event)"
 		(chartClick)="chartClicked($event)">
 	</canvas>

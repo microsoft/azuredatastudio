@@ -1935,19 +1935,60 @@ declare module 'azdata' {
 		}
 	}
 
-	export interface ModelBuilder {
-		chart(): ComponentBuilder<ChartComponent, ChartComponentProperties>;
+	export interface ChartData {
+		line: {
+			dataset: number[],
+			datasetLabel: string,
+			backgroundColor?: string;
+		};
+		doughnut: {
+			dataset: number[],
+			labels: string[],
+			colors?: string[];
+		};
+		bar: {
+			dataset: number[],
+			labels: string[],
+			datasetLabel: string,
+			colors?: string | string[];
+		};
+		horizontalBar: {
+			dataset: number[],
+			labels: string[],
+			datasetLabel: string,
+			colors?: string | string[];
+		};
+		pie: {
+			dataset: number[],
+			labels: string[],
+			colors?: string[];
+		};
+		radar: {
+			dataset: number[],
+			datasetLabel: string,
+			backgroundColor?: string;
+		};
+		polarArea: {
+			dataset: number[],
+			labels: string[],
+			colors?: string[];
+		};
 	}
 
-	export interface ChartComponentProperties extends ComponentProperties {
-		data: number[];
-		labels: string[];
-		colors?: string[];
+	export type ChartType = keyof ChartData;
+
+	export interface ModelBuilder {
+		chart<T extends ChartType>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
+	}
+
+	export interface ChartComponentProperties<T extends ChartType> extends ComponentProperties {
+		chartType?: T;
+		chartData?: ChartData[T];
 	}
 
 	export type ChartClickEvent = { label: string };
 
-	export interface ChartComponent extends Component, ChartComponentProperties {
+	export interface ChartComponent<T extends ChartType> extends Component, ChartComponentProperties<T> {
 		onDidClick: vscode.Event<ChartClickEvent>;
 	}
 }
