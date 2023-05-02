@@ -7,7 +7,8 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // Error code reference comes from here: https://learn.microsoft.com/en-us/sql/relational-databases/errors-events/database-engine-events-and-errors?view=sql-server-ver16
-export const MssqlPasswordResetErrorCode: number = 18488;
+export const MssqlPasswordResetErrorCode: number[] = [18488, 18487];
+
 export const MssqlCertValidationFailedErrorCode: number = -2146893019;
 
 export const MssqlConnectionTelemetryView = 'MssqlConnectionErrorDialog';
