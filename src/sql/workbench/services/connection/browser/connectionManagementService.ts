@@ -745,7 +745,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return '';
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, showNameSeparately?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
@@ -772,13 +772,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					idToFind = parentProfile[0].id;
 				}
 				else {
-					// Profile is not a child of an existing profile nor is it a recognized stored profile, return it's normal title.
-					if (getOptionsOnly) {
-						return '';
-					}
-					else {
-						return tempProfile.title;
-					}
+					// Profile is not a child of an existing profile nor is it a recognized stored profile, add it to the totalConnections list.
+					totalConnections.concat(tempProfile);
 				}
 			}
 
@@ -795,16 +790,40 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.id === idToFind);
 			let finalTitle = searchResult[0]?.title;
 			if (finalTitle) {
+				let optionsAppend = finalTitle.substring(trimTitle.length);
+				if (showNameSeparately) {
+					optionsAppend = this.removeConnectionName(optionsAppend);
+				}
 				if (getOptionsOnly) {
-					finalTitle = finalTitle.substring(trimTitle.length);
+					finalTitle = optionsAppend;
 				}
 				else if (!getOptionsOnly && isChild) {
-					finalTitle = tempProfile.getServerInfo() + finalTitle.substring(trimTitle.length);
+					if (showNameSeparately) {
+						finalTitle = tempProfile.getOriginalTitle() + optionsAppend;
+					}
+					else {
+						finalTitle = tempProfile.getServerInfo() + optionsAppend;
+					}
+				}
+				else {
+					if (showNameSeparately) {
+						finalTitle = searchResult[0].getOriginalTitle() + optionsAppend;
+					}
 				}
 				result = finalTitle;
 			}
 		}
 		return result;
+	}
+
+	private removeConnectionName(inputString: string): string {
+		let resultString = inputString.replace(/connectionName=\w*(; )?/, '');
+		if (resultString === '()') {
+			return '';
+		}
+		else {
+			return resultString;
+		}
 	}
 
 	/**

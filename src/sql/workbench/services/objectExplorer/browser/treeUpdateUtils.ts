@@ -398,7 +398,7 @@ export class TreeUpdateUtils {
 
 	private static alterConnectionTitles(inputList: ConnectionProfile[], connectionManagementService: IConnectionManagementService): void {
 		for (let i = 0; i < inputList.length; i++) {
-			let titleOptions = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], true);
+			let titleOptions = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], true, true);
 			inputList[i].title = inputList[i].getOriginalTitle() + titleOptions;
 		}
 	}

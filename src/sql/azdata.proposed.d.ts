@@ -515,7 +515,7 @@ declare module 'azdata' {
 		 * @param getOptionsOnly Provide if you only want to get the differing advanced options (for some titles).
 		 * @returns The title formatted with server info in front, with non default options at the end.
 		 */
-		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean): Thenable<string>;
+		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, showNameSeparately?: boolean): Thenable<string>;
 	}
 
 	/*

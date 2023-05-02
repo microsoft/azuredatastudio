@@ -385,7 +385,7 @@ export interface IConnectionManagementService {
 	 * @param getOptionsOnly Provide if you only want to get the differing advanced options (for some titles).
 	 * @returns The title formatted with server info in front, with non default options at the end.
 	 */
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean): string;
+	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, showNameSeparately?: boolean): string;
 }
 
 export enum RunQueryOnConnectionMode {
