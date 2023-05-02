@@ -106,8 +106,24 @@ const DatabaseLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
 			displayName: 'ALTER'
 		}]
 	}, {
-		name: 'Application Role',
-		displayName: 'Application Role',
+		name: 'Table',
+		displayName: 'Table',
+		permissions: [{
+			name: 'SELECT',
+			displayName: 'SELECT'
+		}, {
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}, {
+		name: 'View',
+		displayName: 'View',
 		permissions: [{
 			name: 'ALTER',
 			displayName: 'ALTER'
