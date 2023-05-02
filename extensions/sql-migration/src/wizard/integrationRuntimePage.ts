@@ -814,7 +814,7 @@ export function createRegistrationInstructions(view: azdata.ModelView, testConne
 		links: [
 			{
 				text: constants.SERVICE_STEP1_LINK,
-				url: 'https://www.microsoft.com/download/details.aspx?id=39717'
+				url: 'https://aka.ms/sql-migration-shir-download'
 			}
 		]
 	}).component();
