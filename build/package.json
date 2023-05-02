@@ -82,6 +82,7 @@
   },
   "resolutions": {
     "json-schema": "0.4.0",
-    "jsonwebtoken": "9.0.0"
+    "jsonwebtoken": "9.0.0",
+    "minimist": "1.2.6"
   }
 }
