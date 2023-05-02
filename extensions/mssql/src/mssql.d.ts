@@ -933,6 +933,9 @@ declare module 'mssql' {
 			objectInfo: T;
 		}
 
+		/**
+		 * Securable type metadata.
+		 */
 		export interface SecurableTypeMetadata {
 			/**
 			 * Name of the securable type.
@@ -949,7 +952,7 @@ declare module 'mssql' {
 		}
 
 		/**
-		 * Permission
+		 * Permission metadata.
 		 */
 		export interface PermissionMetata {
 			/**
@@ -966,6 +969,9 @@ declare module 'mssql' {
 		 * Base interface for security principal object's view information.
 		 */
 		export interface SecurityPrincipalViewInfo<T extends SecurityPrincipalObject> extends ObjectViewInfo<T> {
+			/**
+			 * The securable types that the security principal object can be granted permissions on.
+			 */
 			supportedSecurableTypes: SecurableTypeMetadata[];
 		}
 
@@ -1412,7 +1418,7 @@ declare module 'mssql' {
 		 * @param searchText Search text.
 		 * @param schema Schema to search in.
 		 */
-		search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
+		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
 }

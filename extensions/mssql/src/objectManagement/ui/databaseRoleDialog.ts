@@ -40,7 +40,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemasSection();
 		this.initializeMemberSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection, this.securableSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection, this.securableSection], this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {

@@ -45,7 +45,7 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 			sections.push(this.membershipSection);
 			sections.push(this.securableSection);
 		}
-		this.formContainer.addItems(sections);
+		this.formContainer.addItems(sections, this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {

@@ -43,14 +43,17 @@ export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText
 export const AddSecurableAriaLabel = localize('objectManagement.addSecurablesText', "Add securables");
 export const RemoveSecurableAriaLabel = localize('objectManagement.removeSecurablesText', "Remove selected securable");
 export const SecurablesText = localize('objectManagement.securablesText', "Securables");
-export const ExplicitPermissionsTableLabel = localize('objectManagement.explicitPermissionsTableLabel', "Explicit permissions");
-export const EffectivePermissionsTableLabel = localize('objectManagement.effectivePermissionsTableLabel', "Effective permissions");
+export const ExplicitPermissionsTableLabel = localize('objectManagement.explicitPermissionsTableLabel', "Explicit permissions for selected securable");
+export const EffectivePermissionsTableLabel = localize('objectManagement.effectivePermissionsTableLabel', "Effective permissions for selected securable");
 export const PermissionColumnHeader = localize('objectManagement.permissionColumnHeader', "Permission");
 export const GrantorColumnHeader = localize('objectManagement.grantorColumnHeader', "Grantor");
 export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', "Grant");
 export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
 export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
 export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
+
+export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
+export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
@@ -230,7 +233,7 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 		case ObjectManagement.NodeType.Database:
 			return DatabaseTypeDisplayName;
 		default:
-			return type;
+			throw new Error(`Unknown node type: ${type}`);
 	}
 }
 

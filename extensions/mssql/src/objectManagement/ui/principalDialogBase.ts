@@ -15,6 +15,10 @@ import { deepClone } from '../utils';
 const GrantColumnIndex = 2;
 const WithGrantColumnIndex = 3;
 const DenyColumnIndex = 4;
+
+/**
+ * Base class for security principal dialogs such as user, role, etc.
+ */
 export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectManagement.SecurityPrincipalObject, ViewInfoType extends mssql.ObjectManagement.SecurityPrincipalViewInfo<ObjectInfoType>> extends ObjectManagementDialogBase<ObjectInfoType, ViewInfoType> {
 	protected securableTable: azdata.TableComponent;
 	protected permissionTable: azdata.TableComponent;
@@ -96,6 +100,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 				}
 			}
 			this.updatePermissionsTable();
+			this.updateSecurablePermissions();
 			// Restore the focus to previously selected cell.
 			this.permissionTable.setActiveCell(arg.row, arg.column);
 		}));
@@ -111,7 +116,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 
 	private async onAddSecurableButtonClicked(): Promise<void> {
 		const dialog = new FindObjectDialog(this.objectManagementService, {
-			objectTypes: this.viewInfo.supportedSecurableTypes.map(securableType => securableType.name),
+			objectTypes: this.viewInfo.supportedSecurableTypes,
 			multiSelect: true,
 			contextId: this.contextId,
 			title: localizedConstants.SelectSecurablesDialogTitle,
@@ -150,12 +155,13 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 			this.securablePermissions.splice(this.securableTable.selectedRows[0], 1);
 			const data = this.getSecurableTableData();
 			this.setTableData(this.securableTable, data);
+			this.updateSecurablePermissions();
 		}
 	}
 
 	private getSecurableTableData(): string[][] {
 		return this.securablePermissions.map(securable => {
-			const row = [securable.name, localizedConstants.getNodeTypeDisplayName(securable.type, true)];
+			const row = [securable.name, this.getSecurableTypeDisplayName(securable.type)];
 			if (this.showSchemaColumn) {
 				row.splice(1, 0, securable.schema);
 			}
@@ -164,35 +170,55 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	}
 
 	private updatePermissionsTable(): void {
-		let permissionsTableData: any[][];
-		let effectivePermissionsTableData: any[][];
+		let permissionsTableData: any[][] = [];
+		let effectivePermissionsTableData: any[][] = [];
+		let explicitPermissionsLabel = localizedConstants.ExplicitPermissionsTableLabel;
+		let effectivePermissionsLabel = localizedConstants.EffectivePermissionsTableLabel;
 		if (this.securableTable.selectedRows.length === 1) {
 			const securable = this.securablePermissions[this.securableTable.selectedRows[0]];
-			const securableTypeMetadata = this.viewInfo.supportedSecurableTypes.find(securableType => securableType.name === securable.type);
-			permissionsTableData = securable.permissions.map(permission => {
-				return [permission.permission, permission.grantor, { checked: permission.grant === true }, { checked: permission.withGrant === true }, { checked: permission.grant === false }];
-			});
-			permissionsTableData = securableTypeMetadata.permissions.map(permissionMetadata => {
-				const permission = securable.permissions.find(securablePermission => securablePermission.permission === permissionMetadata.name);
-				return [
-					permissionMetadata.name,
-					permission?.grantor ?? '',
-					{ checked: permission?.grant === true },
-					{ checked: permission?.withGrant === true },
-					{ checked: permission?.grant === false }];
-			});
-			effectivePermissionsTableData = securable.effectivePermissions.map(permission => [permission]);
-		} else {
-			permissionsTableData = [];
-			effectivePermissionsTableData = [];
+			if (securable) {
+				const securableDisplayName = securable.schema ? `${securable.schema}.${securable.name}` : securable.name;
+				explicitPermissionsLabel = localizedConstants.ExplicitPermissionsTableLabelSelected(securableDisplayName);
+				effectivePermissionsLabel = localizedConstants.EffectivePermissionsTableLabelSelected(securableDisplayName);
+				const securableTypeMetadata = this.viewInfo.supportedSecurableTypes.find(securableType => securableType.name === securable.type);
+				permissionsTableData = securable.permissions.map(permission => {
+					return [permission.permission, permission.grantor, { checked: permission.grant === true }, { checked: permission.withGrant === true }, { checked: permission.grant === false }];
+				});
+				permissionsTableData = securableTypeMetadata.permissions.map(permissionMetadata => {
+					const permission = securable.permissions.find(securablePermission => securablePermission.permission === permissionMetadata.name);
+					return [
+						permissionMetadata.name,
+						permission?.grantor ?? '',
+						{ checked: permission?.grant === true },
+						{ checked: permission?.withGrant === true },
+						{ checked: permission?.grant === false }];
+				});
+				effectivePermissionsTableData = securable.effectivePermissions.map(permission => [permission]);
+			}
 		}
+		this.explicitPermissionTableLabel.value = explicitPermissionsLabel;
+		// this.permissionTable.ariaLabel = explicitPermissionsLabel;
 		this.setTableData(this.permissionTable, permissionsTableData);
 		if (!this.options.isNewObject) {
+			this.effectivePermissionTableLabel.value = effectivePermissionsLabel;
+			// this.effectivePermissionTable.ariaLabel = effectivePermissionsLabel;
 			this.setTableData(this.effectivePermissionTable, effectivePermissionsTableData);
 		}
-		this.objectInfo.securablePermissions = this.securablePermissions.filter((securablePermissions) => {
+	}
+
+	private updateSecurablePermissions(): void {
+		// Only save securable permissions that have grant or deny value.
+		this.objectInfo.securablePermissions = deepClone(this.securablePermissions.filter((securablePermissions) => {
 			return securablePermissions.permissions.some(permission => permission.grant !== undefined);
+		}));
+		this.objectInfo.securablePermissions.forEach(securablePermissions => {
+			securablePermissions.permissions = securablePermissions.permissions.filter(permission => permission.grant !== undefined);
 		});
 		this.onFormFieldChange();
+	}
+
+	private getSecurableTypeDisplayName(securableType: string): string {
+		const securableTypeMetadata = this.viewInfo.supportedSecurableTypes.find(securableTypeMetadata => securableTypeMetadata.name === securableType);
+		return securableTypeMetadata ? securableTypeMetadata.displayName : securableType;
 	}
 }

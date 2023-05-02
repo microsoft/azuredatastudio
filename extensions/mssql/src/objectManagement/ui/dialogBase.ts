@@ -239,7 +239,7 @@ export abstract class DialogBase<DialogResult> {
 		let removeButton: azdata.ButtonComponent;
 		const updateButtons = () => {
 			this.onFormFieldChange();
-			removeButton.enabled = table.selectedRows.length === 1;
+			removeButton.enabled = table.selectedRows.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 		}
 		addButton = this.createButton(localizedConstants.AddText, addButtonAriaLabel, async () => {
 			await addHandler();
@@ -312,12 +312,12 @@ export abstract class DialogBase<DialogResult> {
 		}
 	}
 
-	protected addItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component, index?: number): void {
+	protected addItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component, itemLayout?: azdata.FlexItemLayout, index?: number): void {
 		if (container.items.indexOf(item) === -1) {
 			if (index === undefined) {
-				container.addItem(item);
+				container.addItem(item, itemLayout);
 			} else {
-				container.insertItem(item, index);
+				container.insertItem(item, index, itemLayout);
 			}
 		}
 	}
@@ -331,6 +331,10 @@ export abstract class DialogBase<DialogResult> {
 	private createFormContainer(items: azdata.Component[]): azdata.DivContainer {
 		return this.modelView.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
 			CSSStyles: { 'padding': '10px' }
-		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
+		}).withItems(items, this.getSectionItemLayout()).component();
+	}
+
+	protected getSectionItemLayout(): azdata.FlexItemLayout {
+		return { CSSStyles: { 'margin-block-end': '5px' } };
 	}
 }

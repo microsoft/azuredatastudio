@@ -56,7 +56,7 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.
 		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemasSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.securableSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.securableSection], this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {

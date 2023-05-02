@@ -162,6 +162,7 @@ const DatabaseLevelPermissions: ObjectManagement.SecurablePermissions[] = [
 	{
 		name: 'table1',
 		type: 'Table',
+		schema: 'dbo',
 		permissions: [
 			{
 				permission: 'SELECT',
@@ -174,6 +175,7 @@ const DatabaseLevelPermissions: ObjectManagement.SecurablePermissions[] = [
 	}, {
 		name: 'view1',
 		type: 'View',
+		schema: 'Sales',
 		permissions: [
 			{
 				permission: 'ALTER',

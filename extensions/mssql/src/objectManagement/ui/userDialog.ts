@@ -68,7 +68,7 @@ export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, Objec
 		this.initializeOwnedSchemaSection();
 		this.initializeMembershipSection();
 		this.initializeAdvancedSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.securableSection, this.advancedSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.securableSection, this.advancedSection], this.getSectionItemLayout());
 		setTimeout(() => {
 			this.setViewByUserType();
 		}, 100);

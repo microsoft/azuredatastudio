@@ -101,7 +101,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 			this.initializeAdvancedSection();
 			sections.push(this.advancedSection);
 		}
-		this.formContainer.addItems(sections);
+		this.formContainer.addItems(sections, this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {
@@ -222,7 +222,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 
 	private setViewByAuthenticationType(): void {
 		if (this.authTypeDropdown.value === localizedConstants.SQLAuthenticationTypeDisplayText) {
-			this.addItem(this.formContainer, this.sqlAuthSection, 1);
+			this.addItem(this.formContainer, this.sqlAuthSection, this.getSectionItemLayout(), 1);
 		} else if (this.authTypeDropdown.value !== localizedConstants.SQLAuthenticationTypeDisplayText) {
 			this.removeItem(this.formContainer, this.sqlAuthSection);
 		}
