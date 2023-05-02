@@ -507,12 +507,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		// const authenticationKeysLabel = this._view.modelBuilder.text()
-		// 	.withProps({
-		// 		value: constants.AUTHENTICATION_KEYS,
-		// 		CSSStyles: { ...styles.LABEL_CSS }
-		// 	}).component();
-
 		this._copy1 = this._view.modelBuilder.button()
 			.withProps({
 				title: constants.COPY_KEY1,
@@ -560,7 +554,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
-			// authenticationKeysLabel,
 			instructions,
 			this._authKeyTable]);
 
