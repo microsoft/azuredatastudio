@@ -184,7 +184,7 @@ function getSqlDbConnectionProfile(
 		savePassword: false,
 		saveProfile: false,
 		options: {
-			conectionName: '',
+			connectionName: '',
 			server: serverName,
 			database: databaseName,
 			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
@@ -197,7 +197,7 @@ function getSqlDbConnectionProfile(
 			trustServerCertificate: false,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
-			applicationName: 'azdata',
+			applicationName: 'azdata-sqlMigration',
 			azureTenantId: tenantId,
 			originalDatabase: databaseName,
 			databaseDisplayName: databaseName,
@@ -228,7 +228,7 @@ export function getTargetConnectionProfile(
 		providerName: 'MSSQL',
 		saveProfile: false,
 		options: {
-			conectionName: connectId,
+			connectionName: connectId,
 			server: serverName,
 			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
@@ -239,9 +239,9 @@ export function getTargetConnectionProfile(
 			trustServerCertificate: trustServerCert,
 			connectRetryCount: '1',
 			connectRetryInterval: '10',
-			applicationName: 'azdata',
+			applicationName: 'azdata-sqlMigration',
 		},
-	};
+	}
 }
 
 export async function getSourceConnectionString(): Promise<string> {

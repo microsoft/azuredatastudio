@@ -47,7 +47,7 @@ export class ManageAction extends Action {
 
 	override async run(actionContext: ManageActionContext): Promise<void> {
 		if (actionContext.profile) {
-			await this._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, params: undefined, showConnectionDialogOnError: false, showFirewallRuleOnError: true });
+			await this._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, showConnectionDialogOnError: false, showFirewallRuleOnError: true });
 			this._angularEventingService.sendAngularEvent(actionContext.uri, AngularEventType.NAV_DATABASE);
 		}
 	}

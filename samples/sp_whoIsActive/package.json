@@ -2,7 +2,7 @@
   "name": "whoisactive",
   "displayName": "whoisactive",
   "description": "sp_whoisactive for Azure Data Studio",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {

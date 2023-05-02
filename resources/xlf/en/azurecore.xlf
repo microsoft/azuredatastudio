@@ -34,8 +34,21 @@
     <trans-unit id="azure.tenantNotFound">
       <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
     </trans-unit>
+    <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
+      <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
+
+To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
+
+Do you wish to proceed?</source>
+    </trans-unit>
+    <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
+      <source xml:lang="en">Confirm</source>
+    </trans-unit>
+    <trans-unit id="azurecore.consentDialog.authenticate">
+      <source xml:lang="en">Cancel and Authenticate</source>
+    </trans-unit>
     <trans-unit id="azurecore.consentDialog.body">
-      <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+      <source xml:lang="en">Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
     </trans-unit>
     <trans-unit id="azurecore.consentDialog.cancel">
       <source xml:lang="en">Cancel</source>
@@ -45,6 +58,12 @@
     </trans-unit>
     <trans-unit id="azurecore.consentDialog.open">
       <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="msal.accountNotFoundError">
+      <source xml:lang="en">Unable to find account info when acquiring token.</source>
+    </trans-unit>
+    <trans-unit id="msal.resourceNotFoundError">
+      <source xml:lang="en">Unable to find configuration for Azure Resource {0}</source>
     </trans-unit>
     <trans-unit id="noMicrosoftResource">
       <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
@@ -94,6 +113,9 @@
     <trans-unit id="msalTokenError">
       <source xml:lang="en">{0} occurred when acquiring token. 
 {1}</source>
+    </trans-unit>
+    <trans-unit id="tenantIgnoredError">
+      <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext"><body>
@@ -582,7 +604,7 @@
       <source xml:lang="en">Azure (Preview)</source>
     </trans-unit>
     <trans-unit id="azure.tenant.config.filter.description">
-      <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
+      <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
     </trans-unit>
     <trans-unit id="azure.title">
       <source xml:lang="en">Azure</source>

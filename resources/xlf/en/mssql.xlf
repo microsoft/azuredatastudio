@@ -62,11 +62,23 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectManagement.ApplicationRoleTypeDisplayName">
+      <source xml:lang="en">application role</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ApplicationRoleTypeDisplayNameInTitle">
+      <source xml:lang="en">Application Role</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ColumnDisplayName">
       <source xml:lang="en">column</source>
     </trans-unit>
     <trans-unit id="objectManagement.DatabaseDisplayName">
       <source xml:lang="en">database</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.DatabaseRoleTypeDisplayName">
+      <source xml:lang="en">database role</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.DatabaseRoleTypeDisplayNameInTitle">
+      <source xml:lang="en">Database Role</source>
     </trans-unit>
     <trans-unit id="objectManagement.LoginTypeDisplayName">
       <source xml:lang="en">login</source>
@@ -76,6 +88,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.OkText">
       <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
+      <source xml:lang="en">server role</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ServerRoleTypeDisplayNameInTitle">
+      <source xml:lang="en">Server Role</source>
     </trans-unit>
     <trans-unit id="objectManagement.TableDisplayName">
       <source xml:lang="en">table</source>
@@ -89,11 +107,23 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.ViewDisplayName">
       <source xml:lang="en">view</source>
     </trans-unit>
+    <trans-unit id="objectManagement.addMemberText">
+      <source xml:lang="en">Add a member</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.addText">
+      <source xml:lang="en">Add…</source>
+    </trans-unit>
     <trans-unit id="objectManagement.advancedSectionHeader">
       <source xml:lang="en">Advanced</source>
     </trans-unit>
     <trans-unit id="objectManagement.blankPasswordConfirmation">
       <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.browseForOwnerText">
+      <source xml:lang="en">Browse for an owner</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.browseText">
+      <source xml:lang="en">Browse…</source>
     </trans-unit>
     <trans-unit id="objectManagement.confirmPasswordLabel">
       <source xml:lang="en">Confirm password</source>
@@ -101,6 +131,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.createObjectOperationName">
       <source xml:lang="en">Create {0}</source>
       <note>{0} object type</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
+      <source xml:lang="en">Select Database Role Members</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseRole.SelectOwnerDialogTitle">
+      <source xml:lang="en">Select Database Role Owner</source>
     </trans-unit>
     <trans-unit id="objectManagement.deleteLoginConfirmation">
       <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
@@ -120,6 +156,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.enabledLabel">
       <source xml:lang="en">Enabled</source>
     </trans-unit>
+    <trans-unit id="objectManagement.filterText">
+      <source xml:lang="en">Filter</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.findText">
+      <source xml:lang="en">Find</source>
+    </trans-unit>
     <trans-unit id="objectManagement.generalSectionHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -131,6 +173,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.loadingDialog">
       <source xml:lang="en">Loading dialog...</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
+      <source xml:lang="en">Loading objects completed, {0} objects found</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.loadingObjectsLabel">
+      <source xml:lang="en">Loading objects…</source>
     </trans-unit>
     <trans-unit id="objectManagement.login.aadAuthenticationType">
       <source xml:lang="en">Azure Active Directory Authentication</source>
@@ -183,6 +231,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.loginNotSelectedError">
       <source xml:lang="en">Login is not selected.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.membersLabel">
+      <source xml:lang="en">Members</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.membershipLabel">
+      <source xml:lang="en">Membership</source>
+    </trans-unit>
     <trans-unit id="objectManagement.nameCannotBeEmptyError">
       <source xml:lang="en">Name cannot be empty.</source>
     </trans-unit>
@@ -203,6 +257,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">{0} - {1} (Preview)</source>
       <note>{0} object type, {1}: object name.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.objectTypeLabel">
+      <source xml:lang="en">Object Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.objectsLabel">
+      <source xml:lang="en">Objects</source>
+    </trans-unit>
     <trans-unit id="objectManagement.openNewObjectDialogError">
       <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
       <note>{0} object type, {1}: error message.</note>
@@ -210,6 +270,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.openObjectPropertiesDialogError">
       <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.ownerText">
+      <source xml:lang="en">Owner</source>
     </trans-unit>
     <trans-unit id="objectManagement.passwordCannotBeEmptyError">
       <source xml:lang="en">Password cannot be empty.</source>
@@ -224,6 +287,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
       <note>{0}: error message.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.removeMemberText">
+      <source xml:lang="en">Remove selected member</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.removeText">
+      <source xml:lang="en">Remove</source>
+    </trans-unit>
     <trans-unit id="objectManagement.renameObjectDialogTitle">
       <source xml:lang="en">Enter new name</source>
     </trans-unit>
@@ -235,6 +304,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
       <note>{0} object type, {1}: original name, {2}: new name</note>
     </trans-unit>
+    <trans-unit id="objectManagement.schemaLabel">
+      <source xml:lang="en">Schema</source>
+    </trans-unit>
     <trans-unit id="objectManagement.scriptError">
       <source xml:lang="en">An error occurred while generating script. {0}</source>
     </trans-unit>
@@ -244,15 +316,24 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.scriptText">
       <source xml:lang="en">Script</source>
     </trans-unit>
+    <trans-unit id="objectManagement.selectText">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
     <trans-unit id="objectManagement.selectedLabel">
       <source xml:lang="en">Selected</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
+      <source xml:lang="en">Select Server Role Members</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
+      <source xml:lang="en">Select Server Role Owner</source>
     </trans-unit>
     <trans-unit id="objectManagement.updateObjectOperationName">
       <source xml:lang="en">Update {0} '{1}'</source>
       <note>{0} object type, {1}: object name.</note>
     </trans-unit>
-    <trans-unit id="objectManagement.user.containedUser">
-      <source xml:lang="en">Contained user</source>
+    <trans-unit id="objectManagement.user.aadAuth">
+      <source xml:lang="en">Authenticate with Azure Active Directory</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.defaultSchemaLabel">
       <source xml:lang="en">Default schema</source>
@@ -260,23 +341,23 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.user.loginLabel">
       <source xml:lang="en">Login</source>
     </trans-unit>
-    <trans-unit id="objectManagement.user.membershipLabel">
-      <source xml:lang="en">Membership</source>
+    <trans-unit id="objectManagement.user.loginMapped">
+      <source xml:lang="en">Mapped to a server login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.user.noLogin">
+      <source xml:lang="en">No Login Access</source>
     </trans-unit>
     <trans-unit id="objectManagement.user.ownedSchemasLabel">
       <source xml:lang="en">Owned Schemas</source>
     </trans-unit>
+    <trans-unit id="objectManagement.user.sqlAuth">
+      <source xml:lang="en">Authenticate with password</source>
+    </trans-unit>
     <trans-unit id="objectManagement.user.type">
       <source xml:lang="en">Type</source>
     </trans-unit>
-    <trans-unit id="objectManagement.user.userWithGroupLogin">
-      <source xml:lang="en">User with Windows group login</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.user.userWithLogin">
-      <source xml:lang="en">User with login</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.user.userWithNoConnectAccess">
-      <source xml:lang="en">User with no connect access</source>
+    <trans-unit id="objectManagement.user.windowsUser">
+      <source xml:lang="en">Mapped to a Windows user/group</source>
     </trans-unit>
     <trans-unit id="objectManagement.yesText">
       <source xml:lang="en">Yes</source>

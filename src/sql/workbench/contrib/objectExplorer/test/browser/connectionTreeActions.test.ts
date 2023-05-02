@@ -283,14 +283,14 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 	});
 
-	test('AddServerAction - test if show connection dialog is called', () => {
+	test('AddServerAction - test if show connection dialog is called', async () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
-
+		connectionManagementService.setup(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(
+			() => new Promise<void>((resolve, reject) => resolve()));
 		let connectionTreeAction: AddServerAction = new AddServerAction(AddServerAction.ID, AddServerAction.LABEL, connectionManagementService.object);
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
-		return connectionTreeAction.run(conProfGroup).then((value) => {
-			connectionManagementService.verify(x => x.showConnectionDialog(undefined, undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
-		});
+		await connectionTreeAction.run(conProfGroup);
+		connectionManagementService.verify(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('ActiveConnectionsFilterAction - test if view is called to display filtered results', () => {
