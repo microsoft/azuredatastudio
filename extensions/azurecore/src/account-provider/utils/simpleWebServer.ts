@@ -87,6 +87,14 @@ export class SimpleWebServer {
 				reject(new Error('Server closed'));
 			});
 
+			this.server.addListener('beforeunload', () => {
+				console.log('unload')
+			});
+
+			this.server.on('beforeunload', () => {
+				reject(new Error('Before unload'));
+			});
+
 			this.server.on('close', () => {
 				reject(new Error('Server closed'));
 			});

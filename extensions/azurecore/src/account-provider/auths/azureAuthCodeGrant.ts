@@ -20,6 +20,8 @@ import * as qs from 'qs';
 import { promises as fs } from 'fs';
 import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
+import { ChildProcess } from 'child_process';
+import open = require("open");
 
 const localize = nls.loadMessageBundle();
 
@@ -248,8 +250,36 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			};
 			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
 
-			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
-			//TODO: need a callback from openExternal if the external window is closed
+			let childProcess: ChildProcess;
+			childProcess = await open(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`) as ChildProcess;
+			childProcess.on('close', (test) => {
+				console.log('close');
+			});
+			childProcess.on('exit', (test) => {
+				console.log(
+					'exit'
+				);
+			});
+			childProcess.addListener('beforeunload', () => {
+				console.log('Before unload');
+			});
+
+			childProcess.on('message', () => {
+				console.log('message');
+			});
+
+			childProcess.on('beforeunload', () => {
+				console.log('Before unload');
+			});
+			childProcess.on('disconnect', () => {
+				console.log('disconnect');
+			});
+
+
+
+			// await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
+
+			//TODO: need a callback from openExternal if the external window is closed, and then cancel the connection waiting
 			const authCode = await this.addServerListeners(server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
 
 			authCodeRequest.code = authCode;
@@ -343,6 +373,17 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			res.end();
 		});
 
+		server.on('beforeunload', () => {
+			console.log('Before unload');
+		});
+
+		server.on('close', (req, reqUrl, res) => {
+			console.log('test');
+		});
+		server.on('disconnect', (req, reqUrl, res) => {
+			console.log('test');
+		});
+
 		return new Promise<string>((resolve, reject) => {
 			server.on('/redirect', (req, reqUrl, res) => {
 				const state = reqUrl.query.state as string ?? '';
@@ -393,6 +434,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 			server.on('close', (req, reqUrl, res) => {
 				console.log('test');
+			});
+			server.on('disconnect', (req, reqUrl, res) => {
+				console.log('test');
+			});
+
+			server.on('beforeunload', (req, reqUrl, res) => {
+				console.log('Before unload');
 			});
 		});
 	}
