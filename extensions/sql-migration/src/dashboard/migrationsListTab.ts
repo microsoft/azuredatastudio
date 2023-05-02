@@ -9,8 +9,8 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { getCurrentMigrations, getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
-import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration } from '../constants/helper';
-import { DatabaseMigration, getResourceName } from '../api/azure';
+import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, canDeleteMigration, canRetryMigration } from '../constants/helper';
+import { DatabaseMigration, getMigrationErrors, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemetry';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { AdsMigrationStatus, EmptySettingValue, ServiceContextChangeEvent, TabBase } from './tabBase';
@@ -78,7 +78,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		}
 	}
 
-	public async refresh(): Promise<void> {
+	public async refresh(initialize?: boolean): Promise<void> {
 		if (this.isRefreshing ||
 			this._refreshLoader === undefined) {
 
@@ -90,6 +90,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			this._refreshLoader.loading = true;
 
 			await this.statusBar.clearError();
+
+			if (initialize) {
+				await this.updateServiceButtonContext(this._serviceContextButton);
+			}
 
 			await this._statusTable.updateProperty('data', []);
 			this._migrations = await getCurrentMigrations();
@@ -166,7 +170,8 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				description: loc.MIGRATION_SERVICE_DESCRIPTION,
 				buttonType: azdata.ButtonType.Informational,
 				width: 230,
-			}).component();
+			})
+			.component();
 
 		this.disposables.push(
 			this._serviceContextButton.onDidClick(
@@ -179,12 +184,11 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			this.serviceContextChangedEvent.event(
 				async (e) => {
 					if (e.connectionId === await getSourceConnectionId()) {
-						await this.updateServiceContext(this._serviceContextButton);
-						await this.refresh();
+						await this.refresh(true);
 					}
 				}
 			));
-		await this.updateServiceContext(this._serviceContextButton);
+		await this.updateServiceButtonContext(this._serviceContextButton);
 
 		this._searchBox = this.view.modelBuilder.inputBox()
 			.withProps({
@@ -472,6 +476,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'sourceDatabase',
 						width: 170,
 						type: azdata.ColumnType.hyperlink,
+						toolTip: loc.SRC_DATABASE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -480,6 +485,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'sourceServer',
 						width: 170,
 						type: azdata.ColumnType.text,
+						toolTip: loc.SRC_SERVER_TOOL_TIP,
 					},
 					<azdata.HyperlinkColumn>{
 						cssClass: rowCssStyles,
@@ -488,14 +494,16 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'status',
 						width: 160,
 						type: azdata.ColumnType.hyperlink,
+						toolTip: loc.STATUS_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
 						headerCssClass: headerCssStyles,
 						name: loc.MIGRATION_MODE,
 						value: 'mode',
-						width: 55,
+						width: 120,
 						type: azdata.ColumnType.text,
+						toolTip: loc.MIGRATION_MODE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -504,6 +512,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'targetType',
 						width: 120,
 						type: azdata.ColumnType.text,
+						toolTip: loc.AZURE_SQL_TARGET_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -512,6 +521,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'targetDatabase',
 						width: 125,
 						type: azdata.ColumnType.text,
+						toolTip: loc.TARGET_DATABASE_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -520,6 +530,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'targetServer',
 						width: 125,
 						type: azdata.ColumnType.text,
+						toolTip: loc.TARGET_SERVER_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -528,6 +539,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'duration',
 						width: 55,
 						type: azdata.ColumnType.text,
+						toolTip: loc.DURATION_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -536,6 +548,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'startTime',
 						width: 115,
 						type: azdata.ColumnType.text,
+						toolTip: loc.START_TIME_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -544,6 +557,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'finishTime',
 						width: 115,
 						type: azdata.ColumnType.text,
+						toolTip: loc.FINISH_TIME_TOOL_TIP,
 					},
 					{
 						cssClass: rowCssStyles,
@@ -552,6 +566,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'contextMenu',
 						width: 25,
 						type: azdata.ColumnType.contextMenu,
+						toolTip: loc.CONTEXT_MENU_TOOL_TIP,
 					}
 				]
 			}).component();
@@ -564,7 +579,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					// "Migration status" column
 					case 2:
 						const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(getMigrationStatusWithErrors(migration));
-						const errors = this.getMigrationErrors(migration!);
+						const errors = getMigrationErrors(migration!);
 
 						this.showDialogMessage(
 							loc.DATABASE_MIGRATION_STATUS_TITLE,
@@ -591,12 +606,21 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		menuCommands.push(...[
 			MenuCommands.ViewDatabase,
 			MenuCommands.ViewTarget,
-			MenuCommands.ViewService,
-			MenuCommands.CopyMigration]);
+			MenuCommands.ViewService]);
 
 		if (canCancelMigration(migration)) {
 			menuCommands.push(MenuCommands.CancelMigration);
 		}
+
+		if (canDeleteMigration(migration)) {
+			menuCommands.push(MenuCommands.DeleteMigration);
+		}
+
+		if (canRetryMigration(migration)) {
+			menuCommands.push(MenuCommands.RetryMigration);
+		}
+
+		menuCommands.push(MenuCommands.CopyMigration);
 
 		return menuCommands;
 	}

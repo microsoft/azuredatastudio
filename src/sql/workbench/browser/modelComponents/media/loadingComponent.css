@@ -14,7 +14,8 @@
 	margin-left: 5px;
 }
 
-.vs .modelview-loadingComponent-spinner {
+.vs .modelview-loadingComponent-spinner,
+.hc-light .modelview-loadingComponent-spinner {
 	content: url("loading.svg");
 }
 

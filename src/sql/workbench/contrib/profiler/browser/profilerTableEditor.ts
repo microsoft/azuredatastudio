@@ -35,6 +35,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -72,7 +73,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
-		@IQuickInputService private readonly _quickInputService: IQuickInputService
+		@IQuickInputService private readonly _quickInputService: IQuickInputService,
+		@ITableService private readonly _tableService: ITableService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -115,6 +117,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		});
 		this._profilerTable.registerPlugin(copyKeybind);
 		attachTableStyler(this._profilerTable, this._themeService);
+		this._register(this._tableService.registerTable(this._profilerTable));
 
 		this._findState = new FindReplaceState();
 		this._findState.onFindReplaceStateChange(e => this._onFindStateChange(e));

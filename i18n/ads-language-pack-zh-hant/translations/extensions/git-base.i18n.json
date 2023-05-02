@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "分支名稱",
-			"error": "$(error) 錯誤: {0}",
+			"error": "{0} 錯誤: {1}",
 			"none found": "找不到遠端存放庫。",
 			"pick url": "選擇複製的來源 URL。",
 			"provide url": "提供存放庫 URL",

@@ -719,9 +719,6 @@ export class NotebookEditorStub implements INotebookEditor {
 
 export class CellEditorProviderStub implements ICellEditorProvider {
 	isCellOutput = false;
-	hasEditor(): boolean {
-		throw new Error('Method not implemented.');
-	}
 	cellGuid(): string {
 		throw new Error('Method not implemented.');
 	}

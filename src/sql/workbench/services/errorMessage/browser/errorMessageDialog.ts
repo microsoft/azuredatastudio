@@ -46,7 +46,7 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
-	private _promiseResolver: (value: string) => void;
+	private _promise: Deferred<string> | undefined;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -113,7 +113,7 @@ export class ErrorMessageDialog extends Modal {
 			// Run the action if possible
 			this._actions[index].run();
 			// Resolve promise after running action.
-			this._promiseResolver(actionId);
+			this._promise?.resolve(actionId);
 		}
 	}
 
@@ -175,7 +175,7 @@ export class ErrorMessageDialog extends Modal {
 		this._telemetryService.sendActionEvent(this._telemetryView, hideReason.toString());
 		this.hide(hideReason);
 		if (resolvePromise) {
-			this._promiseResolver(hideReason.toString());
+			this._promise?.resolve(hideReason.toString());
 		}
 	}
 
@@ -242,8 +242,8 @@ export class ErrorMessageDialog extends Modal {
 			options.instructionText, options.readMoreLink, false);
 
 		const deferred = new Deferred<string | undefined>();
-		this._promiseResolver = deferred.resolve;
-		return deferred.promise;
+		this._promise = deferred;
+		return this._promise.promise;
 	}
 
 	private convertToSeverity(messageLevel: MessageLevel): Severity {

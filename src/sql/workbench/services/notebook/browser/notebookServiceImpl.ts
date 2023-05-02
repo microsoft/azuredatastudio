@@ -866,11 +866,11 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private get providersMemento(): NotebookProvidersMemento {
-		return this._providersMemento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE) as NotebookProvidersMemento;
+		return this._providersMemento.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE) as NotebookProvidersMemento;
 	}
 
 	private get trustedNotebooksMemento(): TrustedNotebooksMemento {
-		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE) as TrustedNotebooksMemento;
+		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE) as TrustedNotebooksMemento;
 		if (!cache.trustedNotebooksCache) {
 			cache.trustedNotebooksCache = {};
 		}
@@ -909,7 +909,11 @@ export class NotebookService extends Disposable implements INotebookService {
 			standardKernels: [{
 				name: notebookConstants.SQL,
 				displayName: notebookConstants.SQL,
-				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+				connectionProviderIds: [
+					notebookConstants.SQL_CONNECTION_PROVIDER,
+					notebookConstants.MYSQL_CONNECTION_PROVIDER,
+					notebookConstants.PGSQL_CONNECTION_PROVIDER
+				],
 				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
 			}]
 		});

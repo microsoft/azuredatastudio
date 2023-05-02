@@ -34,7 +34,7 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQu
 import { FileQueryEditorSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorSerializer } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID, CATEGORIES } from 'sql/workbench/contrib/query/browser/queryActions';
+import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID, CATEGORIES, ParseSyntaxCommandId } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
@@ -199,8 +199,9 @@ actionRegistry.registerWorkbenchAction(
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
 		ParseSyntaxAction,
-		ParseSyntaxAction.ID,
-		ParseSyntaxAction.LABEL
+		ParseSyntaxCommandId,
+		ParseSyntaxAction.LABEL,
+		{ primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyP }
 	),
 	ParseSyntaxAction.LABEL
 );
@@ -577,17 +578,19 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 				},
 				{
 					// Fall back to using the normal text based diff editor - we don't want the query bar and related items showing up in the diff editor
-					canHandleDiff: () => false
+					// canHandleDiff: () => false
 				},
-				async (editorInput, group) => {
-					const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
-					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
-					if (!queryEditorInput) {
-						this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
-						return undefined;
+				{
+					createEditorInput: async (editorInput, group) => {
+						const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
+						const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
+						const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
+						if (!queryEditorInput) {
+							this._logService.warn('Unable to create input for resolving editor ', editorInput.resource);
+							return undefined;
+						}
+						return { editor: queryEditorInput, options: editorInput.options, group: group };
 					}
-					return { editor: queryEditorInput, options: editorInput.options, group: group };
 				}
 			));
 		});

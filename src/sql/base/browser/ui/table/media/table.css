@@ -24,7 +24,9 @@
 }
 
 .vs .slick-header-menuicon.ascending,
-.vs .monaco-table .slick-sort-indicator-asc {
+.hc-light .slick-header-menuicon.ascending,
+.vs .monaco-table .slick-sort-indicator-asc,
+.hc-light .monaco-table .slick-sort-indicator-asc {
 	background-image: url('sort_asc.svg');
 }
 
@@ -36,7 +38,9 @@
 }
 
 .vs .slick-header-menuicon.descending,
-.vs .monaco-table .slick-sort-indicator-desc {
+.hc-light .slick-header-menuicon.descending,
+.vs .monaco-table .slick-sort-indicator-desc,
+.hc-light .monaco-table .slick-sort-indicator-desc {
 	background-image: url('sort_desc.svg');
 }
 
@@ -71,12 +75,17 @@
 	padding: 0px;
 }
 
+.hc-light .slick-header-menubutton {
+	background-image: url('down.svg');
+}
+
 .vs-dark .slick-header-menubutton,
 .hc-black .slick-header-menubutton {
 	background-image: url('down-inverse.svg');
 }
 
-.slick-header-menubutton.filtered {
+.slick-header-menubutton.filtered,
+.hc-light .slick-header-menubutton.filtered {
 	background-image: url('filter.svg');
 }
 
@@ -95,6 +104,10 @@
 	display: inline-block;
 	margin: 0;
 	position: absolute;
+}
+
+.hc-light .slick-header-menu {
+	background: none repeat scroll 0 0 #F3F2F1;
 }
 
 .vs-dark .slick-header-menu {

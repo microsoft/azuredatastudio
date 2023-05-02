@@ -16,7 +16,7 @@ import { SummaryPage } from './summaryPage';
 import { LoginMigrationStatusPage } from './loginMigrationStatusPage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { LoginSelectorPage } from './loginSelectorPage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemetry';
+import { sendSqlMigrationActionEvent, sendButtonClickEvent, TelemetryAction, TelemetryViews, logError, getTelemetryProps } from '../telemetry';
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
@@ -99,7 +99,7 @@ export class WizardController {
 
 		// kill existing data collection if user relaunches the wizard via new migration or retry existing migration
 		await this._model.refreshPerfDataCollection();
-		if ((!this._model.resumeAssessment || this._model.retryMigration) && this._model._perfDataCollectionIsCollecting) {
+		if ((!this._model.resumeAssessment || this._model.restartMigration) && this._model._perfDataCollectionIsCollecting) {
 			void this._model.stopPerfDataCollection();
 			void vscode.window.showInformationMessage(loc.AZURE_RECOMMENDATION_STOP_POPUP);
 		}
@@ -107,7 +107,7 @@ export class WizardController {
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
-		if (this._model.retryMigration || this._model.resumeAssessment) {
+		if (this._model.resumeAssessment || this._model.restartMigration) {
 			if (this._model.savedInfo.closedPage >= Page.IntegrationRuntime) {
 				this._model.refreshDatabaseBackupPage = true;
 			}
@@ -131,7 +131,7 @@ export class WizardController {
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 					const newPage = pageChangeInfo.newPage;
 					const lastPage = pageChangeInfo.lastPage;
-					this.sendPageButtonClickEvent(pageChangeInfo)
+					this.sendPageButtonClickEvent(TelemetryViews.SqlMigrationWizard, pageChangeInfo)
 						.catch(e => logError(
 							TelemetryViews.MigrationWizardController,
 							'ErrorSendingPageButtonClick', e));
@@ -163,7 +163,7 @@ export class WizardController {
 					TelemetryViews.SqlMigrationWizard,
 					TelemetryAction.PageButtonClick,
 					{
-						...this.getTelemetryProps(),
+						...getTelemetryProps(this._model),
 						'buttonPressed': TelemetryAction.Cancel,
 						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 					},
@@ -182,7 +182,7 @@ export class WizardController {
 						TelemetryViews.SqlMigrationWizard,
 						TelemetryAction.PageButtonClick,
 						{
-							...this.getTelemetryProps(),
+							...getTelemetryProps(this._model),
 							'buttonPressed': TelemetryAction.Done,
 							'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 						},
@@ -216,12 +216,16 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
 
+		// Emit telemetry for starting login migration wizard
+		const firstPageTitle = this._wizardObject.pages.length > 0 ? this._wizardObject.pages[0].title : "";
+		sendButtonClickEvent(this._model, TelemetryViews.LoginMigrationWizard, TelemetryAction.OpenLoginMigrationWizard, "", firstPageTitle);
+
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
 				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 					const newPage = pageChangeInfo.newPage;
 					const lastPage = pageChangeInfo.lastPage;
-					this.sendPageButtonClickEvent(pageChangeInfo)
+					this.sendPageButtonClickEvent(TelemetryViews.LoginMigrationWizard, pageChangeInfo)
 						.catch(e => logError(
 							TelemetryViews.LoginMigrationWizardController,
 							'ErrorSendingPageButtonClick', e));
@@ -243,8 +247,21 @@ export class WizardController {
 					TelemetryViews.LoginMigrationWizard,
 					TelemetryAction.PageButtonClick,
 					{
-						...this.getTelemetryProps(),
+						...getTelemetryProps(this._model),
 						'buttonPressed': TelemetryAction.Cancel,
+						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+					},
+					{});
+			}));
+
+		this._disposables.push(
+			this._wizardObject.doneButton.onClick(async (e) => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.LoginMigrationWizard,
+					TelemetryAction.PageButtonClick,
+					{
+						...getTelemetryProps(this._model),
+						'buttonPressed': TelemetryAction.Done,
 						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 					},
 					{});
@@ -255,10 +272,7 @@ export class WizardController {
 		stateModel: MigrationStateModel,
 		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
 
-		const resourceGroup = this._getResourceGroupByName(
-			stateModel._resourceGroups,
-			stateModel._sqlMigrationService?.properties.resourceGroup);
-
+		const resourceGroup = stateModel._sqlMigrationServiceResourceGroup;
 		const subscription = this._getSubscriptionFromResourceId(
 			stateModel._subscriptions,
 			resourceGroup?.id);
@@ -277,13 +291,6 @@ export class WizardController {
 				migrationService: stateModel._sqlMigrationService,
 			},
 			serviceContextChangedEvent);
-	}
-
-	private _getResourceGroupByName(
-		resourceGroups: azureResource.AzureResourceResourceGroup[],
-		displayName?: string): azureResource.AzureResourceResourceGroup | undefined {
-
-		return resourceGroups.find(rg => rg.name === displayName);
 	}
 
 	private _getLocationByValue(
@@ -308,31 +315,15 @@ export class WizardController {
 		return undefined;
 	}
 
-	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
+	private async sendPageButtonClickEvent(telemetryView: TelemetryViews, pageChangeInfo: azdata.window.WizardPageChangeInfo) {
 		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage
 			? TelemetryAction.Next
 			: TelemetryAction.Prev;
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
-		sendSqlMigrationActionEvent(
-			TelemetryViews.SqlMigrationWizard,
-			TelemetryAction.PageButtonClick,
-			{
-				...this.getTelemetryProps(),
-				'buttonPressed': buttonPressed,
-				'pageTitle': pageTitle
-			},
-			{});
+		const newPageTitle = this._wizardObject.pages[pageChangeInfo.newPage]?.title;
+		sendButtonClickEvent(this._model, telemetryView, buttonPressed, pageTitle, newPageTitle);
 	}
 
-	private getTelemetryProps() {
-		return {
-			'sessionId': this._model._sessionId,
-			'subscriptionId': this._model._targetSubscription?.id,
-			'resourceGroup': this._model._resourceGroup?.name,
-			'targetType': this._model._targetType,
-			'tenantId': this._model?._azureAccount?.properties?.tenants[0]?.id
-		};
-	}
 }
 
 export function createInformationRow(

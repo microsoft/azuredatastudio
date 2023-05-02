@@ -20,8 +20,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
 import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 import { localize } from 'vs/nls';
@@ -143,28 +141,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
-
-		this._grid.onKeyDown.subscribe(async (e, args: Slick.OnKeyDownEventArgs<T>) => {
-			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
-			const stdEvt = new StandardKeyboardEvent(evt);
-			if (stdEvt.altKey && stdEvt.shiftKey && stdEvt.keyCode === KeyCode.KeyS) {
-				const newWidth = this.resizeActiveCellColumnByQuickInput();
-				if (newWidth) {
-					stdEvt.stopPropagation();
-					stdEvt.preventDefault();
-				}
-			}
-			this._onKeyDown.fire({
-				event: evt,
-				cell: {
-					row: args.row,
-					cell: args.cell
-				}
-			});
-		});
 	}
 
-	private async resizeActiveCellColumnByQuickInput(): Promise<number | undefined> {
+	public async resizeActiveColumn(): Promise<void> {
 		const activeCell = this._grid.getActiveCell();
 		if (activeCell) {
 			const columns = this._grid.getColumns();
@@ -187,7 +166,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 					this._grid.setColumns(columns);
 					this.grid.setActiveCell(activeCell.row, activeCell.cell);
 				}
-				return parseInt(newColumnWidth);
 			}
 		}
 		return undefined;

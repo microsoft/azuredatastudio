@@ -20,7 +20,6 @@
 			"azure.owningTenantNotFound": "As informações do locatário não foram encontradas para a conta.",
 			"azure.responseError": "Falha na recuperação de token com um erro. [Abrir ferramentas para desenvolvedores] ({0}) para obter mais detalhes.",
 			"azure.tenantNotFound": "Locatário especificado com ID '{0}' não encontrado.",
-			"azureAuth.unidentifiedError": "Erro não identificado com a autenticação do Azure",
 			"azurecore.consentDialog.body": "O locatário '{0} ({1})' requer que você seja autenticado novamente para acessar os recursos de {2}. Pressione Abrir para iniciar o processo de autenticação.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Ignorar Locatário",
@@ -42,7 +41,9 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Nenhum método de autenticação do Azure disponível. Você precisa habilitar os métodos de autenticação na configuração do ADS.",
 			"azure.NoAuthMethod.Selected": "Nenhum método de autenticação do Azure selecionado. Você precisa selecionar o método de autenticação que deseja usar.",
-			"azure.deprecatedGetSecurityToken": "Uma chamada foi realizada para azdata.accounts.getSecurityToken. Esse método foi preterido e será removido em versões futuras. Em vez disso, use getAccountSecurityToken."
+			"azure.deprecatedGetSecurityToken": "Uma chamada foi realizada para azdata.accounts.getSecurityToken. Esse método foi preterido e será removido em versões futuras. Em vez disso, use getAccountSecurityToken.",
+			"genericTokenError": "Falha ao obter o token",
+			"msalTokenError": "{0} ocorreu ao adquirir o token. \r\n{1}"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Falha ao limpar o cache do token",
@@ -50,10 +51,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Alemanha)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (Governo dos EUA)",
-			"usNatCloudDisplayName": "Azure (Nacional dos EUA)"
+			"usGovCloudDisplayName": "Azure (Governo dos EUA)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Você precisa selecionar uma conta do Azure para que este recurso funcione.",
@@ -154,6 +153,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Recursos do Azure (Versão Prévia)",
+			"azure.credStoreSaveFailedError": "As chaves para cache de token não puderam ser salvas no armazenamento de credenciais, isso pode causar problemas de persistência de token de acesso do Azure e instabilidades de conexão. É provável que o SqlTools tenha atingido o limite de armazenamento de credenciais no Windows, limpe pelo menos 2 credenciais que comecem com \"Microsoft.SqlTools|\" no Gerenciador de Credenciais do Windows e recarregue.",
 			"azure.unableToOpenAzureLink": "Não é possível abrir o link, os valores necessários estão ausentes",
 			"azurecore.australiacentral": "Austrália Central",
 			"azurecore.australiacentral2": "Austrália Central 2",
@@ -169,6 +169,7 @@
 			"azurecore.centralindia": "Índia Central",
 			"azurecore.centralus": "EUA Central",
 			"azurecore.centraluseuap": "EUA Central EUAP",
+			"azurecore.deprecated": "Aviso: a ADAL foi preterida e está agendada para ser removida em uma versão futura. Em vez disso, use a MSAL.",
 			"azurecore.eastasia": "Leste da Ásia",
 			"azurecore.eastus": "Leste dos EUA",
 			"azurecore.eastus2": "Leste dos EUA 2",

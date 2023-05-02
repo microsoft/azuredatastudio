@@ -7,11 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectTargetDatabaseInfo, TargetDatabaseInfo } from '../api/sqlUtils';
@@ -42,7 +43,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _targetPasswordInputBox!: azdata.InputBoxComponent;
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
-	private _migrationTargetPlatform!: MigrationTargetType;
+	private _migrationTargetPlatform!: utils.MigrationTargetType;
 	private _serviceContext!: MigrationServiceContext;
 
 	constructor(
@@ -708,7 +709,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
-								this.migrationStateModel._vmInstanceView = await getVMInstanceView(this.migrationStateModel._targetServerInstance, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription);
+								this.migrationStateModel._vmInstanceView = await getVMInstanceView(
+									this.migrationStateModel._targetServerInstance,
+									this.migrationStateModel._azureAccount,
+									this.migrationStateModel._targetSubscription);
 								this.wizard.message = { text: '' };
 
 								// validate power state from VM instance view
@@ -869,45 +873,45 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this._azureAccountsDropdown.loading = true;
 			this.migrationStateModel._azureAccounts = await utils.getAzureAccounts();
 
-			this._azureAccountsDropdown.values = await utils.getAzureAccountsDropdownValues(this.migrationStateModel._azureAccounts);
-		} finally {
-			this._azureAccountsDropdown.loading = false;
 			const accountId =
 				this.migrationStateModel._azureAccount?.displayInfo?.userId ??
 				this._serviceContext?.azureAccount?.displayInfo?.userId;
+			this._azureAccountsDropdown.values = await utils.getAzureAccountsDropdownValues(this.migrationStateModel._azureAccounts);
 
 			utils.selectDefaultDropdownValue(
 				this._azureAccountsDropdown,
 				accountId,
 				false);
+		} finally {
+			this._azureAccountsDropdown.loading = false;
 		}
 	}
 
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			if (this.migrationStateModel._azureAccount?.isStale === false &&
-				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
-				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
-
-				this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
-			}
 			const tenantId =
 				this.migrationStateModel._azureTenant?.id ??
 				this._serviceContext?.tenant?.id;
+
+			if (!utils.isAccountTokenStale(this.migrationStateModel._azureAccount) &&
+				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
+				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
+				this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
+			}
 
 			utils.selectDefaultDropdownValue(
 				this._accountTenantDropdown,
 				tenantId,
 				true);
+			await this._azureAccountsDropdown.validate();
+		} finally {
+			this._accountTenantDropdown.loading = false;
 			await this._accountTenantFlexContainer.updateCssStyles(
 				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 1
 					? { 'display': 'inline' }
 					: { 'display': 'none' }
 			);
-			await this._azureAccountsDropdown.validate();
-		} finally {
-			this._accountTenantDropdown.loading = false;
 		}
 	}
 
@@ -915,19 +919,20 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		try {
 			this._azureSubscriptionDropdown.loading = true;
 			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(this.migrationStateModel._azureAccount);
-			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this.migrationStateModel._subscriptions);
-		} catch (e) {
-			console.log(e);
-		} finally {
-			this._azureSubscriptionDropdown.loading = false;
 			const subscriptionId =
 				this.migrationStateModel._targetSubscription?.id ??
 				this._serviceContext?.subscription?.id;
+
+			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this.migrationStateModel._subscriptions);
 
 			utils.selectDefaultDropdownValue(
 				this._azureSubscriptionDropdown,
 				subscriptionId,
 				false);
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this._azureSubscriptionDropdown.loading = false;
 		}
 	}
 
@@ -963,19 +968,20 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._targetSqlDatabaseServers);
 					break;
 			}
-			this._azureLocationDropdown.values = utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
-		} catch (e) {
-			console.log(e);
-		} finally {
-			this._azureLocationDropdown.loading = false;
+
 			const location =
 				this.migrationStateModel._location?.displayName ??
 				this._serviceContext?.location?.displayName;
 
+			this._azureLocationDropdown.values = utils.getAzureLocationsDropdownValues(this.migrationStateModel._locations);
 			utils.selectDefaultDropdownValue(
 				this._azureLocationDropdown,
 				location,
 				true);
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this._azureLocationDropdown.loading = false;
 		}
 	}
 
@@ -999,24 +1005,29 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._location);
 					break;
 			}
+
+			const resourceGroupId = this.migrationStateModel._resourceGroup?.id;
+
 			this._azureResourceGroupDropdown.values = utils.getResourceDropdownValues(
 				this.migrationStateModel._resourceGroups,
 				constants.RESOURCE_GROUP_NOT_FOUND);
+
+			utils.selectDefaultDropdownValue(
+				this._azureResourceGroupDropdown,
+				resourceGroupId,
+				false);
 		} catch (e) {
 			console.log(e);
 		} finally {
 			this._azureResourceGroupDropdown.loading = false;
-
-			utils.selectDefaultDropdownValue(
-				this._azureResourceGroupDropdown,
-				this.migrationStateModel._resourceGroup?.id,
-				false);
 		}
 	}
 
 	private async populateResourceInstanceDropdown(): Promise<void> {
 		try {
 			this._azureResourceDropdown.loading = true;
+			const targetName = this.migrationStateModel.migrationTargetServerName;
+
 			switch (this.migrationStateModel._targetType) {
 				case MigrationTargetType.SQLMI:
 					this._azureResourceDropdown.values = await utils.getManagedInstancesDropdownValues(
@@ -1042,31 +1053,19 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						constants.NO_SQL_DATABASE_SERVER_FOUND);
 					break;
 			}
-		} finally {
-			this._azureResourceDropdown.loading = false;
-			let targetName = '';
-			switch (this.migrationStateModel._targetType) {
-				case MigrationTargetType.SQLMI:
-					targetName = (this.migrationStateModel._targetServerInstance as azureResource.AzureSqlManagedInstance)?.name;
-					break;
-				case MigrationTargetType.SQLVM:
-					targetName = (this.migrationStateModel._targetServerInstance as SqlVMServer)?.name;
-					break;
-				case MigrationTargetType.SQLDB:
-					targetName = (this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer)?.name;
-					break;
-			}
 
 			utils.selectDefaultDropdownValue(
 				this._azureResourceDropdown,
 				targetName,
 				true);
+		} finally {
+			this._azureResourceDropdown.loading = false;
 		}
 	}
 
 	private _updateTdeMigrationButtonStatus() {
-
-		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled = this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
+		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled =
+			this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
 			this.migrationStateModel._targetManagedInstances.length > 0;
 	}
 

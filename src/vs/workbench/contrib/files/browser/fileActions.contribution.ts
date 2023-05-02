@@ -607,7 +607,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	order: 1.1
 });
 
-// {{SQL CARBON EDIT}} - Add "New Notebook" item
+// {{SQL CARBON EDIT}} - BEGIN - Add "New Notebook" item
 MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '1_new',
 	command: {
@@ -617,6 +617,17 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	order: 1.2
 });
 // {{SQL CARBON EDIT}} - End
+
+// {{SQL CARBON EDIT}} - BEGIN - Add "New Deployment..." option
+MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
+	group: '1_new',
+	command: {
+		id: 'azdata.resource.deploy',
+		title: locConstants.fileActionsContributionMiNewDeployment
+	},
+	order: 4
+});
+// {{SQL CARBON EDIT}} - END
 
 MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '4_save',

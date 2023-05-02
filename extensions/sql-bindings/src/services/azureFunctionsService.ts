@@ -34,7 +34,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			exitReason = ExitReason.error;
 			propertyBag.exitReason = exitReason;
 			telemetryStep = CreateAzureFunctionStep.noAzureFunctionsExtension;
-			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).send();
 			return;
 		}
@@ -275,7 +275,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		// an error occurred during createFunction
 		exitReason = ExitReason.error;
 		void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
-		TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
+		TelemetryReporter.createErrorEvent2(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, error, undefined, errorType)
 			.withAdditionalProperties(propertyBag).send();
 		return;
 	} finally {

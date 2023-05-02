@@ -1311,8 +1311,8 @@ Select a different subscription containing at least one server</source>
         <target state="translated">SQL Server 2019 컨테이너 이미지 배포</target>
       </trans-unit>
       <trans-unit id="docker-sql-2022-title">
-        <source xml:lang="en">Deploy SQL Server 2022 Preview container images</source>
-        <target state="translated">SQL Server 2022 미리 보기 컨테이너 이미지 배포</target>
+        <source xml:lang="en">Deploy SQL Server 2022 container images</source>
+        <target state="translated">SQL Server 2022 컨테이너 이미지 배포</target>
       </trans-unit>
       <trans-unit id="docker-sql-password-field">
         <source xml:lang="en">SQL Server password</source>
@@ -1363,8 +1363,8 @@ Select a different subscription containing at least one server</source>
         <target state="translated">SQL Server 2019</target>
       </trans-unit>
       <trans-unit id="sql-2022-display-name">
-        <source xml:lang="en">SQL Server 2022 Preview</source>
-        <target state="translated">SQL Server 2022 미리 보기</target>
+        <source xml:lang="en">SQL Server 2022</source>
+        <target state="translated">SQL Server 2022</target>
       </trans-unit>
       <trans-unit id="sql-azure-database-server-display-name">
         <source xml:lang="en">Database Server</source>

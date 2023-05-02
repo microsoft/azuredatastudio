@@ -26,7 +26,10 @@ import { INotificationService, Severity, INotification } from 'vs/platform/notif
 import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ADAL_AUTH_LIBRARY, AuthLibrary, filterAccounts, MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
+import { ADAL_AUTH_LIBRARY, MSAL_AUTH_LIBRARY, AuthLibrary, AZURE_AUTH_LIBRARY_CONFIG, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { TelemetryAction, TelemetryError, TelemetryPropertyName, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -41,7 +44,6 @@ export class AccountManagementService implements IAccountManagementService {
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
 	protected readonly disposables = new DisposableStore();
-	private readonly configurationService: IConfigurationService;
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -61,21 +63,21 @@ export class AccountManagementService implements IAccountManagementService {
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
-		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
+		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
 		this._accountStore = this._instantiationService.createInstance(AccountStore, mementoObj);
 
 		// Setup the event emitters
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
-		this.configurationService = configurationService;
 
 		// Determine authentication library in use, to support filtering accounts respectively.
 		// When this value is changed a restart is required so there isn't a need to dynamically update this value at runtime.
-		this._authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		this._authLibrary = getAuthLibrary(this._configurationService);
 
 		_storageService.onWillSaveState(() => this.shutdown());
 		this.registerListeners();
@@ -128,7 +130,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 */
 	public addAccount(providerId: string): Promise<void> {
 		const closeAction: Action = new Action('closeAddingAccount', localize('accountManagementService.close', "Close"), undefined, true);
-
+		const genericAccountErrorMessage = localize('addAccountFailedGenericMessage', 'Adding account failed, check Azure Accounts log for more info.')
 		const loginNotification: INotification = {
 			severity: Severity.Info,
 			message: localize('loggingIn', "Adding account..."),
@@ -148,13 +150,29 @@ export class AccountManagementService implements IAccountManagementService {
 					if (accountResult.canceled === true) {
 						return;
 					} else {
-						throw new Error(localize('addAccountFailedMessage', `${0} \nError Message: ${1}`, accountResult.errorCode, accountResult.errorMessage));
+						this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountError, accountResult.errorCode,
+							this.getErrorType(accountResult.errorMessage))
+							.withAdditionalProperties({
+								[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+							})
+							.send();
+						if (accountResult.errorCode && accountResult.errorMessage) {
+							throw new Error(localize('addAccountFailedCodeMessage', `{0} \nError Message: {1}`, accountResult.errorCode, accountResult.errorMessage));
+						} else {
+							throw new Error(accountResult.errorMessage ?? genericAccountErrorMessage);
+						}
 					}
 				}
 				let result = await this._accountStore.addOrUpdate(accountResult);
 				if (!result) {
-					this._logService.error('adding account failed');
-					throw new Error(localize('addAccountFailedGeneric', 'Adding account failed, check Azure Accounts log for more info.'));
+					this._logService.error('Adding account failed, no result received.');
+					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountErrorNoResult, '-1',
+						this.getErrorType())
+						.withAdditionalProperties({
+							[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+						})
+						.send();
+					throw new Error(genericAccountErrorMessage);
 				}
 				if (result.accountAdded) {
 					// Add the account to the list
@@ -163,7 +181,11 @@ export class AccountManagementService implements IAccountManagementService {
 				if (result.accountModified) {
 					this.spliceModifiedAccount(provider, result.changedAccount);
 				}
-
+				this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.AddAzureAccount)
+					.withAdditionalProperties({
+						[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+					})
+					.send();
 				this.fireAccountListUpdate(provider, result.accountAdded);
 			} finally {
 				notificationHandler.close();
@@ -203,6 +225,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return an account
 	 */
 	public refreshAccount(account: azdata.Account): Promise<azdata.Account> {
+		const genericAccountErrorMessage = localize('refreshAccountFailedGenericMessage', 'Refreshing account failed, check Azure Accounts log for more info.')
 		return this.doWithProvider(account.key.providerId, async (provider) => {
 			let refreshedAccount = await provider.provider.refresh(account);
 			if (!this.isAccountResult(refreshedAccount)) {
@@ -210,13 +233,33 @@ export class AccountManagementService implements IAccountManagementService {
 					// Pattern here is to throw if this fails. Handled upstream.
 					throw new Error(localize('refreshCanceled', "Refresh account was canceled by the user"));
 				} else {
-					throw new Error(localize('refreshFailed', `${0} \nError Message: ${1}`, refreshedAccount.errorCode, refreshedAccount.errorMessage));
+					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountError, refreshedAccount.errorCode,
+						this.getErrorType(refreshedAccount.errorMessage))
+						.withAdditionalProperties({
+							[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+						})
+						.send();
+					if (refreshedAccount.errorCode && refreshedAccount.errorMessage) {
+						throw new Error(localize('refreshFailed', `{0} \nError Message: {1}`, refreshedAccount.errorCode, refreshedAccount.errorMessage));
+					} else {
+						throw new Error(refreshedAccount.errorMessage ?? genericAccountErrorMessage);
+					}
 				}
 			} else {
 				account = refreshedAccount;
 			}
 
 			let result = await this._accountStore.addOrUpdate(account);
+			if (!result) {
+				this._logService.error('Refreshing account failed, no result received.');
+				this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountErrorNoResult, '-1',
+					this.getErrorType())
+					.withAdditionalProperties({
+						[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+					})
+					.send();
+				throw new Error(genericAccountErrorMessage);
+			}
 			if (result.accountAdded) {
 				// Double check that there isn't a matching account
 				let indexToRemove = this.findAccountIndex(provider.accounts, result.changedAccount);
@@ -237,9 +280,28 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 			}
 
+			this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.RefreshAzureAccount)
+				.withAdditionalProperties({
+					[TelemetryPropertyName.AuthLibrary]: this._authLibrary
+				})
+				.send();
 			this.fireAccountListUpdate(provider, result.accountAdded);
 			return result.changedAccount!;
 		});
+	}
+
+	private getErrorType(errorMessage?: string | undefined): string {
+		let errorType: string = 'Unknown';
+		if (errorMessage) {
+			if (errorMessage.toLocaleLowerCase().includes('token')) {
+				errorType = 'AccessToken';
+			} else if (errorMessage.toLocaleLowerCase().includes('timeout')) {
+				errorType = 'Timeout';
+			} else if (errorMessage.toLocaleLowerCase().includes('cache')) {
+				errorType = 'TokenCache'
+			}
+		}
+		return errorType;
 	}
 
 	/**
@@ -299,8 +361,8 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @return Promise to return the security token
 	 */
 	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined> {
-		return this.doWithProvider(account.key.providerId, provider => {
-			return Promise.resolve(provider.provider.getAccountSecurityToken(account, tenant, resource));
+		return this.doWithProvider(account.key.providerId, async provider => {
+			return await provider.provider.getAccountSecurityToken(account, tenant, resource);
 		});
 	}
 
@@ -317,18 +379,19 @@ export class AccountManagementService implements IAccountManagementService {
 		// Step 3) Update the account cache and fire an event
 		return this.doWithProvider(accountKey.providerId, async provider => {
 			const result = await this._accountStore.remove(accountKey);
+			let indexToRemove: number = provider.accounts.findIndex(account => {
+				return account.key.accountId === accountKey.accountId;
+			});
 			await provider.provider.clear(accountKey);
 			if (!result) {
 				return result;
 			}
 
-			let indexToRemove: number = provider.accounts.findIndex(account => {
-				return account.key.accountId === accountKey.accountId;
-			});
-
 			if (indexToRemove >= 0) {
 				provider.accounts.splice(indexToRemove, 1);
 				this.fireAccountListUpdate(provider, false);
+			} else {
+				this._logService.error(`Error when removing an account: ${accountKey.accountId} could not find account in provider list.`);
 			}
 			return result;
 		});
@@ -513,7 +576,7 @@ export class AccountManagementService implements IAccountManagementService {
 			});
 		}
 
-		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService)
 		let updatedAccounts: azdata.Account[]
 		if (authLibrary) {
 			updatedAccounts = filterAccounts(provider.accounts, authLibrary);
@@ -537,9 +600,9 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	private registerListeners(): void {
-		this.disposables.add(this.configurationService.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration('azure.authenticationLibrary')) {
-				const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary') ?? MSAL_AUTH_LIBRARY;
+		this.disposables.add(this._configurationService.onDidChangeConfiguration(async e => {
+			if (e.affectsConfiguration(AZURE_AUTH_LIBRARY_CONFIG)) {
+				const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
 				let accounts = await this._accountStore.getAllAccounts();
 				if (accounts) {
 					let updatedAccounts = await this.filterAndMergeAccounts(accounts, authLibrary);

@@ -95,7 +95,7 @@ export class NewProjectDialog extends DialogBase {
 		}
 		catch (err) {
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted, err)
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, error: err?.message ? err.message : err })
 				.send();
 
@@ -187,7 +187,7 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectNameTextBox.onTextChanged(text => {
 			const errorMessage = isValidBasenameErrorMessage(text);
-			if (errorMessage) {
+			if (errorMessage !== undefined) {
 				// Set validation error message if project name is invalid
 				return void projectNameTextBox.updateProperty('validationErrorMessage', errorMessage);
 			} else {
@@ -215,6 +215,7 @@ export class NewProjectDialog extends DialogBase {
 
 		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
+			title: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
 			width: '18px'
@@ -284,7 +285,6 @@ export class NewProjectDialog extends DialogBase {
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
-				required: true,
 				component: projectTypeRadioCardGroup
 			},
 			{

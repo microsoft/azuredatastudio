@@ -12,7 +12,8 @@ import * as vscode from 'vscode';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import { AzureSqlClient } from './azureSqlClient';
 import { ConnectionService } from '../connections/connectionService';
-import { DockerImageSpec, IDockerSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { DockerImageSpec } from 'sqldbproj';
+import { IDockerSettings, IPublishToDockerSettings } from './publishSettings';
 
 export class DeployService {
 

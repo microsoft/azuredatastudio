@@ -11,6 +11,22 @@ declare module 'azdata' {
 	 */
 	export const version: string;
 
+	export namespace env {
+		/**
+		 * Well-known app quality values
+		 */
+		export enum AppQuality {
+			stable = 'stable',
+			insider = 'insider',
+			dev = 'dev'
+		}
+
+		/**
+		 * The version of Azure Data Studio this is currently running as - such as `stable`, or `insider`
+		 */
+		export const quality: AppQuality | string | undefined;
+	}
+
 	// EXPORTED NAMESPACES /////////////////////////////////////////////////
 	/**
 	 * Namespace for Data Management Protocol global methods
@@ -93,6 +109,36 @@ declare module 'azdata' {
 	 */
 	export namespace connection {
 		/**
+		 * Well-known Authentication types commonly supported by connection providers.
+		 */
+		export enum AuthenticationType {
+			/**
+			 * Username and password
+			 */
+			SqlLogin = 'SqlLogin',
+			/**
+			 * Windows Authentication
+			 */
+			Integrated = 'Integrated',
+			/**
+			 * Azure Active Directory - Universal with MFA support
+			 */
+			AzureMFA = 'AzureMFA',
+			/**
+			 * Azure Active Directory - Password
+			 */
+			AzureMFAAndUser = 'AzureMFAAndUser',
+			/**
+			 * Datacenter Security Token Service Authentication
+			 */
+			DSTSAuth = 'dstsAuth',
+			/**
+			 * No authentication required
+			 */
+			None = 'None'
+		}
+
+		/**
 		 * Connection profile primary class
 		 */
 		export class ConnectionProfile {
@@ -103,7 +149,7 @@ declare module 'azdata' {
 			databaseName: string;
 			userName: string;
 			password: string;
-			authenticationType: string;
+			authenticationType: string | AuthenticationType;
 			savePassword: boolean;
 			groupFullName: string;
 			groupId: string;
@@ -308,7 +354,7 @@ declare module 'azdata' {
 			/**
 			 * Get the parent node. Returns undefined if there is none.
 			 */
-			getParent(): Thenable<ObjectExplorerNode>;
+			getParent(): Thenable<ObjectExplorerNode | undefined>;
 
 			/**
 			 * Refresh the node, expanding it if it has children
@@ -370,7 +416,10 @@ declare module 'azdata' {
 		databaseName?: string | undefined;
 		userName: string;
 		password: string;
-		authenticationType: string;
+		/**
+		 * The type of authentication to use when connecting
+		 */
+		authenticationType: string | connection.AuthenticationType;
 		savePassword: boolean;
 		groupFullName?: string | undefined;
 		groupId?: string | undefined;
@@ -1947,8 +1996,8 @@ declare module 'azdata' {
 
 		// Proxy management methods
 		getProxies(ownerUri: string): Thenable<AgentProxiesResult>;
-		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentOperatorResult>;
-		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentOperatorResult>;
+		createProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<CreateAgentProxyResult>;
+		updateProxy(ownerUri: string, originalProxyName: string, proxyInfo: AgentProxyInfo): Thenable<UpdateAgentProxyResult>;
 		deleteProxy(ownerUri: string, proxyInfo: AgentProxyInfo): Thenable<ResultStatus>;
 
 		// Credential method
@@ -2499,7 +2548,11 @@ declare module 'azdata' {
 		/**
 		 * Power BI
 		 */
-		PowerBi = 11
+		PowerBi = 11,
+		/**
+		 * Represents custom resource URIs as received from server endpoint.
+		 */
+		Custom = 12
 	}
 
 	export interface DidChangeAccountsParams {
@@ -2826,7 +2879,7 @@ declare module 'azdata' {
 		 * @param title The title shown in the editor tab
 		 * @param options Options to configure the editor
 		 * @param name The name used to identify the editor in telemetry
-		 */
+		*/
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.ModelViewPanel {
@@ -2981,6 +3034,11 @@ declare module 'azdata' {
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+		/**
+		 * Sets the initial set of properties for the container being created
+		 * @param properties The properties to apply to the container
+		 */
+		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ContainerProperties> {
@@ -3568,9 +3626,14 @@ declare module 'azdata' {
 		title?: string | undefined;
 	}
 
+	/**
+	 * Supported values for aria-live accessibility attribute
+	 */
+	export type AriaLiveValue = 'polite' | 'assertive' | 'off';
+
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string | undefined;
-		ariaLive?: string | undefined;
+		ariaLive?: AriaLiveValue | undefined;
 		placeHolder?: string | undefined;
 		inputType?: InputBoxInputType | undefined;
 		required?: boolean | undefined;
@@ -4162,6 +4225,10 @@ declare module 'azdata' {
 	export interface TableComponent extends Component, TableComponentProperties {
 		onRowSelected: vscode.Event<any>;
 		onCellAction?: vscode.Event<ICellActionEventArgs> | undefined;
+		/**
+		 * Append data to the existing table data.
+		 */
+		appendData(data: any[][]): Thenable<void>;
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
@@ -4694,6 +4761,7 @@ declare module 'azdata' {
 		 * @deprecated please use the method createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth) instead.
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
+		 * @param dialogName Name of the dialog.
 		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
@@ -4922,7 +4990,7 @@ declare module 'azdata' {
 			 * Set the informational message shown in the dialog. Hidden when the message is
 			 * undefined or the text is empty or undefined. The default level is error.
 			 */
-			message: DialogMessage;
+			message?: DialogMessage;
 
 			/**
 			 * Set the dialog name when opening
@@ -5221,9 +5289,41 @@ declare module 'azdata' {
 			| 'executionPlan'
 			| 'visualize';
 
+		/**
+		 * A message sent during the execution of a query
+		 */
+		export interface QueryMessage {
+			/**
+			 * The message string
+			 */
+			message: string;
+			/**
+			 * Whether this message is an error message or not
+			 */
+			isError: boolean;
+			/**
+			 * The timestamp for when this message was sent
+			 */
+			time?: string;
+		}
+
+		/**
+		 * Information about a query that was executed
+		 */
+		export interface QueryInfo {
+			/**
+			 * Any messages that have been received from the query provider
+			 */
+			messages: QueryMessage[];
+			/**
+			 * The ranges for each batch that has executed so far
+			 */
+			batchRanges: vscode.Range[];
+		}
+
 		export interface QueryEventListener {
 			/**
-			 * A callback that is called whenever a query event occurs
+			 * An event that is fired for query events
 			 * @param type The type of query event
 			 * @param document The document this event was sent by
 			 * @param args The extra information for the event, if any
@@ -5232,8 +5332,9 @@ declare module 'azdata' {
 			 * queryStop: undefined
 			 * executionPlan: string (the plan itself)
 			 * visualize: ResultSetSummary (the result set to be visualized)
+			 * @param queryInfo The information about the query that triggered this event
 			 */
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
 		}
 
 		export interface QueryDocument {
@@ -5291,6 +5392,7 @@ declare module 'azdata' {
 		 */
 		export function getQueryDocument(fileUri: string): Thenable<QueryDocument>;
 
+		/* eslint-disable */
 		/**
 		 * Opens an untitled text document. The editor will prompt the user for a file
 		 * path when the document is to be saved. The `options` parameter allows to
@@ -5301,6 +5403,7 @@ declare module 'azdata' {
 		 * @return A promise that resolves to a {@link QueryDocument}.
 		 */
 		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
+		/* eslint-enable */
 	}
 
 	/**
@@ -5555,6 +5658,7 @@ declare module 'azdata' {
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 
+		/* eslint-disable */
 		/**
 		 * Show the given document in a notebook editor. A {@link vscode.ViewColumn} can be provided
 		 * to control where the editor is being shown. Might change the {@link nb.activeNotebookEditor}.
@@ -5574,6 +5678,7 @@ declare module 'azdata' {
 		 * @return A promise that resolves to a {@link NotebookEditor}.
 		 */
 		export function showNotebookDocument(uri: vscode.Uri, showOptions?: NotebookShowOptions): Thenable<NotebookEditor>;
+		/* eslint-enable */
 
 		export interface NotebookDocument {
 			/**

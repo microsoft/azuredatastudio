@@ -19,6 +19,7 @@ import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 new RestoreAction().registerTask();
 
@@ -29,7 +30,9 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem?.payload) {
 			const commandService = accessor.get(ICommandService);
-			return commandService.executeCommand(RestoreAction.ID, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			return commandService.executeCommand(RestoreAction.ID, payload);
 		}
 	}
 });
@@ -51,9 +54,11 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 const OE_RESTORE_COMMAND_ID = 'objectExplorer.restore';
 CommandsRegistry.registerCommand({
 	id: OE_RESTORE_COMMAND_ID,
-	handler: (accessor, args: ObjectExplorerActionsContext) => {
+	handler: async (accessor, args: ObjectExplorerActionsContext) => {
 		const commandService = accessor.get(ICommandService);
-		return commandService.executeCommand(RestoreAction.ID, args.connectionProfile);
+		const connectionService = accessor.get(IConnectionManagementService);
+		let profile = await connectionService.fixProfile(args.connectionProfile);
+		return commandService.executeCommand(RestoreAction.ID, profile);
 	}
 });
 
@@ -69,9 +74,11 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 const ExplorerRestoreActionID = 'explorer.restore';
-CommandsRegistry.registerCommand(ExplorerRestoreActionID, (accessor, context: ManageActionContext) => {
+CommandsRegistry.registerCommand(ExplorerRestoreActionID, async (accessor, context: ManageActionContext) => {
 	const commandService = accessor.get(ICommandService);
-	return commandService.executeCommand(RestoreAction.ID, context.profile);
+	const connectionService = accessor.get(IConnectionManagementService);
+	let profile = await connectionService.fixProfile(context.profile);
+	return commandService.executeCommand(RestoreAction.ID, profile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

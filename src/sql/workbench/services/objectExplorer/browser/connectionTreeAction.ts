@@ -179,7 +179,12 @@ export class AddServerAction extends Action {
 			saveProfile: true,
 			id: element.id!
 		} as Partial<IConnectionProfile>;
-		await this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
+		await this._connectionManagementService.showConnectionDialog(undefined, {
+			showDashboard: true,
+			saveTheConnection: true,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		}, connection);
 	}
 }
 

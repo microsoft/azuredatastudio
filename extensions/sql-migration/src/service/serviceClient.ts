@@ -78,13 +78,23 @@ export class ServiceClient {
 	}
 
 	public async downloadBinaries(context: vscode.ExtensionContext, rawConfig: Buffer): Promise<string> {
-		const config = JSON.parse(rawConfig.toString());
-		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
-		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
-		const serverdownloader = new ServerProvider(config);
-		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
-		return serverdownloader.getOrDownloadServer();
+		try {
+			const config = JSON.parse(rawConfig.toString());
+			config.installDirectory = path.join(context.extensionPath, config.installDirectory);
+			config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
+			config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
+			const serverdownloader = new ServerProvider(config);
+			serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
+			return serverdownloader.getOrDownloadServer();
+		}
+		catch (error) {
+			const errorStr = localize('downloadingServiceFailed', "Failed to download binaries for {0}. Use the following link to troubleshoot: {1}", constants.serviceName, "https://aka.ms/dms-migrations-troubleshooting#azure-data-studio-limitations");
+			const errorStrWithLink = localize('downloadingServiceFailedWithLinkMarkup', "Failed to download binaries for {0}. Use this [link to troubleshoot]({1}).", constants.serviceName, "https://aka.ms/dms-migrations-troubleshooting#azure-data-studio-limitations");
+			this.outputChannel.appendLine(errorStr);
+			void vscode.window.showErrorMessage(errorStrWithLink);
+			logError(TelemetryViews.SqlServerDashboard, errorStr, error);
+			throw error;
+		}
 	}
 
 	private createClientOptions(): ClientOptions {

@@ -13,6 +13,7 @@ import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { LoginMigrationStatusCodes } from '../constants/helper';
 import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
+import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -92,10 +93,13 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			};
 
 			this._progressLoader.loading = false;
+			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', 'Login Migrations Internal Server Error');
 		}
 
+		this._logMigrationResult();
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 		await this._filterTableList('');
+		this.wizard.doneButton.enabled = true;
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -307,6 +311,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				status = LoginMigrationStatusCodes.Succeeded;
 				title = constants.LOGIN_MIGRATION_STATUS_SUCCEEDED;
 				var didLoginFail = Object.keys(stateMachine._loginMigrationModel.loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
+
 				if (didLoginFail) {
 					status = LoginMigrationStatusCodes.Failed;
 					title = constants.LOGIN_MIGRATION_STATUS_FAILED;
@@ -339,60 +344,32 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		return this._migratingLoginsTable?.data?.length || 0;
 	}
 
-	private async _runLoginMigrations(): Promise<Boolean> {
-		this._progressLoader.loading = true;
+	private async _updateMigrationProgressDetails(message: string) {
+		await this._migrationProgressDetails.updateProperties({
+			'value': message
+		});
+	}
 
+	private async _hideMigrationProgressDetails() {
+		await this._migrationProgressDetails.updateProperties({
+			'CSSStyles': { 'display': 'none' },
+		});
+	}
+
+	private async _markMigrationStart() {
 		if (this.migrationStateModel._targetServerInstance) {
 			await this._migrationProgress.updateProperties({
 				'text': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel.GetTargetType(), this.migrationStateModel._targetServerInstance.name)
 			});
 		}
 
-		await this._migrationProgressDetails.updateProperties({
-			'value': constants.STARTING_LOGIN_MIGRATION
-		});
+		this._progressLoader.loading = true;
+		await this._updateMigrationProgressDetails(constants.STARTING_LOGIN_MIGRATION);
+		this._logMigrationStart();
+	}
 
-		var result = await this.migrationStateModel._loginMigrationModel.MigrateLogins(this.migrationStateModel);
-
-		if (!result) {
-			await this._migrationProgressDetails.updateProperties({
-				'value': constants.STARTING_LOGIN_MIGRATION_FAILED
-			});
-
-			return false;
-		}
-
-		await this._migrationProgressDetails.updateProperties({
-			'value': constants.ESTABLISHING_USER_MAPPINGS
-		});
-
-		result = await this.migrationStateModel._loginMigrationModel.EstablishUserMappings(this.migrationStateModel);
-
-		if (!result) {
-			await this._migrationProgressDetails.updateProperties({
-				'value': constants.ESTABLISHING_USER_MAPPINGS_FAILED
-			});
-
-			return false;
-		}
-
-		await this._migrationProgressDetails.updateProperties({
-			'value': constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS
-		});
-
-		result = await this.migrationStateModel._loginMigrationModel.MigrateServerRolesAndSetPermissions(this.migrationStateModel);
-
-		if (!result) {
-			await this._migrationProgressDetails.updateProperties({
-				'value': constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED
-			});
-
-			return false;
-		}
-
-		await this._migrationProgressDetails.updateProperties({
-			'CSSStyles': { 'display': 'none' },
-		});
+	private async _markMigrationSuccess() {
+		await this._hideMigrationProgressDetails();
 
 		if (this.migrationStateModel._targetServerInstance) {
 			await this._migrationProgress.updateProperties({
@@ -407,9 +384,35 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}
 
 		this._progressLoader.loading = false;
+	}
 
-		this.wizard.doneButton.enabled = true;
-		return result;
+	private async _runLoginMigrations(): Promise<Boolean> {
+		await this._markMigrationStart();
+		var result = await this.migrationStateModel._loginMigrationModel.MigrateLogins(this.migrationStateModel);
+
+		if (!result) {
+			await this._updateMigrationProgressDetails(constants.STARTING_LOGIN_MIGRATION_FAILED);
+			return false;
+		}
+
+		await this._updateMigrationProgressDetails(constants.ESTABLISHING_USER_MAPPINGS);
+		result = await this.migrationStateModel._loginMigrationModel.EstablishUserMappings(this.migrationStateModel);
+
+		if (!result) {
+			await this._updateMigrationProgressDetails(constants.ESTABLISHING_USER_MAPPINGS_FAILED);
+			return false;
+		}
+
+		await this._updateMigrationProgressDetails(constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS);
+		result = await this.migrationStateModel._loginMigrationModel.MigrateServerRolesAndSetPermissions(this.migrationStateModel);
+
+		if (!result) {
+			await this._updateMigrationProgressDetails(constants.MIGRATING_SERVER_ROLES_AND_SET_PERMISSIONS_FAILED);
+			return false;
+		}
+
+		await this._markMigrationSuccess();
+		return true;
 	}
 
 	private async _showLoginDetailsDialog(loginName: string): Promise<void> {
@@ -417,9 +420,39 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		const dialog = new MultiStepStatusDialog(
 			() => { });
 
-		const loginResults = this.migrationStateModel._loginMigrationModel.GetLoginMigrationResults(loginName);
+		const loginResults = this.migrationStateModel._loginMigrationModel.GetDisplayResults(loginName);
 		const isMigrationComplete = this.migrationStateModel._loginMigrationModel.isMigrationComplete;
 
 		await dialog.openDialog(constants.LOGIN_MIGRATIONS_LOGIN_STATUS_DETAILS_TITLE(loginName), loginResults, isMigrationComplete);
+	}
+
+	private _logMigrationStart(): void {
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationStatusPage,
+			TelemetryAction.LoginMigrationStarted,
+			{
+				...getTelemetryProps(this.migrationStateModel),
+				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
+			},
+			{
+				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length,
+			}
+		);
+	}
+
+	private _logMigrationResult(): void {
+		sendSqlMigrationActionEvent(
+			TelemetryViews.LoginMigrationStatusPage,
+			TelemetryAction.LoginMigrationCompleted,
+			{
+				...getTelemetryProps(this.migrationStateModel),
+				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
+				'numberLoginsFailingPerStep': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.errorCountMap)),
+				'durationPerStepTimestamp': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.durationPerStep)),
+				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
+				// AKMA TODO: add error code string count map
+			},
+			{}
+		);
 	}
 }

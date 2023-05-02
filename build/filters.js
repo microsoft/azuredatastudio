@@ -52,7 +52,6 @@ module.exports.unicodeFilter = [
 	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
-	'!extensions/vscode-custom-editor-tests/test-workspace/**',
 	'!extensions/**/dist/**',
 	'!extensions/**/out/**',
 	'!extensions/**/snippets/**',
@@ -93,7 +92,6 @@ module.exports.indentationFilter = [
 	'!extensions/markdown-math/notebook-out/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
-	'!extensions/vscode-custom-editor-tests/test-workspace/**',
 	'!build/monaco/**',
 	'!build/win32/**',
 
@@ -146,7 +144,6 @@ module.exports.indentationFilter = [
 	'!extensions/admin-tool-ext-win/license/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
-	'!extensions/azurehybridtoolkit/notebooks/**',
 	'!extensions/integration-tests/testData/**',
 	'!extensions/arc/src/controller/generated/**',
 	'!extensions/sql-database-projects/resources/templates/*.xml',
@@ -198,7 +195,6 @@ module.exports.copyrightFilter = [
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 
 	// {{SQL CARBON EDIT}} Except for stuff in our code that doesn't use our copyright
-	'!extensions/azurehybridtoolkit/notebooks/**',
 	'!extensions/azuremonitor/src/prompts/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/kusto/src/prompts/**',

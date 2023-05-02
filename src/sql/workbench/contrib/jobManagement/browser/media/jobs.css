@@ -30,6 +30,10 @@ notebooksview-component {
 	border-bottom: 3px solid #2b56f2;
 }
 
+.hc-light .job-heading-container {
+	border-bottom: 3px solid #6fc3df;
+}
+
 .jobview-grid {
 	height: calc(100% - 75px);
 	width: 100%;
@@ -67,6 +71,23 @@ notebooksview-component {
 	.ui-widget-content.slick-row
 	.slick-cell {
 	border: 1px solid #2b56f2;
+}
+
+.hc-light
+	#jobsDiv
+	jobsview-component
+	.jobview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell,
+.hc-light
+	#notebooksDiv
+	notebooksview-component
+	.jobnotebooksview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
+	border: 1px solid #6fc3df;
 }
 
 #jobsDiv
@@ -268,7 +289,8 @@ notebooksview-component {
 	margin-left: 20px;
 }
 
-.jobsview-icon {
+.jobsview-icon,
+.hc-light .jobsview-icon {
 	background-image: url("./job.svg");
 }
 
@@ -277,7 +299,8 @@ notebooksview-component {
 	background-image: url("./job_inverse.svg");
 }
 
-.notebooksview-icon {
+.notebooksview-icon,
+.hc-light .notebooksview-icon {
 	background-image: url("./notebook.svg");
 }
 
@@ -286,7 +309,8 @@ notebooksview-component {
 	background-image: url("./notebook_inverse.svg");
 }
 
-.alertsview-icon {
+.alertsview-icon,
+.hc-light .alertsview-icon {
 	background-image: url("./alert.svg");
 }
 
@@ -295,7 +319,8 @@ notebooksview-component {
 	background-image: url("./alert_inverse.svg");
 }
 
-.proxiesview-icon {
+.proxiesview-icon,
+.hc-light .proxiesview-icon {
 	background-image: url("./proxy.svg");
 }
 
@@ -304,7 +329,8 @@ notebooksview-component {
 	background-image: url("./proxy_inverse.svg");
 }
 
-.operatorsview-icon {
+.operatorsview-icon,
+.hc-light .operatorsview-icon {
 	background-image: url("./operator.svg");
 }
 
@@ -340,6 +366,14 @@ agentview-component
 	.slick-header-columns
 	.slick-resizable-handle {
 	border-left: 1px dotted #2b56f2;
+}
+
+.hc-light
+	.jobview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
+	border-left: 1px dotted #6fc3df;
 }
 
 .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
@@ -519,6 +553,57 @@ agentview-component
 	background: none !important;
 }
 
+.hc-light
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.hc-light
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.hc-light
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+.hc-light
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.hc-light
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.hc-light
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
+	background: #fff !important;
+}
+
 table.jobprevruns div.bar,
 table.jobprevruns div.bar0,
 table.jobprevruns div.bar1,
@@ -574,7 +659,8 @@ table.jobprevruns > tbody {
 	display: block;
 }
 
-.vs .action-label.codicon.refreshIcon {
+.vs .action-label.codicon.refreshIcon,
+.hc-light .action-label.codicon.refreshIcon {
 	background-image: url("refresh.svg");
 }
 
@@ -583,7 +669,8 @@ table.jobprevruns > tbody {
 	background-image: url("refresh_inverse.svg");
 }
 
-.vs .action-label.codicon.openNotebook {
+.vs .action-label.codicon.openNotebook,
+.hc-light .action-label.codicon.openNotebook {
 	background-image: url("open_notebook.svg");
 }
 

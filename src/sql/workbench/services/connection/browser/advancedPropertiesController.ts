@@ -56,6 +56,7 @@ export class AdvancedPropertiesController {
 			categoryValues: connectionOption.categoryValues,
 			isRequired: connectionOption.isRequired,
 			isArray: undefined,
+			onSelectionChange: connectionOption.onSelectionChange
 		};
 	}
 }

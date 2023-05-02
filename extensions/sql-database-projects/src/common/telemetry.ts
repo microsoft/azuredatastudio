@@ -34,9 +34,6 @@ export enum TelemetryActions {
 	build = 'build',
 	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
 	changePlatformType = 'changePlatformType',
-	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
-	startAddSqlBinding = 'startAddSqlBinding',
-	finishAddSqlBinding = 'finishAddSqlBinding',
 	createProjectFromDatabase = 'createProjectFromDatabase',
 	updateProjectFromDatabase = 'updateProjectFromDatabase',
 	publishToContainer = 'publishToContainer',
@@ -47,5 +44,7 @@ export enum TelemetryActions {
 	optionsChanged = 'optionsChanged',
 	profileLoaded = 'profileLoaded',
 	SchemaComparisonFinished = 'SchemaComparisonFinished',
-	SchemaComparisonStarted = 'SchemaComparisonStarted'
+	SchemaComparisonStarted = 'SchemaComparisonStarted',
+	rename = "rename",
+	move = "move"
 }

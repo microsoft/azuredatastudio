@@ -13,7 +13,8 @@ import * as styles from '../constants/styles';
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, LoginTableInfo } from '../api/sqlUtils';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
-import { LoginType } from '../models/loginMigrationModel';
+import { logError, TelemetryViews } from '../telemetry';
+
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -74,7 +75,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				return false;
 			}
 
-			if (this.selectedWindowsLogins() && !this.migrationStateModel._aadDomainName) {
+			if (this.migrationStateModel._loginMigrationModel.selectedWindowsLogins && !this.migrationStateModel._aadDomainName) {
 				this.wizard.message = {
 					text: constants.ENTER_AAD_DOMAIN_NAME,
 					level: azdata.window.MessageLevel.Error
@@ -365,6 +366,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				text: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE('source'),
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
+
+			logError(TelemetryViews.LoginMigrationWizard, 'CollectingSourceLoginsFailed', error);
 		}
 	}
 
@@ -396,6 +399,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				text: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE('target'),
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
+
+			logError(TelemetryViews.LoginMigrationWizard, 'CollectingTargetLoginsFailed', error);
 		}
 	}
 
@@ -471,8 +476,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			|| [];
 	}
 
-	private selectedWindowsLogins(): boolean {
-		return this.selectedLogins().some(logins => logins.loginType.toLocaleLowerCase() === LoginType.Windows_Login);
+	private async refreshAADInputBox() {
+		// Display AAD Domain Name input box only if windows logins selected, else disable
+		const selectedWindowsLogins = this.migrationStateModel._loginMigrationModel.selectedWindowsLogins;
+		await utils.updateControlDisplay(this._aadDomainNameContainer, selectedWindowsLogins);
+		await this._loginSelectorTable.updateProperty("height", selectedWindowsLogins ? 600 : 650);
 	}
 
 	private async updateValuesOnSelection() {
@@ -483,12 +491,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				this._loginSelectorTable.data?.length || 0)
 		});
 
-		// Display AAD Domain Name input box if windows logins selected, else disable
-		const hasSelectedWindowsLogins = this.selectedWindowsLogins()
-		await utils.updateControlDisplay(this._aadDomainNameContainer, hasSelectedWindowsLogins);
-		await this._loginSelectorTable.updateProperty("height", hasSelectedWindowsLogins ? 600 : 650);
-
 		this.migrationStateModel._loginMigrationModel.loginsForMigration = selectedLogins;
+		this.migrationStateModel._loginMigrationModel.loginsForMigration = selectedLogins;
+		await this.refreshAADInputBox();
 		this.updateNextButton();
 	}
 

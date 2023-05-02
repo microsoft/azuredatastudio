@@ -174,6 +174,14 @@
         <source xml:lang="en">Column encryption</source>
         <target state="translated">Crittografia di colonna</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.commandTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+        <target state="translated">Intervallo di tempo (in secondi) in cui attendere l'esecuzione di un comando prima di interrompere il tentativo e generare un errore</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.commandTimeout.displayName">
+        <source xml:lang="en">Command timeout</source>
+        <target state="translated">Timeout del comando</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
         <target state="translated">Numero di tentativi di ripristino della connessione</target>
@@ -222,9 +230,21 @@
         <source xml:lang="en">Current language</source>
         <target state="translated">Lingua corrente</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
+        <source xml:lang="en">Optional (False)</source>
+        <target state="translated">Facoltativo (Falso)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
+        <source xml:lang="en">Strict</source>
+        <target state="translated">Restrittivo</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
+        <source xml:lang="en">Mandatory (True)</source>
+        <target state="translated">Obbligatorio (Vero)</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">Se è true, SQL Server usa la crittografia SSL per tutti i dati scambiati tra il client e il server, se nel server è installato un certificato</target>
+        <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+        <target state="translated">Quando è 'Obbligatorio' o 'Restrittivo', SQL Server utilizza la crittografia SSL per tutti i dati inviati tra il client e il server se nel server è installato un certificato. Se impostato su 'Restrittivo', SQL Server utilizza TDS 8.0 per tutti i trasferimenti di dati tra il client e il server. 'Restrittivo' è supportato a partire da SQL Server 2022.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
@@ -269,6 +289,14 @@
       <trans-unit id="cms.connectionOptions.groupName.source">
         <source xml:lang="en">Source</source>
         <target state="translated">Origine</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
+        <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+        <target state="translated">Indica il nome host specificato nel certificato TLS che verrà utilizzato da SQL Server per convalidare il certificato del server. Se non specificato, il nome del server viene utilizzato per impostazione predefinita per la convalida del certificato.</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
+        <source xml:lang="en">Host name in certificate</source>
+        <target state="translated">Nome host nel certificato</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -367,8 +395,8 @@
         <target state="translated">Server</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Se è true (ed encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server</target>
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
+        <target state="translated">Se il valore è true (e encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server. Questa proprietà non è supportata con Encrypt=Strict.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>

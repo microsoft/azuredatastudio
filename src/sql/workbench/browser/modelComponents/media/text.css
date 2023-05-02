@@ -17,7 +17,7 @@ modelview-text div#textContainer {
 	margin-left: 5px;
 }
 
-.vs .modelview-text-tooltip {
+.vs .modelview-text-tooltip, .hc-light .modelview-text-tooltip {
 	background-image: url('info.svg')
 }
 
@@ -36,7 +36,7 @@ modelview-text div#textContainer {
 	margin-left: 14px;
 }
 
-.vs .modelview-text-tooltip .modelview-text-tooltip-content {
+.vs .modelview-text-tooltip .modelview-text-tooltip-content, .hc-light .modelview-text-tooltip .modelview-text-tooltip-content {
 	background-color: #f5f5f5;
 }
 

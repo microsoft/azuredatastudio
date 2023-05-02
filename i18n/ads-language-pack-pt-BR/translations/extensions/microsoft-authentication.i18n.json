@@ -9,6 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/AADHelper": {
+			"pasteCodePlaceholder": "Cole o código de autorização aqui...",
+			"pasteCodePrompt": "Forneça o código de autorização para concluir o fluxo de entrada.",
+			"pasteCodeTitle": "Autenticação da Microsoft",
 			"signOut": "Você foi desconectado porque houve uma falha na leitura das informações de autenticação armazenadas."
 		},
 		"package": {

@@ -9,12 +9,12 @@
  * @param promise The promise to verify was rejected
  * @param message The message to include in the error if the promise isn't rejected
  */
-export async function assertRejected(promise: Promise<any>, message: string): Promise<void> {
-	try {
-		await promise;
-	} catch {
-		return;
-	}
-	throw new Error(message);
-}
+// export async function assertRejected(promise: Promise<any>, message: string): Promise<void> {
+// 	try {
+// 		await promise;
+// 	} catch {
+// 		return;
+// 	}
+// 	throw new Error(message);
+// }
 

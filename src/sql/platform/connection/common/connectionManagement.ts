@@ -85,6 +85,17 @@ export const SERVICE_ID = 'connectionManagementService';
 
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
+export interface ConnectionElementMovedParams {
+	source: ConnectionProfile | ConnectionProfileGroup;
+	oldGroupId: string;
+	newGroupId: string;
+}
+
+export interface ConnectionProfileEditedParams {
+	profile: ConnectionProfile;
+	oldProfileId: string;
+}
+
 export interface IConnectionManagementService {
 	_serviceBrand: undefined;
 
@@ -95,6 +106,25 @@ export interface IConnectionManagementService {
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
+
+	// Event Emitters for async tree
+	/**
+	 * Connection Profile events.
+	 */
+	onConnectionProfileCreated: Event<ConnectionProfile>;
+	onConnectionProfileEdited: Event<ConnectionProfileEditedParams>;
+	onConnectionProfileDeleted: Event<ConnectionProfile>;
+	onConnectionProfileMoved: Event<ConnectionElementMovedParams>;
+	onConnectionProfileConnected: Event<ConnectionProfile>;
+	onConnectionProfileDisconnected: Event<ConnectionProfile>;
+	/**
+	 * Connection Profile Group events.
+	 */
+	onConnectionProfileGroupCreated: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupEdited: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupDeleted: Event<ConnectionProfileGroup>;
+	onConnectionProfileGroupMoved: Event<ConnectionElementMovedParams>;
+	// End of Event Emitters for async tree
 
 	// Properties
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
@@ -136,6 +166,12 @@ export interface IConnectionManagementService {
 	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile;
 
 	/**
+	 * Fixes treeItem payload to consider defaultAuthenticationType and any other user settings.
+	 * @param profile Connection profile as received from treeItem.
+	 */
+	fixProfile(profile?: azdata.IConnectionProfile): Promise<azdata.IConnectionProfile>;
+
+	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
@@ -152,6 +188,8 @@ export interface IConnectionManagementService {
 	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
+
+	getConnectionGroupById(id: string): ConnectionProfileGroup | undefined;
 
 	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
@@ -304,9 +342,9 @@ export interface IConnectionManagementService {
 	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 	/**
-	 * Serialize connection string with optional provider
+	 * Deserialize connection string using the specified provider
 	 */
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo>;
+	buildConnectionInfo(connectionString: string, provider: string): Promise<azdata.ConnectionInfo>;
 
 	providerRegistered(providerId: string): boolean;
 	/**
@@ -340,6 +378,14 @@ export interface IConnectionManagementService {
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
+
+	/**
+	 * Gets the formatted title of the connection profile for display.
+	 * @param profile The connection profile to change the password.
+	 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
+	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
+	 */
+	getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): string;
 }
 
 export enum RunQueryOnConnectionMode {

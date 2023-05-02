@@ -766,21 +766,22 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			.component();
 
 		this.disposables.push(
+			this._serviceContextButton.onDidClick(
+				async () => {
+					const dialog = new SelectMigrationServiceDialog(this.serviceContextChangedEvent);
+					await dialog.initialize();
+				}));
+
+		this.disposables.push(
 			this.serviceContextChangedEvent.event(
 				async (e) => {
 					if (e.connectionId === await getSourceConnectionId()) {
-						await this.updateServiceContext(this._serviceContextButton);
+						await this.updateServiceButtonContext(this._serviceContextButton);
 						await this.refresh();
 					}
 				}
 			));
-		await this.updateServiceContext(this._serviceContextButton);
-
-		this.disposables.push(
-			this._serviceContextButton.onDidClick(async () => {
-				const dialog = new SelectMigrationServiceDialog(this.serviceContextChangedEvent);
-				await dialog.initialize();
-			}));
+		await this.updateServiceButtonContext(this._serviceContextButton);
 
 		return this._serviceContextButton;
 	}

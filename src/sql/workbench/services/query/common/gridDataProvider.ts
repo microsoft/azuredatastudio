@@ -26,12 +26,6 @@ export interface IGridDataProvider {
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void>;
 
 	/**
-	 * Sends a copy request to copy table headers to the clipboard
-	 * @param selection The selection range to copy
-	 */
-	copyHeaders(selection: Slick.Range[]): Promise<void>;
-
-	/**
 	 * Gets the EOL terminator to use for this data type.
 	 */
 	getEolString(): string;
@@ -106,8 +100,11 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 	// Make sure all these tasks have executed
 	await Promise.all(actionedTasks);
 
-	headers = sortMapEntriesByColumnOrder(headers);
-	rows = sortMapEntriesByColumnOrder(rows);
+	const sortResults = (e1: [number, any], e2: [number, any]) => {
+		return e1[0] - e2[0];
+	};
+	headers = new Map([...headers].sort(sortResults));
+	rows = new Map([...rows].sort(sortResults));
 
 	let copyString = '';
 	if (includeHeaders) {
@@ -135,42 +132,6 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 	return copyString;
 }
 
-export function getTableHeaderString(provider: IGridDataProvider, selection: Slick.Range[]): string {
-	let headers: Map<number, string> = new Map(); // Maps a column index -> header
-
-	selection.forEach((range) => {
-		let startCol = range.fromCell;
-		let columnHeaders = provider.getColumnHeaders(range);
-		if (columnHeaders !== undefined) {
-			let idx = 0;
-			for (let header of columnHeaders) {
-				headers.set(startCol + idx, header);
-				idx++;
-			}
-		}
-	});
-
-	headers = sortMapEntriesByColumnOrder(headers)
-
-	const copyString = Array.from(headers.values())
-		.map(colHeader => colHeader ? colHeader : '')
-		.join('\t');
-
-	return copyString;
-}
-
-/**
- * Ensures that table entries in the map appear in column order instead of the order that they were selected.
- * @param map Contains the entries selected in a table
- * @returns Sorted map with entries appearing in column order.
- */
-function sortMapEntriesByColumnOrder(map: Map<number, any>): Map<number, any> {
-	const leftToRight = (e1: [number, any], e2: [number, any]) => {
-		return e1[0] - e2[0];
-	};
-
-	return new Map([...map].sort(leftToRight));
-}
 
 function removeNewLines(inputString: string): string {
 	// This regex removes all newlines in all OS types

@@ -310,6 +310,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectFileTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Project file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Файл проекта]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectLocationPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to create project]]></Val>
@@ -351,15 +360,6 @@
           <Val><![CDATA[The selected project location '{0}' does not exist or is not a directory.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Выбранное расположение проекта "{0}" не существует или не является каталогом.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectsFailedToLoad" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Some projects failed to load. To view more details, [open the developer console]5D;(command:workbench.action.toggleDevTools)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось загрузить некоторые проекты. Чтобы просмотреть дополнительные сведения, [откройте консоль разработчика]5D;(command:workbench.action.toggleDevTools)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -559,6 +559,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.projectFailedToLoad" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Project '{0}' failed to load: {1}  To view more details, [open the developer console]5D;(command:workbench.action.toggleDevTools).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось загрузить проект "{0}": {1}. Чтобы просмотреть дополнительные сведения, [откройте консоль разработчика]5D;(command:workbench.action.toggleDevTools)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.projectNameNull" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project name is null]]></Val>
@@ -597,10 +606,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.trailingWhitespaceErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[File name cannot end with a whitespace]]></Val>
+          <Val><![CDATA[File name cannot start or end with whitespace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя не может заканчиваться пробелом]]></Val>
+            <Val><![CDATA[Имя файла не может начинаться с пробела или заканчиваться им.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[File name cannot end with a whitespace]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

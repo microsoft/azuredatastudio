@@ -10,7 +10,98 @@
 			"args": [
 				"hygiene"
 			]
-		},	
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Git Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"/tmp/my4g9l",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/git",
+				"--extensionTestsPath=${workspaceFolder}/extensions/git/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/extensions/git/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 6
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Github Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/github/testWorkspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/github",
+				"--extensionTestsPath=${workspaceFolder}/extensions/github/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/extensions/github/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 6
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code API Tests (single folder)",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				// "${workspaceFolder}", // Uncomment for running out of sources.
+				"${workspaceFolder}/extensions/vscode-api-tests/testWorkspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/singlefolder-tests",
+				"--disable-extensions"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 3
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code API Tests (workspace)",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/vscode-api-tests/testworkspace.code-workspace",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/workspace-tests"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests",
+				"order": 4
+			}
+		},
+		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "VS Code Tokenizer Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/vscode-colorize-tests/test",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-colorize-tests",
+				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-colorize-tests/out"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "5_tests"
+			}
+		},
 		{
 			"type": "node",
 			"request": "launch",
@@ -19,8 +110,18 @@
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
 			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
 			"runtimeArgs": [
-				"--no-cached-data"
+				"--inspect=5875",
+				"--no-cached-data",
+				"--crash-reporter-directory=${workspaceFolder}/.profile-oss/crashes",
+				// for general runtime freezes: https://github.com/microsoft/vscode/issues/127861#issuecomment-904144910
+				"--disable-features=CalculateNativeWinOcclusion",
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -53,6 +154,9 @@
 			"runtimeArgs": [
 				"--inspect=5875",
 				"--no-cached-data",
+				"--crash-reporter-directory=${workspaceFolder}/.profile-oss/crashes",
+				// for general runtime freezes: https://github.com/microsoft/vscode/issues/127861#issuecomment-904144910
+				"--disable-features=CalculateNativeWinOcclusion",
 			],
 			"webRoot": "${workspaceFolder}",
 			"cascadeTerminateToConfigurations": [
@@ -109,6 +213,18 @@
 			}
 		},
 		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to CLI Process",
+			"port": 5874,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "2_attach"
+			}
+		},
+		{
 			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to Renderer",
@@ -127,6 +243,49 @@
 				"group": "2_attach",
 				"order": 2
 			}
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Search Process",
+			"port": 5876,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "2_attach"
+			}
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Pty Host Process",
+			"port": 5877,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "2_attach"
+			}
+		},
+		{
+			/* Added for "VS Code Selfhost Test Provider" extension support */
+			"type": "pwa-chrome",
+			"request": "attach",
+			"name": "Attach to VS Code",
+			"browserAttachLocation": "workspace",
+			"port": 9222,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "2_attach",
+				"hidden": true
+			},
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"perScriptSourcemaps": "yes"
 		},
 		{
 			"type": "node",

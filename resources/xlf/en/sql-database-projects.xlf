@@ -389,7 +389,7 @@
       <source xml:lang="en">Enter new SQLCMD Variable name</source>
     </trans-unit>
     <trans-unit id="enterNewValueForVar">
-      <source xml:lang="en">Enter new value for variable '{0}'</source>
+      <source xml:lang="en">Enter new default value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
       <source xml:lang="en">Enter {0} admin password</source>
@@ -406,6 +406,9 @@
     <trans-unit id="equalComparison">
       <source xml:lang="en">The project is already up to date with the database.</source>
     </trans-unit>
+    <trans-unit id="errorAddingDatabaseReference">
+      <source xml:lang="en">Error adding database reference to {0}. Error: {1}</source>
+    </trans-unit>
     <trans-unit id="errorDownloading">
       <source xml:lang="en">Error downloading {0}. Error: {1}</source>
     </trans-unit>
@@ -418,8 +421,17 @@
     <trans-unit id="errorMovingFile">
       <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
     </trans-unit>
+    <trans-unit id="errorNotSupportedInVsCode">
+      <source xml:lang="en">Error: {0} is not currently supported in SQL Database Projects for VS Code.</source>
+    </trans-unit>
+    <trans-unit id="errorPrefix">
+      <source xml:lang="en">Error: {0}</source>
+    </trans-unit>
     <trans-unit id="errorReadingProjectGuid">
-      <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+      <source xml:lang="en">Error trying to read {0} of project '{1}'. {2}</source>
+    </trans-unit>
+    <trans-unit id="errorRenamingFile">
+      <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
     </trans-unit>
     <trans-unit id="errorRetrievingBuildFiles">
       <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
@@ -440,6 +452,9 @@
     </trans-unit>
     <trans-unit id="excludeAction">
       <source xml:lang="en">Exclude</source>
+    </trans-unit>
+    <trans-unit id="excludeFolderNotSupported">
+      <source xml:lang="en">Excluding folders is not yet supported</source>
     </trans-unit>
     <trans-unit id="excludeObjectTypes">
       <source xml:lang="en">Exclude Object Types</source>
@@ -633,8 +648,11 @@
     <trans-unit id="noneElements">
       <source xml:lang="en">None Elements</source>
     </trans-unit>
-    <trans-unit id="notValidVariableName">
-      <source xml:lang="en">The variable name '{0}' is not valid.</source>
+    <trans-unit id="nupkgNamePlaceholder">
+      <source xml:lang="en">NuGet package name</source>
+    </trans-unit>
+    <trans-unit id="nupkgText">
+      <source xml:lang="en">Published data-tier application (.nupkg)</source>
     </trans-unit>
     <trans-unit id="objectType">
       <source xml:lang="en">Object Type</source>
@@ -642,8 +660,8 @@
     <trans-unit id="okString">
       <source xml:lang="en">Ok</source>
     </trans-unit>
-    <trans-unit id="onlyMoveSqlFilesSupported">
-      <source xml:lang="en">Only moving .sql files is supported</source>
+    <trans-unit id="onlyMoveFilesFoldersSupported">
+      <source xml:lang="en">Only moving files and folders are supported</source>
     </trans-unit>
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
@@ -714,6 +732,9 @@
     <trans-unit id="projectNamePlaceholderText">
       <source xml:lang="en">Enter project name</source>
     </trans-unit>
+    <trans-unit id="projectNeedsUpdatingForCrossPlat">
+      <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'.</source>
+    </trans-unit>
     <trans-unit id="projectReferenceElement">
       <source xml:lang="en">Project reference</source>
     </trans-unit>
@@ -783,9 +804,6 @@
     <trans-unit id="reloadProject">
       <source xml:lang="en">Would you like to reload your database project?</source>
     </trans-unit>
-    <trans-unit id="reloadValuesFromProjectButtonTitle">
-      <source xml:lang="en">Reload values from project</source>
-    </trans-unit>
     <trans-unit id="reset">
       <source xml:lang="en">Reset</source>
     </trans-unit>
@@ -810,6 +828,9 @@
     <trans-unit id="retryWaitMessage">
       <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
     </trans-unit>
+    <trans-unit id="revertSqlCmdVarsButtonTitle">
+      <source xml:lang="en">Revert values to project defaults</source>
+    </trans-unit>
     <trans-unit id="runViaNpx">
       <source xml:lang="en">Run via npx</source>
     </trans-unit>
@@ -818,6 +839,12 @@
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
+    </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfileAsButtonText">
+      <source xml:lang="en">Save Profile as...</source>
     </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
@@ -945,6 +972,12 @@
     <trans-unit id="sqlcmdVariableAlreadyExists">
       <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
     </trans-unit>
+    <trans-unit id="sqlcmdVariableNameCannotBeWhitespace">
+      <source xml:lang="en">SQLCMD variable name '{0}' cannot contain whitespace</source>
+    </trans-unit>
+    <trans-unit id="sqlcmdVariableNameCannotContainIllegalChars">
+      <source xml:lang="en">SQLCMD variable name '{0}' cannot contain any of the following characters: {1}</source>
+    </trans-unit>
     <trans-unit id="sqlcmdVariablesNodeName">
       <source xml:lang="en">SQLCMD Variables</source>
     </trans-unit>
@@ -990,6 +1023,12 @@
     <trans-unit id="unexpectedProjectContext">
       <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
     </trans-unit>
+    <trans-unit id="unhandledDeleteType">
+      <source xml:lang="en">Unhandled item type during delete: '{0}</source>
+    </trans-unit>
+    <trans-unit id="unhandledMoveNode">
+      <source xml:lang="en">Unhandled node type for move</source>
+    </trans-unit>
     <trans-unit id="unknownDataSourceType">
       <source xml:lang="en">Unknown data source type: </source>
     </trans-unit>
@@ -1005,8 +1044,11 @@
     <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
       <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
-    <trans-unit id="updateProjectForRoundTrip">
-      <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    <trans-unit id="updateProjectForCrossPlatform">
+      <source xml:lang="en">{0} If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="updateProjectForCrossPlatformShort">
+      <source xml:lang="en">Update {0} for cross-platform support?</source>
     </trans-unit>
     <trans-unit id="updateProjectFromDatabaseDialogName">
       <source xml:lang="en">Update project from database</source>
@@ -1031,6 +1073,15 @@
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="versionMustNotBeEmpty">
+      <source xml:lang="en">Version must not be empty</source>
+    </trans-unit>
+    <trans-unit id="versionPlaceholder">
+      <source xml:lang="en">NuGet package version</source>
     </trans-unit>
     <trans-unit id="viewFriendlyName">
       <source xml:lang="en">View</source>

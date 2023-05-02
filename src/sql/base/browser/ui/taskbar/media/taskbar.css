@@ -108,7 +108,8 @@
 	box-sizing: border-box;
 }
 
-.hc-black .carbon-taskbar .overflow {
+.hc-black .carbon-taskbar .overflow,
+.hc-light .carbon-taskbar .overflow {
 	box-shadow: none;
 }
 
@@ -141,4 +142,16 @@
 	height: 1px;
 	width: 100%;
 	margin-left: 0;
+}
+
+.carbon-taskbar .monaco-action-bar .action-item .codicon.action-label[class*='codicon-'] {
+	font-size: 11px;
+	padding-left: 0px;
+	font-family: inherit;
+}
+
+.carbon-taskbar .monaco-action-bar .action-item .codicon.action-label[class*='codicon-']:before {
+	font-size: 16px;
+	font-family: 'codicon';
+	padding-right: 2px;
 }

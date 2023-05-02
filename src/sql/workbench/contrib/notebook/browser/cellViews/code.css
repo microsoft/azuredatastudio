@@ -44,7 +44,8 @@ code-component .toolbar .carbon-taskbar.monaco-toolbar .monaco-action-bar .codic
 	background-position: center;
 }
 
-.notebook-cell:not(.active):hover code-component .toolbarIconRun {
+.notebook-cell:not(.active):hover code-component .toolbarIconRun,
+.hc-light .notebook-cell:not(.active):hover code-component .toolbarIconRun {
 	background-image: url('./media/execute_cell_grey.svg');
 }
 .vs-dark .notebook-cell:not(.active):hover code-component .toolbarIconRun {

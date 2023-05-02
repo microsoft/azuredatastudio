@@ -2,8 +2,8 @@
 	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/tools/ssmsmin/{#version#}/{#fileName#}",
 	"version": "16.0.19061.0",
 	"downloadFileNames": {
-		"Windows_64": "SsmsMin-16.0.19061.0-win-x64.zip",
-		"Windows_86": "SsmsMin-16.0.19061.0-win-x86.zip"
+		"Windows_86": "SsmsMin-16.0.19061.0-win-x86.zip",
+		"Windows": "SsmsMin-16.0.19061.0-win-x64.zip"
 	},
 	"installDirectory": "ssmsmin/{#platform#}/{#version#}",
 	"executableFiles": [

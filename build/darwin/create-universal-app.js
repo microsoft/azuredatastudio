@@ -1,8 +1,8 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode_universal_bundler_1 = require("vscode-universal-bundler");
 const cross_spawn_promise_1 = require("@malept/cross-spawn-promise");
@@ -28,17 +28,16 @@ async function main() {
     const outAppPath = path.join(buildDir, `azuredatastudio-darwin-${arch}`, appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
     const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
     // {{SQL CARBON EDIT}}
-    // Current STS arm64 builds doesn't work on osx-arm64, we need to use the x64 version of STS on osx-arm64 until the issue is fixed.
-    // Tracked by: https://github.com/microsoft/azuredatastudio/issues/20775
-    // makeUniversalApp function will complain if the x64 ADS and arm64 ADS have the same STS binaries, to workaround the issue, we need
-    // to delete STS from both of them and then copy it to the universal app.
+    // STS binaries for x64 and arm64 have different file count and cannot be combined
+    // Remove them from the package before the makeUniversalApp step and copy them to the universal package after it.
     const stsPath = '/Contents/Resources/app/extensions/mssql/sqltoolsservice';
     const tempSTSDir = path.join(buildDir, 'sqltoolsservice');
     const x64STSDir = path.join(x64AppPath, stsPath);
     const arm64STSDir = path.join(arm64AppPath, stsPath);
     const targetSTSDirs = [x64STSDir, arm64STSDir];
-    // backup the x64 STS to a temporary directory, later it will be copied to the universal app directory.
+    // backup the STS folders to a temporary directory, later they will be copied to the universal app directory.
     await fs.copy(x64STSDir, tempSTSDir);
+    await fs.copy(arm64STSDir, tempSTSDir);
     // delete STS directories from both x64 ADS and arm64 ADS.
     console.debug(`Removing SqlToolsService folders.`);
     targetSTSDirs.forEach(async (dir) => {
@@ -72,7 +71,7 @@ async function main() {
         outAppPath,
         force: true
     });
-    let productJson = await fs.readJson(productJsonPath);
+    const productJson = await fs.readJson(productJsonPath);
     Object.assign(productJson, {
         darwinUniversalAssetId: 'darwin-universal'
     });
@@ -89,7 +88,8 @@ async function main() {
     }
     // {{SQL CARBON EDIT}}
     console.debug(`Copying SqlToolsService to the universal app folder.`);
-    await fs.copy(tempSTSDir, path.join(outAppPath, stsPath), { overwrite: true });
+    await fs.copy(path.join(tempSTSDir, 'OSX'), path.join(outAppPath, stsPath, 'OSX'), { overwrite: true });
+    await fs.copy(path.join(tempSTSDir, 'OSX_ARM64'), path.join(outAppPath, stsPath, 'OSX_ARM64'), { overwrite: true });
 }
 if (require.main === module) {
     main().catch(err => {

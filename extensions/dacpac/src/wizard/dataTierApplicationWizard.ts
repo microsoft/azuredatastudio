@@ -493,7 +493,7 @@ export class DataTierApplicationWizard {
 				.withAdditionalMeasurements(additionalMeasurements)
 				.send();
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
+			TelemetryReporter.createErrorEvent2(TelemetryViews.DataTierApplicationWizard, telemetryAction)
 				.withAdditionalProperties(additionalProps)
 				.withAdditionalMeasurements(additionalMeasurements)
 				.send();

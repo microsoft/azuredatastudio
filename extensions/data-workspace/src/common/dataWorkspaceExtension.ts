@@ -59,7 +59,7 @@ export class DataWorkspaceExtension implements IExtension {
 		return isValidBasename(name);
 	}
 
-	isValidBasenameErrorMessage(name?: string): string {
+	isValidBasenameErrorMessage(name?: string): string | undefined {
 		return isValidBasenameErrorMessage(name);
 	}
 

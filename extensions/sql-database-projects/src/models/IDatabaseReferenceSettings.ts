@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Uri } from 'vscode';
-import { SystemDatabase } from './projectEntry';
+import { SystemDatabase } from '../common/typeHelper';
 
 export interface IDatabaseReferenceSettings {
-	databaseName?: string;
+	databaseVariableLiteralValue?: string;
 	suppressMissingDependenciesErrors: boolean;
 }
 
@@ -15,18 +15,24 @@ export interface ISystemDatabaseReferenceSettings extends IDatabaseReferenceSett
 	systemDb: SystemDatabase;
 }
 
-export interface IDacpacReferenceSettings extends IDatabaseReferenceSettings {
-	dacpacFileLocation: Uri;
+export interface IUserDatabaseReferenceSettings extends IDatabaseReferenceSettings {
+	databaseName?: string;
 	databaseVariable?: string;
 	serverName?: string;
 	serverVariable?: string;
 }
 
-export interface IProjectReferenceSettings extends IDatabaseReferenceSettings {
+export interface IDacpacReferenceSettings extends IUserDatabaseReferenceSettings {
+	dacpacFileLocation: Uri;
+}
+
+export interface IProjectReferenceSettings extends IUserDatabaseReferenceSettings {
 	projectRelativePath: Uri | undefined;
 	projectName: string;
 	projectGuid: string;
-	databaseVariable?: string;
-	serverName?: string;
-	serverVariable?: string;
+}
+
+export interface INugetPackageReferenceSettings extends IUserDatabaseReferenceSettings {
+	packageName: string;
+	packageVersion: string;
 }

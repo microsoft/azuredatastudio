@@ -19,8 +19,9 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { URI } from 'vs/base/common/uri';
+import * as perf from 'vs/base/common/performance';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { IGridDataProvider, getResultsString, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -242,6 +243,9 @@ export default class QueryRunner extends Disposable {
 	public handleQueryComplete(batchSummaries?: CompleteBatchSummary[]): void {
 		// this also isn't exact but its the best we can do
 		this._queryEndTime = new Date();
+
+		perf.mark(`sql/query/${this.uri}/handleQueryComplete`);
+		this.logPerfMarks();
 
 		// Store the batch sets we got back as a source of "truth"
 		this._isExecuting = false;
@@ -513,6 +517,25 @@ export default class QueryRunner extends Disposable {
 		};
 		this._onVisualize.fire(result);
 	}
+
+	private logPerfMarks(): void {
+		let marks = perf.getMarks().filter(mark => mark.name.startsWith(`sql/query/${this.uri}`));
+		// One query editor can have one set of marks for each query gets executed,
+		// we only log the latest set of marks for the latest query.
+		let reverseIdx = marks.slice().reverse().findIndex(m => m.name.startsWith(`sql/query/${this.uri}/runQuery`));
+		marks = marks.slice(-(reverseIdx + 1));
+		let head = `Name\tTimestamp\tDelta\tTotal\n`;
+		let traceMsg = '';
+		let lastStartTime = -1;
+		let total = 0;
+		for (const { name, startTime } of marks) {
+			let delta = lastStartTime !== -1 ? startTime - lastStartTime : 0;
+			total += delta;
+			traceMsg += `${name}\t${startTime}\t${delta}\t${total}\n`;
+			lastStartTime = startTime;
+		}
+		this.logService.debug(`Traces for sql/query/${this.uri}:\n${head}${traceMsg}`);
+	}
 }
 
 export class QueryGridDataProvider implements IGridDataProvider {
@@ -541,16 +564,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			const results = await getResultsString(this, selection, includeHeaders, tableView);
 			await this._clipboardService.writeText(results);
 		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
-		}
-	}
-
-	async copyHeaders(selection: Slick.Range[]): Promise<void> {
-		try {
-			const results = getTableHeaderString(this, selection);
-			await this._clipboardService.writeText(results);
-		} catch (error) {
-			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
 		}
 	}
 

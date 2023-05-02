@@ -9,22 +9,6 @@ import * as vscode from 'vscode';
 
 declare module 'azdata' {
 
-	export namespace env {
-		/**
-		 * Well-known app quality values
-		 */
-		export enum AppQuality {
-			stable = 'stable',
-			insider = 'insider',
-			dev = 'dev'
-		}
-
-		/**
-		 * The version of Azure Data Studio this is currently running as - such as `stable`, or `insider`
-		 */
-		export const quality: AppQuality | string | undefined;
-	}
-
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
@@ -423,26 +407,30 @@ declare module 'azdata' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
-		/**
-		 * The type of authentication to use when connecting
-		 */
-		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
 	}
 
-	export interface PromptFailedResult {
+	export interface PromptFailedResult extends ProviderError { }
+
+	export interface ProviderError {
 		/**
-		 * Error code used for non-user cancelled sign in errors
+		 * Error name
+		 */
+		name?: string;
+
+		/**
+		 * Error code
 		 */
 		errorCode?: string;
 
 		/**
-		 * Error message used for non-user cancelled sign in errors
+		 * Error message
 		 */
 		errorMessage?: string;
 	}
+
 
 	export namespace diagnostics {
 		/**
@@ -513,35 +501,6 @@ declare module 'azdata' {
 	}
 
 	export namespace connection {
-		/**
-		 * Well-known Authentication types commonly supported by connection providers.
-		 */
-		export enum AuthenticationType {
-			/**
-			 * Username and password
-			 */
-			SqlLogin = 'SqlLogin',
-			/**
-			 * Windows Authentication
-			 */
-			Integrated = 'Integrated',
-			/**
-			 * Azure Active Directory - Universal with MFA support
-			 */
-			AzureMFA = 'AzureMFA',
-			/**
-			 * Azure Active Directory - Password
-			 */
-			AzureMFAAndUser = 'AzureMFAAndUser',
-			/**
-			 * Datacenter Security Token Service Authentication
-			 */
-			DSTSAuth = 'dstsAuth',
-			/**
-			 * No authentication required
-			 */
-			None = 'None'
-		}
 
 		/**
 		 * Opens the change password dialog.
@@ -549,6 +508,14 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the formatted title of the connection profile for display
+		 * @param profile The connection profile we want to get the full display info for (without non default options).
+		 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
+		 * @returns The title formatted with connection name in front, server info in the middle, with non default options at the end.
+		 */
+		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): Thenable<string>;
 	}
 
 	/*
@@ -564,6 +531,11 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 
 		/**
+		 * Used to define placeholder text
+		 */
+		placeholder?: string;
+
+		/**
 		 * When set to true, the respective connection option will be rendered on the main connection dialog
 		 * and not the Advanced Options window.
 		 */
@@ -575,6 +547,17 @@ declare module 'azdata' {
 		onSelectionChange?: SelectionChangeEvent[];
 	}
 
+	export interface ServiceOption {
+		/**
+		 * Used to define placeholder text
+		 */
+		placeholder?: string;
+
+		/**
+		 * Used to define list of values based on which another option is rendered visible/hidden.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
 	/**
 	 * This change event defines actions
 	 */
@@ -600,6 +583,13 @@ declare module 'azdata' {
 		 * Action to be taken, Supported values: 'show', 'hide'.
 		 */
 		action: string;
+
+		/**
+		 * Whether or not the option should be set to required when visible. Defaults to false.
+		 * NOTE: Since this is dynamically defined, option values are not updated on 'show' and validation is not performed.
+		 * When set to true, providers must handle property validation.
+		 */
+		required?: boolean;
 	}
 
 	// Object Explorer interfaces  --------------------------------
@@ -615,6 +605,11 @@ declare module 'azdata' {
 		 * Authentication token for the current session.
 		 */
 		securityToken?: accounts.AccountSecurityToken | undefined;
+
+		/**
+		 * Filters to apply to the child nodes being returned
+		 */
+		filters?: NodeFilter[];
 	}
 	// End Object Explorer interfaces  ----------------------------
 
@@ -689,13 +684,13 @@ declare module 'azdata' {
 
 		/**
 		 * Enters the workspace with the provided path
-		 * @param workspacefile
+		 * @param workspaceFile
 		 */
 		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 
 		/**
 		 * Saves and enters the workspace with the provided path
-		 * @param workspacefile
+		 * @param workspaceFile
 		 */
 		export function saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	}
@@ -705,13 +700,6 @@ declare module 'azdata' {
 		 * Specifies whether to use headerFilter plugin
 		 */
 		headerFilter?: boolean,
-	}
-
-	export interface TableComponent {
-		/**
-		 * Append data to an existing table data.
-		 */
-		appendData(data: any[][]): Thenable<void>;
 	}
 
 	export interface ListViewOption {
@@ -865,7 +853,7 @@ declare module 'azdata' {
 		 * Open a table designer window.
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
-		 * @param telemetryInfo: Optional Key-value pair containing any extra information that needs to be sent via telemetry
+		 * @param telemetryInfo Optional Key-value pair containing any extra information that needs to be sent via telemetry
 		 */
 		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
 
@@ -1790,69 +1778,14 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: string;
-	}
-
-	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
-		/**
-		 * Sets the initial set of properties for the container being created
-		 * @param properties The properties to apply to the container
-		 */
-		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+		ariaLive?: AriaLiveValue
 	}
 
 	export interface ContainerProperties extends ComponentProperties {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: string;
-	}
-	export namespace queryeditor {
-
-		export interface QueryMessage {
-			/**
-			 * The message string
-			 */
-			message: string;
-			/**
-			 * Whether this message is an error message or not
-			 */
-			isError: boolean;
-			/**
-			 * The timestamp for when this message was sent
-			 */
-			time?: string;
-		}
-
-		/**
-		 * Information about a query that was executed
-		 */
-		export interface QueryInfo {
-			/**
-			 * Any messages that have been received from the query provider
-			 */
-			messages: QueryMessage[];
-			/**
-			 * The ranges for each batch that has executed so far
-			 */
-			batchRanges: vscode.Range[];
-		}
-
-		export interface QueryEventListener {
-			/**
-			 * An event that is fired for query events
-			 * @param type The type of query event
-			 * @param document The document this event was sent by
-			 * @param args The extra information for the event, if any
-			 * The args sent depend on the type of event :
-			 * queryStart: undefined
-			 * queryStop: undefined
-			 * executionPlan: string (the plan itself)
-			 * visualize: ResultSetSummary (the result set to be visualized)
-			 * @param queryInfo The information about the query that triggered this event
-			 */
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
-		}
+		ariaLive?: AriaLiveValue
 	}
 
 	export interface NodeInfo {
@@ -1861,6 +1794,77 @@ declare module 'azdata' {
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
 		objectType?: string;
+		/*
+		 * The path of the parent node.
+		 */
+		parentNodePath: string;
+		/**
+		 * Filterable properties that this node supports
+		 */
+		filterableProperties?: NodeFilterProperty[];
+	}
+
+	export interface NodeFilterProperty {
+		/**
+		 * The name of the filter property displayed to the user
+		 */
+		displayName: string;
+		/**
+		 * The type of the filter property
+		 */
+		type: NodeFilterPropertyDataType;
+		/**
+		 * The description of the filter property
+		 */
+		description: string;
+	}
+
+	/**
+	 * NodeFilterChoiceProperty is used to define the choices for the filter property if the type is choice
+	 */
+	export interface NodeFilterChoiceProperty extends NodeFilterProperty {
+		/**
+		 * The list of choices for the filter property if the type is choice
+		 */
+		choices: string[];
+	}
+
+	export interface NodeFilter {
+		/**
+		 * The name of the filter property
+		 */
+		name: string;
+		/**
+		 * The operator of the filter property
+		 */
+		operator: NodeFilterOperator;
+		/**
+		 * The applied values of the filter property
+		 */
+		value: string | string[] | number | boolean | undefined;
+	}
+
+	export enum NodeFilterPropertyDataType {
+		String = 0,
+		Number = 1,
+		Boolean = 2,
+		Date = 3,
+		Choice = 4
+	}
+
+	export enum NodeFilterOperator {
+		Equals = 0,
+		NotEquals = 1,
+		LessThan = 2,
+		LessThanOrEquals = 3,
+		GreaterThan = 4,
+		GreaterThanOrEquals = 5,
+		Between = 6,
+		NotBetween = 7,
+		Contains = 8,
+		NotContains = 9,
+		IsNull = 10,
+		IsNotNull = 11
 	}
 
 	export namespace window {

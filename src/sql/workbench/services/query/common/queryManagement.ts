@@ -7,6 +7,7 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import * as perf from 'vs/base/common/performance';
 import * as azdata from 'azdata';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -234,6 +235,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
 		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQuery, ownerUri, runOptions);
+		perf.mark(`sql/query/${ownerUri}/runQuery`);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQuery(ownerUri, rangeToSelectionData(range), runOptions);
 		});
@@ -241,6 +243,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
 		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQueryStatement, ownerUri);
+		perf.mark(`sql/query/${ownerUri}/runQueryStatement`);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryStatement(ownerUri, line - 1, column - 1); // we are taking in a vscode IRange which is 1 indexed, but our api expected a 0 index
 		});
@@ -248,6 +251,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public runQueryString(ownerUri: string, queryString: string): Promise<void> {
 		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQueryString, ownerUri);
+		perf.mark(`sql/query/${ownerUri}/runQueryString`);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryString(ownerUri, queryString);
 		});

@@ -24,6 +24,9 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -170,12 +173,25 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _serverTreeView?: IServerTreeView;
 
 	private _onSelectionOrFocusChange: Emitter<void>;
+	private _onNodeExpandedError: Emitter<NodeExpandInfoWithProviderId> = new Emitter<NodeExpandInfoWithProviderId>();
+
+	private _onCreateNewSession: Emitter<azdata.ObjectExplorerSessionResponse> = new Emitter<azdata.ObjectExplorerSessionResponse>();
+
+	private _connectionsWaitingForSession: Map<string, boolean> = new Map<string, boolean>();
+
+	// Cache of tree nodes for each connection by session ids
+	private _treeNodeCache: Map<string, Map<string, TreeNode>> = new Map<string, Map<string, TreeNode>>();
+
+	// Cache of node filters for each connection by session ids
+	private _nodeFilterCache: Map<string, Map<string, azdata.NodeFilter[]>> = new Map<string, Map<string, azdata.NodeFilter[]>>();
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private logService: ILogService
+		@ILogService private logService: ILogService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -223,6 +239,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (!session) {
 				return;
 			}
+			this._treeNodeCache.delete(session.sessionId);
+			this._nodeFilterCache.delete(session.sessionId);
 			await this.closeSession(connection.providerName, session);
 			delete this._activeObjectExplorerNodes[connectionUri];
 			delete this._sessions[session.sessionId!];
@@ -248,18 +266,20 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			} else {
 				this.logService.warn(`Cannot find node status for session: ${expandResponse.sessionId} and node path: ${expandResponse.nodePath}`);
+				this._onNodeExpandedError.fire(expandResponse);
 			}
 		} else {
 			this.logService.warn(`Cannot find session ${expandResponse.sessionId} for node path: ${expandResponse.nodePath}`);
+			this._onNodeExpandedError.fire(expandResponse);
 		}
 	}
 
 	/**
 	 * Gets called when session is created
 	 */
-	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
+	public async onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): Promise<void> {
 		if (session && session.success) {
-			this.handleSessionCreated(session).catch((e) => this.logService.error(e));
+			await this.handleSessionCreated(session).catch((e) => this.logService.error(e));
 		} else {
 			let errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
 			this.logService.error(errorMessage);
@@ -269,35 +289,88 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
 		let connection: ConnectionProfile | undefined = undefined;
 		let errorMessage: string | undefined = undefined;
-		if (this._sessions[session.sessionId!]) {
-			connection = this._sessions[session.sessionId!].connection;
+		const sessionId = session.sessionId;
 
-			try {
-				if (session.success && session.rootNode) {
-					let server = this.toTreeNode(session.rootNode, undefined);
-					server.connection = connection;
-					server.session = session;
-					this._activeObjectExplorerNodes[connection!.id] = server;
+
+		await new Promise<void>((resolve, reject) => {
+			const cleanup = () => {
+				if (connection) {
+					this._connectionsWaitingForSession.delete(connection.id);
 				}
-				else {
-					errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
-					this.logService.error(errorMessage);
-				}
-				// Send on session created about the session to all node providers so they can prepare for node expansion
-				let nodeProviders = this._nodeProviders[connection!.providerName];
-				if (nodeProviders) {
-					const promises = nodeProviders.map(p => p.handleSessionOpen(session));
-					await Promise.all(promises);
-				}
-			} catch (error) {
-				this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
-			} finally {
-				this.sendUpdateNodeEvent(connection!, errorMessage);
+				createNewSessionListener.dispose();
+				clearTimeout(timeoutHandle);
 			}
+			const onTimeout = () => {
+				if (!this._sessions[sessionId]) {
+					this.logService.error(`Timed out waiting for session ${sessionId} to be created.
+					This has probably happened because OE service did not recieve a response for createNewSession from the provider.`);
+					reject(new Error(
+						nls.localize('objectExplorerMissingSession',
+							'Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.', sessionId)));
+				} else {
+					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}".
+					This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection."${connection.title}`);
+					reject(new Error(nls.localize(
+						'objectExplorerMissingConnectionForSession',
+						'Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"', sessionId, connection.title
+					)));
+				}
+
+				cleanup();
+			}
+			const timeoutHandle = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
+			const createNewSessionListener = this._onCreateNewSession.event((response) => {
+				checkSessionAndConnection();
+			});
+			const checkSessionAndConnection = () => {
+				/**
+				 * Sometimes ads recieves handleSessionCreated from providers before the createNewSession response is recieved.
+				 * We need to wait while the createNewSession response is recieved and the session map contains the session before we can continue.
+				 */
+				if (this._sessions[sessionId]) {
+					connection = this._sessions[sessionId].connection;
+					/**
+					 * In certain cases, when we try to connect to a previously connected server, we may encounter a situation where the session is present in this._sessions,
+					 * probably becaue the close session request was not completed successfully with the same session id for an older connection. While creating this new session,
+					 * if we recieve the handleSessionCreated event before the createNewSession response is recieved, we will end up using the older connection stored in
+					 * this._sessions[sessionId].connection. To avoid this, we check if the connection id is false in this._connectionsWaitingForSession. If it is not false,
+					 * we know that the createNewSession response has been recieved and we have the correct connection.
+					 */
+					if (connection && this._connectionsWaitingForSession.get(connection.id) === false) {
+						resolve();
+						cleanup();
+					}
+				}
+			}
+			checkSessionAndConnection();
+		});
+
+		try {
+			if (session.success && session.rootNode) {
+				let server = this.toTreeNode(session.rootNode, undefined);
+				this._treeNodeCache.set(sessionId, new Map<string, TreeNode>());
+				this._treeNodeCache.get(sessionId)!.set(this.getTreeNodeCacheKey(server.toNodeInfo()), server);
+				this._nodeFilterCache.set(sessionId, new Map<string, azdata.NodeFilter[]>());
+				server.connection = connection;
+				server.session = session;
+				this._activeObjectExplorerNodes[connection!.id] = server;
+			}
+			else {
+				errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
+				this.logService.error(errorMessage);
+			}
+			// Send on session created about the session to all node providers so they can prepare for node expansion
+			let nodeProviders = this._nodeProviders[connection!.providerName];
+			if (nodeProviders) {
+				const promises = nodeProviders.map(p => p.handleSessionOpen(session));
+				await Promise.all(promises);
+			}
+		} catch (error) {
+			this.logService.error(`An error occured while handling session ${sessionId} in all nodeProviders.`, error);
+		} finally {
+			this.sendUpdateNodeEvent(connection!, errorMessage);
 		}
-		else {
-			this.logService.warn(`cannot find session ${session.sessionId}`);
-		}
+
 	}
 
 	/**
@@ -353,7 +426,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
 		const provider = this._providers[providerId];
 		if (provider) {
+			// set the connection to wait for session
+			this._connectionsWaitingForSession.set(connection.id, true);
 			const result = await provider.createNewSession(connection.toConnectionInfo());
+			// some providers return a malformed create sessions responses which don't have a session id. We should throw an error in this case
+			if (!result?.sessionId) {
+				this.logService.error(`The session ID returned by provider "${providerId}" for connection "${connection.title}" is invalid.`);
+				throw new Error(nls.localize('objectExplorerSessionIdMissing', 'The session ID returned by provider "{0}" for connection "{1}" is invalid.', providerId, connection.title));
+			}
 			if (this._sessions[result.sessionId]) {
 				this.logService.trace(`Overwriting session ${result.sessionId}`);
 			}
@@ -361,8 +441,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				connection: connection,
 				nodes: {}
 			};
+			// once the session is created, set the connection to not wait for session
+			this._connectionsWaitingForSession.set(connection.id, false);
+			this._onCreateNewSession.fire(result);
 			return result;
 		} else {
+			this._connectionsWaitingForSession.delete(connection.id);
 			throw new Error(`Provider doesn't exist. id: ${providerId}`);
 		}
 	}
@@ -396,6 +480,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
+			const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
+			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
+			if (node.filters && sessionFilterCache) {
+				sessionFilterCache.set(this.getTreeNodeCacheKey(node), node.filters);
+			}
+
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId!].nodes[node.nodePath]) {
@@ -415,16 +505,52 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						nodeProviders = nodeProviders.sort((a, b) => a.group!.toLowerCase().localeCompare(b.group!.toLowerCase()));
 						allProviders.push(...nodeProviders);
 					}
+					this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
+
+					const resolveExpansion = () => {
+						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+						// Have to delete it after get all responses otherwise couldn't find session for not the first response
+						clearTimeout(expansionTimeout);
+						if (newRequest) {
+							delete self._sessions[session.sessionId!].nodes[node.nodePath];
+							this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
+						}
+					}
+
+					// Incase node status not found.
+					this._onNodeExpandedError.event(e => {
+						//Ignore errors from other sessions and nodepaths.
+						if (e.sessionId === session.sessionId && e.nodePath === node.nodePath) {
+							resultMap.set(e.providerId, e);
+							// When get all responses from all providers, merge results
+							if (resultMap.size === allProviders.length) {
+								resolveExpansion();
+							}
+						}
+					});
+
+					const expansionTimeout = setTimeout(() => {
+						/**
+						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
+						 * it's not going to respond and resolve the promise with the results we have so far
+						 */
+						if (resultMap.size !== allProviders.length) {
+							const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
+							this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
+							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
+						}
+						resolveExpansion();
+					}, this.getObjectExplorerTimeout() * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
+							this.logService.trace(`${session.sessionId}: Received expand result for node ${node.nodePath} from provider ${expandResult.providerId}`);
 							resultMap.set(expandResult.providerId, expandResult);
 							// If we got an error result back then send error our error event
-							// We only do this for the MSSQL provider
-							if (expandResult.errorMessage && expandResult.providerId === mssqlProviderName) {
+							if (expandResult.errorMessage) {
 								const errorType = expandResult.errorMessage.indexOf('Object Explorer task didn\'t complete') !== -1 ? 'Timeout' : 'Other';
-								// For folders send the actual name of the folder (since the nodeTypeId isn't useful in this case and the names are controlled by us)
-								const nodeType = node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
+								// For folders send the actual name of the folder for the MSSQL provider (since the nodeTypeId isn't useful in this case and the names are controlled by us)
+								const nodeType = expandResult.providerId === mssqlProviderName && node.nodeTypeId === NodeType.Folder ? node.label : node.nodeTypeId;
 								this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.ObjectExplorerExpandError, undefined, errorType)
 									.withAdditionalProperties({
 										nodeType,
@@ -438,13 +564,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
-
-							// Have to delete it after get all responses otherwise couldn't find session for not the first response
-							if (newRequest) {
-								delete self._sessions[session.sessionId!].nodes[node.nodePath];
-								this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
-							}
+							resolveExpansion();
 						}
 					});
 					if (newRequest) {
@@ -452,7 +572,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
-								securityToken: session.securityToken
+								securityToken: session.securityToken,
+								filters: node.filters
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
@@ -463,6 +584,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 										sessionId: session.sessionId
 									};
 									resultMap.set(provider.providerId, emptyResult);
+									if (resultMap.size === allProviders.length) {
+										resolveExpansion();
+									}
 								}
 							}, error => {
 								reject(error);
@@ -481,6 +605,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
+			parentNodePath: '',
 			objectType: 'error',
 			label: 'Error',
 			errorMessage: '',
@@ -586,8 +711,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
-		// Always refresh the node if it has an error, otherwise expand it normally
-		let needsRefresh = !!parentTree.errorStateMessage;
+		// Always refresh the node if it has an error or forceRefresh is set to true, otherwise expand it normally
+		let needsRefresh = !!parentTree.errorStateMessage || parentTree.forceRefresh;
+		parentTree.forceRefresh = false;
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
@@ -623,9 +749,41 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			throw new Error('Failed to expand node - no provider name');
 		}
 		const expandResult = await this.callExpandOrRefreshFromService(providerName, session, parentTree, refresh);
+		const sessionTreeNodeCache = this._treeNodeCache.get(session.sessionId!);
 		if (expandResult && expandResult.nodes) {
+			// In case of refresh, we want to clear the cache of the descendants of the node being refreshed
+			if (refresh && parentTree?.children) {
+				const stack = [...parentTree.children];
+				while (stack.length > 0) {
+					const currentTreeNode = stack.pop();
+					if (currentTreeNode) {
+						sessionTreeNodeCache.delete(this.getTreeNodeCacheKey(currentTreeNode.toNodeInfo()));
+						if (currentTreeNode.children) {
+							stack.push(...currentTreeNode.children);
+						}
+					}
+				}
+			}
 			const children = expandResult.nodes.map(node => {
-				return this.toTreeNode(node, parentTree);
+				let treeNode;
+				const cacheKey = this.getTreeNodeCacheKey(node);
+				// In case of refresh, we want to update the existing node in the cache
+				if (!refresh && sessionTreeNodeCache.has(cacheKey)) {
+					treeNode = sessionTreeNodeCache.get(cacheKey);
+				} else {
+					treeNode = this.toTreeNode(node, parentTree);
+					sessionTreeNodeCache.set(cacheKey, treeNode);
+				}
+
+				const filterCacheKey = this.getTreeNodeCacheKey(treeNode);
+				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
+				// Making sure we retain the filters for the node.
+				if (sessionFilterCache?.has(filterCacheKey)) {
+					treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
+				} else {
+					treeNode.filters = [];
+				}
+				return treeNode;
 			});
 			parentTree.children = children.filter(c => c !== undefined);
 			return children;
@@ -649,8 +807,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		}
 
-		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
+		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, nodeInfo.filterableProperties, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
@@ -889,5 +1047,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			currentNode = nextNode;
 		}
 		return currentNode;
+	}
+
+	/**
+	 * returns object explorer timeout in seconds.
+	 */
+	public getObjectExplorerTimeout(): number {
+		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
+	}
+
+	private getTreeNodeCacheKey(node: azdata.NodeInfo | TreeNode): string {
+		return node.nodePath;
 	}
 }

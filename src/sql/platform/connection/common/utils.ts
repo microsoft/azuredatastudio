@@ -6,7 +6,8 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes'
+import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
+import { applicationName } from 'sql/platform/connection/common/constants';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -169,4 +170,12 @@ export function convertToRpcConnectionProfile(profile: IConnectionProfile | unde
 	}
 
 	return connection;
+}
+
+export function adjustForMssqlAppName(currentAppName: string, suffix?: string): string {
+	let appName = suffix ? applicationName + '-' + suffix : applicationName;
+	let finalSuffix = '-' + appName;
+	return (currentAppName && currentAppName !== appName && !currentAppName.endsWith(finalSuffix))
+		? currentAppName + finalSuffix
+		: currentAppName ?? appName;
 }

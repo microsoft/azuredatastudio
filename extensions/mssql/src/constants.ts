@@ -7,6 +7,7 @@ export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
+export const telemetryConfigSectionName = 'telemetry';
 export const packageName = 'Microsoft.mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
@@ -31,3 +32,5 @@ export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.g
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';
 export const cmdObjectExplorerDisableGroupBySchemaCommand = 'mssql.disableGroupBySchema';
+export const cmdObjectExplorerEnabbleGroupBySchemaTitleCommand = 'mssql.enableGroupBySchemaTitle';
+export const cmdObjectExplorerDisableGroupBySchemaTitleCommand = 'mssql.disableGroupBySchemaTitle';

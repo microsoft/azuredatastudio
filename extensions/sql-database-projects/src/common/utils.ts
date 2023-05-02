@@ -16,6 +16,7 @@ import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabase } from './typeHelper';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -153,12 +154,33 @@ export function convertSlashesForSqlProj(filePath: string): string {
 }
 
 /**
+ * Converts a SystemDatabase enum to its string value
+ * @param systemDb
+ * @returns
+ */
+export function systemDatabaseToString(systemDb: SystemDatabase): string {
+	if (systemDb === mssql.SystemDatabase.Master || systemDb === vscodeMssql.SystemDatabase.Master) {
+		return constants.master;
+	} else {
+		return constants.msdb;
+	}
+}
+
+export function getSystemDatabase(name: string): SystemDatabase {
+	if (getAzdataApi()) {
+		return name === constants.master ? mssql.SystemDatabase.Master : mssql.SystemDatabase.MSDB;
+	} else {
+		return name === constants.master ? vscodeMssql.SystemDatabase.Master : vscodeMssql.SystemDatabase.MSDB;
+	}
+}
+
+/**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
  * @param publishProfile true if reading from publish profile
  */
-export function readSqlCmdVariables(xmlDoc: Document, publishProfile: boolean): Record<string, string> {
-	let sqlCmdVariables: Record<string, string> = {};
+export function readSqlCmdVariables(xmlDoc: Document, publishProfile: boolean): Map<string, string> {
+	let sqlCmdVariables: Map<string, string> = new Map();
 	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include)!;
@@ -168,11 +190,11 @@ export function readSqlCmdVariables(xmlDoc: Document, publishProfile: boolean): 
 		// are local variable values you can set in VS in the properties. Since we don't support that in ADS, only DefaultValue is supported for sqlproj.
 		if (!publishProfile && sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
 			// project file path
-			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue!;
+			sqlCmdVariables.set(varName, sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue!);
 		}
 		else {
 			// profile path
-			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!;
+			sqlCmdVariables.set(varName, sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!);
 		}
 	}
 
@@ -229,25 +251,24 @@ export function formatSqlCmdVariable(name: string): string {
  * Checks if it's a valid sqlcmd variable name
  * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
  * @param name variable name to validate
- */
-export function isValidSqlCmdVariableName(name: string | undefined): boolean {
+ * @returns null if valid, otherwise an error message describing why input is invalid
+*/
+export function validateSqlCmdVariableName(name: string | undefined): string | null {
 	// remove $() around named if it's there
-	name = removeSqlCmdVariableFormatting(name);
+	const cleanedName = removeSqlCmdVariableFormatting(name);
 
 	// can't contain whitespace
-	if (!name || name.trim() === '' || name.includes(' ')) {
-		return false;
+	if (!cleanedName || cleanedName.trim() === '' || cleanedName.includes(' ')) {
+		return constants.sqlcmdVariableNameCannotContainWhitespace(name ?? '');
 	}
 
 	// can't contain these characters
-	if (name.includes('$') || name.includes('@') || name.includes('#') || name.includes('"') || name.includes('\'') || name.includes('-')) {
-		return false;
+	if (constants.illegalSqlCmdChars.some(c => cleanedName?.includes(c))) {
+		return constants.sqlcmdVariableNameCannotContainIllegalChars(name ?? '');
 	}
 
 	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
-	// TODO: give more detail why variable name was invalid https://github.com/microsoft/azuredatastudio/issues/12231
-
-	return true;
+	return null;
 }
 
 /**
@@ -279,6 +300,7 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 
 export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
 export type ISchemaCompareService = mssql.ISchemaCompareService | vscodeMssql.ISchemaCompareService;
+export type ISqlProjectsService = mssql.ISqlProjectsService | vscodeMssql.ISqlProjectsService;
 
 export async function getDacFxService(): Promise<IDacFxService> {
 	if (getAzdataApi()) {
@@ -302,12 +324,15 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
-	const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
-	const api = await ext.activate();
-	return api.sqlProjects;
-
-	// TODO: add vscode-mssql support
+export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
+	if (getAzdataApi()) {
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const api = await ext.activate();
+		return api.sqlProjects;
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.sqlProjects;
+	}
 }
 
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
@@ -619,36 +644,6 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 }
 
 /**
- * Determines whether provided value is a well-known database source and therefore is allowed to be sent in telemetry.
- *
- * @param value Value to check if it is a well-known database source
- * @returns Normalized database source value if it is well-known, otherwise returns undefined
- */
-export function getWellKnownDatabaseSource(value: string): string | undefined {
-	const upperCaseValue = value.toUpperCase();
-	return constants.WellKnownDatabaseSources
-		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
-}
-
-/**
- * Filters an array of specified database project sources to only those that are well-known.
- *
- * @param databaseSourceValues Array of database source values to filter
- * @returns Array of well-known database sources
- */
-export function getWellKnownDatabaseSources(databaseSourceValues: string[]): string[] {
-	const databaseSourceSet = new Set<string>();
-	for (let databaseSourceValue of databaseSourceValues) {
-		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSource(databaseSourceValue);
-		if (wellKnownDatabaseSourceValue) {
-			databaseSourceSet.add(wellKnownDatabaseSourceValue);
-		}
-	}
-
-	return Array.from(databaseSourceSet);
-}
-
-/**
  * Returns SQL version number from docker image name which is in the beginning of the image name
  * @param imageName docker image name
  * @returns SQL server version
@@ -725,7 +720,7 @@ export async function fileContainsCreateTableStatement(fullPath: string, project
  * @param serverInfo server information
  * @returns target platform for the database project
  */
-export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.ServerInfo): Promise<SqlTargetPlatform | undefined> {
+export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.IServerInfo): Promise<SqlTargetPlatform | undefined> {
 	const isCloud = serverInfo.isCloud;
 
 	let targetPlatform;
@@ -768,7 +763,7 @@ export function isValidBasename(name?: string): boolean {
  * Returns specific error message if file name is invalid
  * @param name filename to check
  */
-export function isValidBasenameErrorMessage(name?: string): string {
+export function isValidBasenameErrorMessage(name?: string): string | undefined {
 	return getDataWorkspaceExtensionApi().isValidBasenameErrorMessage(name);
 }
 
@@ -780,4 +775,34 @@ export function isValidBasenameErrorMessage(name?: string): string {
 export function isPublishProfile(fileName: string): boolean {
 	const hasPublishExtension = fileName.trim().toLowerCase().endsWith(constants.publishProfileExtension);
 	return hasPublishExtension;
+}
+
+/**
+ * Checks to see if a file exists at absoluteFilePath, and writes contents if it doesn't.
+ * If either the file already exists and contents is specified or the file doesn't exist and contents is blank,
+ * then an exception is thrown.
+ * @param absoluteFilePath
+ * @param contents
+ */
+export async function ensureFileExists(absoluteFilePath: string, contents?: string): Promise<void> {
+	if (contents) {
+		// Create the file if contents were passed in and file does not exist yet
+		await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+
+		try {
+			await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
+		} catch (error) {
+			if (error.code === 'EEXIST') {
+				// Throw specialized error, if file already exists
+				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+			}
+
+			throw error;
+		}
+	} else {
+		// If no contents were provided, then check that file already exists
+		if (!await exists(absoluteFilePath)) {
+			throw new Error(constants.noFileExist(absoluteFilePath));
+		}
+	}
 }

@@ -141,6 +141,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
+				getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getNonDefaultsOnly?: boolean): Thenable<string> {
+					return extHostConnectionManagement.$getEditorConnectionProfileTitle(profile, getNonDefaultsOnly);
+				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
@@ -654,6 +657,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
 				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
 				FrequencyRelativeIntervals: sqlExtHostTypes.FrequencyRelativeIntervals,
+				NodeFilterPropertyDataType: sqlExtHostTypes.NodeFilterPropertyDataType,
+				NodeFilterOperator: sqlExtHostTypes.NodeFilterOperator,
 				window,
 				tasks,
 				dashboard,

@@ -195,22 +195,22 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this.applyStyles();
 	}
 
-	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true): void {
+	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true, forceSelectionEvent: boolean = false): void {
 		let option: number | undefined;
 		if (optionName !== undefined) {
 			option = this._optionsDictionary.get(optionName);
 		}
 		if (option !== undefined) {
-			this.select(option);
+			this.select(option, forceSelectionEvent);
 		} else if (selectFirstByDefault) {
-			this.select(0);
+			this.select(0, forceSelectionEvent);
 		}
 	}
 
-	public override select(index: number): void {
+	public override select(index: number, forceSelectionEvent: boolean = false): void {
 		super.select(index);
 		let selectedOptionIndex = this._optionsDictionary.get(this._selectedOption);
-		if (selectedOptionIndex === index) { // Not generating an event if the same value is selected.
+		if (!forceSelectionEvent && selectedOptionIndex === index) { // Not generating an event if the same value is selected.
 			return;
 		}
 		if (this._dialogOptions !== undefined) {

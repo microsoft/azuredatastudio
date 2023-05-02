@@ -62,7 +62,7 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 			// TODO
 		} else if (item.icon?.dark) { // at the very least we need a dark icon
 			iconClass = ids.nextId();
-			createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+			createCSSRule(`.codicon.${iconClass}, .hc-light .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
 			createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
 			this.taskIdToIconClassNameMap.set(item.id, iconClass);
 		}

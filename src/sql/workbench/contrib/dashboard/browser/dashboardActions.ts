@@ -38,11 +38,11 @@ CommandsRegistry.registerCommand({
 				let options = {
 					showDashboard: true,
 					saveTheConnection: false,
-					params: undefined,
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true
 				};
-				let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+				let payload = await connectionService.fixProfile(args.$treeItem.payload);
+				let profile = new ConnectionProfile(capabilitiesService, payload);
 				let uri = generateUri(profile, 'dashboard');
 				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
 			}
@@ -96,7 +96,8 @@ export class OEManageConnectionAction extends Action {
 
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			// Must use a real connection profile for this action due to lookup
-			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
+			let updatedIConnProfile = await this._connectionManagementService.fixProfile(actionContext.connectionProfile);
+			connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, updatedIConnProfile);
 			if (!actionContext.isConnectionNode) {
 				treeNode = await getTreeNode(actionContext, this._objectExplorerService);
 				if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
@@ -120,7 +121,6 @@ export class OEManageConnectionAction extends Action {
 		}
 
 		let options: IConnectionCompletionOptions = {
-			params: undefined,
 			saveTheConnection: false,
 			showConnectionDialogOnError: true,
 			showDashboard: true,

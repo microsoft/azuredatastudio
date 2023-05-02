@@ -11,6 +11,9 @@
 		"vs/base/browser/ui/actionbar/actionViewItems": {
 			"titleLabel": "{0} ({1})"
 		},
+		"vs/base/browser/ui/button/button": {
+			"button dropdown more actions": "更多動作..."
+		},
 		"vs/base/browser/ui/dialog/dialog": {
 			"dialogClose": "關閉對話方塊",
 			"dialogErrorMessage": "錯誤",
@@ -57,11 +60,11 @@
 			"moreActions": "更多操作"
 		},
 		"vs/base/browser/ui/tree/abstractTree": {
-			"clear": "清除",
-			"disable filter on type": "在類型上停用篩選",
-			"empty": "找不到任何元素",
-			"enable filter on type": "在類型上啟用篩選",
-			"found": "{1} 項元素中有 {0} 項相符"
+			"close": "關閉",
+			"filter": "篩選",
+			"not found": "找不到任何元素。",
+			"type to filter": "要篩選的類型",
+			"type to search": "要搜尋的類型"
 		},
 		"vs/base/browser/ui/tree/treeDefaults": {
 			"collapse all": "全部摺疊"
@@ -156,6 +159,9 @@
 			"windowsKey": "Windows",
 			"windowsKey.long": "Windows"
 		},
+		"vs/base/common/platform": {
+			"ensureLoaderPluginIsLoaded": "_"
+		},
 		"vs/base/node/processes": {
 			"TaskRunner.UNC": "無法在 UNC 磁碟機上執行殼層命令。"
 		},
@@ -171,6 +177,7 @@
 			"ok": "確定",
 			"quickInput.back": "上一頁",
 			"quickInput.backWithKeybinding": "背面 ({0})",
+			"quickInput.checkAll": "切換所有核取方塊",
 			"quickInput.countSelected": "已選擇 {0}",
 			"quickInput.steps": "{0}/{1}",
 			"quickInput.visibleCount": "{0} 個結果",
@@ -240,6 +247,7 @@
 			"maxFileSize": "要計算差異的檔案大小上限 (MB)。使用 0 表示無限制。",
 			"maxTokenizationLineLength": "因效能的緣故，不會將超過此高度的行 Token 化",
 			"renderIndicators": "控制 Diff 編輯器是否要為新增/移除的變更顯示 +/- 標記。",
+			"renderMarginRevertIcon": "啟用時，Diff 編輯器會在其字符邊緣顯示箭頭，以還原變更。",
 			"schema.brackets": "定義增加或減少縮排的括弧符號。",
 			"schema.closeBracket": "右括弧字元或字串順序。",
 			"schema.colorizedBracketPairs": "定義當括弧配對著色已啟用時，由其巢狀層級著色的括弧配對。",
@@ -262,7 +270,7 @@
 			"wordWrap.on": "依檢視區寬度換行。"
 		},
 		"vs/editor/common/config/editorOptions": {
-			"acceptSuggestionOnCommitCharacter": "控制是否透過提交字元接受建議。例如在 JavaScript 中，分號 (';') 可以是接受建議並鍵入該字元的提交字元。",
+			"acceptSuggestionOnCommitCharacter": "控制是否透過提交字元接受建議。例如在 JavaScript 中，分號 (`; `) 可以是接受建議並鍵入該字元的提交字元。",
 			"acceptSuggestionOnEnter": "控制除了 'Tab' 外，是否也透過 'Enter' 接受建議。這有助於避免混淆要插入新行或接受建議。",
 			"acceptSuggestionOnEnterSmart": "在建議進行文字變更時，僅透過 `Enter` 接受建議。",
 			"accessibilityPageSize": "控制編輯器中可一次由螢幕助讀程式讀出的行數。偵測到螢幕助讀程式時會自動預設為 500。警告: 若數字超過預設，可能會對效能有所影響。",
@@ -281,7 +289,7 @@
 			"autoClosingQuotes": "控制編輯器是否應在使用者新增開始引號後，自動加上關閉引號。",
 			"autoIndent": "控制編輯器是否應在使用者鍵入、貼上、移動或縮排行時自動調整縮排。",
 			"autoSurround": "控制編輯器是否應在鍵入引號或括弧時自動包圍選取範圍。",
-			"bracketPairColorization.enabled": "控制是否啟用成對方括弧著色。使用 `#workbench.colorCustomizations#` 覆寫括弧亮顯顏色。",
+			"bracketPairColorization.enabled": "控制是否啟用成對方括弧著色。使用 {0} 覆寫括弧亮顯顏色。",
 			"bracketPairColorization.independentColorPoolPerBracketType": "控制每個括弧類型是否有自己的獨立色彩集區。",
 			"codeActions": "在編輯器中啟用程式碼動作燈泡。",
 			"codeLens": "控制編輯器是否顯示 codelens。",
@@ -303,6 +311,7 @@
 			"definitionLinkOpensInPeek": "控制「前往定義」滑鼠手勢，是否一律開啟瞄核小工具。",
 			"deprecated": "此設定已淘汰，請改用 'editor.suggest.showKeywords' 或 'editor.suggest.showSnippets' 等單獨設定。",
 			"dragAndDrop": "控制編輯器是否允許透過拖放來移動選取項目。",
+			"dropIntoEditor.enabled": "控制您是否可以按住 `shift` 鍵 (而非在編輯器中開啟檔案)，將檔案拖放到文字編輯器中。",
 			"editor.autoClosingBrackets.beforeWhitespace": "僅當游標位於空白的左側時自動關閉括號。",
 			"editor.autoClosingBrackets.languageDefined": "使用語言配置確定何時自動關閉括號。",
 			"editor.autoClosingDelete.auto": "僅在自動插入相鄰的右引號或括弧時，才將其移除。",
@@ -322,6 +331,7 @@
 			"editor.editor.gotoLocation.multipleImplemenattions": "控制 'Go to Implementations' 命令在有多個目標位置存在時的行為。",
 			"editor.editor.gotoLocation.multipleReferences": "控制 'Go to References' 命令在有多個目標位置存在時的行為。",
 			"editor.editor.gotoLocation.multipleTypeDefinitions": "控制 'Go to Type Definition' 命令在有多個目標位置存在時的行為。",
+			"editor.experimental.stickyScroll": "在編輯器頂端捲動期間顯示巢狀的目前範圍。",
 			"editor.find.autoFindInSelection.always": "一律自動開啟 [在選取範圍中尋找]。",
 			"editor.find.autoFindInSelection.multiline": "選取多行內容時，自動開啟 [在選取範圍中尋找]。",
 			"editor.find.autoFindInSelection.never": "永不自動開啟 [在選取範圍中尋找] (預設)。",
@@ -411,8 +421,9 @@
 			"hover.enabled": "控制是否顯示暫留。",
 			"hover.sticky": "控制當滑鼠移過時，是否應保持顯示暫留。",
 			"inlayHints.enable": "啟用編輯器中的內嵌提示。",
-			"inlayHints.fontFamily": "控制編輯器中，內嵌提示的字型家族。設定為空白時，會使用 `#editor.fontFamily#`。",
-			"inlayHints.fontSize": "控制編輯器中內嵌提示的字型大小。當設定的值小於 '5' 或大於編輯器字型大小時，會使用 '#editor.fontSize#' 預設值。",
+			"inlayHints.fontFamily": "控制編輯器中，內嵌提示的字型家族。設定為空白時，則會使用 {0}。",
+			"inlayHints.fontSize": "控制編輯器中內嵌提示的字型大小。當設定的值小於 {1} 或大於編輯器字型大小時，則會使用{0} 預設值。",
+			"inlayHints.padding": "在編輯器中啟用的內嵌提示周圍的填補。",
 			"inline": "快速建議會顯示為浮水印文字",
 			"inlineSuggest.enabled": "控制是否要在編輯器中自動顯示內嵌建議。",
 			"letterSpacing": "控制字母間距 (像素)。",
@@ -425,6 +436,7 @@
 			"linkedEditing": "控制編輯器是否已啟用連結編輯。相關符號 (例如 HTML 標籤) 會根據語言在編輯時更新。",
 			"links": "控制編輯器是否應偵測連結並使其可供點選。",
 			"matchBrackets": "將符合的括號醒目提示。",
+			"minimap.autohide": "控制是否會自動隱藏縮圖。",
 			"minimap.enabled": "控制是否會顯示縮圖",
 			"minimap.maxColumn": "限制縮圖的寬度，最多顯示某個數目的列。",
 			"minimap.renderCharacters": "顯示行中的實際字元，而不是色彩區塊。",
@@ -438,7 +450,7 @@
 			"mouseWheelScrollSensitivity": "要用於滑鼠滾輪捲動事件 `deltaX` 和 `deltaY` 的乘數。",
 			"mouseWheelZoom": "使用滑鼠滾輪並按住 `Ctrl` 時，縮放編輯器的字型",
 			"multiCursorMergeOverlapping": "在多個游標重疊時將其合併。",
-			"multiCursorModifier": "用於在滑鼠新增多個游標的乘數。「移至定義」和「開啟連結」滑鼠手勢會加以適應，以避免與多個游標的乘數相衝突。[深入了解](https://code.visualstudio.com/docs/editor/codebasics#_multicursor-modifier)。",
+			"multiCursorModifier": "用於在滑鼠新增多個游標的修飾元。[移至定義] 和 [開啟連結] 滑鼠手勢會加以適應，以避免與 [多個游標的修飾元](https://code.visualstudio.com/docs/editor/codebasics#_multicursor-modifier) 相衝突。",
 			"multiCursorModifier.alt": "對應Windows和Linux的'Alt'與對應macOS的'Option'。",
 			"multiCursorModifier.ctrlCmd": "對應Windows和Linux的'Control'與對應 macOS 的'Command'。",
 			"multiCursorPaste": "當已貼上文字的行數與游標數相符時控制貼上功能。",
@@ -455,7 +467,7 @@
 			"peekWidgetDefaultFocus": "控制要聚焦內嵌編輯器或預覽小工具中的樹系。",
 			"peekWidgetDefaultFocus.editor": "開啟時聚焦編輯器",
 			"peekWidgetDefaultFocus.tree": "開啟預覽時焦點樹狀",
-			"quickSuggestions": "控制是否應在鍵入時自動顯示建議。",
+			"quickSuggestions": "控制輸入時是否應自動顯示建議。這可控制在註解、字串及其他程式碼中的輸入。可設定快速建議以隱形浮出文字或建議小工具顯示。另外也請注意 '{0}'-設定，其會控制建議是否由特殊字元所觸發。",
 			"quickSuggestions.comments": "允許在註解中顯示即時建議。",
 			"quickSuggestions.other": "允許在字串與註解以外之處顯示即時建議。",
 			"quickSuggestions.strings": "允許在字串內顯示即時建議。",
@@ -496,6 +508,7 @@
 			"showFoldingControls": "控制摺疊控制項在裝訂邊上的顯示時機。",
 			"showFoldingControls.always": "一律顯示摺疊控制項。",
 			"showFoldingControls.mouseover": "僅當滑鼠懸停在活動列上時，才顯示折疊功能。",
+			"showFoldingControls.never": "永不顯示摺疊控制項與減少裝訂邊大小。",
 			"showUnused": "控制未使用程式碼的淡出。",
 			"smoothScrolling": "控制編輯器是否會使用動畫捲動",
 			"snippetSuggestions": "控制程式碼片段是否隨其他建議顯示，以及其排序方式。",
@@ -516,8 +529,8 @@
 			"suggest.showInlineDetails": "控制建議詳細資料是以內嵌於標籤的方式顯示，還是只在詳細資料小工具中顯示",
 			"suggest.showStatusBar": "控制建議小工具底下的狀態列可見度。",
 			"suggest.snippetsPreventQuickSuggestions": "控制正在使用的程式碼片段是否會避免快速建議。",
-			"suggestFontSize": "建議小工具的字型大小。當設定為 `0` 時，則使用 `#editor.fontSize#` 值.",
-			"suggestLineHeight": "建議小工具的行高。當設定為 `0` 時，則使用 `#editor.lineHeight#` 的值。最小值為 8。",
+			"suggestFontSize": "建議小工具的字型大小。當設定為 {0} 時，則會使用 {1} 的值。",
+			"suggestLineHeight": "建議小工具的行高。當設定為 {0} 時，則會使用 {1} 的值。最小值為 8。",
 			"suggestOnTriggerCharacters": "控制建議是否應在鍵入觸發字元時自動顯示。",
 			"suggestSelection": "控制在顯示建議清單時如何預先選取建議。",
 			"suggestSelection.first": "一律選取第一個建議。",
@@ -712,7 +725,8 @@
 			"copy as": "複製為",
 			"miCopy": "複製(&&C)",
 			"miCut": "剪下(&&T)",
-			"miPaste": "貼上(&&P)"
+			"miPaste": "貼上(&&P)",
+			"share": "共用"
 		},
 		"vs/editor/contrib/codeAction/browser/codeActionCommands": {
 			"applyCodeActionFailed": "套用程式碼動作時發生未知的錯誤",
@@ -743,7 +757,15 @@
 			"organizeImports.label": "組織匯入",
 			"quickfix.trigger.label": "快速修復...",
 			"refactor.label": "重構...",
+			"refactor.preview.label": "使用預覽重構...",
 			"source.label": "來源動作..."
+		},
+		"vs/editor/contrib/codeAction/browser/codeActionMenu": {
+			"CodeActionMenuVisible": "是否顯示程式碼動作清單小工具",
+			"label": "{0} 以重構，{1} 以預覽"
+		},
+		"vs/editor/contrib/codeAction/browser/codeActionWidgetContribution": {
+			"codeActionWidget": "啟用此選項可調整程式碼動作功能表的轉譯方式。"
 		},
 		"vs/editor/contrib/codeAction/browser/lightBulbWidget": {
 			"codeAction": "顯示程式碼動作",
@@ -765,11 +787,26 @@
 			"miToggleLineComment": "切換行註解(&&T)"
 		},
 		"vs/editor/contrib/contextmenu/browser/contextmenu": {
-			"action.showContextMenu.label": "顯示編輯器內容功能表"
+			"action.showContextMenu.label": "顯示編輯器內容功能表",
+			"context.minimap.minimap": "縮圖",
+			"context.minimap.renderCharacters": "轉譯字元",
+			"context.minimap.size": "垂直大小",
+			"context.minimap.size.fill": "填滿",
+			"context.minimap.size.fit": "最適大小",
+			"context.minimap.size.proportional": "按比例",
+			"context.minimap.slider": "滑桿",
+			"context.minimap.slider.always": "一律",
+			"context.minimap.slider.mouseover": "滑鼠移至上方"
+		},
+		"vs/editor/contrib/copyPaste/browser/copyPasteContribution": {
+			"pasteActions": "在貼上時啟用/停用從延伸模組執行編輯。"
 		},
 		"vs/editor/contrib/cursorUndo/browser/cursorUndo": {
 			"cursor.redo": "游標重做",
 			"cursor.undo": "游標復原"
+		},
+		"vs/editor/contrib/dropIntoEditor/browser/dropIntoEditorContribution": {
+			"dropProgressTitle": "正在執行置放處理常式..."
 		},
 		"vs/editor/contrib/editorState/browser/keybindingCancellation": {
 			"cancellableOperation": "編輯器是否執行可取消的作業，例如「預覽參考」"
@@ -819,6 +856,7 @@
 			"title.matchesCountLimit": "僅反白顯示前 {0} 筆結果，但所有尋找作業會在完整文字上執行。"
 		},
 		"vs/editor/contrib/folding/browser/folding": {
+			"createManualFoldRange.label": "從選取範圍建立手動摺疊範圍",
 			"editorGutter.foldingControlForeground": "編輯器裝訂邊的摺疊控制項色彩。",
 			"foldAction.label": "摺疊",
 			"foldAllAction.label": "全部摺疊",
@@ -832,6 +870,7 @@
 			"gotoParentFold.label": "移至父代摺疊",
 			"gotoPreviousFold.label": "移至上一個摺疊範圍",
 			"maximum fold ranges": "可摺疊區域的數目限制為上限 {0}。增加設定選項 ['Folding Maximum Regions'](command:workbench.action.openSettings?[\"editor.foldingMaximumRegions\"]) 以啟用更多數目。",
+			"removeManualFoldingRanges.label": "移除手動折疊範圍",
 			"toggleFoldAction.label": "切換摺疊",
 			"unFoldRecursivelyAction.label": "以遞迴方式展開",
 			"unfoldAction.label": "展開",
@@ -841,7 +880,9 @@
 		},
 		"vs/editor/contrib/folding/browser/foldingDecorations": {
 			"foldingCollapsedIcon": "編輯器字符邊界中 [摺疊的範圍] 的圖示。",
-			"foldingExpandedIcon": "編輯器字符邊界中 [展開的範圍] 的圖示。"
+			"foldingExpandedIcon": "編輯器字符邊界中 [展開的範圍] 的圖示。",
+			"foldingManualCollapedIcon": "編輯器字符邊界中手動摺疊範圍的圖示。",
+			"foldingManualExpandedIcon": "編輯器字符邊界中手動展開範圍的圖示。"
 		},
 		"vs/editor/contrib/fontZoom/browser/fontZoom": {
 			"EditorFontZoomIn.label": "編輯器字體放大",
@@ -1012,6 +1053,7 @@
 		},
 		"vs/editor/contrib/linesOperations/browser/linesOperations": {
 			"duplicateSelection": "重複選取項目",
+			"editor.transformToKebabcase": "轉換成 Kebab Case",
 			"editor.transformToLowercase": "轉換到小寫",
 			"editor.transformToSnakecase": "轉換為底線連接字",
 			"editor.transformToTitlecase": "轉換為字首大寫",
@@ -1056,7 +1098,6 @@
 			"tooltip.explanation": "執行命令 {0}"
 		},
 		"vs/editor/contrib/message/browser/messageController": {
-			"editor.readonly": "無法在唯讀編輯器中編輯",
 			"messageVisible": "編輯器目前是否正在顯示內嵌訊息"
 		},
 		"vs/editor/contrib/multicursor/browser/multicursor": {
@@ -1152,6 +1193,10 @@
 			"typeParameter": "型別參數 ({0})",
 			"variable": "變數 ({0})"
 		},
+		"vs/editor/contrib/readOnlyMessage/browser/contribution": {
+			"editor.readonly": "無法在唯讀編輯器中編輯",
+			"editor.simple.readonly": "無法在唯讀輸入中編輯"
+		},
 		"vs/editor/contrib/rename/browser/rename": {
 			"aria": "已成功將 '{0}' 重新命名為 '{1}'。摘要: {2}",
 			"enablePreview": "啟用/停用重新命名前先預覽變更的功能",
@@ -1223,6 +1268,7 @@
 		"vs/editor/contrib/suggest/browser/suggest": {
 			"acceptSuggestionOnEnter": "是否在按下 Enter 時插入建議",
 			"suggestWidgetDetailsVisible": "是否顯示建議詳細資料",
+			"suggestWidgetHasSelection": "是否聚焦任何建議",
 			"suggestWidgetMultipleSuggestions": "是否有多個建議可以挑選",
 			"suggestionCanResolve": "目前的建議是否支援解決更多詳細資料",
 			"suggestionHasInsertAndReplaceRange": "目前的建議是否有插入和取代行為",
@@ -1357,9 +1403,18 @@
 			"deleteInsideWord": "刪除字組"
 		},
 		"vs/platform/actions/browser/menuEntryActionViewItem": {
-			"titleAndKb": "{0} ({1})"
+			"titleAndKb": "{0} ({1})",
+			"titleAndKbAndAlt": "{0}\r\n[{1}] {2}"
+		},
+		"vs/platform/actions/common/menuResetAction": {
+			"cat": "檢視",
+			"title": "重設隱藏的功能表"
+		},
+		"vs/platform/actions/common/menuService": {
+			"hide.label": "隱藏 '{0}'"
 		},
 		"vs/platform/configuration/common/configurationRegistry": {
+			"config.policy.duplicate": "無法註冊 '{0}'。已向 {2} 註冊關聯的原則 {1}。",
 			"config.property.duplicate": "無法註冊 '{0}'。此屬性已經註冊。",
 			"config.property.empty": "無法註冊空白屬性",
 			"config.property.languageDefault": "無法註冊 '{0}'。這符合用於描述語言專用編輯器設定的屬性模式 '\\\\[.*\\\\]$'。請使用 'configurationDefaults' 貢獻。",
@@ -1378,7 +1433,8 @@
 			"isMac": "作業系統是否為 macOS",
 			"isMacNative": "非瀏覽器平台上的作業系統是否為 macOS",
 			"isWeb": "平台是否為網頁瀏覽器",
-			"isWindows": "作業系統是否為 Windows"
+			"isWindows": "作業系統是否為 Windows",
+			"productQualityType": "VS Code 的品質類型"
 		},
 		"vs/platform/dialogs/common/dialogs": {
 			"moreFile": "...另外 1 個檔案未顯示",
@@ -1390,6 +1446,9 @@
 			"openFolder": "開啟資料夾",
 			"openWorkspace": "開啟(&&O)",
 			"openWorkspaceTitle": "從檔案開啟工作區"
+		},
+		"vs/platform/dnd/browser/dnd": {
+			"fileTooLarge": "檔案過大，無法以未命名的編輯器開啟。請先將其上傳至檔案總管，並再試一次。"
 		},
 		"vs/platform/environment/node/argv": {
 			"add": "將資料夾新增至上一個使用中的視窗。",
@@ -1412,6 +1471,7 @@
 			"locale": "要使用的地區設定 (例如 en-US 或 zh-TW)。",
 			"log": "使用的日誌級別。預設為\"訊息\"。允許的值是 \"關鍵\"、\"錯誤\"、\"警告\"、\"訊息\"、\"偵錯\"、\"追蹤\"、\"關閉\"。",
 			"maxMemory": "視窗的最大記憶體大小 (以 MB 為單位)。",
+			"merge": "提供檔案的兩個已修改版本、兩個已修改版本的一般來源及輸出檔案的路徑以儲存合併結果，來執行三向合併。",
 			"newWindow": "強制開啟新視窗。",
 			"options": "選項",
 			"optionsUpperCase": "選項",
@@ -1436,6 +1496,7 @@
 		},
 		"vs/platform/environment/node/argvHelper": {
 			"deprecatedArgument": "選項 '{0}' 已棄用: {1}",
+			"emptyValue": "選項 '{0}' 需要非空白值。略過選項。",
 			"gotoValidation": "`--goto` 模式中的引數格式應為 `FILE(:LINE(:CHARACTER))`。",
 			"multipleValues": "已多次定義選項 ‘{0}’。請使用值 ‘{1}’。",
 			"unknownOption": "警告: '{0}' 不在已知選項清單中，但仍傳遞至 Electron/Chromium。"
@@ -1453,8 +1514,7 @@
 			"singleDependentError": "無法將 '{0}' 延伸模組解除安裝。其為延伸模組 '{1}' 的相依對象。",
 			"singleIndirectDependentError": "無法將 '{0}' 延伸模組解除安裝。這麼做會將與其相依的 '{1}' 延伸模組與 '{2}' 延伸模組解除安裝。",
 			"twoDependentsError": "無法將 '{0}' 延伸模組解除安裝。其為 '{1}' 及 '{2}' 延伸模組的相依對象。",
-			"twoIndirectDependentsError": "無法將 '{0}' 延伸模組解除安裝。這麼做會將與其相依的 '{1}' 延伸模組及 '{2}' 和 '{3}' 延伸模組解除安裝。",
-			"unsupported prerelease extension": "無法安裝 '{0}' 延伸模組，因為它已不受支援。它現在是 '{1}' 延伸模組的一部分，為發行前版本。"
+			"twoIndirectDependentsError": "無法將 '{0}' 延伸模組解除安裝。這麼做會將與其相依的 '{1}' 延伸模組及 '{2}' 和 '{3}' 延伸模組解除安裝。"
 		},
 		"vs/platform/extensionManagement/common/extensionManagement": {
 			"extensions": "延伸模組",
@@ -1610,16 +1670,27 @@
 			"first.chord": "已按下 ({0})。等待第二個套索鍵...",
 			"missing.chord": "按鍵組合 ({0}, {1}) 不是命令。"
 		},
+		"vs/platform/languagePacks/common/languagePacks": {
+			"currentDisplayLanguage": " (目前)"
+		},
+		"vs/platform/languagePacks/common/localizedStrings": {
+			"close": "關閉",
+			"find": "尋找",
+			"open": "開啟"
+		},
 		"vs/platform/list/browser/listService": {
 			"Fast Scroll Sensitivity": "按下 `Alt` 時的捲動速度乘數。",
 			"Mouse Wheel Scroll Sensitivity": "要用於滑鼠滾輪捲動事件 `deltaX` 和 `deltaY` 的乘數。",
-			"automatic keyboard navigation setting": "控制是否只要鍵入即可自動觸發清單和樹狀結構中的鍵盤瀏覽。若設為 `false`，只有在執行 `list.toggleKeyboardNavigation` 命令時，才會觸發鍵盤瀏覽，您可為其指定鍵盤快速鍵。",
+			"defaultFindModeSettingKey": "控制 Workbench 中清單和樹狀結構的預設尋找模式。",
+			"defaultFindModeSettingKey.filter": "搜尋時篩選元素。",
+			"defaultFindModeSettingKey.highlight": "搜尋時會醒目提示元素。進一步的向上和向下瀏覽只會周遊已醒目提示的元素。",
 			"expand mode": "控制當按下資料夾名稱時，樹狀目錄資料夾的展開方式。請注意，若不適用，某些樹狀目錄和清單可能會選擇忽略此設定。",
 			"horizontalScrolling setting": "控制在工作台中，清單與樹狀結構是否支援水平捲動。警告: 開啟此設定將會影響效能。",
 			"keyboardNavigationSettingKey": "控制 Workbench 中清單和樹狀結構的鍵盤瀏覽樣式。可以是簡易的、醒目提示和篩選。",
 			"keyboardNavigationSettingKey.filter": "篩選鍵盤瀏覽會篩掉並隱藏不符合鍵盤輸入的所有元素。",
 			"keyboardNavigationSettingKey.highlight": "醒目提示鍵盤瀏覽會醒目提示符合鍵盤輸入的元素。進一步向上或向下瀏覽只會周遊醒目提示的元素。",
 			"keyboardNavigationSettingKey.simple": "比對按鍵輸入的簡易按鍵瀏覽焦點元素。僅比對前置詞。",
+			"keyboardNavigationSettingKeyDeprecated": "請改用 'workbench.list.defaultFindMode'。",
 			"list smoothScrolling setting": "控制清單和樹狀結構是否具有平滑捲動。",
 			"multiSelectModifier": "透過滑鼠多選，用於在樹狀目錄與清單中新增項目的輔助按鍵 (例如在總管中開啟編輯器 及 SCM 檢視)。'在側邊開啟' 滑鼠手勢 (若支援) 將會適應以避免和多選輔助按鍵衝突。",
 			"multiSelectModifier.alt": "對應Windows和Linux的'Alt'與對應macOS的'Option'。",
@@ -1628,11 +1699,6 @@
 			"render tree indent guides": "控制樹系是否應轉譯縮排輔助線。",
 			"tree indent setting": "控制樹狀結構縮排 (像素)。",
 			"workbenchConfigurationTitle": "工作台"
-		},
-		"vs/platform/localizations/common/localizedStrings": {
-			"close": "關閉",
-			"find": "尋找",
-			"open": "開啟"
 		},
 		"vs/platform/markers/common/markers": {
 			"sev.error": "錯誤",
@@ -1693,8 +1759,6 @@
 			"recentlyUsed": "最近使用的"
 		},
 		"vs/platform/quickinput/browser/helpQuickAccess": {
-			"editorCommands": "編輯器命令",
-			"globalCommands": "全域命令",
 			"helpPickAriaLabel": "{0}, {1}"
 		},
 		"vs/platform/request/common/request": {
@@ -1767,9 +1831,9 @@
 			"terminalAutomationProfile.path": "殼層可執行檔的單一路徑。",
 			"terminalIntegratedConfigurationTitle": "整合式終端",
 			"terminalProfile.args": "執行殼層可執行檔時所使用的一組選擇性引數。",
-			"terminalProfile.color": "要與這個終端機相關聯的佈景主題色彩識別碼。",
+			"terminalProfile.color": "要與這個終端機圖示相關聯的佈景主題色彩識別碼。",
 			"terminalProfile.env": "具有環境變數的物件，將新增至終端機設定檔流程。設為 'null' 以從基底環境刪除環境變數。",
-			"terminalProfile.icon": "要與這個終端機相關聯的 codicon 識別碼。",
+			"terminalProfile.icon": "要與這個終端機圖示相關聯的 codicon 識別碼。",
 			"terminalProfile.linuxExtensionId": "延伸模組終端機的識別碼",
 			"terminalProfile.linuxExtensionIdentifier": "提供此設定檔的延伸模組。",
 			"terminalProfile.linuxExtensionTitle": "延伸模組終端機的名稱",
@@ -1787,7 +1851,7 @@
 			"terminalAutomaticProfile": "自動偵測預設值"
 		},
 		"vs/platform/terminal/node/ptyService": {
-			"terminal-session-restore": "從 {0} 的 {1} 還原工作階段內容"
+			"terminal-history-restored": "已還原歷程記錄"
 		},
 		"vs/platform/terminal/node/terminalProcess": {
 			"launchFail.cwdDoesNotExist": "啟動目錄 (cwd) \"{0}\" 不存在",
@@ -1811,6 +1875,7 @@
 			"buttonSecondaryBackground": "次要按鈕背景色彩。",
 			"buttonSecondaryForeground": "次要按鈕前景色彩。",
 			"buttonSecondaryHoverBackground": "滑鼠暫留時的次要按鈕背景色彩。",
+			"buttonSeparator": "分隔線色彩按鈕。",
 			"chartsBlue": "圖表視覺效果中所使用的藍色。",
 			"chartsForeground": "圖表中使用的前景色彩。",
 			"chartsGreen": "圖表視覺效果中所使用的綠色。",
@@ -1863,6 +1928,8 @@
 			"editorSelectionForeground": "為選取的文字顏色高對比化",
 			"editorSelectionHighlight": "與選取項目內容相同之區域的色彩。其不得為不透明色彩，以免隱藏底層裝飾。",
 			"editorSelectionHighlightBorder": "選取時，內容相同之區域的框線色彩。",
+			"editorStickyScrollBackground": "編輯器的黏滯卷軸背景色彩",
+			"editorStickyScrollHoverBackground": "編輯器的游標背景色彩上的黏滯卷軸",
 			"editorWarning.background": "編輯器中警告文字的背景色彩。其不得為不透明色彩，以免隱藏底層裝飾。",
 			"editorWarning.foreground": "編輯器內警告提示線的前景色彩.",
 			"editorWidgetBackground": "編輯器小工具的背景色彩，例如尋找/取代。",
@@ -1918,6 +1985,8 @@
 			"listFilterWidgetBackground": "清單和樹狀結構中類型篩選小工具的背景色彩。",
 			"listFilterWidgetNoMatchesOutline": "在沒有相符項目時，清單和樹狀結構中類型篩選小工具的大綱色彩。",
 			"listFilterWidgetOutline": "清單和樹狀結構中類型篩選小工具的大綱色彩。",
+			"listFilterWidgetShadow": "清單和樹狀結構中類型篩選小工具的陰影色彩。",
+			"listFocusAndSelectionOutline": "當清單/樹狀目錄為使用中狀態並已選取時，焦點項目的清單/樹狀目錄外框色彩。使用中的清單/樹狀目錄具有鍵盤焦點，非使用中者則沒有。",
 			"listFocusBackground": "當清單/樹狀為使用中狀態時，焦點項目的清單/樹狀背景色彩。使用中的清單/樹狀有鍵盤焦點，非使用中者則沒有。",
 			"listFocusForeground": "當清單/樹狀為使用中狀態時，焦點項目的清單/樹狀前景色彩。使用中的清單/樹狀有鍵盤焦點，非使用中者則沒有。",
 			"listFocusHighlightForeground": "在清單/樹狀內搜尋時，相符項目的清單/樹狀結構前景色彩會針對主動焦點項目進行強調顯示。",
@@ -2085,6 +2154,9 @@
 			"updateConfigurationTitle": "更新",
 			"updateMode": "設定是否要接收自動更新。變更後需要重新啟動。系統會從 Microsoft 線上服務擷取更新。"
 		},
+		"vs/platform/userDataProfile/common/userDataProfile": {
+			"defaultProfile": "預設"
+		},
 		"vs/platform/userDataSync/common/abstractSynchronizer": {
 			"incompatible": "因為 {0} 的本機版本 {1} 與其遠端版本 {2} 不相容，所以無法加以同步",
 			"incompatible sync data": "因為同步資料與目前的版本不相容，所以無法予以剖析。"
@@ -2165,272 +2237,6 @@
 			"Other": "其他:",
 			"RunAfter": "安裝後執行 %1",
 			"SourceFile": "%1 來源檔案"
-		},
-		"readme.md": {
-			"LanguagePackTitle": "語言套件提供 VS Code 的當地語系化 UI 體驗。",
-			"Usage": "使用方式",
-			"displayLanguage": "您可以使用「設定顯示語言」命令，以明確的方式設定 VS Code 顯示語言，以覆寫預設的 UI 語言。",
-			"Command Palette": "按下「Ctrl+Shift+P」以顯示「命令選擇區」，然後開始鍵入「display」以篩選及顯示「設定顯示語言」命令。",
-			"ShowLocale": "按下 [確定] 後會顯示已安裝的語言清單 (依據地區設定)，目前的地區設定會有醒目提示。",
-			"SwtichUI": "選取其他「地區設定」以切換 UI 語言。",
-			"DocLink": "如需詳細資訊，請參閱「文件」。",
-			"Contributing": "參與",
-			"Feedback": "若要對翻譯提出改善意見反應，請在 \"vscode-loc\" 存放庫中建立問題。",
-			"LocPlatform": "翻譯字串會在 Microsoft 當地語系化平台中維護。只有在 Microsoft 當地語系化平台中才能進行變更，並匯出至 vscode-loc 存放庫。因此，vscode-loc 存放庫中不接受提取要求。",
-			"LicenseTitle": "授權",
-			"LicenseMessage": "原始程式碼和字串會在「MIT」授權之下獲得授權。",
-			"Credits": "參與名單",
-			"Contributed": "此語言套件收到了來自「社群自治、社群享有」之社群當地語系化行動的貢獻。特別感謝社群參與者，讓此套件得以完成。",
-			"TopContributors": "前幾大參與者:",
-			"Contributors": "參與者:",
-			"EnjoyLanguagePack": "盡情使用!"
-		},
-		"win32/i18n/Default": {
-			"SetupAppTitle": "安裝程式",
-			"SetupWindowTitle": "安裝程式 - %1",
-			"UninstallAppTitle": "解除安裝",
-			"UninstallAppFullTitle": "%1 解除安裝",
-			"InformationTitle": "資訊",
-			"ConfirmTitle": "確認",
-			"ErrorTitle": "錯誤",
-			"SetupLdrStartupMessage": "這會安裝 %1。要繼續嗎?",
-			"LdrCannotCreateTemp": "無法建立暫存檔。安裝已中止",
-			"LdrCannotExecTemp": "無法執行暫存目錄中的檔案。安裝已中止",
-			"LastErrorMessage": "%1。%n%n錯誤 %2: %3",
-			"SetupFileMissing": "安裝目錄中缺少檔案 %1。請修正問題，或重新取得程式的新複本。",
-			"SetupFileCorrupt": "安裝程式檔案已損毀。請重新取得該程式的複本。",
-			"SetupFileCorruptOrWrongVer": "安裝程式檔案已損毀，或不相容於與此版的安裝程式。請修正問題，或重新取得程式的新複本。",
-			"InvalidParameter": "在命令列上傳遞了無效的參數:%n%n%1",
-			"SetupAlreadyRunning": "安裝程式已在執行中。",
-			"WindowsVersionNotSupported": "此程式不支援電腦所執行的 Windows 版本。",
-			"WindowsServicePackRequired": "此程式需要 %1 Service Pack %2 或更新版本。",
-			"NotOnThisPlatform": "此程式不會在 %1 上執行。",
-			"OnlyOnThisPlatform": "此程式必須在 %1 上執行。",
-			"OnlyOnTheseArchitectures": "此程式只可安裝在專為下列處理器架構設計的 Windows 版本上:%n%n%1",
-			"MissingWOW64APIs": "您執行的 Windows 版本不含安裝程式執行 64 位元安裝所需的功能。若要修正此問題，請安裝 Service Pack %1。",
-			"WinVersionTooLowError": "此程式需要 %1 版 %2 或更新版本。",
-			"WinVersionTooHighError": "此程式無法安裝在 %1 版 %2 或更新版本上。",
-			"AdminPrivilegesRequired": "安裝此程式時，必須以系統管理員身分登入。",
-			"PowerUserPrivilegesRequired": "當您安裝此程式時，必須以系統管理員或 Power Users 群組的成員身分登入。",
-			"SetupAppRunningError": "安裝時偵測到 %1 目前正在執行中。%n%n請立即關閉其所有執行個體。若要繼續，請按一下 [確定]; 若要結束，請按一下 [取消]。",
-			"UninstallAppRunningError": "解除安裝時偵測到 %1 目前正在執行中。%n%n請立即關閉其所有執行個體。若要繼續，請按一下 [確定]; 若要結束，請按一下 [取消]。",
-			"ErrorCreatingDir": "安裝程式無法建立目錄 \"%1\"",
-			"ErrorTooManyFilesInDir": "因為目錄 \"%1\" 包含太多檔案，所以無法在其中建立檔案",
-			"ExitSetupTitle": "結束安裝",
-			"ExitSetupMessage": "安裝未完成。若立即結束，將不會安裝程式。%n%n您可以稍後再執行安裝程式來完成安裝。%n%n要結束安裝嗎?",
-			"AboutSetupMenuItem": "關於安裝程式(&A)...",
-			"AboutSetupTitle": "關於安裝程式",
-			"AboutSetupMessage": "%1 版 %2%n%3%n%n%1 首頁:%n%4",
-			"ButtonBack": "< 上一步(&B)",
-			"ButtonNext": "下一步 >(&N)",
-			"ButtonInstall": "安裝(&I)",
-			"ButtonOK": "確定",
-			"ButtonCancel": "取消",
-			"ButtonYes": "是(&Y)",
-			"ButtonYesToAll": "全部皆是(&A)",
-			"ButtonNo": "否(&N)",
-			"ButtonNoToAll": "全部皆否(&O)",
-			"ButtonFinish": "完成(&F)",
-			"ButtonBrowse": "瀏覽(&B)...",
-			"ButtonWizardBrowse": "瀏覽(&R)...",
-			"ButtonNewFolder": "建立新資料夾(&M)",
-			"SelectLanguageTitle": "選取安裝程式語言",
-			"SelectLanguageLabel": "選取安裝期間所要使用的語言:",
-			"ClickNext": "若要繼續，請按一下 [下一步]; 若要結束安裝，請按一下 [取消]。",
-			"BrowseDialogTitle": "瀏覽資料夾",
-			"BrowseDialogLabel": "請從下列清單中選取資料夾，然後按一下 [確定]。",
-			"NewFolderName": "新資料夾",
-			"WelcomeLabel1": "歡迎使用 [name] 安裝精靈",
-			"WelcomeLabel2": "這會在您的電腦上安裝 [name/ver]。%n%n建議您先關閉所有其他應用程式，然後再繼續。",
-			"WizardPassword": "密碼",
-			"PasswordLabel1": "此安裝受密碼保護。",
-			"PasswordLabel3": "請提供密碼，然後按一下 [下一步] 以繼續。密碼區分大小寫。",
-			"PasswordEditLabel": "密碼(&P):",
-			"IncorrectPassword": "輸入的密碼不正確。請再試一次。",
-			"WizardLicense": "授權合約",
-			"LicenseLabel": "請先閱讀下列重要資訊再繼續。",
-			"LicenseLabel3": "請閱讀下列授權合約。您必須接受此合約條款，才能繼續安裝。",
-			"LicenseAccepted": "我接受合約(&A)",
-			"LicenseNotAccepted": "我不接受合約(&D)",
-			"WizardInfoBefore": "資訊",
-			"InfoBeforeLabel": "請先閱讀下列重要資訊再繼續。",
-			"InfoBeforeClickLabel": "當您準備好繼續安裝，請按一下 [下一步]。",
-			"WizardInfoAfter": "資訊",
-			"InfoAfterLabel": "請先閱讀下列重要資訊再繼續。",
-			"InfoAfterClickLabel": "當您準備好繼續安裝，請按一下 [下一步]。",
-			"WizardUserInfo": "使用者資訊",
-			"UserInfoDesc": "請輸入您的資訊。",
-			"UserInfoName": "使用者名稱(&U):",
-			"UserInfoOrg": "組織(&O):",
-			"UserInfoSerial": "序號(&S):",
-			"UserInfoNameRequired": "您必須輸入名稱。",
-			"WizardSelectDir": "選取目的地位置",
-			"SelectDirDesc": "應將 [name] 安裝在何處?",
-			"SelectDirLabel3": "安裝程式會將 [name] 安裝在下列資料夾中。",
-			"SelectDirBrowseLabel": "若要繼續，請按一下 [下一步]。若要選取其他資料夾，請按一下 [瀏覽]。",
-			"DiskSpaceMBLabel": "至少須有 [mb] MB 的可用磁碟空間。",
-			"CannotInstallToNetworkDrive": "安裝程式無法安裝到網路磁碟機。",
-			"CannotInstallToUNCPath": "安裝程式無法安裝到 UNC 路徑。",
-			"InvalidPath": "必須輸入包含磁碟機代號的完整路徑，例如:%n%nC:\\APP%n%n或輸入下列格式的 UNC 路徑:%n%n\\\\伺服器\\共用",
-			"InvalidDrive": "選取的磁碟機或 UNC 共用不存在或無法存取。請選取其他磁碟機或 UNC 共用。",
-			"DiskSpaceWarningTitle": "磁碟空間不足",
-			"DiskSpaceWarning": "安裝程式至少需要 %1 KB 的可用空間才能安裝，但所選磁碟機的可用空間只有 %2 KB。%n%n仍要繼續嗎?",
-			"DirNameTooLong": "資料夾名稱或路徑過長。",
-			"InvalidDirName": "此資料夾名稱無效。",
-			"BadDirName32": "資料夾名稱不得包含下列任一字元:%n%n%1",
-			"DirExistsTitle": "資料夾已存在",
-			"DirExists": "已有資料夾 %n%n%1%n%n。仍要安裝到該資料夾嗎?",
-			"DirDoesntExistTitle": "資料夾不存在",
-			"DirDoesntExist": "資料夾 %n%n%1%n%n 不存在。要建立該資料夾嗎?",
-			"WizardSelectComponents": "選取元件",
-			"SelectComponentsDesc": "應安裝哪些元件?",
-			"SelectComponentsLabel2": "選取您要安裝的元件; 清除您不要安裝的元件。當您準備好要繼續時，請按一下 [下一步]。",
-			"FullInstallation": "完整安裝",
-			"CompactInstallation": "精簡安裝",
-			"CustomInstallation": "自訂安裝",
-			"NoUninstallWarningTitle": "已有此元件",
-			"NoUninstallWarning": "安裝程式偵測到您的電腦已安裝了下列元件:%n%n%1%n%n將這些元件取消選取並不會使元件解除安裝。%n%n仍要繼續嗎?",
-			"ComponentSize1": "%1 KB",
-			"ComponentSize2": "%1 MB",
-			"ComponentsDiskSpaceMBLabel": "目前的選擇至少需要 [mb] MB 的磁碟空間。",
-			"WizardSelectTasks": "選取其他工作",
-			"SelectTasksDesc": "還須執行哪些其他工作?",
-			"SelectTasksLabel2": "請選取安裝程式在安裝 [name] 時，須額外執行的其他工作，然後按一下 [下一步]。",
-			"WizardSelectProgramGroup": "選取 [開始] 功能表資料夾",
-			"SelectStartMenuFolderDesc": "安裝程式應將程式捷徑置於何處?",
-			"SelectStartMenuFolderLabel3": "安裝程式將在下列 [開始] 功能表資料夾中建立程式捷徑。",
-			"SelectStartMenuFolderBrowseLabel": "若要繼續，請按一下 [下一步]。若要選取其他資料夾，請按一下 [瀏覽]。",
-			"MustEnterGroupName": "您必須輸入資料夾名稱。",
-			"GroupNameTooLong": "資料夾名稱或路徑過長。",
-			"InvalidGroupName": "此資料夾名稱無效。",
-			"BadGroupName": "資料夾名稱不得包含下列任一字元:%n%n%1",
-			"NoProgramGroupCheck2": "不要建立 [開始] 功能表資料夾(&D)",
-			"WizardReady": "已可開始安裝",
-			"ReadyLabel1": "安裝程式現在已可開始將 [name] 安裝到您的電腦上。",
-			"ReadyLabel2a": "若要繼續安裝，請按一下 [安裝]; 若要檢閱或變更任何設定，請按一下 [上一步]。",
-			"ReadyLabel2b": "若要繼續安裝，請按一下 [安裝]。",
-			"ReadyMemoUserInfo": "使用者資訊:",
-			"ReadyMemoDir": "目的地位置:",
-			"ReadyMemoType": "安裝類型:",
-			"ReadyMemoComponents": "選取的元件:",
-			"ReadyMemoGroup": "[開始] 功能表資料夾:",
-			"ReadyMemoTasks": "其他工作:",
-			"WizardPreparing": "正在準備安裝",
-			"PreparingDesc": "安裝程式正在準備將 [name] 安裝到您的電腦上。",
-			"PreviousInstallNotCompleted": "上一個程式的安裝/移除尚未完成。必須重新啟動電腦，才能完成該安裝。%n%n請在重新啟動電腦之後，重新執行安裝程式，以完成 [name] 的安裝。",
-			"CannotContinue": "安裝程式無法繼續。請按一下 [取消] 以結束。",
-			"ApplicationsFound": "安裝程式必須更新下列應用程式正在使用的一些檔案。建議您允許安裝程式自動關閉這些應用程式。",
-			"ApplicationsFound2": "安裝程式必須更新下列應用程式正在使用的一些檔案。建議您允許安裝程式自動關閉這些應用程式。當安裝完成之後，安裝程式將會嘗試重新啟動這些應用程式。",
-			"CloseApplications": "自動關閉應用程式(&A)",
-			"DontCloseApplications": "不要關閉應用程式(&D)",
-			"ErrorCloseApplications": "安裝程式無法自動關閉所有應用程式。建議您關閉所有正在使用安裝程式必須更新之檔案的應用程式，然後再繼續。",
-			"WizardInstalling": "正在安裝",
-			"InstallingLabel": "請稍候，安裝程式正在將 [name] 安裝到您的電腦上。",
-			"FinishedHeadingLabel": "正在完成 [name] 安裝精靈",
-			"FinishedLabelNoIcons": "安裝程式已完成您電腦上 [name] 的安裝。",
-			"FinishedLabel": "安裝程式已完成您電腦上 [名稱] 的安裝。您可選取所安裝的圖示啟動應用程式。",
-			"ClickFinish": "請按一下 [\\[]完成[\\]] 結束安裝程式。",
-			"FinishedRestartLabel": "安裝程式必須重新啟動您的電腦，才能完成 [name] 的安裝。要立即重新啟動嗎?",
-			"FinishedRestartMessage": "安裝程式必須重新啟動您的電腦，才能完成 [name] 的安裝。%n%n要立即重新啟動嗎?",
-			"ShowReadmeCheck": "是，我要檢視讀我檔案",
-			"YesRadio": "是，立即重新啟動電腦(&Y)",
-			"NoRadio": "否，稍候再重新啟動電腦(&N)",
-			"RunEntryExec": "執行 %1",
-			"RunEntryShellExec": "檢視 %1",
-			"ChangeDiskTitle": "安裝程式需要下一張磁片。",
-			"SelectDiskLabel2": "請插入磁片 %1，然後按一下 [確定]。%n%n若此磁片上的檔案可以在下列顯示之資料夾以外的資料夾中找到，請輸入正確的路徑，或按一下 [瀏覽]。",
-			"PathLabel": "路徑(&P):",
-			"FileNotInDir2": "在 \"%2\" 中找不到檔案 \"%1\"。請插入正確的磁片，或選取其他資料夾。",
-			"SelectDirectoryLabel": "請指定下一張磁片的位置。",
-			"SetupAborted": "安裝未安成。%n%n請修正問題，再重新執行安裝程式。",
-			"EntryAbortRetryIgnore": "若要再試一次，請按一下 [重試]; 若要繼續，請按一下 [忽略]; 若要取消安裝，請按一下 [中止]。",
-			"StatusClosingApplications": "正在關閉應用程式...",
-			"StatusCreateDirs": "正在建立目錄...",
-			"StatusExtractFiles": "正在解壓縮檔案...",
-			"StatusCreateIcons": "正在建立捷徑...",
-			"StatusCreateIniEntries": "正在建立 INI 項目...",
-			"StatusCreateRegistryEntries": "正在建立登錄項目...",
-			"StatusRegisterFiles": "正在登錄檔案...",
-			"StatusSavingUninstall": "正在儲存解除安裝資訊...",
-			"StatusRunProgram": "正在完成安裝...",
-			"StatusRestartingApplications": "正在重新啟動應用程式...",
-			"StatusRollback": "正在復原變更...",
-			"ErrorInternal2": "內部錯誤: %1",
-			"ErrorFunctionFailedNoCode": "%1 失敗",
-			"ErrorFunctionFailed": "%1 失敗; 代碼 %2",
-			"ErrorFunctionFailedWithMessage": "%1 失敗; 代碼 %2。%n%3",
-			"ErrorExecutingProgram": "無法執行檔案:%n%1",
-			"ErrorRegOpenKey": "開啟登錄機碼時發生錯誤:%n%1\\%2",
-			"ErrorRegCreateKey": "建立登錄機碼時發生錯誤:%n%1\\%2",
-			"ErrorRegWriteKey": "寫入登錄機碼時發生錯誤:%n%1\\%2",
-			"ErrorIniEntry": "在檔案 \"%1\" 中建立 INI 項目時發生錯誤。",
-			"FileAbortRetryIgnore": "若要再試一次，請按一下 [重試]; 若要略過此檔案，請按一下 [忽略] (不建議使用); 若要取消安裝，請按一下 [中止]。",
-			"FileAbortRetryIgnore2": "若要再試一次，請按一下 [重試]; 若要繼續，請按一下 [忽略] (不建議使用); 若要取消安裝，請按一下 [中止]。",
-			"SourceIsCorrupted": "原始程式檔已損毀",
-			"SourceDoesntExist": "原始程式檔 \"%1\" 不存在",
-			"ExistingFileReadOnly": "現有檔案已標記為唯讀。%n%n若要移除唯讀屬性，然後再試一次，請按一下 [重試]; 若要略過此檔案，請按一下 [忽略]; 若要取消安裝，請按一下 [中止]。",
-			"ErrorReadingExistingDest": "嘗試讀取現有檔案時發生錯誤:",
-			"FileExists": "已有此檔案。%n%n要由安裝程式加以覆寫嗎?",
-			"ExistingFileNewer": "現有檔案較安裝程式嘗試安裝的檔案新。建議您保留現有檔案。%n%n要保留現有的檔案嗎?",
-			"ErrorChangingAttr": "嘗試變更現有檔案的屬性時發生錯誤:",
-			"ErrorCreatingTemp": "嘗試在目的地目錄中建立檔案時發生錯誤:",
-			"ErrorReadingSource": "嘗試讀取原始程式檔時發生錯誤:",
-			"ErrorCopying": "嘗試複製檔案時發生錯誤:",
-			"ErrorReplacingExistingFile": "嘗試取代現有檔案時發生錯誤:",
-			"ErrorRestartReplace": "RestartReplace 失敗:",
-			"ErrorRenamingTemp": "嘗試重新命名目的地目錄中的檔案時發生錯誤:",
-			"ErrorRegisterServer": "無法登錄 DLL/OCX: %1",
-			"ErrorRegSvr32Failed": "RegSvr32 失敗，結束代碼為 %1",
-			"ErrorRegisterTypeLib": "無法登錄類型程式庫: %1",
-			"ErrorOpeningReadme": "嘗試開啟讀我檔案時發生錯誤。",
-			"ErrorRestartingComputer": "安裝程式無法重新啟動電腦。請手動執行此作業。",
-			"UninstallNotFound": "沒有檔案 \"%1\"。無法解除安裝。",
-			"UninstallOpenError": "無法開啟檔案 \"%1\"。無法解除安裝",
-			"UninstallUnsupportedVer": "此版解除安裝程式無法辨識解除安裝記錄檔 \"%1\" 的格式。無法解除安裝",
-			"UninstallUnknownEntry": "在解除安裝記錄中找到不明的項目 (%1)",
-			"ConfirmUninstall": "確定要完全移除 %1 嗎? 將不會移除延伸模組和設定。",
-			"UninstallOnlyOnWin64": "只可在 64 位元 Windows 上解除安裝此安裝。",
-			"OnlyAdminCanUninstall": "只有具備系統管理權限的使用者，才能解除安裝此安裝。",
-			"UninstallStatusLabel": "正在從您的電腦移除 %1，請稍候。",
-			"UninstalledAll": "已成功從您的電腦移除 %1。",
-			"UninstalledMost": "解除安裝 %1 已完成。%n%n有部分項目無法移除。您可以手動加以移除。",
-			"UninstalledAndNeedsRestart": "若要完成 %1 的解除安裝，必須重新啟動您的電腦。%n%n要立即重新啟動嗎?",
-			"UninstallDataCorrupted": "\"%1\" 檔案已損毀。無法解除安裝",
-			"ConfirmDeleteSharedFileTitle": "要移除共用檔案嗎?",
-			"ConfirmDeleteSharedFile2": "系統指出已無任何程式在使用下列共用檔案。您要解除安裝，以移除此共用檔案嗎?%n%n如有任何程式仍在使用此檔案而將該檔案移除，這些程式可能無法正常運作。若不確定，請選擇 [否]。將檔案保留在系統上並不會造成任何不良影響。",
-			"SharedFileNameLabel": "檔案名稱:",
-			"SharedFileLocationLabel": "位置:",
-			"WizardUninstalling": "解除安裝狀態",
-			"StatusUninstalling": "正在解除安裝 %1...",
-			"ShutdownBlockReasonInstallingApp": "正在安裝 %1。",
-			"ShutdownBlockReasonUninstallingApp": "正在解除安裝 %1。",
-			"NameAndVersion": "%1 版 %2",
-			"AdditionalIcons": "其他圖示:",
-			"CreateDesktopIcon": "建立桌面圖示(&D)",
-			"CreateQuickLaunchIcon": "建立快速啟動圖示(&Q)",
-			"ProgramOnTheWeb": "Web 上的 %1",
-			"UninstallProgram": "解除安裝 %1",
-			"LaunchProgram": "啟動 %1",
-			"AssocFileExtension": "關聯 %1 與 %2 副檔名(&A)",
-			"AssocingFileExtension": "正在建立 %1 與 %2 副檔名的關聯…",
-			"AutoStartProgramGroupDescription": "啟動:",
-			"AutoStartProgram": "自動啟動 %1",
-			"AddonHostProgramNotFound": "在選取的資料夾中找不到 %1。%n%n仍要繼續嗎?"
-		},
-		"vscode/vscode/": {
-			"FinishedLabel": "安裝程式已完成您電腦上 [名稱] 的安裝。您可以選取安裝的捷徑來啟動該應用程式。",
-			"ConfirmUninstall": "確定要全面移除 %1 及其所有元件嗎?",
-			"AdditionalIcons": "其他圖示:",
-			"CreateDesktopIcon": "建立桌面圖示(&D)",
-			"CreateQuickLaunchIcon": "建立快速啟動圖示(&Q)",
-			"AddContextMenuFiles": "將 [以 %1 開啟] 動作加入 Windows 檔案總管檔案的操作功能表中",
-			"AddContextMenuFolders": "將 [以 %1 開啟] 動作加入 Windows 檔案總管目錄的操作功能表中",
-			"AssociateWithFiles": "針對支援的檔案類型將 %1 註冊為編輯器",
-			"AddToPath": "新增至 PATH (需要殼層重新啟動)",
-			"RunAfter": "安裝後執行 %1",
-			"Other": "其他:",
-			"SourceFile": "%1 來源檔案",
-			"OpenWithCodeContextMenu": "以 %1 開啟(&I)"
 		},
 		"vs/code/electron-main/app": {
 			"cancel": "否(&&N)",
@@ -2643,7 +2449,8 @@
 			"vscode.extension.contributes.views.containers.icon": "容器圖示的路徑。圖示為置於 50x40 區塊中央，且以 'rgb(215, 218, 224)' 或 '#d7dae0' 填滿顏色的 24x24 影像。雖然接受所有影像檔案類型，但建議使用 SVG 作為圖示格式。",
 			"vscode.extension.contributes.views.containers.id": "用於識別可透過使用 'views' 參與點參與檢視之容器的唯一識別碼",
 			"vscode.extension.contributes.views.containers.title": "用於轉譯容器的易讀字串",
-			"vscode.extension.contributes.viewsContainers": "提供檢視容器給編輯者"
+			"vscode.extension.contributes.viewsContainers": "提供檢視容器給編輯者",
+			"vscode.extension.contributs.view.size": "檢視的大小。使用數字的行為會像 css 'flex' 屬性一樣，而大小會設定第一次顯示檢視時的初始大小。在側邊欄中，這是檢視的高度。"
 		},
 		"vs/workbench/api/common/configurationExtensionPoint": {
 			"config.property.defaultConfiguration.warning": "無法登錄 '{0}' 的設定預設值。僅支援機器可覆寫、視窗、資源及語言可覆寫範圍設定的預設值。",
@@ -2796,15 +2603,16 @@
 			"leftSideBar": "左方",
 			"menuBar": "功能表列",
 			"menuBarIcon": "代表功能表列",
+			"miActivityBar": "活動列(&&A)",
 			"miAppearance": "外觀(&&A)",
+			"miMenuBar": "功能表列(&&B)",
+			"miMenuBarNoMnemonic": "功能表列",
 			"miMoveSidebarLeft": "將主要提要欄位向左移(&&M)",
 			"miMoveSidebarRight": "將主要提要欄位向右移(&&M)",
-			"miShowActivityBar": "顯示活動列(&&A)",
 			"miShowEditorArea": "顯示編輯器區域(&&E)",
-			"miShowMenuBar": "顯示功能表列(&&B)",
-			"miShowSidebar": "顯示主要提要欄位(&&P)",
-			"miShowSidebarNoMnnemonic": "顯示主要提要欄位",
-			"miShowStatusbar": "顯示狀態列(&&T)",
+			"miShowSidebar": "主要提要欄位(&&P)",
+			"miSidebarNoMnnemonic": "主要提要欄位",
+			"miStatusbar": "狀態列(&&T)",
 			"miToggleCenteredLayout": "置中配置(&C)",
 			"miToggleZenMode": "Zen Mode",
 			"move second sidebar left": "將次要提要欄位向左移",
@@ -2833,7 +2641,9 @@
 			"panelBottomRight": "代表下方面板設為靠右對齊",
 			"panelContainer": "面板/{0}",
 			"panelLeft": "代表提要欄位在左側位置",
+			"panelLeftOff": "代表在左側位置切換關閉的提要欄位",
 			"panelRight": "代表提要欄位在右側位置",
+			"panelRightOff": "代表在右側位置切換關閉的提要欄位",
 			"resetFocusedView.error.noFocusedView": "目前沒有任何焦點檢視。",
 			"resetFocusedViewLocation": "重設焦點檢視位置",
 			"resetViewLocations": "重設檢視位置",
@@ -2908,7 +2718,7 @@
 			"newWindow": "開新視窗",
 			"openRecent": "開啟最近使用的檔案...",
 			"openRecentPlaceholder": "選取以開啟 (按住 Ctrl 鍵可強制在新視窗中開啟，按住 Alt 鍵可在同一個視窗中開啟)",
-			"openRecentPlaceholderMac": "選取以開啟 (按住 Cmd 鍵可強制在新視窗中開啟，按住 Alt 鍵可在同一個視窗中開啟)",
+			"openRecentPlaceholderMac": "選取以開啟 (按住 Cmd 鍵可強制在新視窗中開啟，或按住 Option 鍵可在同一個視窗中開啟)",
 			"quickOpenRecent": "快速開啟最近使用的檔案...",
 			"recentDirtyFolderAriaLabel": "{0}，具有未儲存變更的資料夾",
 			"recentDirtyWorkspaceAriaLabel": "{0}，具有未儲存變更的工作區",
@@ -2948,9 +2758,6 @@
 		"vs/workbench/browser/codeeditor": {
 			"openWorkspace": "開啟工作區"
 		},
-		"vs/workbench/browser/dnd": {
-			"fileTooLarge": "檔案過大，無法以未命名的編輯器開啟。請先將其上傳至檔案總管，並再試一次。"
-		},
 		"vs/workbench/browser/editor": {
 			"pinned": "{0}，已釘選",
 			"preview": "{0}，預覽"
@@ -2980,11 +2787,13 @@
 		"vs/workbench/browser/parts/auxiliarybar/auxiliaryBarActions": {
 			"focusAuxiliaryBar": "將焦點放入次要提要欄位",
 			"hideAuxiliaryBar": "隱藏次要提要欄位",
-			"miShowAuxiliaryBar": "顯示次要提要欄位(&&D)",
-			"miShowAuxiliaryBarNoMnemonic": "顯示次要提要欄位",
+			"miAuxiliaryBar": "次要提要欄位(&&D)",
+			"miAuxiliaryBarNoMnemonic": "次要提要欄位",
 			"toggleAuxiliaryBar": "切換次要提要欄位可見度",
 			"toggleAuxiliaryIconLeft": "將輔助列切換到左邊位置的圖示。",
-			"toggleAuxiliaryIconRight": "將輔助列切換到右邊位置的圖示。",
+			"toggleAuxiliaryIconLeftOn": "將輔助列切換開啟到左邊位置的圖示。",
+			"toggleAuxiliaryIconRight": "將輔助列切換關閉到右邊位置的圖示。",
+			"toggleAuxiliaryIconRightOn": "將輔助列切換開啟到右邊位置的圖示。",
 			"toggleSecondarySideBar": "切換次要提要欄位"
 		},
 		"vs/workbench/browser/parts/auxiliarybar/auxiliaryBarPart": {
@@ -3078,7 +2887,7 @@
 			"cmd.focus": "焦點軌跡",
 			"cmd.toggle": "切換軌跡",
 			"empty": "沒有任何元素",
-			"miShowBreadcrumbs": "顯示階層連結(&&B)",
+			"miBreadcrumbs": "階層連結(&&B)",
 			"separatorIcon": "階層連結中分隔符號的圖示。"
 		},
 		"vs/workbench/browser/parts/editor/breadcrumbsPicker": {
@@ -3110,7 +2919,6 @@
 			"keepEditor": "保留編輯器",
 			"keepOpen": "保持開啟",
 			"lockGroup": "鎖定群組",
-			"miBack": "上一步(&&B)",
 			"miClearRecentOpen": "清除最近開啟的項目(&&C)",
 			"miEditorLayout": "編輯器版面配置(&&L)",
 			"miFirstSideEditor": "編輯器中的第一面(&&F)",
@@ -3123,7 +2931,6 @@
 			"miFocusRightGroup": "群組置右(&&R)",
 			"miFocusSecondGroup": "群組 2(&&2)",
 			"miFocusThirdGroup": "群組 3(&&3)",
-			"miForward": "轉寄(&&F)",
 			"miJoinEditorInGroup": "加入群組(&&G)",
 			"miJoinEditorInGroupWithoutMnemonic": "加入群組",
 			"miLastEditLocation": "上次編輯位置(&&L)",
@@ -3139,6 +2946,7 @@
 			"miPreviousUsedEditorInGroup": "群組中上一個已使用的編輯器(&&P)",
 			"miReopenClosedEditor": "重新開啟已關閉的編輯器(&&R)",
 			"miSecondSideEditor": "編輯器中的第二面(&&S)",
+			"miShare": "共用",
 			"miSingleColumnEditorLayout": "單一(&&S)",
 			"miSingleColumnEditorLayoutWithoutMnemonic": "單一",
 			"miSplitEditorDown": "向下分割(&&D)",
@@ -3186,8 +2994,8 @@
 			"splitUp": "向上分割",
 			"textDiffEditor": "文字 Diff 編輯器",
 			"textEditor": "文字編輯器",
-			"toggleKeepEditors": "保持編輯器開啟",
 			"toggleLockGroup": "鎖定群組",
+			"togglePreviewMode": "啟用預覽編輯器",
 			"toggleSplitEditorInGroupLayout": "切換版面配置",
 			"toggleWhitespace": "Diff 編輯器中 [切換空白字元動作] 的圖示。",
 			"unlockEditorGroup": "解除鎖定群組",
@@ -3236,6 +3044,8 @@
 			"joinTwoGroups": "將編輯器群組與下一個群組聯結",
 			"lastEditorInGroup": "開啟群組中最後一個編輯器",
 			"maximizeEditor": "將編輯器群組最大化並隱藏提要欄位",
+			"miBack": "上一步(&&B)",
+			"miForward": "轉寄(&&F)",
 			"minimizeOtherEditorGroups": "最大化編輯器群組",
 			"moveActiveGroupDown": "向下移動編輯器群組",
 			"moveActiveGroupLeft": "將編輯器群組向左移",
@@ -3321,7 +3131,7 @@
 			"toggleEditorGroupLock": "切換編輯器群組鎖定",
 			"toggleInlineView": "切換內嵌檢視",
 			"toggleJoinEditorInGroup": "在群組中切換分割編輯器",
-			"toggleSplitEditorInGroupLayout": "在群組版面配置中切換分割編輯器",
+			"toggleSplitEditorInGroupLayout": "在群組中切換分割編輯器的版面配置",
 			"unlockEditorGroup": "解除鎖定編輯器群組"
 		},
 		"vs/workbench/browser/parts/editor/editorConfiguration": {
@@ -3427,14 +3237,14 @@
 		"vs/workbench/browser/parts/editor/tabsTitleControl": {
 			"ariaLabelTabActions": "索引標籤動作"
 		},
+		"vs/workbench/browser/parts/editor/textCodeEditor": {
+			"textEditor": "文字編輯器"
+		},
 		"vs/workbench/browser/parts/editor/textDiffEditor": {
 			"textDiffEditor": "文字 Diff 編輯器"
 		},
 		"vs/workbench/browser/parts/editor/textEditor": {
 			"editor": "編輯器"
-		},
-		"vs/workbench/browser/parts/editor/textResourceEditor": {
-			"textEditor": "文字編輯器"
 		},
 		"vs/workbench/browser/parts/editor/titleControl": {
 			"ariaLabelEditorActions": "編輯器動作",
@@ -3450,10 +3260,12 @@
 			"configureIcon": "通知中 [設定動作] 的圖示。",
 			"configureNotification": "設定通知",
 			"copyNotification": "複製文字",
+			"doNotDisturbIcon": "通知中 [將所有動作靜音] 的圖示。",
 			"expandIcon": "通知中 [展開動作] 的圖示。",
 			"expandNotification": "展開通知",
 			"hideIcon": "通知中 [隱藏動作] 的圖示。",
-			"hideNotificationsCenter": "隱藏通知"
+			"hideNotificationsCenter": "隱藏通知",
+			"toggleDoNotDisturbMode": "切換請勿打擾模式"
 		},
 		"vs/workbench/browser/parts/notifications/notificationsAlerts": {
 			"alertErrorMessage": "錯誤: {0}",
@@ -3471,7 +3283,8 @@
 			"focusNotificationToasts": "焦點通知快顯通知",
 			"hideNotifications": "隱藏通知",
 			"notifications": "通知",
-			"showNotifications": "顯示通知"
+			"showNotifications": "顯示通知",
+			"toggleDoNotDisturbMode": "切換請勿打擾模式"
 		},
 		"vs/workbench/browser/parts/notifications/notificationsList": {
 			"notificationAriaLabel": "{0}，通知",
@@ -3486,6 +3299,8 @@
 			"notificationsWithProgress": "有 {0} 則新通知 (有 {1} 則正在進行)",
 			"oneNotification": "1 則新通知",
 			"oneNotificationWithProgress": "1 則新通知 ({0} 正在進行)",
+			"status.doNotDisturb": "請勿打擾",
+			"status.doNotDisturbTooltip": "請勿打擾模式已啟用",
 			"status.message": "狀態訊息",
 			"status.notifications": "通知",
 			"zeroNotifications": "無通知"
@@ -3516,8 +3331,8 @@
 			"hidePanel": "隱藏面板",
 			"maximizeIcon": "用於將面板最大化的圖示。",
 			"maximizePanel": "最大化面板大小",
-			"miShowPanel": "顯示面板(&&P)",
-			"miShowPanelNoMnemonic": "顯示面板",
+			"miPanel": "面板(&&P)",
+			"miPanelNoMnemonic": "面板",
 			"minimizePanel": "還原面板大小",
 			"movePanelToSecondarySideBar": "將面板檢視移至次要提要欄位",
 			"moveSidePanelToPanel": "將次要提要欄位檢視移至面板",
@@ -3534,7 +3349,8 @@
 			"restoreIcon": "用於還原面板的圖示。",
 			"toggleMaximizedPanel": "切換最大化面板",
 			"togglePanel": "切換面板",
-			"togglePanelIcon": "切换面板的圖示。",
+			"togglePanelOffIcon": "面板開啟時要切換關閉的圖示。",
+			"togglePanelOnIcon": "面板關閉時要切換開啟的圖示。",
 			"togglePanelVisibility": "切換面板可見度"
 		},
 		"vs/workbench/browser/parts/panel/panelPart": {
@@ -3557,6 +3373,19 @@
 		"vs/workbench/browser/parts/statusbar/statusbarPart": {
 			"hideStatusBar": "隱藏狀態列"
 		},
+		"vs/workbench/browser/parts/titlebar/commandCenterControl": {
+			"all": "顯示搜尋模式...",
+			"commandCenter-activeBackground": "命令中心的使用中背景色彩",
+			"commandCenter-activeForeground": "命令中心的使用中前景色彩",
+			"commandCenter-background": "命令中心的背景色彩",
+			"commandCenter-border": "命令中心的框線色彩",
+			"commandCenter-foreground": "命令中心的前景色彩",
+			"label.dfl": "搜尋",
+			"label1": "{0} {1}",
+			"label2": "{0} {1}",
+			"title": "搜尋 {0} ({1}) — {2}",
+			"title2": "搜尋 {0} — {1}"
+		},
 		"vs/workbench/browser/parts/titlebar/menubarControl": {
 			"DownloadingUpdate": "正在下載更新...",
 			"checkForUpdates": "檢查更新(&&U)...",
@@ -3578,9 +3407,12 @@
 			"restartToUpdate": "重新啟動以更新(&&U)"
 		},
 		"vs/workbench/browser/parts/titlebar/titlebarPart": {
+			"focusTitleBar": "焦點標題列",
+			"toggle.commandCenter": "命令中心",
+			"toggle.layout": "版面配置控制項"
+		},
+		"vs/workbench/browser/parts/titlebar/windowTitle": {
 			"devExtensionWindowTitlePrefix": "[延伸模組開發主機]",
-			"layoutControl.hide": "隱藏版面配置控制項",
-			"patchedWindowTitle": "[不支援]",
 			"userIsAdmin": "[系統管理員]",
 			"userIsSudo": "[超級使用者]"
 		},
@@ -3639,7 +3471,6 @@
 			"decorations.badges": "控制編輯器檔案裝飾是否須使用徽章。",
 			"decorations.colors": "控制編輯器檔案裝飾是否須使用色彩。",
 			"dirty": "`${dirty}`: 當使用中編輯器具有未儲存變更的指示器。",
-			"dropIntoEditor": "控制您是否可以按住 `shift` 鍵 (而非在編輯器中開啟檔案)，將檔案拖放到文字編輯器中。",
 			"editorOpenPositioning": "控制編輯器開啟的位置。選取 [左] 或 [右] 可在目前使用中編輯器的左方或右方開啟編輯器。選取 [第一個] 或 [最後一個] 可在目前使用中編輯器外，另開編輯器。",
 			"editorTabCloseButton": "控制編輯器索引標籤關閉按鈕的位置，或在設定為 [關閉] 時停用。當 `#workbench.editor.showTabs#` 停用時，會忽略此值。",
 			"enableMenuBarMnemonics": "控制是否可透過 ALT 快速鍵開啟主功能表。停用助憶鍵可改為將這些 ALT 快速鍵繫結到編輯器命令。",
@@ -3661,7 +3492,7 @@
 			"layoutcontrol.type.toggles": "顯示數個按鈕以切換面板和提要欄位的可見度。",
 			"limitEditorsEnablement": "控制是否應限制開啟的編輯器數目。啟用後，系統將關閉最近較少使用的編輯器，以為新開啟的編輯器騰出空間。",
 			"limitEditorsExcludeDirty": "控制開啟的編輯器數目上限是否應排除已變更的編輯器，以計入設定的限制。",
-			"limitEditorsMaximum": "控制已開啟編輯器的數目上限。使用 `#workbench.editor.limit.perEditorGroup#` 設定來根據編輯器群組，或針對所有群組控制此限制。",
+			"limitEditorsMaximum": "控制已開啟編輯器的數目上限。使用 {0} 設定來根據編輯器群組，或針對所有群組控制此限制。",
 			"localHistoryEnabled": "控制是否啟用本機檔案歷程記錄。啟用時，儲存的編輯器檔案內容會儲存到備份位置，可於稍後還原或檢閱該內容。變更此設定不會影響現有的本機檔案歷程記錄項目。",
 			"localHistoryMaxFileEntries": "控制每個檔案的本機檔案歷程記錄項目數目上限。當本機檔案歷程記錄項目數目超過此檔案數目時，將會捨棄最舊的項目。",
 			"localHistoryMaxFileSize": "控制要考慮視為本機檔案歷程記錄的檔案大小上限 (KB)。較大的檔案不會新增至本機檔案歷程記錄。變更此設定不會影響現有的本機檔案歷程記錄項目。",
@@ -3681,7 +3512,7 @@
 			"pinnedTabSizing": "控制釘選的編輯器索引標籤大小。釘選的索引標籤會排序在所有開啟的索引標籤之前，且通常在解除釘選前不會關閉。當 `#workbench.editor.showTabs#` 停用時，會忽略此值。",
 			"preserveInput": "控制上次鍵入命令選擇區的輸入是否應在下次將其開啟時還原。",
 			"remoteName": "`${remoteName}`: 例如 SSH",
-			"restoreViewState": "在編輯器關閉後又重新開啟時，還原上一個編輯器檢視狀態 (例如，捲動位置)。編輯器檢視狀態會依編輯器群組儲存，並在群組關閉時捨棄。使用 `#workbench.editor.sharedViewState#` 設定，在所有編輯器群組中使用最新的已知檢視狀態，以防找不到編輯器群組的上一個檢視狀態。",
+			"restoreViewState": "在編輯器關閉後又重新開啟時，還原上一個編輯器檢視狀態 (例如，捲動位置)。編輯器檢視狀態會依編輯器群組儲存，並在群組關閉時捨棄。使用 {0} 設定，在所有編輯器群組中使用最新的已知檢視狀態，以防找不到編輯器群組的上一個檢視狀態。",
 			"revealIfOpen": "控制若編輯器已開啟，是否在任何可見群組中予以顯示。若停用，編輯器通常會在目前的使用中編輯器群組內開啟。若啟用，已開啟的編輯器會在目前的使用中編輯器群組內顯示，而不是再次開啟。請注意，在某些情況下會忽略此設定，例如當強制讓編輯器在特定群組中或在目前使用中群組側方開啟時。",
 			"rootName": "`${rootName}`: 開啟的工作區或資料夾名稱 (例如 myFolder 或 myWorkspace)。",
 			"rootPath": "`${rootPath}`: 開啟的工作區或資料夾檔案路徑 (如 /Users/Development/myWorkspace)。",
@@ -3702,10 +3533,11 @@
 			"tabDescription": "控制編輯器的標籤格式。",
 			"tabScrollbarHeight": "控制編輯器標題區域中，定位字元和階層連結所用捲軸的高度。",
 			"tabSizing": "控制編輯器索引標籤的大小。當 `#workbench.editor.showTabs#` 停用時，會忽略此值。",
-			"untitledHint": "控制無標題提示在編輯器中應為內嵌文字、浮動按鈕，或隱藏。",
+			"untitledHint": "控制編輯器中是否顯示未命名的文字提示。",
 			"untitledLabelFormat": "控制無標題編輯器的標籤格式。",
 			"useSplitJSON": "控制是否要在將設定編輯為 JSON 時使用分割 JSON 編輯器。",
 			"viewVisibility": "控制檢視標頭動作的可見度。檢視標頭動作可為總是可見，或在檢視為焦點或暫留時才可見。",
+			"window.commandCenter": "顯示命令啟動器與視窗標題。只有當 {0} 設為 {1} 時，此設定才會生效。",
 			"window.confirmBeforeClose.always": "一律要求確認。",
 			"window.confirmBeforeClose.always.web": "一律嘗試要求確認。請注意，瀏覽器仍可能會決定不經確認就關閉索引標籤或視窗。",
 			"window.confirmBeforeClose.keyboardOnly": "只有在使用按鍵繫結關係時才要求確認。",
@@ -3713,7 +3545,7 @@
 			"window.confirmBeforeClose.never": "永不明確要求確認。",
 			"window.confirmBeforeClose.never.web": "除非即將遺失資料，否則從不明確要求確認。",
 			"window.menuBarVisibility.classic": "功能表顯示在視窗頂端，且只會在全螢幕模式下隱藏。",
-			"window.menuBarVisibility.compact": "功能表會在提要欄位中顯示為精簡按鈕。當 `#window.titleBarStyle#` 為 `native` 時，會忽略此值。",
+			"window.menuBarVisibility.compact": "功能表會在提要欄位中顯示為精簡按鈕。當 {0} 為 {1} 時，即會忽略此值。",
 			"window.menuBarVisibility.hidden": "一律隱藏功能表。",
 			"window.menuBarVisibility.toggle": "功能表已隱藏，但可透過 ALT 鍵顯示於視窗頂端。",
 			"window.menuBarVisibility.toggle.mac": "功能表已隱藏，但可透過執行 `Focus Application Menu` 命令顯示於視窗頂端。",
@@ -3725,7 +3557,7 @@
 			"window.openFoldersInNewWindow.default": "除非從應用程式內揀選資料夾 (例如透過 [檔案] 功能表)，否則其會在新視窗中開啟。",
 			"window.openFoldersInNewWindow.off": "資料夾將取代上次使用中的視窗。",
 			"window.openFoldersInNewWindow.on": "資料夾將在新視窗中開啟。",
-			"window.titleSeparator": "`window.title` 使用的分隔符號。",
+			"window.titleSeparator": "{0} 使用的分隔線。",
 			"windowConfigurationTitle": "視窗",
 			"windowTitle": "根據使用中的編輯器控制視窗標題。變數的替代以下列內容為依據:",
 			"workbench.activityBar.iconClickBehavior.focus": "若點選的項目已顯示，則聚焦於提要欄位。",
@@ -3777,7 +3609,7 @@
 			"zenMode.hideStatusBar": "控制開啟 Zen Mode 是否也會隱藏 Workbench 底部的狀態列。",
 			"zenMode.hideTabs": "控制開啟 Zen Mode 是否也會隱藏 Workbench 索引標籤。",
 			"zenMode.restore": "控制視窗如果在 Zen Mode 下結束，是否應還原為 Zen Mode。",
-			"zenMode.silentNotifications": "控制是否在無干擾模式下顯示通知。如果為 true，則只會快顯錯誤通知。",
+			"zenMode.silentNotifications": "控制處於 Zen 模式時是否應啟用通知的請勿打擾模式。如果為 True，則只會彈出錯誤通知。",
 			"zenModeConfigurationTitle": "Zen Mode"
 		},
 		"vs/workbench/common/actions": {
@@ -4013,7 +3845,6 @@
 		},
 		"vs/workbench/electron-sandbox/desktop.contribution": {
 			"argv.crashReporterId": "用於關聯此應用程式執行個體傳送之損毀報告的唯一識別碼。",
-			"argv.disableColorCorrectRendering": "解決色彩設定檔選取問題。只有在您遇到圖形問題時，才變更此選項。",
 			"argv.disableHardwareAcceleration": "停用硬體加速。只有在您遇到圖形問題時，才變更此選項。",
 			"argv.enableCrashReporter": "允許停用損毀報告，如果值已變更，則應重新啟動應用程式。",
 			"argv.enebleProposedApi": "為延伸模組識別碼 (例如 `vscode.git`) 清單啟用建議的 API。建議的 API 並不穩定，且可能在任何時候中斷而不發出警告，因此只應用於延伸模組開發及測試用途。",
@@ -4024,6 +3855,7 @@
 			"closeWhenEmpty": "控制關閉上個編輯器時，是否也應關閉視窗。此設定僅適用於未顯示資料夾的視窗。",
 			"dialogStyle": "調整對話方塊視窗的外觀。",
 			"enableCrashReporterDeprecated": "如果此設定為 False，則無論新設定的值如何，都不會傳送任何遙測。已過時，因為合併到 {0} 的設定中。",
+			"experimentalUseSandbox": "實驗性: 啟用時，視窗會透過 Electron API 啟用沙箱模式。",
 			"keyboardConfigurationTitle": "鍵盤",
 			"mergeAllWindowTabs": "合併所有視窗",
 			"miExit": "結束(&&X)",
@@ -4058,6 +3890,7 @@
 			"window.reopenFolders.one": "除非已開啟資料夾、工作區或檔案 (例如從命令列)，否則會重新開啟上一個使用中視窗。",
 			"window.reopenFolders.preserve": "一律重新開啟所有視窗。如果要開啟資料夾或工作區 (例如，從命令列開啟)，則除非先前已開啟過，否則會以新視窗的方式開啟。如果檔案已開啟過，將會在其中一個還原的視窗中開啟檔案。",
 			"windowConfigurationTitle": "視窗",
+			"windowControlsOverlay": "請使用平台提供的視窗控制項，而不是我們的 HTML 型視窗控制項。變更需要完整重新開機才能生效。",
 			"zoomLevel": "調整視窗的縮放比例。原始大小為 0，而且每個向上增量 (例如 1) 或向下增量 (例如 -1) 代表放大或縮小 20%。您也可以輸入小數，更細微地調整縮放比例。"
 		},
 		"vs/workbench/electron-sandbox/desktop.main": {
@@ -4132,15 +3965,6 @@
 			"audioCues.help.placeholder": "選取要播放的音訊提示",
 			"audioCues.help.settings": "啟用/停用音訊提示",
 			"disabled": "停用"
-		},
-		"vs/workbench/contrib/backup/electron-sandbox/backupTracker": {
-			"backupTrackerBackupFailed": "無法將下列已變更的編輯器儲存至備份位置。",
-			"backupTrackerConfirmFailed": "無法儲存或還原下列已變更的編輯器。",
-			"backupErrorDetails": "請先嘗試儲存或還原變更的編輯器，然後重試。",
-			"ok": "確定",
-			"backupBeforeShutdown": "正在等候已變更的編輯器備份...",
-			"saveBeforeShutdown": "正在等候已變更的編輯器儲存...",
-			"revertBeforeShutdown": "正在等候已變更的編輯器還原..."
 		},
 		"vs/workbench/contrib/bulkEdit/browser/bulkEditService": {
 			"areYouSureQuiteBulkEdit": "確定要結束嗎 {0}? '{1}' 正在進行。",
@@ -4230,21 +4054,6 @@
 			"to": "{0} 的呼叫者",
 			"tree.aria": "呼叫階層"
 		},
-		"vs/workbench/contrib/cli/node/cli.contribution": {
-			"shellCommand": "殼層命令",
-			"install": "在 PATH 中安裝 '{0}' 命令",
-			"not available": "此命令無法使用",
-			"ok": "確定",
-			"cancel2": "取消",
-			"warnEscalation": "Code 現在會提示輸入 'osascript' 取得系統管理員權限，以便安裝殼層命令。",
-			"cantCreateBinFolder": "無法建立 '/usr/local/bin'。",
-			"aborted": "已中止",
-			"successIn": "已成功在 PATH 中安裝殼層命令 '{0}'。",
-			"uninstall": "從 PATH 將 '{0}' 命令解除安裝",
-			"warnEscalationUninstall": "Code 現在會使用 'osascript' 提示取得系統管理員權限，以解除安裝殼層命令。",
-			"cantUninstall": "無法解除安裝殼層命令 '{0}'。",
-			"successFrom": "已成功從 PATH 解除安裝殼層命令 '{0}'。"
-		},
 		"vs/workbench/contrib/codeActions/browser/codeActionsContribution": {
 			"codeActionsOnSave": "要在儲存時執行的程式碼動作種類。",
 			"codeActionsOnSave.fixAll": "控制是否應在檔案儲存時執行自動修正動作。",
@@ -4292,6 +4101,10 @@
 			"removeTimeout": "移除限制"
 		},
 		"vs/workbench/contrib/codeEditor/browser/find/simpleFindWidget": {
+			"ariaSearchNoInput": "輸入搜尋輸入",
+			"ariaSearchNoResult": "已以 '{1}' 找到 {0}",
+			"ariaSearchNoResultEmpty": "已找到 {0}",
+			"ariaSearchNoResultWithLineNumNoCurrentMatch": "已以 '{1}' 找到 {0}",
 			"label.closeButton": "關閉",
 			"label.find": "尋找",
 			"label.nextMatchButton": "下一個相符項目",
@@ -4434,7 +4247,7 @@
 			"toggleColumnSelection": "切換資料行選取模式"
 		},
 		"vs/workbench/contrib/codeEditor/browser/toggleMinimap": {
-			"miShowMinimap": "顯示縮圖(&&M)",
+			"miMinimap": "縮圖(&&M)",
 			"toggleMinimap": "切換縮圖"
 		},
 		"vs/workbench/contrib/codeEditor/browser/toggleMultiCursorModifier": {
@@ -4459,14 +4272,7 @@
 			"wrapMinified": "啟用此檔案的換行"
 		},
 		"vs/workbench/contrib/codeEditor/browser/untitledTextEditorHint": {
-			"dontshow": "不要再顯示",
-			"keyboardBindingTooltip": "{0}",
-			"openADifferentEditor": "開啟不同的編輯器",
-			"or": " 或 ",
-			"selectAlanguage2": "選取語言",
-			"startTyping": "開始輸入以關閉，或",
-			"thisAgain": " 此訊息。",
-			"toGetStarted": "以開始使用。"
+			"message": "[[選取語言]] 或 [[開啟不同的編輯器]] 來開始使用。\r\n 開始輸入以關閉，或 [[不要再次顯示]]。"
 		},
 		"vs/workbench/contrib/codeEditor/electron-sandbox/selectionClipboard": {
 			"actions.pasteSelectionClipboard": "將選取項目貼上剪貼簿"
@@ -4519,6 +4325,8 @@
 		},
 		"vs/workbench/contrib/comments/browser/commentsEditorContribution": {
 			"comments.addCommand": "在目前的選取範圍上新增註解",
+			"comments.toggleCommenting": "切換編輯器註解",
+			"hasCommentingProvider": "開啟的工作區是否有註解或註解範圍。",
 			"hasCommentingRange": "使用中游標的位置是否有註解範圍",
 			"nextCommentThreadAction": "移至下一個註解執行緒",
 			"pickCommentService": "選取註解提供者",
@@ -4761,6 +4569,8 @@
 			"showSubSessionsInToolBar": "控制偵錯子工作階段是否顯示在偵錯工具列中。當此設定為 false 時，子工作階段上的停止命令也會停止父工作階段。",
 			"startDebugPlaceholder": "鍵入要執行的啟動組態名稱。",
 			"startDebuggingHelp": "開始偵錯",
+			"tasksQuickAccessHelp": "顯示所有偵錯主控台",
+			"tasksQuickAccessPlaceholder": "輸入要開啟的偵錯主控台名稱。",
 			"terminateThread": "終止執行緒",
 			"toolBarLocation": "控制偵錯工具列的位置。可以是在所有檢視中 `floating`; 在偵錯檢視中 `docked`; 或者 `hidden`。",
 			"variables": "變數",
@@ -4785,7 +4595,8 @@
 			"findExtension": "尋找 {0} 延伸模組",
 			"installExt": "安裝延伸模組...",
 			"installLanguage": "安裝 {0} 的延伸模組...",
-			"selectDebug": "選取環境"
+			"selectDebug": "選取偵錯工具",
+			"suggestedDebuggers": "建議"
 		},
 		"vs/workbench/contrib/debug/browser/debugColors": {
 			"debugIcon.continueForeground": "用於繼續的偵錯工具列圖示。",
@@ -4803,21 +4614,32 @@
 		},
 		"vs/workbench/contrib/debug/browser/debugCommands": {
 			"addInlineBreakpoint": "新增內嵌中斷點",
+			"callStackBottom": "瀏覽至呼叫堆疊底層",
+			"callStackDown": "向下瀏覽呼叫堆疊",
+			"callStackTop": "瀏覽至呼叫堆疊頂層",
+			"callStackUp": "向上瀏覽呼叫堆疊",
 			"chooseLocation": "選擇特定位置",
 			"continueDebug": "繼續",
 			"debug": "偵錯",
 			"disconnect": "中斷連線",
 			"disconnectSuspend": "中斷連線並暫止",
+			"editor.debug.action.stepIntoTargets.none": "沒有可用的步驟目標",
 			"focusSession": "焦點工作階段",
 			"jumpToCursor": "跳至資料指標",
+			"nextDebugConsole": "聚焦下一個偵錯主控台",
 			"noExecutableCode": "沒有任何可執行程式碼與目前的指標位置相關。",
 			"openLaunchJson": "開啟 '{0}'",
+			"openLoadedScript": "開啟已載入的指令碼...",
 			"pauseDebug": "暫停",
+			"prevDebugConsole": "聚焦上一個偵錯主控台",
 			"restartDebug": "重新啟動",
 			"selectAndStartDebugging": "選取並開始偵錯",
+			"selectDebugConsole": "選取偵錯主控台",
+			"selectDebugSession": "選取偵錯工作階段",
 			"startDebug": "開始偵錯",
 			"startWithoutDebugging": "開始但不偵錯",
 			"stepIntoDebug": "逐步執行",
+			"stepIntoTargetDebug": "逐步執行目標",
 			"stepOutDebug": "跳離函式",
 			"stepOverDebug": "不進入函式",
 			"stop": "停止"
@@ -4829,10 +4651,14 @@
 			"user settings": "使用者設定",
 			"workspace": "工作區"
 		},
+		"vs/workbench/contrib/debug/browser/debugConsoleQuickAccess": {
+			"workbench.action.debug.startDebug": "啟動新的偵錯工作階段"
+		},
 		"vs/workbench/contrib/debug/browser/debugEditorActions": {
 			"addToWatch": "加入監看",
 			"closeExceptionWidget": "關閉例外狀況小工具",
 			"conditionalBreakpointEditorAction": "偵錯: 新增條件中斷點...",
+			"editor.debug.action.stepIntoTargets.notAvailable": "此處無法使用步驟目標",
 			"evaluateInDebugConsole": "在偵錯主控台中評估",
 			"goToNextBreakpoint": "偵錯: 移至下一個中斷點",
 			"goToPreviousBreakpoint": "偵錯: 移至上一個中斷點",
@@ -4845,7 +4671,7 @@
 			"openDisassemblyView": "開啟反組譯碼檢視",
 			"runToCursor": "執行至游標處",
 			"showDebugHover": "偵錯: 動態顯示",
-			"stepIntoTargets": "逐步執行目標...",
+			"stepIntoTargets": "逐步執行目標",
 			"toggleBreakpointAction": "偵錯: 切換中斷點",
 			"toggleDisassemblyViewSourceCode": "在反組解碼檢視中切換原始程式碼"
 		},
@@ -4910,6 +4736,7 @@
 			"loadedScriptsViewIcon": "[載入的指令碼] 檢視的檢視圖示。",
 			"runViewIcon": "[執行] 檢視的檢視圖示。",
 			"variablesViewIcon": "[變數] 檢視的檢視圖示。",
+			"watchExpressionRemove": "監看式檢視中 [移除] 動作的圖示。",
 			"watchExpressionsAdd": "監看式檢視中新增動作的圖示。",
 			"watchExpressionsAddFuncBreakpoint": "監看式檢視中新增函式中斷點動作的圖示。",
 			"watchExpressionsRemoveAll": "監看式檢視中移除所有動作的圖示。",
@@ -4938,7 +4765,7 @@
 			"debugTrust": "從您的工作區執行組建工作和程式碼的偵錯。",
 			"debugTypeMissing": "遺漏所選啟動設定的屬性 'type'。",
 			"debugTypeNotSupported": "不支援設定的偵錯類型 '{0}'。",
-			"debuggingPaused": "{0}:{1}，偵錯已暫停 {2}，{3}",
+			"debuggingPaused": "{0}, 偵錯已暫停 {1}, {2}:{3}",
 			"installAdditionalDebuggers": "安裝 {0} 延伸模組",
 			"launchJsonDoesNotExist": "傳遞的工作區資料夾中沒有 'launch.json'。",
 			"multipleConfigurationNamesInWorkspace": "工作區中有多個啟動組態 '{0}'。請使用資料夾名稱以符合組態。",
@@ -4954,6 +4781,11 @@
 			"debuggingStopped": "偵錯已停止。",
 			"noDebugAdapter": "沒有任何可用的偵錯工具，無法傳送 '{0}'",
 			"sessionNotReadyForBreakpoints": "工作階段還沒準備好使用中斷點"
+		},
+		"vs/workbench/contrib/debug/browser/debugSessionPicker": {
+			"moveFocusedView.selectView": "根據名稱搜尋偵錯工作階段",
+			"workbench.action.debug.spawnFrom": "工作階段 {0} 從 {1} 衍生",
+			"workbench.action.debug.startDebug": "啟動新的偵錯工作階段"
 		},
 		"vs/workbench/contrib/debug/browser/debugStatus": {
 			"debugTarget": "偵錯: {0}",
@@ -5187,6 +5019,7 @@
 			"vscode.extension.contributes.debuggers.args": "要傳遞至配接器的選擇性引數。",
 			"vscode.extension.contributes.debuggers.configurationAttributes": "JSON 結構描述組態，用於驗證 'launch.json'。",
 			"vscode.extension.contributes.debuggers.configurationSnippets": "用於在 'launch.json' 中新增組態的程式碼片段。",
+			"vscode.extension.contributes.debuggers.deprecated": "選擇性訊息，可將此偵錯類型標示為已過時。",
 			"vscode.extension.contributes.debuggers.initialConfigurations": "組態，用於產生初始 'launch.json'。",
 			"vscode.extension.contributes.debuggers.label": "此偵錯配接器的顯示名稱。",
 			"vscode.extension.contributes.debuggers.languages": "可將偵錯延伸模組視為「預設偵錯工具」的語言清單。",
@@ -5222,6 +5055,9 @@
 		"vs/workbench/contrib/debug/common/disassemblyViewInput": {
 			"disassemblyInputName": "反組譯碼"
 		},
+		"vs/workbench/contrib/debug/common/loadedScriptsPicker": {
+			"moveFocusedView.selectView": "依名稱搜尋載入的指令碼"
+		},
 		"vs/workbench/contrib/debug/common/replModel": {
 			"consoleCleared": "已清除主控台"
 		},
@@ -5231,19 +5067,60 @@
 			"unableToLaunchDebugAdapter": "無法從 '{0}' 啟動偵錯配接器。",
 			"unableToLaunchDebugAdapterNoArgs": "無法啟動偵錯配接器。"
 		},
-		"vs/workbench/contrib/dialogs/browser/dialogHandler": {
-			"yesButton": "是(&&Y)",
-			"cancelButton": "取消",
-			"aboutDetail": "版本: {0}\r\n認可: {1}\r\n日期: {2}\r\n瀏覽器: {3}",
-			"copy": "複製",
-			"ok": "確定"
+		"vs/workbench/contrib/deprecatedExtensionMigrator/browser/deprecatedExtensionMigrator.contribution": {
+			"bracketPairColorizer.notification": "擴延伸模組 'Bracket pair Colorizer' 已停用，因為它已被取代。",
+			"bracketPairColorizer.notification.action.enableNative": "啟用原生括弧組著色",
+			"bracketPairColorizer.notification.action.showMoreInfo": "詳細資訊",
+			"bracketPairColorizer.notification.action.uninstall": "將延伸模組解除安裝"
 		},
-		"vs/workbench/contrib/dialogs/electron-sandbox/dialogHandler": {
-			"yesButton": "是(&&Y)",
-			"cancelButton": "取消",
-			"aboutDetail": "版本: {0}\r\n認可: {1}\r\n日期: {2}\r\nElectron: {3}\r\nChrome: {4}\r\nNode.js: {5}\r\nV8: {6}\r\nOS: {7}",
-			"okButton": "確定",
-			"copy": "複製(&&C)"
+		"vs/workbench/contrib/editSessions/browser/editSessions.contribution": {
+			"client too old": "請升級至較新版本的 {0} 以繼續此編輯工作階段。",
+			"continue edit session": "繼續編輯工作階段...",
+			"continue edit session in local folder": "在本機資料夾中開啟",
+			"continueEditSession.openLocalFolder.title": "選取本機資料夾以在以下位置繼續您的編輯工作階段",
+			"continueEditSessionExtPoint": "提供在不同環境中繼續目前編輯工作階段的選項",
+			"continueEditSessionExtPoint.command": "要執行之命令的識別碼。命令必須在 'commands'-section 中宣告，並傳回代表可繼續目前編輯工作階段之不同環境的 URI。",
+			"continueEditSessionExtPoint.group": "此項目所屬的群組。",
+			"continueEditSessionExtPoint.when": "顯示此項目必須為 True 的條件。",
+			"continueEditSessionItem.openInLocalFolder": "在本機資料夾中開啟",
+			"continueEditSessionPick.placeholder": "選擇您要如何繼續工作",
+			"continueEditSessionPick.title": "繼續編輯工作階段...",
+			"editSessionsEnabled": "在網頁、桌面或裝置之間切換時，控制是否顯示啟用雲端的動作，以儲存及繼續未提交的變更。",
+			"no edit session": "沒有要繼續的編輯工作階段。",
+			"no edit session content for ref": "無法繼續識別碼 {0} 的編輯工作階段內容。",
+			"no edits to store": "已略過儲存編輯工作階段，因為沒有要儲存的編輯。",
+			"payload failed": "無法儲存您的編輯工作階段。",
+			"payload too large": "您的編輯工作階段超過大小限制，因此無法儲存。",
+			"resume edit session warning": "繼續您的編輯工作階段可能會覆寫您現有未提交的變更。您要繼續嗎?",
+			"resume failed": "無法繼續您的編輯工作階段。",
+			"resume latest.v2": "繼續最新的編輯工作階段",
+			"resuming edit session": "正在繼續編輯工作階段...",
+			"show edit session": "顯示編輯工作階段",
+			"store current.v2": "儲存目前的編輯工作階段",
+			"storing edit session": "正在儲存編輯工作階段..."
+		},
+		"vs/workbench/contrib/editSessions/browser/editSessionsViews": {
+			"confirm delete": "確定要使用 ref {0} 永久刪除編輯工作階段嗎? 您無法復原此動作。",
+			"edit sessions data": "所有工作階段",
+			"open file": "開啟檔案",
+			"workbench.editSessions.actions.delete": "刪除編輯工作模式",
+			"workbench.editSessions.actions.resume": "繼續編輯工作模式"
+		},
+		"vs/workbench/contrib/editSessions/browser/editSessionsWorkbenchService": {
+			"account preference": "登入以使用 [編輯工作階段]",
+			"choose account placeholder": "選取要用於登入的帳戶",
+			"clear data confirm": "是",
+			"delete all edit sessions": "從雲端刪除所有儲存的編輯工作階段。",
+			"others": "其他",
+			"reset auth.v2": "登出編輯工作階段",
+			"sign in using account": "利用 {0} 登入",
+			"sign out of edit sessions clear data prompt": "您要登出編輯工作階段嗎?",
+			"signed in": "已登入"
+		},
+		"vs/workbench/contrib/editSessions/common/editSessions": {
+			"edit sessions": "編輯工作階段",
+			"editSessionViewIcon": "檢視編輯工作階檢視的圖示。",
+			"session sync": "編輯工作階段"
 		},
 		"vs/workbench/contrib/emmet/browser/actions/expandAbbreviation": {
 			"expandAbbreviationAction": "Emmet: 展開縮寫",
@@ -5280,7 +5157,7 @@
 		"vs/workbench/contrib/extensions/browser/extensionEditor": {
 			"JSON Validation": "JSON 驗證 ({0})",
 			"Marketplace": "市集",
-			"Marketplace Info": "Marketplace 訊息",
+			"Marketplace Info": "其他資訊",
 			"Notebook id": "識別碼",
 			"Notebook mimetypes": "MIME 類型",
 			"Notebook name": "名稱",
@@ -5362,10 +5239,9 @@
 			"publisher": "發行者",
 			"publisher verified tooltip": "此發行者已驗證 {0} 的擁有權",
 			"rating": "評等",
-			"recommendationHasBeenIgnored": "您已選擇不接收此延伸模組的建議項目。",
 			"release date": "發行日期",
 			"repository": "儲存庫",
-			"resources": "資源",
+			"resources": "延伸模組資源",
 			"runtimeStatus": "執行階段狀態",
 			"runtimeStatus description": "擴充功能執行階段狀態",
 			"schema": "結構描述",
@@ -5442,6 +5318,7 @@
 			"extensionsConfigurationTitle": "延伸模組",
 			"extensionsIgnoreRecommendations": "啟用時，延伸模組建議的通知就不會顯示。",
 			"extensionsShowRecommendationsOnlyOnDemand_Deprecated": "此設定已淘汰。請使用 extensions.ignoreRecommendations 設定來控制建議通知。預設會使用延伸模組檢視的可見度動作來隱藏建議檢視。",
+			"extensionsUseUtilityProcess": "啟用時，將會使用新的 UtilityProcess Electron API 啟動延伸主機。",
 			"extensionsWebWorker": "啟用 Web 背景工作延伸主機。",
 			"extensionsWebWorker.auto": "當網頁擴充功能需要時，將會啟動背景工作角色延伸主機。",
 			"extensionsWebWorker.false": "永遠不啟動背景工作角色延伸主機。",
@@ -5476,8 +5353,8 @@
 			"notFound": "找不到延伸模組 '{0}'。",
 			"notInstalled": "未安裝延伸模組 '{0}'。請務必包含發行者的完整延伸模組識別碼，例如 ms-vscode.csharp。",
 			"outdated filter": "過期",
-			"recently published filter": "最近發佈",
-			"recentlyPublishedExtensions": "顯示最近發佈的延伸模組",
+			"recently published filter": "最近發布",
+			"recentlyPublishedExtensions": "顯示最近發布的延伸模組",
 			"refreshExtension": "重新整理",
 			"show pre-release version": "顯示發行前版本",
 			"show released version": "顯示發行前版本",
@@ -5493,7 +5370,7 @@
 			"showRecommendedExtensions": "顯示建議的延伸模組",
 			"showRecommendedKeymapExtensionsShort": "按鍵對應",
 			"showWorkspaceUnsupportedExtensions": "顯示工作區不支援的延伸模組",
-			"sort by date": "發佈日期",
+			"sort by date": "發布日期",
 			"sort by installs": "安裝次數",
 			"sort by name": "名稱",
 			"sort by rating": "評等",
@@ -5513,6 +5390,7 @@
 			"workbench.extensions.action.undoIgnoredRecommendation": "復原已忽略的建議",
 			"workbench.extensions.installExtension.arg.decription": "延伸模組識別碼或 VSIX 資源 uri",
 			"workbench.extensions.installExtension.description": "安裝指定的延伸模組",
+			"workbench.extensions.installExtension.option.context": "安裝的內容。這是 JSON 物件，可用來將任何資訊傳遞給安裝處理常式。例如 `{skipWalkthrough: true}` 將會在安裝時跳過開啟逐步解說。",
 			"workbench.extensions.installExtension.option.donotSync": "啟用後，當 [設定同步] 開啟時，VS Code 不會同步此延伸模組。",
 			"workbench.extensions.installExtension.option.installOnlyNewlyAddedFromExtensionPackVSIX": "啟用時，VS Code 只會從延伸模組套件 VSIX 安裝新增的延伸模組。只有在安裝 VSIX 時，才考慮使用此選項。",
 			"workbench.extensions.installExtension.option.installPreReleaseVersion": "啟用時，VS Code 會安裝延伸模組的發行前版本 (如果可用)。",
@@ -5534,14 +5412,23 @@
 			"OpenExtensionsFile.failed": "無法在 '.vscode' 資料夾 ({0}) 中建立 'extensions.json' 檔案。",
 			"ReinstallAction.success": "延伸模組 {0} 已重新安裝完成。",
 			"ReinstallAction.successReload": "請重新載入 Visual Studio Code，以完成延伸模組 {0} 的重新安裝。",
+			"Show alternate extension": "開啟 {0}",
 			"Uninstalling": "正在解除安裝",
 			"VS Code for Web": "{0} 網頁版",
+			"cancel": "取消",
 			"cannot be installed": "無法在 {1} 中使用 '{0}' 延伸模組。若要深入了解，請按一下 [詳細資訊]。",
 			"check logs": "如需詳細資料，請查看[記錄]({0})。",
 			"close": "關閉",
+			"configure in settings": "設定",
 			"configureWorkspaceFolderRecommendedExtensions": "設定建議的延伸模組 (工作區資料夾) ",
 			"configureWorkspaceRecommendedExtensions": "設定建議的延伸模組 (工作區)",
 			"current": "目前",
+			"deprecated message": "此延伸模組已被取代且不再維護。",
+			"deprecated tooltip": "此延伸模組已被取代且不再維護。",
+			"deprecated with alternate extension message": "此延伸模組已被取代。請改用 {0} 延伸模組。",
+			"deprecated with alternate extension tooltip": "此延伸模組已被取代。請改用 {0} 延伸模組。",
+			"deprecated with alternate settings message": "此延伸模組已被取代，因為此功能現在已內建為 VS Code。",
+			"deprecated with alternate settings tooltip": "此延伸模組已被取代，因為此功能現在已內建為 VS Code。設定這些 {0} 以使用此功能。",
 			"disableAction": "停用",
 			"disableForWorkspaceAction": "停用 (工作區)",
 			"disableForWorkspaceActionToolTip": "僅在此工作區中停用此延伸模組",
@@ -5578,10 +5465,13 @@
 			"globally enabled": "已全域啟用此延伸模組。",
 			"ignoreExtensionRecommendation": "不要再建議此延伸模組",
 			"ignored": "同步期間會忽略此延伸模組",
+			"incompatible": "無法安裝 '{0}' 延伸模組，因為它不相容。",
 			"incompatible platform": "{1} 中無法針對 {2} 使用 {0}' 延伸模組。",
 			"install": "安裝",
 			"install another version": "安裝另一個版本...",
+			"install anyway": "仍要安裝",
 			"install browser": "安裝在瀏覽器中",
+			"install confirmation": "確定要安裝 {0} 嗎?",
 			"install everywhere tooltip": "在所有已同步的 {0} 個執行個體中安裝此延伸模組",
 			"install extension in remote": "{0}，位於 {1}",
 			"install extension in remote and do not sync": "{0} 於 {1} ({2})",
@@ -5610,6 +5500,9 @@
 			"learn why": "了解原因。",
 			"malicious tooltip": "這個延伸模組曾經被回報是有問題的。",
 			"manage": "管理",
+			"migrate": "移轉",
+			"migrate to": "移轉到 {0}",
+			"migrateExtension": "移轉",
 			"more information": "詳細資訊",
 			"no local extensions": "沒有任何要安裝的延伸模組。",
 			"no versions": "此延伸模組沒有其他版本。",
@@ -5632,9 +5525,12 @@
 			"selectExtension": "選擇延伸模組",
 			"selectExtensionToReinstall": "選取要重新安裝的延伸模組",
 			"selectVersion": "選擇安裝的版本",
+			"settings": "設定",
 			"showRecommendedExtension": "顯示建議的延伸模組",
 			"switch to pre-release version": "切換到發行前版本",
+			"switch to pre-release version tooltip": "切換至此延伸模組的發行前版本",
 			"switch to release version": "切換至發行版本",
+			"switch to release version tooltip": "切換至此延伸模組的發行版本",
 			"sync": "同步此延伸模組",
 			"synced": "已同步此延伸模組",
 			"undo": "復原",
@@ -5642,8 +5538,6 @@
 			"uninstallExtensionComplete": "請重新載入 Visual Studio Code 來完成延伸模組 {0} 的解除安裝。",
 			"uninstallExtensionStart": "已開始將延伸模組 {0} 解除安裝。",
 			"uninstalled": "已解除安裝",
-			"unsupported prerelease switch tooltip": "此延伸模組現在已是發行前版本 {0} 延伸模組的一部分。",
-			"unsupported tooltip": "已不再支援此延伸模組。",
 			"update operation": "更新 '{0}' 延伸模組時發生錯誤。",
 			"updateAction": "更新",
 			"updateExtensionComplete": "將延伸模組 {0} 更新至 {1} 版已完成。",
@@ -5651,7 +5545,9 @@
 			"updateToLatestVersion": "更新至 {0}",
 			"updateToTargetPlatformVersion": "更新為 {0} 版本",
 			"updated": "已更新",
+			"workbench.extensions.action.clearLanguage": "清除顯示語言",
 			"workbench.extensions.action.setColorTheme": "設定色彩主題",
+			"workbench.extensions.action.setDisplayLanguage": "設定顯示語言",
 			"workbench.extensions.action.setFileIconTheme": "設定檔案圖示主題",
 			"workbench.extensions.action.setProductIconTheme": "設定產品圖示主題",
 			"workspace disabled": "使用者已為此工作區停用此延伸模組。",
@@ -5686,6 +5582,7 @@
 			"ratingIcon": "延伸模組檢視和編輯器中隨著評等一起顯示的圖示。",
 			"refreshIcon": "延伸模組檢視中 [重新整理] 動作的圖示。",
 			"remoteIcon": "延伸模組檢視和編輯器中，表示延伸模組為遠端的圖示。",
+			"sponsorIcon": "用於贊助延伸模組在延伸模組檢視與編輯器中的圖示。",
 			"starEmptyIcon": "延伸模組編輯器中用於評等的空星形圖示。",
 			"starFullIcon": "延伸模組編輯器中用於評等的實星形圖示。",
 			"starHalfIcon": "延伸模組編輯器中用於評等的半星形圖示。",
@@ -5712,6 +5609,7 @@
 			"builtin": "內建",
 			"builtinFeatureExtensions": "功能",
 			"builtinProgrammingLanguageExtensions": "程式語言",
+			"deprecated": "已取代",
 			"disabled": "停用",
 			"disabledExtensions": "停用",
 			"enabled": "啟用",
@@ -5744,7 +5642,8 @@
 		},
 		"vs/workbench/contrib/extensions/browser/extensionsViews": {
 			"error": "擷取延伸模組時發生錯誤。{0}",
-			"extension.arialabel": "{0}，{1}，{2}，{3}",
+			"extension.arialabel.deprecated": "已取代",
+			"extension.arialabel.publihser": "發行者 {0}",
 			"extensions": "延伸模組",
 			"no extensions found": "找不到延伸模組。",
 			"no local extensions": "沒有任何要安裝的延伸模組。",
@@ -5756,6 +5655,7 @@
 			"Show prerelease version": "發行前版本",
 			"activation": "啟用時間",
 			"dependencies": "顯示相依性",
+			"extensionIcon.sponsorForeground": "延伸模組贊助者的圖示色彩。",
 			"extensionIconStarForeground": "延伸模組分級的圖示色彩。",
 			"extensionIconVerifiedForeground": "用於延伸模組已驗證發行者的圖示色彩。",
 			"extensionPreReleaseForeground": "發行前版本延伸模組的圖示色彩。",
@@ -5764,7 +5664,10 @@
 			"messages": "{0} 則訊息",
 			"pre-release-label": "發行前版本",
 			"publisher verified tooltip": "此發行者已驗證 {0} 的擁有權",
+			"ratedLabel": "平均評等: {0} (最高為 5)",
+			"recommendationHasBeenIgnored": "您已選擇不接收此延伸模組的建議項目。",
 			"remote extension title": "{0} 中的延伸模組",
+			"sponsor": "贊助者",
 			"startup": "啟動",
 			"syncingore.label": "同步期間會忽略此延伸模組。",
 			"uncaught error": "1 個未攔截錯誤",
@@ -5854,6 +5757,8 @@
 		"vs/workbench/contrib/extensions/electron-sandbox/runtimeExtensionsEditor": {
 			"extensionHostProfileStart": "啟動延伸主機設定檔",
 			"saveExtensionHostProfile": "儲存延伸主機設定檔",
+			"saveprofile.dialogTitle": "儲存延伸主機設定檔",
+			"saveprofile.saveButton": "儲存",
 			"stopExtensionHostProfileStart": "停止延伸主機設定檔"
 		},
 		"vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution": {
@@ -6070,6 +5975,7 @@
 			"genericRevertError": "無法還原 '{0}': {1}",
 			"genericSaveError": "無法儲存 '{0}': {1}",
 			"modifiedLabel": "{0} (檔案中) ↔ {1}",
+			"newFileCommand.saveLabel": "建立檔案",
 			"retry": "重試"
 		},
 		"vs/workbench/contrib/files/browser/fileConstants": {
@@ -6117,7 +6023,7 @@
 		"vs/workbench/contrib/files/browser/files.contribution": {
 			"askUser": "將會拒絕儲存，並要求手動解決儲存衝突。",
 			"associations": "將檔案關聯設定為語言 (例如 `\"*.extension\": \"html\"`)。這些語言優先於已安裝語言的預設關聯。",
-			"autoGuessEncoding": "啟用時，編輯器會在開啟檔案時嘗試猜測字元集編碼。此設定也可以設定為根據語言。請注意，文字搜尋不考慮此設定，只會遵守 '#files.encoding#'。",
+			"autoGuessEncoding": "啟用時，編輯器會在開啟檔案時嘗試猜測字元集編碼。此設定也可以設定為根據語言。請注意，文字搜尋並不考慮此設定，只會遵守 {0}。",
 			"autoReveal": "控制總管是否在開啟檔案時自動加以顯示及選取。",
 			"autoReveal.focusNoScroll": "將不會捲動檔案使其出現於檢視中，但仍會聚焦於檔案上。",
 			"autoReveal.off": "將不會顯示及選取檔案。",
@@ -6146,14 +6052,16 @@
 			"eol.auto": "使用作業系統專用的行尾字元。",
 			"everything": "將整個檔案格式化。",
 			"exclude": "設定排除檔案與資料夾的 [Glob 模式](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)。例如，檔案總管會根據此設定，決定要顯示或隱藏的檔案與資料夾。請參閱 '#search.exclude#' 設定，定義搜尋特定的排除項目。",
+			"excludeGitignore": "控制是否應從總管剖析及排除 .gitignore 中的項目。類似於 {0}。",
 			"expandSingleFolderWorkspaces": "控制總管是否應在初始化期間展開只包含一個資料夾的多根工作區",
 			"explorer.decorations.badges": "控制檔案裝飾是否須使用徽章。",
 			"explorer.decorations.colors": "控制檔案裝飾是否須使用色彩。",
 			"explorer.incrementalNaming": "控制在貼上時為重複總管項目指定新名稱時要使用的命名策略。",
 			"explorerConfigurationTitle": "檔案總管",
+			"falseDescription": "停用模式。",
 			"fileNesting.description": "每個索引鍵模式可能包含符合任何字串的單一 '*' 字元。",
 			"fileNestingEnabled": "控制是否在檔案總管中啟用檔案巢狀。檔案巢狀可讓目錄中的相關檔案以視覺方式群組在單一父檔案下。",
-			"fileNestingExpand": "控制是否自動展開檔案巢狀。必須設定 `#explorer.fileNesting.enabled#`，此設定才能生效。",
+			"fileNestingExpand": "控制是否自動展開檔案巢狀。必須設定 {0}，此設定才能生效。",
 			"fileNestingPatterns": "控制檔案總管中的巢狀檔案。每個 __Item__ 代表父系模式，且可能包含符合任何字串的單一 '*' 字元。每個 __Value__ 代表子模式的逗號分隔清單，這些子模式應該以巢狀方式顯示在指定父系下。子模式可能包含數個特殊權杖:\r\n- `${capture}`: 符合父模式\r\n中 '*' 的解析值- `${basename}`: 符合父檔案的主檔名，`file.ts`\r\n 中的 'file'- `${extname}`: 符合父檔案的副檔名，`file.ts`\r\n 中的 'ts'- `${dirname}`: 符合父檔案的目錄名稱，`src/file.ts`\r\n 中的 'src'- `*`: 符合任何字串，每個子模式只能使用一次",
 			"files.autoSave.afterDelay": "設定 `#files.autoSaveDelay#` 後，系統將自動儲存具有變更的編輯器。",
 			"files.autoSave.off": "系統永遠不會自動儲存具有變更的編輯器。",
@@ -6200,6 +6108,7 @@
 			"sortOrderLexicographicOptions.upper": "大寫名稱會在小寫名稱之前分組在一起。",
 			"trimFinalNewlines": "若啟用，則會在儲存檔案時，修剪檔案末新行尾的所有新行。",
 			"trimTrailingWhitespace": "若啟用，將在儲存檔案時修剪尾端空白。",
+			"trueDescription": "啟用模式。",
 			"useTrash": "刪除時將檔案/資料夾移至作業系統垃圾桶 (Windows 為資源回收筒)。停用此項目會永久刪除檔案/資料夾。",
 			"watcherExclude": "設定要從檔案監視中排除的路徑或 Glob 模式。相對路徑或基本 Glob 模式 (例如 `build/output` or `*.js`) 將會使用目前開啟的工作區解析為絕對路徑。複雜 Glob 模式在絕對路徑上必須相符，(例如，首碼為 '**/' 或完整路徑及尾碼 '/**'，才能比對路徑中的檔案)，以正確比對 (例如 '**/build/output/**' 或 '/Users/name/workspaces/project/build/output/**')。當您遇到耗用大量 CPU 的檔案監看程式處理序時，請務必排除較不感興趣的大型資料夾 (例如組建輸出資料夾)。",
 			"watcherInclude": "設定其他路徑以監看工作區內的變更。根據預設，將遞迴監看所有工作區資料夾，符號連結資料夾除外。您可以明確新增絕對或相對路徑，以支援監看符號連結資料夾。相對路徑將使用目前開啟的工作區解析為絕對路徑。"
@@ -6267,7 +6176,8 @@
 			"explorerViewletVisible": "當 [總管] Viewlet 可見時為 true。",
 			"filesExplorerFocus": "當焦點在 [總管] 檢視中時為 true。",
 			"openEditorsFocus": "當焦點在 [開放式編輯器] 檢視中時為 true。",
-			"openEditorsVisible": "當 [開放式編輯器] 檢視可見時為 true。"
+			"openEditorsVisible": "當 [開放式編輯器] 檢視可見時為 true。",
+			"viewHasSomeCollapsibleItem": "當 [總管] 檢視中的工作區有一些可摺疊的根子系時，為 True。"
 		},
 		"vs/workbench/contrib/files/electron-sandbox/fileActions.contribution": {
 			"filesCategory": "檔案",
@@ -6329,7 +6239,9 @@
 			"interactive.input.focus": "將焦點放在互動式視窗中的輸入編輯器",
 			"interactive.open": "開啟互動視窗",
 			"interactiveScrollToBottom": "捲動至底端",
-			"interactiveScrollToTop": "捲動至頂端"
+			"interactiveScrollToTop": "捲動至頂端",
+			"interactiveWindow.alwaysScrollOnNewCell": "自動捲動互動視窗，以顯示上次執行陳述式的輸出。如果此值為 false，則只有在最後一個儲存格已經是捲動到的儲存格時，視窗才會捲動。",
+			"interactiveWindow.restore": "控制是否應跨視窗重載還原互動式視窗會話/歷程記錄。互動式 Windows 中使用的控制器狀態是否在視窗重載時保持不變，是否由參與控制器的擴充功能控制。"
 		},
 		"vs/workbench/contrib/interactive/browser/interactiveEditor": {
 			"interactiveInputPlaceHolder": "在此輸入 {0} 代碼，然後按 {1} 即可執行"
@@ -6399,7 +6311,8 @@
 			"renameLocalHistoryPlaceholder": "輸入本機歷程記錄項目的新名稱",
 			"restoreButtonLabel": "還原(&&R)",
 			"restoreViaPicker.entryPlaceholder": "選取要開啟的本機歷程記錄項目",
-			"restoreViaPicker.filePlaceholder": "選取檔案以為下列項目顯示本機歷程記錄"
+			"restoreViaPicker.filePlaceholder": "選取檔案以為下列項目顯示本機歷程記錄",
+			"unableToRestore": "無法還原使用者 '{0}'。"
 		},
 		"vs/workbench/contrib/localHistory/browser/localHistoryTimeline": {
 			"localHistory": "本機歷程記錄"
@@ -6409,7 +6322,22 @@
 			"revealInMac": "在 Finder 中顯示",
 			"revealInWindows": "在檔案總管中顯示"
 		},
-		"vs/workbench/contrib/localizations/browser/localizations.contribution": {
+		"vs/workbench/contrib/localization/browser/localizationsActions": {
+			"available": "可用",
+			"chooseLocale": "選取顯示語言",
+			"clearDisplayLanguage": "清除顯示器使用語言",
+			"configureLocale": "設定顯示語言",
+			"installed": "已安裝"
+		},
+		"vs/workbench/contrib/localization/electron-sandbox/localeService": {
+			"argvInvalid": "無法寫入顯示語言。請開啟執行階段設定，更正其中的錯誤/警告，然後再試一次。",
+			"installing": "正在安裝 {0} 語言支援...",
+			"openArgv": "開啟執行階段設定",
+			"restart": "重新啟動(&&R)",
+			"restartDisplayLanguageDetail": "按重新啟動按鈕以重新啟動 {0} 並設定更顯示語言為 {1}。",
+			"restartDisplayLanguageMessage": "若要變更顯示語言，{0} 必須重新啟動"
+		},
+		"vs/workbench/contrib/localization/electron-sandbox/localization.contribution": {
 			"activateLanguagePack": "若要在 {0} 中使用 VS Code，VS Code 就需要重新啟動。",
 			"changeAndRestart": "變更語言並重新啟動",
 			"doNotChangeAndRestart": "不變更語言",
@@ -6426,21 +6354,14 @@
 			"vscode.extension.contributes.localizations.translations.id.pattern": "轉譯 VS 程式碼或延伸模組時，識別碼應分別使用 `vscode` 或 `publisherId.extensionName` 的格式。",
 			"vscode.extension.contributes.localizations.translations.path": "包含語言翻譯的檔案相對路徑。"
 		},
-		"vs/workbench/contrib/localizations/browser/localizationsActions": {
-			"chooseDisplayLanguage": "選取顯示語言",
-			"configureLocale": "設定顯示語言",
-			"installAdditionalLanguages": "安裝其他語言…",
-			"relaunchDisplayLanguageDetail": "按重新啟動按鈕以重新啟動 {0} 並變更顯示語言。",
-			"relaunchDisplayLanguageMessage": "必須重新啟動，顯示語言的變更才會生效。",
-			"restart": "重新啟動(&&R)"
-		},
-		"vs/workbench/contrib/localizations/browser/minimalTranslations": {
+		"vs/workbench/contrib/localization/electron-sandbox/minimalTranslations": {
 			"installAndRestart": "安裝並重新啟動",
 			"installAndRestartMessage": "安裝語言套件以將顯示語言變更為 {0}。",
 			"searchMarketplace": "搜尋市集",
 			"showLanguagePackExtensions": "在 Marketplace 中搜尋語言套件以將顯示語言變更為 {0}。"
 		},
 		"vs/workbench/contrib/logs/common/logs.contribution": {
+			"editSessionsLog": "編輯工作階段",
 			"rendererLog": "視窗",
 			"show window log": "顯示視窗記錄",
 			"telemetryLog": "遙測",
@@ -6471,9 +6392,6 @@
 			"openExtensionLogsFolder": "開啟擴充記錄資料夾",
 			"openLogsFolder": "開啟記錄資料夾"
 		},
-		"vs/workbench/contrib/markers/browser/markers": {
-			"totalProblems": "共 {0} 項問題"
-		},
 		"vs/workbench/contrib/markers/browser/markers.contribution": {
 			"clearFiltersText": "清除篩選文字",
 			"collapseAll": "全部摺疊",
@@ -6492,13 +6410,22 @@
 			"status.problems": "問題",
 			"totalErrors": "錯誤: {0}",
 			"totalInfos": "資訊: {0}",
-			"totalWarnings": "警告: {0}"
+			"totalProblems": "共 {0} 項問題",
+			"totalWarnings": "警告: {0}",
+			"viewAsTable": "以資料表方式檢視",
+			"viewAsTree": "以樹狀方式檢視"
 		},
 		"vs/workbench/contrib/markers/browser/markersFileDecorations": {
 			"label": "問題",
 			"markers.showOnFile": "在檔案和資料夾上顯示錯誤與警告。",
 			"tooltip.1": "此檔案發生 1 個問題",
 			"tooltip.N": "此檔案發生 {0} 個問題"
+		},
+		"vs/workbench/contrib/markers/browser/markersTable": {
+			"codeColumnLabel": "程式碼",
+			"fileColumnLabel": "檔案",
+			"messageColumnLabel": "訊息",
+			"sourceColumnLabel": "來源"
 		},
 		"vs/workbench/contrib/markers/browser/markersTreeViewer": {
 			"collapsedIcon": "標記檢視中表示多個線條已摺疊的圖示。",
@@ -6550,6 +6477,7 @@
 			"problems.panel.configuration.compareOrder.severity": "瀏覽依嚴重性排序的問題",
 			"problems.panel.configuration.showCurrentInStatus": "啟用時，在狀態列中顯示目前問題。",
 			"problems.panel.configuration.title": "[問題] 檢視",
+			"problems.panel.configuration.viewMode": "控制 [問題] 檢視的預設檢視模式。",
 			"problems.tree.aria.label.error.marker": "{0} 產生的錯誤: 在行 {2} 與字元 {3} 的 {1}。{4} ",
 			"problems.tree.aria.label.error.marker.nosource": "錯誤: {0} 在行 {1} 和字元 {2}.{3}",
 			"problems.tree.aria.label.info.marker": "{0} 產生的資訊: 在行 {2} 與字元 {3} 的 {1}。{4}",
@@ -6563,6 +6491,78 @@
 			"problems.tree.aria.label.warning.marker.nosource": "警告: 在行 {1} 與字元 {2} 的 {0}。{3}",
 			"problems.view.focus.label": "聚焦於問題(錯誤, 警告, 資訊)",
 			"problems.view.toggle.label": "切換至問題(錯誤, 警告, 資訊)"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/commands/commands": {
+			"layout.column": "資料行版面配置",
+			"layout.mixed": "混合版面配置",
+			"merge.acceptAllInput1": "從左接受所有變更",
+			"merge.acceptAllInput2": "從右接受所有變更",
+			"merge.goToNextConflict": "移至下一個衝突",
+			"merge.goToPreviousConflict": "移至上一個衝突",
+			"merge.openBaseEditor": "開啟基底檔案",
+			"merge.toggleCurrentConflictFromLeft": "從左方切換目前的衝突",
+			"merge.toggleCurrentConflictFromRight": "從右方切換目前的衝突",
+			"mergeEditor": "合併編輯器",
+			"mergeEditor.compareInput1WithBase": "將輸入 1 與基礎映像進行比較",
+			"mergeEditor.compareInput2WithBase": "將輸入 2 與基礎映像進行比較",
+			"mergeEditor.compareWithBase": "與基礎映像比較",
+			"openfile": "開啟檔案",
+			"title": "開啟合併編輯器"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/commands/devCommands": {
+			"merge.dev.copyState": "將合併編輯器狀態複製為 JSON",
+			"merge.dev.openState": "從 JSON 開啟合併編輯器狀態",
+			"mergeEditor.enterJSON": "輸入 JSON",
+			"mergeEditor.name": "合併編輯器",
+			"mergeEditor.noActiveMergeEditor": "無作用中的合併編輯器",
+			"mergeEditor.successfullyCopiedMergeEditorContents": "已成功複製合併編輯器狀態"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/mergeEditor.contribution": {
+			"name": "合併編輯器"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/mergeEditorInput": {
+			"name": "正在合併: {0}",
+			"unhandledConflicts.cancel": "取消",
+			"unhandledConflicts.detail1": "此編輯器中的合併衝突將維持在未處理狀態。",
+			"unhandledConflicts.detailN": "{0} 編輯器中的合併衝突仍然無法處理。",
+			"unhandledConflicts.discard": "捨棄合併變更",
+			"unhandledConflicts.ignore": "繼續處理衝突",
+			"unhandledConflicts.msg": "您要繼續處理未處理的衝突嗎?",
+			"unhandledConflicts.saveAndIgnore": "儲存並在衝突情況下繼續"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/view/colors": {
+			"mergeEditor.change.background": "變更的背景色彩。",
+			"mergeEditor.change.word.background": "文字變更的背景色彩。",
+			"mergeEditor.conflict.handled.minimapOverViewRuler": "輸入 1 中變更的前景色彩。",
+			"mergeEditor.conflict.handledFocused.border": "已處理之焦點衝突的框線色彩。",
+			"mergeEditor.conflict.handledUnfocused.border": "已處理之未聚焦衝突的框線色彩。",
+			"mergeEditor.conflict.unhandled.minimapOverViewRuler": "輸入 1 中變更的前景色彩。",
+			"mergeEditor.conflict.unhandledFocused.border": "未處理之焦點衝突的框線色彩。",
+			"mergeEditor.conflict.unhandledUnfocused.border": "未處理之未聚焦衝突的框線色彩。"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/view/editors/inputCodeEditorView": {
+			"accept": "接受",
+			"mergeEditor.accept": "接受 {0}",
+			"mergeEditor.acceptBoth": "接受兩者",
+			"mergeEditor.markAsHandled": "標示為已處理",
+			"mergeEditor.swap": "切換"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/view/editors/resultCodeEditorView": {
+			"mergeEditor.remainingConflict": "{0} 個剩餘衝突 ",
+			"mergeEditor.remainingConflicts": "{0} 個剩餘衝突"
+		},
+		"vs/workbench/contrib/mergeEditor/browser/view/mergeEditor": {
+			"editor.mergeEditor.label": "Merge Editor",
+			"input1": "輸入 1",
+			"input2": "輸入 2",
+			"mergeEditor": "文字合併編輯器",
+			"result": "結果"
+		},
+		"vs/workbench/contrib/mergeEditor/common/mergeEditor": {
+			"baseUri": "合併編輯器基底的 URI",
+			"editorLayout": "合併編輯器的版面配置模式",
+			"is": "編輯器是合併編輯器",
+			"resultUri": "合併編輯器結果的 URI"
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/cellCommands/cellCommands": {
 			"notebookActions.changeCellToCode": "將儲存格變更為程式碼",
@@ -6604,12 +6604,11 @@
 		"vs/workbench/contrib/notebook/browser/contrib/editorStatusBar/editorStatusBar": {
 			"current1": "目前選取的項目",
 			"current2": "{0} - 目前選取的項目",
-			"installKernels": "從 Marketplace 安裝核心",
+			"installSuggestedKernel": "安裝建議的延伸模組",
 			"kernel.select.label": "選取核心",
 			"notebook.activeCellStatusName": "筆記本編輯器選項",
 			"notebook.info": "筆記本核心資訊",
 			"notebook.multiActiveCellIndicator": "儲存格 {0} ({1} 已選取)",
-			"notebook.promptKernel.setDefaultTooltip": "設定為 '{0}' 筆記本的預設值",
 			"notebook.select": "筆記本核心選取範圍",
 			"notebook.singleActiveCellIndicator": "儲存格 {0} / {1}",
 			"notebookActions.selectKernel": "選取 Notebook 核心",
@@ -6617,6 +6616,7 @@
 			"otherKernelKinds": "其他",
 			"prompt.placeholder.change": "變更 '{0}' 的核心",
 			"prompt.placeholder.select": "選取 '{0}' 的核心",
+			"searchForKernels": "瀏覽市集以取得核心延伸模組",
 			"suggestedKernels": "建議",
 			"tooltop": "{0} (建議)"
 		},
@@ -6680,7 +6680,13 @@
 		"vs/workbench/contrib/notebook/browser/contrib/profile/notebookProfile": {
 			"setProfileTitle": "設定設定檔"
 		},
+		"vs/workbench/contrib/notebook/browser/contrib/troubleshoot/layout": {
+			"workbench.notebook.clearNotebookEdtitorTypeCache": "清除筆記本編輯器類型快取",
+			"workbench.notebook.inspectLayout": "檢查筆記本版面配置",
+			"workbench.notebook.toggleLayoutTroubleshoot": "切換版面配置疑難排解"
+		},
 		"vs/workbench/contrib/notebook/browser/controller/coreActions": {
+			"miShare": "共用",
 			"notebookActions.category": "筆記本",
 			"notebookMenu.cellTitle": "筆記本儲存格",
 			"notebookMenu.insertCell": "插入儲存格"
@@ -6711,7 +6717,10 @@
 			"notebookActions.executeBelow": "執行儲存格及下方",
 			"notebookActions.executeNotebook": "全部執行",
 			"notebookActions.renderMarkdown": "轉譯所有 Markdown 儲存格",
-			"revealRunningCell": "移至執行儲存格"
+			"revealLastFailedCell": "移至最近使用的失敗儲存格",
+			"revealLastFailedCellShort": "移至",
+			"revealRunningCell": "移至執行儲存格",
+			"revealRunningCellShort": "移至"
 		},
 		"vs/workbench/contrib/notebook/browser/controller/foldingController": {
 			"fold.cell": "摺疊儲存格",
@@ -6726,17 +6735,16 @@
 			"notebookActions.insertMarkdownCellAbove": "在上方插入 Markdown 儲存格",
 			"notebookActions.insertMarkdownCellAtTop": "在頂端新增 Markdown 儲存格",
 			"notebookActions.insertMarkdownCellBelow": "在下方插入 Markdown 儲存格",
-			"notebookActions.menu.insertCode": "$(add) 程式碼",
+			"notebookActions.menu.insertCode": "程式碼",
 			"notebookActions.menu.insertCode.minimalToolbar": "新增程式碼",
 			"notebookActions.menu.insertCode.minimaltoolbar": "新增程式碼",
 			"notebookActions.menu.insertCode.ontoolbar": "程式碼",
 			"notebookActions.menu.insertCode.tooltip": "新增程式碼資料格",
-			"notebookActions.menu.insertMarkdown": "$(add) Markdown",
+			"notebookActions.menu.insertMarkdown": "Markdown",
 			"notebookActions.menu.insertMarkdown.ontoolbar": "Markdown",
 			"notebookActions.menu.insertMarkdown.tooltip": "新增 Markdown 資料格"
 		},
 		"vs/workbench/contrib/notebook/browser/controller/layoutActions": {
-			"cmd.toggle": "切換階層連結",
 			"customizeNotebook": "自訂筆記本...",
 			"notebook.placeholder": "要儲存的設定檔案",
 			"notebook.saveMimeTypeOrder": "儲存 Mimetype 顯示順序",
@@ -6781,6 +6789,7 @@
 			"contributes.notebook.renderer": "提供筆記本輸出轉譯提供者。",
 			"contributes.notebook.renderer.displayName": "筆記本輸出轉譯器的人類可閱讀名稱。",
 			"contributes.notebook.renderer.entrypoint": "要在 Web 檢視中載入以轉譯延伸模組的檔案。",
+			"contributes.notebook.renderer.entrypoint.extends": "此轉譯器延伸的現有轉譯器。",
 			"contributes.notebook.renderer.hardDependencies": "轉譯器所需的核心相依性清單。如果有任何相依性出現在 `NotebookKernel.preloads` 中，就可以使用轉譯器。",
 			"contributes.notebook.renderer.optionalDependencies": "轉譯器可利用的柔化核心相依性清單。如果有任何相依性出現在 `NotebookKernel.preloads` 中，則將優先使用轉譯器，而非不與核心互動的轉譯器。",
 			"contributes.notebook.renderer.requiresMessaging": "定義轉譯器是否需要透過 'createRendererMessaging' 與延伸模組通訊及其方式。具有較強傳訊需求的轉譯器可能無法在所有環境中運作。",
@@ -6814,9 +6823,9 @@
 			"notebook.globalToolbarShowLabel": "控制筆記本工具列上的動作是否應呈現標籤。",
 			"notebook.insertToolbarPosition.description": "控制插入儲存格動作應出現的位置。",
 			"notebook.interactiveWindow.collapseCodeCells": "控制互動式視窗中的代碼儲存格是否預設為已摺疊。",
-			"notebook.markup.fontSize": "控制筆記本中轉譯標記的字型大小 (像素)。設定為 `0` 時，會使用 120% 的 '#editor.fontSize#'。",
-			"notebook.outputFontFamily": "筆記本儲存格輸出文字的字型系列。設定為空白時，會使用 '#editor.fontFamily#'。",
-			"notebook.outputFontSize": "筆記本儲存格輸出文字的字型大小。當設為 0 時，會使用 '#editor.fontSize#'。",
+			"notebook.markup.fontSize": "控制筆記本中轉譯標記的字型大小 (像素)。設定為 {0} 時，則會使用 120% 的 {1}。",
+			"notebook.outputFontFamily": "筆記本儲存格輸出文字的字型家族。設定為空白時，則會使用 {0}。",
+			"notebook.outputFontSize": "筆記本儲存格輸出文字的字型大小。當設定為 {0} 時，則會使用 {1}。",
 			"notebook.outputLineHeight": "筆記本儲存格輸出文字的行高。\r\n - 介於 0 到 8 之間的值會用來做為字型大小的乘數。\r\n - 大於或等於 8 的值將做為有效值。",
 			"notebook.showCellStatusbar.description": "是否要顯示儲存格狀態列。",
 			"notebook.showCellStatusbar.hidden.description": "儲存格狀態列一律為隱藏。",
@@ -6827,7 +6836,8 @@
 			"notebook.undoRedoPerCell.description": "是否要針對每個儲存格使用個別的復原/取消復原堆疊。",
 			"notebookConfigurationTitle": "筆記本",
 			"showFoldingControls.always": "摺疊控制項永遠可見。",
-			"showFoldingControls.mouseover": "摺疊控制項只在滑鼠懸停時可見。"
+			"showFoldingControls.mouseover": "摺疊控制項只在滑鼠懸停時可見。",
+			"showFoldingControls.never": "永不顯示摺疊控制項與減少裝訂邊大小。"
 		},
 		"vs/workbench/contrib/notebook/browser/notebookEditor": {
 			"fail.noEditor": "無法使用筆記本編輯器類型 '{0}' 開啟資源，請確定您已安裝或啟用正確的延伸模組。",
@@ -6841,6 +6851,7 @@
 			"notebook.cellInsertionIndicator": "筆記本儲存格插入指示區的色彩。",
 			"notebook.cellStatusBarItemHoverBackground": "筆記本儲存格狀態列項目的背景色彩。",
 			"notebook.cellToolbarSeparator": "儲存格底部工具列中分隔符號的色彩",
+			"notebook.editorBackground": "Notebook 背景色彩。",
 			"notebook.focusedCellBorder": "聚焦於儲存格時儲存格焦點指示器框線的色彩。",
 			"notebook.focusedEditorBorder": "筆記本儲存格編輯器框線的色彩。",
 			"notebook.inactiveFocusedCellBorder": "當主要焦點在編輯器外，且正專注於儲存格時，儲存格上框線和下框線的色彩。",
@@ -6943,7 +6954,6 @@
 			"cellExecutionOrderCountLabel": "執行順序"
 		},
 		"vs/workbench/contrib/notebook/browser/viewParts/notebookKernelActionViewItem": {
-			"initializing": "正在初始化...",
 			"select": "選取核心"
 		},
 		"vs/workbench/contrib/notebook/common/notebookEditorModel": {
@@ -7090,11 +7100,13 @@
 		"vs/workbench/contrib/preferences/browser/preferences.contribution": {
 			"Keyboard Shortcuts": "鍵盤快速鍵",
 			"clear": "清除搜尋結果",
+			"clearHistory": "清除鍵盤快速鍵搜尋歷程記錄",
 			"filterUntrusted": "顯示未受信任的工作區設定",
 			"keybindingsEditor": "按鍵繫結關係編輯器",
 			"miOpenOnlineSettings": "線上服務設定(&&O)",
 			"miOpenSettings": "設定(&&S)",
 			"miPreferences": "喜好設定(&&P)",
+			"openCurrentProfileSettingsJson": "開啟目前的設定檔設定 (JSON)",
 			"openDefaultKeybindingsFile": "開啟預設鍵盤快速鍵 (JSON)",
 			"openFolderSettings": "開啟資料夾設定",
 			"openFolderSettingsFile": "開啟資料夾設定 (JSON)",
@@ -7106,6 +7118,7 @@
 			"openRemoteSettingsJSON": "開啟遠端設定 (JSON) ({0})",
 			"openSettings2": "開啟設定 (UI)",
 			"openSettingsJson": "開啟設定 (JSON)",
+			"openUserSettingsJson": "開啟使用者設定 (JSON)",
 			"openWorkspaceSettings": "開啟工作區設定",
 			"openWorkspaceSettingsFile": "開啟工作區設定 (JSON)",
 			"preferences": "喜好設定",
@@ -7148,12 +7161,14 @@
 		},
 		"vs/workbench/contrib/preferences/browser/preferencesRenderers": {
 			"copyDefaultValue": "複製到設定",
+			"defaultProfileSettingWhileNonDefaultActive": "當非預設設定檔為使用中時，無法套用此設定。當預設設定檔為使用中時，將會套用。",
 			"editTtile": "編輯",
 			"manage workspace trust": "管理工作區信任",
 			"replaceDefaultValue": "在設定中取代",
 			"unknown configuration setting": "未知的組態設定",
-			"unsupportedApplicationSetting": "只能在應用程式使用者設定中套用此設定",
+			"unsupportedApplicationSetting": "此設定具有應用程式範圍，所以只能在使用者設定檔中設定。",
 			"unsupportedMachineSetting": "此設定只能套用到本機視窗的使用者設定中或遠端視窗的遠端設定中。",
+			"unsupportedPolicySetting": "無法套用此設定，因為它已在系統原則中設定。",
 			"unsupportedProperty": "不支援的屬性",
 			"unsupportedRemoteMachineSetting": "在此視窗中無法套用此設定。此設定會在開啟本機視窗時套用。",
 			"unsupportedWindowSetting": "無法在此工作區中套用此設定。此設定會在您直接開啟包含的工作區資料夾時套用。",
@@ -7178,6 +7193,30 @@
 			"settings": "設定",
 			"settings require trust": "工作區信任",
 			"turnOnSyncButton": "開啟設定同步"
+		},
+		"vs/workbench/contrib/preferences/browser/settingsEditorSettingIndicators": {
+			"alsoConfiguredElsewhere": "也在其他地方修改",
+			"alsoConfiguredIn": "也修改於",
+			"alsoModifiedInScopes": "也已在下列範圍中修改設定:",
+			"applicationSetting": "套用到所有設定檔",
+			"applicationSettingDescription": "此設定不是目前設定檔的特定設定，所以在切換設定檔時會保留其值。",
+			"applicationSettingDescriptionAccessible": "切換設定檔時保留的設定值",
+			"configuredElsewhere": "已在其他地方修改",
+			"configuredIn": "已修改於",
+			"defaultOverriddenDetails": "預設設定值已由 {0} 覆寫",
+			"defaultOverriddenDetailsAriaLabel": "{0} 覆寫預設值",
+			"defaultOverriddenLabel": "預設值已變更",
+			"defaultOverriddenLanguagesList": "{0} 有特定語言的預設值",
+			"extensionSyncIgnoredLabel": "未同步",
+			"hasDefaultOverridesForLanguages": "下列語言有預設覆寫:",
+			"modifiedInScopeForLanguage": "{1} 的 {0} 範圍",
+			"modifiedInScopeForLanguageMidSentence": "{1} 的 {0} 範圍",
+			"modifiedInScopes": "已在下列範圍中修改設定:",
+			"remote": "遠端",
+			"syncIgnoredAriaLabel": "在同步處理期間略過設定",
+			"syncIgnoredTitle": "同步期間會忽略此設定",
+			"user": "使用者",
+			"workspace": "工作區"
 		},
 		"vs/workbench/contrib/preferences/browser/settingsLayout": {
 			"appearance": "外觀",
@@ -7235,37 +7274,30 @@
 			"modifiedSettingsSearchTooltip": "新增或移除修改的設定篩選",
 			"onlineSettingsSearch": "線上服務",
 			"onlineSettingsSearchTooltip": "顯示線上服務的設定",
+			"policySettingsSearch": "原則服務",
+			"policySettingsSearchTooltip": "顯示原則服務的設定",
 			"tagSettingsSearch": "標記...",
 			"tagSettingsSearchTooltip": "新增標籤篩選"
 		},
 		"vs/workbench/contrib/preferences/browser/settingsTree": {
-			"alsoConfiguredIn": "也修改於",
-			"configuredIn": "已修改於",
 			"copySettingAsJSONLabel": "以 JSON 格式複製設定",
 			"copySettingIdLabel": "複製設定識別碼",
-			"defaultOverriddenDetails": "預設值已由 {0} 覆寫",
-			"defaultOverrideLabelText": "($(wrench) 已由 {0} 覆寫)",
 			"editInSettingsJson": "在 settings.json 內編輯",
 			"editLanguageSettingLabel": "{0} 的編輯設定",
-			"extensionSyncIgnoredLabel": "同步: 已忽略",
 			"extensions": "延伸模組",
 			"manageWorkspaceTrust": "管理工作區信任",
 			"modified": "設定已經在目前的範圍中設定。",
 			"newExtensionsButtonLabel": "顯示相符的延伸模組",
+			"policyLabel": "此設定由您的組織所管理。",
 			"resetSettingLabel": "重設設定",
 			"settings": "設定",
 			"settings.Default": "預設",
 			"settings.Modified": "已修改。",
 			"settingsContextMenuTitle": "更多操作...",
 			"stopSyncingSetting": "同步此設定",
-			"syncIgnoredTitle": "設定同步處理未同步此設定",
 			"trustLabel": "此設定只能用於信任的工作區",
-			"validationError": "驗證錯誤。"
-		},
-		"vs/workbench/contrib/preferences/browser/settingsTreeModels": {
-			"remote": "遠端",
-			"user": "使用者",
-			"workspace": "工作區"
+			"validationError": "驗證錯誤。",
+			"viewPolicySettings": "檢視原則設定"
 		},
 		"vs/workbench/contrib/preferences/browser/settingsWidgets": {
 			"addItem": "新增項目",
@@ -7324,19 +7356,6 @@
 			"textInputBoxBorder": "設定編輯器文字輸入方塊邊框。",
 			"textInputBoxForeground": "設定編輯器文字輸入方塊前景。"
 		},
-		"vs/workbench/contrib/profiles/common/profilesActions": {
-			"confiirmation message": "這會取代您現有的設定。確定要繼續嗎?",
-			"export profile": "將設定匯出為設定檔...",
-			"export profile dialog": "儲存設定檔",
-			"export success": "{0}: 已成功匯出。",
-			"import profile": "從設定檔匯入設定...",
-			"import profile dialog": "匯入設定檔",
-			"import profile placeholder": "提供設定檔 URL 或選取要匯入的設定檔檔案",
-			"import profile quick pick title": "從設定檔匯入設定",
-			"import profile title": "從設定檔匯入設定",
-			"select from file": "從設定檔中匯入",
-			"select from url": "從 URL 匯入"
-		},
 		"vs/workbench/contrib/quickaccess/browser/commandsQuickAccess": {
 			"clearButtonLabel": "清除(&&C)",
 			"clearCommandHistory": "清除命令歷程記錄",
@@ -7362,6 +7381,7 @@
 		},
 		"vs/workbench/contrib/quickaccess/browser/viewQuickAccess": {
 			"channels": "輸出",
+			"debugConsoles": "偵錯主控台",
 			"logChannel": "記錄 ({0})",
 			"noViewResults": "沒有相符的檢視",
 			"openView": "開啟檢視",
@@ -7530,13 +7550,13 @@
 			"pauseSocketWriting": "連線: 暫停通訊端寫入",
 			"remote": "遠端",
 			"remote.autoForwardPorts": "啟用時，系統會偵測到新的執行流程，並自動轉寄其接聽的連接埠。停用此設定不會阻止轉寄所有的連接埠。即使停用，延伸模組仍可引起連接埠轉寄，開啟某些 URL 也仍會造成連接埠轉寄。",
-			"remote.autoForwardPortsSource": "設定當 `remote.autoForwardPorts` 為 true 時，自動轉送連接埠的來源。在 Windows 與 Mac 遠端上，`process` 選項沒有作用，將使用 `output`。需要重新載入才會生效。",
+			"remote.autoForwardPortsSource": "設定當 {0} 為 true 時，自動轉送連接埠的來源。在 Windows 與 Mac 遠端上，`process` 選項沒有作用，將使用 `output`。需要重新載入才會生效。",
 			"remote.autoForwardPortsSource.output": "當透過讀取終端和偵錯輸出而探索到連接埠時，會自動轉送連接埠。並非所有使用連接埠的處理序都將列印到整合式終端或偵錯主控台，因此將缺少部分連接埠。根據輸出而轉送的連接埠，在重新載入或使用者在 [連接埠] 檢視中關閉連接埠之前，不會是「未轉送」。",
 			"remote.autoForwardPortsSource.process": "當透過監看已啟動且包含連接埠的處理序而探索到連接埠時，會自動轉送連接埠。",
 			"remote.extensionKind": "覆寫延伸模組的類型。`ui` 延伸模組會於本機電腦安裝並執行，`workspace` 延伸模組則會於遠端執行。如果使用此設定覆寫延伸模組的預設類型，則您應指定該延伸模組是否應於本機或遠端安裝並啟用。",
 			"remote.localPortHost": "指定將用於連接埠轉送的本機主機名稱。",
 			"remote.portsAttributes": "設定在轉送特定連接埠號碼時套用的屬性。例如:\r\n\r\n```\r\n\"3000\": {\r\n  \"label\": \"Application\"\r\n},\r\n\"40000-55000\": {\r\n  \"onAutoForward\": \"ignore\"\r\n},\r\n\".+\\\\/server.js\": {\r\n \"onAutoForward\": \"openPreview\"\r\n}\r\n```",
-			"remote.portsAttributes.defaults": "設定套用到所有未從設定 `remote.portsAttributes` 取得屬性之連接埠的預設屬性。例如:\r\n\r\n```\r\n{\r\n  \"onAutoForward\": \"ignore\"\r\n}\r\n```",
+			"remote.portsAttributes.defaults": "設定套用到所有未從設定 {0} 取得屬性之連接埠的預設屬性。例如:\r\n```\r\n\r\n{\r\n  \"onAutoForward\": \"ignore\"\r\n}\r\n```",
 			"remote.portsAttributes.elevateIfNeeded": "此連接埠轉送時，自動提示提高權限 (如有必要)。如果本機連接埠是特殊權限連接埠，就需要提升。",
 			"remote.portsAttributes.ignore": "此連接埠不會自動轉送。",
 			"remote.portsAttributes.label": "在 UI 中所顯示的此連接埠標籤。",
@@ -7553,6 +7573,7 @@
 			"remote.portsAttributes.silent": "此連接埠自動轉送時，不顯示任何通知也不採取任何動作。",
 			"remote.restoreForwardedPorts": "還原您在工作區轉送的連接埠。",
 			"remoteExtensionLog": "遠端伺服器",
+			"remotePtyHostLog": "遠端 Pty 主機",
 			"triggerReconnect": "連線: 觸發重新連線",
 			"ui": "UI 延伸模組類型。在遠端視窗中，這類延伸模組只有在可於本機電腦上使用時才會啟用。",
 			"workspace": "工作區延伸模組類型。在遠端視窗中，這類延伸模組只有在可於遠端上使用時才會啟用。"
@@ -7665,9 +7686,9 @@
 			"setListViewMode": "清單檢視",
 			"setTreeViewMode": "樹狀檢視",
 			"sortAction": "檢視及排序",
-			"sortByName": "依名稱排序",
-			"sortByPath": "依路徑排序",
-			"sortByStatus": "依狀態排序"
+			"sortChangesByName": "依名稱排序變更",
+			"sortChangesByPath": "依路徑排序變更",
+			"sortChangesByStatus": "依狀態排序變更"
 		},
 		"vs/workbench/contrib/scm/browser/scmViewPaneContainer": {
 			"source control": "原始檔控制"
@@ -7747,7 +7768,7 @@
 			"search.searchEditor.doubleClickBehaviour.selectWord": "點兩下選擇游標下的單字。",
 			"search.searchEditor.reusePriorSearchConfiguration": "啟用時，新的搜尋編輯器會重複使用先前所開啟之搜尋編輯器的包含、排除與旗標。",
 			"search.searchOnType": "鍵入的同時搜尋所有檔案。",
-			"search.searchOnTypeDebouncePeriod": "啟用 `#search.searchOnType#` 時，控制字元鍵入和搜尋開始之間的逾時 (毫秒)。當 `search.searchOnType` 停用時無效。",
+			"search.searchOnTypeDebouncePeriod": "啟用 {0} 時，控制字元鍵入和搜尋開始之間的逾時 (毫秒)。當 {0} 停用時無效。",
 			"search.seedOnFocus": "聚焦在搜尋檢視時，將搜尋查詢更新為編輯器的選取文字。按一下或觸發 'workbench.views.search.focus' 命令時，即會發生此動作。",
 			"search.seedWithNearestWord": "允許在使用中的編輯器沒有選取項目時，從最接近游標的文字植入搜尋。",
 			"search.showLineNumbers": "控制是否要為搜尋結果顯示行號。",
@@ -7903,6 +7924,8 @@
 		"vs/workbench/contrib/searchEditor/browser/searchEditor.contribution": {
 			"promptOpenWith.searchEditor.displayName": "搜尋編輯器",
 			"search": "搜尋編輯器",
+			"search.action.focusFilesToExclude": "要排除的焦點搜尋編輯者檔案",
+			"search.action.focusFilesToInclude": "要包括的焦點搜尋編輯者檔案",
 			"search.action.focusQueryEditorWidget": "聚焦於搜尋編輯器輸入",
 			"search.openNewEditor": "開啟新的搜尋編輯器",
 			"search.openNewEditorToSide": "在側邊開啟新的搜尋編輯器",
@@ -7933,7 +7956,10 @@
 			"oneResult": "1 個結果",
 			"searchMaxResultsWarning": "結果集只包含所有符合項的子集。請提供更具體的搜尋條件以縮小結果範圍。"
 		},
-		"vs/workbench/contrib/snippets/browser/configureSnippets": {
+		"vs/workbench/contrib/snippets/browser/commands/abstractSnippetsActions": {
+			"snippets": "程式碼片段"
+		},
+		"vs/workbench/contrib/snippets/browser/commands/configureSnippets": {
 			"bad_name1": "檔案名稱無效",
 			"bad_name2": "\"{0}\" 不是有效的檔案名稱",
 			"bad_name3": "\"{0}\" 已存在",
@@ -7949,11 +7975,22 @@
 			"new.workspace_scope": "{0} 工作區",
 			"openSnippet.label": "設定使用者程式碼片段",
 			"openSnippet.pickLanguage": "選取程式碼片段檔案或建立程式碼片段",
-			"preferences": "喜好設定",
 			"userSnippets": "使用者程式碼片段"
 		},
-		"vs/workbench/contrib/snippets/browser/insertSnippet": {
+		"vs/workbench/contrib/snippets/browser/commands/fileTemplateSnippets": {
+			"label": "從程式碼片段填入檔案",
+			"placeholder": "選取程式碼片段"
+		},
+		"vs/workbench/contrib/snippets/browser/commands/insertSnippet": {
 			"snippet.suggestions.label": "插入程式碼片段"
+		},
+		"vs/workbench/contrib/snippets/browser/commands/surroundWithSnippet": {
+			"label": "由程式碼片段包圍..."
+		},
+		"vs/workbench/contrib/snippets/browser/snippetCodeActionProvider": {
+			"codeAction": "環繞於: {0}",
+			"overflow.start.title": "以程式碼片段開始",
+			"title": "起始值: {0}"
 		},
 		"vs/workbench/contrib/snippets/browser/snippetCompletionProvider": {
 			"detail.snippet": "{0} ({1})",
@@ -7963,15 +8000,18 @@
 			"disableSnippet": "從 IntelliSense 隱藏",
 			"enable.snippet": "在 IntelliSense 中顯示",
 			"isDisabled": "(從 IntelliSense 隱藏)",
+			"pick.noSnippetAvailable": "沒有可用的程式碼片段",
 			"pick.placeholder": "選取程式碼片段",
 			"sep.userSnippet": "使用者程式碼片段",
 			"sep.workspaceSnippet": "工作區程式碼片段"
 		},
 		"vs/workbench/contrib/snippets/browser/snippets.contribution": {
+			"editor.snippets.codeActions.enabled": "控制是否要將環繞片段或檔案範本片段顯示為程式碼動作。",
 			"snippetSchema.json": "使用者程式碼片段組態",
 			"snippetSchema.json.body": "程式碼片段內容。請使用 '$1', '${1:defaultText}' 來定義資料指標位置，使用 '$0' 代表最終資料指標位置。請以 '${varName}' 和 '${varName:defaultText}' 插入變數值，例如 'This is file: $TM_FILENAME'。",
 			"snippetSchema.json.default": "空白程式碼片段",
 			"snippetSchema.json.description": "程式碼片段描述。",
+			"snippetSchema.json.isFileTemplate": "程式碼片段是用來填入或取代整個檔案",
 			"snippetSchema.json.prefix": "在 Intellisense 中選取程式碼片段時要使用的前置詞",
 			"snippetSchema.json.scope": "此代碼片段應用的編程語言清單，例如 \"typescript,javascript\"。"
 		},
@@ -7991,9 +8031,6 @@
 			"vscode.extension.contributes.snippets-language": "要予以提供此程式碼片段的語言識別碼。",
 			"vscode.extension.contributes.snippets-path": "程式碼片段檔案的路徑。此路徑是延伸模組資料夾的相對路徑，而且一般會以 './snippets/' 開頭。"
 		},
-		"vs/workbench/contrib/snippets/browser/surroundWithSnippet": {
-			"label": "由程式碼片段包圍..."
-		},
 		"vs/workbench/contrib/surveys/browser/ces.contribution": {
 			"cesSurveyQuestion": "有時間協助 VS Code 小組嗎? 請告訴我們您目前使用 VS Code 的體驗。",
 			"giveFeedback": "提供意見反應",
@@ -8010,13 +8047,6 @@
 			"remindLater": "稍後提醒我",
 			"surveyQuestion": "您願意填寫簡短的意見反應問卷嗎?",
 			"takeSurvey": "填寫問卷"
-		},
-		"vs/workbench/contrib/tags/electron-browser/workspaceTagsService": {
-			"workspaceFound": "此資料夾包含工作區檔案 '{0}'。要開啟它嗎? [深入了解]({1}) 工作區檔案。",
-			"openWorkspace": "開啟工作區",
-			"workspacesFound": "此資料夾包含多個工作區檔案。您要開啟一個嗎? [深入了解]({0}) 有關工作區檔案。",
-			"selectWorkspace": "選取工作區",
-			"selectToOpen": "選取要開啟的工作區"
 		},
 		"vs/workbench/contrib/tasks/browser/abstractTaskService": {
 			"ConfigureTaskRunnerAction.label": "設定工作",
@@ -8037,8 +8067,7 @@
 			"TaskService.noBuildTask1": "未定義任何建置工作。請使用 'isBuildCommand' 標記 tasks.json 檔案中的工作。",
 			"TaskService.noBuildTask2": "未定義任何組建工作，請在 tasks.json 檔案中將工作標記為 'build' 群組。",
 			"TaskService.noConfiguration": "錯誤: {0} 工作偵測未提供下列組態的工作:\r\n{1}\r\n將會忽略此工作。\r\n",
-			"TaskService.noEntryToRun": "$(plus) 設定工作",
-			"TaskService.noEntryToRunSlow": "$(plus) 設定工作",
+			"TaskService.noEntryToRun": "設定工作",
 			"TaskService.noTaskIsRunning": "未執行任何工作",
 			"TaskService.noTaskRunning": "目前未執行任何工作",
 			"TaskService.noTaskToRestart": "沒有要重新啟動的工作",
@@ -8084,6 +8113,10 @@
 			"moreThanOneBuildTask": "tasks.json 中定義了許多組建工作。正在執行第一個。\r\n",
 			"recentlyUsed": "最近使用的工作",
 			"restartTask": "重新啟動工作",
+			"runTask.arg": "篩選快速揀選中顯示的工作",
+			"runTask.label": "要篩選的工作標籤或字詞",
+			"runTask.task": "要篩選的工作標籤或字詞",
+			"runTask.type": "參與的任務類型",
 			"saveBeforeRun.dontSave": "不要儲存",
 			"saveBeforeRun.save": "儲存",
 			"selectProblemMatcher": "選取錯誤和警告的種類以掃描工作輸出",
@@ -8133,7 +8166,11 @@
 			"runningTasks": "顯示執行中的工作",
 			"status.runningTasks": "正在執行工作",
 			"task.SaveBeforeRun.prompt": "提示是否要在執行前先儲存編輯器。",
+			"task.allowAutomaticTasks": "啟用資料夾中的自動工作。",
+			"task.allowAutomaticTasks.auto": "提示每個資料夾的權限",
+			"task.allowAutomaticTasks.off": "永不",
 			"task.autoDetect": "控制所有工作提供者擴充的 `provideTasks` 啟用。如果 Tasks: Run Task 命令太慢，停用工作提供者的自動偵測可能有所幫助。個別擴充可能會提供停用自動偵測的設定。",
+			"task.experimental.reconnection": "在視窗重載時，重新連線到執行中的監看/背景工作。請注意，這處於實驗狀態，因此您可能會遇到問題。",
 			"task.problemMatchers.neverPrompt": "設定執行工作時是否要顯示問題比對器提示。設定為 `true` 會永不提示，或是使用工作類型的字典來僅針對特定工作類型關閉提示。",
 			"task.problemMatchers.neverPrompt.array": "包含工作類型-布林值配對的物件，永不提示啟用問題比對器。",
 			"task.problemMatchers.neverPrompt.boolean": "為所有工作設定問題比對器提示行為。",
@@ -8144,12 +8181,14 @@
 			"task.saveBeforeRun": "先儲存所有已變更的編輯器，再執行工作。",
 			"task.saveBeforeRun.always": "一律先儲存所有編輯器再執行。",
 			"task.saveBeforeRun.never": "永遠不要先儲存編輯器再執行。",
+			"task.showDecorations": "在終端機緩衝區中感興趣的點顯示裝飾，例如透過監看工作發現的第一個問題。請注意，這只會在未來的任務中生效。",
 			"task.slowProviderWarning": "設定是否在提供者很慢時顯示警告",
 			"task.slowProviderWarning.array": "永不顯示慢速提供者警告的工作類型陣列。",
 			"task.slowProviderWarning.boolean": "為所有工作設定慢速提供者警告。",
 			"tasksConfigurationTitle": "工作",
 			"tasksQuickAccessHelp": "執行工作",
 			"tasksQuickAccessPlaceholder": "鍵入要執行的工作名稱。",
+			"ttask.allowAutomaticTasks.on": "一律",
 			"workbench.action.tasks.openUserTasks": "開啟使用者工作",
 			"workbench.action.tasks.openWorkspaceFileTasks": "開啟工作區工作"
 		},
@@ -8173,6 +8212,7 @@
 			"taskType": "所有 {0} 項工作"
 		},
 		"vs/workbench/contrib/tasks/browser/taskTerminalStatus": {
+			"task.watchFirstError": "此執行偵測到錯誤的開始",
 			"taskTerminalStatus.active": "工作執行中",
 			"taskTerminalStatus.errors": "工作發生錯誤",
 			"taskTerminalStatus.errorsInactive": "工作發生錯誤，正在等候中...",
@@ -8196,6 +8236,8 @@
 			"dependencyCycle": "存在相依性循環。請查看工作 \"{0}\"。",
 			"dependencyFailed": "無法解決在工作區資料夾 '{1}' 中的相依工作 '{0}'",
 			"reuseTerminal": "工作將被重新啟用.按任意鍵關閉.",
+			"task.executing": "正在執行的工作: {0}",
+			"task.executingInFolder": "正在資料夾 {0} 執行工作: {1}",
 			"unknownProblemMatcher": "無法解析問題比對程式 {0}。將忽略比對程式"
 		},
 		"vs/workbench/contrib/tasks/common/jsonSchemaCommon": {
@@ -8251,6 +8293,7 @@
 			"JsonSchema.command.quotesString.quote": "應如何引用命令值。",
 			"JsonSchema.commandArray": "要執行的 shell 命令。陣列項目會以空白字元連接",
 			"JsonSchema.customizations.customizes.type": "要自訂的工作類型",
+			"JsonSchema.hide": "從執行工作快速篩選中隱藏此工作",
 			"JsonSchema.linux": "Linux 專用命令組態",
 			"JsonSchema.mac": "Mac 專用命令組態",
 			"JsonSchema.shell": "請指定命令為殼層命令或外部程式。若省略，會預設為 false。",
@@ -8270,10 +8313,13 @@
 			"JsonSchema.tasks.group.build": "將工作標記為可透過 'Run Build Task' 命令存取的組建工作。",
 			"JsonSchema.tasks.group.defaultBuild": "將工作標記為預設組建工作。",
 			"JsonSchema.tasks.group.defaultTest": "將工作標記為預設測試工作。",
-			"JsonSchema.tasks.group.isDefault": "定義此工作在群組中是否為預設工作。",
+			"JsonSchema.tasks.group.isDefault": "定義此工作是否為群組中的預設工作，或是符合應觸發此工作檔案的 Glob。",
 			"JsonSchema.tasks.group.kind": "該工作的執行群組。",
 			"JsonSchema.tasks.group.none": "指派工作到沒有群組",
 			"JsonSchema.tasks.group.test": "將工作標記為可透過 'Run Test Task' 命令存取的測試工作。",
+			"JsonSchema.tasks.icon": "工作的選用圖示",
+			"JsonSchema.tasks.icon.color": "圖示的選用色彩",
+			"JsonSchema.tasks.icon.id": "要使用的選用 codicon 識別碼",
 			"JsonSchema.tasks.identifier": "用以參考在 launch.json 或 dependsOn 子句中工作的使用者定義識別碼。",
 			"JsonSchema.tasks.identifier.deprecated": "使用者定義的身分識別已淘汰。請為自訂工作使用名稱作為參考，並為延伸模組提供的工作使用其已定義的工作身分識別。",
 			"JsonSchema.tasks.instanceLimit": "允許同時執行的工作執行個體數。",
@@ -8413,7 +8459,8 @@
 		"vs/workbench/contrib/tasks/common/taskService": {
 			"tasks.customExecutionSupported": "是否支援 CustomExecution 工作。請考慮在 'taskDefinition' 貢獻的 when 子句中使用。",
 			"tasks.processExecutionSupported": "是否支援 ProcessExecution 工作。請考慮在 'taskDefinition' 貢獻的 when 子句中使用。",
-			"tasks.shellExecutionSupported": "是否支援 ShellExecution 工作。請考慮在 'taskDefinition' 貢獻的 when 子句中使用。"
+			"tasks.shellExecutionSupported": "是否支援 ShellExecution 工作。請考慮在 'taskDefinition' 貢獻的 when 子句中使用。",
+			"tasks.taskCommandsRegistered": "工作命令是否已註冊"
 		},
 		"vs/workbench/contrib/tasks/common/taskTemplates": {
 			"Maven": "執行一般 maven 命令",
@@ -8467,10 +8514,8 @@
 			"terminal.integrated.localFileLinks": "本機檔案",
 			"terminal.integrated.openDetectedLink": "選取要開啟的連結",
 			"terminal.integrated.searchLinks": "工作區搜尋",
+			"terminal.integrated.showMoreLinks": "顯示更多連結",
 			"terminal.integrated.urlLinks": "URL"
-		},
-		"vs/workbench/contrib/terminal/browser/links/terminalShellIntegrationLinkDetector": {
-			"learn": "了解殼層整合"
 		},
 		"vs/workbench/contrib/terminal/browser/terminal.contribution": {
 			"miToggleIntegratedTerminal": "終端(&&T)",
@@ -8488,6 +8533,7 @@
 			"workbench.action.terminal.clear": "清除",
 			"workbench.action.terminal.clearCommandHistory": "清除命令歷程記錄",
 			"workbench.action.terminal.clearSelection": "清除選取項目",
+			"workbench.action.terminal.copyLastCommand": "複製上一個命令",
 			"workbench.action.terminal.copySelection": "複製選取項目",
 			"workbench.action.terminal.copySelectionAsHtml": "將選取項目複製為 HTML",
 			"workbench.action.terminal.createTerminalEditor": "在編輯器區域建立新終端",
@@ -8501,7 +8547,7 @@
 			"workbench.action.terminal.focusNextPane": "聚焦終端群組中的下一個終端",
 			"workbench.action.terminal.focusPrevious": "聚焦上一個終端群組",
 			"workbench.action.terminal.focusPreviousPane": "聚焦終端群組中的上一個終端",
-			"workbench.action.terminal.goToRecentDirectory": "移至最近使用的目錄",
+			"workbench.action.terminal.goToRecentDirectory": "移至最近使用的目錄...",
 			"workbench.action.terminal.hideFind": "隱藏尋找",
 			"workbench.action.terminal.join": "加入終端",
 			"workbench.action.terminal.join.insufficientTerminals": "終端不足，無法執行加入動作",
@@ -8512,7 +8558,9 @@
 			"workbench.action.terminal.killEditor": "在編輯器區域終止使用中的終端",
 			"workbench.action.terminal.navigationModeExit": "結束導覽模式",
 			"workbench.action.terminal.navigationModeFocusNext": "將焦點移到下一行 (導覽模式)",
+			"workbench.action.terminal.navigationModeFocusNextPage": "將焦點移到下一頁 (導覽模式)",
 			"workbench.action.terminal.navigationModeFocusPrevious": "將焦點移到上一行 (導覽模式)",
+			"workbench.action.terminal.navigationModeFocusPreviousPage": "將焦點移到上一頁 (導覽模式)",
 			"workbench.action.terminal.new": "建立新終端",
 			"workbench.action.terminal.newInActiveWorkspace": "建立新終端 (於使用中的工作區)",
 			"workbench.action.terminal.newWithCwd": "在自訂工作目錄中建立新終端啟動",
@@ -8536,7 +8584,7 @@
 			"workbench.action.terminal.resizePaneUp": "向上調整終端大小",
 			"workbench.action.terminal.runActiveFile": "在使用中的終端機執行使用中的檔案",
 			"workbench.action.terminal.runActiveFile.noFile": "只有磁碟上的檔案可在終端機執行",
-			"workbench.action.terminal.runRecentCommand": "執行最近使用的命令",
+			"workbench.action.terminal.runRecentCommand": "執行最近使用的命令...",
 			"workbench.action.terminal.runSelectedText": "在使用中的終端機執行選取的文字",
 			"workbench.action.terminal.scrollDown": "向下捲動 (行)",
 			"workbench.action.terminal.scrollDownPage": "向下捲動 (頁)",
@@ -8563,7 +8611,9 @@
 			"workbench.action.terminal.toggleEscapeSequenceLogging": "切換逸出序列記錄",
 			"workbench.action.terminal.toggleFindCaseSensitive": "切換使用區分大小寫尋找",
 			"workbench.action.terminal.toggleFindRegex": "切換使用 Regex 尋找",
-			"workbench.action.terminal.toggleFindWholeWord": "切換使用全字拼寫尋找"
+			"workbench.action.terminal.toggleFindWholeWord": "切換使用全字拼寫尋找",
+			"workbench.action.terminal.writeDataToTerminal": "將資料寫入終端",
+			"workbench.action.terminal.writeDataToTerminal.prompt": "輸入要直接寫入終端的資料，略過 pty"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalConfigHelper": {
 			"install": "安裝",
@@ -8595,14 +8645,22 @@
 			"keybindingHandling": "某些按鍵繫結關係不會依預設進入終端機，而是由 {0} 處理。",
 			"launchFailed.errorMessage": "終端機處理序無法啟動: {0}。",
 			"launchFailed.exitCodeAndCommandLine": "終端機處理序 \"{0}\" 無法啟動 (結束代碼: {1})。",
-			"launchFailed.exitCodeAndCommandLineShellIntegration": "終端機處理序無法啟動「{0}」(結束代碼: {1})。停用與 `terminal.integrated.shellIntegration.enabled` 的殼層整合或許有幫助。",
 			"launchFailed.exitCodeOnly": "終端機處理序無法啟動 (結束代碼: {0})。",
-			"launchFailed.exitCodeOnlyShellIntegration": "終端機處理序無法啟動 (結束代碼: {0})。停用與 `terminal.integrated.shellIntegration.enabled` 的殼層整合或許有幫助。",
+			"launchFailed.exitCodeOnlyShellIntegration": "停用使用者設定中的殼層整合或許有幫助。",
 			"multiLinePasteButton": "貼上(&&P)",
 			"preview": "預覽:",
 			"removeCommand": "從命令歷程記錄中移除",
+			"selectRecentCommand": "選取要執行的命令 (按住 ALT 鍵以編輯命令)",
+			"selectRecentCommandMac": "選取要執行的命令 (按住 Option 鍵以編輯命令)",
+			"selectRecentDirectory": "選取要前往的目錄 (按住 ALT 鍵以編輯命令)",
+			"selectRecentDirectoryMac": "選取要前往的目錄 (按住 Option 鍵以編輯命令)",
 			"setTerminalDimensionsColumn": "設定固定維度: 資料行",
 			"setTerminalDimensionsRow": "設定固定維度: 列",
+			"shellFileHistoryCategory": "{0} 歷程記錄",
+			"shellIntegration.learnMore": "深入了解殼層整合",
+			"shellIntegration.openSettings": "開啟使用者設定",
+			"terminal.contiguousSearch": "使用連續搜尋",
+			"terminal.fuzzySearch": "使用模糊搜尋",
 			"terminal.integrated.a11yPromptLabel": "終端機輸入",
 			"terminal.integrated.a11yTooMuchOutput": "要宣告的輸出過多，請手動讀取瀏覽至資料列",
 			"terminal.integrated.copySelection.noSelection": "終端機沒有任何選取項目可以複製",
@@ -8619,6 +8677,9 @@
 			"workbench.action.terminal.rename.prompt": "輸入終端機名稱",
 			"workspaceNotTrustedCreateTerminal": "無法在不受信任的工作區中啟動終端程序",
 			"workspaceNotTrustedCreateTerminalCwd": "無法使用 cwd {0} 和 userHome {1} 在不受信任的工作區中啟動終端機處理序"
+		},
+		"vs/workbench/contrib/terminal/browser/terminalMainContribution": {
+			"ptyHost": "Pty 主機"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalMenus": {
 			"defaultTerminalProfile": "{0} (預設)",
@@ -8668,8 +8729,8 @@
 			"workbench.action.terminal.newplus": "建立新終端機"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalService": {
-			"localTerminalRemote": "⚠: 此殼層正在您的{0}本機{1}電腦上執行，而非在連接的遠端電腦上執行",
-			"localTerminalVirtualWorkspace": "⚠: 此殼層向{0}本機{1}資料夾開啟，而非虛擬資料夾",
+			"localTerminalRemote": "此殼層正在您的{0}本機{1}電腦上執行，而非在連接的遠端電腦上執行",
+			"localTerminalVirtualWorkspace": "此殼層向{0}本機{1}資料夾開啟，而非虛擬資料夾",
 			"terminalService.terminalCloseConfirmationPlural": "是否要終止 {0} 個使用中的終端工作階段嗎?",
 			"terminalService.terminalCloseConfirmationSingular": "您要終止使用中的終端工作階段嗎?",
 			"terminate": "終止"
@@ -8686,10 +8747,9 @@
 			"terminalInputAriaLabel": "輸入終端機名稱。請按 Enter 鍵確認或按 Esc 鍵取消。"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalTooltip": {
-			"capability.commandDetection": "命令偵測",
-			"capability.cwdDetection": "目前的工作目錄偵測",
-			"capability.partialCommandDetection": "命令偵測 (部份)",
-			"shellIntegration.enabled": "已啟用殼層整合"
+			"launchFailed.exitCodeOnlyShellIntegration": "終端處理序無法啟動。停用與 terminal.integrated.shellIntegration.enabled 的殼層整合或許有幫助。",
+			"shellIntegration.activationFailed": "殼層整合無法啟動",
+			"shellIntegration.enabled": "已啟動殼層整合"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalView": {
 			"terminal.monospaceOnly": "終端機只支援等寬字型。如果這是新安裝的字型，請務必重新啟動 VS Code。",
@@ -8698,13 +8758,22 @@
 			"terminals": "開啟終端機。"
 		},
 		"vs/workbench/contrib/terminal/browser/xterm/decorationAddon": {
+			"changeDefaultIcon": "變更預設圖示",
+			"changeErrorIcon": "變更錯誤圖示",
+			"changeSuccessIcon": "變更成功圖示",
+			"gutter": "裝訂邊命令裝飾",
+			"overviewRuler": "概觀尺規命令裝飾",
+			"terminal.configureCommandDecorations": "設定命令裝飾",
+			"terminal.copyCommand": "複製命令",
 			"terminal.copyOutput": "複製輸出",
 			"terminal.copyOutputAsHtml": "將輸出複製為 HTML",
+			"terminal.learnShellIntegration": "了解殼層整合",
 			"terminal.rerunCommand": "重新執行命令",
 			"terminalPromptCommandFailed": "已執行命令 {0}，但失敗",
 			"terminalPromptCommandFailedWithExitCode": "已執行命令 {0}，但失敗 (結束代碼 {1})",
 			"terminalPromptCommandSuccess": "已執行命令 {0}",
-			"terminalPromptContextMenu": "顯示命令動作"
+			"terminalPromptContextMenu": "顯示命令動作",
+			"toggleVisibility": "切換可見度"
 		},
 		"vs/workbench/contrib/terminal/browser/xterm/xtermTerminal": {
 			"dontShowAgain": "不要再顯示",
@@ -8736,6 +8805,7 @@
 			"terminal.findMatchHighlightBorder": "終端中其他搜尋相符項目的框線色彩。",
 			"terminal.foreground": "終端機的前景色彩。",
 			"terminal.selectionBackground": "終端機的選取項目背景色彩。",
+			"terminal.selectionForeground": "終端機的選取前景色彩。當此為 Null 時，將會保留選取的前景，並套用對比下限功能。",
 			"terminal.tab.activeBorder": "面板中，[終端] 索引標籤側邊的邊界。預設值為 tab.activeBorder。",
 			"terminalCommandDecoration.defaultBackground": "預設終端命令裝飾背景色彩。",
 			"terminalCommandDecoration.errorBackground": "錯誤命令的終端命令裝飾背景色彩。",
@@ -8755,9 +8825,9 @@
 			"separator": "條件式分隔符號 (\" - \")，只有位於具有值或靜態文字的變數之間時才會出現。",
 			"sequence": "處理序提供給終端的名稱",
 			"task": "表示此終端與工作關聯",
-			"terminal.integrated.allowChords": "是否允許在終端內同步選取按鍵繫結關係。請注意，當此設定為 true 時，同步選取的按鍵輸入結果會跳過 `#terminal.integrated.commandsToSkipShell#`，如果希望按 ctrl+k 能前往殼層 (不是 VS Code)，請將此項設定為 false。",
+			"terminal.integrated.allowChords": "是否允許在終端內同步選取按鍵繫結關係。請注意，當此設定為 true 時，同步選取的按鍵輸入結果會跳過 {0}，如果希望按 ctrl+k 就能前往殼層 (不是 VS Code)，請將此項設定為 false。",
 			"terminal.integrated.allowMnemonics": "是否允許功能表列助憶鍵 (例如 alt+f) 觸發開啟功能表列的動作。請注意，若為 true，此設定會導致所有 alt 按鍵輸入都跳過殼層。這不適用於 macOS。",
-			"terminal.integrated.altClickMovesCursor": "若啟用，當 '#editor.multiCursorModifier#' 設定為 ''alt'' (預設) 時，同時按下 ALT/Option 鍵加滑鼠按鈕會將提示游標重新置於至滑鼠下，但其穩定性取決於您您的殼層。",
+			"terminal.integrated.altClickMovesCursor": "若啟用，當 {0} 設定為 {1} (預設值) 時，同時按下 alt/option 鍵加滑鼠按鈕會將提示游標重新置於至滑鼠下，但其穩定性取決於您您的殼層。",
 			"terminal.integrated.autoReplies": "在終端中遇到這一組訊息時，系統將會自動回覆。如果訊息夠具體，有助於自動處理常見的回覆。\r\n\r\n備註:\r\n\r\n- 使用 {0} 自動回應 Windows 上的終端批次工作提示。\r\n- 該訊息包含逸出序列，因此可能不會使用樣式文字進行回覆。\r\n- 每個回覆每秒只能發生一次。\r\n- 在回覆中使用 {1} 表示輸入索引鍵。\r\n- 若要取消設定預設索引鍵，請將值設定為 Null。\r\n- 若新的不適用，請重新啟動 VS Code。",
 			"terminal.integrated.autoReplies.reply": "要傳送至程序的回覆。",
 			"terminal.integrated.bellDuration": "觸發時，在終端機索引標籤內顯示鈴鐺的毫秒數。",
@@ -8774,7 +8844,7 @@
 			"terminal.integrated.copyOnSelection": "控制是否要將終端內的選取文字複製到剪貼簿。",
 			"terminal.integrated.cursorBlinking": "控制終端游標是否閃爍。",
 			"terminal.integrated.cursorStyle": "控制終端游標的樣式。",
-			"terminal.integrated.cursorWidth": "控制 `#terminal.integrated.cursorStyle#` 設為 `line` 時的游標寬度。",
+			"terminal.integrated.cursorWidth": "控制游標寬度，當 {0} 設定為 {1} 時。",
 			"terminal.integrated.customGlyphs": "是否要繪製區塊元素和方塊繪圖字元的自訂字符，而不使用字型，這通常會透過連續行產生更佳的轉譯。請注意，這不適用於 DOM 轉譯器",
 			"terminal.integrated.cwd": "終端啟動所在的明確開始路徑，該路徑會用作殼層處理序目前的工作目錄 (cwd)。如果根目錄不是方便的 cwd，這個路徑在工作區設定中就特別有用。",
 			"terminal.integrated.defaultLocation": "控制新建立的終端機顯示的位置。",
@@ -8788,7 +8858,7 @@
 			"terminal.integrated.enableBell": "控制是否啟用終端機鈴，這會顯示為終端機名稱旁的視覺鈴鐺。",
 			"terminal.integrated.enableFileLinks": "是否要在終端內啟用檔案連結。因為每個檔案連結都要向檔案系統驗證，所以連結可能會變慢，特別是在使用網路磁碟機時。變更此設定只對新的終端有效。",
 			"terminal.integrated.enableMultiLinePasteWarning": "將多行貼上到終端時顯示警告對話方塊。對話方塊不會在下列時間顯示:\r\n\r\n- 加括號貼上模式已啟用 (殼層原生支援多行貼上)\r\n- 貼上會由殼層的讀取行處理 (在 pwsh 的情況下)",
-			"terminal.integrated.enablePersistentSessions": "在視窗重新載入期間保存工作區的終端機工作階段。",
+			"terminal.integrated.enablePersistentSessions": "在視窗重新載入期間保存工作區的終端機工作階段/記錄。",
 			"terminal.integrated.env.linux": "具有環境變數的物件，會新增至 Linux 終端使用的 VS Code 處理序。設為 `null` 可刪除環境變數。",
 			"terminal.integrated.env.osx": "具有環境變數的物件，會新增至 macOS 終端使用的 VS Code 處理序。設為 `null` 可刪除環境變數。",
 			"terminal.integrated.env.windows": "具有環境變數的物件，會新增至 Windows 終端使用的 VS Code 處理序。設為 `null` 可刪除環境變數。",
@@ -8798,19 +8868,19 @@
 			"terminal.integrated.environmentChangesIndicator.warnonly": "當終端的環境「過時」時，僅顯示警告指示器，而非顯示終端環境已被延伸模組修改的資訊指示器。",
 			"terminal.integrated.environmentChangesRelaunch": "當延伸模組要參與終端機環境，且兩者尚未互動時，是否要自動重新啟動終端機。",
 			"terminal.integrated.fastScrollSensitivity": "按 `Alt` 時的捲動速度乘數。",
-			"terminal.integrated.fontFamily": "控制終端的字型系列，預設為 `#editor.fontFamily#` 的值。",
+			"terminal.integrated.fontFamily": "控制終端的字型家族，預設為 {0} 的值。",
 			"terminal.integrated.fontSize": "控制終端的字型大小 (像素)。",
 			"terminal.integrated.fontWeight": "終端中非粗體文字所使用的字型粗細。可接受 \"normal\" 與 \"bold\" 關鍵字，或介於 1 到 1000 之間的數字。",
 			"terminal.integrated.fontWeightBold": "終端中粗體文字所使用的字型粗細。可接受 \"normal\" 與 \"bold\" 關鍵字，或介於 1 到 1000 之間的數字。",
 			"terminal.integrated.fontWeightError": "只允許「一般」及「粗體」關鍵字，或介於 1 到 1000 之間的數值。",
 			"terminal.integrated.gpuAcceleration": "控制終端機是否要利用 GPU 進行轉譯。",
 			"terminal.integrated.gpuAcceleration.auto": "讓 VS Code 偵測哪些轉譯器能提供最佳體驗。",
-			"terminal.integrated.gpuAcceleration.canvas": "使用終端機內的後援畫布轉譯器。這會使用 2d 內容而不是 webgl，而且在某些系統上可能更好。",
-			"terminal.integrated.gpuAcceleration.off": "停用終端機內的 GPU 加速。",
+			"terminal.integrated.gpuAcceleration.canvas": "使用終端機的後援畫布轉譯器，此轉譯器使用 2d 內容，而非在某些系統上執行效果較佳的 WebGL。請注意，某些功能在畫布轉譯器中受到限制，例如不透明的選取範圍。",
+			"terminal.integrated.gpuAcceleration.off": "停用終端機內的 GPU 加速。當 GPU 加速關閉時，終端機轉譯速度會較慢，但應可在所有系統上可靠地運作。",
 			"terminal.integrated.gpuAcceleration.on": "啟用終端機內的 GPU 加速。",
 			"terminal.integrated.letterSpacing": "控制終端的字母間距，這是整數值，代表字元間可新增的額外像素數量。",
 			"terminal.integrated.lineHeight": "控制終端的行高，此數字會乘以終端的字型大小，取得實際行高 (像素)。",
-			"terminal.integrated.localEchoEnabled": "應該啟用本機回應時。這會覆寫 `#terminal.integrated.localEchoLatencyThreshold#`",
+			"terminal.integrated.localEchoEnabled": "何時應該啟用本機回應。這將覆寫 {0}",
 			"terminal.integrated.localEchoEnabled.auto": "僅針對遠端工作區啟用",
 			"terminal.integrated.localEchoEnabled.off": "一律停用",
 			"terminal.integrated.localEchoEnabled.on": "一律啟用",
@@ -8832,19 +8902,24 @@
 			"terminal.integrated.rightClickBehavior.paste": "按右鍵時貼上。",
 			"terminal.integrated.rightClickBehavior.selectWord": "選取游標下方的文字，並顯示操作功能表。",
 			"terminal.integrated.scrollback": "控制終端在緩衝區中保留的行數上限。",
-			"terminal.integrated.sendKeybindingsToShell": "將大部分按鍵繫結關係分派到終端，而不是工作台，並會覆寫 `#terminal.integrated.commandsToSkipShell#`，這也可用於微調。",
-			"terminal.integrated.shellIntegration.decorationIcon": "控制會用於略過/清理命令的圖示。設為 `''` 以隱藏圖示或停用具有 `#terminal.integrated.shellIntegration.decorationsEnabled#` 的裝飾",
-			"terminal.integrated.shellIntegration.decorationIconError": "控制在已啟用殼層整合，且具有相關聯結束代碼之每個終端機中命令所使用的圖示。設為 `''` 以隱藏圖示或停用具有 `#terminal.integrated.shellIntegration.decorationsEnabled#` 的裝飾。",
-			"terminal.integrated.shellIntegration.decorationIconSuccess": "控制在已啟用殼層整合，且不具有相關聯結束代碼之每個終端機中命令所使用的圖示。設為 `''` 以隱藏圖示或停用具有 `#terminal.integrated.shellIntegration.decorationsEnabled#` 的裝飾。",
+			"terminal.integrated.sendKeybindingsToShell": "將大部分按鍵繫結關係分派到終端，而不是工作台，並會覆寫 {0}，這也可用於微調。",
+			"terminal.integrated.shellIntegration.decorationIcon": "控制將用於略過/空白命令的圖示。設定為 {0} 以隱藏圖示或停用 {1} 的裝飾。",
+			"terminal.integrated.shellIntegration.decorationIconError": "控制在啟用殼層整合且有已關聯結束代碼的終端中將用於每個命令的圖示。設定為 {0} 以隱藏圖示或停用 {1} 的裝飾。",
+			"terminal.integrated.shellIntegration.decorationIconSuccess": "控制在啟用殼層整合且沒有已關聯結束代碼的終端中將用於每個命令的圖示。設定為 {0} 以隱藏圖示或停用 {1} 的裝飾。",
 			"terminal.integrated.shellIntegration.decorationsEnabled": "啟用殼層整合時，為每個命令新增裝飾。",
-			"terminal.integrated.shellIntegration.enabled": "啟用實驗性殼層整合功能，這將會開啟特定功能，例如，增強的命令追蹤和目前工作目錄偵測。殼層整合的運作方式是透過插入在殼層初始化時執行的指令碼，讓終端取得終端內發生情況的其他深入解析，如果您在終端設定檔中定義了自訂引數，則指令碼插入可能無法運作。\r\n\r\n支援的殼層:\r\n\r\n- Linux/macOS: bash、pwsh、zsh\r\n - Windows: pwsh\r\n\r\n此設定僅在終端建立時適用，您需要重新啟動終端，設定才會生效。",
+			"terminal.integrated.shellIntegration.decorationsEnabled.both": "在裝訂邊 (左側) 和概觀尺規 (右側) 中顯示裝飾",
+			"terminal.integrated.shellIntegration.decorationsEnabled.gutter": "在終端機左側顯示裝訂邊裝飾",
+			"terminal.integrated.shellIntegration.decorationsEnabled.never": "不要顯示裝飾",
+			"terminal.integrated.shellIntegration.decorationsEnabled.overviewRuler": "在終端機右側顯示概觀尺規裝飾",
+			"terminal.integrated.shellIntegration.enabled": "決定是否自動插入殼層整合以支援像是增強的命令追蹤和目前工作目錄偵測等功能。\r\n\r\n殼層整合的運作方式是透過使用啟動指令碼插入殼層。指令碼讓 VS Code 了解終端內部發生的狀況。\r\n\r\n支援的殼層:\r\n\r\n- Linux/macOS: bash、pwsh、zsh\r\n - Windows: pwsh\r\n\r\n此設定僅在終端建立時適用，因此您需要重新啟動終端，設定才會生效。\r\n\r\n請注意，如果您在終端設定檔、 [複雜 bash `PROMPT_COMMAND`](https://code.visualstudio.com/docs/editor/integrated-terminal#_complex-bash-promptcommand) 或其他未受支援的設定中定義了自訂引數，則指令碼插入可能無法運作。若要停用裝飾，請參閱{0}",
 			"terminal.integrated.shellIntegration.history": "控制最近使用之命令的數量，以保留終端命令歷程記錄。設為 0 可停用終端命令歷程記錄。",
-			"terminal.integrated.shellIntegration.showWelcome": "啟用該功能時，是否在終端中顯示殼層整合已啟動的歡迎訊息。",
 			"terminal.integrated.showExitAlert": "當結束代碼不為零時，控制是否要顯示「終端處理序已終止。結束代碼:」警示。",
 			"terminal.integrated.splitCwd": "控制分割終端開始的工作目錄。",
 			"terminal.integrated.splitCwd.inherited": "在 macOS 和 Linux 上，新的分割終端會使用父終端的工作目錄。在 Windows 上，此行為則與初始行為相同。",
 			"terminal.integrated.splitCwd.initial": "新的分割終端會使用父終端開始的工作目錄。",
 			"terminal.integrated.splitCwd.workspaceRoot": "新的分割終端會使用工作區根目錄作為工作目錄。您可在多重根目錄工作區中選擇要使用的根資料夾。",
+			"terminal.integrated.tabs.defaultColor": "根據預設要與這個終端機圖示相關聯的佈景主題色彩識別碼。",
+			"terminal.integrated.tabs.defaultIcon": "根據預設要與這個終端機圖示相關聯的 codicon 識別碼。",
 			"terminal.integrated.tabs.enableAnimation": "控制 [終端] 索引標籤狀態是否支援動畫 (例如，進行中工作)。",
 			"terminal.integrated.tabs.enabled": "控制終端機的索引標籤是否顯示為終端機側邊的清單。停用此功能時，將會改為顯示下拉式清單。",
 			"terminal.integrated.tabs.focusMode": "控制是要透過按兩下還是按一下，才會使焦點位於索引標籤的終端機。",
@@ -8879,12 +8954,14 @@
 			"workspaceFolder": "啟動終端所在的工作區"
 		},
 		"vs/workbench/contrib/terminal/common/terminalContextKey": {
+			"inTerminalRunCommandPickerContextKey": "終端機執行命令選擇器目前是否開啟。",
 			"isSplitTerminalContextKey": "焦點索引標籤的終端是否為分割終端。",
 			"terminalAltBufferActive": "終端的 alt 緩衝區是否作用中。",
 			"terminalCountContextKey": "目前的終端數目。",
 			"terminalEditorFocusContextKey": "編輯器區域中的終端是否為焦點。",
 			"terminalFocusContextKey": "終端是否為焦點。",
 			"terminalProcessSupportedContextKey": "終端處理序是否可在目前的工作區中啟動。",
+			"terminalShellIntegrationEnabled": "作用中的終端機是否已啟用殼層整合",
 			"terminalShellTypeContextKey": "使用中終端的 shell 類型，當終端不存在時，此類型會設定為上一個已知的值。",
 			"terminalTabsFocusContextKey": "終端的索引標籤小工具是否為焦點。",
 			"terminalTabsSingularSelectedContextKey": "在 [終端] 索引標籤清單中是否選取了一個終端。",
@@ -9074,6 +9151,7 @@
 		},
 		"vs/workbench/contrib/testing/common/configuration": {
 			"testConfigurationTitle": "測試",
+			"testing.alwaysRevealTestOnStateChange": "當 '#testing.followRunningTest#' 開啟時，一律顯示已執行的測試。如果關閉此設定，只會顯示失敗的測試。",
 			"testing.autoRun.delay": "在測試標記為過期且開始新執行後，需要等候的時間 (以毫秒為單位)。",
 			"testing.autoRun.mode": "控制要自動執行哪些測試。",
 			"testing.autoRun.mode.allInWorkspace": "當切換為自動執行時，自動執行所有探索到的測試。會在個別測試變更時重新執行。",
@@ -9158,7 +9236,8 @@
 			"themes.selectMarketplaceTheme": "輸入以搜尋更多。選取以安裝。要預覽的向上鍵/向下鍵",
 			"themes.selectProductIconTheme": "選取產品圖示佈景主題 (向上鍵/向下鍵以預覽)",
 			"themes.selectProductIconTheme.label": "產品圖示佈景主題",
-			"themes.selectTheme": "選取色彩主題(上/下鍵預覽)"
+			"themes.selectTheme": "選取色彩主題(上/下鍵預覽)",
+			"toggleLightDarkThemes.label": "在淺色/深色主題之間切換"
 		},
 		"vs/workbench/contrib/timeline/browser/timeline.contribution": {
 			"files.openTimeline": "開啟時間軸",
@@ -9251,10 +9330,13 @@
 			"use stable": "穩定 (目前)"
 		},
 		"vs/workbench/contrib/update/browser/update.contribution": {
+			"applyUpdate": "套用更新...",
 			"downloadUpdate": "下載更新",
 			"installUpdate": "安裝更新",
 			"miReleaseNotes": "版本資訊(&&R)",
-			"restartToUpdate": "重新啟動以更新"
+			"pickUpdate": "套用更新",
+			"restartToUpdate": "重新啟動以更新",
+			"updateButton": "更新(&U)"
 		},
 		"vs/workbench/contrib/url/browser/trustedDomains": {
 			"trustedDomain.manageTrustedDomain": "管理受信任的網域",
@@ -9276,14 +9358,48 @@
 			"urlToOpen": "要開啟的 URL",
 			"workbench.trustedDomains.promptInTrustedWorkspace": "啟用時，在受信任的工作區中開啟連結時，會出現受信任的網域提示。"
 		},
+		"vs/workbench/contrib/userDataProfile/browser/userDataProfile": {
+			"currentProfile": "目前設定設定檔是 {0}",
+			"manageProfiles": "{0} ({1})",
+			"profileTooltip": "{0}: {1}",
+			"settingsProfilesIcon": "設定設定檔的圖示。",
+			"statusBarItemSettingsProfileBackground": "狀態列上設定設定檔項目的背景色彩。",
+			"statusBarItemSettingsProfileForeground": "狀態列上設定設定檔項目的前景色彩。",
+			"workbench.experimental.settingsProfiles.enabled": "控制是否要啟用設定設定檔預覽功能。"
+		},
+		"vs/workbench/contrib/userDataProfile/common/userDataProfileActions": {
+			"cleanup profile": "清理設定設定檔",
+			"confiirmation message": "這會取代您現有的設定。確定要繼續嗎?",
+			"create and enter empty profile": "建立空的設定檔...",
+			"create empty profile": "建立空白的設定設定檔...",
+			"create profile": "建立...",
+			"create settings profile": "{0}: 建立...",
+			"current": "目前",
+			"delete profile": "刪除...",
+			"edit settings profile": "重新命名設定設定檔...",
+			"export profile": "匯出...",
+			"export profile dialog": "儲存設定檔",
+			"export success": "{0}: 已成功匯出。",
+			"import profile": "匯入...",
+			"import profile dialog": "匯入設定檔",
+			"import profile placeholder": "提供設定檔 URL 或選取要匯入的設定檔檔案",
+			"import profile quick pick title": "從設定檔匯入設定",
+			"import profile title": "從設定檔匯入設定",
+			"name": "設定檔名稱",
+			"pick profile": "選取設定設定檔",
+			"pick profile to delete": "選取要刪除的設定設定檔",
+			"pick profile to rename": "選取要重新命名的設定設定檔",
+			"rename profile": "重新命名...",
+			"save profile as": "從目前的設定設定檔建立...",
+			"select from file": "從設定檔中匯入",
+			"select from url": "從 URL 匯入",
+			"switch profile": "切換..."
+		},
 		"vs/workbench/contrib/userDataSync/browser/userDataSync": {
-			"Sync accept merges": "{0}: {1}",
-			"Sync accept remote": "{0}: {1}",
+			"Theirs": "他們的",
+			"Yours": "您的",
 			"accept failed": "接受變更時發生錯誤。如需詳細資料，請查看[記錄]({0})。",
-			"accept merges": "接受合併",
-			"accept merges button": "接受合併(&&M)",
-			"accept remote": "接受遠端",
-			"accept remote button": "接受遠端(&&R)",
+			"accept merges title": "接受合併",
 			"ask to turn on in global": "[設定同步] 已關閉 (1)",
 			"auth failed": "開啟 [設定同步] 時發生錯誤: 驗證失敗。",
 			"cancel": "取消",
@@ -9292,8 +9408,6 @@
 			"configure and turn on sync detail": "請登入以跨裝置同步您的資料。",
 			"configure sync": "{0}: 設定...",
 			"configure sync placeholder": "選擇要同步的內容",
-			"confirm replace and overwrite local": "要接受遠端 {0} 並取代本機 {1} 嗎?",
-			"confirm replace and overwrite remote": "要接受合併並取代遠端 {0} 嗎?",
 			"conflicts detected": "因為 {0} 有衝突而無法同步。請先解決後再繼續。",
 			"default": "預設",
 			"error reset required": "因為雲端中的資料比用戶端資料舊，所以已停用設定同步。開啟同步之前，請先清除雲端中的資料。",
@@ -9305,12 +9419,12 @@
 			"has conflicts": "{0}: 偵測到衝突",
 			"insiders": "測試人員",
 			"learn more": "深入了解",
-			"leftResourceName": "{0} (遠端)",
-			"merges": "{0} (合併)",
+			"localResourceName": "{0} (本機)",
 			"no authentication providers": "沒有任何可用的驗證提供者。",
 			"open file": "開啟 {0} 檔案",
 			"operationId": "作業識別碼: {0}",
 			"per platform": "用於每個平台",
+			"remoteResourceName": "{0} (遠端)",
 			"replace local": "取代本機",
 			"replace remote": "取代遠端",
 			"reset": "清除雲端中的資料...",
@@ -9332,8 +9446,6 @@
 			"showKeybindingsConflicts": "{0}: 顯示按鍵繫結關係衝突",
 			"showSnippetsConflicts": "{0}: 顯示使用者程式碼片段衝突",
 			"showTasksConflicts": "{0}: 顯示使用者工作衝突",
-			"sideBySideDescription": "設定同步",
-			"sideBySideLabels": "{0} ↔ {1}",
 			"sign in accounts": "登入以同步設定 (1)",
 			"sign in and turn on": "登入並開啟",
 			"sign in global": "登入以同步設定",
@@ -9363,7 +9475,6 @@
 			"turnin on sync": "正在開啟設定同步...",
 			"turning on syncing": "正在開啟設定同步...",
 			"turnon sync after initialization message": "已初始化您的設定、按鍵繫結關係、延伸模組、程式碼片段和 UI 狀態，但並未進行同步。要開啟 [設定同步] 嗎?",
-			"update conflicts": "因為有新的本機版本可用，所以無法解決衝突。請再試一次。",
 			"using separate service": "設定同步現在使用不同的服務，如需詳細資訊，請參閱[設定同步文件](https://aka.ms/vscode-settings-sync-help#_syncing-stable-versus-insiders)。",
 			"workbench.action.showSyncRemoteBackup": "顯示同步的資料",
 			"workbench.actions.syncData.reset": "清除雲端中的資料..."
@@ -9435,12 +9546,6 @@
 			"Open Backup folder": "開啟本機備份資料夾",
 			"no backups": "本機備份資料夾不存在"
 		},
-		"vs/workbench/contrib/views/browser/treeView": {
-			"no-dataprovider": "沒有任何已註冊的資料提供者可提供檢視資料。",
-			"refresh": "重新整理",
-			"collapseAll": "全部摺疊",
-			"command-error": "執行命令 {1} 時發生錯誤: {0}。這可能是貢獻 {1} 的延伸模組所引起。"
-		},
 		"vs/workbench/contrib/watermark/browser/watermark": {
 			"tips.enabled": "如有啟用，將會在編輯器未開啟時以浮水印方式顯示提示。",
 			"watermark.findInFiles": "在檔案中尋找",
@@ -9478,261 +9583,6 @@
 		"vs/workbench/contrib/webviewPanel/browser/webviewPanel.contribution": {
 			"webview.editor.label": "Web 檢視編輯器"
 		},
-		"vs/workbench/contrib/welcome/common/newFile.contribution": {
-			"Built-In": "內建",
-			"Create": "建立",
-			"change keybinding": "設定按鍵繫結關係",
-			"createNew": "建立新項目...",
-			"file": "檔案",
-			"miNewFile2": "文字檔",
-			"notebook": "筆記本",
-			"welcome.newFile": "新增檔案..."
-		},
-		"vs/workbench/contrib/welcome/common/viewsWelcomeContribution": {
-			"ViewsWelcomeExtensionPoint.proposedAPI": "'{0}' 中的 viewsWelcome 貢獻需要 'enabledApiProposals: [\"contribViewsWelcome\"]'，才能使用 'group' 建議的屬性。"
-		},
-		"vs/workbench/contrib/welcome/common/viewsWelcomeExtensionPoint": {
-			"contributes.viewsWelcome": "已貢獻檢視歡迎內容。每當沒有具意義的內容可顯示時，就會轉譯樹狀結構檢視中的歡迎內容 (也就是說，未開啟任何資料夾時為檔案總管)。這類內容作為產品內文件相當實用，可先在使用者能夠使用特定功能前先提供介紹。檔案總管歡迎檢視中的 [複製存放庫] 按鈕就是個好範例。",
-			"contributes.viewsWelcome.view": "已為特定檢視貢獻歡迎內容。",
-			"contributes.viewsWelcome.view.contents": "要顯示的歡迎內容。內容的格式為 Markdown 的子集，僅支援連結。",
-			"contributes.viewsWelcome.view.enablement": "應啟用歡迎內容按鈕和命令連結的條件。",
-			"contributes.viewsWelcome.view.group": "此歡迎內容所屬的群組。建議的 API。",
-			"contributes.viewsWelcome.view.view": "此歡迎內容的目標檢視識別碼。只支援樹狀結構的檢視。",
-			"contributes.viewsWelcome.view.when": "顯示歡迎內容的條件。"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted": {
-			"allDone": "標記完成",
-			"checkboxTitle": "核取時，啟動時會顯示此頁面。",
-			"close": "隱藏",
-			"footer": "{0} 收集使用量資料。閱讀我們的 {1}，並了解如何 {2}。",
-			"getStarted": "快速入門",
-			"gettingStarted.allStepsComplete": "所有 {0} 步驟皆完成！",
-			"gettingStarted.editingEvolved": "編輯進化了",
-			"gettingStarted.someStepsComplete": "{1} 個步驟中已完成 {0} 個",
-			"imageShowing": "顯示 {0} 的影像",
-			"new": "新增",
-			"newItems": "已更新",
-			"nextOne": "下一節",
-			"optOut": "退出",
-			"pickWalkthroughs": "開啟逐步解說...",
-			"privacy statement": "隱私權聲明",
-			"recent": "最近使用",
-			"show more recents": "顯示所有最近使用的資料夾 {0}",
-			"showAll": "其他...",
-			"start": "開始",
-			"walkthroughs": "逐步解說",
-			"welcomeAriaLabel": "概述如何利用編輯器加速。",
-			"welcomePage.openFolderWithPath": "透過路徑 {1} 開啟資料夾 {0}",
-			"welcomePage.showOnStartup": "啟動時顯示歡迎頁面"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution": {
-			"getStarted": "快速入門",
-			"help": "說明",
-			"miGetStarted": "快速入門",
-			"pickWalkthroughs": "開啟逐步解說...",
-			"welcome.goBack": "返回",
-			"welcome.markStepComplete": "標記步驟完成",
-			"welcome.markStepInomplete": "將步驟標記為未完成",
-			"welcome.showAllWalkthroughs": "開啟逐步解說...",
-			"workbench.welcomePage.preferReducedMotion": "啟用時，減少歡迎頁面中的動作。",
-			"workbench.welcomePage.walkthroughs.openOnInstall": "啟用後，延伸模組的逐步解說將在安裝延伸模組時開啟。",
-			"workspacePlatform": "目前工作區的平台，在遠端或無伺服器內容中可能會與 UI 平台不同"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedColors": {
-			"welcomePage.background": "歡迎頁面的背景色彩。",
-			"welcomePage.progress.background": "歡迎頁面進度列的前景色彩。",
-			"welcomePage.progress.foreground": "歡迎頁面進度列的背景色彩。",
-			"welcomePage.tileBackground": "[開始使用] 頁面上磚的背景色彩。",
-			"welcomePage.tileHoverBackground": "[開始使用] 上磚的暫留背景色彩。",
-			"welcomePage.tileShadow": "歡迎頁面逐步解說類別按鈕的陰影色彩。"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedExtensionPoint": {
-			"pathDeprecated": "已取代。請改為使用 'image' 或 'markdown'",
-			"title": "標題",
-			"walkthroughs": "貢獻逐步解說，協助使用者開始使用您的延伸模組。",
-			"walkthroughs.description": "逐步解說的描述。",
-			"walkthroughs.featuredFor": "在具有指定檔案的工作區中，符合其中一個 Glob 模式的逐步解說會顯示為「精選」。例如，TypeScript 專案的逐步解說可能會在這裡指定 'tsconfig.json'。",
-			"walkthroughs.id": "此逐步解說不重覆的識別碼。",
-			"walkthroughs.steps": "包含在此逐步解說中要完成的步驟。",
-			"walkthroughs.steps.button.deprecated.interpolated": "已淘汰。改為在描述中使用 Markdown 連結，例如 {0}、{1} 或 {2}",
-			"walkthroughs.steps.completionEvents": "應觸發此步驟以完成的事件。若為空白或未定義，當按一下步驟的任何按鈕或連結時，將會完成步驟; 如果步驟沒有按鈕或連結，它會在選取時檢查。",
-			"walkthroughs.steps.completionEvents.extensionInstalled": "當已安裝具有所提供識別碼的延伸模組時，完成步驟。如果已安裝延伸模組，步驟開始時即為完成。",
-			"walkthroughs.steps.completionEvents.onCommand": "當在 VS Code 中的任何位置執行給定命令時，完成步驟。",
-			"walkthroughs.steps.completionEvents.onContext": "當內容鍵運算式為 True 時，完成步驟。",
-			"walkthroughs.steps.completionEvents.onLink": "當透過逐步解說步驟開啟給定連結時，完成步驟。",
-			"walkthroughs.steps.completionEvents.onSettingChanged": "當給定的設定變更時，完成步驟",
-			"walkthroughs.steps.completionEvents.onView": "在指定的檢視開啟時完成步驟",
-			"walkthroughs.steps.completionEvents.stepSelected": "選取後立即完成步驟。",
-			"walkthroughs.steps.description.interpolated": "步驟的描述。支援 ``預設格式``、__斜體__ 及 **粗體** 文字。針對命令或外部連結使用 Markdown 樣式連結: {0}、{1} 或 {2}。連結本身行中的連結會呈現為按鈕。",
-			"walkthroughs.steps.doneOn": "將步驟標記為已完成的訊號。",
-			"walkthroughs.steps.doneOn.deprecation": "doneOn 已被取代。根據預設，按一下按鈕時即完成步驟，以設定進一步使用 completionEvents",
-			"walkthroughs.steps.id": "此步驟不重覆的識別碼。其可用於追蹤已完成的步驟。",
-			"walkthroughs.steps.media": "要與此步驟一起顯示的媒體，包括影像或 Markdown 內容。",
-			"walkthroughs.steps.media.altText": "當影像無法載入時顯示，或要在螢幕助讀程式內顯示的替代文字。",
-			"walkthroughs.steps.media.image.path.dark.string": "淺色佈景主題的影像路徑，相對於延伸模組目錄。",
-			"walkthroughs.steps.media.image.path.hc.string": "hc 佈景主題的影像路徑，相對於延伸模組目錄。",
-			"walkthroughs.steps.media.image.path.light.string": "淺色佈景主題的影像路徑，相對於延伸模組目錄。",
-			"walkthroughs.steps.media.image.path.string": "相對於延伸目錄的影像路徑 (或包含光線、深色和 hc 影像路徑的物件)。視內容不同，影像會以類似的高度範圍從 400px 到 800px 寬顯示。為了支援 HIDPI 顯示器，影像會以 1.5 倍縮放比例呈現，例如，900 實體像素的影像將會顯示為 600 邏輯像素寬。",
-			"walkthroughs.steps.media.image.path.svg": "變數中支援色彩權杖、svg 路徑，以支持與工作台相符的佈景主題。",
-			"walkthroughs.steps.media.markdown.path": "Markdown 文件的路徑，相對於延伸目錄。",
-			"walkthroughs.steps.oneOn.command": "執行指定的命令時，將步驟標記為完成。",
-			"walkthroughs.steps.title": "步驟的標題。",
-			"walkthroughs.steps.when": "控制是否顯示此步驟的內容索引鍵運算式。",
-			"walkthroughs.title": "逐步解說的標題。",
-			"walkthroughs.when": "控制是否顯示此逐步解說的內容索引鍵運算式。"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedIcons": {
-			"gettingStartedChecked": "用來代表已完成的逐步解說步驟",
-			"gettingStartedUnchecked": "用來代表尚未完成的逐步解說步驟"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedInput": {
-			"getStarted": "快速入門"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedService": {
-			"builtin": "內建"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/common/gettingStartedContent": {
-			"browseLangExts": "瀏覽語言延伸模組",
-			"browsePopular": "瀏覽熱門 Web 延伸模組",
-			"browseRecommended": "瀏覽建議的延伸模組",
-			"cloneRepo": "複製存放庫",
-			"commandPalette": "開啟命令選擇區",
-			"enableSync": "啟用設定同步",
-			"enableTrust": "啟用信任",
-			"getting-started-beginner-icon": "用於歡迎頁面初學者類別的圖示",
-			"getting-started-intermediate-icon": "用於歡迎頁面中級類別的圖示",
-			"getting-started-setup-icon": "用於歡迎頁面設定類別的圖示",
-			"gettingStarted.beginner.description": "直接跳入 VS Code，並取得必須具備功能的概觀。",
-			"gettingStarted.beginner.title": "了解基礎",
-			"gettingStarted.commandPalette.description.interpolated": "命令是完成 VS Code 中任何工作所需的鍵盤方式。**練習**: 查看常用的命令以節省時間。\r\n{0}\r\n__嘗試搜尋「檢視切換」。__",
-			"gettingStarted.commandPalette.title": "一個存取所有項目的快速鍵",
-			"gettingStarted.debug.description.interpolated": "設定啟動設定，加速您的編輯、編譯、測試和偵錯迴圈。\r\n{0}",
-			"gettingStarted.debug.title": "觀看您的程式碼執行",
-			"gettingStarted.extensions.description.interpolated": "延伸模組是 VS Code 的一大助力。範圍涵蓋實用的生產力工具，可以不斷擴展現成可用的功能，以及持續增加的新功能。\r\n{0}",
-			"gettingStarted.extensions.title": "無限的擴充性",
-			"gettingStarted.extensionsWeb.description.interpolated": "延伸模組為 VS Code 的增強功能。有越來越多的延伸模組可於網路上使用。\r\n{0}",
-			"gettingStarted.findLanguageExts.description.interpolated": "使用語法醒目提示、程式碼完成、Lint 分析與偵錯工具，以更聰明的方式執行程式碼。雖然許多語言是內建的，但更多語言可以新增為延伸模組。\r\n{0}",
-			"gettingStarted.findLanguageExts.title": "您所有語言的豐富支援",
-			"gettingStarted.installGit.description.interpolated": "安裝 GIT 以追蹤您專案中的變更。\r\n{0}",
-			"gettingStarted.installGit.title": "安裝 Git",
-			"gettingStarted.intermediate.description": "使用這些秘訣和訣竅，將您的開發工作流程最佳化。",
-			"gettingStarted.intermediate.title": "提升您的生產力",
-			"gettingStarted.menuBar.description.interpolated": "下拉式功能表中提供完整的功能表列，可為程式碼騰出空間。切換其外觀以加快存取速度。\r\n{0}",
-			"gettingStarted.menuBar.title": "正確的 UI 數量",
-			"gettingStarted.newFile.description": "開啟新的無標題檔案、筆記本或自訂編輯器。",
-			"gettingStarted.newFile.title": "新增檔案...",
-			"gettingStarted.notebook.title": "自訂筆記本",
-			"gettingStarted.notebookProfile.description": "讓筆記本成為您喜歡的方式",
-			"gettingStarted.notebookProfile.title": "選取筆記本的版面配置",
-			"gettingStarted.openFile.description": "開啟檔案以開始工作",
-			"gettingStarted.openFile.title": "開啟檔案…",
-			"gettingStarted.openFolder.description": "開啟資料夾以開始工作",
-			"gettingStarted.openFolder.title": "開啟資料夾…",
-			"gettingStarted.openMac.description": "開啟檔案或資料夾以開始工作",
-			"gettingStarted.openMac.title": "開啟…",
-			"gettingStarted.pickColor.description.interpolated": "正確的色彩調色盤可協助您將焦點放在程式碼上、讓眼睛不吃力，且使用起來更有趣。\r\n{0}",
-			"gettingStarted.pickColor.title": "選擇您想要的外觀",
-			"gettingStarted.playground.description.interpolated": "想要更快速且更聰明地編寫程式碼嗎? 練習互動式遊戲區中強大的程式碼編輯功能。\r\n{0}",
-			"gettingStarted.playground.title": "重新定義您的編輯技巧",
-			"gettingStarted.quickOpen.description.interpolated": "使用單一按鍵輸入，立即在檔案間進行瀏覽。提示: 按向右鍵即可開啟多個檔案。\r\n{0}",
-			"gettingStarted.quickOpen.title": "在檔案之間快速瀏覽",
-			"gettingStarted.scm.description.interpolated": "無須再尋找 Git 命令! Git 和 GitHub 工作流程完美整合。\r\n{0}",
-			"gettingStarted.scm.title": "使用 Git 追蹤您的程式碼",
-			"gettingStarted.scmClone.description.interpolated": "設定專案的內建版本控制，以追蹤您的變更並與其他人共同作業。\r\n{0}",
-			"gettingStarted.scmSetup.description.interpolated": "設定專案的內建版本控制，以追蹤您的變更並與其他人共同作業。\r\n{0}",
-			"gettingStarted.settings.description.interpolated": "根據您的喜好調校 VS Code 及延伸模組的每個層面。常用的設定會優先列出，方便您開始使用。\r\n{0}",
-			"gettingStarted.settings.title": "微調您的設定",
-			"gettingStarted.settingsSync.description.interpolated": "保留您在所有裝置上基本 VS Code 自訂的備份及更新。\r\n{0}",
-			"gettingStarted.settingsSync.title": "與其他裝置同步處理",
-			"gettingStarted.setup.OpenFolder.description.interpolated": "一切已設定為開始編碼。開啟專案資料夾，將檔案放入 VS Code。\r\n{0}",
-			"gettingStarted.setup.OpenFolder.title": "開啟您的程式碼",
-			"gettingStarted.setup.OpenFolderWeb.description.interpolated": "您已準備開始撰寫程式碼。您可以開啟本機專案或遠端存放庫，將您的檔案放入 VS Code。\r\n{0}\r\n{1}",
-			"gettingStarted.setup.description": "探索最佳自訂項目，讓 VS Code 專屬於您。",
-			"gettingStarted.setup.title": "開始使用 VS Code",
-			"gettingStarted.setupWeb.description": "探索最佳自訂項目，讓 VS Code 網頁版專屬於您。",
-			"gettingStarted.setupWeb.title": "開始使用網頁版 VS Code",
-			"gettingStarted.shortcuts.description.interpolated": "一旦找到您最愛的命令，請建立自訂鍵盤快速鍵以立即存取。\r\n{0}",
-			"gettingStarted.shortcuts.title": "自訂您的快速鍵",
-			"gettingStarted.splitview.description.interpolated": "並排、垂直和水平開啟檔案，以充分利用螢幕空間。\r\n{0}",
-			"gettingStarted.splitview.title": "並排編輯",
-			"gettingStarted.tasks.description.interpolated": "為一般工作流程建立工作，並享受執行指令碼和自動檢查結果的整合體驗。\r\n{0}",
-			"gettingStarted.tasks.title": "自動化您的專案工作",
-			"gettingStarted.terminal.description.interpolated": "在您的程式碼旁，快速執行殼層命令及監視建置輸出。\r\n{0}",
-			"gettingStarted.terminal.title": "方便的內建終端機",
-			"gettingStarted.topLevelGitClone.description": "將遠端存放庫複製到本機資料夾",
-			"gettingStarted.topLevelGitClone.title": "複製 Git 存放庫...",
-			"gettingStarted.topLevelGitOpen.description": "連線到遠端存放庫或提取要求以瀏覽、搜尋、編輯及認可",
-			"gettingStarted.topLevelGitOpen.title": "開啟存放庫...",
-			"gettingStarted.topLevelShowWalkthroughs.description": "檢視編輯器或延伸模組的逐步解說",
-			"gettingStarted.topLevelShowWalkthroughs.title": "開啟逐步解說...",
-			"gettingStarted.videoTutorial.description.interpolated": "觀看一系列簡短練習影片教學課程中的第一集，以了解 VS Code 的主要功能。\r\n{0}",
-			"gettingStarted.videoTutorial.title": "輕鬆學習",
-			"gettingStarted.workspaceTrust.description.interpolated": "{0} 可讓您決定專案資料夾是否應該**允許或限制**自動執行程式碼 __(延伸模組、偵錯等需要)__。\r\n開啟檔案/資料夾時，系統會提示您授與信任。您稍後隨時 {1}。",
-			"gettingStarted.workspaceTrust.title": "安全地瀏覽和編輯程式碼",
-			"initRepo": "初始化 Git 存放庫",
-			"installGit": "安裝 Git",
-			"keyboardShortcuts": "鍵盤快速鍵",
-			"openEditorPlayground": "開啟編輯器遊樂場",
-			"openFolder": "開啟資料夾",
-			"openRepository": "開啟存放庫",
-			"openSCM": "開放原始碼控制",
-			"pickFolder": "挑選資料夾",
-			"quickOpen": "快速開啟檔案",
-			"runProject": "執行您的專案",
-			"runTasks": "執行自動偵測的工作",
-			"showTerminal": "顯示終端面板",
-			"splitEditor": "分割編輯器",
-			"titleID": "瀏覽色彩主題",
-			"toggleMenuBar": "切換功能表列",
-			"tweakSettings": "調校我的設定",
-			"watch": "觀看教學課程",
-			"workspaceTrust": "工作區信任"
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/common/media/example_markdown_media": {
-			"HighContrast": "高對比",
-			"dark": "深色",
-			"light": "淺色",
-			"seeMore": "查看更多佈景主題..."
-		},
-		"vs/workbench/contrib/welcome/gettingStarted/common/media/notebookProfile": {
-			"colab": "Colab",
-			"default": "預設",
-			"jupyter": "Jupyter"
-		},
-		"vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay": {
-			"hideWelcomeOverlay": "隱藏介面概觀",
-			"welcomeOverlay": "使用者介面概觀",
-			"welcomeOverlay.commandPalette": "尋找及執行所有命令",
-			"welcomeOverlay.debug": "啟動並偵錯",
-			"welcomeOverlay.explorer": "檔案總管",
-			"welcomeOverlay.extensions": "管理延伸模組",
-			"welcomeOverlay.git": "原始程式碼管理",
-			"welcomeOverlay.notifications": "顯示通知",
-			"welcomeOverlay.problems": "檢視錯誤和警告",
-			"welcomeOverlay.search": "跨檔案搜尋",
-			"welcomeOverlay.terminal": "切換整合式終端機"
-		},
-		"vs/workbench/contrib/welcome/page/browser/welcomePage.contribution": {
-			"workbench.startupEditor": "控制在啟動時顯示哪個編輯器，若沒有，則從上個工作階段還原。",
-			"workbench.startupEditor.newUntitledFile": "開啟一個新的無標題檔案 (僅在開啟空白視窗時適用)。",
-			"workbench.startupEditor.none": "不使用編輯器開始。",
-			"workbench.startupEditor.readme": "開啟資料夾時，如果當中包含讀我檔案就開啟讀我檔案，否則改為開啟 'welcomePage'。注意: 只會監看全域設定中的設定，如果是在工作區或資料夾設定中的設定，則會忽略。",
-			"workbench.startupEditor.welcomePage": "開啟包含協助開始使用 VS Code 和延伸模組內容的歡迎頁面。",
-			"workbench.startupEditor.welcomePageInEmptyWorkbench": "在開啟空的工作台時開啟歡迎頁面。"
-		},
-		"vs/workbench/contrib/welcome/walkThrough/browser/editor/editorWalkThrough": {
-			"editorWalkThrough": "互動式編輯器遊樂場",
-			"editorWalkThrough.title": "編輯器遊樂場"
-		},
-		"vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution": {
-			"miPlayground": "編輯遊樂場(&&N)",
-			"walkThrough.editor.label": "遊樂場"
-		},
-		"vs/workbench/contrib/welcome/walkThrough/browser/walkThroughPart": {
-			"walkThrough.embeddedEditorBackground": "編輯器互動區塊的背景色彩.",
-			"walkThrough.gitNotFound": "您的系統上似乎未安裝 Git。",
-			"walkThrough.unboundCommand": "未繫結"
-		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted": {
 			"allDone": "標記完成",
 			"checkboxTitle": "核取時，啟動時會顯示此頁面。",
@@ -9741,6 +9591,7 @@
 			"getStarted": "快速入門",
 			"gettingStarted.allStepsComplete": "所有 {0} 步驟皆完成！",
 			"gettingStarted.editingEvolved": "編輯已進化",
+			"gettingStarted.keyboardTip": "提示: 使用鍵盤快速鍵 ",
 			"gettingStarted.someStepsComplete": "{1} 個步驟中已完成 {0} 個",
 			"imageShowing": "顯示 {0} 的影像",
 			"new": "新增",
@@ -9834,7 +9685,9 @@
 			"getStarted": "快速入門"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedService": {
-			"builtin": "內建"
+			"builtin": "內建",
+			"developer": "開發人員",
+			"resetWelcomePageWalkthroughProgress": "重設歡迎頁面逐步解說進度"
 		},
 		"vs/workbench/contrib/welcomeGettingStarted/common/gettingStartedContent": {
 			"browseLangExts": "瀏覽語言延伸模組",
@@ -9906,7 +9759,7 @@
 			"gettingStarted.terminal.title": "方便的內建終端機",
 			"gettingStarted.topLevelGitClone.description": "將遠端存放庫複製到本機資料夾",
 			"gettingStarted.topLevelGitClone.title": "複製 Git 存放庫...",
-			"gettingStarted.topLevelGitOpen.description": "連線到遠端存放庫或提取要求以瀏覽、搜尋、編輯及認可",
+			"gettingStarted.topLevelGitOpen.description": "連線到遠端存放庫或提取要求以瀏覽、搜尋、編輯及提交",
 			"gettingStarted.topLevelGitOpen.title": "開啟存放庫...",
 			"gettingStarted.topLevelShowWalkthroughs.description": "檢視編輯器或延伸模組的逐步解說",
 			"gettingStarted.topLevelShowWalkthroughs.title": "開啟逐步解說...",
@@ -9960,22 +9813,15 @@
 			"welcomeOverlay.search": "跨檔案搜尋",
 			"welcomeOverlay.terminal": "切換整合式終端"
 		},
-		"vs/workbench/contrib/welcomePage/browser/welcomePage.contribution": {
-			"workbench.startupEditor": "控制在啟動時顯示哪個編輯器，若沒有，則從上個工作階段還原。",
-			"workbench.startupEditor.newUntitledFile": "開啟一個新的無標題檔案 (僅在開啟空白視窗時適用)。",
-			"workbench.startupEditor.none": "不使用編輯器開始。",
-			"workbench.startupEditor.readme": "開啟資料夾時，如果當中包含讀我檔案就開啟讀我檔案，否則改為開啟 'welcomePage'。注意: 只會監看全域設定中的設定，如果是在工作區或資料夾設定中的設定，則會忽略。",
-			"workbench.startupEditor.welcomePage": "開啟包含協助開始使用 VS Code 和延伸模組內容的歡迎頁面。",
-			"workbench.startupEditor.welcomePageInEmptyWorkbench": "在開啟空的工作台時開啟歡迎頁面。"
-		},
 		"vs/workbench/contrib/welcomeViews/common/newFile.contribution": {
 			"Built-In": "內建",
 			"Create": "建立",
 			"change keybinding": "設定按鍵繫結關係",
-			"createNew": "建立新項目...",
 			"file": "檔案",
 			"miNewFile2": "文字檔",
+			"miNewFileWithName": "新檔案 ({0})",
 			"notebook": "筆記本",
+			"selectFileType": "選取檔案類型...",
 			"welcome.newFile": "新增檔案..."
 		},
 		"vs/workbench/contrib/welcomeViews/common/viewsWelcomeContribution": {
@@ -10154,7 +10000,6 @@
 			"inlineCompletions.actions": "將游標停留在內嵌完成時所顯示的動作",
 			"interactive.cell.title": "所提供的互動式儲存格標題功能表",
 			"interactive.toolbar": "所提供的互動式工具列功能表",
-			"menuId.invalid": "`{0}` 不是有效的功能表識別碼",
 			"menus.changeTitle": "原始檔控制內嵌變更功能表",
 			"menus.commandPalette": "命令選擇區",
 			"menus.debugCallstackContext": "偵錯呼叫堆疊檢視操作功能表",
@@ -10162,6 +10007,7 @@
 			"menus.debugVariablesContext": "偵錯變數檢視操作功能表",
 			"menus.editorContext": "編輯器操作功能表",
 			"menus.editorContextCopyAs": "編輯器操作功能表中的 [複製為] 子功能表",
+			"menus.editorContextShare": "編輯器操作功能表中的 [共用] 子功能表",
 			"menus.editorTabContext": "編輯器索引標籤操作功能表",
 			"menus.editorTitle": "編輯器標題功能表",
 			"menus.editorTitleRun": "在編輯器標題功能表內執行子功能表",
@@ -10174,8 +10020,10 @@
 			"menus.resourceStateContext": "原始檔控制資源群組狀態操作功能表",
 			"menus.scmSourceControl": "原始檔控制功能表",
 			"menus.scmTitle": "原始檔控制標題功能表",
+			"menus.share": "最上方的 [檔案] 功能表中顯示 [共用] 子功能表。",
 			"menus.statusBarRemoteIndicator": "狀態列中的遠端指示器功能表",
 			"menus.touchBar": "Touch Bar (macOS)",
+			"merge.toolbar": "合併編輯器中的顯著 Botton",
 			"missing.altCommand": "功能表項目參考了 'commands' 區段中未定義的替代命令 `{0}`。",
 			"missing.command": "功能表項目參考了 'commands' 區段中未定義的命令 `{0}`。",
 			"missing.submenu": "功能表項目參考了 'submenus' 區段中未定義的子功能表 `{0}`。",
@@ -10183,6 +10031,7 @@
 			"notebook.cell.execute": "所提供的筆記本儲存格執行功能表",
 			"notebook.cell.executePrimary": "所提供的主要筆記本儲存格執行按鈕",
 			"notebook.cell.title": "所提供的筆記本儲存格標題功能表",
+			"notebook.kernelSource": "提供的筆記本核心來源功能表",
 			"notebook.toolbar": "提供的筆記本工具列功能表",
 			"opticon": "屬性 `icon` 可以省略，否則必須為字串或類似 `{dark, light}` 的常值",
 			"optstring": "`{0}` 屬性可省略，否則必須屬於 `string` 類型",
@@ -10227,7 +10076,8 @@
 			"vscode.extension.contributes.submenu.icon.light": "使用亮色主題時的圖示路徑",
 			"vscode.extension.contributes.submenu.id": "顯示為子功能表的功能表識別項。",
 			"vscode.extension.contributes.submenu.label": "引導至此子功能表的功能表項目標籤。",
-			"vscode.extension.contributes.submenus": "將子功能表項目提供給編輯器"
+			"vscode.extension.contributes.submenus": "將子功能表項目提供給編輯器",
+			"webview.context": "Web 檢視操作功能表"
 		},
 		"vs/workbench/services/authentication/browser/authenticationService": {
 			"accessRequest": "為 {1} 授予 {0} 的存取權...(1)",
@@ -10248,13 +10098,6 @@
 			"sign in": "需要登入",
 			"signInRequest": "使用 {0} 登入，以使用 {1} (1)",
 			"useOtherAccount": "登入另一個帳戶"
-		},
-		"vs/workbench/services/bulkEdit/browser/bulkEditService": {
-			"summary.0": "未進行任何編輯",
-			"summary.nm": "在 {1} 個檔案中進行了 {0} 項文字編輯",
-			"summary.n0": "在一個檔案中進行了 {0} 項文字編輯",
-			"workspaceEdit": "工作區編輯",
-			"nothing": "未進行任何編輯"
 		},
 		"vs/workbench/services/configuration/browser/configurationService": {
 			"configurationDefaults.description": "提供設定的預設值",
@@ -10283,6 +10126,7 @@
 			"errorLaunchConfigurationFileDirty": "因為檔案具有未儲存的變更，所以無法寫入啟動設定檔。請先儲存，然後再試一次。",
 			"errorLaunchConfigurationFileModifiedSince": "因為檔案內容較新，所以無法寫入啟動組態檔。",
 			"errorNoWorkspaceOpened": "因為未開啟工作區，所以無法寫入至 {0}。請先開啟工作區，再試一次。",
+			"errorPolicyConfiguration": "無法寫入 {0}，因為它已在系統原則中設定。",
 			"errorRemoteConfigurationFileDirty": "因為檔案具有未儲存的變更，所以無法寫入遠端使用者設定。請先儲存遠端使用者設定檔案，然後再試一次。",
 			"errorRemoteConfigurationFileModifiedSince": "因為檔案內容較新，所以無法寫入遠端使用者設定。",
 			"errorTasksConfigurationFileDirty": "因為檔案具有未儲存的變更，所以無法寫入工作設定檔。請先儲存，然後再試一次。",
@@ -10390,12 +10234,12 @@
 			"editorResolver.configureDefault": "設定預設值",
 			"editorResolver.conflictingDefaults": "資源有多個可用的預設編輯器。",
 			"editorResolver.keepDefault": "保留 {0}",
-			"prompOpenWith.updateDefaultPlaceHolder": "選取 '{0}' 的新預設編輯器",
 			"promptOpenWith.configureDefault": "設定 '{0}' 的預設編輯器...",
 			"promptOpenWith.currentDefault": "預設",
 			"promptOpenWith.currentDefaultAndActive": "使用中及預設",
 			"promptOpenWith.currentlyActive": "使用中",
-			"promptOpenWith.placeHolder": "選取 '{0}' 的編輯器"
+			"promptOpenWith.placeHolder": "選取 '{0}' 的編輯器",
+			"promptOpenWith.updateDefaultPlaceHolder": "選取 '{0}' 的新預設編輯器"
 		},
 		"vs/workbench/services/editor/common/editorResolverService": {
 			"editor.editorAssociations": "設定編輯器的 glob 模式 (例如 `\"*.hex\": \"hexEditor.hexEdit\"`)。這些優先順序高於預設行為。"
@@ -10436,10 +10280,6 @@
 			"extensionsDisabled": "已暫時停用所有已安裝的延伸模組。",
 			"noWorkspace": "沒有任何工作區。"
 		},
-		"vs/workbench/services/extensionManagement/browser/webExtensionsScannerService": {
-			"not a web extension": "因為此延伸模組不是 Web 延伸模組，所以無法新增 '{0}'。",
-			"openInstalledWebExtensionsResource": "開啟已安裝的 Web 延伸模組資源"
-		},
 		"vs/workbench/services/extensionManagement/common/extensionManagementService": {
 			"Manifest is not found": "安裝延伸模組 {0} 失敗: 找不到資訊清單。",
 			"VS Code for Web": "{0} 網頁版",
@@ -10470,7 +10310,8 @@
 		},
 		"vs/workbench/services/extensionManagement/electron-sandbox/remoteExtensionManagementService": {
 			"notFoundCompatibleDependency": "因為 '{0}' 延伸模組與目前的 {1} 版本 ({2} 版) 不相容，所以無法安裝。",
-			"notFoundCompatiblePrereleaseDependency": "因為 '{0}' 延伸模組的發行前版本與目前的 {1} 版本 ({2} 版) 不相容，所以無法安裝。"
+			"notFoundCompatiblePrereleaseDependency": "因為 '{0}' 延伸模組的發行前版本與目前的 {1} 版本 ({2} 版) 不相容，所以無法安裝。",
+			"notFoundReleaseExtension": "無法安裝 '{0}' 擴充功能的發行版本，因為它沒有發行版本。"
 		},
 		"vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig": {
 			"select for add": "新增延伸模組建議至",
@@ -10562,9 +10403,11 @@
 			"vscode.extension.category.languages.deprecated": "使用 '程式語言' 代替",
 			"vscode.extension.contributes": "此封裝所代表的所有 VS Code 延伸模組比重。",
 			"vscode.extension.contributes.extensionPack": "可以一併安裝的一組延伸模組。延伸模組的識別碼一律為 ${publisher}.${name}。例如: vscode.csharp。",
+			"vscode.extension.contributes.sponsor": "指定使用者可贊助您延伸模組的位置。",
+			"vscode.extension.contributes.sponsor.url": "使用者可贊助您延伸模組的 URL。它必須是具有 HTTP 或 HTTPS 通訊協定的有效 URL。範例值: https://github.com/sponsors/nvaccess",
 			"vscode.extension.displayName": "VS Code 資源庫中使用的延伸模組顯示名稱。",
 			"vscode.extension.enableProposedApi.deprecated": "改用 `enabledApiProposals`。",
-			"vscode.extension.enabledApiProposals": "啟用 API 建議以試用。只有在**開發期間才有效**。使用此屬性**無法發佈**延伸模組。如需詳細資料，請造訪: https://code.visualstudio.com/api/advanced-topics/using-proposed-api",
+			"vscode.extension.enabledApiProposals": "啟用 API 建議以試用。只有在**開發期間才有效**。使用此屬性**無法發布**延伸模組。如需詳細資料，請造訪: https://code.visualstudio.com/api/advanced-topics/using-proposed-api",
 			"vscode.extension.engines": "引擎相容性。",
 			"vscode.extension.engines.vscode": "若是 VS Code 延伸模組，則指定與延伸模組相容的 VS Code 版本。不得為 *。例如: ^0.10.5 表示與最低 VS Code 版本 0.10.5 相容。",
 			"vscode.extension.extensionDependencies": "其它延伸模組的相依性。延伸模組的識別碼一律為 ${publisher}.${name}。例如: vscode.csharp。",
@@ -10576,7 +10419,7 @@
 			"vscode.extension.preview": "將延伸模組設為在 Marketplace 中標幟為 [預覽]。",
 			"vscode.extension.publisher": "VS Code 延伸模組的發行者。",
 			"vscode.extension.qna": "控制 Marketplace 中的問與答連結。設定為 Marketplace 可啟用預設 Marketplace 問與答網站。設定為字串可提供自訂問與答網站的 URL。設定為 false 可停用所有問與答。",
-			"vscode.extension.scripts.prepublish": "在封裝作為 VS Code 延伸模組發行前所執行的指令碼。",
+			"vscode.extension.scripts.prepublish": "在封裝作為 VS Code 延伸模組發布前所執行的指令碼。",
 			"vscode.extension.scripts.uninstall": "VS Code 延伸模組的解除安裝勾點。當延伸模組完全從 VS Code 解除安裝時，會在延伸模組解除安裝並重新啟動 (關機並啟動) 時執行的程式碼。僅支援 Node 指令碼。",
 			"workspace": "工作區延伸模組類型。在遠端視窗中，這類延伸模組只有在可於遠端上使用時才會啟用。"
 		},
@@ -10587,7 +10430,11 @@
 		"vs/workbench/services/extensions/common/remoteExtensionHost": {
 			"remote extension host Log": "遠端延伸主機"
 		},
-		"vs/workbench/services/extensions/electron-browser/extensionService": {
+		"vs/workbench/services/extensions/electron-sandbox/cachedExtensionScanner": {
+			"extensionCache.invalid": "延伸模組在磁碟上已修改。請重新載入視窗。",
+			"reloadWindow": "重新載入視窗"
+		},
+		"vs/workbench/services/extensions/electron-sandbox/electronExtensionService": {
 			"devTools": "開啟開發人員工具",
 			"enable": "啟用並重新載入",
 			"enableResolver": "需要擴充 '{0}' 才能開啟遠端視窗。\r\n確定要啟用嗎?",
@@ -10603,87 +10450,13 @@
 			"restart": "重新啟動延伸主機",
 			"restartExtensionHost": "重新啟動延伸主機"
 		},
-		"vs/workbench/services/extensions/electron-browser/localProcessExtensionHost": {
+		"vs/workbench/services/extensions/electron-sandbox/localProcessExtensionHost": {
 			"extension host Log": "延伸主機",
 			"extensionHost.error": "延伸主機發生錯誤: {0}",
 			"extensionHost.startupFail": "延伸主機未在 10 秒內啟動，可能發生了問題。",
 			"extensionHost.startupFailDebug": "延伸主機未於 10 秒內開始，可能在第一行就已停止，並需要偵錯工具才能繼續。",
 			"join.extensionDevelopment": "正在終止延伸模組偵錯工作階段",
 			"reloadWindow": "重新載入視窗"
-		},
-		"vs/workbench/services/extensions/electron-sandbox/cachedExtensionScanner": {
-			"extensionCache.invalid": "延伸模組在磁碟上已修改。請重新載入視窗。",
-			"reloadWindow": "重新載入視窗"
-		},
-		"vs/workbench/services/files/electron-browser/diskFileSystemProvider": {
-			"binFailed": "無法將 '{0}' 移至資源回收筒",
-			"trashFailed": "無法將 '{0}' 移動至垃圾"
-		},
-		"vs/workbench/services/gettingStarted/common/gettingStartedContent": {
-			"getting-started-setup-icon": "用於使用者入門設定類別的圖示",
-			"getting-started-beginner-icon": "用於使用者入門初學者類別的圖示",
-			"getting-started-codespaces-icon": "用於使用者入門 codespace 類別的圖示",
-			"gettingStarted.newFile.title": "新增檔案",
-			"gettingStarted.newFile.description": "使用全新空白檔案開始工作",
-			"gettingStarted.openMac.title": "開啟...",
-			"gettingStarted.openMac.description": "開啟檔案或資料夾以開始工作",
-			"gettingStarted.openFile.title": "開啟檔案...",
-			"gettingStarted.openFile.description": "開啟檔案以開始工作",
-			"gettingStarted.openFolder.title": "開啟資料夾...",
-			"gettingStarted.openFolder.description": "開啟資料夾以開始工作",
-			"gettingStarted.cloneRepo.title": "複製 Git 存放庫...",
-			"gettingStarted.cloneRepo.description": "複製 Git 存放庫",
-			"gettingStarted.topLevelCommandPalette.title": "執行命令...",
-			"gettingStarted.topLevelCommandPalette.description": "使用命令選擇區，檢視及執行 VSCode 的所有命令",
-			"gettingStarted.codespaces.title": "Codespaces 基礎入門",
-			"gettingStarted.codespaces.description": "啟動並執行您的即時程式碼環境。",
-			"gettingStarted.runProject.title": "建置及執行您的應用程式",
-			"gettingStarted.runProject.description": "直接從瀏覽器在雲端中建置、執行您的程式碼，並對其偵錯。",
-			"gettingStarted.runProject.button": "開始偵錯 (F5)",
-			"gettingStarted.forwardPorts.title": "存取執行中的應用程式",
-			"gettingStarted.forwardPorts.description": "您 codespace 內執行的連接埠，會自動轉寄到 Web，如此即可在瀏覽器中加以開啟。",
-			"gettingStarted.forwardPorts.button": "顯示連接埠面板",
-			"gettingStarted.pullRequests.title": "彈指間就能提取要求",
-			"gettingStarted.pullRequests.description": "讓您的 GitHub 工作流程更貼近您的程式碼，以便能隨時檢閱提取要求、新增註解、合併分支等等。",
-			"gettingStarted.pullRequests.button": "開啟 GitHub 檢視",
-			"gettingStarted.remoteTerminal.title": "在整合式終端中執行工作",
-			"gettingStarted.remoteTerminal.description": "使用內建終端機，執行快速命令列工作。",
-			"gettingStarted.remoteTerminal.button": "聚焦終端機",
-			"gettingStarted.openVSC.title": "以遠端方式在 VS Code 中開發",
-			"gettingStarted.openVSC.description": "從您的本機 VS Code，存取雲端開發環境功能。請安裝 GitHub Codespaces 延伸模組加以設定，然後連接您的 GitHub 帳戶。",
-			"gettingStarted.openVSC.button": "在 VS Code 中開啟",
-			"gettingStarted.setup.title": "快速設定",
-			"gettingStarted.setup.description": "延伸並自訂 VS Code 可將其個人化。",
-			"gettingStarted.pickColor.title": "利用佈景主題自訂外觀",
-			"gettingStarted.pickColor.description": "您可以挑選符合您編寫程式碼當下之喜好與心情的色彩佈景主題。",
-			"gettingStarted.pickColor.button": "挑選佈景主題",
-			"gettingStarted.findLanguageExts.title": "無須切換編輯器，就能使用任何語言編寫程式碼",
-			"gettingStarted.findLanguageExts.description": "VS Code 支援超過 50 種程式設計語言，而且大部分已經內建在 VS Code 中，其他的語言只要按一下，就能安裝成延伸模組。",
-			"gettingStarted.findLanguageExts.button": "瀏覽語言延伸模組",
-			"gettingStarted.settingsSync.title": "同步我的最愛設定",
-			"gettingStarted.settingsSync.description": "完美的 VS Code 設定永遠常在! 設定同步會備份設定、按鍵繫結關係與延伸模組，並將其提供給多個 VS Code 執行個體共用。",
-			"gettingStarted.settingsSync.button": "啟用設定同步",
-			"gettingStarted.setup.OpenFolder.title": "開啟您的專案",
-			"gettingStarted.setup.OpenFolder.description": "開啟專案資料夾以開始!",
-			"gettingStarted.setup.OpenFolder.button": "挑選資料夾",
-			"gettingStarted.setup.OpenFolder.description2": "開啟資料夾就能開始使用!",
-			"gettingStarted.beginner.title": "了解基礎",
-			"gettingStarted.beginner.description": "使用這些必備的捷徑與功能，可節省時間。",
-			"gettingStarted.commandPalette.title": "尋找及執行命令",
-			"gettingStarted.commandPalette.description": "了解 VS Code 所有用途最簡單的方法。若想要尋找功能或捷徑，請先查看這裡!",
-			"gettingStarted.commandPalette.button": "開啟命令選擇區",
-			"gettingStarted.terminal.title": "在整合式終端中執行工作",
-			"gettingStarted.terminal.description": "在您的程式碼旁，快速執行殼層命令及監視組建輸出。",
-			"gettingStarted.terminal.button": "開啟終端機",
-			"gettingStarted.extensions.title": "無限擴充性",
-			"gettingStarted.extensions.description": "延伸模組是 VS Code 的一大助力。範圍涵蓋實用的生產力工具，可以不斷擴展現成可用的功能，以及持續增加的新功能。",
-			"gettingStarted.extensions.button": "瀏覽建議的延伸模組",
-			"gettingStarted.settings.title": "每件事都可視為是設定",
-			"gettingStarted.settings.description": "根據您的喜好，讓 VS Code 的外觀與感覺更臻完美。啟用設定同步，可以讓多部機器共用您個人的調整結果。",
-			"gettingStarted.settings.button": "調整我的設定",
-			"gettingStarted.videoTutorial.title": "輕鬆學習",
-			"gettingStarted.videoTutorial.description": "觀看一系列簡短練習影片教學課程中的第一集，以了解 VS Code 的主要功能。",
-			"gettingStarted.videoTutorial.button": "觀看教學課程"
 		},
 		"vs/workbench/services/history/browser/historyService": {
 			"canNavigateBack": "在編輯器歷程記錄中是否可以向後巡覽",
@@ -10736,7 +10509,7 @@
 			"vscode.extension.contributes.resourceLabelFormatters.authority": "要比對格式器的所在 URI 授權單位。支援簡易的 Glob 模式。",
 			"vscode.extension.contributes.resourceLabelFormatters.formatting": "用於將 URI 資源標籤格式化的規則。",
 			"vscode.extension.contributes.resourceLabelFormatters.formatting.workspaceSuffix": "附加到工作區標籤的後置詞。",
-			"vscode.extension.contributes.resourceLabelFormatters.label": "要顯示的標籤規則。例如: myLabel:/${path}。支援 ${path}、${scheme} 和 ${authority} 作為變數。",
+			"vscode.extension.contributes.resourceLabelFormatters.label": "要顯示的標籤規則。例如: myLabel:/${path}。支援 ${path}、${scheme}、${authority} 和 ${authoritySuffix} 作為變數。",
 			"vscode.extension.contributes.resourceLabelFormatters.scheme": "要對其比對格式器的 URI 配置。例如 \"file\"。支援簡易的 Glob 模式。",
 			"vscode.extension.contributes.resourceLabelFormatters.separator": "要在 URI 標籤顯示中使用的分隔符號。例如 '/' 或 '’。",
 			"vscode.extension.contributes.resourceLabelFormatters.stripPathStartingSeparator": "控制 `${path}` 的替代是否應去掉開頭的分隔符號字元。",
@@ -10765,32 +10538,6 @@
 			"vscode.extension.contributes.languages.icon": "可用為檔案圖示的圖示 (若圖示主題未針對語言提供)。",
 			"vscode.extension.contributes.languages.icon.dark": "使用暗色主題時的圖像路徑",
 			"vscode.extension.contributes.languages.icon.light": "使用亮色主題時的圖示路徑",
-			"vscode.extension.contributes.languages.id": "語言的識別碼。",
-			"vscode.extension.contributes.languages.mimetypes": "與語言相關聯的 MIME 類型。"
-		},
-		"vs/workbench/services/lifecycle/electron-sandbox/lifecycleService": {
-			"errorClose": "嘗試關閉視窗 ({0}) 時，擲回未預期的錯誤。",
-			"errorLoad": "嘗試變更視窗 ({0}) 的工作區時，擲回未預期的錯誤。",
-			"errorQuit": "嘗試結束應用程式 ({0}) 時，擲回未預期的錯誤。",
-			"errorReload": "嘗試重新載入視窗 ({0}) 時，擲回未預期的錯誤。"
-		},
-		"vs/workbench/services/mode/common/workbenchLanguageService": {
-			"invalid": "`contributes.{0}` 無效。必須是陣列。",
-			"invalid.empty": "`contributes.{0}` 值為空值",
-			"opt.aliases": "屬性 '{0}' 可以省略且必須屬於 `string[]` 類型",
-			"opt.configuration": "屬性 '{0}' 可以省略且必須屬於 `string` 類型",
-			"opt.extensions": "屬性 '{0}' 可以省略且必須屬於 `string[]` 類型",
-			"opt.filenames": "屬性 '{0}' 可以省略且必須屬於 `string[]` 類型",
-			"opt.firstLine": "屬性 '{0}' 可以省略且必須屬於 `string` 類型",
-			"opt.mimetypes": "屬性 '{0}' 可以省略且必須屬於 `string[]` 類型",
-			"require.id": "屬性 '{0}' 為強制項目且必須屬於 `string` 類型",
-			"vscode.extension.contributes.languages": "提供語言宣告。",
-			"vscode.extension.contributes.languages.aliases": "語言的別名名稱。",
-			"vscode.extension.contributes.languages.configuration": "檔案的相對路徑，其中該檔案包含語言組態選項。",
-			"vscode.extension.contributes.languages.extensions": "與語言相關聯的副檔名。",
-			"vscode.extension.contributes.languages.filenamePatterns": "與語言相關聯的檔案名稱 Glob 模式。",
-			"vscode.extension.contributes.languages.filenames": "與語言相關聯的檔案名稱。",
-			"vscode.extension.contributes.languages.firstLine": "規則運算式，符合語言檔案的第一行。",
 			"vscode.extension.contributes.languages.id": "語言的識別碼。",
 			"vscode.extension.contributes.languages.mimetypes": "與語言相關聯的 MIME 類型。"
 		},
@@ -10851,14 +10598,6 @@
 			"validations.uriMissing": "必須是 URI。",
 			"validations.uriSchemeMissing": "必須是具有配置的 URI。"
 		},
-		"vs/workbench/services/profiles/common/profile": {
-			"profile": "設定設定檔",
-			"settings profiles": "設定設定檔"
-		},
-		"vs/workbench/services/profiles/common/profileService": {
-			"applied profile": "{0}: 已成功套用。",
-			"profiles.applying": "{0}: 正在套用..."
-		},
 		"vs/workbench/services/progress/browser/progressService": {
 			"cancel": "取消",
 			"dismiss": "關閉",
@@ -10880,30 +10619,6 @@
 		},
 		"vs/workbench/services/search/common/queryBuilder": {
 			"search.noWorkspaceWithName": "工作區資料夾不存在: {0}"
-		},
-		"vs/workbench/services/textMate/browser/abstractTextMateService": {
-			"alreadyDebugging": "已記錄。",
-			"invalid.embeddedLanguages": "`contributes.{0}.embeddedLanguages` 中的值無效。必須是從範圍名稱到語言的物件對應。提供的值: {1}",
-			"invalid.injectTo": "`contributes.{0}.injectTo` 中的值無效。必須是語言範圍名稱的陣列。提供的值: {1}",
-			"invalid.language": "`contributes.{0}.language` 中的不明語言。提供的值: {1}",
-			"invalid.path.0": "`contributes.{0}.path` 中的預期字串。提供的值: {1}",
-			"invalid.path.1": "延伸模組資料夾 ({2}) 應包含 'contributes.{0}.path' ({1})。這可能會導致延伸模組無法移植。",
-			"invalid.scopeName": "`contributes.{0}.scopeName` 中的預期字串。提供的值: {1}",
-			"invalid.tokenTypes": "`contributes.{0}.tokenTypes` 的值無效。必須是從範圍名稱到象徵類型的物件對應。提供的值: {1} ",
-			"progress1": "正在準備記錄 TM 語法剖析。完成後，請按 [停止]。",
-			"progress2": "目前正在記錄 TM 文法剖析。完成後，請按 [停止]。",
-			"stop": "停止"
-		},
-		"vs/workbench/services/textMate/common/TMGrammars": {
-			"vscode.extension.contributes.grammars": "提供 textmate 權杖化工具。",
-			"vscode.extension.contributes.grammars.balancedBracketScopes": "定義哪些領域名稱包含平衡括弧。",
-			"vscode.extension.contributes.grammars.embeddedLanguages": "如果此文法包含內嵌語言，即為範圍名稱到語言識別碼的對應。",
-			"vscode.extension.contributes.grammars.injectTo": "要插入此文法的語言範圍名稱清單。",
-			"vscode.extension.contributes.grammars.language": "要提供此語法的目標語言識別碼。",
-			"vscode.extension.contributes.grammars.path": "tmLanguage 檔案的路徑。此路徑是延伸模組資料夾的相對路徑，而且一般會以 './syntaxes/' 開頭。",
-			"vscode.extension.contributes.grammars.scopeName": "tmLanguage 檔案所使用的 textmate 範圍名稱。",
-			"vscode.extension.contributes.grammars.tokenTypes": "範圍名稱到象徵類型的對應。",
-			"vscode.extension.contributes.grammars.unbalancedBracketScopes": "定義哪些領域名稱不包含平衡括弧。"
 		},
 		"vs/workbench/services/textfile/browser/textFileService": {
 			"confirmOverwrite": "'{0}' 已存在。您要取代它嗎?",
@@ -10928,6 +10643,30 @@
 		},
 		"vs/workbench/services/textfile/electron-sandbox/nativeTextFileService": {
 			"join.textFiles": "正在儲存文字檔"
+		},
+		"vs/workbench/services/textMate/browser/abstractTextMateService": {
+			"alreadyDebugging": "已記錄。",
+			"invalid.embeddedLanguages": "`contributes.{0}.embeddedLanguages` 中的值無效。必須是從範圍名稱到語言的物件對應。提供的值: {1}",
+			"invalid.injectTo": "`contributes.{0}.injectTo` 中的值無效。必須是語言範圍名稱的陣列。提供的值: {1}",
+			"invalid.language": "`contributes.{0}.language` 中的不明語言。提供的值: {1}",
+			"invalid.path.0": "`contributes.{0}.path` 中的預期字串。提供的值: {1}",
+			"invalid.path.1": "延伸模組資料夾 ({2}) 應包含 'contributes.{0}.path' ({1})。這可能會導致延伸模組無法移植。",
+			"invalid.scopeName": "`contributes.{0}.scopeName` 中的預期字串。提供的值: {1}",
+			"invalid.tokenTypes": "`contributes.{0}.tokenTypes` 的值無效。必須是從範圍名稱到象徵類型的物件對應。提供的值: {1} ",
+			"progress1": "正在準備記錄 TM 語法剖析。完成後，請按 [停止]。",
+			"progress2": "目前正在記錄 TM 文法剖析。完成後，請按 [停止]。",
+			"stop": "停止"
+		},
+		"vs/workbench/services/textMate/common/TMGrammars": {
+			"vscode.extension.contributes.grammars": "提供 textmate 權杖化工具。",
+			"vscode.extension.contributes.grammars.balancedBracketScopes": "定義哪些領域名稱包含平衡括弧。",
+			"vscode.extension.contributes.grammars.embeddedLanguages": "如果此文法包含內嵌語言，即為範圍名稱到語言識別碼的對應。",
+			"vscode.extension.contributes.grammars.injectTo": "要插入此文法的語言範圍名稱清單。",
+			"vscode.extension.contributes.grammars.language": "要提供此語法的目標語言識別碼。",
+			"vscode.extension.contributes.grammars.path": "tmLanguage 檔案的路徑。此路徑是延伸模組資料夾的相對路徑，而且一般會以 './syntaxes/' 開頭。",
+			"vscode.extension.contributes.grammars.scopeName": "tmLanguage 檔案所使用的 textmate 範圍名稱。",
+			"vscode.extension.contributes.grammars.tokenTypes": "範圍名稱到象徵類型的對應。",
+			"vscode.extension.contributes.grammars.unbalancedBracketScopes": "定義哪些領域名稱不包含平衡括弧。"
 		},
 		"vs/workbench/services/themes/browser/fileIconThemeData": {
 			"error.cannotparseicontheme": "剖析檔案圖示檔時發生問題: {0}",
@@ -11131,6 +10870,25 @@
 			"invalid.semanticTokenScopes.scopes.value": "'configuration.semanticTokenScopes.scopes' 值必須為字串陣列",
 			"invalid.semanticTokenTypeConfiguration": "'configuration.semanticTokenType' 必須是陣列",
 			"invalid.superType.format": "'configuration.{0}.superType' 必須遵循 letterOrDigit[-_letterOrDigit]* 模式"
+		},
+		"vs/workbench/services/userDataProfile/browser/userDataProfileManagement": {
+			"cannotDeleteDefaultProfile": "無法刪除預設的設定設定檔",
+			"cannotRenameDefaultProfile": "無法重新命名預設的設定設定檔",
+			"reload button": "重新載入(&&R)",
+			"reload message": "切換設定設定檔需要重新載入 VS Code。",
+			"reload message when removed": "已移除目前的設定設定檔。請重新載入以切換回預設的設定設定檔"
+		},
+		"vs/workbench/services/userDataProfile/common/userDataProfile": {
+			"profile": "設定設定檔",
+			"settings profiles": "設定設定檔"
+		},
+		"vs/workbench/services/userDataProfile/common/userDataProfileImportExportService": {
+			"applied profile": "{0}: 已成功套用。",
+			"imported profile": "{0}: 已成功匯入。",
+			"name": "設定檔名稱",
+			"profiles.applying": "{0}: 正在套用...",
+			"profiles.importing": "{0}: 正在匯入...",
+			"save profile as": "從目前的設定檔建立..."
 		},
 		"vs/workbench/services/userDataSync/browser/userDataSyncWorkbenchService": {
 			"cancel": "取消",
@@ -11344,13 +11102,36 @@
 			"incompatible": "無法安裝延伸模組 '{1}' 的版本 '{0}'，因為它與 Azure Data Studio '{2}' 不相容。更新為 Azure Data Studio {3} 以安裝延伸模組。",
 			"installExtensionCompletedAndReloadRequired": "延伸模組 {0} 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
 			"maxMemoryForLargeFilesMB": "控制當嘗試開啟大型檔案時，Azure Data Studio 在重新啟動後可用的記憶體。效果與在命令列上指定 `--max-memory=NEWSIZE` 相同。",
+			"miNewDeployment": "新部署(&&D)…",
 			"miNewNotebook": "新增筆記本(&&N)",
 			"miNewQuery": "新增查詢(&&Q)",
 			"miinstallVsix": "從 VSIX 套件安裝延伸模組",
 			"newQuery": "新增查詢",
 			"notebook.cellTitle": "筆記本儲存格標題功能表",
+			"notebook.cellToolbarLocation.description": "應顯示儲存格工具列的位置，或是否應隱藏。(僅適用於 VS Code Notebooks)",
+			"notebook.cellToolbarVisibility.description": "當游標停留或按一下時，是否要顯示儲存格工具列。(僅適用於 VS Code Notebooks)",
+			"notebook.compactView.description": "控制筆記本編輯器是否應以精簡格式轉譯。例如，開啟時減少左邊界寬度。(僅適用於 VS Code Notebooks)",
+			"notebook.consolidatedOutputButton.description": "控制輸出動作是否應該在輸出工具列中轉譯。(僅適用於 VS Code Notebooks)",
+			"notebook.consolidatedRunButton.description": "控制執行按鈕旁的下拉式清單是否顯示額外的動作。(僅適用於 VS Code Notebooks)",
+			"notebook.diff.enablePreview.description": "是否要為筆記本使用增強的文字 Diff 編輯器。(僅適用於 VS Code Notebooks)",
+			"notebook.displayOrder.description": "輸出 MIME 類型的優先順序清單。(僅適用於 VS Code Notebooks)",
+			"notebook.dragAndDrop.description": "控制筆記本編輯器是否應該允許透過拖放移動儲存格。(僅適用於 VS Code Notebooks)",
+			"notebook.editorOptions.experimentalCustomization": "筆記本中使用的程式碼編輯器設定。這可用來自訂大部分的編輯器。* 設定。(僅適用於 VS Code Notebooks)",
+			"notebook.focusIndicator.description": "控制焦點指標的轉譯位置是沿著儲存格框線，或左裝訂邊。(僅適用於 VS Code Notebooks)",
+			"notebook.globalToolbar.description": "控制是否要在筆記本編輯器內轉譯全域工具列。(僅適用於 VS Code Notebooks)",
+			"notebook.globalToolbarShowLabel": "控制筆記本工具列上的動作是否應轉譯標籤。(僅適用於 VS Code Notebooks)",
+			"notebook.insertToolbarPosition.description": "控制插入儲存格動作應出現的位置。(僅適用於 VS Code Notebooks)",
+			"notebook.interactiveWindow.collapseCodeCells": "控制互動視窗中的程式碼儲存格是否預設為已摺疊。(僅適用於 VS Code Notebooks)",
+			"notebook.markup.fontSize": "控制筆記本中轉譯標記的字型大小 (像素)。設定為 `0` 時，會使用 120% 的 '#editor.fontSize#'。(僅適用於 VS Code Notebooks)",
+			"notebook.outputFontFamily": "筆記本儲存格輸出文字的字型系列。設定為空白時，會使用 '#editor.fontFamily#'。(僅適用於 VS Code Notebooks)",
+			"notebook.outputFontSize": "筆記本儲存格輸出文字的字型大小。當設為 0 時，會使用 '#editor.fontSize#'。(僅適用於 VS Code Notebooks)",
+			"notebook.outputLineHeight": "筆記本儲存格輸出文字的行高。\r\n - 介於 0 到 8 之間的值會用來做為字型大小的乘數。\r\n - 大於或等於 8 的值將做為有效值。(僅適用於 VS Code Notebooks)",
+			"notebook.showCellStatusbar.description": "是否應顯示儲存格狀態列。(僅適用於 VS Code Notebooks)",
+			"notebook.showFoldingControls.description": "控制何時顯示 Markdown 標題摺疊箭頭。(僅適用於 VS Code Notebooks)",
+			"notebook.textOutputLineLimit": "控制文字輸出中要轉譯多少行文字。(僅適用於 VS Code Notebooks)",
 			"notebook.title": "筆記本標題功能表",
 			"notebook.toolbar": "筆記本工具列功能表",
+			"notebook.undoRedoPerCell.description": "是否要針對每個儲存格使用個別的復原/取消復原堆疊。(僅適用於 VS Code Notebooks)",
 			"objectExplorer.context": "物件總管項目操作功能表",
 			"openDefaultSettingsJson": "開啟預設設定 JSON",
 			"openDefaultSettingsJson.capitalized": "開啟預設設定 (JSON)",
@@ -11470,6 +11251,7 @@
 			"notebook.toolbarIcon": "筆記本: Markdown 工具列圖示",
 			"notebookFindMatchHighlight": "其他搜尋相符項目的色彩。其不得為不透明色彩，以免隱藏底層裝飾。",
 			"notebookFindRangeHighlight": "限制搜尋之範圍的色彩。其不得為不透明色彩，以免隱藏底層裝飾。",
+			"queryEditorNullBackground": "查詢編輯器結果方格中 Null 值的背景色彩。",
 			"tileBorder": "磚的框線色彩",
 			"tileBoxShadow": "磚方塊陰影色彩"
 		},
@@ -11538,7 +11320,9 @@
 			"enableObsoleteApiUsageNotificationTitle": "淘汰 API 通知",
 			"previewFeatures.configEnable": "啟用未發佈的預覽功能",
 			"previewFeatures.configTitle": "預覽功能",
-			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊"
+			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊",
+			"useVSCodeNotebooks": "(預覽) 使用 VS Code Notebooks 做為預設筆記本體驗。注意: 必須重新啟動 Azure Data Studio 才能啟用此設定。",
+			"useVSCodeNotebooksTitle": "使用 VS Code Notebooks"
 		},
 		"sql/workbench/browser/designer/designer": {
 			"designer.actions": "更多動作",
@@ -11901,6 +11685,7 @@
 			"status.connection.status": "連線狀態"
 		},
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.azureResource": "提供者的 Azure 資源端點。",
 			"schema.connectionOptions": "連線選項",
 			"schema.displayName": "提供者的顯示名稱",
 			"schema.enableConnectionStringOption": "提供者是否支援連接字串作為輸入選項。預設值為 false。",
@@ -12222,6 +12007,9 @@
 			"deleteRow": "刪除資料列",
 			"revertRow": "還原目前的資料列"
 		},
+		"sql/workbench/contrib/editData/browser/editDataGridPanel": {
+			"editData.cellWithNullCharMessage": "此儲存格包含 Unicode Null 字元，目前不支援編輯。"
+		},
 		"sql/workbench/contrib/editData/browser/gridActions": {
 			"copySelection": "複製",
 			"copyWithHeaders": "隨標題一併複製",
@@ -12297,6 +12085,9 @@
 			"executionPlanFileLoadingComplete": "產生執行計畫",
 			"executionPlanFileLoadingFailed": "無法載入執行計畫",
 			"loadingExecutionPlanFile": "產生執行計畫"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
 			"executionPlanPropertiesEdgeOperationName": "邊緣",
@@ -12390,9 +12181,6 @@
 			"executionPlanSelectSearchTypeTitle": "選取搜尋類型",
 			"nextSearchItemAction": "下一個相符項目",
 			"previousSearchItemAction": "上一個相符項目"
-		},
-		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
-			"epCompare.executionPlanEditorName": "ExecutionPlan"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "時間",
@@ -12872,6 +12660,7 @@
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "物件總管 Viewlet 中的自動展開伺服器群組。",
 			"serverGroup.colors": "在物件總管 Viewlet 中使用的伺服器群組調色盤。",
+			"serverTree.nodeExpansionTimeout": "在伺服器檢視中展開節點的逾時 (以秒為單位)",
 			"serverTree.useAsyncServerTree": "(預覽) 針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。"
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
@@ -13075,6 +12864,7 @@
 			"fontWeight": "控制字型粗細。",
 			"letterSpacing": "控制字母間距 (像素)。",
 			"maxColumnWidth": "自動調整大小之欄位的寬度上限 (像素)",
+			"resultsGrid.showJsonAsLink": "是否將具有 JSON 格式化字串的儲存格顯示為超連結。當啟用時，按一下則 JSON 值會隨即在另一個索引標籤中開啟。預設值為 true。",
 			"resultsGridConfigurationTitle": "結果方格與訊息",
 			"rowHeight": "控制列高 (像素)"
 		},
@@ -13309,8 +13099,12 @@
 		},
 		"sql/workbench/services/accountManagement/browser/accountManagementService": {
 			"accountManagementService.close": "關閉",
+			"addAccountFailedCodeMessage": "{0} \r\n錯誤訊息: {1}",
+			"addAccountFailedGenericMessage": "新增帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。",
+			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在新增帳戶...",
-			"refreshFailed": "使用者已取消重新整理帳戶"
+			"refreshCanceled": "使用者已取消重新整理帳戶",
+			"refreshFailed": "0 \r\n錯誤訊息: 1"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure 帳戶",
@@ -13383,12 +13177,10 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "連線錯誤",
-			"enableTrustServerCertificate": "啟用信任伺服器憑證",
 			"kerberosErrorStart": "因為 Kerberos 錯誤導致連線失敗。",
 			"kerberosHelpLink": "您可於 {0} 取得設定 Kerberos 的說明",
 			"kerberosKinit": "如果您之前曾連線，則可能需要重新執行 kinit。",
-			"runKinit": "執行 Kinit",
-			"trustServerCertInstructionText": "已在此連線上啟用加密、檢閱目標 SQL Server 的 SSL 與憑證設定，或在連線對話方塊中啟用 [信任伺服器憑證]。\t\t\t\r\n\r\n注意: 自我簽署憑證只提供有限的保護，且不是實際執行環境的建議做法。您要在此連線上啟用 [信任伺服器憑證] 並重試嗎? "
+			"runKinit": "執行 Kinit"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "連線類型",
@@ -13408,6 +13200,7 @@
 			"connection.neverShowUnsupportedVersionWarning": "不要再顯示",
 			"connection.noAzureAccount": "無法取得連線的 Azure 帳戶權杖",
 			"connection.refreshAzureTokenFailure": "無法重新整理 Azure 帳戶權杖以建立連線",
+			"connection.unknownProvider": "未知的提供者 '{0}'",
 			"connection.unsupportedServerVersionWarning": "Azure Data Studio 不支援伺服器版本，您仍然可以連接到伺服器版本，但 Azure Data Studio 中的某些功能可能無法如預期方式執行。",
 			"connectionDialog.connectionProviderNotSupported": "目前未安裝支援提供者類型 '{0}' 之延伸模組。您要檢視延伸模組嗎?",
 			"connectionManagementService.noProviderForUri": "找不到 URI: {0} 的提供者",
@@ -13424,7 +13217,8 @@
 			"connection.azureTenantDropdownLabel": "Azure AD 租用戶",
 			"connectionName": "名稱 (選用)",
 			"connectionWidget.AddAzureAccount": "新增帳戶...",
-			"connectionWidget.ConnectionStringError": "無法剖析連接字串。",
+			"connectionWidget.ConnectionStringError": "無法剖析連接字串。{0}",
+			"connectionWidget.ConnectionStringUndefined": "未傳回連線資訊。",
 			"connectionWidget.Error": "錯誤",
 			"connectionWidget.connectionString": "連接字串",
 			"connectionWidget.invalidAzureAccount": "您必須選取帳戶",
@@ -13443,6 +13237,8 @@
 			"unsavedGroupLabel": "未儲存的連線"
 		},
 		"sql/workbench/services/connection/browser/passwordChangeDialog": {
+			"passwordChangeDialog.Message1": "必須變更 '{0}' 的密碼，才能繼續登入 '{1}'。",
+			"passwordChangeDialog.Message2": "請在下方輸入新密碼:",
 			"passwordChangeDialog.cancel": "取消",
 			"passwordChangeDialog.confirmPassword": "確認密碼:",
 			"passwordChangeDialog.connecting": "正在連線",
@@ -13451,6 +13247,7 @@
 			"passwordChangeDialog.errorPasswordMismatchRecoveryInstructions": "請按 [確定]，然後在兩個方塊中輸入完全相同的密碼。",
 			"passwordChangeDialog.newPassword": "新密碼:",
 			"passwordChangeDialog.ok": "確定",
+			"passwordChangeDialog.passwordChangeInProgress": "密碼變更已在進行中",
 			"passwordChangeDialog.title": "變更密碼"
 		},
 		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
@@ -13461,6 +13258,9 @@
 		},
 		"sql/workbench/services/dialog/browser/dialogPane": {
 			"wizardPageNumberDisplayText": "步驟 {0}"
+		},
+		"sql/workbench/services/dialog/browser/wizardNavigation.component": {
+			"wizardNavigation.stepName": "步驟 {0}: {1}"
 		},
 		"sql/workbench/services/dialog/common/dialogTypes": {
 			"dialogModalCancelButtonLabel": "取消",
@@ -13483,6 +13283,8 @@
 			"warning": "警告"
 		},
 		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"executionPlanService.ensureCapabilitiesRegistered": "識別碼為 {0} 的提供者未在 30 秒後登錄。",
+			"executionPlanService.ensureFileExtensionHandlerRegistered": "支援檔案格式 '{0}' 的執行計畫提供者未在 30 秒後登錄。",
 			"noHandlerRegistered": "未登錄有效的執行計畫處理常式",
 			"providerIdNotValidError": "需要有效的提供者才能與 ExecutionPlanService 互動",
 			"selectExecutionPlanProvider": "選取要開啟執行計畫的提供者"
@@ -13648,12 +13450,17 @@
 			"connectionTree.editServerGroup": "編輯伺服器群組",
 			"connectionTree.refresh": "重新整理",
 			"deleteConnection": "刪除連線",
+			"deleteConnectionConfirmation": "是否確定要刪除連線 '{0}'?",
+			"deleteConnectionConfirmationNo": "否",
+			"deleteConnectionConfirmationYes": "是",
 			"deleteConnectionGroup": "刪除群組",
+			"deleteConnectionGroupConfirmation": "是否確定要刪除連線群組 '{0}'?",
 			"showAllConnections": "顯示所有連線"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "建立物件總管工作階段失敗",
-			"nodeExpansionError": "多個錯誤:"
+			"nodeExpansionError": "多個錯誤:",
+			"nodeExpansionTimeout": "提供者 {1} 節點 {0} 的節點擴充已逾時"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "已取消防火牆對話方塊",
@@ -13674,6 +13481,7 @@
 		},
 		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
 			"profilerFilterDialog.addClauseText": "新增子句",
+			"profilerFilterDialog.allClausesCleared": "已清除所有子句。",
 			"profilerFilterDialog.apply": "套用",
 			"profilerFilterDialog.cancel": "取消",
 			"profilerFilterDialog.clear": "全部清除",
@@ -13682,6 +13490,7 @@
 			"profilerFilterDialog.isNotNullOperator": "非 Null",
 			"profilerFilterDialog.isNullOperator": "為 Null",
 			"profilerFilterDialog.loadFilter": "載入篩選",
+			"profilerFilterDialog.newClauseAdded": "已加入新的子句。",
 			"profilerFilterDialog.notContainsOperator": "不包含",
 			"profilerFilterDialog.notStartsWithOperator": "開頭不是",
 			"profilerFilterDialog.ok": "確定",

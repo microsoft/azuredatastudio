@@ -16,6 +16,7 @@ export class ExtHostObjectExplorerNodeStub implements azdata.objectexplorer.Obje
 	// Base properties
 	public connectionId: string;
 	public nodePath: string;
+	public parentNodePath: string;
 	public nodeType: string;
 	public nodeSubType: string;
 	public nodeStatus: string;

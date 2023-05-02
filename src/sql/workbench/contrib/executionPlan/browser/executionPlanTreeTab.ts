@@ -26,6 +26,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { deepClone } from 'vs/base/common/objects';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 export class ExecutionPlanTreeTab extends Disposable implements IPanelTab {
 	public readonly title: string = localize('planTreeTab.title', 'Plan Tree');
@@ -55,7 +56,8 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
-		@IQuickInputService private _quickInputService: IQuickInputService
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@ITableService private _tableService: ITableService
 	) {
 		super();
 	}
@@ -278,6 +280,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		treeGrid.registerPlugin(copyHandler);
 		treeGrid.setTableTitle(localize('topOperationsTableTitle', "Execution Plan Tree"));
 		this._treeGrids.push(treeGrid);
+		this._register(this._tableService.registerTable(treeGrid));
 
 		const contextMenuAction = [
 			this._register(this._instantiationService.createInstance(CopyTableData)),

@@ -45,21 +45,23 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withConnectionInfo(connectionInfo?: azdata.IConnectionProfile): ITelemetryEvent {
+		// IMPORTANT - If making changes here the same changes should generally be made in the ads-extension-telemetry version as well
 		Object.assign(this._properties,
 			{
 				authenticationType: connectionInfo?.authenticationType,
-				provider: connectionInfo?.providerName
+				providerName: connectionInfo?.providerName
 			});
 		return this;
 	}
 
 	public withServerInfo(serverInfo?: azdata.ServerInfo): ITelemetryEvent {
+		// IMPORTANT - If making changes here the same changes should generally be made in the ads-extension-telemetry version as well
 		Object.assign(this._properties,
 			{
 				connectionType: serverInfo?.isCloud !== undefined ? (serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 				serverVersion: serverInfo?.serverVersion ?? '',
 				serverEdition: serverInfo?.serverEdition ?? '',
-				serverEngineEdition: serverInfo?.engineEditionId ?? '',
+				serverEngineEdition: serverInfo?.engineEditionId ?? ''
 			});
 		return this;
 	}

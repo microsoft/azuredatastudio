@@ -43,7 +43,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.67.0",
+	"vscodeVersion": "1.70.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -86,15 +86,19 @@
 		"ms-dotnettools.dotnet-interactive-vscode",
 		"ms-toolsai.jupyter"
 	],
+	"extensionEnabledApiProposals": {
+		"GitHub.copilot": [
+			"inlineCompletionsAdditions",
+			"terminalDataWriteEvent"
+		],
+		"GitHub.copilot-nightly": [
+			"inlineCompletionsAdditions",
+			"terminalDataWriteEvent"
+		]
+	},
 	"extensionsGallery": {
 		"version": "0.0.76",
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
-	"builtInExtensions": [
-		{
-			"name": "Microsoft.sqlservernotebook",
-			"version": "0.5.0",
-			"repo": "https://github.com/microsoft/azuredatastudio"
-		}
-	]
+	"builtInExtensions": [ ]
 }

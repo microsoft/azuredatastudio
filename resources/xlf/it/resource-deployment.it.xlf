@@ -1311,8 +1311,8 @@ Selezionare una sottoscrizione diversa contenente almeno un server</target>
         <target state="translated">Distribuisci immagini del contenitore di SQL Server 2019</target>
       </trans-unit>
       <trans-unit id="docker-sql-2022-title">
-        <source xml:lang="en">Deploy SQL Server 2022 Preview container images</source>
-        <target state="translated">Distribuire le immagini contenitore dell’anteprima di SQL Server 2022</target>
+        <source xml:lang="en">Deploy SQL Server 2022 container images</source>
+        <target state="translated">Distribuire le immagini del contenitore di SQL Server 2022</target>
       </trans-unit>
       <trans-unit id="docker-sql-password-field">
         <source xml:lang="en">SQL Server password</source>
@@ -1363,8 +1363,8 @@ Selezionare una sottoscrizione diversa contenente almeno un server</target>
         <target state="translated">SQL Server 2019</target>
       </trans-unit>
       <trans-unit id="sql-2022-display-name">
-        <source xml:lang="en">SQL Server 2022 Preview</source>
-        <target state="translated">Anteprima di SQL Server 2022</target>
+        <source xml:lang="en">SQL Server 2022</source>
+        <target state="translated">SQL Server 2022</target>
       </trans-unit>
       <trans-unit id="sql-azure-database-server-display-name">
         <source xml:lang="en">Database Server</source>

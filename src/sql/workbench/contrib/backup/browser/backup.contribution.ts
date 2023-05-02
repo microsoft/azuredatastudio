@@ -20,6 +20,7 @@ import { ConnectionContextKey } from 'sql/workbench/services/connection/common/c
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 new BackupAction().registerTask();
 
@@ -30,7 +31,9 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem?.payload) {
 			const commandService = accessor.get(ICommandService);
-			return commandService.executeCommand(BackupAction.ID, args.$treeItem.payload);
+			const connectionService = accessor.get(IConnectionManagementService);
+			let payload = await connectionService.fixProfile(args.$treeItem.payload);
+			return commandService.executeCommand(BackupAction.ID, payload);
 		}
 	}
 });
@@ -69,9 +72,11 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 
 // dashboard explorer
 const ExplorerBackUpActionID = 'explorer.backup';
-CommandsRegistry.registerCommand(ExplorerBackUpActionID, (accessor, context: ManageActionContext) => {
+CommandsRegistry.registerCommand(ExplorerBackUpActionID, async (accessor, context: ManageActionContext) => {
 	const commandService = accessor.get(ICommandService);
-	return commandService.executeCommand(BackupAction.ID, context.profile);
+	const connectionService = accessor.get(IConnectionManagementService);
+	let profile = await connectionService.fixProfile(context.profile);
+	return commandService.executeCommand(BackupAction.ID, profile);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

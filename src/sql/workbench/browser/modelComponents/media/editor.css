@@ -24,6 +24,10 @@ modelview-diff-editor-component {
 	font-size: 11px
 }
 
+.hc-light .modelview-diff-editor-title-background {
+	background-color: #6fc3df;
+}
+
 .vs-dark .modelview-diff-editor-title-background {
 	background-color: #434343;
 }

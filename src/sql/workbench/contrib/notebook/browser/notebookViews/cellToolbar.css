@@ -48,7 +48,8 @@
 .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
 .vs .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
 .vs-dark .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
-.hc-black .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon {
+.hc-black .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
+.hc-light .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon {
 	background-image: none;
 }
 
