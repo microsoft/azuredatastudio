@@ -1600,6 +1600,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.service.details.status.unavailable">
       <source xml:lang="en">-- unavailable --</source>
     </trans-unit>
+    <trans-unit id="sql.migration.service.error.not.ready">
+      <source xml:lang="en">The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.service.header">
       <source xml:lang="en">Azure Database Migration Service "{0}" details:`</source>
     </trans-unit>
@@ -2739,6 +2742,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="downloadingServiceComplete">
       <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceFailed">
+      <source xml:lang="en">Failed to download binaries for {0}. Use the following link to troubleshoot: {1}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceFailedWithLinkMarkup">
+      <source xml:lang="en">Failed to download binaries for {0}. Use this [link to troubleshoot]({1}).</source>
     </trans-unit>
     <trans-unit id="downloadingServiceSize">
       <source xml:lang="en">({0} KB)</source>

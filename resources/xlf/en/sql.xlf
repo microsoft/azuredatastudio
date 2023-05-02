@@ -6258,6 +6258,11 @@ Error Message: {1}</source>
       <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filteredTreeElementName">
+      <source xml:lang="en">{0} (filtered)</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext"><body>
     <trans-unit id="serversAriaLabel">
       <source xml:lang="en">Servers</source>
