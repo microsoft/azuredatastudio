@@ -774,7 +774,7 @@ export function SERVICE_ERROR_NOT_READY(serviceName: string, error: string): str
 		error);
 }
 export function SERVICE_READY(serviceName: string, host: string): string {
-	return localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high Availability, you can register additional nodes. See below for registration instructions.", serviceName, host);
+	return localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes. See below for registration instructions.", serviceName, host);
 }
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Enter a valid name for the Migration Service.");
 export const SERVICE_NOT_FOUND = localize('sql.migration.service.not.found', "No Migration Services found. To continue, create a new one.");
