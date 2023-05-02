@@ -43,6 +43,7 @@ export enum TelemetryActions {
 	resetOptions = 'resetOptions',
 	optionsChanged = 'optionsChanged',
 	profileLoaded = 'profileLoaded',
+	profileSaved = 'profileSaved',
 	SchemaComparisonFinished = 'SchemaComparisonFinished',
 	SchemaComparisonStarted = 'SchemaComparisonStarted',
 	rename = "rename",
