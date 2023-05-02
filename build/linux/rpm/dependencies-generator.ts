@@ -6,7 +6,7 @@
 import { spawnSync } from 'child_process';
 import { constants, statSync } from 'fs';
 import path = require('path');
-import { additionalDeps, bundledDeps, referenceGeneratedDepsByArch } from './dep-lists';
+import { additionalDeps, bundledDeps } from './dep-lists';
 import { ArchString } from './types';
 
 // A flag that can easily be toggled.
@@ -16,14 +16,14 @@ import { ArchString } from './types';
 // If true, we fail the build if there are new dependencies found during that task.
 // The reference dependencies, which one has to update when the new dependencies
 // are valid, are in dep-lists.ts
-const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false;
+// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false;
 
 export function getDependencies(buildDir: string, applicationName: string, arch: ArchString): string[] {
 	// Get the files for which we want to find dependencies.
 	const nativeModulesPath = path.join(buildDir, 'resources', 'app', 'node_modules.asar.unpacked');
 	const findResult = spawnSync('find', [nativeModulesPath, '-name', '*.node']);
 	if (findResult.status) {
-		console.error('Error finding files:');
+		console.error(`Error finding files for ${arch}:`);
 		console.error(findResult.stderr.toString());
 		return [];
 	}
