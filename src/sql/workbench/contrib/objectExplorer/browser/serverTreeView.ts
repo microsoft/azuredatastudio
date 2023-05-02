@@ -912,7 +912,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 	private async refreshConnectionTreeTitles(): Promise<void> {
 		let treeInput = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
-		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], this._connectionManagementService);
 		treeInput = treeArray[0];
 		await this._tree!.setInput(treeInput);
 	}

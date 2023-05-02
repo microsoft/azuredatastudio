@@ -57,7 +57,6 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
-import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils'
 import { enableSqlAuthenticationProviderConfig, mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
@@ -713,25 +712,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
-	public getRecentConnectionTreeTitle(profile: interfaces.IConnectionProfile): string {
-		let result = '';
-		if (profile) {
-			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-			let recentConnections = this.getRecentConnections();
-			let currentConnectionProfileGroup = new ConnectionProfileGroup('tempGroup');
-			currentConnectionProfileGroup.addConnections(recentConnections);
-			TreeUpdateUtils.alterTreeChildrenTitles([currentConnectionProfileGroup]);
-			recentConnections = currentConnectionProfileGroup.connections;
-			let searchResult = recentConnections.filter(profile => profile.id === tempProfile.id);
-			if (searchResult.length === 0) {
-				result = tempProfile.title;
-			}
-			else {
-				result = searchResult[0].title;
-			}
-		}
-		return result;
-	}
+	// public getRecentConnectionTreeTitle(profile: interfaces.IConnectionProfile): string {
+	// 	let result = '';
+	// 	if (profile) {
+	// 		let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
+	// 		let recentConnections = this.getRecentConnections();
+	// 		let currentConnectionProfileGroup = new ConnectionProfileGroup('tempGroup');
+	// 		currentConnectionProfileGroup.addConnections(recentConnections);
+	// 		TreeUpdateUtils.alterTreeChildrenTitles([currentConnectionProfileGroup], connectionManagementService);
+	// 		recentConnections = currentConnectionProfileGroup.connections;
+	// 		let searchResult = recentConnections.filter(profile => profile.id === tempProfile.id);
+	// 		if (searchResult.length === 0) {
+	// 			result = tempProfile.title;
+	// 		}
+	// 		else {
+	// 			result = searchResult[0].title;
+	// 		}
+	// 	}
+	// 	return result;
+	// }
 
 	private findParentConnection(profile: interfaces.IConnectionProfile): string {
 		let activeConnections = this.getActiveConnections();
@@ -755,14 +754,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let isChild = false;
 			let totalConnections: ConnectionProfile[] = [];
 			let configConnections = this.getAllConnectionsFromConfig();
-			let activeConnections = this.getActiveConnections();
-
-			if (activeConnections) {
-				activeConnections.forEach(activeConnection => {
-					configConnections = configConnections.filter(profile => profile.id !== activeConnection.id)
-				});
-				totalConnections = totalConnections.concat(activeConnections);
-			}
 
 			if (configConnections) {
 				totalConnections = totalConnections.concat(configConnections);
@@ -776,13 +767,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let id = this.findParentConnection(tempProfile)
 				if (id !== '') {
 					isChild = true;
-					let parentProfile = activeConnections.filter(profile => profile.id === id);
+					let parentProfile = configConnections.filter(profile => profile.id === id);
 					trimTitle = parentProfile[0].getServerInfo();
 					idToFind = parentProfile[0].id;
 				}
 				else {
 					// Profile is not a child of an existing profile nor is it a recognized stored profile, return it's normal title.
-					return '';
+					if (getOptionsOnly) {
+						return '';
+					}
+					else {
+						return tempProfile.title;
+					}
 				}
 			}
 
@@ -793,7 +789,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				totalConnections[i].title = totalConnections[i].getServerInfo();
 			}
 
-			TreeUpdateUtils.getEditorConnectionTitles(totalConnections);
+			this.generateEditorConnectionTitles(totalConnections);
 			newConnectionTitles = totalConnections;
 
 			let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.id === idToFind);
@@ -809,6 +805,78 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Change the connection title to display only the unique properties among profiles provided. (used for editors)
+	 */
+	private generateEditorConnectionTitles(inputList: ConnectionProfile[]): void {
+		let profileListMap = new Map<string, number[]>();
+
+		// Map the indices of profiles that share the same server info
+		for (let i = 0; i < inputList.length; i++) {
+			// do not add if the profile is still loading as that will result in erroneous entries.
+			if (inputList[i].serverCapabilities && inputList[i].hasLoaded()) {
+				let titleKey = inputList[i].getServerInfo();
+				if (profileListMap.has(titleKey)) {
+					let profilesForKey = profileListMap.get(titleKey);
+					profilesForKey.push(i);
+					profileListMap.set(titleKey, profilesForKey);
+				}
+				else {
+					profileListMap.set(titleKey, [i]);
+				}
+			}
+		}
+
+		profileListMap.forEach(function (indexes, titleString) {
+			if (profileListMap.get(titleString)?.length > 1) {
+				let combinedOptions = [];
+				indexes.forEach((indexValue) => {
+					// Add all possible options across all profiles with the same title to an option list.
+					let valueOptions = inputList[indexValue].getConnectionOptionsList(true, false, true);
+					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
+				});
+
+				// Generate list of non default option keys for each profile that shares the same server info.
+				let optionKeyMap = new Map<ConnectionProfile, string[]>();
+				let optionValueOccuranceMap = new Map<string, number>();
+				for (let p = 0; p < indexes.length; p++) {
+					optionKeyMap.set(inputList[indexes[p]], []);
+					for (let i = 0; i < combinedOptions.length; i++) {
+						// See if the option is not default for the inputList profile or is.
+						if (inputList[indexes[p]].getConnectionOptionsList(true, true, true).indexOf(combinedOptions[i]) > -1) {
+							let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
+							let currentArray = optionKeyMap.get(inputList[indexes[p]]);
+							let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;
+							if (!optionValueOccuranceMap.get(valueString)) {
+								optionValueOccuranceMap.set(valueString, 0);
+							}
+							optionValueOccuranceMap.set(valueString, optionValueOccuranceMap.get(valueString) + 1);
+							currentArray.push(valueString);
+							optionKeyMap.set(inputList[indexes[p]], currentArray);
+						}
+					}
+				}
+
+				// Filter out options that are found in ALL the entries with the same server info.
+				optionValueOccuranceMap.forEach(function (count, optionValue) {
+					optionKeyMap.forEach(function (connOptionValues, profile) {
+						if (count === optionKeyMap.size) {
+							optionKeyMap.set(profile, connOptionValues.filter(value => value !== optionValue));
+						}
+					});
+				});
+
+				// Generate the final unique connection string for each profile in the list.
+				optionKeyMap.forEach(function (connOptionValues, profile) {
+					let uniqueOptionString = connOptionValues.join(ConnectionProfile.displayIdSeparator);
+					if (uniqueOptionString.length > 0) {
+						profile.title += ' (' + uniqueOptionString + ')';
+					}
+				});
+			}
+		});
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
