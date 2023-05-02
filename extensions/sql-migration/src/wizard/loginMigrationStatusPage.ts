@@ -460,7 +460,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				'numberLoginsFailingPerStep': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.errorCountMap)),
 				'durationPerStepTimestamp': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.durationPerStep)),
 				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
-				// AKMA TODO: add error code string count map
 			},
 			{
 				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length,
