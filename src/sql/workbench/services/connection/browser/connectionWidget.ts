@@ -43,6 +43,7 @@ import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
 import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
+import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -74,6 +75,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _trueInputValue: string = localize('boolean.true', 'True');
 	private _falseInputValue: string = localize('boolean.false', 'False');
 	private _token: string;
+	private _mssqlAuthProviderEnabled: boolean;
 	private _connectionStringOptions: ConnectionStringOptions;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
@@ -143,6 +145,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._register(this._authTypeSelectBox);
 		}
 		this._providerName = providerName;
+		this._mssqlAuthProviderEnabled = isMssqlAuthProviderEnabled(this._providerName, this._configurationService)
 		this._connectionStringOptions = this._connectionManagementService.getProviderProperties(this._providerName).connectionStringOptions;
 	}
 
@@ -647,6 +650,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._passwordInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
 		this._azureTenantDropdown.hideMessage();
+		if (this._mssqlAuthProviderEnabled) {
+			this._tableContainer.classList.add('hide-azure-tenants');
+		}
 		this._tableContainer.classList.add('hide-username');
 		this._tableContainer.classList.add('hide-password');
 		this._tableContainer.classList.add('hide-azure-accounts');
@@ -794,7 +800,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
 			this._azureTenantDropdown.setOptions(options);
-			this._tableContainer.classList.remove(hideTenantsClassName);
+			if (!this._mssqlAuthProviderEnabled) {
+				this._tableContainer.classList.remove(hideTenantsClassName);
+			}
 
 			// If we have a tenant ID available, select that instead of the first one
 			if (this._azureTenantId) {
@@ -819,7 +827,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
 				this.onAzureTenantSelected(0);
 			}
-			this._tableContainer.classList.add(hideTenantsClassName);
+			if (!this._mssqlAuthProviderEnabled) {
+				this._tableContainer.classList.add(hideTenantsClassName);
+			}
 		}
 	}
 
