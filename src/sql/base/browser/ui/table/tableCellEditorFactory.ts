@@ -41,7 +41,7 @@ export class TableCellEditorFactory {
 		};
 	}
 
-	public getTextEditorClass(context: any, inputType: 'text' | 'number' | 'date' = 'text'): any {
+	public getTextEditorClass(context: any, inputType: 'text' | 'number' | 'date' = 'text', presetValue?: string): any {
 		const self = this;
 		class TextEditor extends Disposable {
 			private _originalValue: string;
@@ -76,6 +76,8 @@ export class TableCellEditorFactory {
 				this._register(self._options.onStyleChange(() => {
 					self._options.editorStyler(this._input);
 				}));
+
+				this._input.value = presetValue ?? '';
 			}
 
 			private async commitEdit(): Promise<void> {

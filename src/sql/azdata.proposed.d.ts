@@ -1833,7 +1833,7 @@ declare module 'azdata' {
 		/**
 		 * The name of the filter property
 		 */
-		name: string;
+		displayName: string;
 		/**
 		 * The operator of the filter property
 		 */
@@ -1841,7 +1841,7 @@ declare module 'azdata' {
 		/**
 		 * The applied values of the filter property
 		 */
-		value: string | string[] | number | boolean | undefined;
+		value: string | string[] | number | number[] | boolean | undefined;
 	}
 
 	export enum NodeFilterPropertyDataType {

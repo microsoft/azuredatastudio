@@ -45,12 +45,15 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { status } from 'vs/base/browser/ui/aria/aria';
 
-function FilterDialogTitle(nodePath: string): string { return localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", nodePath) }
+
+// strings for filter dialog
+function FilterDialogTitle(connectionName: string): string { return localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", connectionName) }
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
 const CancelButtonText = localize('objectExplorer.cancelButtonText', "Cancel");
 const ClearAllButtonText = localize('objectExplorer.clearAllButtonText', "Clear All");
 const TitleIconClass: string = 'icon filterLabel';
 
+// strings for filter operator select box
 const EQUALS_SELECT_BOX = localize('objectExplorer.equalsSelectBox', "Equals");
 const NOT_EQUALS_SELECT_BOX = localize('objectExplorer.notEqualsSelectBox', "Not Equals");
 const LESS_THAN_SELECT_BOX = localize('objectExplorer.lessThanSelectBox', "Less Than");
@@ -65,18 +68,23 @@ const AND_SELECT_BOX = localize('objectExplorer.andSelectBox', "And");
 const IS_NULL_SELECT_BOX = localize('objectExplorer.isNullSelectBox', "Is Null");
 const IS_NOT_NULL_SELECT_BOX = localize('objectExplorer.isNotNullSelectBox', "Is Not Null");
 
+// strings for filter table column headers
 const PROPERTY_NAME_COLUMN_HEADER = localize('objectExplorer.propertyNameColumnHeader', "Property");
 const OPERATOR_COLUMN_HEADER = localize('objectExplorer.operatorColumnHeader', "Operator");
 const VALUE_COLUMN_HEADER = localize('objectExplorer.valueColumnHeader', "Value");
+const CLEAR_COLUMN_HEADER = localize('objectExplorer.clearColumnHeader', "Clear");
 
+
+// strings for value select box for boolean type filters
 const TRUE_SELECT_BOX = localize('objectExplorer.trueSelectBox', "True");
 const FALSE_SELECT_BOX = localize('objectExplorer.falseSelectBox', "False");
 
-function NodePath(nodepath: string): string { return localize('objectExplorer.nodePath', "Node Path: {0}", nodepath) }
+function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Node Path: {0}", nodepath) }
 
 const PROPERTY_COLUMN_ID = 'property';
 const OPERATOR_COLUMN_ID = 'operator';
 const VALUE_COLUMN_ID = 'value';
+const CLEAR_COLUMN_ID = 'clear';
 
 export class ObjectExplorerServiceDialog extends Modal {
 
@@ -151,12 +159,30 @@ export class ObjectExplorerServiceDialog extends Modal {
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$('.filter-dialog-body'));
 		const nodePath = DOM.append(body, DOM.$('.filter-dialog-node-path'));
-		nodePath.innerText = NodePath(this._treeNode.nodePath);
+		nodePath.innerText = nodePathDisplayString(this._treeNode.nodePath);
 		const clauseTableContainer = DOM.append(body, DOM.$('.filter-table-container'));
 		const filter = DOM.append(clauseTableContainer, DOM.$('.filter-table'));
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
 				valueGetter: (item, column): string => {
+
+					// if the operator is And and the operator is date, we need to get the date from the previous
+					// row to make it more user friendly for the user to enter the next value.
+					if (column.field === VALUE_COLUMN_ID && item[OPERATOR_COLUMN_ID].value === AND_SELECT_BOX) {
+						const index = item.filterPropertyIndex;
+						const tableData = this.filterTable.getData().getItems();
+						if (this._treeNode.filterProperties[index].type === NodeFilterPropertyDataType.Date) {
+							let value1 = '';
+							for (let i = 0; i < tableData.length; i++) {
+								if (tableData[i].filterPropertyIndex === index) {
+									value1 = tableData[i].value.value;
+									break;
+								}
+							}
+							const value2 = item[column.field].value;
+							return value2 === '' ? value1 : value2;
+						}
+					}
 					return item[column.field].value;
 				},
 				valueSetter: (context: any, row: number, item: any, column: Slick.Column<Slick.SlickData>, value: string): void => {
@@ -246,10 +272,10 @@ export class ObjectExplorerServiceDialog extends Modal {
 		];
 
 		const clearValueColumn = new ButtonColumn({
-			id: 'clear',
+			id: CLEAR_COLUMN_ID,
 			iconCssClass: Codicon.close.classNames,
-			name: localize('objectExplorer.clearColumn', "Clear"),
-			title: localize('objectExplorer.clearColumn', "Clear"),
+			name: CLEAR_COLUMN_HEADER,
+			title: CLEAR_COLUMN_HEADER,
 			width: 60,
 			resizable: true,
 			isFontIcon: true
@@ -270,7 +296,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 			this._treeNode.filters = [];
 		}
 		this._treeNode.filterProperties.forEach((f, i) => {
-			const appliedFilter = this._treeNode.filters.find(filter => filter.name === f.displayName);
+			const appliedFilter = this._treeNode.filters.find(filter => filter.displayName === f.displayName);
 			const filterOperators = this.getOperatorsForType(f.type);
 			const row: Slick.SlickData = {
 				property: {
@@ -281,7 +307,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 					values: filterOperators
 				},
 				value: {
-					value: appliedFilter ? appliedFilter.value : '',
+					value: appliedFilter ? this.getStringValueForFilter(f.type, appliedFilter.value) : '',
 					values: this.getChoiceValuesForFilterProperties(f)
 				},
 				filterPropertyIndex: i
@@ -289,7 +315,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 			tableData.push(row);
 
 			if (appliedFilter?.operator === NodeFilterOperator.Between || appliedFilter?.operator === NodeFilterOperator.NotBetween) {
-				row.value.value = appliedFilter.value[0];
+				row.value.value = this.getStringValueForFilter(f.type, appliedFilter.value[0]);
 				const andRow: Slick.SlickData = {
 					property: {
 						value: ''
@@ -299,7 +325,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 						values: [AND_SELECT_BOX]
 					},
 					value: {
-						value: appliedFilter.value[1],
+						value: this.getStringValueForFilter(f.type, appliedFilter.value[1]),
 						values: []
 					},
 					datatype: f.type,
@@ -375,6 +401,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 				let index = data.filterPropertyIndex;
 				const filterPropertyDescription = this._treeNode.filterProperties[index].description;
 				this._description.innerText = filterPropertyDescription;
+				// Announcing the filter property description for screen reader users
 				status(filterPropertyDescription);
 			}
 		});
@@ -412,11 +439,11 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 		for (let i = 0; i < tableData.length; i++) {
 			const row = tableData[i];
-
+			let filterProperty = this._treeNode.filterProperties[row.filterPropertyIndex]
 			let filter: azdata.NodeFilter = {
-				name: row.property.value,
+				displayName: row.property.value,
 				operator: this.getFilterOperatorEnum(row.operator.value),
-				value: row.value.value,
+				value: this.getFilterValue(filterProperty.type, row.value.value),
 			};
 
 			const isMultipleValueFilter = filter.operator === NodeFilterOperator.Between || filter.operator === NodeFilterOperator.NotBetween;
@@ -424,10 +451,10 @@ export class ObjectExplorerServiceDialog extends Modal {
 			if (isMultipleValueFilter) {
 				i++;
 				const row2 = tableData[i];
-				filter.value = [row.value.value, row2.value.value];
-			}
+				var value1 = this.getFilterValue(filterProperty.type, row.value.value);
+				var value2 = this.getFilterValue(filterProperty.type, row2.value.value);
+				filter.value = <string[] | number[]>[value1, value2];
 
-			if (isMultipleValueFilter) {
 				if (filter.value[0] === '' && filter.value[1] !== '') {
 					// start date not specified.
 					this._dialogService.show(Severity.Error, localize('filterDialog.errorStartDate', "Start date is not specified."));
@@ -474,8 +501,6 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 		}
 		this.spinner = false;
-
-
 		this.hide('ok');
 	}
 
@@ -483,6 +508,43 @@ export class ObjectExplorerServiceDialog extends Modal {
 	// We override it to do nothing so that the enter button doesn't close the dialog
 	protected override async onAccept() {
 		// noop
+	}
+
+	private getFilterValue(filterType: NodeFilterPropertyDataType, value: string): string | number | boolean {
+		switch (filterType) {
+			case NodeFilterPropertyDataType.Boolean:
+				if (value === TRUE_SELECT_BOX) {
+					return true;
+				} else if (value === FALSE_SELECT_BOX) {
+					return false;
+				} else {
+					return value;
+				}
+			case NodeFilterPropertyDataType.Number:
+				return Number(value);
+			case NodeFilterPropertyDataType.Date:
+			case NodeFilterPropertyDataType.Choice:
+			case NodeFilterPropertyDataType.String:
+				return value;
+		}
+	}
+
+	private getStringValueForFilter(filterType: NodeFilterPropertyDataType, value: string | number | boolean | number[] | string[]): string {
+		switch (filterType) {
+			case NodeFilterPropertyDataType.Boolean:
+				if (value === true) {
+					return TRUE_SELECT_BOX;
+				} else if (value === false) {
+					return FALSE_SELECT_BOX;
+				}
+				break;
+			case NodeFilterPropertyDataType.Number:
+				return value.toString();
+			case NodeFilterPropertyDataType.Date:
+			case NodeFilterPropertyDataType.Choice:
+			case NodeFilterPropertyDataType.String:
+				return value as string;
+		}
 	}
 
 	private getOperatorsForType(type: NodeFilterPropertyDataType): string[] {
