@@ -110,7 +110,7 @@ suite('ConnectionDialogService tests', () => {
 		let logService: ILogService = new NullLogService();
 
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService), NullCommandService, logService);
+			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService), NullCommandService, logService, new NullAdsTelemetryService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };

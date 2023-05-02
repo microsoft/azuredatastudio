@@ -11,6 +11,7 @@ import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/workbench/services
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/platform/connection/common/constants';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -32,6 +33,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -90,6 +92,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
 		@ILogService private _logService: ILogService,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
 		this.initializeConnectionProviders();
 	}
@@ -508,6 +511,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// this solves the most common "hard error" that we've noticed
 		const helpLink = 'https://aka.ms/sqlopskerberos';
 		let actions: IAction[] = [];
+		// TODO: Migrate kinit to be a part of connection troubleshooter
 		if (!platform.isWindows && types.isString(message) && message.toLowerCase().indexOf('kerberos') > -1 && message.toLowerCase().indexOf('kinit') > -1) {
 			// Log the original error to console for debugging
 			this._logService.error(`Kerberos connection failure. Message : ${message} Message Details : ${messageDetails}`);
@@ -527,6 +531,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				return;
 			}));
 		}
+
+		actions.push(new Action('Diagnose', localize('diagnoseError', "Diagnose Error"), undefined, true, async () => {
+			this._connectionDialog.close();
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionErrorDialog, TelemetryKeys.TelemetryAction.Click, 'DiagnoseError');
+			// TODO: Run diagnostics
+			// TODO: Show connection troubleshooting dialog
+		}));
 
 		this._logService.error(message);
 
