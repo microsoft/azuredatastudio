@@ -7,6 +7,7 @@
 
 let del = require('del');
 let gulp = require('gulp');
+let remoteSrc = require('gulp-remote-src');
 let srcmap = require('gulp-sourcemaps');
 let tslint = require('gulp-tslint');
 let ts = require('gulp-typescript');
@@ -18,6 +19,11 @@ let tsProject = ts.createProject('tsconfig.json');
 
 
 // GULP TASKS //////////////////////////////////////////////////////////////
+gulp.task('copytypings', function () {
+	return remoteSrc('azdata.proposed.d.ts', { base: 'https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/src/sql/' })
+		.pipe(gulp.dest('typings/'));
+});
+
 gulp.task('clean', function (done) {
 	return del('out', done);
 });
@@ -83,7 +89,7 @@ gulp.task('compile:test', function (done) {
 // COMPOSED GULP TASKS /////////////////////////////////////////////////////
 gulp.task("compile", gulp.series("compile:src", "compile:test"));
 
-gulp.task("build", gulp.series("clean", "lint", "compile"));
+gulp.task("build", gulp.series("clean", "copytypings", "lint", "compile"));
 
 gulp.task("watch", function () {
 	gulp.watch([config.paths.project.root + '/src/**/*',

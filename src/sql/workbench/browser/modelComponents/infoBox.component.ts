@@ -78,8 +78,8 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 			this._container.nativeElement.style.height = this.getHeight();
 			this._infoBox.announceText = this.announceText;
 			this._infoBox.infoBoxStyle = this.style;
-			this._infoBox.links = this.links;
 			this._infoBox.text = this.text;
+			this._infoBox.links = this.links;
 			this._infoBox.isClickable = this.isClickable;
 			this._infoBox.clickableButtonAriaLabel = this.clickableButtonAriaLabel;
 		}

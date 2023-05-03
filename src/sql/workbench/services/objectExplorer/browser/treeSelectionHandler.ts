@@ -142,7 +142,6 @@ export class TreeSelectionHandler {
 					doubleClickHandler(selectedNode);
 				} else if (selectedNode instanceof ConnectionProfile) {
 					let options: IConnectionCompletionOptions = {
-						params: undefined,
 						saveTheConnection: true,
 						showConnectionDialogOnError: true,
 						showFirewallRuleOnError: true,

@@ -494,23 +494,23 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
         },
         {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@1",
           "isDefault": true
         },
         {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@2"
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@3"
         },
         {
@@ -540,22 +540,22 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         },
         {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         },
         {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@2"
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database|ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@3"
         },
         {
@@ -903,6 +903,20 @@
         {
           "specialValueType": null,
           "isIdentity": false,
+          "name": "applicationName",
+          "displayName": "%mssql.connectionOptions.applicationName.displayName%",
+          "description": "%mssql.connectionOptions.applicationName.description%",
+          "groupName": "%mssql.connectionOptions.groupName.initialization%",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
           "name": "applicationIntent",
           "displayName": "%mssql.connectionOptions.applicationIntent.displayName%",
           "description": "%mssql.connectionOptions.applicationIntent.description%",
@@ -1231,20 +1245,6 @@
           "groupName": "%mssql.connectionOptions.groupName.connectionResiliency%",
           "valueType": "number",
           "defaultValue": "10",
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": "appName",
-          "isIdentity": false,
-          "name": "applicationName",
-          "displayName": "%mssql.connectionOptions.applicationName.displayName%",
-          "description": "%mssql.connectionOptions.applicationName.description%",
-          "groupName": "%mssql.connectionOptions.groupName.context%",
-          "valueType": "string",
-          "defaultValue": null,
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,

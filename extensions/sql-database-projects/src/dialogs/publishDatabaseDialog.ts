@@ -868,6 +868,7 @@ export class PublishDatabaseDialog {
 				const targetDatabaseName = this.targetDatabaseName ?? '';
 				const deploymentOptions = await this.getDeploymentOptions();
 				await this.savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
+				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileSaved);
 			}
 
 			this.profileUsed = true;

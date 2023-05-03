@@ -188,6 +188,11 @@ declare module 'sqldbproj' {
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
 
 		/**
+		 * Gets an array of all database sources specified in the project.
+		 */
+		getDatabaseSourceValues(): string[];
+
+		/**
 		 * Appends given database source to the DatabaseSource property element.
 		 * If property element does not exist, then new one will be created.
 		 *
@@ -241,9 +246,9 @@ declare module 'sqldbproj' {
 		readonly projectFileName: string;
 
 		/**
-		 * Files and folders that are included in the project
+		 * SQL object scripts in this project
 		 */
-		readonly files: IFileProjectEntry[];
+		readonly sqlObjectScripts: IFileProjectEntry[];
 
 		/**
 		 * SqlCmd variables and their values
