@@ -18,7 +18,7 @@ import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/a
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
-import { LoginMigrationErrors } from '../models/loginMigrationModel';
+import { ConnectingToTargetFailed, } from '../models/loginMigrationModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -637,13 +637,13 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
 
-						logError(TelemetryViews.LoginMigrationTargetSelectionPage, LoginMigrationErrors.ConnectingToTargetFailed.toString(), error);
+						logError(TelemetryViews.LoginMigrationTargetSelectionPage, ConnectingToTargetFailed, error);
 						sendSqlMigrationActionEvent(
 							TelemetryViews.LoginMigrationTargetSelectionPage,
 							TelemetryAction.LoginMigrationError,
 							{
 								...getTelemetryProps(this.migrationStateModel),
-								'errorMessage': LoginMigrationErrors.ConnectingToTargetFailed.toString(),
+								'errorMessage': ConnectingToTargetFailed,
 							},
 							{}
 						);

@@ -26,12 +26,11 @@ export enum LoginMigrationStep {
 	MigrationCompleted = 3,
 }
 
-export enum LoginMigrationErrors {
-	CollectingSourceLoginsFailed,
-	CollectingTargetLoginsFailed,
-	ConnectingToTargetFailed,
-	InternalServerError = 'Login Migrations Internal Server Error',
-}
+export const CollectingSourceLoginsFailed = 'Collecting source logins failed';
+export const CollectingTargetLoginsFailed = 'Collecting target logins failed';
+export const ConnectingToTargetFailed = 'Connecting to target failed';
+export const InternalServerError = 'Login Migrations Internal Server Error';
+
 
 export function GetLoginMigrationStepString(step: LoginMigrationStep): string {
 	switch (step) {

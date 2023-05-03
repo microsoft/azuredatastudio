@@ -14,7 +14,7 @@ import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, LoginT
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as utils from '../api/utils';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
-import { LoginMigrationErrors } from '../models/loginMigrationModel';
+import { CollectingSourceLoginsFailed, CollectingTargetLoginsFailed } from '../models/loginMigrationModel';
 
 
 export class LoginSelectorPage extends MigrationWizardPage {
@@ -368,14 +368,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
 
-			logError(TelemetryViews.LoginMigrationWizard, LoginMigrationErrors.CollectingSourceLoginsFailed.toString(), error);
+			logError(TelemetryViews.LoginMigrationWizard, CollectingSourceLoginsFailed, error);
 
 			sendSqlMigrationActionEvent(
 				TelemetryViews.LoginMigrationSelectorPage,
 				TelemetryAction.LoginMigrationError,
 				{
 					...getTelemetryProps(this.migrationStateModel),
-					'errorMessage': LoginMigrationErrors.CollectingSourceLoginsFailed.toString(),
+					'errorMessage': CollectingSourceLoginsFailed,
 				},
 				{}
 			);
@@ -411,14 +411,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
 			};
 
-			logError(TelemetryViews.LoginMigrationWizard, LoginMigrationErrors.CollectingTargetLoginsFailed.toString(), error);
+			logError(TelemetryViews.LoginMigrationWizard, CollectingTargetLoginsFailed, error);
 
 			sendSqlMigrationActionEvent(
 				TelemetryViews.LoginMigrationSelectorPage,
 				TelemetryAction.LoginMigrationError,
 				{
 					...getTelemetryProps(this.migrationStateModel),
-					'errorMessage': LoginMigrationErrors.CollectingTargetLoginsFailed.toString(),
+					'errorMessage': CollectingTargetLoginsFailed,
 				},
 				{}
 			);
