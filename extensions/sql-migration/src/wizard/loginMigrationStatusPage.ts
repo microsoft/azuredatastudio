@@ -14,6 +14,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { LoginMigrationStatusCodes } from '../constants/helper';
 import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
+import { LoginMigrationErrors } from '../models/loginMigrationModel';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -93,14 +94,14 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			};
 
 			this._progressLoader.loading = false;
-			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', 'Login Migrations Internal Server Error');
+			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', LoginMigrationErrors.InternalServerError);
 
 			sendSqlMigrationActionEvent(
 				TelemetryViews.LoginMigrationStatusPage,
 				TelemetryAction.LoginMigrationError,
 				{
 					...getTelemetryProps(this.migrationStateModel),
-					'errorMessage': 'Login Migrations Internal Server Error',
+					'errorMessage': LoginMigrationErrors.InternalServerError.toString(),
 				},
 				{}
 			);

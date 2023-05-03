@@ -26,6 +26,13 @@ export enum LoginMigrationStep {
 	MigrationCompleted = 3,
 }
 
+export enum LoginMigrationErrors {
+	CollectingSourceLoginsFailed,
+	CollectingTargetLoginsFailed,
+	ConnectingToTargetFailed,
+	InternalServerError = 'Login Migrations Internal Server Error',
+}
+
 export function GetLoginMigrationStepString(step: LoginMigrationStep): string {
 	switch (step) {
 		case LoginMigrationStep.NotStarted:
@@ -159,7 +166,7 @@ export class LoginMigrationModel {
 	}
 
 	private setErrorCountMapPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
-		let errorBuckets: Map<string, number> = new Map<string, number>();
+		const errorBuckets: Map<string, number> = new Map<string, number>();
 
 		if (!result.exceptionMap) {
 			return;
