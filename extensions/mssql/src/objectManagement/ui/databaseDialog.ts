@@ -8,7 +8,6 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
-import { DefaultInputWidth } from './dialogBase';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.DatabaseViewInfo> {
 	private _nameInput: azdata.InputBoxComponent;
@@ -37,16 +36,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this._nameInput = this.modelView.modelBuilder.inputBox().withProps({
-			ariaLabel: localizedConstants.NameText,
-			value: this.objectInfo.name,
-			width: DefaultInputWidth,
-			required: true
-		}).component();
-		this.disposables.push(this._nameInput.onTextChanged(async () => {
+		this._nameInput = this.createInputBox(localizedConstants.NameText, async () => {
 			this.objectInfo.name = this._nameInput.value;
 			await this.runValidation(false);
-		}));
+		});
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this._nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
