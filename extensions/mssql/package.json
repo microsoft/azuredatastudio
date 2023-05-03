@@ -494,7 +494,7 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
         },
         {
@@ -540,7 +540,7 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         },
         {
