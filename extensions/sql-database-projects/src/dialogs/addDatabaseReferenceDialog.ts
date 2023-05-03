@@ -15,8 +15,8 @@ import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { ProjectType, SystemDatabase } from 'mssql';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
+import { ProjectType } from 'mssql';
 
 export enum ReferenceType {
 	project,
@@ -160,7 +160,7 @@ export class AddDatabaseReferenceDialog {
 		if (this.currentReferenceType === ReferenceType.systemDb) {
 			const systemDbRef: ISystemDatabaseReferenceSettings = {
 				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
-				systemDb: getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
+				systemDb: utils.getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 
@@ -732,10 +732,6 @@ export function getSystemDbOptions(project: Project): string[] {
 		return [constants.master];
 	}
 	return [constants.master, constants.msdb];
-}
-
-export function getSystemDatabase(name: string): SystemDatabase {
-	return name === constants.master ? SystemDatabase.Master : SystemDatabase.MSDB;
 }
 
 export async function promptDacpacLocation(): Promise<vscode.Uri[] | undefined> {
