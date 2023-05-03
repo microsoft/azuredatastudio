@@ -92,7 +92,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 		const postResult = await this.makePostRequest(uri, postData);
 
-		const initialDeviceLogin: DeviceCodeLogin = postResult.data;
+		const initialDeviceLogin: DeviceCodeLogin = postResult.data as DeviceCodeLogin;
 
 		await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, initialDeviceLogin.message, initialDeviceLogin.user_code, initialDeviceLogin.verification_url);
 
@@ -154,7 +154,7 @@ export class AzureDeviceCode extends AzureAuth {
 			};
 
 			const postResult = await this.makePostRequest(uri, postData);
-			const result: DeviceCodeLoginResult = postResult.data;
+			const result: DeviceCodeLoginResult = postResult.data as DeviceCodeLoginResult;
 
 			return result;
 		} catch (ex) {
