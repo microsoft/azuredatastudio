@@ -61,39 +61,39 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DropObjectRequestParams = { connectionUri, objectUrn, objectType };
 		return this.runWithErrorHandling(contracts.DropObjectRequest.type, params);
 	}
+	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Promise<ObjectManagement.SearchResultItem[]> {
+		const params: contracts.SearchObjectRequestParams = { contextId, searchText, objectTypes, schema };
+		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
+	}
 }
 
 export class TestObjectManagementService implements IObjectManagementService {
 	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
-		if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
-			return Promise.resolve(this.getLoginView(isNewObject, objectUrn));
+		let obj;
+		if (objectType === ObjectManagement.NodeType.ApplicationRole) {
+			obj = this.getApplicationRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
+			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
+			obj = this.getLoginView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
+			obj = this.getServerRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.User) {
-			return Promise.resolve(this.getUserView(isNewObject, objectUrn));
+			obj = this.getUserView(isNewObject, objectUrn);
 		}
 		else {
 			throw Error('Not implemented');
 		}
+		return this.delayAndResolve(obj);
 	}
 	save(contextId: string, object: ObjectManagement.SqlObject): Thenable<void> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve();
-			}, 3000);
-		});
+		return this.delayAndResolve();
 	}
 	script(contextId: string, object: ObjectManagement.SqlObject): Thenable<string> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve('test script');
-			}, 1000);
-		});
+		return this.delayAndResolve('test script');
 	}
 	disposeView(contextId: string): Thenable<void> {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve();
-			}, 100);
-		});
+		return this.delayAndResolve();
 	}
 	async rename(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string, newName: string): Promise<void> {
 		return this.delayAndResolve();
@@ -101,6 +101,23 @@ export class TestObjectManagementService implements IObjectManagementService {
 	async drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Promise<void> {
 		return this.delayAndResolve();
 	}
+
+	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText: string, schema: string): Promise<ObjectManagement.SearchResultItem[]> {
+		const items: ObjectManagement.SearchResultItem[] = [];
+		objectTypes.forEach(type => {
+			items.push(...this.generateSearchResult(type, 15));
+		});
+		return this.delayAndResolve(items);
+	}
+
+	private generateSearchResult(objectType: ObjectManagement.NodeType, count: number): ObjectManagement.SearchResultItem[] {
+		let items: ObjectManagement.SearchResultItem[] = [];
+		for (let i = 0; i < count; i++) {
+			items.push(<ObjectManagement.SearchResultItem>{ name: `${objectType} ${i}`, type: objectType });
+		}
+		return items;
+	}
+
 	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
 		const serverRoles = ['sysadmin', 'public', 'bulkadmin', 'dbcreator', 'diskadmin', 'processadmin', 'securityadmin', 'serveradmin'];
 		const languages = ['<default>', 'English'];
@@ -121,9 +138,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					isEnabled: true,
 					isLockedOut: false
 				},
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true,
+				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
 				supportAdvancedOptions: true,
 				supportAdvancedPasswordOptions: true,
 				canEditLockedOutState: false,
@@ -147,9 +162,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					isLockedOut: false,
 					password: '******************'
 				},
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true,
+				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
 				supportAdvancedOptions: true,
 				supportAdvancedPasswordOptions: true,
 				canEditLockedOutState: false,
@@ -160,6 +173,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		}
 		return login;
 	}
+
 	private getUserView(isNewObject: boolean, name: string): ObjectManagement.UserViewInfo {
 		let viewInfo: ObjectManagement.UserViewInfo;
 		const languages = ['<default>', 'English'];
@@ -171,7 +185,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			viewInfo = {
 				objectInfo: <ObjectManagement.User>{
 					name: '',
-					type: ObjectManagement.UserType.WithLogin,
+					type: ObjectManagement.UserType.LoginMapped,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
 					authenticationType: ObjectManagement.AuthenticationType.Sql,
@@ -184,20 +198,21 @@ export class TestObjectManagementService implements IObjectManagementService {
 				schemas: schemas,
 				logins: logins,
 				databaseRoles: databaseRoles,
-				supportContainedUser: true,
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true
+				userTypes: [
+					ObjectManagement.UserType.LoginMapped,
+					ObjectManagement.UserType.AADAuthentication,
+					ObjectManagement.UserType.SqlAuthentication,
+					ObjectManagement.UserType.NoLoginAccess
+				]
 			};
 		} else {
 			viewInfo = {
 				objectInfo: <ObjectManagement.User>{
 					name: name,
-					type: ObjectManagement.UserType.WithLogin,
+					type: ObjectManagement.UserType.LoginMapped,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
 					loginName: 'sa',
-					authenticationType: ObjectManagement.AuthenticationType.Sql,
 					ownedSchemas: ['dbo'],
 					databaseRoles: ['dbmanager', 'bulkadmin']
 				},
@@ -205,19 +220,83 @@ export class TestObjectManagementService implements IObjectManagementService {
 				schemas: schemas,
 				logins: logins,
 				databaseRoles: databaseRoles,
-				supportContainedUser: true,
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true
+				userTypes: [
+					ObjectManagement.UserType.LoginMapped,
+					ObjectManagement.UserType.AADAuthentication,
+					ObjectManagement.UserType.SqlAuthentication,
+					ObjectManagement.UserType.NoLoginAccess
+				]
 			};
 		}
 		return viewInfo;
 	}
-	private delayAndResolve(): Promise<void> {
+
+	private getServerRoleView(isNewObject: boolean, name: string): ObjectManagement.ServerRoleViewInfo {
+		return isNewObject ? <ObjectManagement.ServerRoleViewInfo>{
+			objectInfo: {
+				name: '',
+				members: [],
+				owner: '',
+				memberships: []
+			},
+			isFixedRole: false,
+			serverRoles: ['ServerLevelServerRole 1', 'ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
+		} : <ObjectManagement.ServerRoleViewInfo>{
+			objectInfo: {
+				name: 'ServerLevelServerRole 1',
+				members: ['ServerLevelLogin 1', 'ServerLevelServerRole 2'],
+				owner: 'ServerLevelLogin 2',
+				memberships: ['ServerLevelServerRole 3', 'ServerLevelServerRole 4']
+			},
+			isFixedRole: false,
+			serverRoles: ['ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4']
+		};
+	}
+
+	private getApplicationRoleView(isNewObject: boolean, name: string): ObjectManagement.ApplicationRoleViewInfo {
+		return isNewObject ? <ObjectManagement.ApplicationRoleViewInfo>{
+			objectInfo: {
+				name: '',
+				defaultSchema: 'dbo',
+				ownedSchemas: [],
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		} : <ObjectManagement.ApplicationRoleViewInfo>{
+			objectInfo: {
+				name: 'app role1',
+				password: '******************',
+				defaultSchema: 'dbo',
+				ownedSchemas: ['dbo'],
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		};
+	}
+
+	private getDatabaseRoleView(isNewObject: boolean, name: string): ObjectManagement.DatabaseRoleViewInfo {
+		return isNewObject ? <ObjectManagement.DatabaseRoleViewInfo>{
+			objectInfo: {
+				name: '',
+				owner: '',
+				members: [],
+				ownedSchemas: []
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		} : <ObjectManagement.DatabaseRoleViewInfo>{
+			objectInfo: {
+				name: 'db role1',
+				owner: '',
+				members: [],
+				ownedSchemas: ['dbo']
+			},
+			schemas: ['dbo', 'sys', 'admin']
+		};
+	}
+
+	private delayAndResolve(obj?: any): Promise<any> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
-				resolve();
-			}, 3000);
+				resolve(obj);
+			}, 1000);
 		});
 	}
 }

@@ -1,8 +1,8 @@
-"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.watchApiProposalNamesTask = exports.compileApiProposalNamesTask = exports.watchTask = exports.compileTask = exports.transpileTask = void 0;
 const es = require("event-stream");
@@ -52,7 +52,7 @@ function createCompile(src, build, emitError, transpileOnly) {
         console.warn('* and re-run the build/watch task                                                          *');
         console.warn('********************************************************************************************');
     }
-    const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
+    const compilation = tsb.create(projectPath, overrideOptions, { verbose: false }, err => reporter(err));
     function pipeline(token) {
         const bom = require('gulp-bom');
         const utf8Filter = util.filter(data => /(\/|\\)test(\/|\\).*utf8/.test(data.path));
@@ -204,7 +204,7 @@ function generateApiProposalNames() {
         const match = /\r?\n/m.exec(src);
         eol = match ? match[0] : os.EOL;
     }
-    catch {
+    catch (_a) {
         eol = os.EOL;
     }
     const pattern = /vscode\.proposed\.([a-zA-Z]+)\.d\.ts$/;

@@ -6,8 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
-import { ObjectManagement } from 'mssql';
-import { AADAuthenticationTypeDisplayText, ColumnTypeDisplayName, ContainedUserText, DatabaseTypeDisplayName, LoginTypeDisplayName, LoginTypeDisplayNameInTitle, RefreshObjectExplorerError, SQLAuthenticationTypeDisplayText, TableTypeDisplayName, UserTypeDisplayName, UserTypeDisplayNameInTitle, UserWithLoginText, UserWithNoConnectAccess, UserWithWindowsGroupLoginText, ViewTypeDisplayName, WindowsAuthenticationTypeDisplayText } from './localizedConstants';
+import * as localizedConstants from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -36,7 +35,7 @@ export async function refreshParentNode(context: azdata.ObjectExplorerContext): 
 			await parentNode?.refresh();
 		}
 		catch (err) {
-			await vscode.window.showErrorMessage(RefreshObjectExplorerError(getErrorMessage(err)));
+			await vscode.window.showErrorMessage(localizedConstants.RefreshObjectExplorerError(getErrorMessage(err)));
 		}
 	}
 }
@@ -48,83 +47,14 @@ export async function refreshNode(context: azdata.ObjectExplorerContext): Promis
 			await node?.refresh();
 		}
 		catch (err) {
-			await vscode.window.showErrorMessage(RefreshObjectExplorerError(getErrorMessage(err)));
+			await vscode.window.showErrorMessage(localizedConstants.RefreshObjectExplorerError(getErrorMessage(err)));
 		}
-	}
-}
-
-export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
-	switch (type) {
-		case ObjectManagement.NodeType.ServerLevelLogin:
-			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
-		case ObjectManagement.NodeType.User:
-			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
-		case ObjectManagement.NodeType.Table:
-			return TableTypeDisplayName;
-		case ObjectManagement.NodeType.View:
-			return ViewTypeDisplayName;
-		case ObjectManagement.NodeType.Column:
-			return ColumnTypeDisplayName;
-		case ObjectManagement.NodeType.Database:
-			return DatabaseTypeDisplayName;
-		default:
-			throw new Error(`Unkown node type: ${type}`);
-	}
-}
-
-export function getAuthenticationTypeDisplayName(authType: ObjectManagement.AuthenticationType | undefined): string | undefined {
-	if (authType === undefined) { return undefined; }
-
-	switch (authType) {
-		case ObjectManagement.AuthenticationType.Windows:
-			return WindowsAuthenticationTypeDisplayText;
-		case ObjectManagement.AuthenticationType.AzureActiveDirectory:
-			return AADAuthenticationTypeDisplayText;
-		default:
-			return SQLAuthenticationTypeDisplayText;
-	}
-}
-
-export function getAuthenticationTypeByDisplayName(displayValue: string): ObjectManagement.AuthenticationType {
-	switch (displayValue) {
-		case WindowsAuthenticationTypeDisplayText:
-			return ObjectManagement.AuthenticationType.Windows;
-		case AADAuthenticationTypeDisplayText:
-			return ObjectManagement.AuthenticationType.AzureActiveDirectory;
-		default:
-			return ObjectManagement.AuthenticationType.Sql;
-	}
-}
-
-export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
-	switch (userType) {
-		case ObjectManagement.UserType.WithLogin:
-			return UserWithLoginText;
-		case ObjectManagement.UserType.WithWindowsGroupLogin:
-			return UserWithWindowsGroupLoginText;
-		case ObjectManagement.UserType.Contained:
-			return ContainedUserText;
-		default:
-			return UserWithNoConnectAccess;
-	}
-}
-
-export function getUserTypeByDisplayName(userTypeDisplayName: string): ObjectManagement.UserType {
-	switch (userTypeDisplayName) {
-		case UserWithLoginText:
-			return ObjectManagement.UserType.WithLogin;
-		case UserWithWindowsGroupLoginText:
-			return ObjectManagement.UserType.WithWindowsGroupLogin;
-		case ContainedUserText:
-			return ObjectManagement.UserType.Contained;
-		default:
-			return ObjectManagement.UserType.NoConnectAccess;
 	}
 }
 
 // https://docs.microsoft.com/sql/relational-databases/security/password-policy
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
-	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
+	const containsUserName = password && userName && password.toUpperCase().includes(userName.toUpperCase());
 	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
 	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
 	const hasNumbers = /\d/.test(password) ? 1 : 0;

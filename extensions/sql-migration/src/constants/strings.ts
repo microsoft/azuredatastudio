@@ -76,6 +76,12 @@ export const RUN_VALIDATION = localize('sql.migration.run.validation', "Run vali
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
 export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.description', "Select the databases that you want to assess for migration to Azure SQL.");
 
+// XEvents assessment
+export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess extended event sessions");
+export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}");
+export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more");
+export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
+
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
@@ -194,8 +200,6 @@ export const AZURE_RECOMMENDATION_OPEN_EXISTING = localize('sql.migration.sku.az
 export const AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER = localize('sql.migration.sku.azureRecommendation.collectDataSelectFolder.instructions', "Select a folder on your local drive where performance data will be saved");
 export const AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER = localize('sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions', "Select a folder on your local drive where previously collected performance data was saved");
 export const FOLDER_NAME = localize('sql.migration.azureRecommendation.folder.name', "Folder name");
-export const BROWSE = localize('sql.migration.azureRecommendation.browse', "Browse");
-export const OPEN = localize('sql.migration.azureRecommendation.open', "Open");
 
 export const VIEW_DETAILS = localize('sql.migration.sku.viewDetails', "View details");
 export function ASSESSED_DBS(totalDbs: number): string {
@@ -759,6 +763,12 @@ export function AUTH_KEY_REFRESHED(keyName: string): string {
 export function SERVICE_NOT_READY(serviceName: string): string {
 	return localize('sql.migration.service.not.ready', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.", serviceName);
 }
+export function SERVICE_ERROR_NOT_READY(serviceName: string, error: string): string {
+	return localize('sql.migration.service.error.not.ready',
+		"The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.",
+		serviceName,
+		error);
+}
 export function SERVICE_READY(serviceName: string, host: string): string {
 	return localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}", serviceName, host);
 }
@@ -920,6 +930,10 @@ export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy t
 export const NEW_SUPPORT_REQUEST = localize('sql.migration.newSupportRequest', "New support request");
 export const IMPACT = localize('sql.migration.impact', "Impact");
 export const ALL_FIELDS_REQUIRED = localize('sql.migration.all.fields.required', 'All fields are required.');
+export const CLEAR = localize('sql.migration.clear', "Clear");
+export const SELECT = localize('sql.migration.select', "Select");
+export const BROWSE = localize('sql.migration.browse', "Browse");
+export const OPEN = localize('sql.migration.open', "Open");
 
 //Summary Page
 export const START_MIGRATION_TEXT = localize('sql.migration.start.migration.button', "Start migration");
@@ -1164,7 +1178,6 @@ export const OPEN_MIGRATION_DETAILS_ERROR = localize('sql.migration.open.migrati
 export const OPEN_MIGRATION_TARGET_ERROR = localize('sql.migration.open.migration.target.error', "Error opening migration target");
 export const OPEN_MIGRATION_SERVICE_ERROR = localize('sql.migration.open.migration.service.error', "Error opening migration service dialog");
 export const LOAD_MIGRATION_LIST_ERROR = localize('sql.migration.load.migration.list.error', "Error loading migrations list");
-export const ERROR_DIALOG_CLEAR_BUTTON_LABEL = localize('sql.migration.error.dialog.clear.button.label', "Clear");
 export const ERROR_DIALOG_ARIA_CLICK_VIEW_ERROR_DETAILS = localize('sql.migration.error.aria.view.details', 'Click to view error details');
 
 export interface LookupTable<T> {

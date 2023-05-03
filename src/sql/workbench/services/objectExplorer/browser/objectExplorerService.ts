@@ -182,6 +182,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	// Cache of tree nodes for each connection by session ids
 	private _treeNodeCache: Map<string, Map<string, TreeNode>> = new Map<string, Map<string, TreeNode>>();
 
+	// Cache of node filters for each connection by session ids
+	private _nodeFilterCache: Map<string, Map<string, azdata.NodeFilter[]>> = new Map<string, Map<string, azdata.NodeFilter[]>>();
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
@@ -237,6 +240,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				return;
 			}
 			this._treeNodeCache.delete(session.sessionId);
+			this._nodeFilterCache.delete(session.sessionId);
 			await this.closeSession(connection.providerName, session);
 			delete this._activeObjectExplorerNodes[connectionUri];
 			delete this._sessions[session.sessionId!];
@@ -346,6 +350,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				let server = this.toTreeNode(session.rootNode, undefined);
 				this._treeNodeCache.set(sessionId, new Map<string, TreeNode>());
 				this._treeNodeCache.get(sessionId)!.set(this.getTreeNodeCacheKey(server.toNodeInfo()), server);
+				this._nodeFilterCache.set(sessionId, new Map<string, azdata.NodeFilter[]>());
 				server.connection = connection;
 				server.session = session;
 				this._activeObjectExplorerNodes[connection!.id] = server;
@@ -475,6 +480,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
+			const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
+			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
+			if (node.filters && sessionFilterCache) {
+				sessionFilterCache.set(this.getTreeNodeCacheKey(node), node.filters);
+			}
+
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId!].nodes[node.nodePath]) {
@@ -561,7 +572,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
-								securityToken: session.securityToken
+								securityToken: session.securityToken,
+								filters: node.filters
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
@@ -699,8 +711,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
-		// Always refresh the node if it has an error, otherwise expand it normally
-		let needsRefresh = !!parentTree.errorStateMessage;
+		// Always refresh the node if it has an error or forceRefresh is set to true, otherwise expand it normally
+		let needsRefresh = !!parentTree.errorStateMessage || parentTree.forceRefresh;
+		parentTree.forceRefresh = false;
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
@@ -752,15 +765,25 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			}
 			const children = expandResult.nodes.map(node => {
+				let treeNode;
 				const cacheKey = this.getTreeNodeCacheKey(node);
 				// In case of refresh, we want to update the existing node in the cache
 				if (!refresh && sessionTreeNodeCache.has(cacheKey)) {
-					return sessionTreeNodeCache.get(cacheKey);
+					treeNode = sessionTreeNodeCache.get(cacheKey);
 				} else {
-					const treeNode = this.toTreeNode(node, parentTree);
+					treeNode = this.toTreeNode(node, parentTree);
 					sessionTreeNodeCache.set(cacheKey, treeNode);
-					return treeNode;
 				}
+
+				const filterCacheKey = this.getTreeNodeCacheKey(treeNode);
+				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
+				// Making sure we retain the filters for the node.
+				if (sessionFilterCache?.has(filterCacheKey)) {
+					treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
+				} else {
+					treeNode.filters = [];
+				}
+				return treeNode;
 			});
 			parentTree.children = children.filter(c => c !== undefined);
 			return children;
@@ -785,7 +808,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
-			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, nodeInfo.filterableProperties, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
@@ -1033,7 +1056,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 	}
 
-	private getTreeNodeCacheKey(node: azdata.NodeInfo): string {
+	private getTreeNodeCacheKey(node: azdata.NodeInfo | TreeNode): string {
 		return node.nodePath;
 	}
 }
