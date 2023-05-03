@@ -237,7 +237,7 @@ steps:
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop
 
-  # {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)" and "Archive Logs" and "Copy Coverage"
+  # {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)" and "Archive Logs" and "Copy Coverage" and "Publish test results/crash reports"
   # - script: |
   #     set -e
   #     shopt -s globstar
@@ -246,20 +246,20 @@ steps:
   #   displayName: Copy Coverage
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
-    inputs:
-      testResultsFiles: '*.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
-    continueOnError: true
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+  # - task: PublishTestResults@2
+  #   displayName: 'Publish Test Results test-results.xml'
+  #   inputs:
+  #     testResultsFiles: '*.xml'
+  #     searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
+  #   continueOnError: true
+  #   condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: crash reports'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
-      ArtifactName: crashes
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+  # - task: PublishBuildArtifacts@1
+  #   displayName: 'Publish Artifact: crash reports'
+  #   inputs:
+  #     PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
+  #     ArtifactName: crashes
+  #   condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
