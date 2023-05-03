@@ -333,10 +333,7 @@ export class TreeUpdateUtils {
 						}
 					});
 				});
-				const isNodeConnected = await TreeUpdateUtils.connectAndCreateOeSession(connection, options, connectionManagementService, objectExplorerService, undefined);
-				if (!isNodeConnected) {
-					return [];
-				}
+				await TreeUpdateUtils.connectAndCreateOeSession(connection, options, connectionManagementService, objectExplorerService, undefined);
 				await nodesUpdatedPromise;
 				let rootNode = objectExplorerService.getObjectExplorerNode(connection); // Major code change
 				const session = rootNode?.getSession();
