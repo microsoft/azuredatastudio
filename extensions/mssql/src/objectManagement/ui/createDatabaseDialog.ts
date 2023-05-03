@@ -10,8 +10,6 @@ import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
 import { DefaultInputWidth } from './dialogBase';
 
-const DefaultValue = '<default>';
-
 export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
 	private _nameInput: azdata.InputBoxComponent;
 
@@ -70,7 +68,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 		if (this.viewInfo.loginNames?.length > 0) {
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
-				this.objectInfo.owner = ownerDropbox.value === DefaultValue ? undefined : ownerDropbox.value as string;
+				this.objectInfo.owner = ownerDropbox.value as string;
 				await this.runValidation(false);
 			}, this.viewInfo.loginNames, this.viewInfo.loginNames[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
@@ -78,7 +76,7 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 
 		if (this.viewInfo.collationNames?.length > 0) {
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
-				this.objectInfo.collationName = collationDropbox.value === DefaultValue ? undefined : collationDropbox.value as string;
+				this.objectInfo.collationName = collationDropbox.value as string;
 				await this.runValidation(false);
 			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
