@@ -12,7 +12,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
-import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
@@ -51,17 +51,14 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 			} else if (element instanceof ConnectionProfileGroup) {
 				return element.getChildren();
 			} else if (element instanceof TreeNode) {
-				if (element.children) {
-					return element.children;
-				} else {
-					return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
-				}
+				return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 			}
 		} catch (err) {
 			if (element instanceof TreeNode) {
 				element.errorStateMessage = err.message ?? err;
 			}
-			if (err.message) {
+			// In case of connection profile, we won't show the error here and let the connection service handle it.
+			if (err.message && !(err instanceof ConnectionError)) {
 				this.showError(err.message);
 			}
 
