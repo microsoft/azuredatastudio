@@ -776,11 +776,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			let newConnectionTitles = [];
 
-			// Generate titles based on base server info alone (not whatever the user sets).
-			for (let i = 0; i < totalConnections.length; i++) {
-				totalConnections[i].title = totalConnections[i].getServerInfo();
-			}
-
 			this.generateEditorConnectionTitles(totalConnections);
 			newConnectionTitles = totalConnections;
 
@@ -868,7 +863,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				optionKeyMap.forEach(function (connOptionValues, profile) {
 					let uniqueOptionString = connOptionValues.join(ConnectionProfile.displayIdSeparator);
 					if (uniqueOptionString.length > 0) {
-						profile.title += ' (' + uniqueOptionString + ')';
+						profile.title += profile.getServerInfo() + ' (' + uniqueOptionString + ')';
 					}
 				});
 			}
