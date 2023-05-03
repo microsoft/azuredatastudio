@@ -461,4 +461,25 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
 	}
+
+	/**
+	 * Exclude a folder and its contents from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the folder, typically relative to the .sqlproj file
+	 */
+	public async excludeFolder(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.FolderParams = { projectUri: projectUri, path: path };
+		return await this.runWithErrorHandling(contracts.ExcludeFolderRequest.type, params);
+	}
+
+	/**
+	 * Move a folder and its contents within a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param destinationPath Path of the folder, typically relative to the .sqlproj file
+	 * @param path Path of the folder, typically relative to the .sqlproj file
+	 */
+	public async moveFolder(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.MoveFolderParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
+		return await this.runWithErrorHandling(contracts.MoveFolderRequest.type, params);
+	}
 }
