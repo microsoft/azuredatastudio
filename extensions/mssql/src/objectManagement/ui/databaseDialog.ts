@@ -22,10 +22,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 	}
 
 	protected override async validateInput(): Promise<string[]> {
-		const errors: string[] = [];
-		if (!this.objectInfo.name) {
-			errors.push(localizedConstants.NameCannotBeEmptyError);
-		} else if (this.viewInfo.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
+		const errors = await super.validateInput();
+		if (this.objectInfo.name && this.viewInfo.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
 			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
@@ -54,7 +52,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		if (this.viewInfo.loginNames?.length > 0) {
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value as string;
-				await this.runValidation(false);
 			}, this.viewInfo.loginNames, this.viewInfo.loginNames[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
@@ -67,7 +64,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		if (this.viewInfo.collationNames?.length > 0) {
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
-				await this.runValidation(false);
 			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
@@ -76,7 +72,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			this.objectInfo.recoveryModel = this.viewInfo.recoveryModels[0];
 			let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async () => {
 				this.objectInfo.recoveryModel = recoveryDropbox.value as string;
-				await this.runValidation(false);
 			}, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 		}
@@ -85,7 +80,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			this.objectInfo.compatibilityLevel = this.viewInfo.compatibilityLevels[0];
 			let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async () => {
 				this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
-				await this.runValidation(false);
 			}, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
 		}
@@ -94,7 +88,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			this.objectInfo.containmentType = this.viewInfo.containmentTypes[0];
 			let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async () => {
 				this.objectInfo.containmentType = containmentDropbox.value as string;
-				await this.runValidation(false);
 			}, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
 		}
