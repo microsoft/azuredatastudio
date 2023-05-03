@@ -894,6 +894,10 @@ Default Skipped Commands:
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">限制搜尋之範圍的色彩。其不得為不透明色彩，以免隱藏底層裝飾。</target>
       </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
+        <target state="translated">查詢編輯器結果方格中 Null 值的背景色彩。</target>
+      </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
         <target state="translated">磚的框線色彩</target>
@@ -3493,6 +3497,14 @@ Default Skipped Commands:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">此儲存格包含 Unicode Null 字元，目前不支援編輯。</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="copySelection">
@@ -5784,8 +5796,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">複製失敗，發生錯誤: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">複製失敗。錯誤: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5838,6 +5850,10 @@ Error: {1}</source>
       <trans-unit id="serverGroup.colors">
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">在物件總管 Viewlet 中使用的伺服器群組調色盤。</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">在伺服器檢視中展開節點的逾時 (以秒為單位)</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
@@ -7764,6 +7780,10 @@ Error Message: 1</source>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">無法重新整理 Azure 帳戶權杖以建立連線</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">未知的提供者 '{0}'</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">Azure Data Studio 不支援伺服器版本，您仍然可以連接到伺服器版本，但 Azure Data Studio 中的某些功能可能無法如預期方式執行。</target>
@@ -7825,8 +7845,12 @@ Error Message: 1</source>
         <target state="translated">新增帳戶...</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">無法剖析連接字串。</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">無法剖析連接字串。{0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">未傳回連線資訊。</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8047,11 +8071,11 @@ Error Message: 1</source>
     <body>
       <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
         <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
-        <target state="new">Provider with id {0} was not registered after 30 seconds.</target>
+        <target state="translated">識別碼為 {0} 的提供者未在 30 秒後登錄。</target>
       </trans-unit>
       <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
         <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
-        <target state="new">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</target>
+        <target state="translated">支援檔案格式 '{0}' 的執行計畫提供者未在 30 秒後登錄。</target>
       </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
@@ -8654,6 +8678,10 @@ Error Message: 1</source>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">多個錯誤:</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">提供者 {1} 節點 {0} 的節點擴充已逾時</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="zh-Hant">
@@ -8843,8 +8871,8 @@ Error Message: 1</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">複製失敗，發生錯誤: {0}</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">複製失敗。錯誤: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

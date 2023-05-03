@@ -15,6 +15,9 @@ import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
+import * as nls from 'vs/nls';
+import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -74,6 +77,8 @@ export class TreeUpdateUtils {
 		}
 		const previousTreeInput = tree.getInput();
 		if (treeInput) {
+			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+			treeInput = treeArray[0];
 			await tree.setInput(treeInput);
 		}
 		if (previousTreeInput instanceof Disposable) {
@@ -92,12 +97,28 @@ export class TreeUpdateUtils {
 	}
 
 	/**
+	 * Calls alterConnectionTitles on all levels of the Object Explorer Tree
+	 * so that profiles in connection groups can have distinguishing titles too.
+	 */
+	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[]): ConnectionProfileGroup[] {
+		inputGroups.forEach(group => {
+			group.children = this.alterTreeChildrenTitles(group.children);
+			let connections = group.connections;
+			TreeUpdateUtils.alterConnectionTitles(connections);
+			group.connections = connections;
+		});
+		return inputGroups;
+	}
+
+	/**
 	 * Set input for the registered servers tree.
 	 */
 	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
 		if (tree instanceof AsyncServerTree) {
-			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
+				let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+				treeInput = treeArray[0];
 				await tree.setInput(treeInput);
 			}
 			tree.rerender();
@@ -126,6 +147,8 @@ export class TreeUpdateUtils {
 
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
+				let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
+				treeInput = treeArray[0];
 				const originalInput = tree.getInput();
 				if (treeInput !== originalInput) {
 					return tree.setInput(treeInput).then(async () => {
@@ -148,10 +171,7 @@ export class TreeUpdateUtils {
 
 	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup | undefined {
 		const groups = connectionManagementService.getConnectionGroups(providers);
-		const input = groups.find(group => group.isRoot);
-		// Dispose of the unused groups to clean up their handlers
-		groups.filter(g => g !== input).forEach(g => g.dispose());
-		return input;
+		return groups.find(group => group.isRoot);
 	}
 
 	public static hasObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): boolean {
@@ -222,8 +242,13 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static async connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
-		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined, requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
+	public static async connectAndCreateOeSession(
+		connection: ConnectionProfile,
+		options: IConnectionCompletionOptions,
+		connectionManagementService: IConnectionManagementService,
+		objectExplorerService: IObjectExplorerService,
+		tree: AsyncServerTree | ITree | undefined,
+		requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
 			// append group ID and original display name to build unique OE session ID
@@ -264,7 +289,12 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static async getAsyncConnectionNodeChildren(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
+	public static async getAsyncConnectionNodeChildren(
+		connection: ConnectionProfile,
+		connectionManagementService: IConnectionManagementService,
+		objectExplorerService: IObjectExplorerService,
+		configurationService: IConfigurationService
+	): Promise<TreeNode[]> {
 		if (connection.isDisconnecting) {
 			return [];
 		} else {
@@ -275,20 +305,36 @@ export class TreeUpdateUtils {
 				return rootNode.children ?? [];
 			} else {
 				const options: IConnectionCompletionOptions = {
-					params: undefined,
 					saveTheConnection: true,
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true,
 					showDashboard: false
 				};
+				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
-				const nodesUpdatedPromise = new Promise((resolve, reject) => {
-					objectExplorerService.onUpdateObjectExplorerNodes(e => {
-						if (e.errorMessage) {
-							reject(new Error(e.errorMessage));
-						}
-						if (e.connection.id === connection.id) {
-							resolve(undefined);
+				const nodesUpdatedPromise = new Promise<void>((resolve, reject) => {
+					// Clean up timeout and listener
+					const cleanup = () => {
+						clearTimeout(nodeUpdateTimer);
+						nodesUpdatedListener.dispose();
+					}
+
+					// If the node update takes too long, reject the promise
+					const nodeUpdateTimeout = () => {
+						cleanup();
+						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer expansion timed out for '{0}'", connection.databaseName)));
+					}
+					const nodeUpdateTimer = setTimeout(nodeUpdateTimeout, expansionTimeoutValueSec * 1000);
+
+
+					const nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
+						if (e.connection && e.connection.id === connection.id) {
+							if (e.errorMessage) {
+								reject(new Error(e.errorMessage));
+							} else {
+								resolve();
+							}
+							cleanup();
 						}
 					});
 				});
@@ -347,5 +393,86 @@ export class TreeUpdateUtils {
 			connectionProfile = connectionProfile?.cloneWithDatabase(databaseName);
 		}
 		return connectionProfile;
+	}
+
+	/**
+	 * Change the connection title to display only the unique properties among profiles.
+	 */
+	private static alterConnectionTitles(inputList: ConnectionProfile[]): void {
+		let profileListMap = new Map<string, number[]>();
+
+		// Map the indices of profiles that share the same connection name.
+		for (let i = 0; i < inputList.length; i++) {
+			// do not add if the profile is still loading as that will result in erroneous entries.
+			if (inputList[i].serverCapabilities && inputList[i].hasLoaded()) {
+				let titleKey = inputList[i].getOriginalTitle();
+				if (profileListMap.has(titleKey)) {
+					let profilesForKey = profileListMap.get(titleKey);
+					profilesForKey.push(i);
+					profileListMap.set(titleKey, profilesForKey);
+				}
+				else {
+					profileListMap.set(titleKey, [i]);
+				}
+			}
+		}
+
+		profileListMap.forEach(function (indexes, titleString) {
+			if (profileListMap.get(titleString)?.length > 1) {
+				let combinedOptions = [];
+				let needSpecial = false;
+				if (titleString === inputList[indexes[0]].connectionName) {
+					// check for potential connections with the same name but technically different connections.
+					let listOfDuplicates = indexes.filter(item => inputList[item].getOptionsKey() !== inputList[indexes[0]].getOptionsKey());
+					if (listOfDuplicates.length > 0) {
+						// if we do find duplicates, we will need to include the special properties.
+						needSpecial = true;
+					}
+				}
+				indexes.forEach((indexValue) => {
+					// Add all possible options across all profiles with the same title to an option list.
+					let valueOptions = inputList[indexValue].getConnectionOptionsList(needSpecial, false);
+					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
+				});
+
+				// Generate list of non default option keys for each profile that shares the same basic connection name.
+				let optionKeyMap = new Map<ConnectionProfile, string[]>();
+				let optionValueOccuranceMap = new Map<string, number>();
+				for (let p = 0; p < indexes.length; p++) {
+					optionKeyMap.set(inputList[indexes[p]], []);
+					for (let i = 0; i < combinedOptions.length; i++) {
+						// See if the option is not default for the inputList profile or is.
+						if (inputList[indexes[p]].getConnectionOptionsList(needSpecial, true).indexOf(combinedOptions[i]) > -1) {
+							let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
+							let currentArray = optionKeyMap.get(inputList[indexes[p]]);
+							let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;
+							if (!optionValueOccuranceMap.get(valueString)) {
+								optionValueOccuranceMap.set(valueString, 0);
+							}
+							optionValueOccuranceMap.set(valueString, optionValueOccuranceMap.get(valueString) + 1);
+							currentArray.push(valueString);
+							optionKeyMap.set(inputList[indexes[p]], currentArray);
+						}
+					}
+				}
+
+				// Filter out options that are found in ALL the entries with the same basic name.
+				optionValueOccuranceMap.forEach(function (count, optionValue) {
+					optionKeyMap.forEach(function (connOptionValues, profile) {
+						if (count === optionKeyMap.size) {
+							optionKeyMap.set(profile, connOptionValues.filter(value => value !== optionValue));
+						}
+					});
+				});
+
+				// Generate the final unique connection string for each profile in the list.
+				optionKeyMap.forEach(function (connOptionValues, profile) {
+					let uniqueOptionString = connOptionValues.join(ConnectionProfile.displayIdSeparator);
+					if (uniqueOptionString.length > 0) {
+						profile.title += ' (' + uniqueOptionString + ')';
+					}
+				});
+			}
+		});
 	}
 }

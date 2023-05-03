@@ -131,7 +131,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceDacpac) {
 			source = {
@@ -145,7 +145,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: '',
 				targetScripts: [],
 				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		} else if (sourceProject) {
 			source = {
@@ -159,7 +159,7 @@ export class SchemaCompareMainWindow {
 				projectFilePath: sourceProject,
 				targetScripts: [],
 				dataSchemaProvider: undefined,
-				folderStructure: mssql.ExtractTarget.schemaObjectType
+				extractTarget: mssql.ExtractTarget.schemaObjectType
 			};
 		}
 
@@ -736,7 +736,7 @@ export class SchemaCompareMainWindow {
 			title: loc.compare
 		}).component();
 
-		this.compareButton.onDidClick(async (click) => {
+		this.compareButton.onDidClick(async (_click) => {
 			await this.startCompare();
 		});
 	}
@@ -751,7 +751,7 @@ export class SchemaCompareMainWindow {
 			title: loc.stop
 		}).component();
 
-		this.cancelCompareButton.onDidClick(async (click) => {
+		this.cancelCompareButton.onDidClick(async (_click) => {
 			await this.cancelCompare();
 		});
 	}
@@ -806,7 +806,7 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.generateScriptButton.onDidClick(async (click) => {
+		this.generateScriptButton.onDidClick(async (_click) => {
 			await this.generateScript();
 		});
 	}
@@ -843,7 +843,7 @@ export class SchemaCompareMainWindow {
 			title: loc.options
 		}).component();
 
-		this.optionsButton.onDidClick(async (click) => {
+		this.optionsButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOptionsOpened');
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
@@ -861,7 +861,7 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
-		this.applyButton.onDidClick(async (click) => {
+		this.applyButton.onDidClick(async (_click) => {
 			await this.publishChanges();
 		});
 	}
@@ -889,7 +889,7 @@ export class SchemaCompareMainWindow {
 						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 						break;
 					case mssql.SchemaCompareEndpointType.Project:
-						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
+						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.extractTarget);
 						if (!result.success) {
 							void vscode.window.showErrorMessage(loc.applyError);
 						}
@@ -998,7 +998,7 @@ export class SchemaCompareMainWindow {
 			title: loc.switchDirectionDescription
 		}).component();
 
-		this.switchButton.onDidClick(async (click) => {
+		this.switchButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSwitch');
 			// switch source and target
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
@@ -1032,7 +1032,7 @@ export class SchemaCompareMainWindow {
 			secondary: true
 		}).component();
 
-		this.selectSourceButton.onDidClick(async () => {
+		this.selectSourceButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
 			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = this.schemaCompareDialog.openDialog();
@@ -1046,7 +1046,7 @@ export class SchemaCompareMainWindow {
 			secondary: true
 		}).component();
 
-		this.selectTargetButton.onDidClick(async () => {
+		this.selectTargetButton.onDidClick(async (_click) => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
 			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = await this.schemaCompareDialog.openDialog();
@@ -1064,7 +1064,7 @@ export class SchemaCompareMainWindow {
 			title: loc.openScmpDescription
 		}).component();
 
-		this.openScmpButton.onDidClick(async (click) => {
+		this.openScmpButton.onDidClick(async (_click) => {
 			await this.openScmp();
 		});
 	}
@@ -1151,8 +1151,8 @@ export class SchemaCompareMainWindow {
 				connectionDetails: undefined,
 				projectFilePath: endpoint.projectFilePath,
 				targetScripts: [],
-				dataSchemaProvider: '',
-				folderStructure: mssql.ExtractTarget.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+				dataSchemaProvider: endpoint.dataSchemaProvider,
+				extractTarget: endpoint.extractTarget
 			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
@@ -1180,7 +1180,7 @@ export class SchemaCompareMainWindow {
 			enabled: false
 		}).component();
 
-		this.saveScmpButton.onDidClick(async (click) => {
+		this.saveScmpButton.onDidClick(async (_click) => {
 			await this.saveScmp();
 		});
 	}

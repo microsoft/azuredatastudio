@@ -50,6 +50,14 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">Falha ao localizar o locatário '{0}' na conta '{1}' ao atualizar o token de segurança</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">Nenhum resultado retornado da solicitação de conversão do Notebook</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">Nenhum documento encontrado para URI {0}</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} Falha na atualização do token AAD, reconecte-se para ativar {0}</target>
@@ -57,6 +65,10 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">Falha na atualização do token do editor, o preenchimento automático será desativado até que o editor seja desconectado e reconectado</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">Plataforma sem suporte {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,14 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">coluna</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">banco de dados</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">logon</target>
@@ -90,6 +110,10 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">tabela</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">usuário</target>
@@ -97,6 +121,10 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">Usuário</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">exibir</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -218,6 +246,10 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Autenticação do Windows</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">Login não selecionado.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">O nome não pode ficar em branco.</target>
@@ -230,6 +262,10 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <source xml:lang="en">{0} - New (Preview)</source>
         <note>{0} object type.</note>
         <target state="translated">{0} – Novo (Versão prévia)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">Falha ao recuperar as informações de conexão, reconecte e tente novamente.</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
@@ -262,6 +298,20 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">Erro ao atualizar o pesquisador de objetos. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Inserir novo nome</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">Ocorreu um erro ao renomear {0} '{1}' para '{2}'. {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">Renomear {0} '{1}' para '{2}'</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
@@ -601,16 +651,16 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <target state="translated">Especifica um protocolo para atestar um enclave do lado do servidor usado com o Always Encrypted com enclaves seguros</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
-        <target state="translated">Protocolo de Atestado</target>
+        <source xml:lang="en">Attestation protocol</source>
+        <target state="translated">Protocolo de atestado</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
         <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
         <target state="translated">Especifica um ponto de extremidade para atestar um enclave do lado do servidor usado com o Always Encrypted com enclaves seguros</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">URL de Atestado de Enclave</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">URL do Atestado</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,12 +811,12 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <target state="translated">Replicação</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
-        <target state="translated">Habilita ou desabilita Enclaves Seguros para a conexão</target>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">Habilita ou desabilita enclaves Seguros para a conexão</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
-        <target state="translated">Enclaves Seguros</target>
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">Enclaves seguros</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
@@ -1149,8 +1199,12 @@ Observação: um certificado autoassinado oferece apenas proteção limitada e n
         <target state="translated">Novo Usuário</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Propriedades</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">Propriedades (Versão prévia)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Renomear</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

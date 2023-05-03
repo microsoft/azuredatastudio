@@ -465,6 +465,10 @@
         <source xml:lang="en">Azure Resources (Preview)</source>
         <target state="translated">Azure リソース (プレビュー)</target>
       </trans-unit>
+      <trans-unit id="azure.credStoreSaveFailedError">
+        <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+        <target state="translated">トークン キャッシュのキーを資格情報ストアに保存できませんでした。Azure アクセス トークンの永続化に問題が発生して接続が不安定になる可能性があります。SqlTools が Windows の資格情報ストレージ制限に達していると考えられる場合は、Windows 資格情報マネージャーで、"Microsoft.SqlTools|" から始まる資格情報を少なくとも 2 つクリアし、再読み込みしてください。</target>
+      </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
         <target state="translated">リンクを開けません。必要な値がありません</target>
@@ -524,6 +528,10 @@
       <trans-unit id="azurecore.centraluseuap">
         <source xml:lang="en">Central US EUAP</source>
         <target state="translated">米国中部 EUAP</target>
+      </trans-unit>
+      <trans-unit id="azurecore.deprecated">
+        <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+        <target state="translated">警告: ADAL は非推奨となり、今後のリリースで削除される予定です。代わりに MSAL を使用してください。</target>
       </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>

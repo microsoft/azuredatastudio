@@ -278,7 +278,6 @@ export class NewProfilerAction extends Task {
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
 		await accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
 		let options: IConnectionCompletionOptions = {
-			params: undefined,
 			saveTheConnection: false,
 			showConnectionDialogOnError: true,
 			showDashboard: false,

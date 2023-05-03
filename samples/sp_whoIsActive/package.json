@@ -2,7 +2,7 @@
   "name": "whoisactive",
   "displayName": "whoisactive",
   "description": "sp_whoisactive for Azure Data Studio",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -266,6 +266,6 @@
     "tslint": "^3.14.0",
     "typemoq": "^2.1.0",
     "typescript": "^4.1.2",
-    "vsce": "1.36.2"
+    "@vscode/vsce": "^2.18.0"
   }
 }

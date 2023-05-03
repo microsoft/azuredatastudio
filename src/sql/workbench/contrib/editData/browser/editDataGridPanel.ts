@@ -33,7 +33,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { deepClone } from 'vs/base/common/objects';
 import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
-import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
@@ -81,6 +80,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// Prevent the cell submission function from being called multiple times.
 	private cellSubmitInProgress: boolean;
+
+	// Manually submit the cell after edit end if it's the null row.
+	private isInNullRow: boolean;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -131,7 +133,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	onInit(): void {
 		const self = this;
 		this.baseInit();
-		this._register(DOM.addDisposableListener(this.nativeElement, DOM.EventType.KEY_DOWN, e => this.tryHandleKeyEvent(new StandardKeyboardEvent(e))));
 
 		// Add the subscription to the list of things to be disposed on destroy, or else on a new component init
 		// may get the "destroyed" object still getting called back.
@@ -193,6 +194,18 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			// Store the value that was set
 			self.currentEditCellValue = event.item[event.cell];
+
+			// In case the last row is entered in, we need to wait to get the cell value after edit end
+			// so that we can add a row, submit the value and move down. (SlickGrid tries to go down immediately
+			// which fails, as we haven't added the new row yet).
+			if (self.isInNullRow) {
+				self.submitCurrentCellChange((result: EditUpdateCellResult) => {
+					self.table.grid.navigateDown();
+				},
+					(error: any) => {
+						self.notificationService.error(error);
+					}).catch(onUnexpectedError);
+			}
 		};
 
 		this.overrideCellFn = (columnId, value?, data?): string => {
@@ -234,19 +247,30 @@ export class EditDataGridPanel extends GridParentComponent {
 		};
 
 		// Setup a function for generating a promise to lookup result subsets
+		// Function will be called upon refresh.
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return self.dataService.getEditRows(offset, count).then(result => {
 				if (this.dataSet) {
+					let counter = 0;
 					let gridData = result.subset.map(r => {
+						// Newly added rows will have null values displayed as empty strings.
+						// Since it is currently impossible to add empty strings via edit data
+						// this must mean the empty strings on the newly added row are null values.
+						let isNewlyAddedRow = false;
+						if (this.isInNullRow && (counter === (count - 2))) {
+							isNewlyAddedRow = true;
+						}
 						let dataWithSchema = {};
 						// skip the first column since its a number column
 						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+							let isNewAddedNullCell = isNewlyAddedRow && r.cells[i - 1].displayValue === '';
 							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
 								displayValue: r.cells[i - 1].displayValue,
 								ariaLabel: escape(r.cells[i - 1].displayValue),
-								isNull: r.cells[i - 1].isNull
+								isNull: isNewAddedNullCell ? true : r.cells[i - 1].isNull
 							};
 						}
+						counter++;
 						return dataWithSchema;
 					});
 
@@ -262,9 +286,15 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (gridData && gridData !== this.oldGridData) {
 						this.oldGridData = gridData;
 					}
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					return gridData;
 				}
 				else {
+					if (this.isInNullRow) {
+						this.isInNullRow = false;
+					}
 					this.logService.error('Grid data is nonexistent, using last known good grid');
 					return this.oldGridData;
 				}
@@ -564,6 +594,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			document.execCommand('delete');
 			document.execCommand('insertText', false, 'NULL');
 			handled = true;
+		}
+
+		if (e.keyCode === KeyCode.Enter && this.isNullRow(this.currentCell.row)) {
+			this.isInNullRow = true;
 		}
 
 		return handled;
@@ -1130,6 +1164,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.table.grid.onBeforeAppendCell.subscribe((e, args) => {
 			// Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
 			return this.onBeforeAppendCell ? this.onBeforeAppendCell(args.row, args.cell) : undefined;
+		});
+		this.table.grid.onKeyDown.subscribe((e, args) => {
+			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
+			const stdEvt = new StandardKeyboardEvent(evt);
+			this.tryHandleKeyEvent(stdEvt);
 		});
 	}
 

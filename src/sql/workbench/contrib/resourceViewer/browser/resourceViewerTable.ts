@@ -27,6 +27,7 @@ import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingS
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -43,7 +44,8 @@ export class ResourceViewerTable extends Disposable {
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
-		@IQuickInputService private _quickInputService: IQuickInputService) {
+		@IQuickInputService private _quickInputService: IQuickInputService,
+		@ITableService private readonly _tableService: ITableService) {
 		super();
 		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
@@ -89,6 +91,7 @@ export class ResourceViewerTable extends Disposable {
 		});
 		this._resourceViewerTable.registerPlugin(filterPlugin);
 		this._resourceViewerTable.registerPlugin(this._loadingSpinnerPlugin);
+		this._register(this._tableService.registerTable(this._resourceViewerTable));
 	}
 
 	public set data(data: azdata.DataGridItem[]) {

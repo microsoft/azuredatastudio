@@ -150,10 +150,9 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 		allGroups.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
 		allGroups.push(this._connectionWidget.NoneServerGroup);
-		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
+		if (connectionGroupRoot?.length > 0) {
 			this.flattenGroups(connectionGroupRoot[0], allGroups);
 		}
-		connectionGroupRoot.forEach(cpg => cpg.dispose());
 		return allGroups;
 	}
 
@@ -161,10 +160,16 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
+		// MSSQL and MSSQL-CMS Provider don't treat appName as special type anymore.
 		let appNameOption = this._providerOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
 		if (appNameOption) {
 			let appNameKey = appNameOption.name;
 			this._model.options[appNameKey] = Constants.applicationName;
+		} else {
+			appNameOption = this._providerOptions.find(option => option.name === Constants.mssqlApplicationNameOption);
+			if (appNameOption && (this._model.providerName === Constants.mssqlProviderName || this._model.providerName === Constants.mssqlCmsProviderName)) {
+				this._model.options[Constants.mssqlApplicationNameOption] = Utils.adjustForMssqlAppName(this._model.options[Constants.mssqlApplicationNameOption]);
+			}
 		}
 		this._connectionWidget.initDialog(this._model);
 	}

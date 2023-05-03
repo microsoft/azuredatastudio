@@ -34,8 +34,21 @@
     <trans-unit id="azure.tenantNotFound">
       <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
     </trans-unit>
+    <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
+      <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
+
+To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
+
+Do you wish to proceed?</source>
+    </trans-unit>
+    <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
+      <source xml:lang="en">Confirm</source>
+    </trans-unit>
+    <trans-unit id="azurecore.consentDialog.authenticate">
+      <source xml:lang="en">Cancel and Authenticate</source>
+    </trans-unit>
     <trans-unit id="azurecore.consentDialog.body">
-      <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+      <source xml:lang="en">Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
     </trans-unit>
     <trans-unit id="azurecore.consentDialog.cancel">
       <source xml:lang="en">Cancel</source>
@@ -45,6 +58,12 @@
     </trans-unit>
     <trans-unit id="azurecore.consentDialog.open">
       <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="msal.accountNotFoundError">
+      <source xml:lang="en">Unable to find account info when acquiring token.</source>
+    </trans-unit>
+    <trans-unit id="msal.resourceNotFoundError">
+      <source xml:lang="en">Unable to find configuration for Azure Resource {0}</source>
     </trans-unit>
     <trans-unit id="noMicrosoftResource">
       <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
@@ -94,6 +113,9 @@
     <trans-unit id="msalTokenError">
       <source xml:lang="en">{0} occurred when acquiring token. 
 {1}</source>
+    </trans-unit>
+    <trans-unit id="tenantIgnoredError">
+      <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext"><body>
@@ -268,6 +290,9 @@
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
+      <source xml:lang="en">No Resources found.</source>
+    </trans-unit>
     <trans-unit id="azure.resource.throttleerror">
       <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
     </trans-unit>
@@ -318,6 +343,9 @@
     <trans-unit id="azure.azureResourcesGridTitle">
       <source xml:lang="en">Azure Resources (Preview)</source>
     </trans-unit>
+    <trans-unit id="azure.credStoreSaveFailedError">
+      <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+    </trans-unit>
     <trans-unit id="azure.unableToOpenAzureLink">
       <source xml:lang="en">Unable to open link, missing required values</source>
     </trans-unit>
@@ -362,6 +390,15 @@
     </trans-unit>
     <trans-unit id="azurecore.centraluseuap">
       <source xml:lang="en">Central US EUAP</source>
+    </trans-unit>
+    <trans-unit id="azurecore.deprecated">
+      <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+    </trans-unit>
+    <trans-unit id="azurecore.disable">
+      <source xml:lang="en">Disable</source>
+    </trans-unit>
+    <trans-unit id="azurecore.dismiss">
+      <source xml:lang="en">Dismiss</source>
     </trans-unit>
     <trans-unit id="azurecore.eastasia">
       <source xml:lang="en">East Asia</source>
@@ -425,6 +462,9 @@
     </trans-unit>
     <trans-unit id="azurecore.norwaywest">
       <source xml:lang="en">Norway West</source>
+    </trans-unit>
+    <trans-unit id="azurecore.piiLogging.warning">
+      <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
     </trans-unit>
     <trans-unit id="azurecore.postgresServer">
       <source xml:lang="en">Azure Database for PostgreSQL server</source>
@@ -564,7 +604,7 @@
       <source xml:lang="en">Azure (Preview)</source>
     </trans-unit>
     <trans-unit id="azure.tenant.config.filter.description">
-      <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
+      <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
     </trans-unit>
     <trans-unit id="azure.title">
       <source xml:lang="en">Azure</source>

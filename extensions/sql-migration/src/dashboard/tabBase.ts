@@ -7,8 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { EOL } from 'os';
-import { DatabaseMigration } from '../api/azure';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
@@ -50,7 +48,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
-	public abstract refresh(): Promise<void>;
+	public abstract refresh(initialize?: boolean): Promise<void>;
 
 	dispose() {
 		this.disposables.forEach(
@@ -84,16 +82,12 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return new Date(stringDate1) > new Date(stringDate2) ? -sortDir : sortDir;
 	}
 
-	protected async updateServiceContext(button: azdata.ButtonComponent): Promise<void> {
+	protected async updateServiceButtonContext(button: azdata.ButtonComponent): Promise<void> {
 		const label = await getSelectedServiceStatus();
-		if (button.label !== label ||
-			button.title !== label) {
-
-			button.label = label;
-			button.title = label;
-
-			await this.refresh();
-		}
+		await button.updateProperty('label', '');
+		await button.updateProperty('title', '');
+		await button.updateProperty('label', label);
+		await button.updateProperty('title', label);
 	}
 
 	protected createNewLoginMigrationButton(): azdata.ButtonComponent {
@@ -182,20 +176,6 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				return await vscode.commands.executeCommand(actionId, args);
 			}));
 		return feedbackButton;
-	}
-
-	protected getMigrationErrors(migration: DatabaseMigration): string {
-		const errors = [];
-		errors.push(migration.properties.provisioningError);
-		errors.push(migration.properties.migrationFailureError?.message);
-		errors.push(migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
-		errors.push(migration.properties.migrationStatusDetails?.restoreBlockingReason);
-		errors.push(migration.properties.migrationStatusDetails?.sqlDataCopyErrors);
-
-		// remove undefined and duplicate error entries
-		return errors
-			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-			.join(EOL);
 	}
 
 	protected showDialogMessage(

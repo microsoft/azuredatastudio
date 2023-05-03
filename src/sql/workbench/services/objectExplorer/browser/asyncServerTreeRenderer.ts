@@ -18,14 +18,14 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeyboardNavigationLabelProvider } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
+import { ServerTreeRenderer, getLabelWithFilteredSuffix } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const DefaultConnectionIconClass = 'server-page';
-
 export interface ConnectionProfileGroupDisplayOptions {
 	showColor: boolean;
 }
@@ -39,9 +39,9 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		private _option: ConnectionProfileGroupDisplayOptions
 	) {
 		super();
-		container.parentElement!.classList.add('server-group');
-		container.classList.add('server-group');
-		this._root = dom.append(container, dom.$('.server-group'));
+		container.parentElement!.classList.add('async-server-group');
+		container.classList.add('async-server-group');
+		this._root = dom.append(container, dom.$('.async-server-group-container'));
 		this._nameContainer = dom.append(this._root, dom.$('span.name'));
 	}
 
@@ -50,10 +50,10 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
 			if (element.color) {
-				rowElement.style.background = element.color;
+				this._nameContainer.style.background = element.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				rowElement.style.background = DefaultServerGroupColor;
+				this._nameContainer.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (element.description && (element.description !== '')) {
@@ -96,11 +96,12 @@ class ConnectionProfileTemplate extends Disposable {
 	constructor(
 		container: HTMLElement,
 		private _isCompact: boolean,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
-		this._root = dom.append(container, dom.$('.connection-tile'));
+		this._root = dom.append(container, dom.$('.connection-profile-container'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
@@ -122,6 +123,11 @@ class ConnectionProfileTemplate extends Disposable {
 		let label = element.title;
 		this._label.textContent = label;
 		this._root.title = element.serverInfo;
+
+		const treeNode = this._objectExplorerService.getObjectExplorerNode(element);
+		if (treeNode?.filters?.length > 0) {
+			this._label.textContent = getLabelWithFilteredSuffix(this._label.textContent);
+		}
 	}
 }
 
@@ -153,7 +159,7 @@ class TreeNodeTemplate extends Disposable {
 		container: HTMLElement
 	) {
 		super();
-		this._root = dom.append(container, dom.$('.object-element-group'));
+		this._root = dom.append(container, dom.$('.object-element-container'));
 		this._icon = dom.append(this._root, dom.$('div.object-icon'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
@@ -192,7 +198,8 @@ class TreeNodeTemplate extends Disposable {
 			iconRenderer.putIcon(this._icon, element.icon);
 		}
 
-		this._label.textContent = element.label;
+		this._label.textContent = element.filters.length > 0 ? getLabelWithFilteredSuffix(element.label) :
+			element.label;
 		this._root.title = element.label;
 	}
 }

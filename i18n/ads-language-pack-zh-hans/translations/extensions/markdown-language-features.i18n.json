@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "转到链接"
+		"dist/client": {
+			"markdownServer.name": "Markdown 语言服务器"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "从链接验证中排除 \"{0}\"。"
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "查找文件引用失败。未提供资源。",
 			"progress.title": "正在查找文件引用"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "位置不支持重命名"
-		},
-		"dist/preview/preview": {
-			"lockedPreviewTitle": "[预览] {0}",
-			"onPreviewStyleLoadError": "无法加载 \\\"markdown.styles\\\": {0}",
-			"preview.clickOpenFailed": "无法打开 {0}",
-			"previewTitle": "预览 {0}"
-		},
-		"dist/preview/previewContentProvider": {
+		"dist/preview/documentRenderer": {
 			"preview.notFound": "找不到 {0}",
 			"preview.securityMessage.label": "已禁用内容安全警告",
 			"preview.securityMessage.text": "已禁用此文档中的部分内容",
 			"preview.securityMessage.title": "已禁用此 Markdown 预览中的可能不安全的内容。更改 Markdown 预览安全设置以允许不安全内容或启用脚本"
+		},
+		"dist/preview/preview": {
+			"lockedPreviewTitle": "[预览] {0}",
+			"onPreviewStyleLoadError": "无法加载 'markdown.styles': {0}",
+			"preview.clickOpenFailed": "无法打开 {0}",
+			"previewTitle": "预览 {0}"
 		},
 		"dist/preview/security": {
 			"disable.description": "允许所有内容，执行所有脚本。不推荐",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "不影响内容安全级别"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "启用/禁用放置到 Markdown editor 中以插入排班。需要启用 `#workbenck.experimental.editor.dropIntoEditor.enabled#`。",
+			"configuration.markdown.editor.drop.enabled": "启用/禁用放置到 Markdown 编辑器以插入排班。需要启用 `#editor.dropIntoEditor.enabled#`。",
+			"configuration.markdown.editor.pasteLinks.enabled": "启用/禁用将文件粘贴到 Markdown 编辑器会插入 Markdown 链接。需要启用 `#editor.experimental.pasteActions.enabled#`。",
+			"configuration.markdown.experimental.validate.enabled.description": "启用/禁用 Markdown 文件中的所有错误报告。",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "验证指向 Markdown 文件中其他文件的链接，例如 `[link](/path/to/file.md)`。此操作将检查目标文件是否存在。需要启用 ·#markdown.experimental.validate.enabled#·。",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "验证 Markdown 文件中其他文件中标头的链接片段部分，例如“[link](/path/to/file.md#header)”。默认情况下从“#markdown.experimental.validate.fragmentLinks.enabled#”继承设置值。",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "验证当前 Markdown 文件中标头的片段链接，例如“[link](#header)”。需要启用“#markdown.experimental.validate.enabled#”。",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "配置不应被验证的链接。例如，`/about` 不会验证链接 `[about](/about)`，而 `/assets/**/*.svg` 会允许你跳过对 `assets` 目录下 `.svg` 文件的任何链接的验证。",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "验证 Markdown 文件中的引用链接，例如 `[link][ref]`。 需要启用 `#markdown.experimental.validate.enabled#`。",
 			"configuration.markdown.links.openLocation.beside": "打开活动编辑器旁边的链接。",
 			"configuration.markdown.links.openLocation.currentGroup": "打开活动编辑器组中的链接。",
 			"configuration.markdown.links.openLocation.description": "控制应在哪里打开 Markdown 文件中的链接。",
@@ -75,7 +82,8 @@
 			"markdown.showPreviewSecuritySelector.title": "更改预览安全设置",
 			"markdown.showSource.title": "显示源",
 			"markdown.styles.dec": "要从 Markdown 预览使用的 CSS 样式表的 URL 或本地路径的列表。相对路径解释为相对于资源管理器中打开的文件夹。如果没有打开的文件夹，则解释为相对于 Markdown 文件的位置。所有 '\\' 都需写为 '\\\\'。",
-			"markdown.trace.desc": "对 Markdown 扩展启用调试日志记录。",
+			"markdown.trace.extension.desc": "对 Markdown 扩展启用调试日志记录。",
+			"markdown.trace.server.desc": "跟踪 VS Code 和 Markdown 语言服务器之间的通信。",
 			"workspaceTrust": "加载在工作区中配置的样式时需要。"
 		}
 	}

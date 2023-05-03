@@ -9,7 +9,8 @@ import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
-import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
+import * as azurecore from 'azurecore';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -19,7 +20,7 @@ import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
-import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
+import { CompletionExtensionParams, CompletionExtLoadRequest, EncryptionKeysChangedNotification } from './contracts';
 import { promises as fs } from 'fs';
 import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
@@ -50,7 +51,7 @@ export class SqlToolsServer {
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
-	public installDirectory: string | undefined = undefined;
+	public installDirectory: string;
 
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
@@ -82,6 +83,7 @@ export class SqlToolsServer {
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
 			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
+			await this.handleEncryptionKeyEventNotification(this.client);
 			return this.client;
 		} catch (e) {
 			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
@@ -90,13 +92,50 @@ export class SqlToolsServer {
 		}
 	}
 
+	/**
+	 * This is a hop notification handler to send Encryption Key and Iv information from Azure Core extension to backend
+	 * SqlToolsService. This notification is needed for Azure authentication flows to be able to read/write into
+	 * shared MSAL cache.
+	 * @param client SqlOpsDataClient instance
+	 */
+	private async handleEncryptionKeyEventNotification(client: SqlOpsDataClient) {
+		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
+			let azureCoreApi = await this.getAzureCoreAPI();
+			let onDidEncryptionKeysChanged = azureCoreApi.onEncryptionKeysUpdated;
+			// Register event listener from Azure Core extension and
+			// send client notification for updated encryption keys
+			onDidEncryptionKeysChanged((keys: azurecore.CacheEncryptionKeys) => {
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
+			});
+
+			try {
+				// Fetch encryption keys directly from AzureCore as notification event may not fire again
+				// if Azure Core extension was activated before.
+				const keys = await azureCoreApi.getEncryptionKeys();
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
+			}
+			catch (e) {
+				console.error(`An error occurred when fetching encryption keys: ${e}`);
+			}
+			logDebug('SqlToolsServer: Registered encryption key event handler.');
+		}
+	}
+
+	private async getAzureCoreAPI(): Promise<azurecore.IExtension> {
+		const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
+		if (!api) {
+			throw new Error('Azure core extension could not be activated.');
+		}
+		return api;
+	}
+
 	private async download(context: AppContext): Promise<string> {
 		const configDir = context.extensionContext.extensionPath;
 		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
 		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
-		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
+		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy', '');
+		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		return getOrDownloadServer(this.config, handleServerProviderEvent);
 	}
 
@@ -178,7 +217,10 @@ function getClientOptions(context: AppContext): ClientOptions {
 	return {
 		documentSelector: ['sql'],
 		synchronize: {
-			configurationSection: Constants.extensionConfigSectionName
+			configurationSection: [
+				Constants.extensionConfigSectionName,
+				Constants.telemetryConfigSectionName
+			]
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),

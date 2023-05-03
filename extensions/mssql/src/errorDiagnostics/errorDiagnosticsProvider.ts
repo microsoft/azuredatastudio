@@ -54,7 +54,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 				let handleConnectionError = async (errorInfo: azdata.diagnostics.IErrorInformation, connection: azdata.connection.ConnectionProfile): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> => {
 					let restoredProfile = this.convertToIConnectionProfile(connection);
 
-					if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode) {
+					if (ErrorDiagnosticsConstants.MssqlPasswordResetErrorCode.includes(errorInfo.errorCode)) {
 						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} requires user to change their password, launching change password dialog.`);
 						return await this.handleChangePassword(restoredProfile);
 					}
@@ -136,5 +136,9 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 		super(client, ErrorDiagnosticsProvider.messagesTypes);
 	}
 
-	protected registerProvider(options: any): Disposable { return undefined; }
+	protected registerProvider(options: any): Disposable {
+		return {
+			dispose: () => { }
+		}
+	}
 }

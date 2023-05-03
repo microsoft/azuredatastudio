@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { makeUniversalApp } from 'vscode-universal-bundler';
 import { spawn } from '@malept/cross-spawn-promise';
 import * as fs from 'fs-extra';
@@ -80,7 +78,7 @@ async function main() {
 		force: true
 	});
 
-	let productJson = await fs.readJson(productJsonPath);
+	const productJson = await fs.readJson(productJsonPath);
 	Object.assign(productJson, {
 		darwinUniversalAssetId: 'darwin-universal'
 	});

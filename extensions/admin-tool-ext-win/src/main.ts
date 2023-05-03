@@ -160,6 +160,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 					TelemetryViews.SsmsMinDialog,
 					'LaunchSsmsDialogError',
 					execException,
+					false,
 					execException ? execException?.code?.toString() : '',
 					getTelemetryErrorType(err));
 			}

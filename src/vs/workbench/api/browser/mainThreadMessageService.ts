@@ -14,6 +14,7 @@ import { Event } from 'vs/base/common/event';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { dispose } from 'vs/base/common/lifecycle';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
+import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions'; // {{SQL CARBON EDIT}}}
 
 @extHostNamedCustomer(MainContext.MainThreadMessageService)
 export class MainThreadMessageService implements MainThreadMessageServiceShape {
@@ -22,7 +23,8 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 		extHostContext: IExtHostContext,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@ICommandService private readonly _commandService: ICommandService,
-		@IDialogService private readonly _dialogService: IDialogService
+		@IDialogService private readonly _dialogService: IDialogService,
+		@IExtensionsWorkbenchService private readonly _extensionService?: IExtensionsWorkbenchService // {{SQL CARBON EDIT}}}
 	) {
 		//
 	}
@@ -80,7 +82,14 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 
 			const secondaryActions: IAction[] = [];
 			if (options.source) {
-				secondaryActions.push(new ManageExtensionAction(options.source.identifier, nls.localize('manageExtension', "Manage Extension"), this._commandService));
+				// {{SQL CARBON EDIT}}} - Do not expose 'manage extension' action for built-in extensions to avoid the users from disabling them by mistake.
+				const extension = this._extensionService?.local.find(e => e.identifier.id.toUpperCase() === options.source.identifier.value.toUpperCase());
+				if (extension && !extension.isBuiltin) {
+					secondaryActions.push(new ManageExtensionAction(options.source.identifier, nls.localize('manageExtension', "Manage Extension"), this._commandService));
+				}
+				// Original code
+				// secondaryActions.push(new ManageExtensionAction(options.source.identifier, nls.localize('manageExtension', "Manage Extension"), this._commandService));
+				// {{SQL CARBON EDIT}} - End
 			}
 
 			const messageHandle = this._notificationService.notify({

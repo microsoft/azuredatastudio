@@ -20,6 +20,7 @@ import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
 import { AzureAccount, azureResource } from 'azurecore';
+import { TenantIgnoredError } from '../../utils/TenantIgnoredError';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -75,10 +76,14 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 						try {
 							token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant!, azdata.AzureResource.ResourceManagement);
 						} catch (err) {
-							errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
+							if (!(err instanceof TenantIgnoredError)) {
+								errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
+							}
 						}
 						if (!token) {
-							void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
+							if (errMsg !== '') {
+								void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
+							}
 							return false;
 						}
 						return true;
@@ -120,6 +125,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: AzureResourceItemType.account,
 			nodeSubType: undefined,

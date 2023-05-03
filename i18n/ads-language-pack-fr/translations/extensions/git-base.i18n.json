@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "Nom de la branche",
-			"error": "$(error) - Erreur : {0}",
+			"error": "{0} Erreur : {1}",
 			"none found": "Dépôts distants introuvables.",
 			"pick url": "Choisissez l'URL à partir de laquelle effectuer le clonage.",
 			"provide url": "Indiquer l'URL du dépôt",

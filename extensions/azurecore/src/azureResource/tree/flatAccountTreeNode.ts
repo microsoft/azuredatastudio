@@ -21,6 +21,7 @@ import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { Logger } from '../../utils/Logger';
+import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 
 export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -94,6 +95,7 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: AzureResourceItemType.account,
 			nodeSubType: undefined,
@@ -185,8 +187,12 @@ class FlatAccountTreeNodeLoader {
 			let tenants = this._account.properties.tenants;
 			// Filter out tenants that we can't authenticate to.
 			tenants = tenants.filter(async tenant => {
-				const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
-				return token !== undefined;
+				try {
+					const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
+					return token !== undefined;
+				} catch (e) {
+					return false;
+				}
 			});
 
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
@@ -218,6 +224,10 @@ class FlatAccountTreeNodeLoader {
 						}
 					}
 				}
+			}
+			// Create "No Resources Found" message node if no resources found under azure account.
+			if (this._nodes.length === 0) {
+				this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatAccountTreeNode.noResourcesLabel', "No Resources found."), this._accountNode))
 			}
 		} catch (error) {
 			if (error instanceof AzureSubscriptionError) {

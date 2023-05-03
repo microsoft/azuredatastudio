@@ -25,8 +25,8 @@ export const TelemetryReporter = new AdsTelemetryReporter<string, string>(packag
 export function fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): void {
 	telemetryInfo['serverEdition'] = serverInfo?.serverEdition;
 	telemetryInfo['serverLevel'] = serverInfo?.serverLevel;
-	telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
-	telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
+	telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion?.toString() || '';
+	telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion?.toString() || '';
 	telemetryInfo['isCloud'] = serverInfo?.isCloud.toString();
 }
 

@@ -8,7 +8,7 @@ import { AzureAccountProviderMetadata, AzureAuthType, Resource, Tenant } from 'a
 import { Deferred } from '../interfaces';
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
-import { SimpleTokenCache } from '../simpleTokenCache';
+import { SimpleTokenCache } from '../utils/simpleTokenCache';
 import { SimpleWebServer } from '../utils/simpleWebServer';
 import { AzureAuthError } from './azureAuthError';
 import { Logger } from '../../utils/Logger';
@@ -19,6 +19,7 @@ import * as http from 'http';
 import * as qs from 'qs';
 import { promises as fs } from 'fs';
 import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
+import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 
 const localize = nls.loadMessageBundle();
 
@@ -43,12 +44,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	constructor(
 		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
+		msalCacheProvider: MsalCachePluginProvider,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		clientApplication: PublicClientApplication,
 		authLibrary: string
 	) {
-		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME, authLibrary);
+		super(metadata, tokenCache, msalCacheProvider, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME, authLibrary);
 		this.cryptoProvider = new CryptoProvider();
 		this.pkceCodes = {
 			nonce: '',

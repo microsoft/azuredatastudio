@@ -430,51 +430,56 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		this._installInProgress = true;
 		this._installCompletion = new Deferred<void>();
+		try {
+			this._pythonInstallationPath = installSettings.installPath;
+			this._usingExistingPython = installSettings.existingPython;
+			await this.configurePackagePaths();
 
-		this._pythonInstallationPath = installSettings.installPath;
-		this._usingExistingPython = installSettings.existingPython;
-		await this.configurePackagePaths();
+			azdata.tasks.startBackgroundOperation({
+				displayName: msgTaskName,
+				description: msgTaskName,
+				isCancelable: false,
+				operation: op => {
+					this.installDependencies(op, forceInstall, installSettings.packages)
+						.then(async () => {
+							let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+							await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
+							await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
+							await this.configurePackagePaths();
 
-		azdata.tasks.startBackgroundOperation({
-			displayName: msgTaskName,
-			description: msgTaskName,
-			isCancelable: false,
-			operation: op => {
-				this.installDependencies(op, forceInstall, installSettings.packages)
-					.then(async () => {
-						let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
-						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
-						await this.configurePackagePaths();
+							this._installCompletion.resolve();
+							this._installInProgress = false;
+							if (this._upgradeInProcess) {
+								// Pass in false for restartJupyterServer parameter since the jupyter server has already been shutdown
+								// when removing the old Python version on Windows.
+								if (process.platform === constants.winPlatform) {
+									await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
+								} else {
+									await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
+								}
+								if (this._oldUserInstalledPipPackages.length !== 0) {
+									await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
+								}
 
-						this._installCompletion.resolve();
-						this._installInProgress = false;
-						if (this._upgradeInProcess) {
-							// Pass in false for restartJupyterServer parameter since the jupyter server has already been shutdown
-							// when removing the old Python version on Windows.
-							if (process.platform === constants.winPlatform) {
-								await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
-							} else {
+								await fs.remove(this._oldPythonInstallationPath);
+								this._upgradeInProcess = false;
+							} else if (!installSettings.packageUpgradeOnly) {
 								await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
 							}
-							if (this._oldUserInstalledPipPackages.length !== 0) {
-								await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
-							}
-
-							await fs.remove(this._oldPythonInstallationPath);
-							this._upgradeInProcess = false;
-						} else if (!installSettings.packageUpgradeOnly) {
-							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
-						}
-					})
-					.catch(err => {
-						let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-						op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-						this._installCompletion.reject(errorMsg);
-						this._installInProgress = false;
-					});
-			}
-		});
+						})
+						.catch(err => {
+							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
+							this._installCompletion.reject(new Error(errorMsg));
+							this._installInProgress = false;
+						});
+				}
+			});
+		} catch (err) {
+			let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
+			this._installCompletion.reject(new Error(errorMsg));
+			this._installInProgress = false;
+		}
 		return this._installCompletion.promise;
 	}
 

@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DefaultInputWidth, ObjectManagementDialogBase } from './objectManagementDialogBase';
+import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterLoginDocUrl, AuthenticationType, CreateLoginDocUrl, NodeType, PublicServerRoleName } from '../constants';
-import { getAuthenticationTypeByDisplayName, getAuthenticationTypeDisplayName, isValidSQLPassword } from '../utils';
+import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
+import { isValidSQLPassword } from '../utils';
+import { DefaultMaxTableHeight } from './dialogBase';
 
 export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
-
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
@@ -32,15 +32,19 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	private enabledCheckbox: azdata.CheckBoxComponent;
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
-	constructor(objectManagementService: IObjectManagementService, connectionUri: string, isNewObject: boolean, name?: string, objectExplorerContext?: azdata.ObjectExplorerContext) {
-		super(NodeType.Login, isNewObject ? CreateLoginDocUrl : AlterLoginDocUrl, objectManagementService, connectionUri, isNewObject, name, objectExplorerContext);
+	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
+		super(objectManagementService, options);
+	}
+
+	protected override get docUrl(): string {
+		return this.options.isNewObject ? CreateLoginDocUrl : AlterLoginDocUrl
 	}
 
 	protected override async onConfirmation(): Promise<boolean> {
 		// Empty password is only allowed when advanced password options are supported and the password policy check is off.
 		// To match the SSMS behavior, a warning is shown to the user.
 		if (this.viewInfo.supportAdvancedPasswordOptions
-			&& this.objectInfo.authenticationType === AuthenticationType.Sql
+			&& this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql
 			&& !this.objectInfo.password
 			&& !this.objectInfo.enforcePasswordPolicy) {
 			const result = await vscode.window.showWarningMessage(localizedConstants.BlankPasswordConfirmationText, { modal: true }, localizedConstants.YesText);
@@ -49,19 +53,16 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		return true;
 	}
 
-	protected async validateInput(): Promise<string[]> {
-		const errors: string[] = [];
-		if (!this.objectInfo.name) {
-			errors.push(localizedConstants.NameCannotBeEmptyError);
-		}
-		if (this.objectInfo.authenticationType === AuthenticationType.Sql) {
+	protected override async validateInput(): Promise<string[]> {
+		const errors = await super.validateInput();
+		if (this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
 			if (!this.objectInfo.password && !(this.viewInfo.supportAdvancedPasswordOptions && !this.objectInfo.enforcePasswordPolicy)) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}
 
 			if (this.objectInfo.password && (this.objectInfo.enforcePasswordPolicy || !this.viewInfo.supportAdvancedPasswordOptions)
 				&& !isValidSQLPassword(this.objectInfo.password, this.objectInfo.name)
-				&& (this.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
+				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
 
@@ -76,22 +77,8 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		return errors;
 	}
 
-	protected async onComplete(): Promise<void> {
-		if (this.isNewObject) {
-			await this.objectManagementService.createLogin(this.contextId, this.objectInfo);
-		} else {
-			await this.objectManagementService.updateLogin(this.contextId, this.objectInfo);
-		}
-	}
-
-	protected async disposeView(): Promise<void> {
-		await this.objectManagementService.disposeLoginView(this.contextId);
-	}
-
-	protected async initializeData(): Promise<ObjectManagement.LoginViewInfo> {
-		const viewInfo = await this.objectManagementService.initializeLoginView(this.connectionUri, this.contextId, this.isNewObject, this.objectName);
-		viewInfo.objectInfo.password = viewInfo.objectInfo.password ?? '';
-		return viewInfo;
+	protected override postInitializeData(): void {
+		this.objectInfo.password = this.objectInfo.password ?? '';
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -99,7 +86,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.initializeGeneralSection();
 		sections.push(this.generalSection);
 
-		if (this.isNewObject || this.objectInfo.authenticationType === 'Sql') {
+		if (this.options.isNewObject || this.objectInfo.authenticationType === 'Sql') {
 			this.initializeSqlAuthSection();
 			sections.push(this.sqlAuthSection);
 		}
@@ -115,116 +102,81 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.modelView.modelBuilder.inputBox().withProps({
-			ariaLabel: localizedConstants.NameText,
-			enabled: this.isNewObject,
-			value: this.objectInfo.name,
-			width: DefaultInputWidth
-		}).component();
-		this.disposables.push(this.nameInput.onTextChanged(async () => {
-			this.objectInfo.name = this.nameInput.value;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
+		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+			this.objectInfo.name = newValue;
+		}, this.objectInfo.name, this.options.isNewObject);
 
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
-		const authTypes = [];
-		if (this.viewInfo.supportWindowsAuthentication) {
-			authTypes.push(localizedConstants.WindowsAuthenticationTypeDisplayText);
-		}
-		if (this.viewInfo.supportSQLAuthentication) {
-			authTypes.push(localizedConstants.SQLAuthenticationTypeDisplayText);
-		}
-		if (this.viewInfo.supportAADAuthentication) {
-			authTypes.push(localizedConstants.AADAuthenticationTypeDisplayText);
-		}
-		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText, authTypes, getAuthenticationTypeDisplayName(this.objectInfo.authenticationType), this.isNewObject);
-		this.disposables.push(this.authTypeDropdown.onValueChanged(async () => {
-			this.objectInfo.authenticationType = getAuthenticationTypeByDisplayName(<string>this.authTypeDropdown.value);
-			this.setViewByAuthenticationType();
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
+		this.authTypeDropdown = this.createDropdown(localizedConstants.AuthTypeText,
+			async (newValue) => {
+				this.objectInfo.authenticationType = localizedConstants.getAuthenticationTypeByDisplayName(newValue);
+				this.setViewByAuthenticationType();
+			},
+			this.viewInfo.authenticationTypes.map(authType => localizedConstants.getAuthenticationTypeDisplayName(authType)),
+			localizedConstants.getAuthenticationTypeDisplayName(this.objectInfo.authenticationType),
+			this.options.isNewObject);
+
 		const authTypeContainer = this.createLabelInputContainer(localizedConstants.AuthTypeText, this.authTypeDropdown);
 
-		this.enabledCheckbox = this.createCheckbox(localizedConstants.EnabledText, this.objectInfo.isEnabled);
-		this.disposables.push(this.enabledCheckbox.onChanged(() => {
-			this.objectInfo.isEnabled = this.enabledCheckbox.checked;
-			this.onObjectValueChange();
-		}));
+		this.enabledCheckbox = this.createCheckbox(localizedConstants.EnabledText, async (checked) => {
+			this.objectInfo.isEnabled = checked;
+		}, this.objectInfo.isEnabled);
 		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [nameContainer, authTypeContainer, this.enabledCheckbox], false);
 	}
 
 	private initializeSqlAuthSection(): void {
 		const items: azdata.Component[] = [];
-		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, this.objectInfo.password ?? '');
+		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, async (newValue) => {
+			this.objectInfo.password = newValue;
+		}, this.objectInfo.password ?? '');
 		const passwordRow = this.createLabelInputContainer(localizedConstants.PasswordText, this.passwordInput);
-		this.confirmPasswordInput = this.createPasswordInputBox(localizedConstants.ConfirmPasswordText, this.objectInfo.password ?? '');
-		this.disposables.push(this.passwordInput.onTextChanged(async () => {
-			this.objectInfo.password = this.passwordInput.value;
-			this.onObjectValueChange();
-			await this.runValidation(false);
-		}));
-		this.disposables.push(this.confirmPasswordInput.onTextChanged(async () => {
-			await this.runValidation(false);
-		}));
+		this.confirmPasswordInput = this.createPasswordInputBox(localizedConstants.ConfirmPasswordText, async () => { }, this.objectInfo.password ?? '');
 		const confirmPasswordRow = this.createLabelInputContainer(localizedConstants.ConfirmPasswordText, this.confirmPasswordInput);
 		items.push(passwordRow, confirmPasswordRow);
 
-		if (!this.isNewObject) {
-			this.specifyOldPasswordCheckbox = this.createCheckbox(localizedConstants.SpecifyOldPasswordText);
-			this.oldPasswordInput = this.createPasswordInputBox(localizedConstants.OldPasswordText, '', false);
-			const oldPasswordRow = this.createLabelInputContainer(localizedConstants.OldPasswordText, this.oldPasswordInput);
-			this.disposables.push(this.specifyOldPasswordCheckbox.onChanged(async () => {
+		if (!this.options.isNewObject) {
+			this.specifyOldPasswordCheckbox = this.createCheckbox(localizedConstants.SpecifyOldPasswordText, async (checked) => {
 				this.oldPasswordInput.enabled = this.specifyOldPasswordCheckbox.checked;
 				this.objectInfo.oldPassword = '';
 				if (!this.specifyOldPasswordCheckbox.checked) {
 					this.oldPasswordInput.value = '';
 				}
-				this.onObjectValueChange();
-				await this.runValidation(false);
-			}));
-			this.disposables.push(this.oldPasswordInput.onTextChanged(async () => {
-				this.objectInfo.oldPassword = this.oldPasswordInput.value;
-				this.onObjectValueChange();
-				await this.runValidation(false);
-			}));
+			});
+			this.oldPasswordInput = this.createPasswordInputBox(localizedConstants.OldPasswordText, async (newValue) => {
+				this.objectInfo.oldPassword = newValue;
+			}, '', false);
+			const oldPasswordRow = this.createLabelInputContainer(localizedConstants.OldPasswordText, this.oldPasswordInput);
 			items.push(this.specifyOldPasswordCheckbox, oldPasswordRow);
 		}
 
 		if (this.viewInfo.supportAdvancedPasswordOptions) {
-			this.enforcePasswordPolicyCheckbox = this.createCheckbox(localizedConstants.EnforcePasswordPolicyText, this.objectInfo.enforcePasswordPolicy);
-			this.enforcePasswordExpirationCheckbox = this.createCheckbox(localizedConstants.EnforcePasswordExpirationText, this.objectInfo.enforcePasswordPolicy);
-			this.mustChangePasswordCheckbox = this.createCheckbox(localizedConstants.MustChangePasswordText, this.objectInfo.mustChangePassword);
-			this.disposables.push(this.enforcePasswordPolicyCheckbox.onChanged(async () => {
-				const enforcePolicy = this.enforcePasswordPolicyCheckbox.checked;
+			this.enforcePasswordPolicyCheckbox = this.createCheckbox(localizedConstants.EnforcePasswordPolicyText, async (checked) => {
+				const enforcePolicy = checked;
 				this.objectInfo.enforcePasswordPolicy = enforcePolicy;
 				this.enforcePasswordExpirationCheckbox.enabled = enforcePolicy;
 				this.mustChangePasswordCheckbox.enabled = enforcePolicy;
 				this.enforcePasswordExpirationCheckbox.checked = enforcePolicy;
 				this.mustChangePasswordCheckbox.checked = enforcePolicy;
-				this.onObjectValueChange();
-				await this.runValidation(false);
-			}));
-			this.disposables.push(this.enforcePasswordExpirationCheckbox.onChanged(() => {
-				const enforceExpiration = this.enforcePasswordExpirationCheckbox.checked;
+			}, this.objectInfo.enforcePasswordPolicy);
+
+			this.enforcePasswordExpirationCheckbox = this.createCheckbox(localizedConstants.EnforcePasswordExpirationText, async (checked) => {
+				const enforceExpiration = checked;
 				this.objectInfo.enforcePasswordExpiration = enforceExpiration;
 				this.mustChangePasswordCheckbox.enabled = enforceExpiration;
 				this.mustChangePasswordCheckbox.checked = enforceExpiration;
-				this.onObjectValueChange();
-			}));
-			this.disposables.push(this.mustChangePasswordCheckbox.onChanged(() => {
-				this.objectInfo.mustChangePassword = this.mustChangePasswordCheckbox.checked;
-				this.onObjectValueChange();
-			}));
+			}, this.objectInfo.enforcePasswordPolicy);
+
+			this.mustChangePasswordCheckbox = this.createCheckbox(localizedConstants.MustChangePasswordText, async (checked) => {
+				this.objectInfo.mustChangePassword = checked;
+			}, this.objectInfo.mustChangePassword);
+
 			items.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
-			if (!this.isNewObject) {
-				this.lockedOutCheckbox = this.createCheckbox(localizedConstants.LoginLockedOutText, this.objectInfo.isLockedOut, this.viewInfo.canEditLockedOutState);
+
+			if (!this.options.isNewObject) {
+				this.lockedOutCheckbox = this.createCheckbox(localizedConstants.LoginLockedOutText, async (checked) => {
+					this.objectInfo.isLockedOut = checked;
+				}, this.objectInfo.isLockedOut, this.viewInfo.canEditLockedOutState);
 				items.push(this.lockedOutCheckbox);
-				this.disposables.push(this.lockedOutCheckbox.onChanged(() => {
-					this.objectInfo.isLockedOut = this.lockedOutCheckbox.checked;
-					this.onObjectValueChange();
-				}));
 			}
 		}
 
@@ -234,25 +186,19 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	private initializeAdvancedSection(): void {
 		const items: azdata.Component[] = [];
 		if (this.viewInfo.supportAdvancedOptions) {
-			this.defaultDatabaseDropdown = this.createDropdown(localizedConstants.DefaultDatabaseText, this.viewInfo.databases, this.objectInfo.defaultDatabase);
+			this.defaultDatabaseDropdown = this.createDropdown(localizedConstants.DefaultDatabaseText, async (newValue) => {
+				this.objectInfo.defaultDatabase = newValue;
+			}, this.viewInfo.databases, this.objectInfo.defaultDatabase);
 			const defaultDatabaseContainer = this.createLabelInputContainer(localizedConstants.DefaultDatabaseText, this.defaultDatabaseDropdown);
-			this.disposables.push(this.defaultDatabaseDropdown.onValueChanged(() => {
-				this.objectInfo.defaultDatabase = <string>this.defaultDatabaseDropdown.value;
-				this.onObjectValueChange();
-			}));
 
-			this.defaultLanguageDropdown = this.createDropdown(localizedConstants.DefaultLanguageText, this.viewInfo.languages, this.objectInfo.defaultLanguage);
+			this.defaultLanguageDropdown = this.createDropdown(localizedConstants.DefaultLanguageText, async (newValue) => {
+				this.objectInfo.defaultLanguage = newValue;
+			}, this.viewInfo.languages, this.objectInfo.defaultLanguage);
 			const defaultLanguageContainer = this.createLabelInputContainer(localizedConstants.DefaultLanguageText, this.defaultLanguageDropdown);
-			this.disposables.push(this.defaultLanguageDropdown.onValueChanged(() => {
-				this.objectInfo.defaultLanguage = <string>this.defaultLanguageDropdown.value;
-				this.onObjectValueChange();
-			}));
 
-			this.connectPermissionCheckbox = this.createCheckbox(localizedConstants.PermissionToConnectText, this.objectInfo.connectPermission);
-			this.disposables.push(this.connectPermissionCheckbox.onChanged(() => {
-				this.objectInfo.connectPermission = this.connectPermissionCheckbox.checked;
-				this.onObjectValueChange();
-			}));
+			this.connectPermissionCheckbox = this.createCheckbox(localizedConstants.PermissionToConnectText, async (checked) => {
+				this.objectInfo.connectPermission = checked;
+			}, this.objectInfo.connectPermission);
 			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
 		}
 
@@ -260,12 +206,14 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	}
 
 	private initializeServerRolesSection(): void {
-		const serverRolesData = this.viewInfo.serverRoles.map(name => {
-			const isRoleSelected = this.objectInfo.serverRoles.indexOf(name) !== -1;
-			const isRoleSelectionEnabled = name !== PublicServerRoleName;
-			return [{ enabled: isRoleSelectionEnabled, checked: isRoleSelected }, name];
-		});
-		this.serverRoleTable = this.createTableList(localizedConstants.ServerRoleSectionHeader, this.viewInfo.serverRoles, this.objectInfo.serverRoles, serverRolesData);
+		this.serverRoleTable = this.createTableList(localizedConstants.ServerRoleSectionHeader,
+			[localizedConstants.ServerRoleTypeDisplayNameInTitle],
+			this.viewInfo.serverRoles,
+			this.objectInfo.serverRoles,
+			DefaultMaxTableHeight,
+			(item) => {
+				return item !== PublicServerRoleName
+			});
 		this.serverRoleSection = this.createGroup(localizedConstants.ServerRoleSectionHeader, [this.serverRoleTable]);
 	}
 

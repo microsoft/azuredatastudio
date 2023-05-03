@@ -500,7 +500,7 @@ export interface ISqlMigrationService {
 		targetManagedInstanceName: string,
 		networkSharePath: string,
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string) => void): Promise<TdeMigrationResult | undefined>;
+		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => void): Promise<TdeMigrationResult | undefined>;
 }
 
 export interface TdeMigrationRequest {
@@ -547,4 +547,5 @@ export interface TdeMigrateProgressParams {
 	name: string;
 	success: boolean;
 	message: string;
+	statusCode: string;
 }

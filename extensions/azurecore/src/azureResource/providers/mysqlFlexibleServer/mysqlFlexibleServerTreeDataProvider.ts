@@ -11,7 +11,7 @@ import { AzureResourceItemType } from '../../constants';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { azureResource } from 'azurecore';
+import { AzureAccountProperties, azureResource } from 'azurecore';
 import { Account, ExtensionNodeType, TreeItem, connection } from 'azdata';
 
 export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
@@ -54,7 +54,7 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
 				azureResourceId: databaseServer.id,
-				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
+				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
 			childProvider: MysqlFlexibleServerTreeDataProvider.MYSQL_FLEXIBLE_SERVER_PROVIDER_ID,
 			type: ExtensionNodeType.Server
