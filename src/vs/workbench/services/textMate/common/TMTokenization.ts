@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
-import { IState, ITokenizationSupport, TokenizationResult, EncodedTokenizationResult } from 'vs/editor/common/languages';
-import { LanguageId, TokenMetadata } from 'vs/editor/common/encodedTokenAttributes';
+import { IState, ITokenizationSupport, LanguageId, TokenMetadata, TokenizationResult, EncodedTokenizationResult } from 'vs/editor/common/languages';
 import type { IGrammar, StackElement } from 'vscode-textmate';
 import { Disposable } from 'vs/base/common/lifecycle';
 
@@ -45,13 +44,13 @@ export class TMTokenization extends Disposable implements ITokenizationSupport {
 		}
 
 		if (this._containsEmbeddedLanguages) {
-			const seenLanguages = this._seenLanguages;
-			const tokens = textMateResult.tokens;
+			let seenLanguages = this._seenLanguages;
+			let tokens = textMateResult.tokens;
 
 			// Must check if any of the embedded languages was hit
 			for (let i = 0, len = (tokens.length >>> 1); i < len; i++) {
-				const metadata = tokens[(i << 1) + 1];
-				const languageId = TokenMetadata.getLanguageId(metadata);
+				let metadata = tokens[(i << 1) + 1];
+				let languageId = TokenMetadata.getLanguageId(metadata);
 
 				if (!seenLanguages[languageId]) {
 					seenLanguages[languageId] = true;

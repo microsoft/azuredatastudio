@@ -20,7 +20,6 @@ import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { createTextModel } from 'vs/editor/test/common/testTextModel';
 import { ISimpleModel, IModelLineProjection, createModelLineProjection } from 'vs/editor/common/viewModel/modelLineProjection';
 import { ModelLineProjectionData } from 'vs/editor/common/modelLineProjectionData';
-import { MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
 
 suite('Editor ViewModel - SplitLinesCollection', () => {
 	test('SplitLine', () => {
@@ -64,9 +63,9 @@ suite('Editor ViewModel - SplitLinesCollection', () => {
 		assert.strictEqual(line1.getViewLineMaxColumn(model1, 1, 1), 19);
 		assert.strictEqual(line1.getViewLineMaxColumn(model1, 1, 2), 20);
 
-		const actualViewColumnMapping: number[][] = [];
+		let actualViewColumnMapping: number[][] = [];
 		for (let lineIndex = 0; lineIndex < line1.getViewLineCount(); lineIndex++) {
-			const actualLineViewColumnMapping: number[] = [];
+			let actualLineViewColumnMapping: number[] = [];
 			for (let col = 1; col <= line1.getViewLineMaxColumn(model1, 1, lineIndex); col++) {
 				actualLineViewColumnMapping.push(line1.getModelColumnOfViewPosition(lineIndex, col));
 			}
@@ -218,15 +217,15 @@ suite('Editor ViewModel - SplitLinesCollection', () => {
 				new Range(5, 1, 6, 1)
 			]);
 
-			const viewLineCount = linesCollection.getViewLineCount();
+			let viewLineCount = linesCollection.getViewLineCount();
 			assert.strictEqual(viewLineCount, 1, 'getOutputLineCount()');
 
-			const modelLineCount = model.getLineCount();
+			let modelLineCount = model.getLineCount();
 			for (let lineNumber = 0; lineNumber <= modelLineCount + 1; lineNumber++) {
-				const lineMinColumn = (lineNumber >= 1 && lineNumber <= modelLineCount) ? model.getLineMinColumn(lineNumber) : 1;
-				const lineMaxColumn = (lineNumber >= 1 && lineNumber <= modelLineCount) ? model.getLineMaxColumn(lineNumber) : 1;
+				let lineMinColumn = (lineNumber >= 1 && lineNumber <= modelLineCount) ? model.getLineMinColumn(lineNumber) : 1;
+				let lineMaxColumn = (lineNumber >= 1 && lineNumber <= modelLineCount) ? model.getLineMaxColumn(lineNumber) : 1;
 				for (let column = lineMinColumn - 1; column <= lineMaxColumn + 1; column++) {
-					const viewPosition = linesCollection.convertModelPositionToViewPosition(lineNumber, column);
+					let viewPosition = linesCollection.convertModelPositionToViewPosition(lineNumber, column);
 
 					// validate view position
 					let viewLineNumber = viewPosition.lineNumber;
@@ -234,29 +233,29 @@ suite('Editor ViewModel - SplitLinesCollection', () => {
 					if (viewLineNumber < 1) {
 						viewLineNumber = 1;
 					}
-					const lineCount = linesCollection.getViewLineCount();
+					let lineCount = linesCollection.getViewLineCount();
 					if (viewLineNumber > lineCount) {
 						viewLineNumber = lineCount;
 					}
-					const viewMinColumn = linesCollection.getViewLineMinColumn(viewLineNumber);
-					const viewMaxColumn = linesCollection.getViewLineMaxColumn(viewLineNumber);
+					let viewMinColumn = linesCollection.getViewLineMinColumn(viewLineNumber);
+					let viewMaxColumn = linesCollection.getViewLineMaxColumn(viewLineNumber);
 					if (viewColumn < viewMinColumn) {
 						viewColumn = viewMinColumn;
 					}
 					if (viewColumn > viewMaxColumn) {
 						viewColumn = viewMaxColumn;
 					}
-					const validViewPosition = new Position(viewLineNumber, viewColumn);
+					let validViewPosition = new Position(viewLineNumber, viewColumn);
 					assert.strictEqual(viewPosition.toString(), validViewPosition.toString(), 'model->view for ' + lineNumber + ', ' + column);
 				}
 			}
 
 			for (let lineNumber = 0; lineNumber <= viewLineCount + 1; lineNumber++) {
-				const lineMinColumn = linesCollection.getViewLineMinColumn(lineNumber);
-				const lineMaxColumn = linesCollection.getViewLineMaxColumn(lineNumber);
+				let lineMinColumn = linesCollection.getViewLineMinColumn(lineNumber);
+				let lineMaxColumn = linesCollection.getViewLineMaxColumn(lineNumber);
 				for (let column = lineMinColumn - 1; column <= lineMaxColumn + 1; column++) {
-					const modelPosition = linesCollection.convertViewPositionToModelPosition(lineNumber, column);
-					const validModelPosition = model.validatePosition(modelPosition);
+					let modelPosition = linesCollection.convertViewPositionToModelPosition(lineNumber, column);
+					let validModelPosition = model.validatePosition(modelPosition);
 					assert.strictEqual(modelPosition.toString(), validModelPosition.toString(), 'view->model for ' + lineNumber + ', ' + column);
 				}
 			}
@@ -337,13 +336,13 @@ suite('SplitLinesCollection', () => {
 			getInitialState: () => NullState,
 			tokenize: undefined!,
 			tokenizeEncoded: (line: string, hasEOL: boolean, state: languages.IState): languages.EncodedTokenizationResult => {
-				const tokens = _tokens[_lineIndex++];
+				let tokens = _tokens[_lineIndex++];
 
-				const result = new Uint32Array(2 * tokens.length);
+				let result = new Uint32Array(2 * tokens.length);
 				for (let i = 0; i < tokens.length; i++) {
 					result[2 * i] = tokens[i].startIndex;
 					result[2 * i + 1] = (
-						tokens[i].value << MetadataConsts.FOREGROUND_OFFSET
+						tokens[i].value << languages.MetadataConsts.FOREGROUND_OFFSET
 					);
 				}
 				return new languages.EncodedTokenizationResult(result, state);
@@ -368,7 +367,7 @@ suite('SplitLinesCollection', () => {
 	}
 
 	function assertViewLineTokens(_actual: IViewLineTokens, expected: ITestViewLineToken[]): void {
-		const actual: ITestViewLineToken[] = [];
+		let actual: ITestViewLineToken[] = [];
 		for (let i = 0, len = _actual.getCount(); i < len; i++) {
 			actual[i] = {
 				endIndex: _actual.getEndOffset(i),
@@ -407,22 +406,22 @@ suite('SplitLinesCollection', () => {
 	}
 
 	function assertAllMinimapLinesRenderingData(splitLinesCollection: ViewModelLinesFromProjectedModel, all: ITestMinimapLineRenderingData[]): void {
-		const lineCount = all.length;
+		let lineCount = all.length;
 		for (let line = 1; line <= lineCount; line++) {
 			assert.strictEqual(splitLinesCollection.getViewLineData(line).content, splitLinesCollection.getViewLineContent(line));
 		}
 
 		for (let start = 1; start <= lineCount; start++) {
 			for (let end = start; end <= lineCount; end++) {
-				const count = end - start + 1;
+				let count = end - start + 1;
 				for (let desired = Math.pow(2, count) - 1; desired >= 0; desired--) {
-					const needed: boolean[] = [];
-					const expected: Array<ITestMinimapLineRenderingData | null> = [];
+					let needed: boolean[] = [];
+					let expected: Array<ITestMinimapLineRenderingData | null> = [];
 					for (let i = 0; i < count; i++) {
 						needed[i] = (desired & (1 << i)) ? true : false;
 						expected[i] = (needed[i] ? all[start - 1 + i] : null);
 					}
-					const actual = splitLinesCollection.getViewLinesData(start, end, needed);
+					let actual = splitLinesCollection.getViewLinesData(start, end, needed);
 
 					assertMinimapLinesRenderingData(actual, expected);
 					// Comment out next line to test all possible combinations
@@ -444,7 +443,7 @@ suite('SplitLinesCollection', () => {
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(7, 1), true);
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(8, 1), true);
 
-			const _expected: ITestMinimapLineRenderingData[] = [
+			let _expected: ITestMinimapLineRenderingData[] = [
 				{
 					content: 'class Nice {',
 					minColumn: 1,
@@ -578,7 +577,7 @@ suite('SplitLinesCollection', () => {
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(7, 1), true);
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(8, 1), true);
 
-			const _expected: ITestMinimapLineRenderingData[] = [
+			let _expected: ITestMinimapLineRenderingData[] = [
 				{
 					content: 'class Nice {',
 					minColumn: 1,
@@ -757,7 +756,7 @@ suite('SplitLinesCollection', () => {
 
 			assert.strictEqual(splitLinesCollection.getViewLineMaxColumn(1), 24);
 
-			const _expected: ITestMinimapLineRenderingData[] = [
+			let _expected: ITestMinimapLineRenderingData[] = [
 				{
 					content: 'class Nivery very long ',
 					minColumn: 1,
@@ -980,7 +979,7 @@ function createSplitLine(splitLengths: number[], breakingOffsetsVisibleColumn: n
 }
 
 function createLineBreakData(breakingLengths: number[], breakingOffsetsVisibleColumn: number[], wrappedTextIndentWidth: number): ModelLineProjectionData {
-	const sums: number[] = [];
+	let sums: number[] = [];
 	for (let i = 0; i < breakingLengths.length; i++) {
 		sums[i] = (i > 0 ? sums[i - 1] : 0) + breakingLengths[i];
 	}

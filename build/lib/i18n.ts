@@ -87,7 +87,7 @@ interface LocalizeInfo {
 
 module LocalizeInfo {
 	export function is(value: any): value is LocalizeInfo {
-		const candidate = value as LocalizeInfo;
+		let candidate = value as LocalizeInfo;
 		return Is.defined(candidate) && Is.string(candidate.key) && (Is.undef(candidate.comment) || (Is.array(candidate.comment) && candidate.comment.every(element => Is.string(element))));
 	}
 }
@@ -104,8 +104,8 @@ module BundledFormat {
 			return false;
 		}
 
-		const candidate = value as BundledFormat;
-		const length = Object.keys(value).length;
+		let candidate = value as BundledFormat;
+		let length = Object.keys(value).length;
 
 		return length === 3 && Is.defined(candidate.keys) && Is.defined(candidate.messages) && Is.defined(candidate.bundles);
 	}
@@ -126,7 +126,7 @@ module PackageJsonFormat {
 			return false;
 		}
 		return Object.keys(value).every(key => {
-			const element = value[key];
+			let element = value[key];
 			return Is.string(element) || (Is.object(element) && Is.defined(element.message) && Is.defined(element.comment));
 		});
 	}
@@ -218,9 +218,9 @@ export class XLF {
 		}
 		this.numberOfMessages += keys.length;
 		this.files[original] = [];
-		const existingKeys = new Set<string>();
+		let existingKeys = new Set<string>();
 		for (let i = 0; i < keys.length; i++) {
-			const key = keys[i];
+			let key = keys[i];
 			let realKey: string | undefined;
 			let comment: string | undefined;
 			if (Is.string(key)) {
@@ -236,7 +236,7 @@ export class XLF {
 				continue;
 			}
 			existingKeys.add(realKey);
-			const message: string = encodeEntities(messages[i]);
+			let message: string = encodeEntities(messages[i]);
 			this.files[original].push({ id: realKey, message: message, comment: comment });
 		}
 	}
@@ -269,15 +269,15 @@ export class XLF {
 	}
 
 	private appendNewLine(content: string, indent?: number): void {
-		const line = new Line(indent);
+		let line = new Line(indent);
 		line.append(content);
 		this.buffer.push(line.toString());
 	}
 
 	static parsePseudo = function (xlfString: string): Promise<ParsedXLF[]> {
 		return new Promise((resolve) => {
-			const parser = new xml2js.Parser();
-			const files: { messages: Map<string>; originalFilePath: string; language: string }[] = [];
+			let parser = new xml2js.Parser();
+			let files: { messages: Map<string>; originalFilePath: string; language: string }[] = [];
 			parser.parseString(xlfString, function (_err: any, result: any) {
 				const fileNodes: any[] = result['xliff']['file'];
 				fileNodes.forEach(file => {
@@ -302,9 +302,9 @@ export class XLF {
 
 	static parse = function (xlfString: string): Promise<ParsedXLF[]> {
 		return new Promise((resolve, reject) => {
-			const parser = new xml2js.Parser();
+			let parser = new xml2js.Parser();
 
-			const files: { messages: Map<string>; originalFilePath: string; language: string }[] = [];
+			let files: { messages: Map<string>; originalFilePath: string; language: string }[] = [];
 
 			parser.parseString(xlfString, function (err: any, result: any) {
 				if (err) {
@@ -321,7 +321,7 @@ export class XLF {
 					if (!originalFilePath) {
 						reject(new Error(`XLF parsing error: XLIFF file node does not contain original attribute to determine the original location of the resource file.`));
 					}
-					const language = file.$['target-language'];
+					let language = file.$['target-language'];
 					if (!language) {
 						reject(new Error(`XLF parsing error: XLIFF file node does not contain target-language attribute to determine translated language.`));
 					}
@@ -412,10 +412,9 @@ function stripComments(content: string): string {
 	// Second group matches a single quoted string
 	// Third group matches a multi line comment
 	// Forth group matches a single line comment
-	// Fifth group matches a trailing comma
-	const regexp = /("[^"\\]*(?:\\.[^"\\]*)*")|('[^'\\]*(?:\\.[^'\\]*)*')|(\/\*[^\/\*]*(?:(?:\*|\/)[^\/\*]*)*?\*\/)|(\/{2,}.*?(?:(?:\r?\n)|$))|(,\s*[}\]])/g;
-	const result = content.replace(regexp, (match, _m1: string, _m2: string, m3: string, m4: string, m5: string) => {
-		// Only one of m1, m2, m3, m4, m5 matches
+	const regexp = /("[^"\\]*(?:\\.[^"\\]*)*")|('[^'\\]*(?:\\.[^'\\]*)*')|(\/\*[^\/\*]*(?:(?:\*|\/)[^\/\*]*)*?\*\/)|(\/{2,}.*?(?:(?:\r?\n)|$))/g;
+	let result = content.replace(regexp, (match, _m1: string, _m2: string, m3: string, m4: string) => {
+		// Only one of m1, m2, m3, m4 matches
 		if (m3) {
 			// A block comment. Replace with nothing
 			return '';
@@ -428,9 +427,6 @@ function stripComments(content: string): string {
 			} else {
 				return '';
 			}
-		} else if (m5) {
-			// Remove the trailing comma
-			return match.substring(1);
 		} else {
 			// We match a string
 			return match;
@@ -476,22 +472,22 @@ function escapeCharacters(value: string): string {
 }
 
 function processCoreBundleFormat(fileHeader: string, languages: Language[], json: BundledFormat, emitter: ThroughStream) {
-	const keysSection = json.keys;
-	const messageSection = json.messages;
-	const bundleSection = json.bundles;
+	let keysSection = json.keys;
+	let messageSection = json.messages;
+	let bundleSection = json.bundles;
 
-	const statistics: Map<number> = Object.create(null);
+	let statistics: Map<number> = Object.create(null);
 
-	const defaultMessages: Map<Map<string>> = Object.create(null);
-	const modules = Object.keys(keysSection);
+	let defaultMessages: Map<Map<string>> = Object.create(null);
+	let modules = Object.keys(keysSection);
 	modules.forEach((module) => {
-		const keys = keysSection[module];
-		const messages = messageSection[module];
+		let keys = keysSection[module];
+		let messages = messageSection[module];
 		if (!messages || keys.length !== messages.length) {
 			emitter.emit('error', `Message for module ${module} corrupted. Mismatch in number of keys and messages.`);
 			return;
 		}
-		const messageMap: Map<string> = Object.create(null);
+		let messageMap: Map<string> = Object.create(null);
 		defaultMessages[module] = messageMap;
 		keys.map((key, i) => {
 			if (typeof key === 'string') {
@@ -502,28 +498,28 @@ function processCoreBundleFormat(fileHeader: string, languages: Language[], json
 		});
 	});
 
-	const languageDirectory = path.join(__dirname, '..', '..', '..', 'vscode-loc', 'i18n');
+	let languageDirectory = path.join(__dirname, '..', '..', '..', 'vscode-loc', 'i18n');
 	if (!fs.existsSync(languageDirectory)) {
 		log(`No VS Code localization repository found. Looking at ${languageDirectory}`);
 		log(`To bundle translations please check out the vscode-loc repository as a sibling of the vscode repository.`);
 	}
-	const sortedLanguages = sortLanguages(languages);
+	let sortedLanguages = sortLanguages(languages);
 	sortedLanguages.forEach((language) => {
 		if (process.env['VSCODE_BUILD_VERBOSE']) {
 			log(`Generating nls bundles for: ${language.id}`);
 		}
 
 		statistics[language.id] = 0;
-		const localizedModules: Map<string[]> = Object.create(null);
-		const languageFolderName = language.translationId || language.id;
-		const i18nFile = path.join(languageDirectory, `vscode-language-pack-${languageFolderName}`, 'translations', 'main.i18n.json');
+		let localizedModules: Map<string[]> = Object.create(null);
+		let languageFolderName = language.translationId || language.id;
+		let i18nFile = path.join(languageDirectory, `vscode-language-pack-${languageFolderName}`, 'translations', 'main.i18n.json');
 		let allMessages: I18nFormat | undefined;
 		if (fs.existsSync(i18nFile)) {
-			const content = stripComments(fs.readFileSync(i18nFile, 'utf8'));
+			let content = stripComments(fs.readFileSync(i18nFile, 'utf8'));
 			allMessages = JSON.parse(content);
 		}
 		modules.forEach((module) => {
-			const order = keysSection[module];
+			let order = keysSection[module];
 			let moduleMessage: { [messageKey: string]: string } | undefined;
 			if (allMessages) {
 				moduleMessage = allMessages.contents[module];
@@ -535,7 +531,7 @@ function processCoreBundleFormat(fileHeader: string, languages: Language[], json
 				moduleMessage = defaultMessages[module];
 				statistics[language.id] = statistics[language.id] + Object.keys(moduleMessage).length;
 			}
-			const localizedMessages: string[] = [];
+			let localizedMessages: string[] = [];
 			order.forEach((keyInfo) => {
 				let key: string | null = null;
 				if (typeof keyInfo === 'string') {
@@ -556,14 +552,14 @@ function processCoreBundleFormat(fileHeader: string, languages: Language[], json
 			localizedModules[module] = localizedMessages;
 		});
 		Object.keys(bundleSection).forEach((bundle) => {
-			const modules = bundleSection[bundle];
-			const contents: string[] = [
+			let modules = bundleSection[bundle];
+			let contents: string[] = [
 				fileHeader,
 				`define("${bundle}.nls.${language.id}", {`
 			];
 			modules.forEach((module, index) => {
 				contents.push(`\t"${module}": [`);
-				const messages = localizedModules[module];
+				let messages = localizedModules[module];
 				if (!messages) {
 					emitter.emit('error', `Didn't find messages for module ${module}.`);
 					return;
@@ -578,11 +574,11 @@ function processCoreBundleFormat(fileHeader: string, languages: Language[], json
 		});
 	});
 	Object.keys(statistics).forEach(key => {
-		const value = statistics[key];
+		let value = statistics[key];
 		log(`${key} has ${value} untranslated strings.`);
 	});
 	sortedLanguages.forEach(language => {
-		const stats = statistics[language.id];
+		let stats = statistics[language.id];
 		if (Is.undef(stats)) {
 			log(`\tNo translations found for language ${language.id}. Using default language instead.`);
 		}
@@ -591,7 +587,7 @@ function processCoreBundleFormat(fileHeader: string, languages: Language[], json
 
 export function processNlsFiles(opts: { fileHeader: string; languages: Language[] }): ThroughStream {
 	return through(function (this: ThroughStream, file: File) {
-		const fileName = path.basename(file.path);
+		let fileName = path.basename(file.path);
 		if (fileName === 'nls.metadata.json') {
 			let json = null;
 			if (file.isBuffer()) {
@@ -678,7 +674,7 @@ export function createXlfFilesForCoreBundle(): ThroughStream {
 						xlf.addFile(`src/${coreModule}`, keys, messages);
 					}
 				}
-				for (const resource in xlfs) {
+				for (let resource in xlfs) {
 					const xlf = xlfs[resource];
 					const filePath = `${xlf.project}/${resource.replace(/\//g, '_')}.xlf`;
 					const xlfFile = new File({
@@ -708,7 +704,7 @@ export function createXlfFilesForExtensions(): ThroughStream {
 		if (!stat.isDirectory()) {
 			return;
 		}
-		const extensionName = path.basename(extensionFolder.path);
+		let extensionName = path.basename(extensionFolder.path);
 		if (extensionName === 'node_modules') {
 			return;
 		}
@@ -726,29 +722,22 @@ export function createXlfFilesForExtensions(): ThroughStream {
 				const basename = path.basename(file.path);
 				if (basename === 'package.nls.json') {
 					const json: PackageJsonFormat = JSON.parse(buffer.toString('utf8'));
-					const keys: Array<string | LocalizeInfo> = [];
-					const messages: string[] = [];
-					Object.keys(json).forEach((key) => {
+					const keys = Object.keys(json);
+					const messages = keys.map((key) => {
 						const value = json[key];
 						if (Is.string(value)) {
-							keys.push(key);
-							messages.push(value);
+							return value;
 						} else if (value) {
-							keys.push({
-								key,
-								comment: value.comment
-							});
-							messages.push(value.message);
+							return value.message;
 						} else {
-							keys.push(key);
-							messages.push(`Unknown message for key: ${key}`);
+							return `Unknown message for key: ${key}`;
 						}
 					});
 					getXlf().addFile(`extensions/${extensionName}/package`, keys, messages);
 				} else if (basename === 'nls.metadata.json') {
 					const json: BundledExtensionFormat = JSON.parse(buffer.toString('utf8'));
 					const relPath = path.relative(`.build/extensions/${extensionName}`, path.dirname(file.path));
-					for (const file in json) {
+					for (let file in json) {
 						const fileContent = json[file];
 						getXlf().addFile(`extensions/${extensionName}/${relPath}/${file}`, fileContent.keys, fileContent.messages);
 					}
@@ -759,7 +748,7 @@ export function createXlfFilesForExtensions(): ThroughStream {
 			}
 		}, function () {
 			if (_xlf) {
-				const xlfFile = new File({
+				let xlfFile = new File({
 					path: path.join(extensionsProject, extensionName + '.xlf'),
 					contents: Buffer.from(_xlf.toString(), 'utf8')
 				});
@@ -792,17 +781,17 @@ export function createXlfFilesForIsl(): ThroughStream {
 			throw new Error(`Unknown input file ${file.path}`);
 		}
 
-		const xlf = new XLF(projectName),
+		let xlf = new XLF(projectName),
 			keys: string[] = [],
 			messages: string[] = [];
 
-		const model = new TextModel(file.contents.toString());
+		let model = new TextModel(file.contents.toString());
 		let inMessageSection = false;
 		model.lines.forEach(line => {
 			if (line.length === 0) {
 				return;
 			}
-			const firstChar = line.charAt(0);
+			let firstChar = line.charAt(0);
 			switch (firstChar) {
 				case ';':
 					// Comment line;
@@ -814,12 +803,12 @@ export function createXlfFilesForIsl(): ThroughStream {
 			if (!inMessageSection) {
 				return;
 			}
-			const sections: string[] = line.split('=');
+			let sections: string[] = line.split('=');
 			if (sections.length !== 2) {
 				throw new Error(`Badly formatted message found: ${line}`);
 			} else {
-				const key = sections[0];
-				const value = sections[1];
+				let key = sections[0];
+				let value = sections[1];
 				if (key.length > 0 && value.length > 0) {
 					keys.push(key);
 					messages.push(value);
@@ -838,8 +827,8 @@ export function createXlfFilesForIsl(): ThroughStream {
 }
 
 export function pushXlfFiles(apiHostname: string, username: string, password: string): ThroughStream {
-	const tryGetPromises: Array<Promise<boolean>> = [];
-	const updateCreatePromises: Array<Promise<boolean>> = [];
+	let tryGetPromises: Array<Promise<boolean>> = [];
+	let updateCreatePromises: Array<Promise<boolean>> = [];
 
 	return through(function (this: ThroughStream, file: File) {
 		const project = path.dirname(file.relative);
@@ -880,11 +869,11 @@ function getAllResources(project: string, apiHostname: string, username: string,
 		};
 
 		const request = https.request(options, (res) => {
-			const buffer: Buffer[] = [];
+			let buffer: Buffer[] = [];
 			res.on('data', (chunk: Buffer) => buffer.push(chunk));
 			res.on('end', () => {
 				if (res.statusCode === 200) {
-					const json = JSON.parse(Buffer.concat(buffer).toString());
+					let json = JSON.parse(Buffer.concat(buffer).toString());
 					if (Array.isArray(json)) {
 						resolve(json.map(o => o.slug));
 						return;
@@ -903,7 +892,7 @@ function getAllResources(project: string, apiHostname: string, username: string,
 }
 
 export function findObsoleteResources(apiHostname: string, username: string, password: string): ThroughStream {
-	const resourcesByProject: Map<string[]> = Object.create(null);
+	let resourcesByProject: Map<string[]> = Object.create(null);
 	resourcesByProject[extensionsProject] = ([] as any[]).concat(externalExtensionsWithTranslations); // clone
 
 	return through(function (this: ThroughStream, file: File) {
@@ -920,10 +909,10 @@ export function findObsoleteResources(apiHostname: string, username: string, pas
 	}, function () {
 
 		const json = JSON.parse(fs.readFileSync('./build/lib/i18n.resources.json', 'utf8'));
-		const i18Resources = [...json.editor, ...json.workbench].map((r: Resource) => r.project + '/' + r.name.replace(/\//g, '_'));
-		const extractedResources: string[] = [];
-		for (const project of [workbenchProject, editorProject]) {
-			for (const resource of resourcesByProject[project]) {
+		let i18Resources = [...json.editor, ...json.workbench].map((r: Resource) => r.project + '/' + r.name.replace(/\//g, '_'));
+		let extractedResources: string[] = [];
+		for (let project of [workbenchProject, editorProject]) {
+			for (let resource of resourcesByProject[project]) {
 				if (resource !== 'setup_messages') {
 					extractedResources.push(project + '/' + resource);
 				}
@@ -934,12 +923,12 @@ export function findObsoleteResources(apiHostname: string, username: string, pas
 			console.log(`[i18n] Missing resources in file 'build/lib/i18n.resources.json': JSON.stringify(${extractedResources.filter(p => i18Resources.indexOf(p) === -1)})`);
 		}
 
-		const promises: Array<Promise<void>> = [];
-		for (const project in resourcesByProject) {
+		let promises: Array<Promise<void>> = [];
+		for (let project in resourcesByProject) {
 			promises.push(
 				getAllResources(project, apiHostname, username, password).then(resources => {
-					const expectedResources = resourcesByProject[project];
-					const unusedResources = resources.filter(resource => resource && expectedResources.indexOf(resource) === -1);
+					let expectedResources = resourcesByProject[project];
+					let unusedResources = resources.filter(resource => resource && expectedResources.indexOf(resource) === -1);
 					if (unusedResources.length) {
 						console.log(`[transifex] Obsolete resources in project '${project}': ${unusedResources.join(', ')}`);
 					}
@@ -997,7 +986,7 @@ function createResource(project: string, slug: string, xlfFile: File, apiHostnam
 			method: 'POST'
 		};
 
-		const request = https.request(options, (res) => {
+		let request = https.request(options, (res) => {
 			if (res.statusCode === 201) {
 				log(`Resource ${project}/${slug} successfully created on Transifex.`);
 			} else {
@@ -1031,7 +1020,7 @@ function updateResource(project: string, slug: string, xlfFile: File, apiHostnam
 			method: 'PUT'
 		};
 
-		const request = https.request(options, (res) => {
+		let request = https.request(options, (res) => {
 			if (res.statusCode === 200) {
 				res.setEncoding('utf8');
 
@@ -1058,7 +1047,7 @@ function updateResource(project: string, slug: string, xlfFile: File, apiHostnam
 }
 
 export function pullSetupXlfFiles(apiHostname: string, username: string, password: string, language: Language, includeDefault: boolean): NodeJS.ReadableStream {
-	const setupResources = [{ name: 'setup_messages', project: workbenchProject }];
+	let setupResources = [{ name: 'setup_messages', project: workbenchProject }];
 	if (includeDefault) {
 		setupResources.push({ name: 'setup_default', project: setupProject });
 	}
@@ -1067,7 +1056,7 @@ export function pullSetupXlfFiles(apiHostname: string, username: string, passwor
 
 function pullXlfFiles(apiHostname: string, username: string, password: string, language: Language, resources: Resource[]): NodeJS.ReadableStream {
 	const credentials = `${username}:${password}`;
-	const expectedTranslationsCount = resources.length;
+	let expectedTranslationsCount = resources.length;
 	let translationsRetrieved = 0, called = false;
 
 	return readable(function (_count: any, callback: any) {
@@ -1098,7 +1087,7 @@ function retrieveResource(language: Language, resource: Resource, apiHostname: s
 	return limiter.queue(() => new Promise<File | null>((resolve, reject) => {
 		const slug = resource.name.replace(/\//g, '_');
 		const project = resource.project;
-		const transifexLanguageId = language.id === 'ps' ? 'en' : language.translationId || language.id;
+		let transifexLanguageId = language.id === 'ps' ? 'en' : language.translationId || language.id;
 		const options = {
 			hostname: apiHostname,
 			path: `/api/2/project/${project}/resource/${slug}/translation/${transifexLanguageId}?file&mode=onlyreviewed`,
@@ -1108,8 +1097,8 @@ function retrieveResource(language: Language, resource: Resource, apiHostname: s
 		};
 		console.log('[transifex] Fetching ' + options.path);
 
-		const request = https.request(options, (res) => {
-			const xlfBuffer: Buffer[] = [];
+		let request = https.request(options, (res) => {
+			let xlfBuffer: Buffer[] = [];
 			res.on('data', (chunk: Buffer) => xlfBuffer.push(chunk));
 			res.on('end', () => {
 				if (res.statusCode === 200) {
@@ -1130,16 +1119,16 @@ function retrieveResource(language: Language, resource: Resource, apiHostname: s
 }
 
 export function prepareI18nFiles(): ThroughStream {
-	const parsePromises: Promise<ParsedXLF[]>[] = [];
+	let parsePromises: Promise<ParsedXLF[]>[] = [];
 
 	return through(function (this: ThroughStream, xlf: File) {
-		const stream = this;
-		const parsePromise = XLF.parse(xlf.contents.toString());
+		let stream = this;
+		let parsePromise = XLF.parse(xlf.contents.toString());
 		parsePromises.push(parsePromise);
 		parsePromise.then(
 			resolvedFiles => {
 				resolvedFiles.forEach(file => {
-					const translatedFile = createI18nFile(file.originalFilePath, file.messages);
+					let translatedFile = createI18nFile(file.originalFilePath, file.messages);
 					stream.queue(translatedFile);
 				});
 			}
@@ -1160,7 +1149,7 @@ export function createI18nFile(originalFilePath: string, messages: any): File { 
 		'--------------------------------------------------------------------------------------------',
 		'Do not edit this file. It is machine generated.'
 	];
-	for (const key of Object.keys(messages)) {
+	for (let key of Object.keys(messages)) {
 		result[key] = messages[key];
 	}
 
@@ -1189,16 +1178,16 @@ export interface TranslationPath {
 }
 
 export function prepareI18nPackFiles(externalExtensions: Map<string>, resultingTranslationPaths: TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
-	const parsePromises: Promise<ParsedXLF[]>[] = [];
-	const mainPack: I18nPack = { version: i18nPackVersion, contents: {} };
-	const extensionsPacks: Map<I18nPack> = {};
-	const errors: any[] = [];
+	let parsePromises: Promise<ParsedXLF[]>[] = [];
+	let mainPack: I18nPack = { version: i18nPackVersion, contents: {} };
+	let extensionsPacks: Map<I18nPack> = {};
+	let errors: any[] = [];
 	return through(function (this: ThroughStream, xlf: File) {
-		const project = path.basename(path.dirname(path.dirname(xlf.relative)));
-		const resource = path.basename(xlf.relative, '.xlf');
-		const contents = xlf.contents.toString();
+		let project = path.basename(path.dirname(path.dirname(xlf.relative)));
+		let resource = path.basename(xlf.relative, '.xlf');
+		let contents = xlf.contents.toString();
 		log(`Found ${project}: ${resource}`);
-		const parsePromise = pseudo ? XLF.parsePseudo(contents) : XLF.parse(contents);
+		let parsePromise = pseudo ? XLF.parsePseudo(contents) : XLF.parse(contents);
 		parsePromises.push(parsePromise);
 		parsePromise.then(
 			resolvedFiles => {
@@ -1236,7 +1225,7 @@ export function prepareI18nPackFiles(externalExtensions: Map<string>, resultingT
 				resultingTranslationPaths.push({ id: 'vscode', resourceName: 'main.i18n.json' });
 
 				this.queue(translatedMainFile);
-				for (const extension in extensionsPacks) {
+				for (let extension in extensionsPacks) {
 					const translatedExtFile = createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
 					this.queue(translatedExtFile);
 
@@ -1257,16 +1246,16 @@ export function prepareI18nPackFiles(externalExtensions: Map<string>, resultingT
 }
 
 export function prepareIslFiles(language: Language, innoSetupConfig: InnoSetup): ThroughStream {
-	const parsePromises: Promise<ParsedXLF[]>[] = [];
+	let parsePromises: Promise<ParsedXLF[]>[] = [];
 
 	return through(function (this: ThroughStream, xlf: File) {
-		const stream = this;
-		const parsePromise = XLF.parse(xlf.contents.toString());
+		let stream = this;
+		let parsePromise = XLF.parse(xlf.contents.toString());
 		parsePromises.push(parsePromise);
 		parsePromise.then(
 			resolvedFiles => {
 				resolvedFiles.forEach(file => {
-					const translatedFile = createIslFile(file.originalFilePath, file.messages, language, innoSetupConfig);
+					let translatedFile = createIslFile(file.originalFilePath, file.messages, language, innoSetupConfig);
 					stream.queue(translatedFile);
 				});
 			}
@@ -1283,7 +1272,7 @@ export function prepareIslFiles(language: Language, innoSetupConfig: InnoSetup):
 }
 
 function createIslFile(originalFilePath: string, messages: Map<string>, language: Language, innoSetup: InnoSetup): File {
-	const content: string[] = [];
+	let content: string[] = [];
 	let originalContent: TextModel;
 	if (path.basename(originalFilePath) === 'Default') {
 		originalContent = new TextModel(fs.readFileSync(originalFilePath + '.isl', 'utf8'));
@@ -1292,15 +1281,15 @@ function createIslFile(originalFilePath: string, messages: Map<string>, language
 	}
 	originalContent.lines.forEach(line => {
 		if (line.length > 0) {
-			const firstChar = line.charAt(0);
+			let firstChar = line.charAt(0);
 			if (firstChar === '[' || firstChar === ';') {
 				content.push(line);
 			} else {
-				const sections: string[] = line.split('=');
-				const key = sections[0];
+				let sections: string[] = line.split('=');
+				let key = sections[0];
 				let translated = line;
 				if (key) {
-					const translatedMessage = messages[key];
+					let translatedMessage = messages[key];
 					if (translatedMessage) {
 						translated = `${key}=${translatedMessage}`;
 					}
@@ -1322,9 +1311,9 @@ function createIslFile(originalFilePath: string, messages: Map<string>, language
 }
 
 function encodeEntities(value: string): string {
-	const result: string[] = [];
+	let result: string[] = [];
 	for (let i = 0; i < value.length; i++) {
-		const ch = value[i];
+		let ch = value[i];
 		switch (ch) {
 			case '<':
 				result.push('&lt;');

@@ -15,21 +15,21 @@ export interface IExtensionDevOptions {
 
 export function parseExtensionDevOptions(environmentService: IEnvironmentService): IExtensionDevOptions {
 	// handle extension host lifecycle a bit special when we know we are developing an extension that runs inside
-	const isExtensionDevHost = environmentService.isExtensionDevelopment;
+	let isExtensionDevHost = environmentService.isExtensionDevelopment;
 
 	let debugOk = true;
-	const extDevLocs = environmentService.extensionDevelopmentLocationURI;
+	let extDevLocs = environmentService.extensionDevelopmentLocationURI;
 	if (extDevLocs) {
-		for (const x of extDevLocs) {
+		for (let x of extDevLocs) {
 			if (x.scheme !== Schemas.file) {
 				debugOk = false;
 			}
 		}
 	}
 
-	const isExtensionDevDebug = debugOk && typeof environmentService.debugExtensionHost.port === 'number';
-	const isExtensionDevDebugBrk = debugOk && !!environmentService.debugExtensionHost.break;
-	const isExtensionDevTestFromCli = isExtensionDevHost && !!environmentService.extensionTestsLocationURI && !environmentService.debugExtensionHost.debugId;
+	let isExtensionDevDebug = debugOk && typeof environmentService.debugExtensionHost.port === 'number';
+	let isExtensionDevDebugBrk = debugOk && !!environmentService.debugExtensionHost.break;
+	let isExtensionDevTestFromCli = isExtensionDevHost && !!environmentService.extensionTestsLocationURI && !environmentService.debugExtensionHost.debugId;
 	return {
 		isExtensionDevHost,
 		isExtensionDevDebug,

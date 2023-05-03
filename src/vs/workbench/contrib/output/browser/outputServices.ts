@@ -48,7 +48,7 @@ class OutputChannel extends Disposable implements IOutputChannel {
 	}
 
 	update(mode: OutputChannelUpdateMode, till?: number): void {
-		this.model.update(mode, till, true);
+		this.model.update(mode, till);
 	}
 
 	clear(): void {
@@ -145,7 +145,9 @@ export class OutputService extends Disposable implements IOutputService, ITextMo
 			this.setActiveChannel(channel);
 			this._onActiveOutputChannel.fire(channelId);
 			const outputView = this.viewsService.getActiveViewWithId<OutputViewPane>(OUTPUT_VIEW_ID);
-			outputView?.showChannel(channel, true);
+			if (outputView) {
+				outputView.showChannel(channel, true);
+			}
 		}
 	}
 
@@ -202,7 +204,7 @@ export class LogContentProvider {
 
 	provideTextContent(resource: URI): Promise<ITextModel> | null {
 		if (resource.scheme === LOG_SCHEME) {
-			const channelModel = this.getChannelModel(resource);
+			let channelModel = this.getChannelModel(resource);
 			if (channelModel) {
 				return channelModel.loadModel();
 			}

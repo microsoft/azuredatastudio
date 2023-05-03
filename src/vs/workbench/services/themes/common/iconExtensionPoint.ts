@@ -93,7 +93,7 @@ export class IconExtensionPoint {
 						collector.error(nls.localize('invalid.icons.description', "'configuration.icons.description' must be defined and can not be empty"));
 						return;
 					}
-					const defaultIcon = iconContribution.default;
+					let defaultIcon = iconContribution.default;
 					if (typeof defaultIcon === 'string') {
 						iconRegistry.registerIcon(id, { id: defaultIcon }, iconContribution.description);
 					} else if (typeof defaultIcon === 'object' && typeof defaultIcon.fontPath === 'string' && typeof defaultIcon.fontCharacter === 'string') {

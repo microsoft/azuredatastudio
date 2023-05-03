@@ -16,7 +16,7 @@ import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
-import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -30,14 +30,13 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IModelService } from 'vs/editor/common/services/model';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
-import { IFileService } from 'vs/platform/files/common/files';
 
 class DesignerCodeEditor extends CodeEditorWidget {
 }
 
 let DesignerScriptEditorInstanceId = 0;
 
-export class DesignerScriptEditor extends AbstractTextCodeEditor<editorCommon.ICodeEditorViewState> implements DesignerTextEditor {
+export class DesignerScriptEditor extends BaseTextEditor<editorCommon.ICodeEditorViewState> implements DesignerTextEditor {
 	private _content: string;
 	private _contentChangeEventEmitter: Emitter<string> = new Emitter<string>();
 	readonly onDidContentChange: Event<string> = this._contentChangeEventEmitter.event;
@@ -56,10 +55,9 @@ export class DesignerScriptEditor extends AbstractTextCodeEditor<editorCommon.IC
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
 		@IEditorService editorService: IEditorService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IFileService fileService: IFileService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
-		super(DesignerScriptEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService, fileService);
+		super(DesignerScriptEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 		this.create(this._container);
 		this.setVisible(true);
 		this._untitledTextEditorModel = this.instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled, path: `DesignerScriptEditor-${DesignerScriptEditorInstanceId++}` }), false, undefined, 'sql', undefined);
@@ -72,9 +70,7 @@ export class DesignerScriptEditor extends AbstractTextCodeEditor<editorCommon.IC
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		this.editorControl = this.instantiationService.createInstance(DesignerCodeEditor, parent, configuration, {});
-
-		return this.editorControl;
+		return this.instantiationService.createInstance(DesignerCodeEditor, parent, configuration, {});
 	}
 
 	protected override getConfigurationOverrides(): IEditorOptions {

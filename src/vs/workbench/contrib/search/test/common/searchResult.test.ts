@@ -22,8 +22,6 @@ import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity'
 import { UriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentityService';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { ILabelService } from 'vs/platform/label/common/label';
-import { MockLabelService } from 'vs/workbench/services/label/test/common/mockLabelService';
 
 const lineOneRange = new OneLineRange(1, 0, 1);
 
@@ -38,7 +36,6 @@ suite('SearchResult', () => {
 		instantiationService.stub(IUriIdentityService, new UriIdentityService(new FileService(new NullLogService())));
 		instantiationService.stubPromise(IReplaceService, {});
 		instantiationService.stubPromise(IReplaceService, 'replace', null);
-		instantiationService.stub(ILabelService, new MockLabelService());
 	});
 
 	test('Line Match', function () {

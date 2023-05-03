@@ -44,7 +44,6 @@ export interface IWorkbenchEnvironmentService extends IEnvironmentService {
 	// --- Editors to open
 	readonly filesToOpenOrCreate?: IPath[] | undefined;
 	readonly filesToDiff?: IPath[] | undefined;
-	readonly filesToMerge?: IPath[] | undefined;
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// NOTE: KEEP THIS INTERFACE AS SMALL AS POSSIBLE. AS SUCH:

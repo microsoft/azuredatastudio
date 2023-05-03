@@ -96,7 +96,7 @@ export class LinksList {
 
 	private static _union(oldLinks: Link[], newLinks: Link[]): Link[] {
 		// reunite oldLinks with newLinks and remove duplicates
-		const result: Link[] = [];
+		let result: Link[] = [];
 		let oldIndex: number;
 		let oldLen: number;
 		let newIndex: number;

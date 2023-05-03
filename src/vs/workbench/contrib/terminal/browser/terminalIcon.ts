@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Codicon } from 'vs/base/common/codicons';
 import { hash } from 'vs/base/common/hash';
 import { URI } from 'vs/base/common/uri';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionTerminalProfile, ITerminalProfile } from 'vs/platform/terminal/common/terminal';
 import { getIconRegistry } from 'vs/platform/theme/common/iconRegistry';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { IColorTheme, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { ITerminalInstance } from 'vs/workbench/contrib/terminal/browser/terminal';
-import { ITerminalProfileResolverService } from 'vs/workbench/contrib/terminal/common/terminal';
 import { ansiColorMap } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 
 
@@ -117,9 +116,9 @@ export function getUriClasses(terminal: ITerminalInstance | IExtensionTerminalPr
 	return iconClasses;
 }
 
-export function getIconId(accessor: ServicesAccessor, terminal: ITerminalInstance | IExtensionTerminalProfile | ITerminalProfile): string {
+export function getIconId(terminal: ITerminalInstance | IExtensionTerminalProfile | ITerminalProfile): string {
 	if (!terminal.icon || (terminal.icon instanceof Object && !('id' in terminal.icon))) {
-		return accessor.get(ITerminalProfileResolverService).getDefaultIcon().id;
+		return Codicon.terminal.id;
 	}
 	return typeof terminal.icon === 'string' ? terminal.icon : terminal.icon.id;
 }

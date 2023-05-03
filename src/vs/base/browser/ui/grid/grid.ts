@@ -528,16 +528,6 @@ export class Grid<T extends IView = IView> extends Disposable {
 	}
 
 	/**
-	 * Returns whether all other {@link IView views} are at their minimum size.
-	 *
-	 * @param view The reference {@link IView view}.
-	 */
-	isViewSizeMaximized(view: T): boolean {
-		const location = this.getViewLocation(view);
-		return this.gridview.isViewSizeMaximized(location);
-	}
-
-	/**
 	 * Get the size of a {@link IView view}.
 	 *
 	 * @param view The {@link IView view}. Provide `undefined` to get the size
@@ -759,16 +749,6 @@ export class SerializableGrid<T extends ISerializableView> extends Grid<T> {
 	}
 
 	/**
-	 * Construct a new {@link SerializableGrid} from a grid descriptor.
-	 *
-	 * @param gridDescriptor A grid descriptor in which leaf nodes point to actual views.
-	 * @returns A new {@link SerializableGrid} instance.
-	 */
-	static from<T extends ISerializableView>(gridDescriptor: GridDescriptor<T>, options: IGridOptions = {}): SerializableGrid<T> {
-		return SerializableGrid.deserialize(createSerializedGrid(gridDescriptor), { fromJSON: view => view }, options);
-	}
-
-	/**
 	 * Useful information in order to proportionally restore view sizes
 	 * upon the very first layout call.
 	 */
@@ -796,21 +776,15 @@ export class SerializableGrid<T extends ISerializableView> extends Grid<T> {
 	}
 }
 
-export type GridLeafNodeDescriptor<T> = { size?: number; data?: any };
-export type GridBranchNodeDescriptor<T> = { size?: number; groups: GridNodeDescriptor<T>[] };
-export type GridNodeDescriptor<T> = GridBranchNodeDescriptor<T> | GridLeafNodeDescriptor<T>;
-export type GridDescriptor<T> = { orientation: Orientation } & GridBranchNodeDescriptor<T>;
+export type GridNodeDescriptor = { size?: number; groups?: GridNodeDescriptor[] };
+export type GridDescriptor = { orientation: Orientation; groups?: GridNodeDescriptor[] };
 
-function isGridBranchNodeDescriptor<T>(nodeDescriptor: GridNodeDescriptor<T>): nodeDescriptor is GridBranchNodeDescriptor<T> {
-	return !!(nodeDescriptor as GridBranchNodeDescriptor<T>).groups;
-}
-
-export function sanitizeGridNodeDescriptor<T>(nodeDescriptor: GridNodeDescriptor<T>, rootNode: boolean): void {
-	if (!rootNode && (nodeDescriptor as any).groups && (nodeDescriptor as any).groups.length <= 1) {
-		(nodeDescriptor as any).groups = undefined;
+export function sanitizeGridNodeDescriptor(nodeDescriptor: GridNodeDescriptor, rootNode: boolean): void {
+	if (!rootNode && nodeDescriptor.groups && nodeDescriptor.groups.length <= 1) {
+		nodeDescriptor.groups = undefined;
 	}
 
-	if (!isGridBranchNodeDescriptor(nodeDescriptor)) {
+	if (!nodeDescriptor.groups) {
 		return;
 	}
 
@@ -837,11 +811,11 @@ export function sanitizeGridNodeDescriptor<T>(nodeDescriptor: GridNodeDescriptor
 	}
 }
 
-function createSerializedNode<T>(nodeDescriptor: GridNodeDescriptor<T>): ISerializedNode {
-	if (isGridBranchNodeDescriptor(nodeDescriptor)) {
+function createSerializedNode(nodeDescriptor: GridNodeDescriptor): ISerializedNode {
+	if (nodeDescriptor.groups) {
 		return { type: 'branch', data: nodeDescriptor.groups.map(c => createSerializedNode(c)), size: nodeDescriptor.size! };
 	} else {
-		return { type: 'leaf', data: nodeDescriptor.data, size: nodeDescriptor.size! };
+		return { type: 'leaf', data: null, size: nodeDescriptor.size! };
 	}
 }
 
@@ -869,7 +843,7 @@ function getDimensions(node: ISerializedNode, orientation: Orientation): { width
  * Creates a new JSON object from a {@link GridDescriptor}, which can
  * be deserialized by {@link SerializableGrid.deserialize}.
  */
-export function createSerializedGrid<T>(gridDescriptor: GridDescriptor<T>): ISerializedGrid {
+export function createSerializedGrid(gridDescriptor: GridDescriptor): ISerializedGrid {
 	sanitizeGridNodeDescriptor(gridDescriptor, true);
 
 	const root = createSerializedNode(gridDescriptor);

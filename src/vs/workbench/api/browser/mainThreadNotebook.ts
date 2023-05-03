@@ -49,7 +49,7 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 	}
 
 	async $registerNotebookProvider(extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, data: INotebookContributionData | undefined): Promise<void> {
-		const contentOptions = { ...options };
+		let contentOptions = { ...options };
 
 		const controller: INotebookContentProvider = {
 			get options() {

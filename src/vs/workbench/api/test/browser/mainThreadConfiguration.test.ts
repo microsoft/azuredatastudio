@@ -18,7 +18,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 
 suite('MainThreadConfiguration', function () {
 
-	const proxy = {
+	let proxy = {
 		$initializeConfiguration: () => { }
 	};
 	let instantiationService: TestInstantiationService;

@@ -1,8 +1,8 @@
-"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shake = exports.toStringShakeLevel = exports.ShakeLevel = void 0;
 const fs = require("fs");
@@ -32,7 +32,7 @@ function printDiagnostics(options, diagnostics) {
             result += `${path.join(options.sourcesRoot, diag.file.fileName)}`;
         }
         if (diag.file && diag.start) {
-            const location = diag.file.getLineAndCharacterOfPosition(diag.start);
+            let location = diag.file.getLineAndCharacterOfPosition(diag.start);
             result += `:${location.line + 1}:${location.character}`;
         }
         result += ` - ` + JSON.stringify(diag.messageText);
@@ -89,8 +89,6 @@ function discoverAndReadFiles(ts, options) {
     const in_queue = Object.create(null);
     const queue = [];
     const enqueue = (moduleId) => {
-        // To make the treeshaker work on windows...
-        moduleId = moduleId.replace(/\\/g, '/');
         if (in_queue[moduleId]) {
             return;
         }
@@ -152,7 +150,7 @@ function processLibFiles(ts, options) {
             result[key] = sourceText;
             // precess dependencies and "recurse"
             const info = ts.preProcessFile(sourceText);
-            for (const ref of info.libReferenceDirectives) {
+            for (let ref of info.libReferenceDirectives) {
                 stack.push(ref.fileName);
             }
         }
@@ -227,12 +225,6 @@ function getColor(node) {
 }
 function setColor(node, color) {
     node.$$$color = color;
-}
-function markNeededSourceFile(node) {
-    node.$$$neededSourceFile = true;
-}
-function isNeededSourceFile(node) {
-    return Boolean(node.$$$neededSourceFile);
 }
 function nodeOrParentIsBlack(node) {
     while (node) {
@@ -359,19 +351,6 @@ function markNodes(ts, languageService, options) {
             }
         });
     }
-    /**
-     * Return the parent of `node` which is an ImportDeclaration
-     */
-    function findParentImportDeclaration(node) {
-        let _node = node;
-        do {
-            if (ts.isImportDeclaration(_node)) {
-                return _node;
-            }
-            _node = _node.parent;
-        } while (_node);
-        return null;
-    }
     function enqueue_gray(node) {
         if (nodeOrParentIsBlack(node) || getColor(node) === 1 /* Gray */) {
             return;
@@ -439,8 +418,6 @@ function markNodes(ts, languageService, options) {
             console.warn(`Cannot find source file ${filename}`);
             return;
         }
-        // This source file should survive even if it is empty
-        markNeededSourceFile(sourceFile);
         enqueue_black(sourceFile);
     }
     function enqueueImport(node, importText) {
@@ -492,11 +469,7 @@ function markNodes(ts, languageService, options) {
         const loop = (node) => {
             const [symbol, symbolImportNode] = getRealNodeSymbol(ts, checker, node);
             if (symbolImportNode) {
-                setColor(symbolImportNode, 2 /* NodeColor.Black */);
-                const importDeclarationNode = findParentImportDeclaration(symbolImportNode);
-                if (importDeclarationNode && ts.isStringLiteral(importDeclarationNode.moduleSpecifier)) {
-                    enqueueImport(importDeclarationNode, importDeclarationNode.moduleSpecifier.text);
-                }
+                setColor(symbolImportNode, 2 /* Black */);
             }
             if (isSymbolWithDeclarations(symbol) && !nodeIsInItsOwnDeclaration(nodeSourceFile, node, symbol)) {
                 for (let i = 0, len = symbol.declarations.length; i < len; i++) { // {{SQL CARBON EDIT}} Compile fixes
@@ -530,7 +503,7 @@ function markNodes(ts, languageService, options) {
                         }
                         // queue the heritage clauses
                         if (declaration.heritageClauses) {
-                            for (const heritageClause of declaration.heritageClauses) {
+                            for (let heritageClause of declaration.heritageClauses) {
                                 enqueue_black(heritageClause);
                             }
                         }
@@ -578,7 +551,7 @@ function generateResult(ts, languageService, shakeLevel) {
     if (!program) {
         throw new Error('Could not get program from language service');
     }
-    const result = {};
+    let result = {};
     const writeFile = (filePath, contents) => {
         result[filePath] = contents;
     };
@@ -594,7 +567,7 @@ function generateResult(ts, languageService, shakeLevel) {
             }
             return;
         }
-        const text = sourceFile.text;
+        let text = sourceFile.text;
         let result = '';
         function keep(node) {
             result += text.substring(node.pos, node.end);
@@ -624,7 +597,7 @@ function generateResult(ts, languageService, shakeLevel) {
                         }
                     }
                     else {
-                        const survivingImports = [];
+                        let survivingImports = [];
                         for (const importNode of node.importClause.namedBindings.elements) {
                             if (getColor(importNode) === 2 /* Black */) {
                                 survivingImports.push(importNode.getFullText(sourceFile));
@@ -653,7 +626,7 @@ function generateResult(ts, languageService, shakeLevel) {
             }
             if (ts.isExportDeclaration(node)) {
                 if (node.exportClause && node.moduleSpecifier && ts.isNamedExports(node.exportClause)) {
-                    const survivingExports = [];
+                    let survivingExports = [];
                     for (const exportSpecifier of node.exportClause.elements) {
                         if (getColor(exportSpecifier) === 2 /* Black */) {
                             survivingExports.push(exportSpecifier.getFullText(sourceFile));
@@ -674,8 +647,8 @@ function generateResult(ts, languageService, shakeLevel) {
                         // keep method
                         continue;
                     }
-                    const pos = member.pos - node.pos;
-                    const end = member.end - node.pos;
+                    let pos = member.pos - node.pos;
+                    let end = member.end - node.pos;
                     toWrite = toWrite.substring(0, pos) + toWrite.substring(end);
                 }
                 return write(toWrite);
@@ -688,23 +661,11 @@ function generateResult(ts, languageService, shakeLevel) {
         }
         if (getColor(sourceFile) !== 2 /* Black */) {
             if (!nodeOrChildIsBlack(sourceFile)) {
-                // none of the elements are reachable
-                if (isNeededSourceFile(sourceFile)) {
-                    // this source file must be written, even if nothing is used from it
-                    // because there is an import somewhere for it.
-                    // However, TS complains with empty files with the error "x" is not a module,
-                    // so we will export a dummy variable
-                    result = 'export const __dummy = 0;';
-                }
-                else {
-                    // don't write this file at all!
-                    return;
-                }
+                // none of the elements are reachable => don't write this file at all!
+                return;
             }
-            else {
-                sourceFile.forEachChild(writeMarkedNodes);
-                result += sourceFile.endOfFileToken.getFullText(sourceFile);
-            }
+            sourceFile.forEachChild(writeMarkedNodes);
+            result += sourceFile.endOfFileToken.getFullText(sourceFile);
         }
         else {
             result = text;
@@ -878,4 +839,3 @@ function getTokenAtPosition(ts, sourceFile, position, allowPositionInLeadingTriv
         return current;
     }
 }
-//#endregion

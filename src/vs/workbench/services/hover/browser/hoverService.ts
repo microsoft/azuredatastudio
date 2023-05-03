@@ -38,11 +38,7 @@ export class HoverService implements IHoverService {
 		const hoverDisposables = new DisposableStore();
 		const hover = this._instantiationService.createInstance(HoverWidget, options);
 		hover.onDispose(() => {
-			// Only clear the current options if it's the current hover, the current options help
-			// reduce flickering when the same hover is shown multiple times
-			if (this._currentHoverOptions === options) {
-				this._currentHoverOptions = undefined;
-			}
+			this._currentHoverOptions = undefined;
 			hoverDisposables.dispose();
 		});
 		const provider = this._contextViewService as IContextViewProvider;

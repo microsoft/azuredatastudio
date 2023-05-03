@@ -16,7 +16,7 @@ import { Lazy } from 'vs/base/common/lazy';
 suite('ExtHostTextEditor', () => {
 
 	let editor: ExtHostTextEditor;
-	const doc = new ExtHostDocumentData(undefined!, URI.file(''), [
+	let doc = new ExtHostDocumentData(undefined!, URI.file(''), [
 		'aaaa bbbb+cccc abc'
 	], '\n', 1, 'text', false);
 
@@ -42,7 +42,7 @@ suite('ExtHostTextEditor', () => {
 
 	test('API [bug]: registerTextEditorCommand clears redo stack even if no edits are made #55163', async function () {
 		let applyCount = 0;
-		const editor = new ExtHostTextEditor('edt1',
+		let editor = new ExtHostTextEditor('edt1',
 			new class extends mock<MainThreadTextEditorsShape>() {
 				override $tryApplyEdits(): Promise<boolean> {
 					applyCount += 1;
@@ -68,7 +68,7 @@ suite('ExtHostTextEditorOptions', () => {
 
 	setup(() => {
 		calls = [];
-		const mockProxy: MainThreadTextEditorsShape = {
+		let mockProxy: MainThreadTextEditorsShape = {
 			dispose: undefined!,
 			$trySetOptions: (id: string, options: ITextEditorConfigurationUpdate) => {
 				assert.strictEqual(id, '1');
@@ -102,7 +102,7 @@ suite('ExtHostTextEditorOptions', () => {
 	});
 
 	function assertState(opts: ExtHostTextEditorOptions, expected: IResolvedTextEditorConfiguration): void {
-		const actual = {
+		let actual = {
 			tabSize: opts.value.tabSize,
 			insertSpaces: opts.value.insertSpaces,
 			cursorStyle: opts.value.cursorStyle,

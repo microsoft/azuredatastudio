@@ -366,7 +366,7 @@ export class ExtHostNotebookDocument {
 		});
 
 		if (bucket) {
-			for (const changeEvent of contentChangeEvents) {
+			for (let changeEvent of contentChangeEvents) {
 				bucket.push(changeEvent.asApiEvent());
 			}
 		}

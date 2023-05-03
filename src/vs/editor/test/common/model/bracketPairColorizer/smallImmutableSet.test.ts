@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as assert from 'assert';
+import assert = require('assert');
 import { DenseKeyProvider, SmallImmutableSet } from 'vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/smallImmutableSet';
 
 suite('Bracket Pair Colorizer - ImmutableSet', () => {

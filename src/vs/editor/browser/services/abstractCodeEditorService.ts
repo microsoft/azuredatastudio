@@ -5,12 +5,11 @@
 
 import * as dom from 'vs/base/browser/dom';
 import { Emitter, Event } from 'vs/base/common/event';
-import { IDisposable, DisposableStore, Disposable, toDisposable } from 'vs/base/common/lifecycle';
-import { LinkedList } from 'vs/base/common/linkedList';
+import { IDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import * as strings from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { ICodeEditor, IDiffEditor } from 'vs/editor/browser/editorBrowser';
-import { ICodeEditorOpenHandler, ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IContentDecorationRenderOptions, IDecorationRenderOptions, IThemeDecorationRenderOptions, isThemeColor } from 'vs/editor/common/editorCommon';
 import { IModelDecorationOptions, IModelDecorationOverviewRulerOptions, InjectedTextOptions, ITextModel, OverviewRulerLane, TrackedRangeStickiness } from 'vs/editor/common/model';
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
@@ -43,7 +42,6 @@ export abstract class AbstractCodeEditorService extends Disposable implements IC
 	protected _globalStyleSheet: GlobalStyleSheet | null;
 	private readonly _decorationOptionProviders = new Map<string, IModelDecorationOptionsProvider>();
 	private readonly _editorStyleSheets = new Map<string, RefCountedStyleSheet>();
-	private readonly _codeEditorOpenHandlers = new LinkedList<ICodeEditorOpenHandler>();
 
 	constructor(
 		@IThemeService private readonly _themeService: IThemeService,
@@ -163,7 +161,7 @@ export abstract class AbstractCodeEditorService extends Disposable implements IC
 			if (provider.refCount <= 0) {
 				this._decorationOptionProviders.delete(key);
 				provider.dispose();
-				this.listCodeEditors().forEach((ed) => ed.removeDecorationsByType(key));
+				this.listCodeEditors().forEach((ed) => ed.removeDecorations(key));
 			}
 		}
 	}
@@ -249,21 +247,7 @@ export abstract class AbstractCodeEditorService extends Disposable implements IC
 	}
 
 	abstract getActiveCodeEditor(): ICodeEditor | null;
-
-	async openCodeEditor(input: IResourceEditorInput, source: ICodeEditor | null, sideBySide?: boolean): Promise<ICodeEditor | null> {
-		for (const handler of this._codeEditorOpenHandlers) {
-			const candidate = await handler(input, source, sideBySide);
-			if (candidate !== null) {
-				return candidate;
-			}
-		}
-		return null;
-	}
-
-	registerCodeEditorOpenHandler(handler: ICodeEditorOpenHandler): IDisposable {
-		const rm = this._codeEditorOpenHandlers.unshift(handler);
-		return toDisposable(rm);
-	}
+	abstract openCodeEditor(input: IResourceEditorInput, source: ICodeEditor | null, sideBySide?: boolean): Promise<ICodeEditor | null>;
 }
 
 export class ModelTransientSettingWatcher {
@@ -792,7 +776,7 @@ class DecorationCSSRules {
 
 	private collectCSSText(opts: any, properties: string[], cssTextArr: string[]): boolean {
 		const lenBefore = cssTextArr.length;
-		for (const property of properties) {
+		for (let property of properties) {
 			const value = this.resolveValue(opts[property]);
 			if (typeof value === 'string') {
 				cssTextArr.push(strings.format(_CSS_MAP[property], value));

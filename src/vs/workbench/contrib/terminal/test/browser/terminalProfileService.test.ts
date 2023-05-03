@@ -140,8 +140,8 @@ let jsdebugProfile = {
 	id: 'extension.js-debug.debugTerminal',
 	title: 'JavaScript Debug Terminal'
 };
-const powershellPick = { label: 'Powershell', profile: powershellProfile, profileName: powershellProfile.profileName };
-const jsdebugPick = { label: 'Javascript Debug Terminal', profile: jsdebugProfile, profileName: jsdebugProfile.title };
+let powershellPick = { label: 'Powershell', profile: powershellProfile, profileName: powershellProfile.profileName };
+let jsdebugPick = { label: 'Javascript Debug Terminal', profile: jsdebugProfile, profileName: jsdebugProfile.title };
 
 suite('TerminalProfileService', () => {
 	let configurationService: TestConfigurationService;
@@ -160,9 +160,9 @@ suite('TerminalProfileService', () => {
 		environmentService = { remoteAuthority: undefined } as IWorkbenchEnvironmentService;
 		instantiationService = new TestInstantiationService();
 
-		const themeService = new TestThemeService();
-		const terminalContributionService = new TestTerminalContributionService();
-		const contextKeyService = new MockContextKeyService();
+		let themeService = new TestThemeService();
+		let terminalContributionService = new TestTerminalContributionService();
+		let contextKeyService = new MockContextKeyService();
 
 		instantiationService.stub(IContextKeyService, contextKeyService);
 		instantiationService.stub(IExtensionService, extensionService);

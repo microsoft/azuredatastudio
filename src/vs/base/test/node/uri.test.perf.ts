@@ -13,18 +13,18 @@ suite('URI - perf', function () {
 	let manyFileUris: URI[];
 	setup(function () {
 		manyFileUris = [];
-		const data = readFileSync(getPathFromAmdModule(require, './uri.test.data.txt')).toString();
-		const lines = data.split('\n');
-		for (const line of lines) {
+		let data = readFileSync(getPathFromAmdModule(require, './uri.test.data.txt')).toString();
+		let lines = data.split('\n');
+		for (let line of lines) {
 			manyFileUris.push(URI.file(line));
 		}
 	});
 
 	function perfTest(name: string, callback: Function) {
 		test(name, _done => {
-			const t1 = Date.now();
+			let t1 = Date.now();
 			callback();
-			const d = Date.now() - t1;
+			let d = Date.now() - t1;
 			console.log(`${name} took ${d}ms (${(d / manyFileUris.length).toPrecision(3)} ms/uri)`);
 			_done();
 		});
@@ -32,28 +32,28 @@ suite('URI - perf', function () {
 
 	perfTest('toString', function () {
 		for (const uri of manyFileUris) {
-			const data = uri.toString();
+			let data = uri.toString();
 			assert.ok(data);
 		}
 	});
 
 	perfTest('toString(skipEncoding)', function () {
 		for (const uri of manyFileUris) {
-			const data = uri.toString(true);
+			let data = uri.toString(true);
 			assert.ok(data);
 		}
 	});
 
 	perfTest('fsPath', function () {
 		for (const uri of manyFileUris) {
-			const data = uri.fsPath;
+			let data = uri.fsPath;
 			assert.ok(data);
 		}
 	});
 
 	perfTest('toJSON', function () {
 		for (const uri of manyFileUris) {
-			const data = uri.toJSON();
+			let data = uri.toJSON();
 			assert.ok(data);
 		}
 	});

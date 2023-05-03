@@ -278,7 +278,7 @@ export class EditorMemento<T> extends Disposable implements IEditorMemento<T> {
 
 		const mementosForResource = cache.get(resource.toString());
 		if (mementosForResource) {
-			const mementoForResourceAndGroup = mementosForResource[group.id];
+			let mementoForResourceAndGroup = mementosForResource[group.id];
 
 			// Return state for group if present
 			if (mementoForResourceAndGroup) {

@@ -8,109 +8,8 @@ import MarkdownIt from 'markdown-it';
 import type * as MarkdownItToken from 'markdown-it/lib/token';
 import type { ActivationFunction } from 'vscode-notebook-renderer';
 
-const allowedHtmlTags = Object.freeze([
-	'a',
-	'b',
-	'blockquote',
-	'br',
-	'button',
-	'caption',
-	'center',
-	'code',
-	'col',
-	'colgroup',
-	'details',
-	'div',
-	'em',
-	'font',
-	'h1',
-	'h2',
-	'h3',
-	'h4',
-	'h5',
-	'h6',
-	'hr',
-	'i',
-	'img',
-	'input',
-	'kbd',
-	'label',
-	'li',
-	'ol',
-	'p',
-	'pre',
-	'select',
-	'small',
-	'span',
-	'strong',
-	'sub',
-	'summary',
-	'sup',
-	'table',
-	'tbody',
-	'td',
-	'textarea',
-	'tfoot',
-	'th',
-	'thead',
-	'tr',
-	'tt',
-	'u',
-	'ul',
-	'video',
-]);
-
-const allowedSvgTags = Object.freeze([
-	'svg',
-	'a',
-	'altglyph',
-	'altglyphdef',
-	'altglyphitem',
-	'animatecolor',
-	'animatemotion',
-	'animatetransform',
-	'circle',
-	'clippath',
-	'defs',
-	'desc',
-	'ellipse',
-	'filter',
-	'font',
-	'g',
-	'glyph',
-	'glyphref',
-	'hkern',
-	'image',
-	'line',
-	'lineargradient',
-	'marker',
-	'mask',
-	'metadata',
-	'mpath',
-	'path',
-	'pattern',
-	'polygon',
-	'polyline',
-	'radialgradient',
-	'rect',
-	'stop',
-	'style',
-	'switch',
-	'symbol',
-	'text',
-	'textpath',
-	'title',
-	'tref',
-	'tspan',
-	'view',
-	'vkern',
-]);
-
 const sanitizerOptions: DOMPurify.Config = {
-	ALLOWED_TAGS: [
-		...allowedHtmlTags,
-		...allowedSvgTags,
-	],
+	ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'],
 };
 
 export const activate: ActivationFunction<void> = (ctx) => {
@@ -127,7 +26,6 @@ export const activate: ActivationFunction<void> = (ctx) => {
 	markdownIt.linkify.set({ fuzzyLink: false });
 
 	addNamedHeaderRendering(markdownIt);
-	addLinkRenderer(markdownIt);
 
 	const style = document.createElement('style');
 	style.textContent = `
@@ -308,9 +206,7 @@ export const activate: ActivationFunction<void> = (ctx) => {
 				previewNode.classList.remove('emptyMarkdownCell');
 				const markdownText = outputInfo.mime.startsWith('text/x-') ? `\`\`\`${outputInfo.mime.substr(7)}\n${text}\n\`\`\``
 					: (outputInfo.mime.startsWith('application/') ? `\`\`\`${outputInfo.mime.substr(12)}\n${text}\n\`\`\`` : text);
-				const unsanitizedRenderedMarkdown = markdownIt.render(markdownText, {
-					outputItem: outputInfo,
-				});
+				const unsanitizedRenderedMarkdown = markdownIt.render(markdownText);
 				previewNode.innerHTML = (ctx.workspace.isTrusted
 					? unsanitizedRenderedMarkdown
 					: DOMPurify.sanitize(unsanitizedRenderedMarkdown, sanitizerOptions)) as string;
@@ -329,12 +225,12 @@ function addNamedHeaderRendering(md: InstanceType<typeof MarkdownIt>): void {
 	const originalHeaderOpen = md.renderer.rules.heading_open;
 	md.renderer.rules.heading_open = (tokens: MarkdownItToken[], idx: number, options, env, self) => {
 		const title = tokens[idx + 1].children!.reduce<string>((acc, t) => acc + t.content, '');
-		let slug = slugify(title);
+		let slug = slugFromHeading(title);
 
 		if (slugCounter.has(slug)) {
 			const count = slugCounter.get(slug)!;
 			slugCounter.set(slug, count + 1);
-			slug = slugify(slug + '-' + (count + 1));
+			slug = slugFromHeading(slug + '-' + (count + 1));
 		} else {
 			slugCounter.set(slug, 0);
 		}
@@ -355,26 +251,9 @@ function addNamedHeaderRendering(md: InstanceType<typeof MarkdownIt>): void {
 	};
 }
 
-function addLinkRenderer(md: MarkdownIt): void {
-	const original = md.renderer.rules.link_open;
-
-	md.renderer.rules.link_open = (tokens: MarkdownItToken[], idx: number, options, env, self) => {
-		const token = tokens[idx];
-		const href = token.attrGet('href');
-		if (typeof href === 'string' && href.startsWith('#')) {
-			token.attrSet('href', '#' + slugify(href.slice(1)));
-		}
-		if (original) {
-			return original(tokens, idx, options, env, self);
-		} else {
-			return self.renderToken(tokens, idx, options);
-		}
-	};
-}
-
-function slugify(text: string): string {
+function slugFromHeading(heading: string): string {
 	const slugifiedHeading = encodeURI(
-		text.trim()
+		heading.trim()
 			.toLowerCase()
 			.replace(/\s+/g, '-') // Replace whitespace with -
 			// allow-any-unicode-next-line

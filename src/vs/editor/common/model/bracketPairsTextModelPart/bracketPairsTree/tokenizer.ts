@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { NotSupportedError } from 'vs/base/common/errors';
-import { StandardTokenType, TokenMetadata } from 'vs/editor/common/encodedTokenAttributes';
+import { StandardTokenType, TokenMetadata } from 'vs/editor/common/languages';
 import { IViewLineTokens } from 'vs/editor/common/tokens/lineTokens';
 import { BracketAstNode, TextAstNode } from './ast';
 import { BracketTokens, LanguageAgnosticBracketTokens } from './brackets';
@@ -199,7 +199,7 @@ class NonPeekableTextBufferTokenizer {
 
 				const endOffset = lineTokens.getEndOffset(this.lineTokenOffset);
 				// Is there a bracket token next? Only consume text.
-				if (containsBracketType && isOther && this.lineCharOffset < endOffset) {
+				if (containsBracketType && isOther && endOffset !== this.lineCharOffset) {
 					const languageId = lineTokens.getLanguageId(this.lineTokenOffset);
 					const text = this.line.substring(this.lineCharOffset, endOffset);
 

@@ -145,7 +145,7 @@
 			/**
 			 * @param {string} channel
 			 * @param {any[]} args
-			 * @returns {Promise<any> | never}
+			 * @returns {Promise<any> | undefined}
 			 */
 			invoke(channel, ...args) {
 				if (validateIPC(channel)) {
@@ -156,7 +156,7 @@
 			/**
 			 * @param {string} channel
 			 * @param {(event: IpcRendererEvent, ...args: any[]) => void} listener
-			 * @returns {IpcRenderer | never}
+			 * @returns {IpcRenderer}
 			 */
 			on(channel, listener) {
 				if (validateIPC(channel)) {
@@ -169,7 +169,7 @@
 			/**
 			 * @param {string} channel
 			 * @param {(event: IpcRendererEvent, ...args: any[]) => void} listener
-			 * @returns {IpcRenderer | never}
+			 * @returns {IpcRenderer}
 			 */
 			once(channel, listener) {
 				if (validateIPC(channel)) {
@@ -182,7 +182,7 @@
 			/**
 			 * @param {string} channel
 			 * @param {(event: IpcRendererEvent, ...args: any[]) => void} listener
-			 * @returns {IpcRenderer | never}
+			 * @returns {IpcRenderer}
 			 */
 			removeListener(channel, listener) {
 				if (validateIPC(channel)) {

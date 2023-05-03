@@ -10,13 +10,13 @@ import { ISerializedSingleFolderWorkspaceIdentifier, ISerializedWorkspaceIdentif
 suite('Workspaces', () => {
 
 	test('reviveIdentifier', () => {
-		const serializedWorkspaceIdentifier: ISerializedWorkspaceIdentifier = { id: 'id', configPath: URI.file('foo').toJSON() };
+		let serializedWorkspaceIdentifier: ISerializedWorkspaceIdentifier = { id: 'id', configPath: URI.file('foo').toJSON() };
 		assert.strictEqual(isWorkspaceIdentifier(reviveIdentifier(serializedWorkspaceIdentifier)), true);
 
-		const serializedSingleFolderWorkspaceIdentifier: ISerializedSingleFolderWorkspaceIdentifier = { id: 'id', uri: URI.file('foo').toJSON() };
+		let serializedSingleFolderWorkspaceIdentifier: ISerializedSingleFolderWorkspaceIdentifier = { id: 'id', uri: URI.file('foo').toJSON() };
 		assert.strictEqual(isSingleFolderWorkspaceIdentifier(reviveIdentifier(serializedSingleFolderWorkspaceIdentifier)), true);
 
-		const serializedEmptyWorkspaceIdentifier: IEmptyWorkspaceIdentifier = { id: 'id' };
+		let serializedEmptyWorkspaceIdentifier: IEmptyWorkspaceIdentifier = { id: 'id' };
 		assert.strictEqual(reviveIdentifier(serializedEmptyWorkspaceIdentifier).id, serializedEmptyWorkspaceIdentifier.id);
 		assert.strictEqual(isWorkspaceIdentifier(serializedEmptyWorkspaceIdentifier), false);
 		assert.strictEqual(isSingleFolderWorkspaceIdentifier(serializedEmptyWorkspaceIdentifier), false);

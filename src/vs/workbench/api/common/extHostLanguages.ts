@@ -102,7 +102,7 @@ export class ExtHostLanguages implements ExtHostLanguagesShape {
 		};
 
 		let soonHandle: IDisposable | undefined;
-		const commandDisposables = new DisposableStore();
+		let commandDisposables = new DisposableStore();
 		const updateAsync = () => {
 			soonHandle?.dispose();
 			soonHandle = disposableTimeout(() => {

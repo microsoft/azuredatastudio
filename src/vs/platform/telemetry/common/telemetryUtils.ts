@@ -85,10 +85,8 @@ export function configurationTelemetry(telemetryService: ITelemetryService, conf
 	return configurationService.onDidChangeConfiguration(event => {
 		if (event.source !== ConfigurationTarget.DEFAULT) {
 			type UpdateConfigurationClassification = {
-				owner: 'lramos15, sbatten';
-				comment: 'Event which fires when user updates telemetry configuration';
-				configurationSource: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'What configuration file was updated i.e user or workspace' };
-				configurationKeys: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'What configuration keys were updated' };
+				configurationSource: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				configurationKeys: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 			};
 			type UpdateConfigurationEvent = {
 				configurationSource: string;
@@ -155,10 +153,10 @@ export interface Measurements {
 
 export function validateTelemetryData(data?: any): { properties: Properties; measurements: Measurements } {
 
-	const properties: Properties = {};
-	const measurements: Measurements = {};
+	const properties: Properties = Object.create(null);
+	const measurements: Measurements = Object.create(null);
 
-	const flat: Record<string, any> = {};
+	const flat = Object.create(null);
 	flatten(data, flat);
 
 	for (let prop in flat) {
@@ -191,20 +189,20 @@ export function validateTelemetryData(data?: any): { properties: Properties; mea
 	};
 }
 
-const telemetryAllowedAuthorities: readonly string[] = ['ssh-remote', 'dev-container', 'attached-container', 'wsl', 'tunneling'];
-
 export function cleanRemoteAuthority(remoteAuthority?: string): string {
 	if (!remoteAuthority) {
 		return 'none';
 	}
 
-	for (const authority of telemetryAllowedAuthorities) {
-		if (remoteAuthority.startsWith(`${authority}+`)) {
-			return authority;
+	let ret = 'other';
+	const allowedAuthorities = ['ssh-remote', 'dev-container', 'attached-container', 'wsl'];
+	allowedAuthorities.forEach((res: string) => {
+		if (remoteAuthority!.indexOf(`${res}+`) === 0) {
+			ret = res;
 		}
-	}
+	});
 
-	return 'other';
+	return ret;
 }
 
 function flatten(obj: any, result: { [key: string]: any }, order: number = 0, prefix?: string): void {
@@ -212,7 +210,7 @@ function flatten(obj: any, result: { [key: string]: any }, order: number = 0, pr
 		return;
 	}
 
-	for (const item of Object.getOwnPropertyNames(obj)) {
+	for (let item of Object.getOwnPropertyNames(obj)) {
 		const value = obj[item];
 		const index = prefix ? prefix + item : item;
 

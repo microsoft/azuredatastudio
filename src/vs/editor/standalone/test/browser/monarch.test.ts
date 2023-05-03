@@ -11,13 +11,11 @@ import { compile } from 'vs/editor/standalone/common/monarch/monarchCompile';
 import { Token, TokenizationRegistry } from 'vs/editor/common/languages';
 import { IMonarchLanguage } from 'vs/editor/standalone/common/monarch/monarchTypes';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { StandaloneConfigurationService } from 'vs/editor/standalone/browser/standaloneServices';
 
 suite('Monarch', () => {
 
-	function createMonarchTokenizer(languageService: ILanguageService, languageId: string, language: IMonarchLanguage, configurationService: IConfigurationService): MonarchTokenizer {
-		return new MonarchTokenizer(languageService, null!, languageId, compile(languageId, language), configurationService);
+	function createMonarchTokenizer(languageService: ILanguageService, languageId: string, language: IMonarchLanguage): MonarchTokenizer {
+		return new MonarchTokenizer(languageService, null!, languageId, compile(languageId, language));
 	}
 
 	function getTokens(tokenizer: MonarchTokenizer, lines: string[]): Token[][] {
@@ -34,7 +32,6 @@ suite('Monarch', () => {
 	test('Ensure @rematch and nextEmbedded can be used together in Monarch grammar', () => {
 		const disposables = new DisposableStore();
 		const languageService = disposables.add(new LanguageService());
-		const configurationService = new StandaloneConfigurationService();
 		disposables.add(languageService.registerLanguage({ id: 'sql' }));
 		disposables.add(TokenizationRegistry.register('sql', createMonarchTokenizer(languageService, 'sql', {
 			tokenizer: {
@@ -42,7 +39,7 @@ suite('Monarch', () => {
 					[/./, 'token']
 				]
 			}
-		}, configurationService)));
+		})));
 		const SQL_QUERY_START = '(SELECT|INSERT|UPDATE|DELETE|CREATE|REPLACE|ALTER|WITH)';
 		const tokenizer = createMonarchTokenizer(languageService, 'test1', {
 			tokenizer: {
@@ -66,7 +63,7 @@ suite('Monarch', () => {
 				],
 				endStringWithSQL: [[/"""/, { token: 'string.quote', next: '@popall', nextEmbedded: '@pop', },]],
 			}
-		}, configurationService);
+		});
 
 		const lines = [
 			`mysql_query("""SELECT * FROM table_name WHERE ds = '<DATEID>'""")`,
@@ -109,7 +106,6 @@ suite('Monarch', () => {
 	});
 
 	test('microsoft/monaco-editor#1235: Empty Line Handling', () => {
-		const configurationService = new StandaloneConfigurationService();
 		const languageService = new LanguageService();
 		const tokenizer = createMonarchTokenizer(languageService, 'test', {
 			tokenizer: {
@@ -129,7 +125,7 @@ suite('Monarch', () => {
 					// No possible rule to detect an empty line and @pop?
 				],
 			},
-		}, configurationService);
+		});
 
 		const lines = [
 			`// This comment \\`,
@@ -167,7 +163,6 @@ suite('Monarch', () => {
 	});
 
 	test('microsoft/monaco-editor#2265: Exit a state at end of line', () => {
-		const configurationService = new StandaloneConfigurationService();
 		const languageService = new LanguageService();
 		const tokenizer = createMonarchTokenizer(languageService, 'test', {
 			includeLF: true,
@@ -184,7 +179,7 @@ suite('Monarch', () => {
 					[/[^\d]+/, '']
 				]
 			}
-		}, configurationService);
+		});
 
 		const lines = [
 			`PRINT 10 * 20`,
@@ -216,7 +211,6 @@ suite('Monarch', () => {
 	});
 
 	test('issue #115662: monarchCompile function need an extra option which can control replacement', () => {
-		const configurationService = new StandaloneConfigurationService();
 		const languageService = new LanguageService();
 
 		const tokenizer1 = createMonarchTokenizer(languageService, 'test', {
@@ -236,7 +230,7 @@ suite('Monarch', () => {
 					},
 				],
 			},
-		}, configurationService);
+		});
 
 		const tokenizer2 = createMonarchTokenizer(languageService, 'test', {
 			ignoreCase: false,
@@ -248,7 +242,7 @@ suite('Monarch', () => {
 					},
 				],
 			},
-		}, configurationService);
+		});
 
 		const lines = [
 			`@ham`
@@ -271,7 +265,6 @@ suite('Monarch', () => {
 	});
 
 	test('microsoft/monaco-editor#2424: Allow to target @@', () => {
-		const configurationService = new StandaloneConfigurationService();
 		const languageService = new LanguageService();
 
 		const tokenizer = createMonarchTokenizer(languageService, 'test', {
@@ -284,7 +277,7 @@ suite('Monarch', () => {
 					},
 				],
 			},
-		}, configurationService);
+		});
 
 		const lines = [
 			`@@`
@@ -294,40 +287,6 @@ suite('Monarch', () => {
 		assert.deepStrictEqual(actualTokens, [
 			[
 				new Token(0, 'ham.test', 'test'),
-			]
-		]);
-		languageService.dispose();
-	});
-
-	test('microsoft/monaco-editor#3025: Check maxTokenizationLineLength before tokenizing', async () => {
-		const configurationService = new StandaloneConfigurationService();
-		const languageService = new LanguageService();
-
-		// Set maxTokenizationLineLength to 4 so that "ham" works but "hamham" would fail
-		await configurationService.updateValue('editor.maxTokenizationLineLength', 4);
-
-		const tokenizer = createMonarchTokenizer(languageService, 'test', {
-			tokenizer: {
-				root: [
-					{
-						regex: /ham/,
-						action: { token: 'ham' }
-					},
-				],
-			},
-		}, configurationService);
-
-		const lines = [
-			'ham', // length 3, should be tokenized
-			'hamham' // length 6, should NOT be tokenized
-		];
-
-		const actualTokens = getTokens(tokenizer, lines);
-		assert.deepStrictEqual(actualTokens, [
-			[
-				new Token(0, 'ham.test', 'test'),
-			], [
-				new Token(0, '', 'test')
 			]
 		]);
 		languageService.dispose();

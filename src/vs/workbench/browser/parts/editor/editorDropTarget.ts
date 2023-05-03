@@ -18,8 +18,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IThemeService, Themable } from 'vs/platform/theme/common/themeService';
 import { isTemporaryWorkspace, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { DraggedEditorGroupIdentifier, DraggedEditorIdentifier, DraggedTreeItemsIdentifier, extractTreeDropData, LocalSelectionTransfer, ResourcesDropHandler } from 'vs/workbench/browser/dnd';
-import { Extensions as DragAndDropExtensions, CodeDataTransfers, containsDragType, extractEditorsDropData, IDragAndDropContributionRegistry } from 'vs/platform/dnd/browser/dnd'; // {{SQL CARBON EDIT}}
+import { CodeDataTransfers, containsDragType, DraggedEditorGroupIdentifier, DraggedEditorIdentifier, DraggedTreeItemsIdentifier, Extensions as DragAndDropExtensions, extractEditorsDropData, extractTreeDropData, IDragAndDropContributionRegistry, LocalSelectionTransfer, ResourcesDropHandler } from 'vs/workbench/browser/dnd';
 import { fillActiveEditorViewState, IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
 import { EditorInputCapabilities, IEditorIdentifier, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { EDITOR_DRAG_AND_DROP_BACKGROUND, EDITOR_DROP_INTO_PROMPT_BACKGROUND, EDITOR_DROP_INTO_PROMPT_BORDER, EDITOR_DROP_INTO_PROMPT_FOREGROUND } from 'vs/workbench/common/theme';
@@ -37,7 +36,7 @@ interface IDropOperation {
 }
 
 function isDropIntoEditorEnabledGlobally(configurationService: IConfigurationService) {
-	return configurationService.getValue<boolean>('editor.dropIntoEditor.enabled');
+	return configurationService.getValue<boolean>('workbench.experimental.editor.dropIntoEditor.enabled');
 }
 
 function isDragIntoEditorEvent(e: DragEvent): boolean {
@@ -355,9 +354,8 @@ class DropOverlay extends Themable {
 						editors.push(...treeDropData.map(editor => ({ ...editor, options: { ...editor.options, pinned: true } })));
 					}
 				}
-				if (editors.length) {
-					this.editorService.openEditors(editors, ensureTargetGroup(), { validateTrust: true });
-				}
+
+				this.editorService.openEditors(editors, ensureTargetGroup(), { validateTrust: true });
 			}
 
 			this.treeItemsTransfer.clearData(DraggedTreeItemsIdentifier.prototype);
@@ -369,7 +367,7 @@ class DropOverlay extends Themable {
 
 			// {{SQL CARBON EDIT}}
 			let untitledOrFileResources: any = undefined;
-			untitledOrFileResources = extractEditorsDropData(event); // {{SQL CARBON EDIT}} Signature no longer takes ServicesAccessor param
+			untitledOrFileResources = await this.instantiationService.invokeFunction(extractEditorsDropData, event);
 			if (untitledOrFileResources && !untitledOrFileResources.length) {
 				return;
 			}
@@ -429,6 +427,15 @@ class DropOverlay extends Themable {
 
 		const splitWidthThreshold = editorControlWidth / 3;		// offer to split left/right at 33%
 		const splitHeightThreshold = editorControlHeight / 3;	// offer to split up/down at 33%
+
+		// Enable to debug the drop threshold square
+		// let child = this.overlay.children.item(0) as HTMLElement || this.overlay.appendChild(document.createElement('div'));
+		// child.style.backgroundColor = 'red';
+		// child.style.position = 'absolute';
+		// child.style.width = (groupViewWidth - (2 * edgeWidthThreshold)) + 'px';
+		// child.style.height = (groupViewHeight - (2 * edgeHeightThreshold)) + 'px';
+		// child.style.left = edgeWidthThreshold + 'px';
+		// child.style.top = edgeHeightThreshold + 'px';
 
 		// No split if mouse is above certain threshold in the center of the view
 		let splitDirection: GroupDirection | undefined;

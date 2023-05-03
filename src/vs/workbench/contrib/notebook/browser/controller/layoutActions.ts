@@ -21,10 +21,7 @@ registerAction2(class NotebookConfigureLayoutAction extends Action2 {
 	constructor() {
 		super({
 			id: 'workbench.notebook.layout.select',
-			title: {
-				value: localize('workbench.notebook.layout.select.label', "Select between Notebook Layouts"),
-				original: 'Select between Notebook Layouts'
-			},
+			title: localize('workbench.notebook.layout.select.label', "Select between Notebook Layouts"),
 			f1: true,
 			precondition: ContextKeyExpr.equals(`config.${NotebookSetting.openGettingStarted}`, true),
 			category: NOTEBOOK_ACTIONS_CATEGORY,
@@ -60,10 +57,7 @@ registerAction2(class NotebookConfigureLayoutAction extends Action2 {
 	constructor() {
 		super({
 			id: 'workbench.notebook.layout.configure',
-			title: {
-				value: localize('workbench.notebook.layout.configure.label', "Customize Notebook Layout"),
-				original: 'Customize Notebook Layout'
-			},
+			title: localize('workbench.notebook.layout.configure.label', "Customize Notebook Layout"),
 			f1: true,
 			category: NOTEBOOK_ACTIONS_CATEGORY,
 			menu: [
@@ -85,10 +79,7 @@ registerAction2(class NotebookConfigureLayoutFromEditorTitle extends Action2 {
 	constructor() {
 		super({
 			id: 'workbench.notebook.layout.configure.editorTitle',
-			title: {
-				value: localize('workbench.notebook.layout.configure.label', "Customize Notebook Layout"),
-				original: 'Customize Notebook Layout'
-			},
+			title: localize('workbench.notebook.layout.configure.label', "Customize Notebook Layout"),
 			f1: false,
 			category: NOTEBOOK_ACTIONS_CATEGORY,
 			menu: [
@@ -186,10 +177,7 @@ registerAction2(class SaveMimeTypeDisplayOrder extends Action2 {
 	constructor() {
 		super({
 			id: 'notebook.saveMimeTypeOrder',
-			title: {
-				value: localize('notebook.saveMimeTypeOrder', 'Save Mimetype Display Order'),
-				original: 'Save Mimetype Display Order'
-			},
+			title: localize('notebook.saveMimeTypeOrder', 'Save Mimetype Display Order'),
 			f1: true,
 			category: NOTEBOOK_ACTIONS_CATEGORY,
 			precondition: NOTEBOOK_IS_ACTIVE_EDITOR,

@@ -21,9 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			try {
 				/* __GDPR__
 					"login" : {
-						"owner": "TylerLeonhardt",
-						"comment": "Used to determine the usage of the Microsoft Auth Provider.",
-						"scopes": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight", "comment": "Used to determine what scope combinations are being requested." }
+						"scopes": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 					}
 				*/
 				telemetryReporter.sendTelemetryEvent('login', {
@@ -36,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				return session;
 			} catch (e) {
 				/* __GDPR__
-					"loginFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users run into issues with the login flow." }
+					"loginFailed" : { }
 				*/
 				telemetryReporter.sendTelemetryEvent('loginFailed');
 
@@ -46,7 +44,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		removeSession: async (id: string) => {
 			try {
 				/* __GDPR__
-					"logout" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often users log out." }
+					"logout" : { }
 				*/
 				telemetryReporter.sendTelemetryEvent('logout');
 
@@ -56,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 			} catch (e) {
 				/* __GDPR__
-					"logoutFailed" : { "owner": "TylerLeonhardt", "comment": "Used to determine how often fail to log out." }
+					"logoutFailed" : { }
 				*/
 				telemetryReporter.sendTelemetryEvent('logoutFailed');
 			}

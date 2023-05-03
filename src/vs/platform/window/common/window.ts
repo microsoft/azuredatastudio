@@ -3,21 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IStringDictionary } from 'vs/base/common/collections';
 import { PerformanceMark } from 'vs/base/common/performance';
-import { isLinux, isMacintosh, isNative, isWeb, isWindows } from 'vs/base/common/platform';
-import { UriDto } from 'vs/base/common/types';
+import { isLinux, isMacintosh, isNative, isWeb } from 'vs/base/common/platform';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { ISandboxConfiguration } from 'vs/base/parts/sandbox/common/sandboxTypes';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { FileType } from 'vs/platform/files/common/files';
 import { LogLevel } from 'vs/platform/log/common/log';
-import { PolicyDefinition, PolicyValue } from 'vs/platform/policy/common/policy';
 import { IPartsSplash } from 'vs/platform/theme/common/themeService';
-import { IUserDataProfile } from 'vs/platform/userDataProfile/common/userDataProfile';
 import { ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier } from 'vs/platform/workspace/common/workspace';
 
 export const WindowMinimumSize = {
@@ -52,7 +47,6 @@ export interface IOpenWindowOptions extends IBaseOpenWindowsOptions {
 	readonly addMode?: boolean;
 
 	readonly diffMode?: boolean;
-	readonly mergeMode?: boolean;
 	readonly gotoLineMode?: boolean;
 
 	readonly waitMarkerFileURI?: URI;
@@ -136,7 +130,6 @@ export interface IWindowSettings {
 	readonly enableMenuBarMnemonics: boolean;
 	readonly closeWhenEmpty: boolean;
 	readonly clickThroughInactive: boolean;
-	readonly experimental?: { useSandbox: boolean };
 }
 
 interface IWindowBorderColors {
@@ -173,19 +166,6 @@ export function getTitleBarStyle(configurationService: IConfigurationService): '
 	}
 
 	return isLinux ? 'native' : 'custom'; // default to custom on all macOS and Windows
-}
-
-export function useWindowControlsOverlay(configurationService: IConfigurationService, environmentService: IEnvironmentService): boolean {
-	// Window Controls Overlay are only configurable on Windows
-	if (!isWindows || isWeb || !environmentService.isBuilt) {
-		return false;
-	}
-
-	if (getTitleBarStyle(configurationService) === 'native') {
-		return false;
-	}
-
-	return configurationService.getValue<boolean>('window.experimental.windowControlsOverlay.enabled');
 }
 
 export interface IPath<T = IEditorOptions> extends IPathData<T> {
@@ -241,7 +221,6 @@ interface IPathsToWaitForData {
 export interface IOpenFileRequest {
 	readonly filesToOpenOrCreate?: IPathData[];
 	readonly filesToDiff?: IPathData[];
-	readonly filesToMerge?: IPathData[];
 }
 
 /**
@@ -272,7 +251,6 @@ export interface IWindowConfiguration {
 
 	filesToOpenOrCreate?: IPath[];
 	filesToDiff?: IPath[];
-	filesToMerge?: IPath[];
 }
 
 export interface IOSConfiguration {
@@ -287,11 +265,6 @@ export interface INativeWindowConfiguration extends IWindowConfiguration, Native
 
 	execPath: string;
 	backupPath?: string;
-
-	profiles: {
-		all: UriDto<IUserDataProfile>[];
-		current: UriDto<IUserDataProfile>;
-	};
 
 	homeDir: string;
 	tmpDir: string;
@@ -316,7 +289,6 @@ export interface INativeWindowConfiguration extends IWindowConfiguration, Native
 	filesToWait?: IPathsToWaitFor;
 
 	os: IOSConfiguration;
-	policiesData?: IStringDictionary<{ definition: PolicyDefinition; value: PolicyValue }>;
 }
 
 /**

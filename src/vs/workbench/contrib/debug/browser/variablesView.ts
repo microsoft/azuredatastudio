@@ -96,10 +96,10 @@ export class VariablesView extends ViewPane {
 			const viewState = this.savedViewState.get(stackFrame.getId());
 			await this.tree.setInput(stackFrame, viewState);
 
-			// Automatically expand the first non-expensive scope
+			// Automatically expand the first scope if it is not expensive and if all scopes are collapsed
 			const scopes = await stackFrame.getScopes();
 			const toExpand = scopes.find(s => !s.expensive);
-			if (toExpand) {
+			if (toExpand && (scopes.every(s => this.tree.isCollapsed(s)) || !this.autoExpandedScopes.has(toExpand.getId()))) {
 				this.autoExpandedScopes.add(toExpand.getId());
 				await this.tree.expand(toExpand);
 			}
@@ -541,7 +541,6 @@ CommandsRegistry.registerCommand({
 		if (ext || await tryInstallHexEditor(notifications, progressService, extensionService, commandService)) {
 			/* __GDPR__
 				"debug/didViewMemory" : {
-					"owner": "connor4312",
 					"debugType" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/

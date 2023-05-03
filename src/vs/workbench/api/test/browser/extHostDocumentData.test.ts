@@ -12,21 +12,20 @@ import { MainThreadDocumentsShape } from 'vs/workbench/api/common/extHost.protoc
 import { IModelChangedEvent } from 'vs/editor/common/model/mirrorTextModel';
 import { mock } from 'vs/base/test/common/mock';
 import * as perfData from './extHostDocumentData.test.perf-data';
-import { setDefaultGetWordAtTextConfig } from 'vs/editor/common/core/wordHelper';
 
 suite('ExtHostDocumentData', () => {
 
 	let data: ExtHostDocumentData;
 
 	function assertPositionAt(offset: number, line: number, character: number) {
-		const position = data.document.positionAt(offset);
+		let position = data.document.positionAt(offset);
 		assert.strictEqual(position.line, line);
 		assert.strictEqual(position.character, character);
 	}
 
 	function assertOffsetAt(line: number, character: number, offset: number) {
-		const pos = new Position(line, character);
-		const actual = data.document.offsetAt(pos);
+		let pos = new Position(line, character);
+		let actual = data.document.offsetAt(pos);
 		assert.strictEqual(actual, offset);
 	}
 
@@ -50,7 +49,7 @@ suite('ExtHostDocumentData', () => {
 
 	test('save, when disposed', function () {
 		let saved: URI;
-		const data = new ExtHostDocumentData(new class extends mock<MainThreadDocumentsShape>() {
+		let data = new ExtHostDocumentData(new class extends mock<MainThreadDocumentsShape>() {
 			override $trySaveDocument(uri: URI) {
 				assert.ok(!saved);
 				saved = uri;
@@ -317,22 +316,14 @@ suite('ExtHostDocumentData', () => {
 			perfData._$_$_expensive
 		], '\n', 1, 'text', false);
 
-		// this test only ensures that we eventually give and timeout (when searching "funny" words and long lines)
-		// for the sake of speedy tests we lower the timeBudget here
-		const config = setDefaultGetWordAtTextConfig({ maxLen: 1000, windowSize: 15, timeBudget: 30 });
-		try {
-			let range = data.document.getWordRangeAtPosition(new Position(0, 1_177_170), regex)!;
-			assert.strictEqual(range, undefined);
+		let range = data.document.getWordRangeAtPosition(new Position(0, 1_177_170), regex)!;
+		assert.strictEqual(range, undefined);
 
-			const pos = new Position(0, 1177170);
-			range = data.document.getWordRangeAtPosition(pos)!;
-			assert.ok(range);
-			assert.ok(range.contains(pos));
-			assert.strictEqual(data.document.getText(range), 'TaskDefinition');
-
-		} finally {
-			config.dispose();
-		}
+		const pos = new Position(0, 1177170);
+		range = data.document.getWordRangeAtPosition(pos)!;
+		assert.ok(range);
+		assert.ok(range.contains(pos));
+		assert.strictEqual(data.document.getText(range), 'TaskDefinition');
 	});
 
 	test('Rename popup sometimes populates with text on the left side omitted #96013', function () {
@@ -344,7 +335,7 @@ suite('ExtHostDocumentData', () => {
 			line
 		], '\n', 1, 'text', false);
 
-		const range = data.document.getWordRangeAtPosition(new Position(0, 27), regex)!;
+		let range = data.document.getWordRangeAtPosition(new Position(0, 27), regex)!;
 		assert.strictEqual(range.start.line, 0);
 		assert.strictEqual(range.end.line, 0);
 		assert.strictEqual(range.start.character, 4);
@@ -379,7 +370,7 @@ suite('ExtHostDocumentData updates line mapping', () => {
 	}
 
 	function assertDocumentLineMapping(doc: ExtHostDocumentData, direction: AssertDocumentLineMappingDirection): void {
-		const allText = doc.getText();
+		let allText = doc.getText();
 
 		let line = 0, character = 0, previousIsCarriageReturn = false;
 		for (let offset = 0; offset <= allText.length; offset++) {
@@ -387,12 +378,12 @@ suite('ExtHostDocumentData updates line mapping', () => {
 			const position: Position = new Position(line, character + (previousIsCarriageReturn ? -1 : 0));
 
 			if (direction === AssertDocumentLineMappingDirection.OffsetToPosition) {
-				const actualPosition = doc.document.positionAt(offset);
+				let actualPosition = doc.document.positionAt(offset);
 				assert.strictEqual(positionToStr(actualPosition), positionToStr(position), 'positionAt mismatch for offset ' + offset);
 			} else {
 				// The position coordinate system cannot express the position between \r and \n
-				const expectedOffset: number = offset + (previousIsCarriageReturn ? -1 : 0);
-				const actualOffset = doc.document.offsetAt(position);
+				let expectedOffset: number = offset + (previousIsCarriageReturn ? -1 : 0);
+				let actualOffset = doc.document.offsetAt(position);
 				assert.strictEqual(actualOffset, expectedOffset, 'offsetAt mismatch for position ' + positionToStr(position));
 			}
 
@@ -423,7 +414,7 @@ suite('ExtHostDocumentData updates line mapping', () => {
 	}
 
 	function testLineMappingDirectionAfterEvents(lines: string[], eol: string, direction: AssertDocumentLineMappingDirection, e: IModelChangedEvent): void {
-		const myDocument = new ExtHostDocumentData(undefined!, URI.file(''), lines.slice(0), eol, 1, 'text', false);
+		let myDocument = new ExtHostDocumentData(undefined!, URI.file(''), lines.slice(0), eol, 1, 'text', false);
 		assertDocumentLineMapping(myDocument, direction);
 
 		myDocument.onEvents(e);

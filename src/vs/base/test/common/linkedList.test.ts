@@ -66,7 +66,7 @@ suite('LinkedList', function () {
 	});
 
 	test('Push/toArray', () => {
-		const list = new LinkedList<string>();
+		let list = new LinkedList<string>();
 		list.push('foo');
 		list.push('bar');
 		list.push('far');
@@ -107,7 +107,7 @@ suite('LinkedList', function () {
 	});
 
 	test('unshift/toArray', () => {
-		const list = new LinkedList<string>();
+		let list = new LinkedList<string>();
 		list.unshift('foo');
 		list.unshift('bar');
 		list.unshift('far');
@@ -116,20 +116,20 @@ suite('LinkedList', function () {
 	});
 
 	test('pop/unshift', function () {
-		const list = new LinkedList<string>();
+		let list = new LinkedList<string>();
 		list.push('a');
 		list.push('b');
 
 		assertElements(list, 'a', 'b');
 
-		const a = list.shift();
+		let a = list.shift();
 		assert.strictEqual(a, 'a');
 		assertElements(list, 'b');
 
 		list.unshift('a');
 		assertElements(list, 'a', 'b');
 
-		const b = list.pop();
+		let b = list.pop();
 		assert.strictEqual(b, 'b');
 		assertElements(list, 'a');
 	});

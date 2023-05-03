@@ -300,7 +300,7 @@ suite('HistoryService', function () {
 
 		// [one.txt] [>two.html<] | <empty>
 
-		const editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
+		let editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
 		pane1?.group?.moveEditor(pane1.input!, sideGroup);
 		await editorChangePromise;
 

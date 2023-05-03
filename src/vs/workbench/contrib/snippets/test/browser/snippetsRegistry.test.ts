@@ -10,10 +10,10 @@ import { Position } from 'vs/editor/common/core/position';
 suite('getNonWhitespacePrefix', () => {
 
 	function assertGetNonWhitespacePrefix(line: string, column: number, expected: string): void {
-		const model = {
+		let model = {
 			getLineContent: (lineNumber: number) => line
 		};
-		const actual = getNonWhitespacePrefix(model, new Position(1, column));
+		let actual = getNonWhitespacePrefix(model, new Position(1, column));
 		assert.strictEqual(actual, expected);
 	}
 

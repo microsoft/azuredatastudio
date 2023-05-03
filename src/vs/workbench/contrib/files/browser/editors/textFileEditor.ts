@@ -9,8 +9,8 @@ import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IAction, toAction } from 'vs/base/common/actions';
 import { VIEWLET_ID, TEXT_FILE_EDITOR_ID, BINARY_TEXT_FILE_MODE } from 'vs/workbench/contrib/files/common/files';
 import { ITextFileService, TextFileOperationError, TextFileOperationResult } from 'vs/workbench/services/textfile/common/textfiles';
-import { AbstractTextCodeEditor } from 'vs/workbench/browser/parts/editor/textCodeEditor';
-import { IEditorOpenContext, isTextEditorViewState, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { IEditorOpenContext, EditorInputCapabilities, isTextEditorViewState, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { applyTextEditorOptions } from 'vs/workbench/common/editor/editorOptions';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
@@ -30,6 +30,7 @@ import { createErrorWithActions } from 'vs/base/common/errorMessage';
 import { EditorActivation, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
+import { MutableDisposable } from 'vs/base/common/lifecycle';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -37,13 +38,15 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 /**
  * An implementation of editor for file system resources.
  */
-export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState> {
+export class TextFileEditor extends BaseTextEditor<ICodeEditorViewState> {
 
 	static readonly ID = TEXT_FILE_EDITOR_ID;
 
+	private readonly inputListener = this._register(new MutableDisposable());
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IFileService fileService: IFileService,
+		@IFileService private readonly fileService: IFileService,
 		@IPaneCompositePartService private readonly paneCompositeService: IPaneCompositePartService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
@@ -58,13 +61,17 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 		@IPathService private readonly pathService: IPathService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
-		super(TextFileEditor.ID, telemetryService, instantiationService, storageService, textResourceConfigurationService, themeService, editorService, editorGroupService, fileService);
+		super(TextFileEditor.ID, telemetryService, instantiationService, storageService, textResourceConfigurationService, themeService, editorService, editorGroupService);
 
 		// Clear view state for deleted files
 		this._register(this.fileService.onDidFilesChange(e => this.onDidFilesChange(e)));
 
 		// Move view state for moved files
 		this._register(this.fileService.onDidRunOperation(e => this.onDidRunOperation(e)));
+
+		// Listen to file system provider changes
+		this._register(this.fileService.onDidChangeFileSystemProviderCapabilities(e => this.onDidChangeFileSystemProvider(e.scheme)));
+		this._register(this.fileService.onDidChangeFileSystemProviderRegistrations(e => this.onDidChangeFileSystemProvider(e.scheme)));
 	}
 
 	private onDidFilesChange(e: FileChangesEvent): void {
@@ -79,12 +86,27 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 		}
 	}
 
-	override getTitle(): string {
-		if (this.input) {
-			return this.input.getName();
+	private onDidChangeFileSystemProvider(scheme: string): void {
+		if (this.input?.resource.scheme === scheme) {
+			this.updateReadonly(this.input);
 		}
+	}
 
-		return localize('textFileEditor', "Text File Editor");
+	private onDidChangeInputCapabilities(input: FileEditorInput): void {
+		if (this.input === input) {
+			this.updateReadonly(input);
+		}
+	}
+
+	private updateReadonly(input: FileEditorInput): void {
+		const control = this.getControl();
+		if (control) {
+			control.updateOptions({ readOnly: input.hasCapability(EditorInputCapabilities.Readonly) });
+		}
+	}
+
+	override getTitle(): string {
+		return this.input ? this.input.getName() : localize('textFileEditor', "Text File Editor");
 	}
 
 	override get input(): FileEditorInput | undefined {
@@ -92,6 +114,9 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 	}
 
 	override async setInput(input: FileEditorInput, options: ITextEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+
+		// Update our listener for input capabilities
+		this.inputListener.value = input.onDidChangeCapabilities(() => this.onDidChangeInputCapabilities(input));
 
 		// Set input and resolve
 		await super.setInput(input, options, context, token);
@@ -113,8 +138,8 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 			const textFileModel = resolvedModel;
 
 			// Editor
-			const control = assertIsDefined(this.editorControl);
-			control.setModel(textFileModel.textEditorModel);
+			const textEditor = assertIsDefined(this.getControl());
+			textEditor.setModel(textFileModel.textEditorModel);
 
 			// Restore view state (unless provided by options)
 			if (!isTextEditorViewState(options?.viewState)) {
@@ -124,13 +149,13 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 						editorViewState.cursorState = []; // prevent duplicate selections via options
 					}
 
-					control.restoreViewState(editorViewState);
+					textEditor.restoreViewState(editorViewState);
 				}
 			}
 
 			// Apply options to editor if any
 			if (options) {
-				applyTextEditorOptions(options, control, ScrollType.Immediate);
+				applyTextEditorOptions(options, textEditor, ScrollType.Immediate);
 			}
 
 			// Since the resolved model provides information about being readonly
@@ -138,7 +163,7 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 			// was already asked for being readonly or not. The rationale is that
 			// a resolved model might have more specific information about being
 			// readonly or not that the input did not have.
-			control.updateOptions({ readOnly: textFileModel.isReadonly() });
+			textEditor.updateOptions({ readOnly: textFileModel.isReadonly() });
 		} catch (error) {
 			await this.handleSetInputError(error, input, options);
 		}
@@ -203,7 +228,7 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 		const defaultBinaryEditor = this.configurationService.getValue<string | undefined>('workbench.editor.defaultBinaryEditor');
 		const group = this.group ?? this.editorGroupService.activeGroup;
 
-		const editorOptions = {
+		let editorOptions = {
 			...options,
 			// Make sure to not steal away the currently active group
 			// because we are triggering another openEditor() call
@@ -254,8 +279,14 @@ export class TextFileEditor extends AbstractTextCodeEditor<ICodeEditorViewState>
 	override clearInput(): void {
 		super.clearInput();
 
+		// Clear input listener
+		this.inputListener.clear();
+
 		// Clear Model
-		this.editorControl?.setModel(null);
+		const textEditor = this.getControl();
+		if (textEditor) {
+			textEditor.setModel(null);
+		}
 	}
 
 	protected override tracksEditorViewState(input: EditorInput): boolean {

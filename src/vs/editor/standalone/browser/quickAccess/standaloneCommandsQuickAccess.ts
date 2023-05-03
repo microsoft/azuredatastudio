@@ -42,13 +42,17 @@ export class StandaloneCommandsQuickAccessProvider extends AbstractEditorCommand
 	}
 }
 
-export class GotoLineAction extends EditorAction {
+Registry.as<IQuickAccessRegistry>(Extensions.Quickaccess).registerQuickAccessProvider({
+	ctor: StandaloneCommandsQuickAccessProvider,
+	prefix: StandaloneCommandsQuickAccessProvider.PREFIX,
+	helpEntries: [{ description: QuickCommandNLS.quickCommandHelp, needsEditor: true }]
+});
 
-	static readonly ID = 'editor.action.quickCommand';
+export class GotoLineAction extends EditorAction {
 
 	constructor() {
 		super({
-			id: GotoLineAction.ID,
+			id: 'editor.action.quickCommand',
 			label: QuickCommandNLS.quickCommandActionLabel,
 			alias: 'Command Palette',
 			precondition: undefined,
@@ -70,9 +74,3 @@ export class GotoLineAction extends EditorAction {
 }
 
 registerEditorAction(GotoLineAction);
-
-Registry.as<IQuickAccessRegistry>(Extensions.Quickaccess).registerQuickAccessProvider({
-	ctor: StandaloneCommandsQuickAccessProvider,
-	prefix: StandaloneCommandsQuickAccessProvider.PREFIX,
-	helpEntries: [{ description: QuickCommandNLS.quickCommandHelp, commandId: GotoLineAction.ID }]
-});

@@ -57,7 +57,7 @@ suite('MainThreadHostTreeView', function () {
 			id: testTreeViewId,
 			ctorDescriptor: null!,
 			name: 'Test View 1',
-			treeView: instantiationService.createInstance(CustomTreeView, 'testTree', 'Test Title', 'extension.id'),
+			treeView: instantiationService.createInstance(CustomTreeView, 'testTree', 'Test Title'),
 		};
 		ViewsRegistry.registerViews([viewDescriptor], container);
 

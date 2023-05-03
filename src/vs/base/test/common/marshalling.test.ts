@@ -9,9 +9,9 @@ import { URI } from 'vs/base/common/uri';
 suite('Marshalling', () => {
 
 	test('RegExp', () => {
-		const value = /foo/img;
-		const raw = stringify(value);
-		const clone = <RegExp>parse(raw);
+		let value = /foo/img;
+		let raw = stringify(value);
+		let clone = <RegExp>parse(raw);
 
 		assert.strictEqual(value.source, clone.source);
 		assert.strictEqual(value.global, clone.global);

@@ -5,7 +5,6 @@
 
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { setTimeout0, setTimeout0IsFaster } from 'vs/base/common/platform';
 
 interface PriorityQueue<T> {
 	length: number;
@@ -178,8 +177,6 @@ export class AsyncSchedulerProcessor extends Disposable {
 		Promise.resolve().then(() => {
 			if (this.useSetImmediate) {
 				originalGlobalValues.setImmediate(() => this.process());
-			} else if (setTimeout0IsFaster) {
-				setTimeout0(() => this.process());
 			} else {
 				originalGlobalValues.setTimeout(() => this.process());
 			}
@@ -193,7 +190,7 @@ export class AsyncSchedulerProcessor extends Disposable {
 
 			if (this.history.length >= this.maxTaskCount && this.scheduler.hasScheduledTasks) {
 				const lastTasks = this._history.slice(Math.max(0, this.history.length - 10)).map(h => `${h.source.toString()}: ${h.source.stackTrace}`);
-				const e = new Error(`Queue did not get empty after processing ${this.history.length} items. These are the last ${lastTasks.length} scheduled tasks:\n${lastTasks.join('\n\n\n')}`);
+				let e = new Error(`Queue did not get empty after processing ${this.history.length} items. These are the last ${lastTasks.length} scheduled tasks:\n${lastTasks.join('\n\n\n')}`);
 				this.lastError = e;
 				throw e;
 			}
@@ -371,7 +368,7 @@ function createDateClass(scheduler: Scheduler): DateConstructor {
 		return new (OriginalDate as any)(...args);
 	}
 
-	for (const prop in OriginalDate) {
+	for (let prop in OriginalDate) {
 		if (OriginalDate.hasOwnProperty(prop)) {
 			(SchedulerDate as any)[prop] = (OriginalDate as any)[prop];
 		}

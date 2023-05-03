@@ -94,7 +94,7 @@ suite('EditorModel', () => {
 	});
 
 	test('BaseTextEditorModel', async () => {
-		const modelService = stubModelService(instantiationService);
+		let modelService = stubModelService(instantiationService);
 
 		const model = new MyTextEditorModel(modelService, languageService, instantiationService.createInstance(LanguageDetectionService), instantiationService.createInstance(TestAccessibilityService));
 		await model.resolve();

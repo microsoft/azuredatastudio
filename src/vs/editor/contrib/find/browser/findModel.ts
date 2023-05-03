@@ -143,7 +143,7 @@ export class FindModelBoundToEditorModel {
 			return;
 		}
 		if (e.searchString || e.isReplaceRevealed || e.isRegex || e.wholeWord || e.matchCase || e.searchScope) {
-			const model = this._editor.getModel();
+			let model = this._editor.getModel();
 
 			if (model.isTooLargeForSyncing()) {
 				this._startSearchingTimer.cancel();
@@ -202,7 +202,7 @@ export class FindModelBoundToEditorModel {
 			});
 		}
 
-		const findMatches = this._findMatches(findScopes, false, MATCHES_LIMIT);
+		let findMatches = this._findMatches(findScopes, false, MATCHES_LIMIT);
 		this._decorations.set(findMatches, findScopes);
 
 		const editorSelection = this._editor.getSelection();
@@ -231,7 +231,7 @@ export class FindModelBoundToEditorModel {
 
 	private _cannotFind(): boolean {
 		if (!this._hasMatches()) {
-			const findScope = this._decorations.getFindScope();
+			let findScope = this._decorations.getFindScope();
 			if (findScope) {
 				// Reveal the selection so user is reminded that 'selection find' is on.
 				this._editor.revealRangeInCenterIfOutsideViewport(findScope, ScrollType.Smooth);
@@ -242,7 +242,7 @@ export class FindModelBoundToEditorModel {
 	}
 
 	private _setCurrentFindMatch(match: Range): void {
-		const matchesPosition = this._decorations.setCurrentFindMatch(match);
+		let matchesPosition = this._decorations.setCurrentFindMatch(match);
 		this._state.changeMatchInfo(
 			matchesPosition,
 			this._decorations.getCount(),
@@ -254,12 +254,12 @@ export class FindModelBoundToEditorModel {
 	}
 
 	private _prevSearchPosition(before: Position) {
-		const isUsingLineStops = this._state.isRegex && (
+		let isUsingLineStops = this._state.isRegex && (
 			this._state.searchString.indexOf('^') >= 0
 			|| this._state.searchString.indexOf('$') >= 0
 		);
 		let { lineNumber, column } = before;
-		const model = this._editor.getModel();
+		let model = this._editor.getModel();
 
 		if (isUsingLineStops || column === 1) {
 			if (lineNumber === 1) {
@@ -305,8 +305,8 @@ export class FindModelBoundToEditorModel {
 			return;
 		}
 
-		const findScope = this._decorations.getFindScope();
-		const searchRange = FindModelBoundToEditorModel._getSearchRange(this._editor.getModel(), findScope);
+		let findScope = this._decorations.getFindScope();
+		let searchRange = FindModelBoundToEditorModel._getSearchRange(this._editor.getModel(), findScope);
 
 		// ...(----)...|...
 		if (searchRange.getEndPosition().isBefore(before)) {
@@ -318,8 +318,8 @@ export class FindModelBoundToEditorModel {
 			before = searchRange.getEndPosition();
 		}
 
-		const { lineNumber, column } = before;
-		const model = this._editor.getModel();
+		let { lineNumber, column } = before;
+		let model = this._editor.getModel();
 
 		let position = new Position(lineNumber, column);
 
@@ -348,13 +348,13 @@ export class FindModelBoundToEditorModel {
 	}
 
 	private _nextSearchPosition(after: Position) {
-		const isUsingLineStops = this._state.isRegex && (
+		let isUsingLineStops = this._state.isRegex && (
 			this._state.searchString.indexOf('^') >= 0
 			|| this._state.searchString.indexOf('$') >= 0
 		);
 
 		let { lineNumber, column } = after;
-		const model = this._editor.getModel();
+		let model = this._editor.getModel();
 
 		if (isUsingLineStops || column === model.getLineMaxColumn(lineNumber)) {
 			if (lineNumber === model.getLineCount()) {
@@ -396,7 +396,7 @@ export class FindModelBoundToEditorModel {
 			return;
 		}
 
-		const nextMatch = this._getNextMatch(after, false, true);
+		let nextMatch = this._getNextMatch(after, false, true);
 		if (nextMatch) {
 			this._setCurrentFindMatch(nextMatch.range);
 		}
@@ -407,8 +407,8 @@ export class FindModelBoundToEditorModel {
 			return null;
 		}
 
-		const findScope = this._decorations.getFindScope();
-		const searchRange = FindModelBoundToEditorModel._getSearchRange(this._editor.getModel(), findScope);
+		let findScope = this._decorations.getFindScope();
+		let searchRange = FindModelBoundToEditorModel._getSearchRange(this._editor.getModel(), findScope);
 
 		// ...(----)...|...
 		if (searchRange.getEndPosition().isBefore(after)) {
@@ -420,8 +420,8 @@ export class FindModelBoundToEditorModel {
 			after = searchRange.getStartPosition();
 		}
 
-		const { lineNumber, column } = after;
-		const model = this._editor.getModel();
+		let { lineNumber, column } = after;
+		let model = this._editor.getModel();
 
 		let position = new Position(lineNumber, column);
 
@@ -461,15 +461,15 @@ export class FindModelBoundToEditorModel {
 			return;
 		}
 
-		const replacePattern = this._getReplacePattern();
-		const selection = this._editor.getSelection();
-		const nextMatch = this._getNextMatch(selection.getStartPosition(), true, false);
+		let replacePattern = this._getReplacePattern();
+		let selection = this._editor.getSelection();
+		let nextMatch = this._getNextMatch(selection.getStartPosition(), true, false);
 		if (nextMatch) {
 			if (selection.equalsRange(nextMatch.range)) {
 				// selection sits on a find match => replace it!
-				const replaceString = replacePattern.buildReplaceString(nextMatch.matches, this._state.preserveCase);
+				let replaceString = replacePattern.buildReplaceString(nextMatch.matches, this._state.preserveCase);
 
-				const command = new ReplaceCommand(selection, replaceString);
+				let command = new ReplaceCommand(selection, replaceString);
 
 				this._executeEditorCommand('replace', command);
 
@@ -542,21 +542,21 @@ export class FindModelBoundToEditorModel {
 			resultText = modelText.replace(searchRegex, replacePattern.buildReplaceString(null, preserveCase));
 		}
 
-		const command = new ReplaceCommandThatPreservesSelection(fullModelRange, resultText, this._editor.getSelection());
+		let command = new ReplaceCommandThatPreservesSelection(fullModelRange, resultText, this._editor.getSelection());
 		this._executeEditorCommand('replaceAll', command);
 	}
 
 	private _regularReplaceAll(findScopes: Range[] | null): void {
 		const replacePattern = this._getReplacePattern();
 		// Get all the ranges (even more than the highlighted ones)
-		const matches = this._findMatches(findScopes, replacePattern.hasReplacementPatterns || this._state.preserveCase, Constants.MAX_SAFE_SMALL_INTEGER);
+		let matches = this._findMatches(findScopes, replacePattern.hasReplacementPatterns || this._state.preserveCase, Constants.MAX_SAFE_SMALL_INTEGER);
 
-		const replaceStrings: string[] = [];
+		let replaceStrings: string[] = [];
 		for (let i = 0, len = matches.length; i < len; i++) {
 			replaceStrings[i] = replacePattern.buildReplaceString(matches[i].matches, this._state.preserveCase);
 		}
 
-		const command = new ReplaceAllCommand(this._editor.getSelection(), matches.map(m => m.range), replaceStrings);
+		let command = new ReplaceAllCommand(this._editor.getSelection(), matches.map(m => m.range), replaceStrings);
 		this._executeEditorCommand('replaceAll', command);
 	}
 
@@ -565,16 +565,16 @@ export class FindModelBoundToEditorModel {
 			return;
 		}
 
-		const findScopes = this._decorations.getFindScopes();
+		let findScopes = this._decorations.getFindScopes();
 
 		// Get all the ranges (even more than the highlighted ones)
-		const matches = this._findMatches(findScopes, false, Constants.MAX_SAFE_SMALL_INTEGER);
+		let matches = this._findMatches(findScopes, false, Constants.MAX_SAFE_SMALL_INTEGER);
 		let selections = matches.map(m => new Selection(m.range.startLineNumber, m.range.startColumn, m.range.endLineNumber, m.range.endColumn));
 
 		// If one of the ranges is the editor selection, then maintain it as primary
-		const editorSelection = this._editor.getSelection();
+		let editorSelection = this._editor.getSelection();
 		for (let i = 0, len = selections.length; i < len; i++) {
-			const sel = selections[i];
+			let sel = selections[i];
 			if (sel.equalsRange(editorSelection)) {
 				selections = [editorSelection].concat(selections.slice(0, i)).concat(selections.slice(i + 1));
 				break;

@@ -95,7 +95,7 @@ export class LineCommentCommand implements ICommand {
 			return null;
 		}
 
-		const lines: ILinePreflightData[] = [];
+		let lines: ILinePreflightData[] = [];
 		for (let i = 0, lineCount = endLineNumber - startLineNumber + 1; i < lineCount; i++) {
 			lines[i] = {
 				ignore: false,
@@ -232,7 +232,7 @@ export class LineCommentCommand implements ICommand {
 		let startLineNumber = s.startLineNumber;
 		let endLineNumber = s.endLineNumber;
 
-		const startTokenAllowedBeforeColumn = endToken.length + Math.max(
+		let startTokenAllowedBeforeColumn = endToken.length + Math.max(
 			model.getLineFirstNonWhitespaceColumn(s.startLineNumber),
 			s.startColumn
 		);
@@ -283,7 +283,7 @@ export class LineCommentCommand implements ICommand {
 	 */
 	private _executeBlockComment(model: ITextModel, builder: IEditOperationBuilder, s: Selection): void {
 		model.tokenization.tokenizeIfCheap(s.startLineNumber);
-		const languageId = model.getLanguageIdAtPosition(s.startLineNumber, 1);
+		let languageId = model.getLanguageIdAtPosition(s.startLineNumber, 1);
 		const config = this.languageConfigurationService.getLanguageConfiguration(languageId).comments;
 		if (!config || !config.blockCommentStartToken || !config.blockCommentEndToken) {
 			// Mode does not support block comments
@@ -381,7 +381,7 @@ export class LineCommentCommand implements ICommand {
 	 * Generate edit operations in the remove line comment case
 	 */
 	public static _createRemoveLineCommentsOperations(lines: ILinePreflightData[], startLineNumber: number): ISingleEditOperation[] {
-		const res: ISingleEditOperation[] = [];
+		let res: ISingleEditOperation[] = [];
 
 		for (let i = 0, len = lines.length; i < len; i++) {
 			const lineData = lines[i];
@@ -403,7 +403,7 @@ export class LineCommentCommand implements ICommand {
 	 * Generate edit operations in the add line comment case
 	 */
 	private _createAddLineCommentsOperations(lines: ILinePreflightData[], startLineNumber: number): ISingleEditOperation[] {
-		const res: ISingleEditOperation[] = [];
+		let res: ISingleEditOperation[] = [];
 		const afterCommentStr = this._insertSpace ? ' ' : '';
 
 

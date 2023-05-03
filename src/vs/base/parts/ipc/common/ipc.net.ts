@@ -212,7 +212,7 @@ export class ChunkStream {
 			return result;
 		}
 
-		const result = VSBuffer.alloc(byteCount);
+		let result = VSBuffer.alloc(byteCount);
 		let resultOffset = 0;
 		let chunkIndex = 0;
 		while (byteCount > 0) {
@@ -675,8 +675,7 @@ class Queue<T> {
 	}
 
 	public toArray(): T[] {
-		const result: T[] = [];
-		let resultLen = 0;
+		let result: T[] = [], resultLen = 0;
 		let it = this._first;
 		while (it) {
 			result[resultLen++] = it.data;

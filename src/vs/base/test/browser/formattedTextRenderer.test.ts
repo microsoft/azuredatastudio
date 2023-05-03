@@ -19,7 +19,7 @@ suite('FormattedTextRenderer', () => {
 	});
 
 	test('render simple element', () => {
-		const result: HTMLElement = renderText('testing');
+		let result: HTMLElement = renderText('testing');
 
 		assert.strictEqual(result.nodeType, document.ELEMENT_NODE);
 		assert.strictEqual(result.textContent, 'testing');
@@ -27,7 +27,7 @@ suite('FormattedTextRenderer', () => {
 	});
 
 	test('render element with class', () => {
-		const result: HTMLElement = renderText('testing', {
+		let result: HTMLElement = renderText('testing', {
 			className: 'testClass'
 		});
 		assert.strictEqual(result.nodeType, document.ELEMENT_NODE);
@@ -55,18 +55,18 @@ suite('FormattedTextRenderer', () => {
 	});
 
 	test('no formatting', () => {
-		const result: HTMLElement = renderFormattedText('this is just a string');
+		let result: HTMLElement = renderFormattedText('this is just a string');
 		assert.strictEqual(result.innerHTML, 'this is just a string');
 	});
 
 	test('preserve newlines', () => {
-		const result: HTMLElement = renderFormattedText('line one\nline two');
+		let result: HTMLElement = renderFormattedText('line one\nline two');
 		assert.strictEqual(result.innerHTML, 'line one<br>line two');
 	});
 
 	test('action', () => {
 		let callbackCalled = false;
-		const result: HTMLElement = renderFormattedText('[[action]]', {
+		let result: HTMLElement = renderFormattedText('[[action]]', {
 			actionHandler: {
 				callback(content) {
 					assert.strictEqual(content, '0');
@@ -77,7 +77,7 @@ suite('FormattedTextRenderer', () => {
 		});
 		assert.strictEqual(result.innerHTML, '<a>action</a>');
 
-		const event: MouseEvent = <any>document.createEvent('MouseEvent');
+		let event: MouseEvent = <any>document.createEvent('MouseEvent');
 		event.initEvent('click', true, true);
 		result.firstChild!.dispatchEvent(event);
 		assert.strictEqual(callbackCalled, true);
@@ -85,7 +85,7 @@ suite('FormattedTextRenderer', () => {
 
 	test('fancy action', () => {
 		let callbackCalled = false;
-		const result: HTMLElement = renderFormattedText('__**[[action]]**__', {
+		let result: HTMLElement = renderFormattedText('__**[[action]]**__', {
 			actionHandler: {
 				callback(content) {
 					assert.strictEqual(content, '0');
@@ -96,7 +96,7 @@ suite('FormattedTextRenderer', () => {
 		});
 		assert.strictEqual(result.innerHTML, '<i><b><a>action</a></b></i>');
 
-		const event: MouseEvent = <any>document.createEvent('MouseEvent');
+		let event: MouseEvent = <any>document.createEvent('MouseEvent');
 		event.initEvent('click', true, true);
 		result.firstChild!.firstChild!.firstChild!.dispatchEvent(event);
 		assert.strictEqual(callbackCalled, true);
@@ -104,7 +104,7 @@ suite('FormattedTextRenderer', () => {
 
 	test('fancier action', () => {
 		let callbackCalled = false;
-		const result: HTMLElement = renderFormattedText('``__**[[action]]**__``', {
+		let result: HTMLElement = renderFormattedText('``__**[[action]]**__``', {
 			renderCodeSegments: true,
 			actionHandler: {
 				callback(content) {
@@ -116,14 +116,14 @@ suite('FormattedTextRenderer', () => {
 		});
 		assert.strictEqual(result.innerHTML, '<code><i><b><a>action</a></b></i></code>');
 
-		const event: MouseEvent = <any>document.createEvent('MouseEvent');
+		let event: MouseEvent = <any>document.createEvent('MouseEvent');
 		event.initEvent('click', true, true);
 		result.firstChild!.firstChild!.firstChild!.firstChild!.dispatchEvent(event);
 		assert.strictEqual(callbackCalled, true);
 	});
 
 	test('escaped formatting', () => {
-		const result: HTMLElement = renderFormattedText('\\*\\*bold\\*\\*');
+		let result: HTMLElement = renderFormattedText('\\*\\*bold\\*\\*');
 		assert.strictEqual(result.children.length, 0);
 		assert.strictEqual(result.innerHTML, '**bold**');
 	});

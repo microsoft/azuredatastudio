@@ -5,7 +5,7 @@
 
 import { IWorkerContext } from 'vs/editor/common/services/editorSimpleWorker';
 import { UriComponents, URI } from 'vs/base/common/uri';
-import { LanguageId } from 'vs/editor/common/encodedTokenAttributes';
+import { LanguageId } from 'vs/editor/common/languages';
 import { IValidEmbeddedLanguagesMap, IValidTokenTypeMap, IValidGrammarDefinition } from 'vs/workbench/services/textMate/common/TMScopeRegistry';
 import { TMGrammarFactory, ICreateGrammarResult } from 'vs/workbench/services/textMate/common/TMGrammarFactory';
 import { IModelChangedEvent, MirrorTextModel } from 'vs/editor/common/model/mirrorTextModel';
@@ -214,7 +214,9 @@ export class TextMateWorker {
 
 	public async acceptTheme(theme: IRawTheme, colorMap: string[]): Promise<void> {
 		const grammarFactory = await this._grammarFactory;
-		grammarFactory?.setTheme(theme, colorMap);
+		if (grammarFactory) {
+			grammarFactory.setTheme(theme, colorMap);
+		}
 	}
 
 	public _setTokens(resource: URI, versionId: number, tokens: Uint8Array): void {

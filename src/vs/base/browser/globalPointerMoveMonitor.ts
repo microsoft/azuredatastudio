@@ -6,18 +6,40 @@
 import * as dom from 'vs/base/browser/dom';
 import { DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 
-export interface IPointerMoveCallback {
-	(event: PointerEvent): void;
+export interface IPointerMoveEventData {
+	leftButton: boolean;
+	buttons: number;
+	pageX: number;
+	pageY: number;
+}
+
+export interface IEventMerger<R> {
+	(lastEvent: R | null, currentEvent: PointerEvent): R;
+}
+
+export interface IPointerMoveCallback<R> {
+	(pointerMoveData: R): void;
 }
 
 export interface IOnStopCallback {
 	(browserEvent?: PointerEvent | KeyboardEvent): void;
 }
 
-export class GlobalPointerMoveMonitor implements IDisposable {
+export function standardPointerMoveMerger(lastEvent: IPointerMoveEventData | null, currentEvent: PointerEvent): IPointerMoveEventData {
+	currentEvent.preventDefault();
+	return {
+		leftButton: (currentEvent.button === 0),
+		buttons: currentEvent.buttons,
+		pageX: currentEvent.pageX,
+		pageY: currentEvent.pageY
+	};
+}
+
+export class GlobalPointerMoveMonitor<R extends { buttons: number } = IPointerMoveEventData> implements IDisposable {
 
 	private readonly _hooks = new DisposableStore();
-	private _pointerMoveCallback: IPointerMoveCallback | null = null;
+	private _pointerMoveEventMerger: IEventMerger<R> | null = null;
+	private _pointerMoveCallback: IPointerMoveCallback<R> | null = null;
 	private _onStopCallback: IOnStopCallback | null = null;
 
 	public dispose(): void {
@@ -33,6 +55,7 @@ export class GlobalPointerMoveMonitor implements IDisposable {
 
 		// Unhook
 		this._hooks.clear();
+		this._pointerMoveEventMerger = null;
 		this._pointerMoveCallback = null;
 		const onStopCallback = this._onStopCallback;
 		this._onStopCallback = null;
@@ -43,19 +66,21 @@ export class GlobalPointerMoveMonitor implements IDisposable {
 	}
 
 	public isMonitoring(): boolean {
-		return !!this._pointerMoveCallback;
+		return !!this._pointerMoveEventMerger;
 	}
 
 	public startMonitoring(
 		initialElement: Element,
 		pointerId: number,
 		initialButtons: number,
-		pointerMoveCallback: IPointerMoveCallback,
+		pointerMoveEventMerger: IEventMerger<R>,
+		pointerMoveCallback: IPointerMoveCallback<R>,
 		onStopCallback: IOnStopCallback
 	): void {
 		if (this.isMonitoring()) {
 			this.stopMonitoring(false);
 		}
+		this._pointerMoveEventMerger = pointerMoveEventMerger;
 		this._pointerMoveCallback = pointerMoveCallback;
 		this._onStopCallback = onStopCallback;
 
@@ -78,19 +103,18 @@ export class GlobalPointerMoveMonitor implements IDisposable {
 			eventSource = window;
 		}
 
-		this._hooks.add(dom.addDisposableListener(
+		this._hooks.add(dom.addDisposableThrottledListener<R, PointerEvent>(
 			eventSource,
 			dom.EventType.POINTER_MOVE,
-			(e) => {
-				if (e.buttons !== initialButtons) {
+			(data: R) => {
+				if (data.buttons !== initialButtons) {
 					// Buttons state has changed in the meantime
 					this.stopMonitoring(true);
 					return;
 				}
-
-				e.preventDefault();
-				this._pointerMoveCallback!(e);
-			}
+				this._pointerMoveCallback!(data);
+			},
+			(lastEvent: R | null, currentEvent) => this._pointerMoveEventMerger!(lastEvent, currentEvent)
 		));
 
 		this._hooks.add(dom.addDisposableListener(

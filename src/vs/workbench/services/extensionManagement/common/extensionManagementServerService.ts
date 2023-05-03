@@ -7,7 +7,6 @@ import { localize } from 'vs/nls';
 import { ExtensionInstallLocation, IExtensionManagementServer, IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { Schemas } from 'vs/base/common/network';
-import { Event } from 'vs/base/common/event';
 import { IChannel } from 'vs/base/parts/ipc/common/ipc';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ILabelService } from 'vs/platform/label/common/label';
@@ -16,6 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { WebExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/webExtensionManagementService';
 import { IExtension } from 'vs/platform/extensions/common/extensions';
 import { ExtensionManagementChannelClient } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ExtensionManagementServerService implements IExtensionManagementServerService {
 
@@ -29,12 +29,11 @@ export class ExtensionManagementServerService implements IExtensionManagementSer
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
 		@ILabelService labelService: ILabelService,
 		@IInstantiationService instantiationService: IInstantiationService,
+		@ILogService logService: ILogService,
 	) {
 		const remoteAgentConnection = remoteAgentService.getConnection();
 		if (remoteAgentConnection) {
-			const extensionManagementService = new class extends ExtensionManagementChannelClient {
-				readonly onDidChangeProfileExtensions = Event.None;
-			}(remoteAgentConnection.getChannel<IChannel>('extensions'));
+			const extensionManagementService = new ExtensionManagementChannelClient(remoteAgentConnection.getChannel<IChannel>('extensions'));
 			this.remoteExtensionManagementServer = {
 				id: 'remote',
 				extensionManagementService,

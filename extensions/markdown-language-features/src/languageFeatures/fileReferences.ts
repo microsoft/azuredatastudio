@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { BaseLanguageClient } from 'vscode-languageclient';
 import * as nls from 'vscode-nls';
 import { Command, CommandManager } from '../commandManager';
-import { getReferencesToFileInWorkspace } from '../protocol';
+import { MdReferencesProvider } from './references';
 
 const localize = nls.loadMessageBundle();
 
@@ -17,7 +16,7 @@ export class FindFileReferencesCommand implements Command {
 	public readonly id = 'markdown.findAllFileReferences';
 
 	constructor(
-		private readonly client: BaseLanguageClient,
+		private readonly referencesProvider: MdReferencesProvider,
 	) { }
 
 	public async execute(resource?: vscode.Uri) {
@@ -34,9 +33,8 @@ export class FindFileReferencesCommand implements Command {
 			location: vscode.ProgressLocation.Window,
 			title: localize('progress.title', "Finding file references")
 		}, async (_progress, token) => {
-			const locations = (await this.client.sendRequest(getReferencesToFileInWorkspace, { uri: resource!.toString() }, token)).map(loc => {
-				return new vscode.Location(vscode.Uri.parse(loc.uri), new vscode.Range(loc.range.start.line, loc.range.start.character, loc.range.end.line, loc.range.end.character));
-			});
+			const references = await this.referencesProvider.getAllReferencesToFile(resource!, token);
+			const locations = references.map(ref => ref.location);
 
 			const config = vscode.workspace.getConfiguration('references');
 			const existingSetting = config.inspect<string>('preferredLocation');
@@ -51,9 +49,6 @@ export class FindFileReferencesCommand implements Command {
 	}
 }
 
-export function registerFindFileReferenceSupport(
-	commandManager: CommandManager,
-	client: BaseLanguageClient,
-): vscode.Disposable {
-	return commandManager.register(new FindFileReferencesCommand(client));
+export function registerFindFileReferences(commandManager: CommandManager, referencesProvider: MdReferencesProvider): vscode.Disposable {
+	return commandManager.register(new FindFileReferencesCommand(referencesProvider));
 }

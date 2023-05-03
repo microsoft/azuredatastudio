@@ -90,10 +90,6 @@ export class BrowserUpdateService extends Disposable implements IUpdateService {
 	async quitAndInstall(): Promise<void> {
 		this.hostService.reload();
 	}
-
-	async _applySpecificUpdate(packagePath: string): Promise<void> {
-		// noop
-	}
 }
 
 registerSingleton(IUpdateService, BrowserUpdateService);

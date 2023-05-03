@@ -57,7 +57,7 @@ export async function hasChildProcesses(processId: number | undefined): Promise<
 const enum ShellType { cmd, powershell, bash }
 
 
-export function prepareCommand(shell: string, args: string[], argsCanBeInterpretedByShell: boolean, cwd?: string, env?: { [key: string]: string | null }): string {
+export function prepareCommand(shell: string, args: string[], cwd?: string, env?: { [key: string]: string | null }): string {
 
 	shell = shell.trim().toLowerCase();
 
@@ -109,12 +109,10 @@ export function prepareCommand(shell: string, args: string[], argsCanBeInterpret
 				}
 			}
 			if (args.length > 0) {
-				const arg = args.shift()!;
-				const cmd = argsCanBeInterpretedByShell ? arg : quote(arg);
+				const cmd = quote(args.shift()!);
 				command += (cmd[0] === '\'') ? `& ${cmd} ` : `${cmd} `;
 				for (const a of args) {
-					command += (a === '<' || a === '>' || argsCanBeInterpretedByShell) ? a : quote(a);
-					command += ' ';
+					command += `${quote(a)} `;
 				}
 			}
 			break;
@@ -122,10 +120,6 @@ export function prepareCommand(shell: string, args: string[], argsCanBeInterpret
 		case ShellType.cmd:
 
 			quote = (s: string) => {
-				// Note: Wrapping in cmd /C "..." complicates the escaping.
-				// cmd /C "node -e "console.log(process.argv)" """A^>0"""" # prints "A>0"
-				// cmd /C "node -e "console.log(process.argv)" "foo^> bar"" # prints foo> bar
-				// Outside of the cmd /C, it could be a simple quoting, but here, the ^ is needed too
 				s = s.replace(/\"/g, '""');
 				s = s.replace(/([><!^&|])/g, '^$1');
 				return (' "'.split('').some(char => s.includes(char)) || s.length === 0) ? `"${s}"` : s;
@@ -151,8 +145,7 @@ export function prepareCommand(shell: string, args: string[], argsCanBeInterpret
 				}
 			}
 			for (const a of args) {
-				command += (a === '<' || a === '>' || argsCanBeInterpretedByShell) ? a : quote(a);
-				command += ' ';
+				command += `${quote(a)} `;
 			}
 			if (env) {
 				command += '"';
@@ -162,8 +155,8 @@ export function prepareCommand(shell: string, args: string[], argsCanBeInterpret
 		case ShellType.bash: {
 
 			quote = (s: string) => {
-				s = s.replace(/(["'\\\$!><#()\[\]*&^| ;{}`])/g, '\\$1');
-				return s.length === 0 ? `""` : s;
+				s = s.replace(/(["'\\\$!><#()\[\]*&^|])/g, '\\$1');
+				return (' ;'.split('').some(char => s.includes(char)) || s.length === 0) ? `"${s}"` : s;
 			};
 
 			const hardQuote = (s: string) => {
@@ -186,8 +179,7 @@ export function prepareCommand(shell: string, args: string[], argsCanBeInterpret
 				command += ' ';
 			}
 			for (const a of args) {
-				command += (a === '<' || a === '>' || argsCanBeInterpretedByShell) ? a : quote(a);
-				command += ' ';
+				command += `${quote(a)} `;
 			}
 			break;
 		}

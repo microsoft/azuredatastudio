@@ -400,7 +400,7 @@ suite('IndexTreeModel', () => {
 				const deleteCount = Math.ceil(Math.random() * (list.length - spliceIndex));
 				const insertCount = Math.floor(Math.random() * maxInserts + 1);
 
-				const inserts: ITreeElement<number>[] = [];
+				let inserts: ITreeElement<number>[] = [];
 				for (let i = 0; i < insertCount; i++) {
 					const element = elementCounter++;
 					inserts.push({ element, children: [] });

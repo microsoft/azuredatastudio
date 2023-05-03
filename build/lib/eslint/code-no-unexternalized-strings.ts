@@ -51,7 +51,7 @@ export = new class NoUnexternalizedStrings implements eslint.Rule.RuleModule {
 				key = keyNode.value;
 
 			} else if (keyNode.type === AST_NODE_TYPES.ObjectExpression) {
-				for (const property of keyNode.properties) {
+				for (let property of keyNode.properties) {
 					if (property.type === AST_NODE_TYPES.Property && !property.computed) {
 						if (property.key.type === AST_NODE_TYPES.Identifier && property.key.name === 'key') {
 							if (isStringLiteral(property.value)) {
@@ -97,7 +97,7 @@ export = new class NoUnexternalizedStrings implements eslint.Rule.RuleModule {
 				// (2)
 				// report all invalid NLS keys
 				if (!key.match(NoUnexternalizedStrings._rNlsKeys)) {
-					for (const value of values) {
+					for (let value of values) {
 						context.report({ loc: value.call.loc, messageId: 'badKey', data: { key } });
 					}
 				}

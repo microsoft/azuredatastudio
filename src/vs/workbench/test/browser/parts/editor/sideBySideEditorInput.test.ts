@@ -99,8 +99,8 @@ suite('SideBySideEditorInput', () => {
 	test('events dispatching', () => {
 		const instantiationService = workbenchInstantiationService(undefined, disposables);
 
-		const input = new MyEditorInput();
-		const otherInput = new MyEditorInput();
+		let input = new MyEditorInput();
+		let otherInput = new MyEditorInput();
 
 		const sideBySideInut = instantiationService.createInstance(SideBySideEditorInput, 'name', 'description', otherInput, input);
 

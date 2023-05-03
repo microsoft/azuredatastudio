@@ -9,8 +9,7 @@ import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { compareIgnoreCase, regExpLeadsToEndlessLoop } from 'vs/base/common/strings';
 import { clearPlatformLanguageAssociations, getLanguageIds, registerPlatformLanguageAssociation } from 'vs/editor/common/services/languagesAssociations';
 import { URI } from 'vs/base/common/uri';
-import { ILanguageIdCodec } from 'vs/editor/common/languages';
-import { LanguageId } from 'vs/editor/common/encodedTokenAttributes';
+import { ILanguageIdCodec, LanguageId } from 'vs/editor/common/languages';
 import { ModesRegistry, PLAINTEXT_LANGUAGE_ID } from 'vs/editor/common/languages/modesRegistry';
 import { ILanguageExtensionPoint, ILanguageNameIdPair, ILanguageIcon } from 'vs/editor/common/languages/language';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
@@ -198,20 +197,20 @@ export class LanguagesRegistry extends Disposable {
 			} else {
 				resolvedLanguage.extensions = resolvedLanguage.extensions.concat(lang.extensions);
 			}
-			for (const extension of lang.extensions) {
+			for (let extension of lang.extensions) {
 				registerPlatformLanguageAssociation({ id: langId, mime: primaryMime, extension: extension }, this._warnOnOverwrite);
 			}
 		}
 
 		if (Array.isArray(lang.filenames)) {
-			for (const filename of lang.filenames) {
+			for (let filename of lang.filenames) {
 				registerPlatformLanguageAssociation({ id: langId, mime: primaryMime, filename: filename }, this._warnOnOverwrite);
 				resolvedLanguage.filenames.push(filename);
 			}
 		}
 
 		if (Array.isArray(lang.filenamePatterns)) {
-			for (const filenamePattern of lang.filenamePatterns) {
+			for (let filenamePattern of lang.filenamePatterns) {
 				registerPlatformLanguageAssociation({ id: langId, mime: primaryMime, filepattern: filenamePattern }, this._warnOnOverwrite);
 			}
 		}

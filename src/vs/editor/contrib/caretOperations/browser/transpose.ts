@@ -38,19 +38,19 @@ class TransposeLettersAction extends EditorAction {
 			return;
 		}
 
-		const model = editor.getModel();
-		const commands: ICommand[] = [];
-		const selections = editor.getSelections();
+		let model = editor.getModel();
+		let commands: ICommand[] = [];
+		let selections = editor.getSelections();
 
-		for (const selection of selections) {
+		for (let selection of selections) {
 			if (!selection.isEmpty()) {
 				continue;
 			}
 
-			const lineNumber = selection.startLineNumber;
-			const column = selection.startColumn;
+			let lineNumber = selection.startLineNumber;
+			let column = selection.startColumn;
 
-			const lastColumn = model.getLineMaxColumn(lineNumber);
+			let lastColumn = model.getLineMaxColumn(lineNumber);
 
 			if (lineNumber === 1 && (column === 1 || (column === 2 && lastColumn === 2))) {
 				// at beginning of file, nothing to do
@@ -59,17 +59,17 @@ class TransposeLettersAction extends EditorAction {
 
 			// handle special case: when at end of line, transpose left two chars
 			// otherwise, transpose left and right chars
-			const endPosition = (column === lastColumn) ?
+			let endPosition = (column === lastColumn) ?
 				selection.getPosition() :
 				MoveOperations.rightPosition(model, selection.getPosition().lineNumber, selection.getPosition().column);
 
-			const middlePosition = MoveOperations.leftPosition(model, endPosition);
-			const beginPosition = MoveOperations.leftPosition(model, middlePosition);
+			let middlePosition = MoveOperations.leftPosition(model, endPosition);
+			let beginPosition = MoveOperations.leftPosition(model, middlePosition);
 
-			const leftChar = model.getValueInRange(Range.fromPositions(beginPosition, middlePosition));
-			const rightChar = model.getValueInRange(Range.fromPositions(middlePosition, endPosition));
+			let leftChar = model.getValueInRange(Range.fromPositions(beginPosition, middlePosition));
+			let rightChar = model.getValueInRange(Range.fromPositions(middlePosition, endPosition));
 
-			const replaceRange = Range.fromPositions(beginPosition, endPosition);
+			let replaceRange = Range.fromPositions(beginPosition, endPosition);
 			commands.push(new ReplaceCommand(replaceRange, rightChar + leftChar));
 		}
 

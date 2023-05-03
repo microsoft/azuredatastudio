@@ -5,32 +5,33 @@
 
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { compareFileExtensions, compareFileNames, comparePaths } from 'vs/base/common/comparers';
-import { memoize } from 'vs/base/common/decorators';
 import * as errors from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
+import { getBaseLabel } from 'vs/base/common/labels';
+import { Disposable, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { ResourceMap, TernarySearchTree } from 'vs/base/common/map';
-import { Schemas } from 'vs/base/common/network';
 import { lcut } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { Range } from 'vs/editor/common/core/range';
-import { FindMatch, IModelDeltaDecoration, ITextModel, MinimapPosition, OverviewRulerLane, TrackedRangeStickiness } from 'vs/editor/common/model';
+import { FindMatch, IModelDeltaDecoration, ITextModel, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { IModelService } from 'vs/editor/common/services/model';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IFileService, IFileStatWithPartialMetadata } from 'vs/platform/files/common/files';
 import { createDecorator, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ILabelService } from 'vs/platform/label/common/label';
 import { IProgress, IProgressStep } from 'vs/platform/progress/common/progress';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { minimapFindMatch, overviewRulerFindMatchForeground } from 'vs/platform/theme/common/colorRegistry';
-import { themeColorFromId } from 'vs/platform/theme/common/themeService';
-import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
-import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
 import { ReplacePattern } from 'vs/workbench/services/search/common/replace';
-import { IFileMatch, IPatternInfo, ISearchComplete, ISearchConfigurationProperties, ISearchProgressItem, ISearchRange, ISearchService, ITextQuery, ITextSearchContext, ITextSearchMatch, ITextSearchPreviewOptions, ITextSearchResult, ITextSearchStats, OneLineRange, resultIsMatch, SearchCompletionExitCode, SearchSortOrder } from 'vs/workbench/services/search/common/search';
-import { addContextToEditorMatches, editorMatchesToTextSearchResults } from 'vs/workbench/services/search/common/searchHelpers';
+import { IFileMatch, IPatternInfo, ISearchComplete, ISearchProgressItem, ISearchConfigurationProperties, ISearchService, ITextQuery, ITextSearchPreviewOptions, ITextSearchMatch, ITextSearchStats, resultIsMatch, ISearchRange, OneLineRange, ITextSearchContext, ITextSearchResult, SearchSortOrder, SearchCompletionExitCode } from 'vs/workbench/services/search/common/search';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { overviewRulerFindMatchForeground, minimapFindMatch } from 'vs/platform/theme/common/colorRegistry';
+import { themeColorFromId } from 'vs/platform/theme/common/themeService';
+import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
+import { editorMatchesToTextSearchResults, addContextToEditorMatches } from 'vs/workbench/services/search/common/searchHelpers';
+import { withNullAsUndefined } from 'vs/base/common/types';
+import { memoize } from 'vs/base/common/decorators';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { compareFileNames, compareFileExtensions, comparePaths } from 'vs/base/common/comparers';
+import { IFileService, IFileStatWithPartialMetadata } from 'vs/platform/files/common/files';
+import { Schemas } from 'vs/base/common/network';
+import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 
 export class Match {
 
@@ -216,15 +217,8 @@ export class FileMatch extends Disposable implements IFileMatch {
 		return new Map(this._context);
 	}
 
-	constructor(
-		private _query: IPatternInfo,
-		private _previewOptions: ITextSearchPreviewOptions | undefined,
-		private _maxResults: number | undefined,
-		private _parent: FolderMatch,
-		private rawMatch: IFileMatch,
-		@IModelService private readonly modelService: IModelService,
-		@IReplaceService private readonly replaceService: IReplaceService,
-		@ILabelService private readonly labelService: ILabelService,
+	constructor(private _query: IPatternInfo, private _previewOptions: ITextSearchPreviewOptions | undefined, private _maxResults: number | undefined, private _parent: FolderMatch, private rawMatch: IFileMatch,
+		@IModelService private readonly modelService: IModelService, @IReplaceService private readonly replaceService: IReplaceService
 	) {
 		super();
 		this._resource = this.rawMatch.resource;
@@ -270,9 +264,7 @@ export class FileMatch extends Disposable implements IFileMatch {
 	private unbindModel(): void {
 		if (this._model) {
 			this._updateScheduler.cancel();
-			this._model.changeDecorations((accessor) => {
-				this._modelDecorations = accessor.deltaDecorations(this._modelDecorations, []);
-			});
+			this._model.deltaDecorations(this._modelDecorations, []);
 			this._model = null;
 			this._modelListener!.dispose();
 		}
@@ -343,17 +335,14 @@ export class FileMatch extends Disposable implements IFileMatch {
 			return;
 		}
 
-		this._model.changeDecorations((accessor) => {
-			const newDecorations = (
-				this.parent().showHighlights
-					? this.matches().map(match => <IModelDeltaDecoration>{
-						range: match.range(),
-						options: FileMatch.getDecorationOption(this.isMatchSelected(match))
-					})
-					: []
-			);
-			this._modelDecorations = accessor.deltaDecorations(this._modelDecorations, newDecorations);
-		});
+		if (this.parent().showHighlights) {
+			this._modelDecorations = this._model.deltaDecorations(this._modelDecorations, this.matches().map(match => <IModelDeltaDecoration>{
+				range: match.range(),
+				options: FileMatch.getDecorationOption(this.isMatchSelected(match))
+			}));
+		} else {
+			this._modelDecorations = this._model.deltaDecorations(this._modelDecorations, []);
+		}
 	}
 
 	id(): string {
@@ -413,7 +402,7 @@ export class FileMatch extends Disposable implements IFileMatch {
 	}
 
 	name(): string {
-		return this.labelService.getUriBasenameLabel(this.resource);
+		return getBaseLabel(this.resource);
 	}
 
 	addContext(results: ITextSearchResult[] | undefined) {
@@ -478,16 +467,9 @@ export class FolderMatch extends Disposable {
 	private _unDisposedFileMatches: ResourceMap<FileMatch>;
 	private _replacingAll: boolean = false;
 
-	constructor(
-		protected _resource: URI | null,
-		private _id: string,
-		private _index: number,
-		private _query: ITextQuery,
-		private _parent: SearchResult,
-		private _searchModel: SearchModel,
+	constructor(protected _resource: URI | null, private _id: string, private _index: number, private _query: ITextQuery, private _parent: SearchResult, private _searchModel: SearchModel,
 		@IReplaceService private readonly replaceService: IReplaceService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@ILabelService private readonly labelService: ILabelService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
 		this._fileMatches = new ResourceMap<FileMatch>();
@@ -519,7 +501,7 @@ export class FolderMatch extends Disposable {
 	}
 
 	name(): string {
-		return this.resource ? this.labelService.getUriBasenameLabel(this.resource) : '';
+		return getBaseLabel(withNullAsUndefined(this.resource)) || '';
 	}
 
 	parent(): SearchResult {
@@ -528,7 +510,9 @@ export class FolderMatch extends Disposable {
 
 	bindModel(model: ITextModel): void {
 		const fileMatch = this._fileMatches.get(model.uri);
-		fileMatch?.bindModel(model);
+		if (fileMatch) {
+			fileMatch.bindModel(model);
+		}
 	}
 
 	add(raw: IFileMatch[], silent: boolean): void {
@@ -662,10 +646,9 @@ export class FolderMatch extends Disposable {
 export class FolderMatchWithResource extends FolderMatch {
 	constructor(_resource: URI, _id: string, _index: number, _query: ITextQuery, _parent: SearchResult, _searchModel: SearchModel,
 		@IReplaceService replaceService: IReplaceService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@ILabelService labelService: ILabelService
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(_resource, _id, _index, _query, _parent, _searchModel, replaceService, instantiationService, labelService);
+		super(_resource, _id, _index, _query, _parent, _searchModel, replaceService, instantiationService);
 	}
 
 	override get resource(): URI {
@@ -712,41 +695,6 @@ export function searchMatchComparer(elementA: RenderableMatch, elementB: Rendera
 	return 0;
 }
 
-export function searchComparer(elementA: RenderableMatch, elementB: RenderableMatch, sortOrder: SearchSortOrder = SearchSortOrder.Default): number {
-	const elemAParents = createParentList(elementA);
-	const elemBParents = createParentList(elementB);
-
-	let i = elemAParents.length - 1;
-	let j = elemBParents.length - 1;
-	while (i >= 0 && j >= 0) {
-		if (elemAParents[i].id() !== elemBParents[j].id()) {
-			return searchMatchComparer(elemAParents[i], elemBParents[j], sortOrder);
-		}
-		i--;
-		j--;
-	}
-	const elemAAtEnd = i === 0;
-	const elemBAtEnd = j === 0;
-
-	if (elemAAtEnd && !elemBAtEnd) {
-		return 1;
-	} else if (!elemAAtEnd && elemBAtEnd) {
-		return -1;
-	}
-	return 0;
-}
-
-function createParentList(element: RenderableMatch): RenderableMatch[] {
-	const parentArray: RenderableMatch[] = [];
-	let currElement: RenderableMatch | SearchResult = element;
-
-	while (!(currElement instanceof SearchResult)) {
-		parentArray.push(currElement);
-		currElement = currElement.parent();
-	}
-
-	return parentArray;
-}
 export class SearchResult extends Disposable {
 
 	private _onChange = this._register(new Emitter<IChangeEvent>());
@@ -817,7 +765,9 @@ export class SearchResult extends Disposable {
 
 	private onModelAdded(model: ITextModel): void {
 		const folderMatch = this._folderMatchesMap.findSubstr(model.uri);
-		folderMatch?.bindModel(model);
+		if (folderMatch) {
+			folderMatch.bindModel(model);
+		}
 	}
 
 	private createFolderMatchWithResource(resource: URI, id: string, index: number, query: ITextQuery): FolderMatchWithResource {
@@ -849,7 +799,9 @@ export class SearchResult extends Disposable {
 			}
 
 			const folderMatch = this.getFolderMatch(raw[0].resource);
-			folderMatch?.add(raw, silent);
+			if (folderMatch) {
+				folderMatch.add(raw, silent);
+			}
 		});
 
 		this._otherFilesMatch?.add(other, silent);
@@ -1106,7 +1058,9 @@ export class SearchModel extends Disposable {
 			progressEmitter.fire();
 			this.onSearchProgress(p);
 
-			onProgress?.(p);
+			if (onProgress) {
+				onProgress(p);
+			}
 		});
 
 		const dispose = () => tokenSource.dispose();
@@ -1117,7 +1071,6 @@ export class SearchModel extends Disposable {
 		Promise.race([currentRequest, Event.toPromise(progressEmitter.event)]).finally(() => {
 			/* __GDPR__
 				"searchResultsFirstRender" : {
-					"owner": "roblourens",
 					"duration" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true }
 				}
 			*/
@@ -1133,7 +1086,6 @@ export class SearchModel extends Disposable {
 		} finally {
 			/* __GDPR__
 				"searchResultsFinished" : {
-					"owner": "roblourens",
 					"duration" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true }
 				}
 			*/
@@ -1162,7 +1114,6 @@ export class SearchModel extends Disposable {
 
 		/* __GDPR__
 			"searchResultsShown" : {
-				"owner": "roblourens",
 				"count" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 				"fileCount": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 				"options": { "${inline}": [ "${IPatternInfo}" ] },
@@ -1271,10 +1222,7 @@ export class RangeHighlightDecorations implements IDisposable {
 
 	removeHighlightRange() {
 		if (this._model && this._decorationId) {
-			const decorationId = this._decorationId;
-			this._model.changeDecorations((accessor) => {
-				accessor.removeDecoration(decorationId);
-			});
+			this._model.deltaDecorations([this._decorationId], []);
 		}
 		this._decorationId = null;
 	}
@@ -1294,9 +1242,7 @@ export class RangeHighlightDecorations implements IDisposable {
 
 	private doHighlightRange(model: ITextModel, range: Range) {
 		this.removeHighlightRange();
-		model.changeDecorations((accessor) => {
-			this._decorationId = accessor.addDecoration(range, RangeHighlightDecorations._RANGE_HIGHLIGHT_DECORATION);
-		});
+		this._decorationId = model.deltaDecorations([], [{ range: range, options: RangeHighlightDecorations._RANGE_HIGHLIGHT_DECORATION }])[0];
 		this.setModel(model);
 	}
 

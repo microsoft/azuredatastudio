@@ -17,10 +17,8 @@ import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/bro
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 
 
-const auxiliaryBarRightIcon = registerIcon('auxiliarybar-right-layout-icon', Codicon.layoutSidebarRight, localize('toggleAuxiliaryIconRight', 'Icon to toggle the auxiliary bar off in its right position.'));
-const auxiliaryBarRightOffIcon = registerIcon('auxiliarybar-right-off-layout-icon', Codicon.layoutSidebarRightOff, localize('toggleAuxiliaryIconRightOn', 'Icon to toggle the auxiliary bar on in its right position.'));
+const auxiliaryBarRightIcon = registerIcon('auxiliarybar-right-layout-icon', Codicon.layoutSidebarRight, localize('toggleAuxiliaryIconRight', 'Icon to toggle the auxiliary bar in its right position.'));
 const auxiliaryBarLeftIcon = registerIcon('auxiliarybar-left-layout-icon', Codicon.layoutSidebarLeft, localize('toggleAuxiliaryIconLeft', 'Icon to toggle the auxiliary bar in its left position.'));
-const auxiliaryBarLeftOffIcon = registerIcon('auxiliarybar-left-off-layout-icon', Codicon.layoutSidebarLeftOff, localize('toggleAuxiliaryIconLeftOn', 'Icon to toggle the auxiliary bar on in its left position.'));
 
 export class ToggleAuxiliaryBarAction extends Action {
 
@@ -62,7 +60,7 @@ class FocusAuxiliaryBarAction extends Action {
 		}
 
 		// Focus into active composite
-		const composite = this.paneCompositeService.getActivePaneComposite(ViewContainerLocation.AuxiliaryBar);
+		let composite = this.paneCompositeService.getActivePaneComposite(ViewContainerLocation.AuxiliaryBar);
 		if (composite) {
 			composite.focus();
 		}
@@ -76,7 +74,7 @@ MenuRegistry.appendMenuItems([
 			group: '0_workbench_layout',
 			command: {
 				id: ToggleAuxiliaryBarAction.ID,
-				title: localize('miAuxiliaryBarNoMnemonic', "Secondary Side Bar"),
+				title: localize('miShowAuxiliaryBarNoMnemonic', "Show Secondary Side Bar"),
 				toggled: AuxiliaryBarVisibleContext
 			},
 			order: 2
@@ -89,8 +87,8 @@ MenuRegistry.appendMenuItems([
 			command: {
 				id: ToggleAuxiliaryBarAction.ID,
 				title: localize('toggleSecondarySideBar', "Toggle Secondary Side Bar"),
-				toggled: { condition: AuxiliaryBarVisibleContext, icon: auxiliaryBarLeftIcon },
-				icon: auxiliaryBarLeftOffIcon,
+				toggled: AuxiliaryBarVisibleContext,
+				icon: auxiliaryBarLeftIcon,
 			},
 			when: ContextKeyExpr.and(ContextKeyExpr.or(ContextKeyExpr.equals('config.workbench.layoutControl.type', 'toggles'), ContextKeyExpr.equals('config.workbench.layoutControl.type', 'both')), ContextKeyExpr.equals('config.workbench.sideBar.location', 'right')),
 			order: 0
@@ -103,8 +101,8 @@ MenuRegistry.appendMenuItems([
 			command: {
 				id: ToggleAuxiliaryBarAction.ID,
 				title: localize('toggleSecondarySideBar', "Toggle Secondary Side Bar"),
-				toggled: { condition: AuxiliaryBarVisibleContext, icon: auxiliaryBarRightIcon },
-				icon: auxiliaryBarRightOffIcon,
+				toggled: AuxiliaryBarVisibleContext,
+				icon: auxiliaryBarRightIcon,
 			},
 			when: ContextKeyExpr.and(ContextKeyExpr.or(ContextKeyExpr.equals('config.workbench.layoutControl.type', 'toggles'), ContextKeyExpr.equals('config.workbench.layoutControl.type', 'both')), ContextKeyExpr.equals('config.workbench.sideBar.location', 'left')),
 			order: 2
@@ -116,7 +114,7 @@ MenuRegistry.appendMenuItems([
 			group: '2_workbench_layout',
 			command: {
 				id: ToggleAuxiliaryBarAction.ID,
-				title: localize({ key: 'miAuxiliaryBar', comment: ['&& denotes a mnemonic'] }, "Secondary Si&&de Bar"),
+				title: localize({ key: 'miShowAuxiliaryBar', comment: ['&& denotes a mnemonic'] }, "Show Secondary Si&&de Bar"),
 				toggled: AuxiliaryBarVisibleContext
 			},
 			order: 2

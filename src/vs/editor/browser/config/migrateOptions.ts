@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { forEach } from 'vs/base/common/collections';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 
 export interface ISettingsReader {
@@ -151,22 +152,14 @@ const suggestFilteredTypesMapping: Record<string, string> = {
 
 registerEditorSettingMigration('suggest.filteredTypes', (value, read, write) => {
 	if (value && typeof value === 'object') {
-		for (const entry of Object.entries(suggestFilteredTypesMapping)) {
-			const v = value[entry[0]];
+		forEach(suggestFilteredTypesMapping, entry => {
+			const v = value[entry.key];
 			if (v === false) {
-				if (typeof read(`suggest.${entry[1]}`) === 'undefined') {
-					write(`suggest.${entry[1]}`, false);
+				if (typeof read(`suggest.${entry.value}`) === 'undefined') {
+					write(`suggest.${entry.value}`, false);
 				}
 			}
-		}
+		});
 		write('suggest.filteredTypes', undefined);
-	}
-});
-
-registerEditorSettingMigration('quickSuggestions', (input, read, write) => {
-	if (typeof input === 'boolean') {
-		const value = input ? 'on' : 'off';
-		const newValue = { comments: value, strings: value, other: value };
-		write('quickSuggestions', newValue);
 	}
 });

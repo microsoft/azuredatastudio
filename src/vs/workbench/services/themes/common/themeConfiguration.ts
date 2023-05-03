@@ -233,7 +233,7 @@ export function updateColorThemeConfigurationSchemas(themes: IWorkbenchColorThem
 
 	const workbenchColors = { $ref: workbenchColorsSchemaId, additionalProperties: false };
 	const tokenColors = { properties: tokenColorSchema.properties, additionalProperties: false };
-	for (const t of themes) {
+	for (let t of themes) {
 		// add theme specific color customization ("[Abyss]":{ ... })
 		const themeId = `[${t.settingsId}]`;
 		themeSpecificWorkbenchColors.properties![themeId] = workbenchColors;
@@ -312,12 +312,12 @@ export class ThemeConfiguration {
 	}
 
 	public isDefaultColorTheme(): boolean {
-		const settings = this.configurationService.inspect(ThemeSettings.COLOR_THEME);
+		let settings = this.configurationService.inspect(ThemeSettings.COLOR_THEME);
 		return settings && settings.default?.value === settings.value;
 	}
 
 	public findAutoConfigurationTarget(key: string) {
-		const settings = this.configurationService.inspect(key);
+		let settings = this.configurationService.inspect(key);
 		if (!types.isUndefined(settings.workspaceFolderValue)) {
 			return ConfigurationTarget.WORKSPACE_FOLDER;
 		} else if (!types.isUndefined(settings.workspaceValue)) {
@@ -333,7 +333,7 @@ export class ThemeConfiguration {
 			return;
 		}
 
-		const settings = this.configurationService.inspect(key);
+		let settings = this.configurationService.inspect(key);
 		if (settingsTarget === 'auto') {
 			return this.configurationService.updateValue(key, value);
 		}

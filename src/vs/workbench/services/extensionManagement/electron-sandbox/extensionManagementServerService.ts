@@ -14,16 +14,14 @@ import { NativeRemoteExtensionManagementService } from 'vs/workbench/services/ex
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IExtension } from 'vs/platform/extensions/common/extensions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IUserDataProfileService } from 'vs/workbench/services/userDataProfile/common/userDataProfile';
-import { NativeExtensionManagementService } from 'vs/workbench/services/extensionManagement/electron-sandbox/nativeExtensionManagementService';
-import { Disposable } from 'vs/base/common/lifecycle';
-import { IUserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
+import { ExtensionManagementChannelClient } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
 
-export class ExtensionManagementServerService extends Disposable implements IExtensionManagementServerService {
+export class ExtensionManagementServerService implements IExtensionManagementServerService {
 
 	declare readonly _serviceBrand: undefined;
 
-	readonly localExtensionManagementServer: IExtensionManagementServer;
+	private readonly _localExtensionManagementServer: IExtensionManagementServer;
+	public get localExtensionManagementServer(): IExtensionManagementServer { return this._localExtensionManagementServer; }
 	readonly remoteExtensionManagementServer: IExtensionManagementServer | null = null;
 	readonly webExtensionManagementServer: IExtensionManagementServer | null = null;
 
@@ -31,13 +29,11 @@ export class ExtensionManagementServerService extends Disposable implements IExt
 		@ISharedProcessService sharedProcessService: ISharedProcessService,
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
 		@ILabelService labelService: ILabelService,
-		@IUserDataProfilesService userDataProfilesService: IUserDataProfilesService,
-		@IUserDataProfileService userDataProfileService: IUserDataProfileService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		super();
-		const localExtensionManagementService = this._register(instantiationService.createInstance(NativeExtensionManagementService, sharedProcessService.getChannel('extensions')));
-		this.localExtensionManagementServer = { extensionManagementService: localExtensionManagementService, id: 'local', label: localize('local', "Local") };
+		const localExtensionManagementService = new ExtensionManagementChannelClient(sharedProcessService.getChannel('extensions'));
+
+		this._localExtensionManagementServer = { extensionManagementService: localExtensionManagementService, id: 'local', label: localize('local', "Local") };
 		const remoteAgentConnection = remoteAgentService.getConnection();
 		if (remoteAgentConnection) {
 			const extensionManagementService = instantiationService.createInstance(NativeRemoteExtensionManagementService, remoteAgentConnection.getChannel<IChannel>('extensions'), this.localExtensionManagementServer);
@@ -47,7 +43,6 @@ export class ExtensionManagementServerService extends Disposable implements IExt
 				get label() { return labelService.getHostLabel(Schemas.vscodeRemote, remoteAgentConnection!.remoteAuthority) || localize('remote', "Remote"); },
 			};
 		}
-
 	}
 
 	getExtensionManagementServer(extension: IExtension): IExtensionManagementServer {

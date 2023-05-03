@@ -13,12 +13,12 @@ import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 import { createTextModel } from 'vs/editor/test/common/testTextModel';
 
 export function testApplyEditsWithSyncedModels(original: string[], edits: ISingleEditOperation[], expected: string[], inputEditsAreInvalid: boolean = false): void {
-	const originalStr = original.join('\n');
-	const expectedStr = expected.join('\n');
+	let originalStr = original.join('\n');
+	let expectedStr = expected.join('\n');
 
 	assertSyncedModels(originalStr, (model, assertMirrorModels) => {
 		// Apply edits & collect inverse edits
-		const inverseEdits = model.applyEdits(edits, true);
+		let inverseEdits = model.applyEdits(edits, true);
 
 		// Assert edits produced expected result
 		assert.deepStrictEqual(model.getValue(EndOfLinePreference.LF), expectedStr);
@@ -26,7 +26,7 @@ export function testApplyEditsWithSyncedModels(original: string[], edits: ISingl
 		assertMirrorModels();
 
 		// Apply the inverse edits
-		const inverseInverseEdits = model.applyEdits(inverseEdits, true);
+		let inverseInverseEdits = model.applyEdits(inverseEdits, true);
 
 		// Assert the inverse edits brought back model to original state
 		assert.deepStrictEqual(model.getValue(EndOfLinePreference.LF), originalStr);
@@ -53,20 +53,20 @@ const enum AssertDocumentLineMappingDirection {
 }
 
 function assertOneDirectionLineMapping(model: TextModel, direction: AssertDocumentLineMappingDirection, msg: string): void {
-	const allText = model.getValue();
+	let allText = model.getValue();
 
 	let line = 1, column = 1, previousIsCarriageReturn = false;
 	for (let offset = 0; offset <= allText.length; offset++) {
 		// The position coordinate system cannot express the position between \r and \n
-		const position: Position = new Position(line, column + (previousIsCarriageReturn ? -1 : 0));
+		let position: Position = new Position(line, column + (previousIsCarriageReturn ? -1 : 0));
 
 		if (direction === AssertDocumentLineMappingDirection.OffsetToPosition) {
-			const actualPosition = model.getPositionAt(offset);
+			let actualPosition = model.getPositionAt(offset);
 			assert.strictEqual(actualPosition.toString(), position.toString(), msg + ' - getPositionAt mismatch for offset ' + offset);
 		} else {
 			// The position coordinate system cannot express the position between \r and \n
-			const expectedOffset: number = offset + (previousIsCarriageReturn ? -1 : 0);
-			const actualOffset = model.getOffsetAt(position);
+			let expectedOffset: number = offset + (previousIsCarriageReturn ? -1 : 0);
+			let actualOffset = model.getOffsetAt(position);
 			assert.strictEqual(actualOffset, expectedOffset, msg + ' - getOffsetAt mismatch for position ' + position.toString());
 		}
 
@@ -88,7 +88,7 @@ function assertLineMapping(model: TextModel, msg: string): void {
 
 
 export function assertSyncedModels(text: string, callback: (model: TextModel, assertMirrorModels: () => void) => void, setup: ((model: TextModel) => void) | null = null): void {
-	const model = createTextModel(text);
+	let model = createTextModel(text);
 	model.setEOL(EndOfLineSequence.LF);
 	assertLineMapping(model, 'model');
 
@@ -97,11 +97,11 @@ export function assertSyncedModels(text: string, callback: (model: TextModel, as
 		assertLineMapping(model, 'model');
 	}
 
-	const mirrorModel2 = new MirrorTextModel(null!, model.getLinesContent(), model.getEOL(), model.getVersionId());
+	let mirrorModel2 = new MirrorTextModel(null!, model.getLinesContent(), model.getEOL(), model.getVersionId());
 	let mirrorModel2PrevVersionId = model.getVersionId();
 
 	model.onDidChangeContent((e: IModelContentChangedEvent) => {
-		const versionId = e.versionId;
+		let versionId = e.versionId;
 		if (versionId < mirrorModel2PrevVersionId) {
 			console.warn('Model version id did not advance between edits (2)');
 		}
@@ -109,7 +109,7 @@ export function assertSyncedModels(text: string, callback: (model: TextModel, as
 		mirrorModel2.onEvents(e);
 	});
 
-	const assertMirrorModels = () => {
+	let assertMirrorModels = () => {
 		assertLineMapping(model, 'model');
 		assert.strictEqual(mirrorModel2.getText(), model.getValue(), 'mirror model 2 text OK');
 		assert.strictEqual(mirrorModel2.version, model.getVersionId(), 'mirror model 2 version OK');

@@ -31,15 +31,15 @@ export class WordSelectionRangeProvider implements SelectionRangeProvider {
 			return;
 		}
 
-		const { word, startColumn } = obj;
-		const offset = pos.column - startColumn;
+		let { word, startColumn } = obj;
+		let offset = pos.column - startColumn;
 		let start = offset;
 		let end = offset;
 		let lastCh: number = 0;
 
 		// LEFT anchor (start)
 		for (; start >= 0; start--) {
-			const ch = word.charCodeAt(start);
+			let ch = word.charCodeAt(start);
 			if ((start !== offset) && (ch === CharCode.Underline || ch === CharCode.Dash)) {
 				// foo-bar OR foo_bar
 				break;
@@ -53,7 +53,7 @@ export class WordSelectionRangeProvider implements SelectionRangeProvider {
 
 		// RIGHT anchor (end)
 		for (; end < word.length; end++) {
-			const ch = word.charCodeAt(end);
+			let ch = word.charCodeAt(end);
 			if (isUpperAsciiLetter(ch) && isLowerAsciiLetter(lastCh)) {
 				// fooBar
 				break;

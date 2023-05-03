@@ -122,7 +122,7 @@ export class LocalFileSearchSimpleWorker implements ILocalFileSearchSimpleWorker
 
 			let fileCount = 0;
 			let resultCount = 0;
-			const limitHit = false;
+			let limitHit = false;
 
 			const processFile = async (file: FileNode) => {
 				if (token.token.isCancellationRequested) {

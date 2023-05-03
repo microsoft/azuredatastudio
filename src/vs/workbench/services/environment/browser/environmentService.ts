@@ -56,19 +56,25 @@ export class BrowserWorkbenchEnvironmentService implements IBrowserWorkbenchEnvi
 	get userRoamingDataHome(): URI { return URI.file('/User').with({ scheme: Schemas.vscodeUserData }); }
 
 	@memoize
+	get settingsResource(): URI { return joinPath(this.userRoamingDataHome, 'settings.json'); }
+
+	@memoize
 	get argvResource(): URI { return joinPath(this.userRoamingDataHome, 'argv.json'); }
 
 	@memoize
+	get snippetsHome(): URI { return joinPath(this.userRoamingDataHome, 'snippets'); }
+
+	@memoize
 	get cacheHome(): URI { return joinPath(this.userRoamingDataHome, 'caches'); }
+
+	@memoize
+	get globalStorageHome(): URI { return joinPath(this.userRoamingDataHome, 'globalStorage'); }
 
 	@memoize
 	get workspaceStorageHome(): URI { return joinPath(this.userRoamingDataHome, 'workspaceStorage'); }
 
 	@memoize
 	get localHistoryHome(): URI { return joinPath(this.userRoamingDataHome, 'History'); }
-
-	@memoize
-	get stateResource(): URI { return joinPath(this.userRoamingDataHome, 'State', 'storage.json'); }
 
 	/**
 	 * In Web every workspace can potentially have scoped user-data
@@ -84,10 +90,10 @@ export class BrowserWorkbenchEnvironmentService implements IBrowserWorkbenchEnvi
 	get userDataSyncLogResource(): URI { return joinPath(this.logsHome, 'userDataSync.log'); }
 
 	@memoize
-	get editSessionsLogResource(): URI { return joinPath(this.logsHome, 'editSessions.log'); }
+	get sync(): 'on' | 'off' | undefined { return undefined; }
 
 	@memoize
-	get sync(): 'on' | 'off' | undefined { return undefined; }
+	get keybindingsResource(): URI { return joinPath(this.userRoamingDataHome, 'keybindings.json'); }
 
 	@memoize
 	get keyboardLayoutResource(): URI { return joinPath(this.userRoamingDataHome, 'keyboardLayout.json'); }
@@ -183,7 +189,7 @@ export class BrowserWorkbenchEnvironmentService implements IBrowserWorkbenchEnvi
 
 		const webviewExternalEndpointCommit = this.payload?.get('webviewExternalEndpointCommit');
 		return endpoint
-			.replace('{{commit}}', webviewExternalEndpointCommit ?? this.productService.commit ?? '3c8520fab514b9f56070214496b26ff68d1b1cb5')
+			.replace('{{commit}}', webviewExternalEndpointCommit ?? this.productService.commit ?? '181b43c0e2949e36ecb623d8cc6de29d4fa2bae8')
 			.replace('{{quality}}', (webviewExternalEndpointCommit ? 'insider' : this.productService.quality) ?? 'insider');
 	}
 
@@ -207,8 +213,6 @@ export class BrowserWorkbenchEnvironmentService implements IBrowserWorkbenchEnvi
 
 	@memoize
 	get disableWorkspaceTrust(): boolean { return !this.options.enableWorkspaceTrust; }
-
-	editSessionId: string | undefined = this.options.editSessionId;
 
 	private payload: Map<string, string> | undefined;
 
@@ -326,26 +330,6 @@ export class BrowserWorkbenchEnvironmentService implements IBrowserWorkbenchEnvi
 				return [
 					{ fileUri: URI.parse(fileToDiffSecondary) },
 					{ fileUri: URI.parse(fileToDiffPrimary) }
-				];
-			}
-		}
-
-		return undefined;
-	}
-
-	@memoize
-	get filesToMerge(): IPath[] | undefined {
-		if (this.payload) {
-			const fileToMerge1 = this.payload.get('mergeFile1');
-			const fileToMerge2 = this.payload.get('mergeFile2');
-			const fileToMergeBase = this.payload.get('mergeFileBase');
-			const fileToMergeResult = this.payload.get('mergeFileResult');
-			if (fileToMerge1 && fileToMerge2 && fileToMergeBase && fileToMergeResult) {
-				return [
-					{ fileUri: URI.parse(fileToMerge1) },
-					{ fileUri: URI.parse(fileToMerge2) },
-					{ fileUri: URI.parse(fileToMergeBase) },
-					{ fileUri: URI.parse(fileToMergeResult) }
 				];
 			}
 		}

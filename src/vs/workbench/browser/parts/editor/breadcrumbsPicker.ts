@@ -286,7 +286,7 @@ class FileFilter implements ITreeFilter<IWorkspaceFolder | IFileStat> {
 					if (typeof excludesConfig[pattern] !== 'boolean') {
 						continue;
 					}
-					const patternAbs = pattern.indexOf('**/') !== 0
+					let patternAbs = pattern.indexOf('**/') !== 0
 						? posix.join(folder.uri.path, pattern)
 						: pattern;
 

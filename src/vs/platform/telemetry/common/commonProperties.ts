@@ -28,7 +28,7 @@ export async function resolveCommonProperties(
 	commit: string | undefined,
 	version: string | undefined,
 	machineId: string | undefined,
-	isInternalTelemetry: boolean,
+	msftInternalDomains: string[] | undefined,
 	installSourcePath: string,
 	product?: string
 ): Promise<{ [name: string]: string | boolean | undefined }> {
@@ -54,9 +54,10 @@ export async function resolveCommonProperties(
 	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
 	result['quality'] = productObject.quality || 'dev'; // {{SQL CARBON EDIT}} Add quality
 
-	if (isInternalTelemetry) {
+	const msftInternal = verifyMicrosoftInternalDomain(msftInternalDomains || []);
+	if (msftInternal) {
 		// __GDPR__COMMON__ "common.msftInternal" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
-		result['common.msftInternal'] = isInternalTelemetry;
+		result['common.msftInternal'] = msftInternal;
 	}
 
 	// dynamic properties which value differs on each call

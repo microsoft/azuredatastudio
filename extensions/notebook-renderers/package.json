@@ -17,7 +17,7 @@
 	"contributes": {
 		"notebookRenderer": [
 			{
-				"id": "vscode.builtin-renderer",
+				"id": "vscode-builtin-notebook-renderer",
 				"entrypoint": "./renderer-out/index.js",
 				"displayName": "VS Code Builtin Notebook Output Renderer",
 				"requiresMessaging": "never",

@@ -662,7 +662,6 @@ class MainThreadCustomEditorModel extends ResourceWorkingCopy implements ICustom
 			} : undefined,
 			webview: {
 				id: primaryEditor.id,
-				origin: primaryEditor.webview.origin,
 				options: primaryEditor.webview.options,
 				state: primaryEditor.webview.state,
 			}

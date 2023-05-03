@@ -5,8 +5,7 @@
 
 import * as assert from 'assert';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { EncodedTokenizationResult, IState, TokenizationRegistry } from 'vs/editor/common/languages';
-import { FontStyle, ColorId, MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { EncodedTokenizationResult, ColorId, FontStyle, IState, MetadataConsts, TokenizationRegistry } from 'vs/editor/common/languages';
 import { ILanguageService } from 'vs/editor/common/languages/language';
 import { tokenizeLineToHTML, _tokenizeToString } from 'vs/editor/common/languages/textToHtmlTokenizer';
 import { LanguageIdCodec } from 'vs/editor/common/services/languagesRegistry';
@@ -29,16 +28,16 @@ suite('Editor Modes - textToHtmlTokenizer', () => {
 	});
 
 	function toStr(pieces: { className: string; text: string }[]): string {
-		const resultArr = pieces.map((t) => `<span class="${t.className}">${t.text}</span>`);
+		let resultArr = pieces.map((t) => `<span class="${t.className}">${t.text}</span>`);
 		return resultArr.join('');
 	}
 
 	test('TextToHtmlTokenizer 1', () => {
 		const mode = disposables.add(instantiationService.createInstance(Mode));
-		const support = TokenizationRegistry.get(mode.languageId)!;
+		let support = TokenizationRegistry.get(mode.languageId)!;
 
-		const actual = _tokenizeToString('.abc..def...gh', new LanguageIdCodec(), support);
-		const expected = [
+		let actual = _tokenizeToString('.abc..def...gh', new LanguageIdCodec(), support);
+		let expected = [
 			{ className: 'mtk7', text: '.' },
 			{ className: 'mtk9', text: 'abc' },
 			{ className: 'mtk7', text: '..' },
@@ -46,17 +45,17 @@ suite('Editor Modes - textToHtmlTokenizer', () => {
 			{ className: 'mtk7', text: '...' },
 			{ className: 'mtk9', text: 'gh' },
 		];
-		const expectedStr = `<div class="monaco-tokenized-source">${toStr(expected)}</div>`;
+		let expectedStr = `<div class="monaco-tokenized-source">${toStr(expected)}</div>`;
 
 		assert.strictEqual(actual, expectedStr);
 	});
 
 	test('TextToHtmlTokenizer 2', () => {
 		const mode = disposables.add(instantiationService.createInstance(Mode));
-		const support = TokenizationRegistry.get(mode.languageId)!;
+		let support = TokenizationRegistry.get(mode.languageId)!;
 
-		const actual = _tokenizeToString('.abc..def...gh\n.abc..def...gh', new LanguageIdCodec(), support);
-		const expected1 = [
+		let actual = _tokenizeToString('.abc..def...gh\n.abc..def...gh', new LanguageIdCodec(), support);
+		let expected1 = [
 			{ className: 'mtk7', text: '.' },
 			{ className: 'mtk9', text: 'abc' },
 			{ className: 'mtk7', text: '..' },
@@ -64,7 +63,7 @@ suite('Editor Modes - textToHtmlTokenizer', () => {
 			{ className: 'mtk7', text: '...' },
 			{ className: 'mtk9', text: 'gh' },
 		];
-		const expected2 = [
+		let expected2 = [
 			{ className: 'mtk7', text: '.' },
 			{ className: 'mtk9', text: 'abc' },
 			{ className: 'mtk7', text: '..' },
@@ -72,9 +71,9 @@ suite('Editor Modes - textToHtmlTokenizer', () => {
 			{ className: 'mtk7', text: '...' },
 			{ className: 'mtk9', text: 'gh' },
 		];
-		const expectedStr1 = toStr(expected1);
-		const expectedStr2 = toStr(expected2);
-		const expectedStr = `<div class="monaco-tokenized-source">${expectedStr1}<br/>${expectedStr2}</div>`;
+		let expectedStr1 = toStr(expected1);
+		let expectedStr2 = toStr(expected2);
+		let expectedStr = `<div class="monaco-tokenized-source">${expectedStr1}<br/>${expectedStr2}</div>`;
 
 		assert.strictEqual(actual, expectedStr);
 	});
@@ -304,10 +303,10 @@ class Mode extends Disposable {
 			getInitialState: (): IState => null!,
 			tokenize: undefined!,
 			tokenizeEncoded: (line: string, hasEOL: boolean, state: IState): EncodedTokenizationResult => {
-				const tokensArr: number[] = [];
+				let tokensArr: number[] = [];
 				let prevColor: ColorId = -1;
 				for (let i = 0; i < line.length; i++) {
-					const colorId: ColorId = line.charAt(i) === '.' ? 7 : 9;
+					let colorId = line.charAt(i) === '.' ? 7 : 9;
 					if (prevColor !== colorId) {
 						tokensArr.push(i);
 						tokensArr.push((
@@ -317,7 +316,7 @@ class Mode extends Disposable {
 					prevColor = colorId;
 				}
 
-				const tokens = new Uint32Array(tokensArr.length);
+				let tokens = new Uint32Array(tokensArr.length);
 				for (let i = 0; i < tokens.length; i++) {
 					tokens[i] = tokensArr[i];
 				}

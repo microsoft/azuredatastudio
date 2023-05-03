@@ -57,7 +57,9 @@ export class TestRPCProtocol implements IExtHostContext, IExtHostRpcService {
 	private set _callCount(value: number) {
 		this._callCountValue = value;
 		if (this._callCountValue === 0) {
-			this._completeIdle?.();
+			if (this._completeIdle) {
+				this._completeIdle();
+			}
 			this._idle = undefined;
 		}
 	}
@@ -86,7 +88,7 @@ export class TestRPCProtocol implements IExtHostContext, IExtHostRpcService {
 	}
 
 	private _createProxy<T>(proxyId: string): T {
-		const handler = {
+		let handler = {
 			get: (target: any, name: PropertyKey) => {
 				if (typeof name === 'string' && !target[name] && name.charCodeAt(0) === CharCode.DollarSign) {
 					target[name] = (...myArgs: any[]) => {
@@ -116,7 +118,7 @@ export class TestRPCProtocol implements IExtHostContext, IExtHostRpcService {
 			const wireArgs = simulateWireTransfer(args);
 			let p: Promise<any>;
 			try {
-				const result = (<Function>instance[path]).apply(instance, wireArgs);
+				let result = (<Function>instance[path]).apply(instance, wireArgs);
 				p = isThenable(result) ? result : Promise.resolve(result);
 			} catch (err) {
 				p = Promise.reject(err);

@@ -80,7 +80,7 @@ export class InlayHintsAccessibility implements IEditorContribution {
 		const cts = new CancellationTokenSource();
 		this._sessionDispoosables.add(cts);
 
-		for (const hint of hints) {
+		for (let hint of hints) {
 			await hint.resolve(cts.token);
 		}
 
@@ -116,7 +116,7 @@ export class InlayHintsAccessibility implements IEditorContribution {
 			if (typeof label === 'string') {
 				em.innerText = label;
 			} else {
-				for (const part of label) {
+				for (let part of label) {
 					if (part.command) {
 						const link = this._instaService.createInstance(Link, em,
 							{ href: asCommandLink(part.command), label: part.label, title: part.command.title },
@@ -174,10 +174,7 @@ registerAction2(class StartReadHints extends EditorAction2 {
 	constructor() {
 		super({
 			id: 'inlayHints.startReadingLineWithHint',
-			title: {
-				value: localize('read.title', 'Read Line With Inline Hints'),
-				original: 'Read Line With Inline Hints'
-			},
+			title: localize('read.title', 'Read Line With Inline Hints'),
 			precondition: EditorContextKeys.hasInlayHintsProvider,
 			f1: true
 		});
@@ -196,10 +193,7 @@ registerAction2(class StopReadHints extends EditorAction2 {
 	constructor() {
 		super({
 			id: 'inlayHints.stopReadingLineWithHint',
-			title: {
-				value: localize('stop.title', 'Stop Inlay Hints Reading'),
-				original: 'Stop Inlay Hints Reading'
-			},
+			title: localize('stop.title', 'Stop Inlay Hints Reading'),
 			precondition: InlayHintsAccessibility.IsReading,
 			f1: true,
 			keybinding: {

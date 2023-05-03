@@ -95,7 +95,9 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 
 	protected async _updateExtensions(): Promise<void> {
 		this._elements = await this._resolveExtensions();
-		this._list?.splice(0, this._list.length, this._elements);
+		if (this._list) {
+			this._list.splice(0, this._list.length, this._elements);
+		}
 	}
 
 	private async _resolveExtensions(): Promise<IRuntimeExtension[]> {
@@ -103,16 +105,16 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 		const extensionsDescriptions = (await this._extensionService.getExtensions()).filter((extension) => {
 			return Boolean(extension.main) || Boolean(extension.browser);
 		});
-		const marketplaceMap: { [id: string]: IExtension } = Object.create(null);
+		let marketplaceMap: { [id: string]: IExtension } = Object.create(null);
 		const marketPlaceExtensions = await this._extensionsWorkbenchService.queryLocal();
-		for (const extension of marketPlaceExtensions) {
+		for (let extension of marketPlaceExtensions) {
 			marketplaceMap[ExtensionIdentifier.toKey(extension.identifier.id)] = extension;
 		}
 
-		const statusMap = this._extensionService.getExtensionsStatus();
+		let statusMap = this._extensionService.getExtensionsStatus();
 
 		// group profile segments by extension
-		const segments: { [id: string]: number[] } = Object.create(null);
+		let segments: { [id: string]: number[] } = Object.create(null);
 
 		const profileInfo = this._getProfileInfo();
 		if (profileInfo) {
@@ -139,7 +141,7 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 
 			let extProfileInfo: IExtensionProfileInformation | null = null;
 			if (profileInfo) {
-				const extensionSegments = segments[ExtensionIdentifier.toKey(extensionDescription.identifier)] || [];
+				let extensionSegments = segments[ExtensionIdentifier.toKey(extensionDescription.identifier)] || [];
 				let extensionTotalTime = 0;
 				for (let j = 0, lenJ = extensionSegments.length / 2; j < lenJ; j++) {
 					const startTime = extensionSegments[2 * j];
@@ -277,7 +279,7 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 				data.version.textContent = element.description.version;
 
 				const activationTimes = element.status.activationTimes!;
-				const syncTime = activationTimes.codeLoadingTime + activationTimes.activateCallTime;
+				let syncTime = activationTimes.codeLoadingTime + activationTimes.activateCallTime;
 				data.activationTime.textContent = activationTimes.activationReason.startup ? `Startup Activation: ${syncTime}ms` : `Activation: ${syncTime}ms`;
 
 				data.actionbar.clear();
@@ -303,7 +305,7 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 						]
 					}, "Activated by {0} on start-up", activationId);
 				} else if (/^workspaceContains:/.test(activationEvent)) {
-					const fileNameOrGlob = activationEvent.substr('workspaceContains:'.length);
+					let fileNameOrGlob = activationEvent.substr('workspaceContains:'.length);
 					if (fileNameOrGlob.indexOf('*') >= 0 || fileNameOrGlob.indexOf('?') >= 0) {
 						title = nls.localize({
 							key: 'workspaceContainsGlobActivation',
@@ -338,7 +340,7 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 						]
 					}, "Activated by {0} after start-up finished", activationId);
 				} else if (/^onLanguage:/.test(activationEvent)) {
-					const language = activationEvent.substr('onLanguage:'.length);
+					let language = activationEvent.substr('onLanguage:'.length);
 					title = nls.localize('languageActivation', "Activated by {1} because you opened a {0} file", language, activationId);
 				} else {
 					title = nls.localize({
@@ -473,7 +475,9 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 	}
 
 	public layout(dimension: Dimension): void {
-		this._list?.layout(dimension.height);
+		if (this._list) {
+			this._list.layout(dimension.height);
+		}
 	}
 
 	protected abstract _getProfileInfo(): IExtensionHostProfile | null;

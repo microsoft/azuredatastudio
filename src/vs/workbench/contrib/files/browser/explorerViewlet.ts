@@ -67,8 +67,8 @@ export class ExplorerViewletViewsContribution extends Disposable implements IWor
 	private registerViews(): void {
 		const viewDescriptors = viewsRegistry.getViews(VIEW_CONTAINER);
 
-		const viewDescriptorsToRegister: IViewDescriptor[] = [];
-		const viewDescriptorsToDeregister: IViewDescriptor[] = [];
+		let viewDescriptorsToRegister: IViewDescriptor[] = [];
+		let viewDescriptorsToDeregister: IViewDescriptor[] = [];
 
 		const openEditorsViewDescriptor = this.createOpenEditorsViewDescriptor();
 		if (!viewDescriptors.some(v => v.id === openEditorsViewDescriptor.id)) {
@@ -224,7 +224,9 @@ export class ExplorerViewPaneContainer extends ViewPaneContainer {
 					}
 
 					const openEditorsView = this.getOpenEditorsView();
-					openEditorsView?.setStructuralRefreshDelay(0);
+					if (openEditorsView) {
+						openEditorsView.setStructuralRefreshDelay(0);
+					}
 				}
 			});
 		}

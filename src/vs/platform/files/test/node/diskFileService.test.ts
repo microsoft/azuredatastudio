@@ -127,8 +127,6 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 	}
 }
 
-DiskFileSystemProvider.configureFlushOnWrite(false); // speed up all unit tests by disabling flush on write
-
 flakySuite('Disk File Service', function () {
 
 	const testSchema = 'test';
@@ -405,7 +403,7 @@ flakySuite('Disk File Service', function () {
 		const children = result.children!;
 		assert.strictEqual(children.length, 1);
 
-		const deep = getByName(result, 'deep');
+		let deep = getByName(result, 'deep');
 		assert.ok(deep);
 		assert.ok(deep!.children!.length > 0);
 		assert.strictEqual(deep!.children!.length, 4);
@@ -1105,7 +1103,7 @@ flakySuite('Disk File Service', function () {
 		}
 	});
 
-	test('copy - MIX CASE different target - overwrite', async () => {
+	test('copy - MIX CASE different taget - overwrite', async () => {
 		const source1 = await service.resolve(URI.file(join(testDir, 'index.html')), { resolveMetadata: true });
 		assert.ok(source1.size > 0);
 
@@ -1225,7 +1223,7 @@ flakySuite('Disk File Service', function () {
 		assert.strictEqual(existsSync(target2.fsPath), true);
 		assert.strictEqual(basename(target2.fsPath), 'index.html-clone');
 
-		const target2Size = (await service.resolve(target2, { resolveMetadata: true })).size;
+		let target2Size = (await service.resolve(target2, { resolveMetadata: true })).size;
 
 		assert.strictEqual(source1Size, target2Size);
 	}
@@ -1361,8 +1359,8 @@ flakySuite('Disk File Service', function () {
 	});
 
 	async function testFilesNotIntermingled() {
-		const resource1 = URI.file(join(testDir, 'lorem.txt'));
-		const resource2 = URI.file(join(testDir, 'some_utf16le.css'));
+		let resource1 = URI.file(join(testDir, 'lorem.txt'));
+		let resource2 = URI.file(join(testDir, 'some_utf16le.css'));
 
 		// load in sequence and keep data
 		const value1 = await service.readFile(resource1);
@@ -1794,15 +1792,6 @@ flakySuite('Disk File Service', function () {
 
 	test('writeFile - default', async () => {
 		return testWriteFile();
-	});
-
-	test('writeFile - flush on write', async () => {
-		DiskFileSystemProvider.configureFlushOnWrite(true);
-		try {
-			return await testWriteFile();
-		} finally {
-			DiskFileSystemProvider.configureFlushOnWrite(false);
-		}
 	});
 
 	test('writeFile - buffered', async () => {

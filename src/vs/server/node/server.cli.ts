@@ -59,7 +59,6 @@ const isSupportedForPipe = (optionId: keyof RemoteParsedArgs) => {
 		case 'file-uri':
 		case 'add':
 		case 'diff':
-		case 'merge':
 		case 'wait':
 		case 'goto':
 		case 'reuse-window':
@@ -73,7 +72,6 @@ const isSupportedForPipe = (optionId: keyof RemoteParsedArgs) => {
 		case 'category':
 		case 'verbose':
 		case 'remote':
-		case 'locate-shell-integration-path':
 			return true;
 		default:
 			return false;
@@ -109,14 +107,13 @@ export function main(desc: ProductDescription, args: string[]): void {
 
 	const errorReporter: ErrorReporter = {
 		onMultipleValues: (id: string, usedValue: string) => {
-			console.error(`Option '${id}' can only be defined once. Using value ${usedValue}.`);
+			console.error(`Option ${id} can only be defined once. Using value ${usedValue}.`);
 		},
-		onEmptyValue: (id) => {
-			console.error(`Ignoring option '${id}': Value must not be empty.`);
-		},
+
 		onUnknownOption: (id: string) => {
-			console.error(`Ignoring option '${id}': not supported for ${desc.executableName}.`);
+			console.error(`Ignoring option ${id}: not supported for ${desc.executableName}.`);
 		},
+
 		onDeprecatedOption: (deprecatedOption: string, message: string) => {
 			console.warn(`Option '${deprecatedOption}' is deprecated: ${message}`);
 		}
@@ -133,20 +130,6 @@ export function main(desc: ProductDescription, args: string[]): void {
 	}
 	if (parsedArgs.version) {
 		console.log(buildVersionMessage(desc.version, desc.commit));
-		return;
-	}
-	if (parsedArgs['locate-shell-integration-path']) {
-		let file: string;
-		switch (parsedArgs['locate-shell-integration-path']) {
-			// Usage: `[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path bash)"`
-			case 'bash': file = 'shellIntegration-bash.sh'; break;
-			// Usage: `if ($env:TERM_PROGRAM -eq "vscode") { . "$(code --locate-shell-integration-path pwsh)" }`
-			case 'pwsh': file = 'shellIntegration.ps1'; break;
-			// Usage: `[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"`
-			case 'zsh': file = 'shellIntegration-rc.zsh'; break;
-			default: throw new Error('Error using --locate-shell-integration-path: Invalid shell type');
-		}
-		console.log(resolve(__dirname, '../..', 'workbench', 'contrib', 'terminal', 'browser', 'media', file));
 		return;
 	}
 	if (cliPipe) {
@@ -169,7 +152,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 
 	const inputPaths = parsedArgs['_'];
 	let hasReadStdinArg = false;
-	for (const input of inputPaths) {
+	for (let input of inputPaths) {
 		if (input === '-') {
 			hasReadStdinArg = true;
 		} else {
@@ -232,15 +215,16 @@ export function main(desc: ProductDescription, args: string[]): void {
 			return;
 		}
 
-		const newCommandline: string[] = [];
-		for (const key in parsedArgs) {
-			const val = parsedArgs[key as keyof typeof parsedArgs];
+
+		let newCommandline: string[] = [];
+		for (let key in parsedArgs) {
+			let val = parsedArgs[key as keyof typeof parsedArgs];
 			if (typeof val === 'boolean') {
 				if (val) {
 					newCommandline.push('--' + key);
 				}
 			} else if (Array.isArray(val)) {
-				for (const entry of val) {
+				for (let entry of val) {
 					newCommandline.push(`--${key}=${entry.toString()}`);
 				}
 			} else if (val) {
@@ -312,7 +296,6 @@ export function main(desc: ProductDescription, args: string[]): void {
 			fileURIs,
 			folderURIs,
 			diffMode: parsedArgs.diff,
-			mergeMode: parsedArgs.merge,
 			addMode: parsedArgs.add,
 			gotoLineMode: parsedArgs.goto,
 			forceReuseWindow: parsedArgs['reuse-window'],
@@ -336,8 +319,8 @@ async function waitForFileDeleted(path: string) {
 }
 
 function openInBrowser(args: string[], verbose: boolean) {
-	const uris: string[] = [];
-	for (const location of args) {
+	let uris: string[] = [];
+	for (let location of args) {
 		try {
 			if (/^(http|https|file):\/\//.test(location)) {
 				uris.push(_url.parse(location).href);
@@ -433,10 +416,10 @@ function pathToURI(input: string): _url.URL {
 }
 
 function translatePath(input: string, mapFileUri: (input: string) => string, folderURIS: string[], fileURIS: string[]) {
-	const url = pathToURI(input);
-	const mappedUri = mapFileUri(url.href);
+	let url = pathToURI(input);
+	let mappedUri = mapFileUri(url.href);
 	try {
-		const stat = _fs.lstatSync(_fs.realpathSync(input));
+		let stat = _fs.lstatSync(_fs.realpathSync(input));
 
 		if (stat.isFile()) {
 			fileURIS.push(mappedUri);
@@ -459,6 +442,6 @@ function mapFileToRemoteUri(uri: string): string {
 	return uri.replace(/^file:\/\//, 'vscode-remote://' + cliRemoteAuthority);
 }
 
-const [, , productName, version, commit, executableName, ...remainingArgs] = process.argv;
+let [, , productName, version, commit, executableName, ...remainingArgs] = process.argv;
 main({ productName, version, commit, executableName }, remainingArgs);
 

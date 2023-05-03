@@ -59,9 +59,9 @@ export class StartupPageContribution implements IWorkbenchContribution {
 			&& this.productService.showTelemetryOptOut
 			&& getTelemetryLevel(this.configurationService) !== TelemetryLevel.NONE
 			&& !this.environmentService.skipWelcome
-			&& !this.storageService.get(telemetryOptOutStorageKey, StorageScope.PROFILE)
+			&& !this.storageService.get(telemetryOptOutStorageKey, StorageScope.GLOBAL)
 		) {
-			this.storageService.store(telemetryOptOutStorageKey, true, StorageScope.PROFILE, StorageTarget.USER);
+			this.storageService.store(telemetryOptOutStorageKey, true, StorageScope.GLOBAL, StorageTarget.USER);
 			await this.openGettingStarted(true);
 			return;
 		}
@@ -94,7 +94,7 @@ export class StartupPageContribution implements IWorkbenchContribution {
 	}
 
 	private tryOpenWalkthroughForFolder(): boolean {
-		const toRestore = this.storageService.get(restoreWalkthroughsConfigurationKey, StorageScope.PROFILE);
+		const toRestore = this.storageService.get(restoreWalkthroughsConfigurationKey, StorageScope.GLOBAL);
 		if (!toRestore) {
 			return false;
 		}
@@ -107,7 +107,7 @@ export class StartupPageContribution implements IWorkbenchContribution {
 						GettingStartedInput,
 						{ selectedCategory: restoreData.category, selectedStep: restoreData.step }),
 					{ pinned: false });
-				this.storageService.remove(restoreWalkthroughsConfigurationKey, StorageScope.PROFILE);
+				this.storageService.remove(restoreWalkthroughsConfigurationKey, StorageScope.GLOBAL);
 				return true;
 			}
 		}

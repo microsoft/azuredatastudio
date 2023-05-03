@@ -55,7 +55,7 @@ export class TestObjectTree<T> extends ObjectTree<T, any> {
 	public getRendered(getProperty?: string) {
 		const elements = element.querySelectorAll<HTMLElement>('.monaco-tl-contents');
 		const sorted = [...elements].sort((a, b) => pos(a) - pos(b));
-		const chain: SerializedTree[] = [{ e: '', children: [] }];
+		let chain: SerializedTree[] = [{ e: '', children: [] }];
 		for (const element of sorted) {
 			const [depthStr, label] = element.textContent!.split(':');
 			const depth = Number(depthStr);

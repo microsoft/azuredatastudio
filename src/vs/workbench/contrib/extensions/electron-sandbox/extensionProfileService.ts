@@ -92,7 +92,9 @@ export class ExtensionHostProfileService extends Disposable implements IExtensio
 
 			const timeStarted = Date.now();
 			const handle = setInterval(() => {
-				this.profilingStatusBarIndicator?.update({ ...indicator, text: nls.localize('profilingExtensionHostTime', "Profiling Extension Host ({0} sec)", Math.round((new Date().getTime() - timeStarted) / 1000)), });
+				if (this.profilingStatusBarIndicator) {
+					this.profilingStatusBarIndicator.update({ ...indicator, text: nls.localize('profilingExtensionHostTime', "Profiling Extension Host ({0} sec)", Math.round((new Date().getTime() - timeStarted) / 1000)), });
+				}
 			}, 1000);
 			this.profilingStatusBarIndicatorLabelUpdater.value = toDisposable(() => clearInterval(handle));
 

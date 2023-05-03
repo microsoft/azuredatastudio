@@ -7,8 +7,7 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, ServicesAccessor, registerEditorAction } from 'vs/editor/browser/editorExtensions';
 import { IStandaloneThemeService } from 'vs/editor/standalone/common/standaloneTheme';
 import { ToggleHighContrastNLS } from 'vs/editor/common/standaloneStrings';
-import { isDark, isHighContrast } from 'vs/platform/theme/common/theme';
-import { HC_BLACK_THEME_NAME, HC_LIGHT_THEME_NAME, VS_DARK_THEME_NAME, VS_LIGHT_THEME_NAME } from 'vs/editor/standalone/browser/standaloneThemeService';
+import { isHighContrast } from 'vs/platform/theme/common/theme';
 
 class ToggleHighContrast extends EditorAction {
 
@@ -26,14 +25,13 @@ class ToggleHighContrast extends EditorAction {
 
 	public run(accessor: ServicesAccessor, editor: ICodeEditor): void {
 		const standaloneThemeService = accessor.get(IStandaloneThemeService);
-		const currentTheme = standaloneThemeService.getColorTheme();
-		if (isHighContrast(currentTheme.type)) {
+		if (isHighContrast(standaloneThemeService.getColorTheme().type)) {
 			// We must toggle back to the integrator's theme
-			standaloneThemeService.setTheme(this._originalThemeName || (isDark(currentTheme.type) ? VS_DARK_THEME_NAME : VS_LIGHT_THEME_NAME));
+			standaloneThemeService.setTheme(this._originalThemeName || 'vs');
 			this._originalThemeName = null;
 		} else {
-			standaloneThemeService.setTheme(isDark(currentTheme.type) ? HC_BLACK_THEME_NAME : HC_LIGHT_THEME_NAME);
-			this._originalThemeName = currentTheme.themeName;
+			this._originalThemeName = standaloneThemeService.getColorTheme().themeName;
+			standaloneThemeService.setTheme('hc-black');
 		}
 	}
 }

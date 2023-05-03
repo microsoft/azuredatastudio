@@ -57,7 +57,7 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 	}
 
 	private onDidChangeStorage(e: IStorageValueChangeEvent): void {
-		if (e.key === BrowserWorkspacesService.RECENTLY_OPENED_KEY && e.scope === StorageScope.APPLICATION) {
+		if (e.key === BrowserWorkspacesService.RECENTLY_OPENED_KEY && e.scope === StorageScope.GLOBAL) {
 			this._onRecentlyOpenedChange.fire();
 		}
 	}
@@ -91,7 +91,7 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 	//#region Workspaces History
 
 	async getRecentlyOpened(): Promise<IRecentlyOpened> {
-		const recentlyOpenedRaw = this.storageService.get(BrowserWorkspacesService.RECENTLY_OPENED_KEY, StorageScope.APPLICATION);
+		const recentlyOpenedRaw = this.storageService.get(BrowserWorkspacesService.RECENTLY_OPENED_KEY, StorageScope.GLOBAL);
 		if (recentlyOpenedRaw) {
 			const recentlyOpened = restoreRecentlyOpened(JSON.parse(recentlyOpenedRaw), this.logService);
 			recentlyOpened.workspaces = recentlyOpened.workspaces.filter(recent => {
@@ -156,11 +156,11 @@ export class BrowserWorkspacesService extends Disposable implements IWorkspacesS
 	}
 
 	private async saveRecentlyOpened(data: IRecentlyOpened): Promise<void> {
-		return this.storageService.store(BrowserWorkspacesService.RECENTLY_OPENED_KEY, JSON.stringify(toStoreData(data)), StorageScope.APPLICATION, StorageTarget.USER);
+		return this.storageService.store(BrowserWorkspacesService.RECENTLY_OPENED_KEY, JSON.stringify(toStoreData(data)), StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	async clearRecentlyOpened(): Promise<void> {
-		this.storageService.remove(BrowserWorkspacesService.RECENTLY_OPENED_KEY, StorageScope.APPLICATION);
+		this.storageService.remove(BrowserWorkspacesService.RECENTLY_OPENED_KEY, StorageScope.GLOBAL);
 	}
 
 	//#endregion

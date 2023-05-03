@@ -303,7 +303,7 @@ class EditorModelManager extends Disposable {
 	}
 
 	public override dispose(): void {
-		for (const modelUrl in this._syncedModels) {
+		for (let modelUrl in this._syncedModels) {
 			dispose(this._syncedModels[modelUrl]);
 		}
 		this._syncedModels = Object.create(null);
@@ -328,7 +328,7 @@ class EditorModelManager extends Disposable {
 		const currentTime = (new Date()).getTime();
 
 		const toRemove: string[] = [];
-		for (const modelUrl in this._syncedModelsLastUsedTime) {
+		for (let modelUrl in this._syncedModelsLastUsedTime) {
 			const elapsedTime = currentTime - this._syncedModelsLastUsedTime[modelUrl];
 			if (elapsedTime > STOP_SYNC_MODEL_DELTA_TIME_MS) {
 				toRemove.push(modelUrl);

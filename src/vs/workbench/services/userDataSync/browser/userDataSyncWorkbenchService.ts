@@ -36,10 +36,18 @@ import { UserDataSyncStoreTypeSynchronizer } from 'vs/platform/userDataSync/comm
 import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
 import { CancellationError } from 'vs/base/common/errors';
 
+type UserAccountClassification = {
+	id: { classification: 'EndUserPseudonymizedInformation'; purpose: 'BusinessInsight' };
+	providerId: { classification: 'EndUserPseudonymizedInformation'; purpose: 'BusinessInsight' };
+};
+
 type FirstTimeSyncClassification = {
-	owner: 'sandy081';
-	comment: 'Action taken when there are merges while turning on settins sync';
-	action: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true; comment: 'action taken turning on sync. Eg: merge, pull, manual or cancel' };
+	action: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; isMeasurement: true };
+};
+
+type UserAccountEvent = {
+	id: string;
+	providerId: string;
 };
 
 type FirstTimeSyncAction = 'pull' | 'push' | 'merge' | 'manual';
@@ -205,13 +213,13 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 	}
 
 	private async getAccounts(authenticationProviderId: string, scopes: string[]): Promise<UserDataSyncAccount[]> {
-		const accounts: Map<string, UserDataSyncAccount> = new Map<string, UserDataSyncAccount>();
+		let accounts: Map<string, UserDataSyncAccount> = new Map<string, UserDataSyncAccount>();
 		let currentAccount: UserDataSyncAccount | null = null;
 
 		const sessions = await this.authenticationService.getSessions(authenticationProviderId, scopes) || [];
 		for (const session of sessions) {
 			const account: UserDataSyncAccount = new UserDataSyncAccount(authenticationProviderId, session);
-			accounts.set(account.accountId, account);
+			accounts.set(account.accountName, account);
 			if (this.isCurrentAccount(account)) {
 				currentAccount = account;
 			}
@@ -219,7 +227,7 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 
 		if (currentAccount) {
 			// Always use current account if available
-			accounts.set(currentAccount.accountId, currentAccount);
+			accounts.set(currentAccount.accountName, currentAccount);
 		}
 
 		return [...accounts.values()];
@@ -604,11 +612,12 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 			// accounts are switched while sync is enabled.
 		}
 		this.currentSessionId = sessionId;
+		this.telemetryService.publicLog2<UserAccountEvent, UserAccountClassification>('sync.userAccount', { id: accountId, providerId: authenticationProviderId });
 		await this.update();
 	}
 
 	private async onDidSuccessiveAuthFailures(): Promise<void> {
-		this.telemetryService.publicLog2<{}, { owner: 'sandy081'; comment: 'Report when there are successive auth failures during settings sync' }>('sync/successiveAuthFailures');
+		this.telemetryService.publicLog2('sync/successiveAuthFailures');
 		this.currentSessionId = undefined;
 		await this.update();
 
@@ -631,7 +640,7 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 	}
 
 	private onDidChangeStorage(e: IStorageValueChangeEvent): void {
-		if (e.key === UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY && e.scope === StorageScope.APPLICATION
+		if (e.key === UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY && e.scope === StorageScope.GLOBAL
 			&& this.currentSessionId !== this.getStoredCachedSessionId() /* This checks if current window changed the value or not */) {
 			this._cachedCurrentSessionId = null;
 			this.update();
@@ -651,24 +660,24 @@ export class UserDataSyncWorkbenchService extends Disposable implements IUserDat
 			this._cachedCurrentSessionId = cachedSessionId;
 			if (cachedSessionId === undefined) {
 				this.logService.info('Settings Sync: Reset current session');
-				this.storageService.remove(UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY, StorageScope.APPLICATION);
+				this.storageService.remove(UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY, StorageScope.GLOBAL);
 			} else {
 				this.logService.info('Settings Sync: Updated current session', cachedSessionId);
-				this.storageService.store(UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY, cachedSessionId, StorageScope.APPLICATION, StorageTarget.MACHINE);
+				this.storageService.store(UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY, cachedSessionId, StorageScope.GLOBAL, StorageTarget.MACHINE);
 			}
 		}
 	}
 
 	private getStoredCachedSessionId(): string | undefined {
-		return this.storageService.get(UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY, StorageScope.APPLICATION);
+		return this.storageService.get(UserDataSyncWorkbenchService.CACHED_SESSION_STORAGE_KEY, StorageScope.GLOBAL);
 	}
 
 	private get useWorkbenchSessionId(): boolean {
-		return !this.storageService.getBoolean(UserDataSyncWorkbenchService.DONOT_USE_WORKBENCH_SESSION_STORAGE_KEY, StorageScope.APPLICATION, false);
+		return !this.storageService.getBoolean(UserDataSyncWorkbenchService.DONOT_USE_WORKBENCH_SESSION_STORAGE_KEY, StorageScope.GLOBAL, false);
 	}
 
 	private set useWorkbenchSessionId(useWorkbenchSession: boolean) {
-		this.storageService.store(UserDataSyncWorkbenchService.DONOT_USE_WORKBENCH_SESSION_STORAGE_KEY, !useWorkbenchSession, StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this.storageService.store(UserDataSyncWorkbenchService.DONOT_USE_WORKBENCH_SESSION_STORAGE_KEY, !useWorkbenchSession, StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
 }

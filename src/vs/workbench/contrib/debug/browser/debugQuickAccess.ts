@@ -12,11 +12,13 @@ import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { matchesFuzzy } from 'vs/base/common/filters';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { ADD_CONFIGURATION_ID, DEBUG_QUICK_ACCESS_PREFIX } from 'vs/workbench/contrib/debug/browser/debugCommands';
+import { ADD_CONFIGURATION_ID } from 'vs/workbench/contrib/debug/browser/debugCommands';
 import { debugConfigure, debugRemoveConfig } from 'vs/workbench/contrib/debug/browser/debugIcons';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
 export class StartDebugQuickAccessProvider extends PickerQuickAccessProvider<IPickerQuickAccessItem> {
+
+	static PREFIX = 'debug ';
 
 	constructor(
 		@IDebugService private readonly debugService: IDebugService,
@@ -24,7 +26,7 @@ export class StartDebugQuickAccessProvider extends PickerQuickAccessProvider<IPi
 		@ICommandService private readonly commandService: ICommandService,
 		@INotificationService private readonly notificationService: INotificationService,
 	) {
-		super(DEBUG_QUICK_ACCESS_PREFIX, {
+		super(StartDebugQuickAccessProvider.PREFIX, {
 			noResultsPick: {
 				label: localize('noDebugResults', "No matching launch configurations")
 			}
@@ -63,7 +65,7 @@ export class StartDebugQuickAccessProvider extends PickerQuickAccessProvider<IPi
 						tooltip: localize('customizeLaunchConfig', "Configure Launch Configuration")
 					}],
 					trigger: () => {
-						config.launch.openConfigFile({ preserveFocus: false, useInitialConfigs: false });
+						config.launch.openConfigFile(false);
 
 						return TriggerAction.CLOSE_PICKER;
 					},

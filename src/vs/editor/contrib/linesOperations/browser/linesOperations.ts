@@ -174,8 +174,8 @@ abstract class AbstractMoveLinesAction extends EditorAction {
 	public run(accessor: ServicesAccessor, editor: ICodeEditor): void {
 		const languageConfigurationService = accessor.get(ILanguageConfigurationService);
 
-		const commands: ICommand[] = [];
-		const selections = editor.getSelections() || [];
+		let commands: ICommand[] = [];
+		let selections = editor.getSelections() || [];
 		const autoIndent = editor.getOption(EditorOption.autoIndent);
 
 		for (const selection of selections) {
@@ -251,7 +251,7 @@ export abstract class AbstractSortLinesAction extends EditorAction {
 			}
 		}
 
-		const commands: ICommand[] = [];
+		let commands: ICommand[] = [];
 		for (let i = 0, len = selections.length; i < len; i++) {
 			commands[i] = new SortLinesCommand(selections[i], this.descending);
 		}
@@ -299,22 +299,22 @@ export class DeleteDuplicateLinesAction extends EditorAction {
 			return;
 		}
 
-		const model: ITextModel = editor.getModel();
+		let model: ITextModel = editor.getModel();
 		if (model.getLineCount() === 1 && model.getLineMaxColumn(1) === 1) {
 			return;
 		}
 
-		const edits: ISingleEditOperation[] = [];
-		const endCursorState: Selection[] = [];
+		let edits: ISingleEditOperation[] = [];
+		let endCursorState: Selection[] = [];
 
 		let linesDeleted = 0;
 
-		for (const selection of editor.getSelections()) {
-			const uniqueLines = new Set();
-			const lines = [];
+		for (let selection of editor.getSelections()) {
+			let uniqueLines = new Set();
+			let lines = [];
 
 			for (let i = selection.startLineNumber; i <= selection.endLineNumber; i++) {
-				const line = model.getLineContent(i);
+				let line = model.getLineContent(i);
 
 				if (uniqueLines.has(line)) {
 					continue;
@@ -325,15 +325,15 @@ export class DeleteDuplicateLinesAction extends EditorAction {
 			}
 
 
-			const selectionToReplace = new Selection(
+			let selectionToReplace = new Selection(
 				selection.startLineNumber,
 				1,
 				selection.endLineNumber,
 				model.getLineMaxColumn(selection.endLineNumber)
 			);
 
-			const adjustedSelectionStart = selection.startLineNumber - linesDeleted;
-			const finalSelection = new Selection(
+			let adjustedSelectionStart = selection.startLineNumber - linesDeleted;
+			let finalSelection = new Selection(
 				adjustedSelectionStart,
 				1,
 				adjustedSelectionStart + lines.length - 1,
@@ -380,12 +380,12 @@ export class TrimTrailingWhitespaceAction extends EditorAction {
 			cursors = (editor.getSelections() || []).map(s => new Position(s.positionLineNumber, s.positionColumn));
 		}
 
-		const selection = editor.getSelection();
+		let selection = editor.getSelection();
 		if (selection === null) {
 			return;
 		}
 
-		const command = new TrimTrailingWhitespaceCommand(selection, cursors);
+		let command = new TrimTrailingWhitespaceCommand(selection, cursors);
 
 		editor.pushUndoStop();
 		editor.executeCommands(this.id, [command]);
@@ -423,17 +423,17 @@ export class DeleteLinesAction extends EditorAction {
 			return;
 		}
 
-		const ops = this._getLinesToRemove(editor);
+		let ops = this._getLinesToRemove(editor);
 
-		const model: ITextModel = editor.getModel();
+		let model: ITextModel = editor.getModel();
 		if (model.getLineCount() === 1 && model.getLineMaxColumn(1) === 1) {
 			// Model is empty
 			return;
 		}
 
 		let linesDeleted = 0;
-		const edits: ISingleEditOperation[] = [];
-		const cursorState: Selection[] = [];
+		let edits: ISingleEditOperation[] = [];
+		let cursorState: Selection[] = [];
 		for (let i = 0, len = ops.length; i < len; i++) {
 			const op = ops[i];
 
@@ -462,7 +462,7 @@ export class DeleteLinesAction extends EditorAction {
 
 	private _getLinesToRemove(editor: IActiveCodeEditor): IDeleteLinesOperation[] {
 		// Construct delete operations
-		const operations: IDeleteLinesOperation[] = editor.getSelections().map((s) => {
+		let operations: IDeleteLinesOperation[] = editor.getSelections().map((s) => {
 
 			let endLineNumber = s.endLineNumber;
 			if (s.startLineNumber < s.endLineNumber && s.endColumn === 1) {
@@ -486,7 +486,7 @@ export class DeleteLinesAction extends EditorAction {
 		});
 
 		// Merge delete operations which are adjacent or overlapping
-		const mergedOperations: IDeleteLinesOperation[] = [];
+		let mergedOperations: IDeleteLinesOperation[] = [];
 		let previousOperation = operations[0];
 		for (let i = 1; i < operations.length; i++) {
 			if (previousOperation.endLineNumber + 1 >= operations[i].startLineNumber) {
@@ -608,13 +608,13 @@ export abstract class AbstractDeleteAllToBoundaryAction extends EditorAction {
 		}
 		const primaryCursor = editor.getSelection();
 
-		const rangesToDelete = this._getRangesToDelete(editor);
+		let rangesToDelete = this._getRangesToDelete(editor);
 		// merge overlapping selections
-		const effectiveRanges: Range[] = [];
+		let effectiveRanges: Range[] = [];
 
 		for (let i = 0, count = rangesToDelete.length - 1; i < count; i++) {
-			const range = rangesToDelete[i];
-			const nextRange = rangesToDelete[i + 1];
+			let range = rangesToDelete[i];
+			let nextRange = rangesToDelete[i + 1];
 
 			if (Range.intersectRanges(range, nextRange) === null) {
 				effectiveRanges.push(range);
@@ -625,9 +625,9 @@ export abstract class AbstractDeleteAllToBoundaryAction extends EditorAction {
 
 		effectiveRanges.push(rangesToDelete[rangesToDelete.length - 1]);
 
-		const endCursorState = this._getEndCursorState(primaryCursor, effectiveRanges);
+		let endCursorState = this._getEndCursorState(primaryCursor, effectiveRanges);
 
-		const edits: ISingleEditOperation[] = effectiveRanges.map(range => {
+		let edits: ISingleEditOperation[] = effectiveRanges.map(range => {
 			return EditOperation.replace(range, '');
 		});
 
@@ -662,13 +662,13 @@ export class DeleteAllLeftAction extends AbstractDeleteAllToBoundaryAction {
 
 	_getEndCursorState(primaryCursor: Range, rangesToDelete: Range[]): Selection[] {
 		let endPrimaryCursor: Selection | null = null;
-		const endCursorState: Selection[] = [];
+		let endCursorState: Selection[] = [];
 		let deletedLines = 0;
 
 		rangesToDelete.forEach(range => {
 			let endCursor;
 			if (range.endColumn === 1 && deletedLines > 0) {
-				const newStartLine = range.startLineNumber - deletedLines;
+				let newStartLine = range.startLineNumber - deletedLines;
 				endCursor = new Selection(newStartLine, range.startColumn, newStartLine, range.startColumn);
 			} else {
 				endCursor = new Selection(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn);
@@ -691,13 +691,13 @@ export class DeleteAllLeftAction extends AbstractDeleteAllToBoundaryAction {
 	}
 
 	_getRangesToDelete(editor: IActiveCodeEditor): Range[] {
-		const selections = editor.getSelections();
+		let selections = editor.getSelections();
 		if (selections === null) {
 			return [];
 		}
 
 		let rangesToDelete: Range[] = selections;
-		const model = editor.getModel();
+		let model = editor.getModel();
 
 		if (model === null) {
 			return [];
@@ -707,8 +707,8 @@ export class DeleteAllLeftAction extends AbstractDeleteAllToBoundaryAction {
 		rangesToDelete = rangesToDelete.map(selection => {
 			if (selection.isEmpty()) {
 				if (selection.startColumn === 1) {
-					const deleteFromLine = Math.max(1, selection.startLineNumber - 1);
-					const deleteFromColumn = selection.startLineNumber === 1 ? 1 : model.getLineContent(deleteFromLine).length + 1;
+					let deleteFromLine = Math.max(1, selection.startLineNumber - 1);
+					let deleteFromColumn = selection.startLineNumber === 1 ? 1 : model.getLineContent(deleteFromLine).length + 1;
 					return new Range(deleteFromLine, deleteFromColumn, selection.startLineNumber, 1);
 				} else {
 					return new Range(selection.startLineNumber, 1, selection.startLineNumber, selection.startColumn);
@@ -740,10 +740,10 @@ export class DeleteAllRightAction extends AbstractDeleteAllToBoundaryAction {
 
 	_getEndCursorState(primaryCursor: Range, rangesToDelete: Range[]): Selection[] {
 		let endPrimaryCursor: Selection | null = null;
-		const endCursorState: Selection[] = [];
+		let endCursorState: Selection[] = [];
 		for (let i = 0, len = rangesToDelete.length, offset = 0; i < len; i++) {
-			const range = rangesToDelete[i];
-			const endCursor = new Selection(range.startLineNumber - offset, range.startColumn, range.startLineNumber - offset, range.startColumn);
+			let range = rangesToDelete[i];
+			let endCursor = new Selection(range.startLineNumber - offset, range.startColumn, range.startLineNumber - offset, range.startColumn);
 
 			if (range.intersectRanges(primaryCursor)) {
 				endPrimaryCursor = endCursor;
@@ -760,18 +760,18 @@ export class DeleteAllRightAction extends AbstractDeleteAllToBoundaryAction {
 	}
 
 	_getRangesToDelete(editor: IActiveCodeEditor): Range[] {
-		const model = editor.getModel();
+		let model = editor.getModel();
 		if (model === null) {
 			return [];
 		}
 
-		const selections = editor.getSelections();
+		let selections = editor.getSelections();
 
 		if (selections === null) {
 			return [];
 		}
 
-		const rangesToDelete: Range[] = selections.map((sel) => {
+		let rangesToDelete: Range[] = selections.map((sel) => {
 			if (sel.isEmpty()) {
 				const maxColumn = model.getLineMaxColumn(sel.startLineNumber);
 
@@ -806,7 +806,7 @@ export class JoinLinesAction extends EditorAction {
 	}
 
 	public run(_accessor: ServicesAccessor, editor: ICodeEditor): void {
-		const selections = editor.getSelections();
+		let selections = editor.getSelections();
 		if (selections === null) {
 			return;
 		}
@@ -817,9 +817,9 @@ export class JoinLinesAction extends EditorAction {
 		}
 
 		selections.sort(Range.compareRangesUsingStarts);
-		const reducedSelections: Selection[] = [];
+		let reducedSelections: Selection[] = [];
 
-		const lastSelection = selections.reduce((previousValue, currentValue) => {
+		let lastSelection = selections.reduce((previousValue, currentValue) => {
 			if (previousValue.isEmpty()) {
 				if (previousValue.endLineNumber === currentValue.startLineNumber) {
 					if (primaryCursor!.equalsSelection(previousValue)) {
@@ -846,28 +846,28 @@ export class JoinLinesAction extends EditorAction {
 
 		reducedSelections.push(lastSelection);
 
-		const model = editor.getModel();
+		let model = editor.getModel();
 		if (model === null) {
 			return;
 		}
 
-		const edits: ISingleEditOperation[] = [];
-		const endCursorState: Selection[] = [];
+		let edits: ISingleEditOperation[] = [];
+		let endCursorState: Selection[] = [];
 		let endPrimaryCursor = primaryCursor;
 		let lineOffset = 0;
 
 		for (let i = 0, len = reducedSelections.length; i < len; i++) {
-			const selection = reducedSelections[i];
-			const startLineNumber = selection.startLineNumber;
-			const startColumn = 1;
+			let selection = reducedSelections[i];
+			let startLineNumber = selection.startLineNumber;
+			let startColumn = 1;
 			let columnDeltaOffset = 0;
 			let endLineNumber: number,
 				endColumn: number;
 
-			const selectionEndPositionOffset = model.getLineContent(selection.endLineNumber).length - selection.endColumn;
+			let selectionEndPositionOffset = model.getLineContent(selection.endLineNumber).length - selection.endColumn;
 
 			if (selection.isEmpty() || selection.startLineNumber === selection.endLineNumber) {
-				const position = selection.getStartPosition();
+				let position = selection.getStartPosition();
 				if (position.lineNumber < model.getLineCount()) {
 					endLineNumber = startLineNumber + 1;
 					endColumn = model.getLineMaxColumn(endLineNumber);
@@ -883,8 +883,8 @@ export class JoinLinesAction extends EditorAction {
 			let trimmedLinesContent = model.getLineContent(startLineNumber);
 
 			for (let i = startLineNumber + 1; i <= endLineNumber; i++) {
-				const lineText = model.getLineContent(i);
-				const firstNonWhitespaceIdx = model.getLineFirstNonWhitespaceColumn(i);
+				let lineText = model.getLineContent(i);
+				let firstNonWhitespaceIdx = model.getLineFirstNonWhitespaceColumn(i);
 
 				if (firstNonWhitespaceIdx >= 1) {
 					let insertSpace = true;
@@ -898,7 +898,7 @@ export class JoinLinesAction extends EditorAction {
 						trimmedLinesContent = trimmedLinesContent.replace(/[\s\uFEFF\xA0]+$/g, ' ');
 					}
 
-					const lineTextWithoutIndent = lineText.substr(firstNonWhitespaceIdx - 1);
+					let lineTextWithoutIndent = lineText.substr(firstNonWhitespaceIdx - 1);
 
 					trimmedLinesContent += (insertSpace ? ' ' : '') + lineTextWithoutIndent;
 
@@ -912,7 +912,7 @@ export class JoinLinesAction extends EditorAction {
 				}
 			}
 
-			const deleteSelection = new Range(startLineNumber, startColumn, endLineNumber, endColumn);
+			let deleteSelection = new Range(startLineNumber, startColumn, endLineNumber, endColumn);
 
 			if (!deleteSelection.isEmpty()) {
 				let resultSelection: Selection;
@@ -960,27 +960,27 @@ export class TransposeAction extends EditorAction {
 	}
 
 	public run(_accessor: ServicesAccessor, editor: ICodeEditor): void {
-		const selections = editor.getSelections();
+		let selections = editor.getSelections();
 		if (selections === null) {
 			return;
 		}
 
-		const model = editor.getModel();
+		let model = editor.getModel();
 		if (model === null) {
 			return;
 		}
 
-		const commands: ICommand[] = [];
+		let commands: ICommand[] = [];
 
 		for (let i = 0, len = selections.length; i < len; i++) {
-			const selection = selections[i];
+			let selection = selections[i];
 
 			if (!selection.isEmpty()) {
 				continue;
 			}
 
-			const cursor = selection.getStartPosition();
-			const maxColumn = model.getLineMaxColumn(cursor.lineNumber);
+			let cursor = selection.getStartPosition();
+			let maxColumn = model.getLineMaxColumn(cursor.lineNumber);
 
 			if (cursor.column >= maxColumn) {
 				if (cursor.lineNumber === model.getLineCount()) {
@@ -989,13 +989,13 @@ export class TransposeAction extends EditorAction {
 
 				// The cursor is at the end of current line and current line is not empty
 				// then we transpose the character before the cursor and the line break if there is any following line.
-				const deleteSelection = new Range(cursor.lineNumber, Math.max(1, cursor.column - 1), cursor.lineNumber + 1, 1);
-				const chars = model.getValueInRange(deleteSelection).split('').reverse().join('');
+				let deleteSelection = new Range(cursor.lineNumber, Math.max(1, cursor.column - 1), cursor.lineNumber + 1, 1);
+				let chars = model.getValueInRange(deleteSelection).split('').reverse().join('');
 
 				commands.push(new ReplaceCommand(new Selection(cursor.lineNumber, Math.max(1, cursor.column - 1), cursor.lineNumber + 1, 1), chars));
 			} else {
-				const deleteSelection = new Range(cursor.lineNumber, Math.max(1, cursor.column - 1), cursor.lineNumber, cursor.column + 1);
-				const chars = model.getValueInRange(deleteSelection).split('').reverse().join('');
+				let deleteSelection = new Range(cursor.lineNumber, Math.max(1, cursor.column - 1), cursor.lineNumber, cursor.column + 1);
+				let chars = model.getValueInRange(deleteSelection).split('').reverse().join('');
 				commands.push(new ReplaceCommandThatPreservesSelection(deleteSelection, chars,
 					new Selection(cursor.lineNumber, cursor.column + 1, cursor.lineNumber, cursor.column + 1)));
 			}
@@ -1162,49 +1162,6 @@ export class SnakeCaseAction extends AbstractCaseAction {
 	}
 }
 
-export class KebabCaseAction extends AbstractCaseAction {
-
-	public static isSupported(): boolean {
-		const areAllRegexpsSupported = [
-			this.caseBoundary,
-			this.singleLetters,
-			this.underscoreBoundary,
-		].every((regexp) => regexp.isSupported());
-
-		return areAllRegexpsSupported;
-	}
-
-	private static caseBoundary = new BackwardsCompatibleRegExp('(\\p{Ll})(\\p{Lu})', 'gmu');
-	private static singleLetters = new BackwardsCompatibleRegExp('(\\p{Lu}|\\p{N})(\\p{Lu}\\p{Ll})', 'gmu');
-	private static underscoreBoundary = new BackwardsCompatibleRegExp('(\\S)(_)(\\S)', 'gm');
-
-	constructor() {
-		super({
-			id: 'editor.action.transformToKebabcase',
-			label: nls.localize('editor.transformToKebabcase', 'Transform to Kebab Case'),
-			alias: 'Transform to Kebab Case',
-			precondition: EditorContextKeys.writable
-		});
-	}
-
-	protected _modifyText(text: string, _: string): string {
-		const caseBoundary = KebabCaseAction.caseBoundary.get();
-		const singleLetters = KebabCaseAction.singleLetters.get();
-		const underscoreBoundary = KebabCaseAction.underscoreBoundary.get();
-
-		if (!caseBoundary || !singleLetters || !underscoreBoundary) {
-			// one or more regexps aren't supported
-			return text;
-		}
-
-		return text
-			.replace(underscoreBoundary, '$1-$3')
-			.replace(caseBoundary, '$1-$2')
-			.replace(singleLetters, '$1-$2')
-			.toLocaleLowerCase();
-	}
-}
-
 registerEditorAction(CopyLinesUpAction);
 registerEditorAction(CopyLinesDownAction);
 registerEditorAction(DuplicateSelectionAction);
@@ -1231,8 +1188,4 @@ if (SnakeCaseAction.caseBoundary.isSupported() && SnakeCaseAction.singleLetters.
 }
 if (TitleCaseAction.titleBoundary.isSupported()) {
 	registerEditorAction(TitleCaseAction);
-}
-
-if (KebabCaseAction.isSupported()) {
-	registerEditorAction(KebabCaseAction);
 }

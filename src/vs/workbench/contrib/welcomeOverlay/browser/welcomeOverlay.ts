@@ -169,7 +169,7 @@ class WelcomeOverlay extends Disposable {
 	}
 
 	private create(): void {
-		const offset = this.layoutService.offset.top;
+		const offset = this.layoutService.offset?.top ?? 0;
 		this._overlay = dom.append(this.layoutService.container, $('.welcomeOverlay'));
 		this._overlay.style.top = `${offset}px`;
 		this._overlay.style.height = `calc(100% - ${offset}px)`;

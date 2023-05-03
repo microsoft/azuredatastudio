@@ -13,8 +13,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { ICommand, ICursorStateComputerData, IEditOperationBuilder } from 'vs/editor/common/editorCommon';
 import { EndOfLinePreference, EndOfLineSequence, ITextModel } from 'vs/editor/common/model';
 import { TextModel } from 'vs/editor/common/model/textModel';
-import { EncodedTokenizationResult, IState, ITokenizationSupport, TokenizationRegistry } from 'vs/editor/common/languages';
-import { StandardTokenType, MetadataConsts } from 'vs/editor/common/encodedTokenAttributes';
+import { EncodedTokenizationResult, IState, ITokenizationSupport, MetadataConsts, StandardTokenType, TokenizationRegistry } from 'vs/editor/common/languages';
 import { IndentAction, IndentationRule } from 'vs/editor/common/languages/languageConfiguration';
 import { ILanguageConfigurationService } from 'vs/editor/common/languages/languageConfigurationRegistry';
 import { NullState } from 'vs/editor/common/languages/nullTokenize';
@@ -116,8 +115,8 @@ function assertCursor(viewModel: ViewModel, what: Position | Selection | Selecti
 	} else {
 		selections = what;
 	}
-	const actual = viewModel.getSelections().map(s => s.toString());
-	const expected = selections.map(s => s.toString());
+	let actual = viewModel.getSelections().map(s => s.toString());
+	let expected = selections.map(s => s.toString());
 
 	assert.deepStrictEqual(actual, expected);
 }
@@ -443,7 +442,7 @@ suite('Editor Controller - Cursor', () => {
 	});
 
 	test('issue #144041: Cursor up/down works', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'Word1 Word2 Word3 Word4',
 				'Word5 Word6 Word7 Word8',
@@ -453,7 +452,7 @@ suite('Editor Controller - Cursor', () => {
 		withTestCodeEditor(model, { wrappingIndent: 'indent', wordWrap: 'wordWrapColumn', wordWrapColumn: 20 }, (editor, viewModel) => {
 			viewModel.setSelections('test', [new Selection(1, 1, 1, 1)]);
 
-			const cursorPositions: any[] = [];
+			let cursorPositions: any[] = [];
 			function reportCursorPosition() {
 				cursorPositions.push(viewModel.getCursorStates()[0].viewState.position.toString());
 			}
@@ -494,7 +493,7 @@ suite('Editor Controller - Cursor', () => {
 	});
 
 	test('issue #140195: Cursor up/down makes progress', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'Word1 Word2 Word3 Word4',
 				'Word5 Word6 Word7 Word8',
@@ -502,23 +501,21 @@ suite('Editor Controller - Cursor', () => {
 		);
 
 		withTestCodeEditor(model, { wrappingIndent: 'indent', wordWrap: 'wordWrapColumn', wordWrapColumn: 20 }, (editor, viewModel) => {
-			editor.changeDecorations((changeAccessor) => {
-				changeAccessor.deltaDecorations([], [
-					{
-						range: new Range(1, 22, 1, 22),
-						options: {
-							showIfCollapsed: true,
-							description: 'test',
-							after: {
-								content: 'some very very very very very very very very long text',
-							}
+			editor.deltaDecorations([], [
+				{
+					range: new Range(1, 22, 1, 22),
+					options: {
+						showIfCollapsed: true,
+						description: 'test',
+						after: {
+							content: 'some very very very very very very very very long text',
 						}
 					}
-				]);
-			});
+				}
+			]);
 			viewModel.setSelections('test', [new Selection(1, 1, 1, 1)]);
 
-			const cursorPositions: any[] = [];
+			let cursorPositions: any[] = [];
 			function reportCursorPosition() {
 				cursorPositions.push(viewModel.getCursorStates()[0].viewState.position.toString());
 			}
@@ -876,7 +873,7 @@ suite('Editor Controller - Cursor', () => {
 			moveTo(editor, viewModel, 2, 1, true);
 			assertCursor(viewModel, new Selection(1, 1, 2, 1));
 
-			const savedState = JSON.stringify(viewModel.saveCursorState());
+			let savedState = JSON.stringify(viewModel.saveCursorState());
 
 			moveTo(editor, viewModel, 1, 1, false);
 			assertCursor(viewModel, new Position(1, 1));
@@ -916,7 +913,7 @@ suite('Editor Controller - Cursor', () => {
 				doColumnSelect: true
 			});
 
-			const expectedSelections = [
+			let expectedSelections = [
 				new Selection(1, 7, 1, 12),
 				new Selection(2, 4, 2, 9),
 				new Selection(3, 3, 3, 6),
@@ -1333,7 +1330,7 @@ suite('Editor Controller - Cursor', () => {
 
 		const LANGUAGE_ID = 'modelModeTest1';
 		const languageRegistration = TokenizationRegistry.register(LANGUAGE_ID, tokenizationSupport);
-		const model = createTextModel('Just text', LANGUAGE_ID);
+		let model = createTextModel('Just text', LANGUAGE_ID);
 
 		withTestCodeEditor(model, {}, (editor1, cursor1) => {
 			let event: ICursorPositionChangedEvent | undefined = undefined;
@@ -1503,7 +1500,7 @@ suite('Editor Controller', () => {
 				while (line.length > 0) {
 					advance();
 				}
-				const result = new Uint32Array(tokens.length * 2);
+				let result = new Uint32Array(tokens.length * 2);
 				let startIndex = 0;
 				for (let i = 0; i < tokens.length; i++) {
 					result[2 * i] = startIndex;
@@ -1625,7 +1622,7 @@ suite('Editor Controller', () => {
 	}
 
 	function extractAutoClosingSpecialColumns(maxColumn: number, annotatedLine: string): AutoClosingColumnType[] {
-		const result: AutoClosingColumnType[] = [];
+		let result: AutoClosingColumnType[] = [];
 		for (let j = 1; j <= maxColumn; j++) {
 			result[j] = AutoClosingColumnType.Normal;
 		}
@@ -1643,8 +1640,8 @@ suite('Editor Controller', () => {
 	}
 
 	function assertType(editor: ITestCodeEditor, model: ITextModel, viewModel: ViewModel, lineNumber: number, column: number, chr: string, expectedInsert: string, message: string): void {
-		const lineContent = model.getLineContent(lineNumber);
-		const expected = lineContent.substr(0, column - 1) + expectedInsert + lineContent.substr(column - 1);
+		let lineContent = model.getLineContent(lineNumber);
+		let expected = lineContent.substr(0, column - 1) + expectedInsert + lineContent.substr(column - 1);
 		moveTo(editor, viewModel, lineNumber, column);
 		viewModel.type(chr, 'keyboard');
 		assert.deepStrictEqual(model.getLineContent(lineNumber), expected, message);
@@ -3228,33 +3225,6 @@ suite('Editor Controller', () => {
 		});
 	});
 
-	test('issue #148256: Pressing Enter creates line with bad indent with insertSpaces: true', () => {
-		usingCursor({
-			text: [
-				'  \t'
-			],
-		}, (editor, model, viewModel) => {
-			moveTo(editor, viewModel, 1, 4, false);
-			viewModel.type('\n', 'keyboard');
-			assert.strictEqual(model.getValue(), '  \t\n    ');
-		});
-	});
-
-	test('issue #148256: Pressing Enter creates line with bad indent with insertSpaces: false', () => {
-		usingCursor({
-			text: [
-				'  \t'
-			]
-		}, (editor, model, viewModel) => {
-			model.updateOptions({
-				insertSpaces: false
-			});
-			moveTo(editor, viewModel, 1, 4, false);
-			viewModel.type('\n', 'keyboard');
-			assert.strictEqual(model.getValue(), '  \t\n\t');
-		});
-	});
-
 	test('removeAutoWhitespace off', () => {
 		usingCursor({
 			text: [
@@ -4666,8 +4636,8 @@ suite('Editor Controller', () => {
 				['(', ')']
 			],
 			indentationRules: {
-				increaseIndentPattern: new RegExp("({+(?=([^\"]*\"[^\"]*\")*[^\"}]*$))|(\\[+(?=([^\"]*\"[^\"]*\")*[^\"\\]]*$))"),
-				decreaseIndentPattern: new RegExp("^\\s*[}\\]],?\\s*$")
+				increaseIndentPattern: new RegExp('^.*\\{[^}\"\\\']*$|^.*\\([^\\)\"\\\']*$|^\\s*(public|private|protected):\\s*$|^\\s*@(public|private|protected)\\s*$|^\\s*\\{\\}$'),
+				decreaseIndentPattern: new RegExp('^\\s*(\\s*/[*].*[*]/\\s*)*\\}|^\\s*(\\s*/[*].*[*]/\\s*)*\\)|^\\s*(public|private|protected):\\s*$|^\\s*@(public|private|protected)\\s*$'),
 			}
 		}));
 
@@ -4995,7 +4965,7 @@ suite('Editor Controller', () => {
 			languageId: autoClosingLanguageId
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'var| a| |=| [|]|;|',
 				'var| b| |=| `asd`|;|',
 				'var| c| |=| \'asd\'|;|',
@@ -5039,7 +5009,7 @@ suite('Editor Controller', () => {
 			}
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'var| a| =| [|];|',
 				'var| b| =| `asd`;|',
 				'var| c| =| \'asd\';|',
@@ -5077,7 +5047,7 @@ suite('Editor Controller', () => {
 			}
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'var| a| =| [|];|',
 			];
 			for (let i = 0, len = autoClosePositions.length; i < len; i++) {
@@ -5107,7 +5077,7 @@ suite('Editor Controller', () => {
 			}
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'var b =| [|];|',
 			];
 			for (let i = 0, len = autoClosePositions.length; i < len; i++) {
@@ -5146,7 +5116,7 @@ suite('Editor Controller', () => {
 			}
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'v|ar |a = [|];|',
 				'v|ar |b = `|asd`;|',
 				'v|ar |c = \'|asd\';|',
@@ -5191,7 +5161,7 @@ suite('Editor Controller', () => {
 			}
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'var a = [];',
 				'var b = `asd`;',
 				'var c = \'asd\';',
@@ -5325,7 +5295,7 @@ suite('Editor Controller', () => {
 			languageId: autoClosingLanguageId
 		}, (editor, model, viewModel) => {
 
-			const autoClosePositions = [
+			let autoClosePositions = [
 				'var a |=| [|]|;|',
 				'var b |=| `asd`|;|',
 				'var c |=| \'asd\'|;|',
@@ -6062,7 +6032,7 @@ suite('Editor Controller', () => {
 	});
 
 	test('All cursors should do the same thing when deleting left', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'var a = ()'
 			].join('\n'),
@@ -6083,7 +6053,7 @@ suite('Editor Controller', () => {
 	});
 
 	test('issue #7100: Mouse word selection is strange when non-word character is at the end of line', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'before.a',
 				'before',
@@ -6113,7 +6083,7 @@ suite('Editor Controller', () => {
 suite('Undo stops', () => {
 
 	test('there is an undo stop between typing and deleting left', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6144,7 +6114,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is an undo stop between typing and deleting right', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6175,7 +6145,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is an undo stop between deleting left and typing', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6211,7 +6181,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is an undo stop between deleting left and deleting right', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6251,7 +6221,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is an undo stop between deleting right and typing', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6284,7 +6254,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is an undo stop between deleting right and deleting left', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6322,7 +6292,7 @@ suite('Undo stops', () => {
 	});
 
 	test('inserts undo stop when typing space', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6352,7 +6322,7 @@ suite('Undo stops', () => {
 	});
 
 	test('can undo typing and EOL change in one undo stop', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'A  line',
 				'Another line',
@@ -6378,7 +6348,7 @@ suite('Undo stops', () => {
 	});
 
 	test('issue #93585: Undo multi cursor edit corrupts document', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				'hello world',
 				'hello world',
@@ -6401,7 +6371,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is a single undo stop for consecutive whitespaces', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				''
 			].join('\n'),
@@ -6435,7 +6405,7 @@ suite('Undo stops', () => {
 	});
 
 	test('there is no undo stop after a single whitespace', () => {
-		const model = createTextModel(
+		let model = createTextModel(
 			[
 				''
 			].join('\n'),

@@ -849,10 +849,9 @@ configurationRegistry.registerConfiguration({
 		[NotebookSetting.showFoldingControls]: {
 			description: locConstants.showFoldingControlsDescription,
 			type: 'string',
-			enum: ['always', 'never', 'mouseover'],
+			enum: ['always', 'mouseover'],
 			enumDescriptions: [
 				nls.localize('showFoldingControls.always', "The folding controls are always visible."),
-				nls.localize('showFoldingControls.never', "Never show the folding controls and reduce the gutter size."),
 				nls.localize('showFoldingControls.mouseover', "The folding controls are visible only on mouseover."),
 			],
 			default: 'mouseover',
@@ -912,6 +911,6 @@ configurationRegistry.registerConfiguration({
 			markdownDescription: locConstants.outputFontFamilyDescription,
 			type: 'string',
 			tags: ['notebookLayout']
-		}
+		},
 	}
 });

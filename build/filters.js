@@ -52,6 +52,7 @@ module.exports.unicodeFilter = [
 	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
+	'!extensions/vscode-custom-editor-tests/test-workspace/**',
 	'!extensions/**/dist/**',
 	'!extensions/**/out/**',
 	'!extensions/**/snippets/**',
@@ -92,6 +93,7 @@ module.exports.indentationFilter = [
 	'!extensions/markdown-math/notebook-out/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
+	'!extensions/vscode-custom-editor-tests/test-workspace/**',
 	'!build/monaco/**',
 	'!build/win32/**',
 

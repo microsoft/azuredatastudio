@@ -34,7 +34,7 @@ export class ViewModel implements IViewModel {
 	private terminateDebuggeeSupported!: IContextKey<boolean>;
 	private suspendDebuggeeSupported!: IContextKey<boolean>;
 	private disassembleRequestSupported!: IContextKey<boolean>;
-	private focusedStackFrameHasInstructionPointerReference!: IContextKey<boolean>;
+	private focusedStackFrameHasInstructionPointerReference!: IContextKey<Boolean>;
 
 	constructor(private contextKeyService: IContextKeyService) {
 		contextKeyService.bufferChangeEvents(() => {

@@ -62,7 +62,7 @@ export abstract class FilterViewPaneContainer extends ViewPaneContainer {
 
 	private updateAllViews(viewDescriptors: ReadonlyArray<IViewDescriptor>) {
 		viewDescriptors.forEach(descriptor => {
-			const filterOnValue = this.getFilterOn(descriptor);
+			let filterOnValue = this.getFilterOn(descriptor);
 			if (!filterOnValue) {
 				return;
 			}

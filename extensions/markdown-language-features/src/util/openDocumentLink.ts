@@ -6,9 +6,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as uri from 'vscode-uri';
-import { MdTableOfContentsProvider } from '../tableOfContents';
-import { ITextDocument } from '../types/textDocument';
-import { IMdWorkspace } from '../workspace';
+import { MarkdownEngine } from '../markdownEngine';
+import { TableOfContents } from '../tableOfContents';
 import { isMarkdownFile } from './file';
 
 export interface OpenDocumentLinkArgs {
@@ -23,7 +22,7 @@ enum OpenMarkdownLinks {
 }
 
 export function resolveDocumentLink(href: string, markdownFile: vscode.Uri): vscode.Uri {
-	const [hrefPath, fragment] = href.split('#').map(c => decodeURIComponent(c));
+	let [hrefPath, fragment] = href.split('#').map(c => decodeURIComponent(c));
 
 	if (hrefPath[0] === '/') {
 		// Absolute path. Try to resolve relative to the workspace
@@ -38,10 +37,10 @@ export function resolveDocumentLink(href: string, markdownFile: vscode.Uri): vsc
 	return vscode.Uri.joinPath(dirnameUri, hrefPath).with({ fragment });
 }
 
-export async function openDocumentLink(tocProvider: MdTableOfContentsProvider, targetResource: vscode.Uri, fromResource: vscode.Uri): Promise<void> {
+export async function openDocumentLink(engine: MarkdownEngine, targetResource: vscode.Uri, fromResource: vscode.Uri): Promise<void> {
 	const column = getViewColumn(fromResource);
 
-	if (await tryNavigateToFragmentInActiveEditor(tocProvider, targetResource)) {
+	if (await tryNavigateToFragmentInActiveEditor(engine, targetResource)) {
 		return;
 	}
 
@@ -59,7 +58,7 @@ export async function openDocumentLink(tocProvider: MdTableOfContentsProvider, t
 			try {
 				const stat = await vscode.workspace.fs.stat(dotMdResource);
 				if (stat.type === vscode.FileType.File) {
-					await tryOpenMdFile(tocProvider, dotMdResource, column);
+					await tryOpenMdFile(engine, dotMdResource, column);
 					return;
 				}
 			} catch {
@@ -70,33 +69,25 @@ export async function openDocumentLink(tocProvider: MdTableOfContentsProvider, t
 		return vscode.commands.executeCommand('revealInExplorer', targetResource);
 	}
 
-	await tryOpenMdFile(tocProvider, targetResource, column);
+	await tryOpenMdFile(engine, targetResource, column);
 }
 
-async function tryOpenMdFile(tocProvider: MdTableOfContentsProvider, resource: vscode.Uri, column: vscode.ViewColumn): Promise<boolean> {
+async function tryOpenMdFile(engine: MarkdownEngine, resource: vscode.Uri, column: vscode.ViewColumn): Promise<boolean> {
 	await vscode.commands.executeCommand('vscode.open', resource.with({ fragment: '' }), column);
-	return tryNavigateToFragmentInActiveEditor(tocProvider, resource);
+	return tryNavigateToFragmentInActiveEditor(engine, resource);
 }
 
-async function tryNavigateToFragmentInActiveEditor(tocProvider: MdTableOfContentsProvider, resource: vscode.Uri): Promise<boolean> {
-	const notebookEditor = vscode.window.activeNotebookEditor;
-	if (notebookEditor?.notebook.uri.fsPath === resource.fsPath) {
-		if (await tryRevealLineInNotebook(tocProvider, notebookEditor, resource.fragment)) {
-			return true;
-		}
-	}
-
+async function tryNavigateToFragmentInActiveEditor(engine: MarkdownEngine, resource: vscode.Uri): Promise<boolean> {
 	const activeEditor = vscode.window.activeTextEditor;
 	if (activeEditor?.document.uri.fsPath === resource.fsPath) {
 		if (isMarkdownFile(activeEditor.document)) {
-			if (await tryRevealLineUsingTocFragment(tocProvider, activeEditor, resource.fragment)) {
+			if (await tryRevealLineUsingTocFragment(engine, activeEditor, resource.fragment)) {
 				return true;
 			}
 		}
 		tryRevealLineUsingLineFragment(activeEditor, resource.fragment);
 		return true;
 	}
-
 	return false;
 }
 
@@ -112,26 +103,8 @@ function getViewColumn(resource: vscode.Uri): vscode.ViewColumn {
 	}
 }
 
-async function tryRevealLineInNotebook(tocProvider: MdTableOfContentsProvider, editor: vscode.NotebookEditor, fragment: string): Promise<boolean> {
-	const toc = await tocProvider.createForNotebook(editor.notebook);
-	const entry = toc.lookup(fragment);
-	if (!entry) {
-		return false;
-	}
-
-	const cell = editor.notebook.getCells().find(cell => cell.document.uri.toString() === entry.sectionLocation.uri.toString());
-	if (!cell) {
-		return false;
-	}
-
-	const range = new vscode.NotebookRange(cell.index, cell.index);
-	editor.selection = range;
-	editor.revealRange(range);
-	return true;
-}
-
-async function tryRevealLineUsingTocFragment(tocProvider: MdTableOfContentsProvider, editor: vscode.TextEditor, fragment: string): Promise<boolean> {
-	const toc = await tocProvider.getForDocument(editor.document);
+async function tryRevealLineUsingTocFragment(engine: MarkdownEngine, editor: vscode.TextEditor, fragment: string): Promise<boolean> {
+	const toc = await TableOfContents.create(engine, editor.document);
 	const entry = toc.lookup(fragment);
 	if (entry) {
 		const lineStart = new vscode.Range(entry.line, 0, entry.line, 0);
@@ -156,9 +129,9 @@ function tryRevealLineUsingLineFragment(editor: vscode.TextEditor, fragment: str
 	return false;
 }
 
-export async function resolveUriToMarkdownFile(workspace: IMdWorkspace, resource: vscode.Uri): Promise<ITextDocument | undefined> {
+export async function resolveUriToMarkdownFile(resource: vscode.Uri): Promise<vscode.TextDocument | undefined> {
 	try {
-		const doc = await workspace.getOrLoadMarkdownDocument(resource);
+		const doc = await tryResolveUriToMarkdownFile(resource);
 		if (doc) {
 			return doc;
 		}
@@ -168,8 +141,21 @@ export async function resolveUriToMarkdownFile(workspace: IMdWorkspace, resource
 
 	// If no extension, try with `.md` extension
 	if (uri.Utils.extname(resource) === '') {
-		return workspace.getOrLoadMarkdownDocument(resource.with({ path: resource.path + '.md' }));
+		return tryResolveUriToMarkdownFile(resource.with({ path: resource.path + '.md' }));
 	}
 
+	return undefined;
+}
+
+async function tryResolveUriToMarkdownFile(resource: vscode.Uri): Promise<vscode.TextDocument | undefined> {
+	let document: vscode.TextDocument;
+	try {
+		document = await vscode.workspace.openTextDocument(resource);
+	} catch {
+		return undefined;
+	}
+	if (isMarkdownFile(document)) {
+		return document;
+	}
 	return undefined;
 }

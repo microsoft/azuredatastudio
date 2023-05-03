@@ -49,7 +49,6 @@ import { IViewModel } from 'vs/editor/common/viewModel';
 import { getThemeTypeSelector, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { PointerHandlerLastRenderData } from 'vs/editor/browser/controller/mouseTarget';
-import { BlockDecorations } from 'vs/editor/browser/viewParts/blockDecorations/blockDecorations';
 
 
 export interface IContentWidgetData {
@@ -181,9 +180,6 @@ export class View extends ViewEventHandler {
 		const rulers = new Rulers(this._context);
 		this._viewParts.push(rulers);
 
-		const blockOutline = new BlockDecorations(this._context);
-		this._viewParts.push(blockOutline);
-
 		const minimap = new Minimap(this._context);
 		this._viewParts.push(minimap);
 
@@ -196,7 +192,6 @@ export class View extends ViewEventHandler {
 
 		this._linesContent.appendChild(contentViewOverlays.getDomNode());
 		this._linesContent.appendChild(rulers.domNode);
-		this._linesContent.appendChild(blockOutline.domNode);
 		this._linesContent.appendChild(this._viewZones.domNode);
 		this._linesContent.appendChild(this._viewLines.getDomNode());
 		this._linesContent.appendChild(this._contentWidgets.domNode);

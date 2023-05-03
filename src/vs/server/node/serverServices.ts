@@ -24,10 +24,10 @@ import { IEncryptionMainService } from 'vs/platform/encryption/common/encryption
 import { EncryptionMainService } from 'vs/platform/encryption/node/encryptionMainService';
 import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ExtensionGalleryServiceWithNoStorageService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
-import { IExtensionGalleryService, IExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionGalleryService, IExtensionManagementCLIService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
 import { ExtensionManagementChannel } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
-import { ExtensionManagementService, INativeServerExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
+import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import { IFileService } from 'vs/platform/files/common/files';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
@@ -35,8 +35,8 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { ILanguagePackService } from 'vs/platform/languagePacks/common/languagePacks';
-import { NativeLanguagePackService } from 'vs/platform/languagePacks/node/languagePacks';
+import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
+import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
 import { AbstractLogger, DEFAULT_LOG_LEVEL, getLogLevel, ILogService, LogLevel, LogService, MultiplexLogService } from 'vs/platform/log/common/log';
 import { LogLevelChannel } from 'vs/platform/log/common/logIpc';
 import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
@@ -69,10 +69,7 @@ import { REMOTE_FILE_SYSTEM_CHANNEL_NAME } from 'vs/workbench/services/remote/co
 import { ExtensionHostStatusService, IExtensionHostStatusService } from 'vs/server/node/extensionHostStatusService';
 import { IExtensionsScannerService } from 'vs/platform/extensionManagement/common/extensionsScannerService';
 import { ExtensionsScannerService } from 'vs/server/node/extensionsScannerService';
-import { IUserDataProfilesService, UserDataProfilesService } from 'vs/platform/userDataProfile/common/userDataProfile';
-import { NullPolicyService } from 'vs/platform/policy/common/policy';
 import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender';
-import { ExtensionsProfileScannerService, IExtensionsProfileScannerService } from 'vs/platform/extensionManagement/common/extensionsProfileScannerService'; // {{SQL CARBON EDIT}} Added import
 
 const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}} Use our own event prefix
 
@@ -110,21 +107,14 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 	services.set(IFileService, fileService);
 	fileService.registerProvider(Schemas.file, disposables.add(new DiskFileSystemProvider(logService)));
 
-	// URI Identity
-	const uriIdentityService = new UriIdentityService(fileService);
-	services.set(IUriIdentityService, uriIdentityService);
-
-	// User Data Profiles
-	const userDataProfilesService = new UserDataProfilesService(environmentService, fileService, uriIdentityService, logService);
-	services.set(IUserDataProfilesService, userDataProfilesService);
-
-	// Configuration
-	const configurationService = new ConfigurationService(environmentService.machineSettingsResource, fileService, new NullPolicyService(), logService);
+	const configurationService = new ConfigurationService(environmentService.machineSettingsResource, fileService);
 	services.set(IConfigurationService, configurationService);
-	await configurationService.initialize();
 
 	const extensionHostStatusService = new ExtensionHostStatusService();
 	services.set(IExtensionHostStatusService, extensionHostStatusService);
+
+	// URI Identity
+	services.set(IUriIdentityService, new UriIdentityService(fileService));
 
 	// Request
 	services.set(IRequestService, new SyncDescriptor(RequestService));
@@ -140,7 +130,7 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 
 		const config: ITelemetryServiceConfig = {
 			appenders: [oneDsAppender],
-			commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, productService.commit, productService.version + '-remote', machineId, isInternal, environmentService.installSourcePath, 'remoteAgent'),
+			commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, productService.commit, productService.version + '-remote', machineId, productService.msftInternalDomains, environmentService.installSourcePath, 'remoteAgent'),
 			piiPaths: getPiiPathsFromEnvironment(environmentService)
 		};
 		const initialTelemetryLevelArg = environmentService.args['telemetry-level'];
@@ -165,12 +155,11 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 	const downloadChannel = socketServer.getChannel('download', router);
 	services.set(IDownloadService, new DownloadServiceChannelClient(downloadChannel, () => getUriTransformer('renderer') /* TODO: @Sandy @Joao need dynamic context based router */));
 
-	services.set(IExtensionsProfileScannerService, new SyncDescriptor(ExtensionsProfileScannerService));
 	services.set(IExtensionsScannerService, new SyncDescriptor(ExtensionsScannerService));
-	services.set(INativeServerExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
+	services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
 
 	const instantiationService: IInstantiationService = new InstantiationService(services);
-	services.set(ILanguagePackService, instantiationService.createInstance(NativeLanguagePackService));
+	services.set(ILocalizationsService, instantiationService.createInstance(LocalizationsService));
 
 	const extensionManagementCLIService = instantiationService.createInstance(ExtensionManagementCLIService);
 	services.set(IExtensionManagementCLIService, extensionManagementCLIService);
@@ -190,9 +179,9 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 	services.set(ICredentialsMainService, new SyncDescriptor(CredentialsWebMainService));
 
 	instantiationService.invokeFunction(accessor => {
-		const extensionManagementService = accessor.get(INativeServerExtensionManagementService);
+		const extensionManagementService = accessor.get(IExtensionManagementService);
 		const extensionsScannerService = accessor.get(IExtensionsScannerService);
-		const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(connectionToken, environmentService, userDataProfilesService, extensionManagementCLIService, logService, extensionHostStatusService, extensionsScannerService);
+		const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(connectionToken, environmentService, extensionManagementCLIService, logService, extensionHostStatusService, extensionsScannerService);
 		socketServer.registerChannel('remoteextensionsenvironment', remoteExtensionEnvironmentChannel);
 
 		const telemetryChannel = new ServerTelemetryChannel(accessor.get(IServerTelemetryService), oneDsAppender);
@@ -215,7 +204,7 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 		socketServer.registerChannel('credentials', credentialsChannel);
 
 		// clean up deprecated extensions
-		extensionManagementService.removeUninstalledExtensions(true);
+		(extensionManagementService as ExtensionManagementService).removeDeprecatedExtensions();
 
 		disposables.add(new ErrorTelemetry(accessor.get(ITelemetryService)));
 

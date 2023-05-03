@@ -35,7 +35,7 @@ import { EditorResourceAccessor, IEditorPane } from 'vs/workbench/common/editor'
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { Event } from 'vs/base/common/event';
 import { ITreeSorter } from 'vs/base/browser/ui/tree/tree';
-import { AbstractTreeViewState, IAbstractTreeViewState, TreeFindMode } from 'vs/base/browser/ui/tree/abstractTree';
+import { AbstractTreeViewState, IAbstractTreeViewState } from 'vs/base/browser/ui/tree/abstractTree';
 
 const _ctxFollowsCursor = new RawContextKey('outlineFollowsCursor', false);
 const _ctxFilterOnType = new RawContextKey('outlineFiltersOnType', false);
@@ -136,7 +136,7 @@ export class OutlinePane extends ViewPane {
 		this._domNode = container;
 		container.classList.add('outline-pane');
 
-		const progressContainer = dom.$('.outline-progress');
+		let progressContainer = dom.$('.outline-progress');
 		this._message = dom.$('.outline-message');
 
 		this._progressBar = new ProgressBar(progressContainer);
@@ -259,7 +259,7 @@ export class OutlinePane extends ViewPane {
 				expandOnlyOnTwistieClick: true,
 				multipleSelectionSupport: false,
 				hideTwistiesOfChildlessElements: true,
-				defaultFindMode: this._outlineViewState.filterOnType ? TreeFindMode.Filter : TreeFindMode.Highlight,
+				filterOnType: this._outlineViewState.filterOnType,
 				overrideStyles: { listBackground: this.getBackgroundColor() }
 			}
 		);
@@ -286,7 +286,6 @@ export class OutlinePane extends ViewPane {
 		};
 		updateTree();
 		this._editorControlDisposables.add(newOutline.onDidChange(updateTree));
-		tree.findMode = this._outlineViewState.filterOnType ? TreeFindMode.Filter : TreeFindMode.Highlight;
 
 		// feature: apply panel background to tree
 		this._editorControlDisposables.add(this.viewDescriptorService.onDidChangeLocation(({ views }) => {
@@ -296,7 +295,7 @@ export class OutlinePane extends ViewPane {
 		}));
 
 		// feature: filter on type - keep tree and menu in sync
-		this._editorControlDisposables.add(tree.onDidChangeFindMode(mode => this._outlineViewState.filterOnType = mode === TreeFindMode.Filter));
+		this._editorControlDisposables.add(tree.onDidUpdateOptions(e => this._outlineViewState.filterOnType = Boolean(e.filterOnType)));
 
 		// feature: reveal outline selection in editor
 		// on change -> reveal/select defining range
@@ -329,7 +328,7 @@ export class OutlinePane extends ViewPane {
 		this._editorControlDisposables.add(this._outlineViewState.onDidChange((e: { followCursor?: boolean; sortBy?: boolean; filterOnType?: boolean }) => {
 			this._outlineViewState.persist(this._storageService);
 			if (e.filterOnType) {
-				tree.findMode = this._outlineViewState.filterOnType ? TreeFindMode.Filter : TreeFindMode.Highlight;
+				tree.updateOptions({ filterOnType: this._outlineViewState.filterOnType });
 			}
 			if (e.followCursor) {
 				revealActiveElement();
@@ -342,8 +341,8 @@ export class OutlinePane extends ViewPane {
 
 		// feature: expand all nodes when filtering (not when finding)
 		let viewState: AbstractTreeViewState | undefined;
-		this._editorControlDisposables.add(tree.onDidChangeFindPattern(pattern => {
-			if (tree.findMode === TreeFindMode.Highlight) {
+		this._editorControlDisposables.add(tree.onDidChangeTypeFilterPattern(pattern => {
+			if (!tree.options.filterOnType) {
 				return;
 			}
 			if (!viewState && pattern) {

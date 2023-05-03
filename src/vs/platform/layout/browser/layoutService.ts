@@ -9,17 +9,6 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 export const ILayoutService = createDecorator<ILayoutService>('layoutService');
 
-export interface ILayoutOffsetInfo {
-	/**
-	 * Generic top offset
-	 */
-	readonly top: number;
-	/**
-	 * Quick pick specific top offset.
-	 */
-	readonly quickPickTop: number;
-}
-
 export interface ILayoutService {
 
 	readonly _serviceBrand: undefined;
@@ -51,7 +40,7 @@ export interface ILayoutService {
 	/**
 	 * An offset to use for positioning elements inside the container.
 	 */
-	readonly offset: ILayoutOffsetInfo;
+	readonly offset?: { top: number };
 
 	/**
 	 * An event that is emitted when the container is layed out. The

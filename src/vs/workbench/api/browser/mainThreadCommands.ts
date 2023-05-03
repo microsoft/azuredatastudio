@@ -49,7 +49,7 @@ export class MainThreadCommands implements MainThreadCommandsShape {
 
 		// print all as markdown
 		const all: string[] = [];
-		for (const id in result) {
+		for (let id in result) {
 			all.push('`' + id + '` - ' + _generateMarkdown(result[id]));
 		}
 		console.log(all.join('\n'));
@@ -71,15 +71,6 @@ export class MainThreadCommands implements MainThreadCommandsShape {
 		if (command) {
 			command.dispose();
 			this._commandRegistrations.delete(id);
-		}
-	}
-
-	$fireCommandActivationEvent(id: string): void {
-		const activationEvent = `onCommand:${id}`;
-		if (!this._extensionService.activationEventIsDone(activationEvent)) {
-			// this is NOT awaited because we only use it as drive-by-activation
-			// for commands that are already known inside the extension host
-			this._extensionService.activateByEvent(activationEvent);
 		}
 	}
 
@@ -111,7 +102,7 @@ function _generateMarkdown(description: string | Dto<ICommandHandlerDescription>
 		const parts = [description.description];
 		parts.push('\n\n');
 		if (description.args) {
-			for (const arg of description.args) {
+			for (let arg of description.args) {
 				parts.push(`* _${arg.name}_ - ${arg.description || ''}\n`);
 			}
 		}

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Command } from '../commandManager';
-import { MarkdownItEngine } from '../markdownEngine';
+import { MarkdownEngine } from '../markdownEngine';
 import { MarkdownPreviewManager } from '../preview/previewManager';
 
 export class ReloadPlugins implements Command {
@@ -12,7 +12,7 @@ export class ReloadPlugins implements Command {
 
 	public constructor(
 		private readonly webviewManager: MarkdownPreviewManager,
-		private readonly engine: MarkdownItEngine,
+		private readonly engine: MarkdownEngine,
 	) { }
 
 	public execute(): void {

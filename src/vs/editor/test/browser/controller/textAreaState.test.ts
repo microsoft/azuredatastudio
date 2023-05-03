@@ -72,12 +72,12 @@ function equalsTextAreaState(a: TextAreaState, b: TextAreaState): boolean {
 suite('TextAreaState', () => {
 
 	function assertTextAreaState(actual: TextAreaState, value: string, selectionStart: number, selectionEnd: number): void {
-		const desired = new TextAreaState(value, selectionStart, selectionEnd, null, null);
+		let desired = new TextAreaState(value, selectionStart, selectionEnd, null, null);
 		assert.ok(equalsTextAreaState(desired, actual), desired.toString() + ' == ' + actual.toString());
 	}
 
 	test('fromTextArea', () => {
-		const textArea = new MockTextAreaWrapper();
+		let textArea = new MockTextAreaWrapper();
 		textArea._value = 'Hello world!';
 		textArea._selectionStart = 1;
 		textArea._selectionEnd = 12;
@@ -94,7 +94,7 @@ suite('TextAreaState', () => {
 	});
 
 	test('applyToTextArea', () => {
-		const textArea = new MockTextAreaWrapper();
+		let textArea = new MockTextAreaWrapper();
 		textArea._value = 'Hello world!';
 		textArea._selectionStart = 1;
 		textArea._selectionEnd = 12;
@@ -126,13 +126,13 @@ suite('TextAreaState', () => {
 	function testDeduceInput(prevState: TextAreaState | null, value: string, selectionStart: number, selectionEnd: number, couldBeEmojiInput: boolean, expected: string, expectedCharReplaceCnt: number): void {
 		prevState = prevState || TextAreaState.EMPTY;
 
-		const textArea = new MockTextAreaWrapper();
+		let textArea = new MockTextAreaWrapper();
 		textArea._value = value;
 		textArea._selectionStart = selectionStart;
 		textArea._selectionEnd = selectionEnd;
 
-		const newState = TextAreaState.readFromTextArea(textArea);
-		const actual = TextAreaState.deduceInput(prevState, newState, couldBeEmojiInput);
+		let newState = TextAreaState.readFromTextArea(textArea);
+		let actual = TextAreaState.deduceInput(prevState, newState, couldBeEmojiInput);
 
 		assert.deepStrictEqual(actual, {
 			text: expected,
@@ -303,13 +303,13 @@ suite('TextAreaState', () => {
 		expected: string, expectedReplacePrevCharCnt: number, expectedReplaceNextCharCnt: number, expectedPositionDelta: number): void {
 		prevState = prevState || TextAreaState.EMPTY;
 
-		const textArea = new MockTextAreaWrapper();
+		let textArea = new MockTextAreaWrapper();
 		textArea._value = value;
 		textArea._selectionStart = selectionStart;
 		textArea._selectionEnd = selectionEnd;
 
-		const newState = TextAreaState.readFromTextArea(textArea);
-		const actual = TextAreaState.deduceAndroidCompositionInput(prevState, newState);
+		let newState = TextAreaState.readFromTextArea(textArea);
+		let actual = TextAreaState.deduceAndroidCompositionInput(prevState, newState);
 
 		assert.deepStrictEqual(actual, {
 			text: expected,
