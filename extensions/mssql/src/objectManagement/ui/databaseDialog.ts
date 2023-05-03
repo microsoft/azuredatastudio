@@ -23,7 +23,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		if (this.objectInfo.name && this.viewInfo.databaseNames.some(name => name.toLowerCase() === this.objectInfo.name.toLowerCase())) {
+		if (this.objectInfo.name && this.viewInfo.databaseNames.some(name => name === this.objectInfo.name)) {
 			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
