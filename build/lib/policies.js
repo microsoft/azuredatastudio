@@ -1,7 +1,7 @@
 "use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
@@ -95,10 +95,6 @@ class BooleanPolicy extends BasePolicy {
     }
 }
 class IntPolicy extends BasePolicy {
-    constructor(name, category, minimumVersion, description, moduleName, defaultValue) {
-        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
-        this.defaultValue = defaultValue;
-    }
     static from(name, category, minimumVersion, description, moduleName, settingNode) {
         const type = getStringProperty(settingNode, 'type');
         if (type !== 'number') {
@@ -109,6 +105,10 @@ class IntPolicy extends BasePolicy {
             throw new Error(`Missing required 'default' property.`);
         }
         return new IntPolicy(name, category, minimumVersion, description, moduleName, defaultValue);
+    }
+    constructor(name, category, minimumVersion, description, moduleName, defaultValue) {
+        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
+        this.defaultValue = defaultValue;
     }
     renderADMXElements() {
         return [
@@ -139,11 +139,6 @@ class StringPolicy extends BasePolicy {
     }
 }
 class StringEnumPolicy extends BasePolicy {
-    constructor(name, category, minimumVersion, description, moduleName, enum_, enumDescriptions) {
-        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
-        this.enum_ = enum_;
-        this.enumDescriptions = enumDescriptions;
-    }
     static from(name, category, minimumVersion, description, moduleName, settingNode) {
         const type = getStringProperty(settingNode, 'type');
         if (type !== 'string') {
@@ -165,6 +160,11 @@ class StringEnumPolicy extends BasePolicy {
         }
         return new StringEnumPolicy(name, category, minimumVersion, description, moduleName, enum_, enumDescriptions);
     }
+    constructor(name, category, minimumVersion, description, moduleName, enum_, enumDescriptions) {
+        super(PolicyType.StringEnum, name, category, minimumVersion, description, moduleName);
+        this.enum_ = enum_;
+        this.enumDescriptions = enumDescriptions;
+    }
     renderADMXElements() {
         return [
             `<enum id="${this.name}" valueName="${this.name}">`,
@@ -185,11 +185,12 @@ class StringEnumPolicy extends BasePolicy {
 const IntQ = {
     Q: `(number) @value`,
     value(matches) {
+        var _a;
         const match = matches[0];
         if (!match) {
             return undefined;
         }
-        const value = match.captures.filter(c => c.name === 'value')[0]?.node.text;
+        const value = (_a = match.captures.filter((c) => c.name === 'value')[0]) === null || _a === void 0 ? void 0 : _a.node.text;
         if (!value) {
             throw new Error(`Missing required 'value' property.`);
         }
@@ -202,15 +203,16 @@ const StringQ = {
 		(call_expression function: (identifier) @localizeFn arguments: (arguments (string (string_fragment) @nlsKey) (string (string_fragment) @value)) (#eq? @localizeFn localize))
 	]`,
     value(matches) {
+        var _a, _b;
         const match = matches[0];
         if (!match) {
             return undefined;
         }
-        const value = match.captures.filter(c => c.name === 'value')[0]?.node.text;
+        const value = (_a = match.captures.filter((c) => c.name === 'value')[0]) === null || _a === void 0 ? void 0 : _a.node.text;
         if (!value) {
             throw new Error(`Missing required 'value' property.`);
         }
-        const nlsKey = match.captures.filter(c => c.name === 'nlsKey')[0]?.node.text;
+        const nlsKey = (_b = match.captures.filter((c) => c.name === 'nlsKey')[0]) === null || _b === void 0 ? void 0 : _b.node.text;
         if (nlsKey) {
             return { value, nlsKey };
         }
@@ -321,7 +323,7 @@ function getPolicies(moduleName, node) {
 		)
 	`);
     const categories = new Map();
-    return query.matches(node).map(m => {
+    return query.matches(node).map((m) => {
         const configurationNode = m.captures.filter(c => c.name === 'configuration')[0].node;
         const settingNode = m.captures.filter(c => c.name === 'setting')[0].node;
         const policyNode = m.captures.filter(c => c.name === 'policy')[0].node;
@@ -461,12 +463,13 @@ async function parsePolicies() {
     return policies;
 }
 async function getTranslations() {
+    var _a;
     const updateUrl = product.updateUrl;
     if (!updateUrl) {
         console.warn(`Skipping policy localization: No 'updateUrl' found in 'product.json'.`);
         return [];
     }
-    const resourceUrlTemplate = product.extensionsGallery?.resourceUrlTemplate;
+    const resourceUrlTemplate = (_a = product.extensionsGallery) === null || _a === void 0 ? void 0 : _a.resourceUrlTemplate;
     if (!resourceUrlTemplate) {
         console.warn(`Skipping policy localization: No 'resourceUrlTemplate' found in 'product.json'.`);
         return [];
