@@ -123,7 +123,6 @@ const extensionsFilter = filter([
 	'**/asde-deployment.xlf',
 	'**/azcli.xlf',
 	'**/azurecore.xlf',
-	'**/azurehybridtoolkit.xlf',
 	'**/azuremonitor.xlf',
 	'**/cms.xlf',
 	'**/dacpac.xlf',
