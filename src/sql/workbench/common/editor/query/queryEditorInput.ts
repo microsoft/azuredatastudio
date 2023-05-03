@@ -243,13 +243,18 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				let additionalOptions = this.connectionManagementService.getEditorConnectionProfileTitle(profile, true);
-				title += `${profile.serverName}`;
-				if (profile.databaseName) {
-					title += `.${profile.databaseName}`;
+
+				let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(profile, false, false);
+				if (distinguishedTitle !== '') {
+					title += distinguishedTitle;
 				}
-				title += ` (${profile.userName || profile.authenticationType})`;
-				title += ` ${additionalOptions}`;
+				else {
+					title += `${profile.serverName}`;
+					if (profile.databaseName) {
+						title += `.${profile.databaseName}`;
+					}
+					title += ` (${profile.userName || profile.authenticationType})`;
+				}
 			} else {
 				title += localize('disconnected', "disconnected");
 			}

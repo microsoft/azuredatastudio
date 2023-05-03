@@ -28,9 +28,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
 			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
-			distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, false);
 			if (distinguishingOptions !== '') {
+				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
 				titleString += `${distinguishingOptions}`;
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
@@ -65,9 +65,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			let titleString = `${server} - ${database} - ${schema}.${name}`;
 			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
-			distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, false);
 			if (distinguishingOptions !== '') {
+				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
 				titleString += `${distinguishingOptions}`;
 			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;

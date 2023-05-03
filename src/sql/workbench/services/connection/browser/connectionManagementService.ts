@@ -742,34 +742,37 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return '';
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, forTree?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-			let trimTitle = tempProfile.getServerInfo();
+			let trimTitle = tempProfile.getOriginalTitle();
 			let idToFind = tempProfile.id;
 			let isChild = false;
 			let totalConnections: ConnectionProfile[] = [];
 			let configConnections = this.getAllConnectionsFromConfig();
+			let activeConnections = this.getActiveConnections();
 
-			if (configConnections) {
+			if (forTree) {
 				totalConnections = totalConnections.concat(configConnections);
+			}
+			else {
+				totalConnections = totalConnections.concat(activeConnections);
 			}
 
 			let initialSearch = totalConnections.filter(inputProfile => {
 				return inputProfile.id === tempProfile.id;
 			});
 
+			let id = this.findParentConnection(tempProfile);
 			if (initialSearch.length === 0) {
-				let id = this.findParentConnection(tempProfile)
-				if (id !== '') {
+				if (!forTree && id !== '') {
 					isChild = true;
 					let parentProfile = configConnections.filter(profile => profile.id === id);
-					trimTitle = parentProfile[0].getServerInfo();
+					trimTitle = parentProfile[0].getOriginalTitle();
 					idToFind = parentProfile[0].id;
 				}
 				else {
-					// Profile is not a child of an existing profile nor is it a recognized stored profile, add it to the totalConnections list.
 					totalConnections.concat(tempProfile);
 				}
 			}
@@ -787,7 +790,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					finalTitle = optionsAppend;
 				}
 				else if (!getOptionsOnly && isChild) {
-					finalTitle = tempProfile.getServerInfo() + optionsAppend;
+					finalTitle = tempProfile.getOriginalTitle() + optionsAppend;
 				}
 				else {
 					finalTitle = searchResult[0].getOriginalTitle() + optionsAppend;
@@ -803,12 +806,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	private generateEditorConnectionTitles(inputList: ConnectionProfile[]): void {
 		let profileListMap = new Map<string, number[]>();
+		// Need to reset title to when it was before (as it may have contained a previously generated title)
+		for (let i = 0; i < inputList.length; i++) {
+			inputList[i].title = inputList[i].getOriginalTitle();
+		}
 
 		// Map the indices of profiles that share the same server info
 		for (let i = 0; i < inputList.length; i++) {
 			// do not add if the profile is still loading as that will result in erroneous entries.
 			if (inputList[i].serverCapabilities && inputList[i].hasLoaded()) {
-				let titleKey = inputList[i].getServerInfo();
+				let titleKey = inputList[i].getOriginalTitle();
 				if (profileListMap.has(titleKey)) {
 					let profilesForKey = profileListMap.get(titleKey);
 					profilesForKey.push(i);
@@ -823,9 +830,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		profileListMap.forEach(function (indexes, titleString) {
 			if (profileListMap.get(titleString)?.length > 1) {
 				let combinedOptions = [];
+				let needSpecial = false;
+				if (titleString === inputList[indexes[0]].connectionName) {
+					// check for potential connections with the same name but technically different connections.
+					let listOfDuplicates = indexes.filter(item => inputList[item].getOptionsKey() !== inputList[indexes[0]].getOptionsKey());
+					if (listOfDuplicates.length > 0) {
+						// if we do find duplicates, we will need to include the special properties.
+						needSpecial = true;
+					}
+				}
 				indexes.forEach((indexValue) => {
 					// Add all possible options across all profiles with the same title to an option list.
-					let valueOptions = inputList[indexValue].getConnectionOptionsList(true, false);
+					let valueOptions = inputList[indexValue].getConnectionOptionsList(needSpecial, false);
 					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
 				});
 
@@ -836,7 +852,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					optionKeyMap.set(inputList[indexes[p]], []);
 					for (let i = 0; i < combinedOptions.length; i++) {
 						// See if the option is not default for the inputList profile or is.
-						if (inputList[indexes[p]].getConnectionOptionsList(true, true).indexOf(combinedOptions[i]) > -1) {
+						if (inputList[indexes[p]].getConnectionOptionsList(needSpecial, true).indexOf(combinedOptions[i]) > -1) {
 							let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
 							let currentArray = optionKeyMap.get(inputList[indexes[p]]);
 							let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;
@@ -863,7 +879,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				optionKeyMap.forEach(function (connOptionValues, profile) {
 					let uniqueOptionString = connOptionValues.join(ConnectionProfile.displayIdSeparator);
 					if (uniqueOptionString.length > 0) {
-						profile.title += profile.getServerInfo() + ' (' + uniqueOptionString + ')';
+						profile.title = profile.getOriginalTitle() + ' (' + uniqueOptionString + ')';
 					}
 				});
 			}
