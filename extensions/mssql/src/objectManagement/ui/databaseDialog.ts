@@ -38,6 +38,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 	}
 
 	private initializeGeneralSection(): azdata.GroupContainer {
+		let containers: azdata.Component[] = [];
 		this._nameInput = this.modelView.modelBuilder.inputBox().withProps({
 			ariaLabel: localizedConstants.NameText,
 			value: this.objectInfo.name,
@@ -48,15 +49,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			this.objectInfo.name = this._nameInput.value;
 			await this.runValidation(false);
 		}));
-		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this._nameInput);
-
-		return this.createGroup(localizedConstants.GeneralSectionHeader, [
-			nameContainer
-		], false);
-	}
-
-	private initializeOptionsSection(): azdata.GroupContainer {
-		let containers: azdata.Component[] = [];
+		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this._nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
@@ -66,6 +59,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
 
+		return this.createGroup(localizedConstants.GeneralSectionHeader, containers, false);
+	}
+
+	private initializeOptionsSection(): azdata.GroupContainer {
+		let containers: azdata.Component[] = [];
 		if (this.viewInfo.collationNames?.length > 0) {
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
