@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import * as azdata from 'azdata';
@@ -78,6 +79,10 @@ export class AzureResourceErrorMessageUtil {
 	public static getErrorMessage(error: Error | string): string {
 		return localize('azure.resource.error', "Error: {0}", getErrorMessage(error));
 	}
+}
+
+export function getTenantVersion(): vscode.WorkspaceConfiguration {
+	return vscode.workspace.getConfiguration('azure.tenantVersion');
 }
 
 export function generateGuid(): string {
@@ -210,7 +215,7 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 	}
 
 	try {
-		const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
+		const path = `/subscriptions/${subscription.id}/locations?api-version=${getTenantVersion()}`;
 		const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
 		const response = await makeHttpRequest<AzureListOperationResponse<azureResource.AzureLocation[]>>(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 		result.locations.push(...response.response?.data.value || []);

@@ -29,7 +29,7 @@ import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
-import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBodyWithError } from '../../azureResource/utils';
+import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBodyWithError, getTenantVersion } from '../../azureResource/utils';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -472,7 +472,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async getTenantsMsal(token: string): Promise<Tenant[]> {
-		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2020-01-01');
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, `tenants?api-version=${getTenantVersion()}`);
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
@@ -522,7 +522,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region tenant calls
 	public async getTenantsAdal(token: AccessToken): Promise<Tenant[]> {
-		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2020-01-01');
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, `tenants?api-version=${getTenantVersion()}`);
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];

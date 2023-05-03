@@ -128,6 +128,11 @@
               "Microsoft Authentication Library"
             ],
             "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
+          },
+          "azure.tenantVersion": {
+              "type": "string",
+              "description": "%config.tenantVersion%",
+              "default": "2020-01-01"
           }
         }
       }
