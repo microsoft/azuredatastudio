@@ -93,11 +93,6 @@
         "title": "%title.renameObject%"
       },
       {
-        "command": "mssql.createDatabase",
-        "category": "MSSQL",
-        "title": "%title.createDatabase%"
-      },
-      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -483,10 +478,6 @@
         {
           "command": "mssql.renameObject",
           "when": "false"
-        },
-        {
-          "command": "mssql.createDatabase",
-          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -503,7 +494,7 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
         },
         {
@@ -528,11 +519,6 @@
           "group": "0_query@3"
         },
         {
-          "command": "mssql.createDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1"
-        },
-        {
           "command": "mssql.enableGroupBySchema",
           "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
         },
@@ -554,7 +540,7 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         },
         {

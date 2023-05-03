@@ -37,9 +37,6 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.createDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleCreateDatabaseDialogCommand(context, service);
-	}));
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
@@ -71,6 +68,9 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			break;
 		case FolderType.Users:
 			objectType = ObjectManagement.NodeType.User;
+			break;
+		case FolderType.Databases:
+			objectType = ObjectManagement.NodeType.Database;
 			break;
 		default:
 			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
@@ -243,6 +243,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new ServerRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.Database:
+			return new CreateDatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}
@@ -264,33 +266,4 @@ async function getParentUrn(context: azdata.ObjectExplorerContext): Promise<stri
 		currentNodePath = node?.parentNodePath;
 	} while (node && currentNodePath && !node.metadata?.urn);
 	return node?.metadata?.urn;
-}
-
-async function handleCreateDatabaseDialogCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	const connectionUri = await getConnectionUri(context);
-	if (!connectionUri) {
-		return;
-	}
-
-	try {
-		const parentUrn = await getParentUrn(context);
-		const options: ObjectManagementDialogOptions = {
-			connectionUri: connectionUri,
-			isNewObject: true,
-			database: context.connectionProfile!.databaseName!,
-			objectType: ObjectManagement.NodeType.Database,
-			objectName: context.nodeInfo.label,
-			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata?.urn,
-			objectExplorerContext: context
-		};
-		const dialog = new CreateDatabaseDialog(service, options);
-		await dialog.open();
-	}
-	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.CreateDatabaseDialog, err).withAdditionalProperties({
-			objectType: context.nodeInfo!.nodeType
-		}).send();
-		await vscode.window.showErrorMessage(localizedConstants.OpenCreateDatabaseDialogError(getErrorMessage(err)));
-	}
 }

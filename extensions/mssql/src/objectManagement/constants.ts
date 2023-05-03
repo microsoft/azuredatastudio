@@ -11,7 +11,8 @@ export const enum FolderType {
 	DatabaseRoles = 'DatabaseRoles',
 	ServerLevelLogins = 'ServerLevelLogins',
 	ServerLevelServerRoles = 'ServerLevelServerRoles',
-	Users = 'Users'
+	Users = 'Users',
+	Databases = 'Databases'
 }
 
 export const PublicServerRoleName = 'public';

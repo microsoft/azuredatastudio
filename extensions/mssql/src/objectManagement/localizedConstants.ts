@@ -231,7 +231,7 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 		case ObjectManagement.NodeType.Column:
 			return ColumnTypeDisplayName;
 		case ObjectManagement.NodeType.Database:
-			return DatabaseTypeDisplayName;
+			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unknown node type: ${type}`);
 	}
@@ -278,6 +278,3 @@ export function getUserTypeByDisplayName(displayName: string): ObjectManagement.
 	}
 	throw new Error(`Unknown user type display name: ${displayName}`);
 }
-
-// Create Database
-export const CreateDatabaseTitle = localize('objectManagement.createDatabaseTitle', "Create Database");
