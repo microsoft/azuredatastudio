@@ -132,7 +132,6 @@ const extensionsFilter = filter([
 	'**/import.xlf',
 	'**/kusto.xlf',
 	'**/machine-learning.xlf',
-	'**/Microsoft.sqlservernotebook.xlf',
 	'**/mssql.xlf',
 	'**/notebook.xlf',
 	'**/profiler.xlf',

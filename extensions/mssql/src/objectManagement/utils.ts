@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
-import { ObjectManagement } from 'mssql';
 import * as localizedConstants from './localizedConstants';
 
 export function deepClone<T>(obj: T): T {

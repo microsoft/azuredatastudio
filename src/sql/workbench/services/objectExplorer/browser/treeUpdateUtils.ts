@@ -305,7 +305,6 @@ export class TreeUpdateUtils {
 				return rootNode.children ?? [];
 			} else {
 				const options: IConnectionCompletionOptions = {
-					params: undefined,
 					saveTheConnection: true,
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true,

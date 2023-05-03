@@ -138,9 +138,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					isEnabled: true,
 					isLockedOut: false
 				},
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true,
+				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
 				supportAdvancedOptions: true,
 				supportAdvancedPasswordOptions: true,
 				canEditLockedOutState: false,
@@ -164,9 +162,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 					isLockedOut: false,
 					password: '******************'
 				},
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true,
+				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
 				supportAdvancedOptions: true,
 				supportAdvancedPasswordOptions: true,
 				canEditLockedOutState: false,
@@ -189,7 +185,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			viewInfo = {
 				objectInfo: <ObjectManagement.User>{
 					name: '',
-					type: ObjectManagement.UserType.WithLogin,
+					type: ObjectManagement.UserType.LoginMapped,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
 					authenticationType: ObjectManagement.AuthenticationType.Sql,
@@ -202,20 +198,21 @@ export class TestObjectManagementService implements IObjectManagementService {
 				schemas: schemas,
 				logins: logins,
 				databaseRoles: databaseRoles,
-				supportContainedUser: true,
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true
+				userTypes: [
+					ObjectManagement.UserType.LoginMapped,
+					ObjectManagement.UserType.AADAuthentication,
+					ObjectManagement.UserType.SqlAuthentication,
+					ObjectManagement.UserType.NoLoginAccess
+				]
 			};
 		} else {
 			viewInfo = {
 				objectInfo: <ObjectManagement.User>{
 					name: name,
-					type: ObjectManagement.UserType.WithLogin,
+					type: ObjectManagement.UserType.LoginMapped,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
 					loginName: 'sa',
-					authenticationType: ObjectManagement.AuthenticationType.Sql,
 					ownedSchemas: ['dbo'],
 					databaseRoles: ['dbmanager', 'bulkadmin']
 				},
@@ -223,10 +220,12 @@ export class TestObjectManagementService implements IObjectManagementService {
 				schemas: schemas,
 				logins: logins,
 				databaseRoles: databaseRoles,
-				supportContainedUser: true,
-				supportAADAuthentication: true,
-				supportSQLAuthentication: true,
-				supportWindowsAuthentication: true
+				userTypes: [
+					ObjectManagement.UserType.LoginMapped,
+					ObjectManagement.UserType.AADAuthentication,
+					ObjectManagement.UserType.SqlAuthentication,
+					ObjectManagement.UserType.NoLoginAccess
+				]
 			};
 		}
 		return viewInfo;
