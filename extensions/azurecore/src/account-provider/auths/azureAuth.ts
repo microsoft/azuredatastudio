@@ -327,7 +327,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource}`);
-			return null;
+			throw new Error(localize('msal.resourceNotFoundError', `Unable to find configuration for Azure Resource {0}`, azureResource));
 		}
 
 		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
@@ -336,7 +336,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let account: AccountInfo | null = await this.getAccountFromMsalCache(accountId);
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
-			return null;
+			throw new Error(localize('msal.accountNotFoundError', `Unable to find account info when acquiring token.`));
 		}
 		let newScope;
 		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
@@ -735,7 +735,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			response = await result.action(tenant.id);
 		}
 
-		return response;
+		return result?.booleanResult || response;
 	}
 	//#endregion
 
