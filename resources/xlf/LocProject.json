@@ -82,12 +82,6 @@
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\Microsoft.sqlservernotebook.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.sqlservernotebook.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
           "SourceFile": "resources\\xlf\\en\\mssql.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\mssql.xlf.lcl",
           "CopyOption": "LangIDOnPath",
