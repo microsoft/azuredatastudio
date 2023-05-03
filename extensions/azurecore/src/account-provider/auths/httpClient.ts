@@ -286,7 +286,7 @@ const networkRequestViaHttps = <T>(
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
 	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
-	const body = (new TextEncoder()).encode(JSON.stringify(options?.body || ''));
+	const body = (new TextEncoder()).encode(options?.body || '');
 	const url = new URL(urlString);
 	const optionHeaders = options?.headers || {} as Record<string, string>;
 	let customOptions: https.RequestOptions = {

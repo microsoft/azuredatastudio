@@ -396,9 +396,10 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		...requestHeaders
 	}
 
+	const body = JSON.stringify(requestBody || '');
 	let networkRequestOptions: NetworkRequestOptions = {
 		headers: reqHeaders,
-		body: requestBody
+		body
 	};
 
 	// Adding '/' if path does not begin with it.
