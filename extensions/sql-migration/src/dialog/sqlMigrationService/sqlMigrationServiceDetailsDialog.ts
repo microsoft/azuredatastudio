@@ -32,7 +32,7 @@ export class SqlMigrationServiceDetailsDialog {
 		this._dialog = azdata.window.createModelViewDialog(
 			'',
 			'SqlMigrationServiceDetailsDialog',
-			580,
+			750,
 			'flyout');
 	}
 
@@ -59,7 +59,7 @@ export class SqlMigrationServiceDetailsDialog {
 	}
 
 	private async createServiceContent(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
-		this._migrationServiceAuthKeyTable = createAuthenticationKeyTable(view, '50px', '80%');
+		this._migrationServiceAuthKeyTable = createAuthenticationKeyTable(view, '50px', '100%');
 		const serviceNode = (await getSqlMigrationServiceMonitoringData(
 			serviceContext.azureAccount!,
 			serviceContext.subscription!,

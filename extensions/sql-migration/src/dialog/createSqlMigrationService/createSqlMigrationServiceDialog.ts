@@ -219,7 +219,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private async migrationServiceDropdownContainer(): Promise<azdata.FlexContainer> {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
-			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
+			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION(!this._model.isSqlDbTarget),
 			CSSStyles: {
 				...styles.BODY_CSS
 			}
