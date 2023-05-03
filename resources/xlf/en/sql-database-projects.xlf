@@ -660,8 +660,8 @@
     <trans-unit id="okString">
       <source xml:lang="en">Ok</source>
     </trans-unit>
-    <trans-unit id="onlyMoveSqlFilesSupported">
-      <source xml:lang="en">Only moving .sql files is supported</source>
+    <trans-unit id="onlyMoveFilesFoldersSupported">
+      <source xml:lang="en">Only moving files and folders are supported</source>
     </trans-unit>
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
@@ -1076,6 +1076,9 @@
     </trans-unit>
     <trans-unit id="version">
       <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="versionMustNotBeEmpty">
+      <source xml:lang="en">Version must not be empty</source>
     </trans-unit>
     <trans-unit id="versionPlaceholder">
       <source xml:lang="en">NuGet package version</source>
