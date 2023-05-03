@@ -356,9 +356,8 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	 * distinct connections sharing the same connection name (for connection trees mainly).
 	 * @param getNonDefault get only the non default options (for individual connections) to be used for identfying different properties
 	 * among connections sharing the same title.
-	 * @param includeConnectionName used for editor connection name generation (not used by connection trees), include the connection name as part of the list.
 	 */
-	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean, includeConnectionName: boolean): azdata.ConnectionOption[] {
+	public getConnectionOptionsList(needSpecial: boolean, getNonDefault: boolean): azdata.ConnectionOption[] {
 		let connectionOptions: azdata.ConnectionOption[] = [];
 
 		if (this.serverCapabilities) {
@@ -367,8 +366,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&
 					element.specialValueType !== ConnectionOptionSpecialType.userName) || needSpecial) &&
-					((!includeConnectionName && element.specialValueType !== ConnectionOptionSpecialType.connectionName)
-						|| includeConnectionName) &&
+					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
 					element.specialValueType !== ConnectionOptionSpecialType.password) {
 					if (getNonDefault) {
 						let value = this.getOptionValue(element.name);
@@ -392,7 +390,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	 */
 	public getNonDefaultOptionsString(): string {
 		let parts: string = "";
-		let nonDefaultOptions = this.getConnectionOptionsList(false, true, false);
+		let nonDefaultOptions = this.getConnectionOptionsList(false, true);
 		nonDefaultOptions.forEach(element => {
 			let value = this.getOptionValue(element.name);
 			if (parts.length === 0) {

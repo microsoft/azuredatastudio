@@ -28,7 +28,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
 			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, false);
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
 			distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
 			if (distinguishingOptions !== '') {
 				titleString += `${distinguishingOptions}`;
@@ -65,7 +65,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			}
 			let titleString = `${server} - ${database} - ${schema}.${name}`;
 			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true, false);
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
 			distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
 			if (distinguishingOptions !== '') {
 				titleString += `${distinguishingOptions}`;

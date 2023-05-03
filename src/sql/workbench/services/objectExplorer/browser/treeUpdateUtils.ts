@@ -397,7 +397,7 @@ export class TreeUpdateUtils {
 
 	private static alterConnectionTitles(inputList: ConnectionProfile[], connectionManagementService: IConnectionManagementService): void {
 		for (let i = 0; i < inputList.length; i++) {
-			let titleOptions = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], true, true);
+			let titleOptions = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], true);
 			inputList[i].title = inputList[i].getOriginalTitle() + titleOptions;
 		}
 	}
@@ -510,7 +510,7 @@ export class TreeUpdateUtils {
 				let combinedOptions = [];
 				indexes.forEach((indexValue) => {
 					// Add all possible options across all profiles with the same title to an option list.
-					let valueOptions = inputList[indexValue].getConnectionOptionsList(true, false, true);
+					let valueOptions = inputList[indexValue].getConnectionOptionsList(true, false);
 					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
 				});
 
@@ -521,7 +521,7 @@ export class TreeUpdateUtils {
 					optionKeyMap.set(inputList[indexes[p]], []);
 					for (let i = 0; i < combinedOptions.length; i++) {
 						// See if the option is not default for the inputList profile or is.
-						if (inputList[indexes[p]].getConnectionOptionsList(true, true, true).indexOf(combinedOptions[i]) > -1) {
+						if (inputList[indexes[p]].getConnectionOptionsList(true, true).indexOf(combinedOptions[i]) > -1) {
 							let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
 							let currentArray = optionKeyMap.get(inputList[indexes[p]]);
 							let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;

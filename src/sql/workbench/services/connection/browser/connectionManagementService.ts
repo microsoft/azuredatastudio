@@ -742,7 +742,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return '';
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, showNameSeparately?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
@@ -788,39 +788,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let finalTitle = searchResult[0]?.title;
 			if (finalTitle) {
 				let optionsAppend = finalTitle.substring(trimTitle.length);
-				if (showNameSeparately) {
-					optionsAppend = this.removeConnectionName(optionsAppend);
-				}
 				if (getOptionsOnly) {
 					finalTitle = optionsAppend;
 				}
 				else if (!getOptionsOnly && isChild) {
-					if (showNameSeparately) {
-						finalTitle = tempProfile.getOriginalTitle() + optionsAppend;
-					}
-					else {
-						finalTitle = tempProfile.getServerInfo() + optionsAppend;
-					}
+					finalTitle = tempProfile.getServerInfo() + optionsAppend;
 				}
 				else {
-					if (showNameSeparately) {
-						finalTitle = searchResult[0].getOriginalTitle() + optionsAppend;
-					}
+					finalTitle = searchResult[0].getOriginalTitle() + optionsAppend;
 				}
 				result = finalTitle;
 			}
 		}
 		return result;
-	}
-
-	private removeConnectionName(inputString: string): string {
-		let resultString = inputString.replace(/connectionName=\w*(; )?/, '');
-		if (resultString === '()') {
-			return '';
-		}
-		else {
-			return resultString;
-		}
 	}
 
 	/**
@@ -850,7 +830,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let combinedOptions = [];
 				indexes.forEach((indexValue) => {
 					// Add all possible options across all profiles with the same title to an option list.
-					let valueOptions = inputList[indexValue].getConnectionOptionsList(true, false, true);
+					let valueOptions = inputList[indexValue].getConnectionOptionsList(true, false);
 					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
 				});
 
@@ -861,7 +841,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					optionKeyMap.set(inputList[indexes[p]], []);
 					for (let i = 0; i < combinedOptions.length; i++) {
 						// See if the option is not default for the inputList profile or is.
-						if (inputList[indexes[p]].getConnectionOptionsList(true, true, true).indexOf(combinedOptions[i]) > -1) {
+						if (inputList[indexes[p]].getConnectionOptionsList(true, true).indexOf(combinedOptions[i]) > -1) {
 							let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
 							let currentArray = optionKeyMap.get(inputList[indexes[p]]);
 							let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;
