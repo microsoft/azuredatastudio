@@ -15,9 +15,11 @@ export class SimpleWebServer {
 	private hasStarted: boolean = false;
 
 	private readonly pathMappings = new Map<string, WebHandler>();
+	public socketHandler = new Map<string, WebHandler>();
 	private readonly server: http.Server;
 	private lastUsed: number = new Date().getTime();
 	private shutoffInterval: NodeJS.Timer;
+
 
 	constructor(private readonly autoShutoffTimer = 5 * 60 * 1000) { // Default to five minutes.
 		this.bumpLastUsed();
@@ -99,6 +101,14 @@ export class SimpleWebServer {
 				reject(new Error('Server closed'));
 			});
 
+			this.server.on('connection', (socket) => {
+				socket.on('close', (value) => {
+					console.log(value);
+					let test = this.socketHandler.get('close');
+					console.log(test);
+				});
+			});
+
 			this.server.listen(0, '127.0.0.1');
 		});
 
@@ -113,5 +123,9 @@ export class SimpleWebServer {
 
 	public on(pathMapping: string, handler: WebHandler) {
 		this.pathMappings.set(pathMapping, handler);
+	}
+
+	public onSocketEvents(pathMapping: string, handler: WebHandler) {
+		this.socketHandler.set(pathMapping, handler);
 	}
 }
