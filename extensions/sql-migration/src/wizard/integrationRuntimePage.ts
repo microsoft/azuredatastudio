@@ -10,11 +10,12 @@ import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEv
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
+import { getFullResourceGroupFromId, /* getResourceName, */ getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, regenerateSqlMigrationServiceAuthKey, SqlMigrationService, /* SqlMigrationServiceAuthenticationKeys, */ SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
 import * as styles from '../constants/styles';
+import { azureResource } from 'azurecore';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -27,10 +28,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _dmsStatusInfoBox!: azdata.InfoBoxComponent;
 	private _authKeyTable!: azdata.DeclarativeTableComponent;
 	private _refreshButton!: azdata.ButtonComponent;
-	private _copy1!: azdata.ButtonComponent;
-	private _copy2!: azdata.ButtonComponent;
-	private _refresh1!: azdata.ButtonComponent;
-	private _refresh2!: azdata.ButtonComponent;
+	// private _copy1!: azdata.ButtonComponent;
+	// private _copy2!: azdata.ButtonComponent;
+	// private _refresh1!: azdata.ButtonComponent;
+	// private _refresh2!: azdata.ButtonComponent;
 	private _onlineButton!: azdata.RadioButtonComponent;
 	private _offlineButton!: azdata.RadioButtonComponent;
 	private _modeContainer!: azdata.FlexContainer;
@@ -507,46 +508,46 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		this._copy1 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.COPY_KEY1,
-				iconPath: IconPathHelper.copy,
-				ariaLabel: constants.COPY_KEY1,
-			}).component();
+		// this._copy1 = this._view.modelBuilder.button()
+		// 	.withProps({
+		// 		title: constants.COPY_KEY1,
+		// 		iconPath: IconPathHelper.copy,
+		// 		ariaLabel: constants.COPY_KEY1,
+		// 	}).component();
 
-		this._disposables.push(
-			this._copy1.onDidClick(
-				async (e) => {
-					await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
-					void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-				}));
+		// this._disposables.push(
+		// 	this._copy1.onDidClick(
+		// 		async (e) => {
+		// 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
+		// 			void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+		// 		}));
 
-		this._copy2 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.COPY_KEY2,
-				iconPath: IconPathHelper.copy,
-				ariaLabel: constants.COPY_KEY2,
-			}).component();
+		// this._copy2 = this._view.modelBuilder.button()
+		// 	.withProps({
+		// 		title: constants.COPY_KEY2,
+		// 		iconPath: IconPathHelper.copy,
+		// 		ariaLabel: constants.COPY_KEY2,
+		// 	}).component();
 
-		this._disposables.push(
-			this._copy2.onDidClick(async (e) => {
-				await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
-				void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-			}));
+		// this._disposables.push(
+		// 	this._copy2.onDidClick(async (e) => {
+		// 		await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
+		// 		void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+		// 	}));
 
-		this._refresh1 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.REFRESH_KEY1,
-				iconPath: IconPathHelper.refresh,
-				ariaLabel: constants.REFRESH_KEY1,
-			}).component();
+		// this._refresh1 = this._view.modelBuilder.button()
+		// 	.withProps({
+		// 		title: constants.REFRESH_KEY1,
+		// 		iconPath: IconPathHelper.refresh,
+		// 		ariaLabel: constants.REFRESH_KEY1,
+		// 	}).component();
 
-		this._refresh2 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.REFRESH_KEY2,
-				iconPath: IconPathHelper.refresh,
-				ariaLabel: constants.REFRESH_KEY2,
-			}).component();
+		// this._refresh2 = this._view.modelBuilder.button()
+		// 	.withProps({
+		// 		title: constants.REFRESH_KEY2,
+		// 		iconPath: IconPathHelper.refresh,
+		// 		ariaLabel: constants.REFRESH_KEY2,
+		// 	}).component();
 
 		const instructions = createRegistrationInstructions(this._view, false);
 
@@ -682,12 +683,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				// exit if new call has started
 				if (callSequence !== this._lastIn) { return; }
 
-				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
-					account,
-					subscription,
-					resourceGroup,
-					location,
-					serviceName);
+				// const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
+				// 	account,
+				// 	subscription,
+				// 	resourceGroup,
+				// 	location,
+				// 	serviceName);
 
 				// exit if new call has started
 				if (callSequence !== this._lastIn) { return; }
@@ -705,30 +706,31 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					});
 				}
 
-				const data = [
-					[
-						{ value: constants.SERVICE_KEY1_LABEL },
-						{ value: migrationServiceAuthKeys.authKey1 },
-						{
-							value: this._view.modelBuilder.flexContainer()
-								.withItems([this._copy1, this._refresh1])
-								.component()
-						}
-					],
-					[
-						{ value: constants.SERVICE_KEY2_LABEL },
-						{ value: migrationServiceAuthKeys.authKey2 },
-						{
-							value: this._view.modelBuilder.flexContainer()
-								.withItems([this._copy2, this._refresh2])
-								.component()
-						}
-					]];
+				// const data = [
+				// 	[
+				// 		{ value: constants.SERVICE_KEY1_LABEL },
+				// 		{ value: migrationServiceAuthKeys.authKey1 },
+				// 		{
+				// 			value: this._view.modelBuilder.flexContainer()
+				// 				.withItems([this._copy1, this._refresh1])
+				// 				.component()
+				// 		}
+				// 	],
+				// 	[
+				// 		{ value: constants.SERVICE_KEY2_LABEL },
+				// 		{ value: migrationServiceAuthKeys.authKey2 },
+				// 		{
+				// 			value: this._view.modelBuilder.flexContainer()
+				// 				.withItems([this._copy2, this._refresh2])
+				// 				.component()
+				// 		}
+				// 	]];
 
 				// exit if new call has started
 				if (callSequence !== this._lastIn) { return; }
 
-				await this._authKeyTable.setDataValues(data);
+				// await this._authKeyTable.setDataValues(data);
+				await refreshAuthenticationKeyTable(this._view, this._authKeyTable, account, subscription, resourceGroup, location, migrationService);
 
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;
@@ -749,7 +751,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 }
 
-export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.DeclarativeTableComponent {
+export function createAuthenticationKeyTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
 	const authKeyTable = view.modelBuilder.declarativeTable()
 		.withProps({
 			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
@@ -782,6 +784,112 @@ export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.De
 			CSSStyles: { 'margin-top': '5px', 'width': WIZARD_INPUT_COMPONENT_WIDTH }
 		}).component();
 	return authKeyTable;
+}
+
+// export async function refreshAuthenticationKeyTable(view: azdata.ModelView, table: azdata.DeclarativeTableComponent, keys: SqlMigrationServiceAuthenticationKeys): Promise<void> {
+export async function refreshAuthenticationKeyTable(view: azdata.ModelView, table: azdata.DeclarativeTableComponent, account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: string, location: string, service: SqlMigrationService): Promise<void> {
+	var _disposables: vscode.Disposable[] = [];
+
+	const copyKey1Button = view.modelBuilder.button().withProps({
+		title: constants.COPY_KEY1,
+		iconPath: IconPathHelper.copy,
+		ariaLabel: constants.COPY_KEY1,
+	}).component();
+
+	_disposables.push(copyKey1Button.onDidClick(async (e) => {
+		await vscode.env.clipboard.writeText(<string>table.dataValues![0][1].value);
+		void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+	}));
+
+	const copyKey2Button = view.modelBuilder.button().withProps({
+		title: constants.COPY_KEY2,
+		iconPath: IconPathHelper.copy,
+		ariaLabel: constants.COPY_KEY2,
+	}).component();
+
+	_disposables.push(copyKey2Button.onDidClick(async (e) => {
+		await vscode.env.clipboard.writeText(<string>table.dataValues![1][1].value);
+		void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+	}));
+
+	const refreshKey1Button = view.modelBuilder.button().withProps({
+		title: constants.REFRESH_KEY1,
+		iconPath: IconPathHelper.refresh,
+		ariaLabel: constants.REFRESH_KEY1,
+	}).component();
+
+	_disposables.push(refreshKey1Button.onDidClick(async (e) => {			///////
+		const keys = await regenerateSqlMigrationServiceAuthKey(
+			account,
+			subscription,
+			resourceGroup,
+			location,
+			service.name,
+			'authKey1');
+
+		const dataValues = table.dataValues!;
+		dataValues![0][1].value = keys.authKey1;
+		await table.setDataValues([]);
+		await table.setDataValues(dataValues);
+		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(constants.SERVICE_KEY1_LABEL));
+	}));
+
+	const refreshKey2Button = view.modelBuilder.button().withProps({
+		title: constants.REFRESH_KEY2,
+		iconPath: IconPathHelper.refresh,
+		ariaLabel: constants.REFRESH_KEY2,
+	}).component();
+
+	_disposables.push(refreshKey2Button.onDidClick(async (e) => {			///////
+		const keys = await regenerateSqlMigrationServiceAuthKey(
+			account,
+			subscription,
+			resourceGroup,
+			location,
+			service.name,
+			'authKey2');
+
+		const dataValues = table.dataValues!;
+		dataValues![1][1].value = keys.authKey2;
+		await table.setDataValues([]);
+		await table.setDataValues(dataValues);
+		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(constants.SERVICE_KEY2_LABEL));
+	}));
+
+	const keys = await getSqlMigrationServiceAuthKeys(
+		account,
+		subscription,
+		resourceGroup,
+		location,
+		service.name);
+
+
+	await table.updateProperties({
+		dataValues: [
+			[
+				{
+					value: constants.SERVICE_KEY1_LABEL
+				},
+				{
+					value: keys.authKey1
+				},
+				{
+					value: view.modelBuilder.flexContainer().withItems([copyKey1Button, refreshKey1Button]).component()
+				}
+			],
+			[
+				{
+					value: constants.SERVICE_KEY2_LABEL
+				},
+				{
+					value: keys.authKey2
+				},
+				{
+					value: view.modelBuilder.flexContainer().withItems([copyKey2Button, refreshKey2Button]).component()
+				}
+			]
+		]
+	});
 }
 
 export function createRegistrationInstructions(view: azdata.ModelView, testConnectionButton: boolean): azdata.FlexContainer {

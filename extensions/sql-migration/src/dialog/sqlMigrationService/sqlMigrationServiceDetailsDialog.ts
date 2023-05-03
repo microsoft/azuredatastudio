@@ -5,22 +5,23 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DatabaseMigration, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, regenerateSqlMigrationServiceAuthKey } from '../../api/azure';
+import { DatabaseMigration, /* getSqlMigrationServiceAuthKeys, */ getSqlMigrationServiceMonitoringData, /* regenerateSqlMigrationServiceAuthKey */ } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
 import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
+import { createAuthenticationKeyTable, refreshAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 
 const CONTROL_MARGIN = '10px';
-const COLUMN_WIDTH = '50px';
+// const COLUMN_WIDTH = '50px';
 const STRETCH_WIDTH = '100%';
 const LABEL_MARGIN = '0 10px 0 10px';
 const VALUE_MARGIN = '0 10px 10px 10px';
 const INFO_VALUE_MARGIN = '0 10px 0 0';
 const ICON_SIZE = '28px';
-const IMAGE_SIZE = '21px';
-const AUTH_KEY1 = 'authKey1';
-const AUTH_KEY2 = 'authKey2';
+// const IMAGE_SIZE = '21px';
+// const AUTH_KEY1 = 'authKey1';
+// const AUTH_KEY2 = 'authKey2';
 
 export class SqlMigrationServiceDetailsDialog {
 
@@ -62,7 +63,7 @@ export class SqlMigrationServiceDetailsDialog {
 	}
 
 	private async createServiceContent(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
-		this._migrationServiceAuthKeyTable = this._createIrTable(view);
+		this._migrationServiceAuthKeyTable = createAuthenticationKeyTable(view);
 		const serviceNode = (await getSqlMigrationServiceMonitoringData(
 			serviceContext.azureAccount!,
 			serviceContext.subscription!,
@@ -100,7 +101,23 @@ export class SqlMigrationServiceDetailsDialog {
 			.component();
 
 		await view.initializeModel(flexContainer);
-		return await this._refreshAuthTable(view, serviceContext, migration);
+		// return await this._refreshAuthTable(view, serviceContext, migration);
+		// const keys = await getSqlMigrationServiceAuthKeys(
+		// 	serviceContext.azureAccount!,
+		// 	serviceContext.subscription!,
+		// 	serviceContext.migrationService?.properties.resourceGroup!,
+		// 	serviceContext.migrationService?.location.toUpperCase()!,
+		// 	serviceContext.migrationService?.name!);
+
+		await refreshAuthenticationKeyTable(
+			view,
+			this._migrationServiceAuthKeyTable,
+			serviceContext.azureAccount!,
+			serviceContext.subscription!,
+			serviceContext.migrationService?.properties.resourceGroup!,
+			serviceContext.migrationService?.location.toUpperCase()!,
+			serviceContext.migrationService!
+		);
 	}
 
 	private _createHeading(view: azdata.ModelView, migration: DatabaseMigration): azdata.FlexContainer {
@@ -165,152 +182,152 @@ export class SqlMigrationServiceDetailsDialog {
 			.component();
 	}
 
-	private _createIrTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
-		return view.modelBuilder
-			.declarativeTable()
-			.withProps({
-				columns: [
-					this._createColumn(constants.NAME, COLUMN_WIDTH, azdata.DeclarativeDataType.string),
-					this._createColumn(constants.AUTH_KEY_COLUMN_HEADER, STRETCH_WIDTH, azdata.DeclarativeDataType.string),
-					this._createColumn('', COLUMN_WIDTH, azdata.DeclarativeDataType.component),
-				],
-				CSSStyles: {
-					'margin': VALUE_MARGIN,
-					'text-align': 'left',
-				},
-			})
-			.component();
-	}
+	// private _createIrTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+	// 	return view.modelBuilder
+	// 		.declarativeTable()
+	// 		.withProps({
+	// 			columns: [
+	// 				this._createColumn(constants.NAME, COLUMN_WIDTH, azdata.DeclarativeDataType.string),
+	// 				this._createColumn(constants.AUTH_KEY_COLUMN_HEADER, STRETCH_WIDTH, azdata.DeclarativeDataType.string),
+	// 				this._createColumn('', COLUMN_WIDTH, azdata.DeclarativeDataType.component),
+	// 			],
+	// 			CSSStyles: {
+	// 				'margin': VALUE_MARGIN,
+	// 				'text-align': 'left',
+	// 			},
+	// 		})
+	// 		.component();
+	// }
 
-	private _createColumn(name: string, width: string, valueType: azdata.DeclarativeDataType): azdata.DeclarativeTableColumn {
-		return {
-			displayName: name,
-			valueType: valueType,
-			width: width,
-			isReadOnly: true,
-			rowCssStyles: {
-				...styles.BODY_CSS
-			},
-			headerCssStyles: {
-				...styles.BODY_CSS
-			},
-		};
-	}
+	// private _createColumn(name: string, width: string, valueType: azdata.DeclarativeDataType): azdata.DeclarativeTableColumn {
+	// 	return {
+	// 		displayName: name,
+	// 		valueType: valueType,
+	// 		width: width,
+	// 		isReadOnly: true,
+	// 		rowCssStyles: {
+	// 			...styles.BODY_CSS
+	// 		},
+	// 		headerCssStyles: {
+	// 			...styles.BODY_CSS
+	// 		},
+	// 	};
+	// }
 
-	private async _regenerateAuthKey(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration, keyName: string): Promise<void> {
-		const keys = await regenerateSqlMigrationServiceAuthKey(
-			serviceContext.azureAccount!,
-			serviceContext.subscription!,
-			serviceContext.migrationService?.properties.resourceGroup!,
-			serviceContext.migrationService?.properties.location?.toUpperCase()!,
-			serviceContext.migrationService?.name!,
-			keyName);
+	// private async _regenerateAuthKey(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration, keyName: string): Promise<void> {
+	// 	const keys = await regenerateSqlMigrationServiceAuthKey(
+	// 		serviceContext.azureAccount!,
+	// 		serviceContext.subscription!,
+	// 		serviceContext.migrationService?.properties.resourceGroup!,
+	// 		serviceContext.migrationService?.properties.location?.toUpperCase()!,
+	// 		serviceContext.migrationService?.name!,
+	// 		keyName);
 
-		if (keys?.authKey1 && keyName === AUTH_KEY1) {
-			await this._updateTableCell(this._migrationServiceAuthKeyTable, 0, 1, keys.authKey1, constants.SERVICE_KEY1_LABEL);
-		}
-		else if (keys?.authKey2 && keyName === AUTH_KEY2) {
-			await this._updateTableCell(this._migrationServiceAuthKeyTable, 1, 1, keys.authKey2, constants.SERVICE_KEY2_LABEL);
-		}
-	}
+	// 	if (keys?.authKey1 && keyName === AUTH_KEY1) {
+	// 		await this._updateTableCell(this._migrationServiceAuthKeyTable, 0, 1, keys.authKey1, constants.SERVICE_KEY1_LABEL);
+	// 	}
+	// 	else if (keys?.authKey2 && keyName === AUTH_KEY2) {
+	// 		await this._updateTableCell(this._migrationServiceAuthKeyTable, 1, 1, keys.authKey2, constants.SERVICE_KEY2_LABEL);
+	// 	}
+	// }
 
-	private async _updateTableCell(table: azdata.DeclarativeTableComponent, row: number, col: number, value: string, keyName: string): Promise<void> {
-		const dataValues = table.dataValues!;
-		dataValues![row][col].value = value;
-		await table.setDataValues([]);
-		await table.setDataValues(dataValues);
-		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(keyName));
-	}
+	// private async _updateTableCell(table: azdata.DeclarativeTableComponent, row: number, col: number, value: string, keyName: string): Promise<void> {
+	// 	const dataValues = table.dataValues!;
+	// 	dataValues![row][col].value = value;
+	// 	await table.setDataValues([]);
+	// 	await table.setDataValues(dataValues);
+	// 	await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(keyName));
+	// }
 
-	private async _refreshAuthTable(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
-		const keys = await getSqlMigrationServiceAuthKeys(
-			serviceContext.azureAccount!,
-			serviceContext.subscription!,
-			serviceContext.migrationService?.properties.resourceGroup!,
-			serviceContext.migrationService?.location.toUpperCase()!,
-			serviceContext.migrationService?.name!);
+	// private async _refreshAuthTable(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
+	// 	const keys = await getSqlMigrationServiceAuthKeys(
+	// 		serviceContext.azureAccount!,
+	// 		serviceContext.subscription!,
+	// 		serviceContext.migrationService?.properties.resourceGroup!,
+	// 		serviceContext.migrationService?.location.toUpperCase()!,
+	// 		serviceContext.migrationService?.name!);
 
-		const copyKey1Button = view.modelBuilder
-			.button()
-			.withProps({
-				title: constants.COPY_KEY1,
-				iconPath: IconPathHelper.copy,
-				height: IMAGE_SIZE,
-				width: IMAGE_SIZE,
-				ariaLabel: constants.COPY_KEY1,
-			})
-			.component();
+	// 	const copyKey1Button = view.modelBuilder
+	// 		.button()
+	// 		.withProps({
+	// 			title: constants.COPY_KEY1,
+	// 			iconPath: IconPathHelper.copy,
+	// 			height: IMAGE_SIZE,
+	// 			width: IMAGE_SIZE,
+	// 			ariaLabel: constants.COPY_KEY1,
+	// 		})
+	// 		.component();
 
-		this._disposables.push(copyKey1Button.onDidClick(async (e) => {
-			await vscode.env.clipboard.writeText(keys.authKey1);
-			void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-		}));
+	// 	this._disposables.push(copyKey1Button.onDidClick(async (e) => {
+	// 		await vscode.env.clipboard.writeText(keys.authKey1);
+	// 		void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+	// 	}));
 
-		const copyKey2Button = view.modelBuilder
-			.button()
-			.withProps({
-				title: constants.COPY_KEY2,
-				iconPath: IconPathHelper.copy,
-				height: IMAGE_SIZE,
-				width: IMAGE_SIZE,
-				ariaLabel: constants.COPY_KEY2,
-			})
-			.component();
+	// 	const copyKey2Button = view.modelBuilder
+	// 		.button()
+	// 		.withProps({
+	// 			title: constants.COPY_KEY2,
+	// 			iconPath: IconPathHelper.copy,
+	// 			height: IMAGE_SIZE,
+	// 			width: IMAGE_SIZE,
+	// 			ariaLabel: constants.COPY_KEY2,
+	// 		})
+	// 		.component();
 
-		this._disposables.push(copyKey2Button.onDidClick(async (e) => {
-			await vscode.env.clipboard.writeText(keys.authKey2);
-			void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-		}));
+	// 	this._disposables.push(copyKey2Button.onDidClick(async (e) => {
+	// 		await vscode.env.clipboard.writeText(keys.authKey2);
+	// 		void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+	// 	}));
 
-		const refreshKey1Button = view.modelBuilder
-			.button()
-			.withProps({
-				title: constants.REFRESH_KEY1,
-				iconPath: IconPathHelper.refresh,
-				height: IMAGE_SIZE,
-				width: IMAGE_SIZE,
-				ariaLabel: constants.REFRESH_KEY1,
-			})
-			.component();
-		this._disposables.push(refreshKey1Button.onDidClick(
-			async (e) => await this._regenerateAuthKey(view, serviceContext, migration, AUTH_KEY1)));
+	// 	const refreshKey1Button = view.modelBuilder
+	// 		.button()
+	// 		.withProps({
+	// 			title: constants.REFRESH_KEY1,
+	// 			iconPath: IconPathHelper.refresh,
+	// 			height: IMAGE_SIZE,
+	// 			width: IMAGE_SIZE,
+	// 			ariaLabel: constants.REFRESH_KEY1,
+	// 		})
+	// 		.component();
+	// 	this._disposables.push(refreshKey1Button.onDidClick(
+	// 		async (e) => await this._regenerateAuthKey(view, serviceContext, migration, AUTH_KEY1)));
 
-		const refreshKey2Button = view.modelBuilder
-			.button()
-			.withProps({
-				title: constants.REFRESH_KEY2,
-				iconPath: IconPathHelper.refresh,
-				height: IMAGE_SIZE,
-				width: IMAGE_SIZE,
-				ariaLabel: constants.REFRESH_KEY2,
-			})
-			.component();
-		this._disposables.push(refreshKey2Button.onDidClick(
-			async (e) => await this._regenerateAuthKey(view, serviceContext, migration, AUTH_KEY2)));
+	// 	const refreshKey2Button = view.modelBuilder
+	// 		.button()
+	// 		.withProps({
+	// 			title: constants.REFRESH_KEY2,
+	// 			iconPath: IconPathHelper.refresh,
+	// 			height: IMAGE_SIZE,
+	// 			width: IMAGE_SIZE,
+	// 			ariaLabel: constants.REFRESH_KEY2,
+	// 		})
+	// 		.component();
+	// 	this._disposables.push(refreshKey2Button.onDidClick(
+	// 		async (e) => await this._regenerateAuthKey(view, serviceContext, migration, AUTH_KEY2)));
 
-		await this._migrationServiceAuthKeyTable.updateProperties({
-			dataValues: [
-				[
-					{ value: constants.SERVICE_KEY1_LABEL },
-					{ value: keys.authKey1 },
-					{
-						value: view.modelBuilder
-							.flexContainer()
-							.withItems([copyKey1Button, refreshKey1Button])
-							.component()
-					}
-				],
-				[
-					{ value: constants.SERVICE_KEY2_LABEL },
-					{ value: keys.authKey2 },
-					{
-						value: view.modelBuilder
-							.flexContainer()
-							.withItems([copyKey2Button, refreshKey2Button])
-							.component()
-					}
-				]
-			]
-		});
-	}
+	// 	await this._migrationServiceAuthKeyTable.updateProperties({
+	// 		dataValues: [
+	// 			[
+	// 				{ value: constants.SERVICE_KEY1_LABEL },
+	// 				{ value: keys.authKey1 },
+	// 				{
+	// 					value: view.modelBuilder
+	// 						.flexContainer()
+	// 						.withItems([copyKey1Button, refreshKey1Button])
+	// 						.component()
+	// 				}
+	// 			],
+	// 			[
+	// 				{ value: constants.SERVICE_KEY2_LABEL },
+	// 				{ value: keys.authKey2 },
+	// 				{
+	// 					value: view.modelBuilder
+	// 						.flexContainer()
+	// 						.withItems([copyKey2Button, refreshKey2Button])
+	// 						.component()
+	// 				}
+	// 			]
+	// 		]
+	// 	});
+	// }
 }
