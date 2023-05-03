@@ -296,7 +296,7 @@ export function createViewContext(): ViewTestContext {
 		onRowSelected: onClick.event,
 		onCellAction: onClick.event,
 		appendData: (_data: any[][]) => undefined,
-		setActiveCell: () => undefined,
+		setActiveCell: (_row: number, _column: number) => undefined
 	});
 	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent, azdata.TableComponentProperties> = {
 		component: () => table(),
