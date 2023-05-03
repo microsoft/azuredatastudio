@@ -77,6 +77,7 @@ export enum TelemetryAction {
 	OpenLoginMigrationWizard = 'OpenLoginMigrationWizard',
 	LoginMigrationStarted = 'LoginMigrationStarted',
 	LoginMigrationCompleted = 'LoginMigrationCompleted',
+	LoginMigrationError = 'LoginMigrationError',
 	TdeMigrationSuccess = 'TdeMigrationSuccess',
 	TdeMigrationFailures = 'TdeMigrationFailures',
 	TdeMigrationClientException = 'TdeMigrationClientException',
