@@ -268,6 +268,9 @@
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
+      <source xml:lang="en">No Resources found.</source>
+    </trans-unit>
     <trans-unit id="azure.resource.throttleerror">
       <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
     </trans-unit>

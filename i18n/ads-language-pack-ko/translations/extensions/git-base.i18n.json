@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/remoteSource": {
 			"branch name": "분기 이름",
-			"error": "$(error) 오류: {0}",
+			"error": "{0} 오류: {1}",
 			"none found": "원격 리포지토리를 찾을 수 없습니다.",
 			"pick url": "복제할 URL을 선택하세요.",
 			"provide url": "리포지토리 URL 제공",
