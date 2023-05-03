@@ -447,7 +447,6 @@ export class ObjectExplorerServiceDialog extends Modal {
 			};
 
 			const isMultipleValueFilter = filter.operator === NodeFilterOperator.Between || filter.operator === NodeFilterOperator.NotBetween;
-
 			if (isMultipleValueFilter) {
 				i++;
 				const row2 = tableData[i];
@@ -464,10 +463,13 @@ export class ObjectExplorerServiceDialog extends Modal {
 					this._dialogService.show(Severity.Error, localize('filterDialog.errorEndDate', "End date is not specified."));
 					return;
 				}
-			}
-
-			if (filter.value !== '') {
-				this._treeNode.filters.push(filter);
+				if (true || value1 !== '' && value2 !== '') {
+					this._treeNode.filters.push(filter);
+				}
+			} else {
+				if (filter.value !== '') {
+					this._treeNode.filters.push(filter);
+				}
 			}
 		}
 		this.spinner = true;
@@ -483,7 +485,6 @@ export class ObjectExplorerServiceDialog extends Modal {
 				await this._tree.expand(this._connectionProfile);
 			}
 		} else {
-			this._modalOptions.onSpinnerHideText
 			try {
 				this._treeNode.forceRefresh = true;
 				if (this._tree instanceof AsyncServerTree) {
@@ -495,12 +496,11 @@ export class ObjectExplorerServiceDialog extends Modal {
 					await this._tree.expand(this._treeNode);
 				}
 			} catch (e) {
-
-				this._dialogService.show(Severity.Error, localize('filterDialog.error', "Error while applying filter: {0}", e));
+				this.spinner = false;
+				this._dialogService.show(Severity.Error, localize('filterDialog.error', "Error while applying filter: {0}", e.message));
+				throw e;
 			}
-
 		}
-		this.spinner = false;
 		this.hide('ok');
 	}
 
@@ -511,14 +511,15 @@ export class ObjectExplorerServiceDialog extends Modal {
 	}
 
 	private getFilterValue(filterType: NodeFilterPropertyDataType, value: string): string | number | boolean {
+		if (value === '') {
+			return '';
+		}
 		switch (filterType) {
 			case NodeFilterPropertyDataType.Boolean:
 				if (value === TRUE_SELECT_BOX) {
 					return true;
 				} else if (value === FALSE_SELECT_BOX) {
 					return false;
-				} else {
-					return value;
 				}
 			case NodeFilterPropertyDataType.Number:
 				return Number(value);
@@ -545,6 +546,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 			case NodeFilterPropertyDataType.String:
 				return value as string;
 		}
+		return '';
 	}
 
 	private getOperatorsForType(type: NodeFilterPropertyDataType): string[] {
