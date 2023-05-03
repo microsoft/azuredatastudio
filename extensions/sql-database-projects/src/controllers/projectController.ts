@@ -1806,7 +1806,7 @@ export class ProjectsController {
 	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
 		const project = await Project.openProject(projectFilePath);
 
-		return project.files
+		return project.sqlObjectScripts
 			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
 			.map(f => f.fsUri.fsPath);
 	}
