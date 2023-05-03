@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as vscode from 'vscode';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import * as localizedConstants from '../localizedConstants';
-import { deepClone, getNodeTypeDisplayName, refreshNode, refreshParentNode } from '../utils';
+import { deepClone, refreshNode, refreshParentNode } from '../utils';
 import { DialogBase } from './dialogBase';
 import { ObjectManagementViewName, TelemetryActions } from '../constants';
 import { TelemetryReporter } from '../../telemetry';
@@ -41,8 +41,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _scriptButton: azdata.window.Button;
 
 	constructor(protected readonly objectManagementService: IObjectManagementService, protected readonly options: ObjectManagementDialogOptions) {
-		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(getNodeTypeDisplayName(options.objectType, true)) :
-			localizedConstants.ObjectPropertiesDialogTitle(getNodeTypeDisplayName(options.objectType, true), options.objectName),
+		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true)) :
+			localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName),
 			getDialogName(options.objectType, options.isNewObject),
 			options.width || 'narrow', 'flyout'
 		);
@@ -78,7 +78,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	protected override async initialize(): Promise<void> {
 		await this.initializeData();
 		await this.initializeUI();
-		const typeDisplayName = getNodeTypeDisplayName(this.options.objectType);
+		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
 		this.dialogObject.registerOperation({
 			displayName: this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
 				: localizedConstants.UpdateObjectOperationDisplayName(typeDisplayName, this.options.objectName),
