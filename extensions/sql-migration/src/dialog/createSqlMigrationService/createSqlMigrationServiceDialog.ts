@@ -5,13 +5,12 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { createSqlMigrationService, getResourceName, getSqlMigrationService, /* getSqlMigrationServiceAuthKeys, */ getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
+import { createSqlMigrationService, getResourceName, getSqlMigrationService, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { logError, TelemetryViews } from '../../telemetry';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azurecore';
-// import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import { createAuthenticationKeyTable, createRegistrationInstructions, refreshAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
@@ -33,10 +32,6 @@ export class CreateSqlMigrationServiceDialog {
 	private _refreshLoadingComponent!: azdata.LoadingComponent;
 	private migrationServiceAuthKeyTable!: azdata.DeclarativeTableComponent;
 	private _connectionStatus!: azdata.InfoBoxComponent;
-	// private _copyKey1Button!: azdata.ButtonComponent;
-	// private _copyKey2Button!: azdata.ButtonComponent;
-	// private _refreshKey1Button!: azdata.ButtonComponent;
-	// private _refreshKey2Button!: azdata.ButtonComponent;
 	private _setupContainer!: azdata.FlexContainer;
 	private _resourceGroupPreset!: string;
 
@@ -119,18 +114,6 @@ export class CreateSqlMigrationServiceDialog {
 							};
 						} else {
 							await this.refreshStatus();
-							// await this.refreshAuthTable();
-
-							// const subscription = this._model._sqlMigrationServiceSubscription;
-							// const resourceGroupId = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
-							// const resourceGroup = getResourceName(resourceGroupId);
-							// const location = this._model._location.name;
-							// const keys = await getSqlMigrationServiceAuthKeys(
-							// 	this._model._azureAccount,
-							// 	subscription,
-							// 	resourceGroup,
-							// 	location,
-							// 	this._createdMigrationService!.name);
 
 							await refreshAuthenticationKeyTable(
 								this._view,
@@ -518,16 +501,16 @@ export class CreateSqlMigrationServiceDialog {
 
 			if (state === 'Online') {
 				await this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.SERVICE_READY(this._createdMigrationService!.name, this.irNodes.join(', ')),
+					text: constants.SERVICE_READY(this._createdMigrationService!.name, this.irNodes.join(', '), false),
 					style: 'success',
 					CSSStyles: {
 						...styles.BODY_CSS
 					}
 				});
 			} else {
-				this._connectionStatus.text = constants.SERVICE_NOT_READY(this._createdMigrationService!.name);
+				this._connectionStatus.text = constants.SERVICE_NOT_READY(this._createdMigrationService!.name, false);
 				await this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.SERVICE_NOT_READY(this._createdMigrationService!.name),
+					text: constants.SERVICE_NOT_READY(this._createdMigrationService!.name, false),
 					style: 'warning',
 					CSSStyles: {
 						...styles.BODY_CSS
@@ -537,89 +520,6 @@ export class CreateSqlMigrationServiceDialog {
 			this._dialogObject.okButton.enabled = true;
 		}
 	}
-
-	// private async refreshAuthTable(): Promise<void> {
-	// 	const subscription = this._model._sqlMigrationServiceSubscription;
-	// 	const resourceGroupId = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
-	// 	const resourceGroup = getResourceName(resourceGroupId);
-	// 	const location = this._model._location.name;
-	// 	const keys = await getSqlMigrationServiceAuthKeys(
-	// 		this._model._azureAccount,
-	// 		subscription,
-	// 		resourceGroup,
-	// 		location,
-	// 		this._createdMigrationService!.name);
-
-	// 	// this._copyKey1Button = this._view.modelBuilder.button().withProps({
-	// 	// 	title: constants.COPY_KEY1,
-	// 	// 	iconPath: IconPathHelper.copy,
-	// 	// 	ariaLabel: constants.COPY_KEY1,
-	// 	// }).component();
-
-	// 	// this._disposables.push(this._copyKey1Button.onDidClick(async (e) => {
-	// 	// 	await vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![0][1].value);
-	// 	// 	void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-	// 	// }));
-
-	// 	// this._copyKey2Button = this._view.modelBuilder.button().withProps({
-	// 	// 	title: constants.COPY_KEY2,
-	// 	// 	iconPath: IconPathHelper.copy,
-	// 	// 	ariaLabel: constants.COPY_KEY2,
-	// 	// }).component();
-
-	// 	// this._disposables.push(this._copyKey2Button.onDidClick(async (e) => {
-	// 	// 	await vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![1][1].value);
-	// 	// 	void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-	// 	// }));
-
-	// 	// this._refreshKey1Button = this._view.modelBuilder.button().withProps({
-	// 	// 	title: constants.REFRESH_KEY1,
-	// 	// 	iconPath: IconPathHelper.refresh,
-	// 	// 	ariaLabel: constants.REFRESH_KEY1,
-	// 	// }).component();
-
-	// 	// this._disposables.push(this._refreshKey1Button.onDidClick((e) => {
-	// 	// 	//TODO: add refresh logic
-	// 	// }));
-
-	// 	// this._refreshKey2Button = this._view.modelBuilder.button().withProps({
-	// 	// 	title: constants.REFRESH_KEY2,
-	// 	// 	iconPath: IconPathHelper.refresh,
-	// 	// 	ariaLabel: constants.REFRESH_KEY2,
-	// 	// }).component();
-
-	// 	// this._disposables.push(this._refreshKey2Button.onDidClick((e) => {
-	// 	// 	//TODO: add refresh logic
-	// 	// }));
-
-	// 	// await this.migrationServiceAuthKeyTable.updateProperties({
-	// 	// 	dataValues: [
-	// 	// 		[
-	// 	// 			{
-	// 	// 				value: constants.SERVICE_KEY1_LABEL
-	// 	// 			},
-	// 	// 			{
-	// 	// 				value: keys.authKey1
-	// 	// 			},
-	// 	// 			{
-	// 	// 				value: this._view.modelBuilder.flexContainer().withItems([this._copyKey1Button, this._refreshKey1Button]).component()
-	// 	// 			}
-	// 	// 		],
-	// 	// 		[
-	// 	// 			{
-	// 	// 				value: constants.SERVICE_KEY2_LABEL
-	// 	// 			},
-	// 	// 			{
-	// 	// 				value: keys.authKey2
-	// 	// 			},
-	// 	// 			{
-	// 	// 				value: this._view.modelBuilder.flexContainer().withItems([this._copyKey2Button, this._refreshKey2Button]).component()
-	// 	// 			}
-	// 	// 		]
-	// 	// 	]
-	// 	// });
-
-	// }
 
 	private setDialogMessage(message: string, level: azdata.window.MessageLevel = azdata.window.MessageLevel.Error): void {
 		this._dialogObject.message = {

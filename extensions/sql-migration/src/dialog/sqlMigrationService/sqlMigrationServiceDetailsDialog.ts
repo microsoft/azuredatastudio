@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DatabaseMigration, /* getSqlMigrationServiceAuthKeys, */ getSqlMigrationServiceMonitoringData, /* regenerateSqlMigrationServiceAuthKey */ } from '../../api/azure';
+import { DatabaseMigration, getSqlMigrationServiceMonitoringData } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
 import { MigrationServiceContext } from '../../models/migrationLocalStorage';
