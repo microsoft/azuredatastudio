@@ -20,7 +20,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/
 import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
-import { CreateDatabaseDialog } from './ui/createDatabaseDialog';
+import { DatabaseDialog } from './ui/databaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -244,7 +244,7 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
-			return new CreateDatabaseDialog(service, dialogOptions);
+			return new DatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}

@@ -1309,7 +1309,7 @@ declare module 'mssql' {
 			containmentType?: string;
 		}
 
-		export interface CreateDatabaseViewInfo extends ObjectViewInfo<Database> {
+		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
 			databaseNames: string[];
 			loginNames: string[];
 			collationNames: string[];

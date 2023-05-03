@@ -10,7 +10,7 @@ import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
 import { DefaultInputWidth } from './dialogBase';
 
-export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.CreateDatabaseViewInfo> {
+export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.DatabaseViewInfo> {
 	private _nameInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
