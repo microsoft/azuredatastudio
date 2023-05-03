@@ -436,7 +436,7 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-		this.migrationServiceAuthKeyTable = createAuthenticationKeyTable(this._view);
+		this.migrationServiceAuthKeyTable = createAuthenticationKeyTable(this._view, '50px', '500px');
 
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[

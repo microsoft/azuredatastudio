@@ -506,7 +506,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		const instructions = createRegistrationInstructions(this._view, false);
 
-		this._authKeyTable = createAuthenticationKeyTable(this._view);
+		this._authKeyTable = createAuthenticationKeyTable(this._view, '50px', '500px');
 
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
@@ -676,7 +676,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 }
 
-export function createAuthenticationKeyTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+export function createAuthenticationKeyTable(view: azdata.ModelView, columnWidth: string, stretchWidth: string): azdata.DeclarativeTableComponent {
 	const authKeyTable = view.modelBuilder.declarativeTable()
 		.withProps({
 			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
@@ -684,7 +684,7 @@ export function createAuthenticationKeyTable(view: azdata.ModelView): azdata.Dec
 				{
 					displayName: constants.NAME,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
+					width: columnWidth,
 					isReadOnly: true,
 					rowCssStyles: { ...styles.BODY_CSS },
 					headerCssStyles: { ...styles.BODY_CSS, 'font-weight': '600' }
@@ -692,7 +692,7 @@ export function createAuthenticationKeyTable(view: azdata.ModelView): azdata.Dec
 				{
 					displayName: constants.AUTH_KEY_COLUMN_HEADER,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
+					width: stretchWidth,
 					isReadOnly: true,
 					rowCssStyles: { ...styles.BODY_CSS },
 					headerCssStyles: { ...styles.BODY_CSS, 'font-weight': '600' }
@@ -700,7 +700,7 @@ export function createAuthenticationKeyTable(view: azdata.ModelView): azdata.Dec
 				{
 					displayName: '',
 					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
+					width: columnWidth,
 					isReadOnly: true,
 					rowCssStyles: { ...styles.BODY_CSS },
 					headerCssStyles: { ...styles.BODY_CSS }
