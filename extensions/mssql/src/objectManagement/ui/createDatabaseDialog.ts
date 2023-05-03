@@ -21,10 +21,6 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 		return CreateDatabaseDocUrl;
 	}
 
-	protected override async onConfirmation(): Promise<boolean> {
-		return true;
-	}
-
 	protected override async validateInput(): Promise<string[]> {
 		const errors: string[] = [];
 		if (!this.objectInfo.name) {
@@ -33,10 +29,6 @@ export class CreateDatabaseDialog extends ObjectManagementDialogBase<ObjectManag
 			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
 		}
 		return errors;
-	}
-
-	protected async onComplete(): Promise<void> {
-		// Execute create database command
 	}
 
 	protected async initializeUI(): Promise<void> {
