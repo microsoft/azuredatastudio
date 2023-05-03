@@ -63,11 +63,9 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
-
-	public $getAllAccounts(): Thenable<azdata.Account[]> {
-		return this.getAllProvidersAndAccounts().then(providersAndAccounts => {
-			return providersAndAccounts.map(providerAndAccount => providerAndAccount.account);
-		});
+	public async $getAllAccounts(): Promise<azdata.Account[]> {
+		let providersAndAccounts = await this.getAllProvidersAndAccounts();
+		return providersAndAccounts.map(providerAndAccount => providerAndAccount.account);
 	}
 
 	private async getAllProvidersAndAccounts(): Promise<ProviderAndAccount[]> {
@@ -94,32 +92,30 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return resultProviderAndAccounts;
 	}
 
-	public override $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
-		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
-			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
-			if (providerAndAccount) {
-				return providerAndAccount.provider.getSecurityToken(account, resource);
-			}
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
+	public override async $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<{}> {
+		let providerAndAccounts = await this.getAllProvidersAndAccounts();
+		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
+		if (providerAndAccount) {
+			return providerAndAccount.provider.getSecurityToken(account, resource);
+		}
+		throw new Error(`Account ${account.key.accountId} not found.`);
 	}
 
-	public override $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<azdata.accounts.AccountSecurityToken> {
-		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
-			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
-			if (providerAndAccount) {
-				return providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
-			}
-			throw new Error(`Account ${account.key.accountId} not found.`);
-		});
+	public override async $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Promise<azdata.accounts.AccountSecurityToken> {
+		let providerAndAccounts = await this.getAllProvidersAndAccounts();
+		const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
+		if (providerAndAccount) {
+			return await providerAndAccount.provider.getAccountSecurityToken(account, tenant, resource);
+		}
+		throw Error(`Account ${account.key.accountId} not found.`);
 	}
 
 	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;
 	}
 
-	public override $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
-		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
+	public override async $accountsChanged(handle: number, accounts: azdata.Account[]): Promise<void> {
+		return this._onDidChangeAccounts.fire({ accounts: accounts });
 	}
 
 	public $registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Disposable {
