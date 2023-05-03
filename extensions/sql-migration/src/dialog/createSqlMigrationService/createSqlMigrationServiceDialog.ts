@@ -12,7 +12,6 @@ import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azurecore';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
-import { createAuthenticationKeyTable, createRegistrationInstructions, refreshAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
 import * as utils from '../../api/utils';
 import * as styles from '../../constants/styles';
@@ -115,7 +114,7 @@ export class CreateSqlMigrationServiceDialog {
 						} else {
 							await this.refreshStatus();
 
-							await refreshAuthenticationKeyTable(
+							await utils.refreshAuthenticationKeyTable(
 								this._view,
 								this.migrationServiceAuthKeyTable,
 								this._model._azureAccount,
@@ -415,7 +414,7 @@ export class CreateSqlMigrationServiceDialog {
 	}
 
 	private createServiceStatus(): azdata.FlexContainer {
-		const instructions = createRegistrationInstructions(this._view, true);
+		const instructions = utils.createRegistrationInstructions(this._view, true);
 
 		this._connectionStatus = this._view.modelBuilder.infoBox().withProps({
 			text: '',
@@ -436,7 +435,7 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-		this.migrationServiceAuthKeyTable = createAuthenticationKeyTable(this._view, '50px', '500px');
+		this.migrationServiceAuthKeyTable = utils.createAuthenticationKeyTable(this._view, '50px', '500px');
 
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[

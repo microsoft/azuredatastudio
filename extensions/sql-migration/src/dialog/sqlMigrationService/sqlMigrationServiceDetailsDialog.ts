@@ -10,7 +10,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
 import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
-import { createAuthenticationKeyTable, refreshAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
+import { createAuthenticationKeyTable, refreshAuthenticationKeyTable } from '../../api/utils';
 
 const CONTROL_MARGIN = '10px';
 const STRETCH_WIDTH = '100%';
