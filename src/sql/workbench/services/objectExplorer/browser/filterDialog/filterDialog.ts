@@ -463,7 +463,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 					this._dialogService.show(Severity.Error, localize('filterDialog.errorEndDate', "End date is not specified."));
 					return;
 				}
-				if (true || value1 !== '' && value2 !== '') {
+				if (value1 !== '' && value2 !== '') {
 					this._treeNode.filters.push(filter);
 				}
 			} else {
