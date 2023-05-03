@@ -10,13 +10,12 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
 import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import * as styles from '../../constants/styles';
-import { createAuthenticationKeyTable, refreshAuthenticationKeyTable } from '../../api/utils';
+import { createAuthenticationKeyTable, createRegistrationInstructions, refreshAuthenticationKeyTable } from '../../api/utils';
 
 const CONTROL_MARGIN = '10px';
 const STRETCH_WIDTH = '100%';
 const LABEL_MARGIN = '0 10px 0 10px';
 const VALUE_MARGIN = '0 10px 10px 10px';
-const INFO_VALUE_MARGIN = '0 10px 0 0';
 const ICON_SIZE = '28px';
 
 export class SqlMigrationServiceDetailsDialog {
@@ -59,6 +58,12 @@ export class SqlMigrationServiceDetailsDialog {
 	}
 
 	private async createServiceContent(view: azdata.ModelView, serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
+		const instructions = createRegistrationInstructions(view, false);
+		await instructions.updateCssStyles({
+			...styles.BODY_CSS,
+			'margin': LABEL_MARGIN,
+		})
+
 		this._migrationServiceAuthKeyTable = createAuthenticationKeyTable(view, '50px', '100%');
 		const serviceNode = (await getSqlMigrationServiceMonitoringData(
 			serviceContext.azureAccount!,
@@ -85,11 +90,7 @@ export class SqlMigrationServiceDetailsDialog {
 				this._createTextItem(view, serviceContext.migrationService?.properties.resourceGroup!, VALUE_MARGIN),
 				this._createTextItem(view, constants.SQL_MIGRATION_SERVICE_DETAILS_IR_LABEL, LABEL_MARGIN),
 				this._createTextItem(view, serviceNodeName, VALUE_MARGIN),
-				this._createTextItem(
-					view,
-					constants.SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_LABEL,
-					INFO_VALUE_MARGIN,
-					constants.SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE),
+				instructions,
 				this._migrationServiceAuthKeyTable,
 			])
 			.withLayout({ flexFlow: 'column' })
