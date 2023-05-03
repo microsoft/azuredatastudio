@@ -42,14 +42,14 @@ export class ConnectionStore {
 		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
 		try {
-			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.GLOBAL, '[]');
+			const configRaw = this.storageService.get(RECENT_CONNECTIONS_STATE_KEY, StorageScope.APPLICATION, '[]');
 			this.mru = JSON.parse(configRaw);
 		} catch (e) {
 			this.mru = [];
 		}
 
 		this.storageService.onWillSaveState(() =>
-			this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.GLOBAL, StorageTarget.MACHINE));
+			this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.APPLICATION, StorageTarget.MACHINE));
 	}
 
 	/**

@@ -1,27 +1,29 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - main
-      - release/*
-  pull_request:
-    branches:
-      - main
-      - release/*
+on: workflow_dispatch
+
+# on:
+#   push:
+#     branches:
+#       - main
+#       - release/*
+#   pull_request:
+#     branches:
+#       - main
+#       - release/*
 
 jobs:
   windows:
     name: Windows
-    runs-on: windows-2019
-    timeout-minutes: 30
+    runs-on: windows-2022
+    timeout-minutes: 60
     env:
       CHILD_CONCURRENCY: "1"
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -248,8 +250,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
-          restore-keys: ${{ runner.os }}-cacheNodeModules14-
+          key: ${{ runner.os }}-cacheNodeModules23-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules23-
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -273,24 +275,98 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         run: yarn --frozen-lockfile --network-timeout 180000
 
+      - name: Compile and Download
+        run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" playwright-install download-builtin-extensions
+
+      - name: Compile Integration Tests
+        run: yarn --cwd test/integration/browser compile
+
+      # This is required for keytar unittests, otherwise we hit
+      # https://github.com/atom/node-keytar/issues/76
+      - name: Create temporary keychain
+        run: |
+          security create-keychain -p pwd $RUNNER_TEMP/buildagent.keychain
+          security default-keychain -s $RUNNER_TEMP/buildagent.keychain
+          security unlock-keychain -p pwd $RUNNER_TEMP/buildagent.keychain
+
+      - name: Run Unit Tests (Electron)
+        run: DISPLAY=:10 ./scripts/test.sh
+
+      - name: Run Unit Tests (node.js)
+        run: yarn test-node
+
+      - name: Run Unit Tests (Browser, Chromium)
+        run: DISPLAY=:10 yarn test-browser-no-install --browser chromium
+
+      - name: Run Integration Tests (Electron)
+        run: DISPLAY=:10 ./scripts/test-integration.sh
+
+      - name: Run Integration Tests (Browser, Webkit)
+        run: DISPLAY=:10 ./scripts/test-web-integration.sh --browser webkit
+
+      - name: Run Integration Tests (Remote)
+        timeout-minutes: 15
+        run: DISPLAY=:10 ./scripts/test-remote-integration.sh
+
+  hygiene:
+    name: Hygiene and Layering
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules23-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules23-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Execute yarn
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+        run: yarn --frozen-lockfile --network-timeout 180000
+
+      - name: Download Playwright
+        run: yarn playwright-install
+
       - name: Run Hygiene Checks
         run: yarn gulp hygiene
 
       - name: Run Valid Layers Checks
         run: yarn valid-layers-check
 
-      # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
-      #   run: yarn monaco-compile-check
-
       - name: Compile /build/
         run: yarn --cwd build compile
+
+      - name: Check clean git state
+        run: ./.github/workflows/check-clean-git-state.sh
 
       - name: Run eslint
         run: yarn eslint
 
-      # {{SQL CARBON EDIT}} Don't need this
-      # - name: Run Monaco Editor Checks
-      #   run: yarn monaco-compile-check
 
       # {{SQL CARBON EDIT}} Don't need this
       # - name: Run vscode-dts Compile Checks

@@ -25,7 +25,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 
 	protected handlePreviewFeatures(): void {
 		let previewFeaturesEnabled = this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
-		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
+		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.APPLICATION)) {
 			return;
 		}
 		Promise.all([
@@ -45,7 +45,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 					label: localize('enablePreviewFeatures.yes', "Yes (recommended)"),
 					run: () => {
 						this.configurationService.updateValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, true).catch(e => onUnexpectedError(e));
-						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
@@ -56,7 +56,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
 						this.configurationService.updateValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, false).catch(e => onUnexpectedError(e));
-						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 					},
 					isSecondary: true
 				}]
