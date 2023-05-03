@@ -37,7 +37,6 @@ export const enum TelemetryActions {
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
 	CreateDatabaseDialog = 'CreateDatabaseDialog',
-	DeleteDatabaseDialog = 'DeleteDatabaseDialog',
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';

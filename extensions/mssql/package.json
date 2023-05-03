@@ -98,11 +98,6 @@
         "title": "%title.createDatabase%"
       },
       {
-        "command": "mssql.deleteDatabase",
-        "category": "MSSQL",
-        "title": "%title.deleteDatabase%"
-      },
-      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -491,10 +486,6 @@
         },
         {
           "command": "mssql.createDatabase",
-          "when": "false"
-        },
-        {
-          "command": "mssql.deleteDatabase",
           "when": "false"
         }
       ],

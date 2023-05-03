@@ -138,13 +138,6 @@ export function OpenCreateDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the Create Database dialog: {0}", error);
 }
 
-export function OpenDeleteDatabaseDialogError(error: string): string {
-	return localize({
-		key: 'admin.openDeleteDatabaseDialogError',
-		comment: ['{0}: error message.']
-	}, "An error occurred while opening the Delete Database dialog: {0}", error);
-}
-
 export const NameText = localize('objectManagement.nameLabel', "Name");
 export const SelectedText = localize('objectManagement.selectedLabel', "Selected");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
@@ -288,9 +281,3 @@ export function getUserTypeByDisplayName(displayName: string): ObjectManagement.
 
 // Create Database
 export const CreateDatabaseTitle = localize('objectManagement.createDatabaseTitle', "Create Database");
-
-// Delete Database
-export const DeleteDatabaseTitle = localize('objectManagement.deleteDatabaseTitle', "Delete Database");
-export const DatabaseNameLabel = localize('objectManagement.databaseNameLabel', "Database");
-export const CloseConnectionsCheckboxLabel = localize('objectManagement.closeConnectionsCheckboxLabel', "Close existing connections");
-export const DeleteBackupsCheckboxLabel = localize('objectManagement.deleteBackupsCheckboxLabel', "Delete backup and restore history information for database");

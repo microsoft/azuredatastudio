@@ -187,6 +187,5 @@
 	"title.objectProperties": "Properties (Preview)",
 	"title.deleteObject": "Delete",
 	"title.renameObject": "Rename",
-	"title.createDatabase": "Create Database",
-	"title.deleteDatabase": "Delete"
+	"title.createDatabase": "Create Database"
 }
