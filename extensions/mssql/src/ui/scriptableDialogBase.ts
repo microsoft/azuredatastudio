@@ -19,7 +19,8 @@ export interface ScriptableDialogOptions {
 
 /**
  * Base class for a scriptable dialog - that is a dialog that has a "Script" button which will
- * open a new editor with the generated script when clicked.
+ * open a new editor with the generated script when clicked. This also includes a "Help" button
+ * to open up a given URL when clicked.
  */
 export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogOptions> extends DialogBase<void> {
 	private _helpButton: azdata.window.Button;
