@@ -81,7 +81,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _refreshButton!: azdata.ButtonComponent;
 	private _databaseTable!: azdata.TableComponent;
 	private _migrationTableSection!: azdata.FlexContainer;
-	//private tableInfoPromises: Promise<[TableInfo[], TableInfo[]]>[] = [];
 	private _tableInfoPromises: Promise<void>[] = [];
 	private _targetTableMap: Map<string, TableInfo> = new Map();
 	private _tableSelectionMap: Map<string, TableInfo> = new Map();
@@ -1843,35 +1842,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._refreshLoading.loading = false;
 	}
 
-
-	// private async _preloadAllTableMappingInfo(sourceDatabaseName: string, targetDatabaseInfo: TargetDatabaseInfo): Promise<void> {
-	// 	try {
-	// 		if (sourceDatabaseName) {
-	// 			if (targetDatabaseInfo) {
-	// 				return collectSourceAndTargetTableInfo(
-	// 					sourceDatabaseName,
-	// 					this.migrationStateModel._targetServerInstance as AzureSqlDatabaseServer,
-	// 					targetDatabaseInfo.databaseName,
-	// 					this.migrationStateModel._azureTenant.id,
-	// 					this.migrationStateModel._targetUserName,
-	// 					this.migrationStateModel._targetPassword).then(
-	// 						async (results) => { await this._updateTableMappingInfo(sourceDatabaseName, targetDatabaseInfo, results); }
-	// 					);
-	// 			}
-	// 		}
-	// 	}
-	// 	catch (error) {
-	// 		this.wizard.message = {
-	// 			text: constants.DATABASE_TABLE_CONNECTION_ERROR,
-	// 			description: constants.DATABASE_TABLE_CONNECTION_ERROR_MESSAGE(error.message),
-	// 			level: azdata.window.MessageLevel.Error
-	// 		};
-	// 	}
-	// }
-
 	private async _preloadAllTableMappingInfoRunQuery(sourceDatabases: string[], targetDatabases: string[]): Promise<void> {
-		void this.migrationStateModel._runQueryModel.RunQueryAsync(this.migrationStateModel, sourceDatabases, QueryResultType.DatabaseTableInfo, false, this.__reportRunQueryDatabaseTableInfoResults.bind(this));
 		void this.migrationStateModel._runQueryModel.RunQueryAsync(this.migrationStateModel, targetDatabases, QueryResultType.DatabaseTableInfo, true, this.__reportRunQueryDatabaseTableInfoResults.bind(this));
+		void this.migrationStateModel._runQueryModel.RunQueryAsync(this.migrationStateModel, sourceDatabases, QueryResultType.DatabaseTableInfo, false, this.__reportRunQueryDatabaseTableInfoResults.bind(this));
 	}
 
 	private async _updateTableMappingInfo(sourceDatabaseName: string, targetDatabaseInfo: TargetDatabaseInfo, tableMappingInfo: [TableInfo[], TableInfo[]]): Promise<void> {
