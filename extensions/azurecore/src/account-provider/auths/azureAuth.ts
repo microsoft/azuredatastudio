@@ -496,13 +496,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 					tenantList.push(tenantInfo.tenantId);
 					Logger.info('Tenant display name found empty: {0}', tenantInfo.tenantId);
 				}
-				let tenant: Tenant = {
+				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
 					userId: token,
 					tenantCategory: tenantInfo.tenantCategory
-				};
-				return tenant;
+				} as Tenant;
 			});
 
 			Logger.verbose(`Tenants: ${tenantList}`);
