@@ -12,8 +12,8 @@ import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType'
 
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
-import { onUnexpectedError } from 'vs/base/common/errors';
-import { AsyncServerTree, ConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
+import { AsyncServerTree, ConnectionError as AsyncTreeConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
@@ -233,7 +233,7 @@ export class TreeUpdateUtils {
 			}
 		} catch (e) {
 			// Since the connection dialog handles connection errors, we don't need to do anything here
-			throw new ConnectionError(e, connection);
+			throw new AsyncTreeConnectionError(getErrorMessage(e), connection);
 		}
 	}
 

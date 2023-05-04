@@ -14,6 +14,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IAsyncDataSource } from 'vs/base/browser/ui/tree/tree';
 import { ConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -54,12 +55,13 @@ export class AsyncServerTreeDataSource implements IAsyncDataSource<ConnectionPro
 				return await this._objectExplorerService.resolveTreeNodeChildren(element.getSession()!, element);
 			}
 		} catch (err) {
+			const errorMessage = getErrorMessage(err) ?? err;
 			if (element instanceof TreeNode) {
-				element.errorStateMessage = err.message ?? err;
+				element.errorStateMessage = errorMessage;
 			}
 			// In case of connection profile, we won't show the error here and let the connection service handle it.
-			if (err.message && !(err instanceof ConnectionError)) {
-				this.showError(err.message);
+			if (errorMessage && !(err instanceof ConnectionError)) {
+				this.showError(errorMessage);
 			}
 
 			throw err;

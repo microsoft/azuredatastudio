@@ -562,7 +562,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo | undefined {
+	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo {
 		let finalResult: azdata.ObjectExplorerExpandInfo | undefined = {
 			sessionId: undefined,
 			nodePath: nodePath,
