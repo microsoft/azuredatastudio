@@ -81,8 +81,8 @@ export class AzureResourceErrorMessageUtil {
 	}
 }
 
-export function getTenantVersion(): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration('azure.tenantVersion');
+export function getTenantVersion(): string | undefined {
+	return vscode.workspace.getConfiguration('azure').get('tenantVersion');
 }
 
 export function generateGuid(): string {
