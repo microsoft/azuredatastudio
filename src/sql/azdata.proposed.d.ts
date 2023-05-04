@@ -1986,8 +1986,8 @@ declare module 'azdata' {
 	}
 
 	export interface ChartComponentProperties<T extends ChartType> extends ComponentProperties {
-		chartType?: T;
-		chartData?: ChartData[T];
+		chartType: T | undefined;
+		chartData: ChartData[T] | undefined;
 	}
 
 	export type ChartClickEvent = { label: string };

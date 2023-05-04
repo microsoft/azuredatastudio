@@ -10,54 +10,12 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 import { Chart } from 'sql/base/browser/ui/chart/chart.component';
 import { ILogService } from 'vs/platform/log/common/log';
 
-export interface ChartData {
-	line: {
-		dataset: number[],
-		datasetLabel: string,
-		backgroundColor?: string;
-	};
-	doughnut: {
-		dataset: number[],
-		labels: string[],
-		colors?: string[];
-	};
-	bar: {
-		dataset: number[],
-		labels: string[],
-		datasetLabel: string,
-		colors?: string | string[];
-	};
-	horizontalBar: {
-		dataset: number[],
-		labels: string[],
-		datasetLabel: string,
-		colors?: string | string[];
-	};
-	pie: {
-		dataset: number[],
-		labels: string[],
-		colors?: string[];
-	};
-	radar: {
-		dataset: number[],
-		datasetLabel: string,
-		backgroundColor?: string;
-	};
-	polarArea: {
-		dataset: number[],
-		labels: string[],
-		colors?: string[];
-	};
-}
-
-export type ChartType = keyof ChartData;
-
 @Component({
 	selector: 'modelview-chart',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
 
-export default class ChartComponent<T extends ChartType> extends ComponentBase<azdata.ChartComponentProperties<T>> implements IComponent, OnDestroy, AfterViewInit {
+export default class ChartComponent<T extends azdata.ChartType> extends ComponentBase<azdata.ChartComponentProperties<T>> implements IComponent, OnDestroy, AfterViewInit {
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
@@ -89,11 +47,11 @@ export default class ChartComponent<T extends ChartType> extends ComponentBase<a
 		}
 	}
 
-	public get chartType(): ChartType | undefined {
+	public get chartType(): azdata.ChartType | undefined {
 		return this.getProperties().chartType ?? undefined;
 	}
 
-	public get chartData(): ChartData[T] | undefined {
+	public get chartData(): azdata.ChartData[T] | undefined {
 		return this.getProperties().chartData ?? undefined;
 	}
 
