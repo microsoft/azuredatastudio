@@ -27,7 +27,6 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 /**
  *  Provides actions for the server tree elements
@@ -42,7 +41,6 @@ export class ServerTreeActionProvider {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private _logService: ILogService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 	}
 
@@ -163,18 +161,6 @@ export class ServerTreeActionProvider {
 		// Contribute refresh action for scriptable objects via contribution
 		if (isProfileConnected && !this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
-
-			const treeNode = this._objectExplorerService.getObjectExplorerNode(context.profile);
-
-			// Adding filter action if the node has filter properties
-			if (treeNode?.filterProperties?.length > 0) {
-				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, context.profile));
-			}
-
-			// Adding remove filter action if the node has filters applied to it.
-			if (treeNode.filters?.length > 0) {
-				actions.push(this._instantiationService.createInstance(RemoveFilterAction, RemoveFilterAction.ID, RemoveFilterAction.LABEL, context.treeNode, context.tree, context.profile));
-			}
 		}
 		return actions;
 	}
@@ -234,7 +220,7 @@ export class ServerTreeActionProvider {
 
 			// Adding filter action if the node has filter properties
 			if (treeNode?.filterProperties?.length > 0) {
-				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode, context.tree, undefined));
+				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode));
 			}
 
 			// Adding remove filter action if the node has filters applied to it.

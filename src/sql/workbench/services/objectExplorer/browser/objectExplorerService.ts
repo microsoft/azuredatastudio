@@ -58,6 +58,7 @@ export interface IServerTreeView {
 	renderBody(container: HTMLElement): Promise<void>;
 	layout(size: number): void;
 	showFilteredTree(view: ServerTreeViewView): void;
+	filterElementChildren(node: TreeNode): Promise<void>;
 	view: ServerTreeViewView;
 }
 
@@ -96,6 +97,8 @@ export interface IObjectExplorerService {
 	deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void>;
 
 	onUpdateObjectExplorerNodes: Event<ObjectExplorerNodeEventArgs>;
+
+	onNodeExpandedError: Event<NodeExpandInfoWithProviderId>;
 
 	registerServerTreeView(view: IServerTreeView): void;
 
@@ -216,6 +219,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
 		return this._onUpdateObjectExplorerNodes.event;
+	}
+
+	public get onNodeExpandedError(): Event<NodeExpandInfoWithProviderId> {
+		return this._onNodeExpandedError.event;
 	}
 
 	/**
@@ -508,7 +515,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
 
 					const resolveExpansion = () => {
-						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+						const expansionResult = self.mergeResults(allProviders, resultMap, node.nodePath);
+						if (expansionResult.errorMessage) {
+							this._onNodeExpandedError.fire({
+								providerId: providerId,
+								sessionId: session.sessionId,
+								nodePath: node.nodePath,
+								nodes: expansionResult.nodes,
+								errorMessage: expansionResult.errorMessage,
+							});
+						}
+						resolve(expansionResult);
 						// Have to delete it after get all responses otherwise couldn't find session for not the first response
 						clearTimeout(expansionTimeout);
 						if (newRequest) {

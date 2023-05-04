@@ -8,7 +8,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Modal } from 'sql/workbench/browser/modal/modal'
-import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
@@ -19,8 +18,6 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
-import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { NodeFilterPropertyDataType, NodeFilterOperator } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -39,15 +36,13 @@ import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import Severity from 'vs/base/common/severity';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { status } from 'vs/base/browser/ui/aria/aria';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
 // strings for filter dialog
-function FilterDialogTitle(connectionName: string): string { return localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", connectionName) }
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
 const CancelButtonText = localize('objectExplorer.cancelButtonText', "Cancel");
 const ClearAllButtonText = localize('objectExplorer.clearAllButtonText', "Clear All");
@@ -86,7 +81,7 @@ const OPERATOR_COLUMN_ID = 'operator';
 const VALUE_COLUMN_ID = 'value';
 const CLEAR_COLUMN_ID = 'clear';
 
-export class ObjectExplorerServiceDialog extends Modal {
+export class FilterDialog extends Modal {
 
 	private _okButton?: Button;
 	private _cancelButton?: Button;
@@ -96,11 +91,17 @@ export class ObjectExplorerServiceDialog extends Modal {
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _onStyleChangeEventEmitter = new Emitter<void>();
 	private _description: HTMLElement;
+	private _onFilterApplied = new Emitter<azdata.NodeFilter[]>();
+	public readonly onFilterApplied = this._onFilterApplied.event;
+	private _onCloseEvent = new Emitter<void>();
+	public readonly onDialogClose = this._onCloseEvent.event;
 
 	constructor(
-		private _treeNode: TreeNode,
-		private _tree: AsyncServerTree | ITree,
-		private _connectionProfile: ConnectionProfile | undefined,
+		private _properties: azdata.NodeFilterProperty[],
+		private _filterDialogTitle: string,
+		private _filterDialogSubtitle: string,
+		private _appliedFilters: azdata.NodeFilter[],
+		private applyFilterAction: (filters: azdata.NodeFilter[]) => Promise<void> | undefined,
 		@IThemeService themeService: IThemeService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@ILayoutService layoutService: ILayoutService,
@@ -111,8 +112,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
-		@IDialogService private _dialogService: IDialogService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 	) {
 		super(
 			'ObjectExplorerServiceDialog',
@@ -130,11 +130,6 @@ export class ObjectExplorerServiceDialog extends Modal {
 				hasSpinner: true
 			}
 		);
-
-		if (this._connectionProfile) {
-			this._treeNode = this._objectExplorerService.getObjectExplorerNode(this._connectionProfile);
-		}
-
 	}
 
 	public open(): void {
@@ -145,7 +140,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 	public override render() {
 		super.render();
-		this.title = FilterDialogTitle(this._treeNode.getConnectionProfile().title);
+		this.title = this._filterDialogTitle;
 		this.titleIconClassName = TitleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(OkButtonText, () => { this.onApply() });
@@ -158,8 +153,8 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$('.filter-dialog-body'));
-		const nodePath = DOM.append(body, DOM.$('.filter-dialog-node-path'));
-		nodePath.innerText = nodePathDisplayString(this._treeNode.nodePath);
+		const subtitle = DOM.append(body, DOM.$('.filter-dialog-node-path'));
+		subtitle.innerText = nodePathDisplayString(this._filterDialogSubtitle);
 		const clauseTableContainer = DOM.append(body, DOM.$('.filter-table-container'));
 		const filter = DOM.append(clauseTableContainer, DOM.$('.filter-table'));
 		this._tableCellEditorFactory = new TableCellEditorFactory(
@@ -171,7 +166,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 					if (column.field === VALUE_COLUMN_ID && item[OPERATOR_COLUMN_ID].value === AND_SELECT_BOX) {
 						const index = item.filterPropertyIndex;
 						const tableData = this.filterTable.getData().getItems();
-						if (this._treeNode.filterProperties[index].type === NodeFilterPropertyDataType.Date) {
+						if (this._properties[index].type === NodeFilterPropertyDataType.Date) {
 							let value1 = '';
 							for (let i = 0; i < tableData.length; i++) {
 								if (tableData[i].filterPropertyIndex === index) {
@@ -189,7 +184,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 					item[column.field].value = value;
 					if (column.field === 'operator') {
 						const index = item.filterPropertyIndex;
-						const nodeOperator = this._treeNode.filterProperties[index].type;
+						const nodeOperator = this._properties[index].type;
 						if (nodeOperator === NodeFilterPropertyDataType.Date || nodeOperator === NodeFilterPropertyDataType.Number) {
 							if (value === BETWEEN_SELECT_BOX || value === NOT_BETWEEN_SELECT_BOX) {
 
@@ -292,11 +287,11 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 
 		const tableData: Slick.SlickData[] = [];
-		if (!this._treeNode.filters) {
-			this._treeNode.filters = [];
+		if (!this._appliedFilters) {
+			this._appliedFilters = [];
 		}
-		this._treeNode.filterProperties.forEach((f, i) => {
-			const appliedFilter = this._treeNode.filters.find(filter => filter.displayName === f.displayName);
+		this._properties.forEach((f, i) => {
+			const appliedFilter = this._appliedFilters.find(filter => filter.displayName === f.displayName);
 			const filterOperators = this.getOperatorsForType(f.type);
 			const row: Slick.SlickData = {
 				property: {
@@ -343,7 +338,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		(<any>dataProvider).getItemMetadata = (row: number) => {
 			const rowData = dataProvider.getItem(row);
 
-			const filterProperty = this._treeNode.filterProperties[rowData.filterPropertyIndex];
+			const filterProperty = this._properties[rowData.filterPropertyIndex];
 			let editor;
 			if (rowData.operator.value === AND_SELECT_BOX) {
 				if (filterProperty.type === NodeFilterPropertyDataType.Number) {
@@ -399,7 +394,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 				const row = this.filterTable.grid.getActiveCell().row;
 				const data = this.filterTable.getData().getItems()[row];
 				let index = data.filterPropertyIndex;
-				const filterPropertyDescription = this._treeNode.filterProperties[index].description;
+				const filterPropertyDescription = this._properties[index].description;
 				this._description.innerText = filterPropertyDescription;
 				// Announcing the filter property description for screen reader users
 				status(filterPropertyDescription);
@@ -411,7 +406,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 		this._register(attachTableStyler(this.filterTable, this._themeService));
 
 		this._description = DOM.append(body, DOM.$('.filter-dialog-description'));
-		this._description.innerHTML = this._treeNode.filterProperties[0].description;
+		this._description.innerHTML = this._properties[0].description;
 	}
 
 	protected layout(height?: number): void {
@@ -420,6 +415,7 @@ export class ObjectExplorerServiceDialog extends Modal {
 
 	protected override onClose() {
 		this.hide('close');
+		this._onCloseEvent.fire();
 	}
 
 	protected onClearAll() {
@@ -435,11 +431,11 @@ export class ObjectExplorerServiceDialog extends Modal {
 	private async onApply(): Promise<void> {
 		const tableData = this.filterTable.getData().getItems();
 
-		this._treeNode.filters = [];
+		this._appliedFilters = [];
 
 		for (let i = 0; i < tableData.length; i++) {
 			const row = tableData[i];
-			let filterProperty = this._treeNode.filterProperties[row.filterPropertyIndex]
+			let filterProperty = this._properties[row.filterPropertyIndex]
 			let filter: azdata.NodeFilter = {
 				displayName: row.property.value,
 				operator: this.getFilterOperatorEnum(row.operator.value),
@@ -453,55 +449,58 @@ export class ObjectExplorerServiceDialog extends Modal {
 				var value1 = this.getFilterValue(filterProperty.type, row.value.value);
 				var value2 = this.getFilterValue(filterProperty.type, row2.value.value);
 				filter.value = <string[] | number[]>[value1, value2];
+				if (filterProperty.type === NodeFilterPropertyDataType.Date) {
+					if (filter.value[0] === '' && filter.value[1] !== '') {
+						// start date not specified.
+						this._errorMessageService.showDialog(Severity.Error, '', localize('filterDialog.errorStartDate', "Start date is not specified."));
+						return;
+					} else if (filter.value[0] !== '' && filter.value[1] === '') {
+						// end date not specified.
+						this._errorMessageService.showDialog(Severity.Error, '', localize('filterDialog.errorEndDate', "End date is not specified."));
+						return;
+					} else if (new Date(filter.value[0]) > new Date(filter.value[1])) {
+						// start date is greater than end date.
+						this._errorMessageService.showDialog(Severity.Error, '', localize('filterDialog.errorDateRange', "Start date cannot be greater than end date."));
+						return;
+					}
+				} else if (filterProperty.type === NodeFilterPropertyDataType.Number) {
+					if (filter.value[0] === '' && filter.value[1] !== '') {
+						// start number not specified.
+						this._errorMessageService.showDialog(Severity.Error, '', localize('filterDialog.errorStartNumber', "Start number is not specified."));
+						return;
+					} else if (filter.value[0] !== '' && filter.value[1] === '') {
+						// end number not specified.
+						this._errorMessageService.showDialog(Severity.Error, '', localize('filterDialog.errorEndNumber', "End number is not specified."));
+						return;
+					} else if (Number(filter.value[0]) > Number(filter.value[1])) {
+						// start number is greater than end number.
+						this._errorMessageService.showDialog(Severity.Error, '', localize('filterDialog.errorNumberRange', "Start number cannot be greater than end number."));
+						return;
+					}
 
-				if (filter.value[0] === '' && filter.value[1] !== '') {
-					// start date not specified.
-					this._dialogService.show(Severity.Error, localize('filterDialog.errorStartDate', "Start date is not specified."));
-					return;
-				} else if (filter.value[0] !== '' && filter.value[1] === '') {
-					// end date not specified.
-					this._dialogService.show(Severity.Error, localize('filterDialog.errorEndDate', "End date is not specified."));
-					return;
 				}
-				if (value1 !== '' && value2 !== '') {
-					this._treeNode.filters.push(filter);
+				if (true || value1 !== '' && value2 !== '') {
+					this._appliedFilters.push(filter);
 				}
 			} else {
 				if (filter.value !== '') {
-					this._treeNode.filters.push(filter);
+					this._appliedFilters.push(filter);
 				}
 			}
 		}
 		this.spinner = true;
-		if (this._connectionProfile) {
-			const treeNode = this._objectExplorerService.getObjectExplorerNode(this._connectionProfile);
-			treeNode.filters = this._treeNode.filters;
-			if (this._tree instanceof AsyncServerTree) {
-				await this._tree.rerender(this._connectionProfile);
-				await this._tree.updateChildren(this._connectionProfile);
-				await this._tree.expand(this._connectionProfile);
-			} else {
-				await this._tree.refresh(this._connectionProfile);
-				await this._tree.expand(this._connectionProfile);
+
+		try {
+			if (this.applyFilterAction) {
+				await this.applyFilterAction(this._appliedFilters);
 			}
-		} else {
-			try {
-				this._treeNode.forceRefresh = true;
-				if (this._tree instanceof AsyncServerTree) {
-					await this._tree.rerender(this._treeNode);
-					await this._tree.updateChildren(this._treeNode);
-					await this._tree.expand(this._treeNode);
-				} else {
-					await this._tree.refresh(this._treeNode);
-					await this._tree.expand(this._treeNode);
-				}
-			} catch (e) {
-				this.spinner = false;
-				this._dialogService.show(Severity.Error, localize('filterDialog.error', "Error while applying filter: {0}", e.message));
-				throw e;
-			}
+			this._onFilterApplied.fire(this._appliedFilters);
+			this.hide('ok');
 		}
-		this.hide('ok');
+		catch (e) {
+			this.spinner = false;
+			throw e;
+		}
 	}
 
 	// This method is called by modal when the enter button is pressed
@@ -675,4 +674,37 @@ export class ObjectExplorerServiceDialog extends Modal {
 			this._register(attachTableStyler(component, this._themeService));
 		}
 	}
+
+
+	/**
+	 * This method is used to let user apply filters on the given filters properties.
+	 * @param properties Properties on which user can apply filters.
+	 * @param filterDialogTitle Title of the filter dialog.
+	 * @param filterDialogSubtile Subtitle of the filter dialog.
+	 * @param appliedFilters Filters that are already applied so that we can prepopulate the filter dialog values.
+	 * @param applyFilterAction Action to be performed when user clicks on apply button. We should pass this so that we can handle the spinner and error message within the dialog.
+	 * @param instantiationService Instantiation service to create the filter dialog.
+	 * @returns
+	 */
+	public static async getFiltersForProperties(
+		properties: azdata.NodeFilterProperty[],
+		filterDialogTitle: string,
+		filterDialogSubtile: string,
+		appliedFilters: azdata.NodeFilter[] | undefined,
+		applyFilterAction: (filters: azdata.NodeFilter[]) => Promise<void> | undefined,
+		instantiationService: IInstantiationService,
+	): Promise<azdata.NodeFilter[]> {
+
+		const dialog = instantiationService.createInstance(FilterDialog, properties, filterDialogTitle, filterDialogSubtile, appliedFilters, applyFilterAction);
+		dialog.open();
+		return new Promise<azdata.NodeFilter[]>((resolve, reject) => {
+			dialog.onFilterApplied(filters => {
+				resolve(filters);
+			});
+			dialog.onDialogClose(() => {
+				reject();
+			});
+		});
+	}
 }
+
