@@ -515,7 +515,7 @@
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
           "group": "0_query@3"
         },
         {
@@ -560,7 +560,7 @@
         },
         {
           "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\/Tables\/.*\/Columns\/.*$",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
           "group": "connection@3"
         },
         {
