@@ -439,7 +439,6 @@ export class TreeUpdateUtils {
 		}
 	}
 
-
 	/**
 	 * Change the connection title to display only the unique properties among profiles provided. (used for editors)
 	 */
