@@ -851,7 +851,7 @@ export class PublishDatabaseDialog {
 		saveProfileAsButton.onDidClick(async () => {
 			const filePath = await vscode.window.showSaveDialog(
 				{
-					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1`)),
+					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1.publish.xml`)),
 					saveLabel: constants.save,
 					filters: {
 						'Publish Settings Files': ['publish.xml'],
@@ -868,6 +868,8 @@ export class PublishDatabaseDialog {
 				const targetDatabaseName = this.targetDatabaseName ?? '';
 				const deploymentOptions = await this.getDeploymentOptions();
 				await this.savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
+
+				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileSaved);
 			}
 
 			this.profileUsed = true;

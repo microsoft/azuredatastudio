@@ -271,14 +271,8 @@ This may take some time.</source>
     <trans-unit id="sql.migration.azure.tenant">
       <source xml:lang="en">Azure AD tenant</source>
     </trans-unit>
-    <trans-unit id="sql.migration.azureRecommendation.browse">
-      <source xml:lang="en">Browse</source>
-    </trans-unit>
     <trans-unit id="sql.migration.azureRecommendation.folder.name">
       <source xml:lang="en">Folder name</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.azureRecommendation.open">
-      <source xml:lang="en">Open</source>
     </trans-unit>
     <trans-unit id="sql.migration.backup.file.backup.size">
       <source xml:lang="en">Backup size (MB)</source>
@@ -355,6 +349,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.blob.storageAccount.select">
       <source xml:lang="en">Select a storage account value first.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.browse">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
     <trans-unit id="sql.migration.can.be.migrated">
       <source xml:lang="en">{0}/{1} databases can be migrated without issues</source>
     </trans-unit>
@@ -381,6 +378,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cannot.start.cutover.error">
       <source xml:lang="en">The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.clear">
+      <source xml:lang="en">Clear</source>
     </trans-unit>
     <trans-unit id="sql.migration.close">
       <source xml:lang="en">Close</source>
@@ -588,6 +588,18 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.assessment.title">
       <source xml:lang="en">Databases for assessment</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.assessment.xevents.description">
+      <source xml:lang="en">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.assessment.xevents.instructions">
+      <source xml:lang="en">Select a folder where extended events session files (.xel and .xem) are stored</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.assessment.xevents.link">
+      <source xml:lang="en">Learn more</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.assessment.xevents.title">
+      <source xml:lang="en">Assess extended event sessions</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.backup.load.error">
       <source xml:lang="en">An error occurred while accessing database details.</source>
@@ -808,9 +820,6 @@ This may take some time.</source>
     <trans-unit id="sql.migration.error.details.title">
       <source xml:lang="en">Migration error details</source>
     </trans-unit>
-    <trans-unit id="sql.migration.error.dialog.clear.button.label">
-      <source xml:lang="en">Clear</source>
-    </trans-unit>
     <trans-unit id="sql.migration.error.title">
       <source xml:lang="en">Migration status details</source>
     </trans-unit>
@@ -986,10 +995,13 @@ This may take some time.</source>
       <source xml:lang="en">Step 1: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.setup.step2">
-      <source xml:lang="en">Step 2: Use this key to register your integration runtime</source>
+      <source xml:lang="en">Step 2: Use the keys below to register your integration runtime</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.setup.step3">
-      <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
+      <source xml:lang="en">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.ir.setup.step3.alternate">
+      <source xml:lang="en">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</source>
     </trans-unit>
     <trans-unit id="sql.migration.issue.aria.label">
       <source xml:lang="en">Blocking Issue: {0}</source>
@@ -1261,6 +1273,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.online">
       <source xml:lang="en">Online</source>
     </trans-unit>
+    <trans-unit id="sql.migration.open">
+      <source xml:lang="en">Open</source>
+    </trans-unit>
     <trans-unit id="sql.migration.open.migration.destails.error">
       <source xml:lang="en">Error opening migration details dialog</source>
     </trans-unit>
@@ -1480,6 +1495,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.sec">
       <source xml:lang="en">{0} sec</source>
     </trans-unit>
+    <trans-unit id="sql.migration.select">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
     <trans-unit id="sql.migration.select.azure.mi">
       <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance.</source>
     </trans-unit>
@@ -1571,13 +1589,13 @@ This may take some time.</source>
       <source xml:lang="en">Ensure that the service account running the source SQL Server instance has read privileges on the network share.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.container.description1">
-      <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network file share to Azure.</source>
+      <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.container.description2">
-      <source xml:lang="en">Follow the instructions below to setup self-hosted integration runtime.</source>
+      <source xml:lang="en">Follow the instructions below to set up self-hosted integration runtime.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.heading">
-      <source xml:lang="en">Setup integration runtime</source>
+      <source xml:lang="en">Set up integration runtime</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.loading.help">
       <source xml:lang="en">Loading Migration Services</source>
@@ -1600,6 +1618,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.service.details.status.unavailable">
       <source xml:lang="en">-- unavailable --</source>
     </trans-unit>
+    <trans-unit id="sql.migration.service.error.not.ready">
+      <source xml:lang="en">The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.service.header">
       <source xml:lang="en">Azure Database Migration Service "{0}" details:`</source>
     </trans-unit>
@@ -1609,11 +1630,23 @@ This may take some time.</source>
     <trans-unit id="sql.migration.service.not.ready">
       <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.service.not.ready.below">
+      <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
+
+See below for registration instructions.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.service.prompt">
       <source xml:lang="en">{0} (change)</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.ready">
-      <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}</source>
+      <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+
+For improved performance and high availability, you can register additional nodes.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.service.ready.below">
+      <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+
+For improved performance and high availability, you can register additional nodes. See below for registration instructions.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.selection.location.msg">
       <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
@@ -1623,6 +1656,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.services.container.description">
       <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.services.container.description.network">
+      <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</source>
     </trans-unit>
     <trans-unit id="sql.migration.services.dialog.title">
       <source xml:lang="en">Create Azure Database Migration Service</source>
@@ -2739,6 +2775,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="downloadingServiceComplete">
       <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceFailed">
+      <source xml:lang="en">Failed to download binaries for {0}. Use the following link to troubleshoot: {1}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceFailedWithLinkMarkup">
+      <source xml:lang="en">Failed to download binaries for {0}. Use this [link to troubleshoot]({1}).</source>
     </trans-unit>
     <trans-unit id="downloadingServiceSize">
       <source xml:lang="en">({0} KB)</source>

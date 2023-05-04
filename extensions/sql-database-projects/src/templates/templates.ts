@@ -65,7 +65,7 @@ export function macroExpansion(template: string, macroDict: Map<string, string>)
 	const macroIndicator = '@@';
 	let output = template;
 
-	for (const macro in macroDict) {
+	for (const macro of macroDict.keys()) {
 		// check if value contains the macroIndicator, which could break expansion for successive macros
 		if (macroDict.get(macro)!.includes(macroIndicator)) {
 			throw new Error(`Macro value ${macroDict.get(macro)} is invalid because it contains ${macroIndicator}`);

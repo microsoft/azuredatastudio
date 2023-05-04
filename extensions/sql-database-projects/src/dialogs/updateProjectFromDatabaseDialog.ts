@@ -572,7 +572,7 @@ export class UpdateProjectFromDatabaseDialog {
 			projectFilePath: this.projectFileDropdown!.value! as string,
 			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
-			dataSchemaProvider: '',
+			dataSchemaProvider: this.project!.getProjectTargetVersion(),
 			connectionDetails: connectionDetails,
 			databaseName: '',
 			serverDisplayName: '',
