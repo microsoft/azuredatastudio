@@ -128,12 +128,18 @@ export class TreeUpdateUtils {
 	 * Calls alterConnectionTitles on all levels of the Object Explorer Tree
 	 * so that profiles in connection groups can have distinguishing titles too.
 	 */
-	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[], connectionManagementService: IConnectionManagementService): ConnectionProfileGroup[] {
+	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[], connectionManagementService: IConnectionManagementService, isActiveOnly?: boolean): ConnectionProfileGroup[] {
 		inputGroups.forEach(group => {
-			group.children = TreeUpdateUtils.alterTreeChildrenTitles(group.children, connectionManagementService);
-			let connections = group.connections;
-			TreeUpdateUtils.alterConnectionTitles(connections, connectionManagementService);
-			group.connections = connections;
+			group.children = TreeUpdateUtils.alterTreeChildrenTitles(group.children, connectionManagementService, isActiveOnly);
+			if (isActiveOnly) {
+				let moddedGroup = TreeUpdateUtils.alterActiveConnectionTitles(group, connectionManagementService);
+				group.connections = moddedGroup.connections;
+			}
+			else {
+				let connections = group.connections;
+				TreeUpdateUtils.alterConnectionTitles(connections, connectionManagementService);
+				group.connections = connections;
+			}
 		});
 		return inputGroups;
 	}
@@ -433,86 +439,6 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	/**
-	 * Change the connection title to display only the unique properties among profiles.
-	 */
-	// private static alterConnectionTitles(inputList: ConnectionProfile[]): void {
-	// 	let profileListMap = new Map<string, number[]>();
-
-	// 	// Map the indices of profiles that share the same connection name.
-	// 	for (let i = 0; i < inputList.length; i++) {
-	// 		// do not add if the profile is still loading as that will result in erroneous entries.
-	// 		if (inputList[i].serverCapabilities && inputList[i].hasLoaded()) {
-	// 			let titleKey = inputList[i].getOriginalTitle();
-	// 			if (profileListMap.has(titleKey)) {
-	// 				let profilesForKey = profileListMap.get(titleKey);
-	// 				profilesForKey.push(i);
-	// 				profileListMap.set(titleKey, profilesForKey);
-	// 			}
-	// 			else {
-	// 				profileListMap.set(titleKey, [i]);
-	// 			}
-	// 		}
-	// 	}
-
-	// 	profileListMap.forEach(function (indexes, titleString) {
-	// 		if (profileListMap.get(titleString)?.length > 1) {
-	// 			let combinedOptions = [];
-	// 			let needSpecial = false;
-	// 			if (titleString === inputList[indexes[0]].connectionName) {
-	// 				// check for potential connections with the same name but technically different connections.
-	// 				let listOfDuplicates = indexes.filter(item => inputList[item].getOptionsKey() !== inputList[indexes[0]].getOptionsKey());
-	// 				if (listOfDuplicates.length > 0) {
-	// 					// if we do find duplicates, we will need to include the special properties.
-	// 					needSpecial = true;
-	// 				}
-	// 			}
-	// 			indexes.forEach((indexValue) => {
-	// 				// Add all possible options across all profiles with the same title to an option list.
-	// 				let valueOptions = inputList[indexValue].getConnectionOptionsList(needSpecial, false, false);
-	// 				combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
-	// 			});
-
-	// 			// Generate list of non default option keys for each profile that shares the same basic connection name.
-	// 			let optionKeyMap = new Map<ConnectionProfile, string[]>();
-	// 			let optionValueOccuranceMap = new Map<string, number>();
-	// 			for (let p = 0; p < indexes.length; p++) {
-	// 				optionKeyMap.set(inputList[indexes[p]], []);
-	// 				for (let i = 0; i < combinedOptions.length; i++) {
-	// 					// See if the option is not default for the inputList profile or is.
-	// 					if (inputList[indexes[p]].getConnectionOptionsList(needSpecial, true, false).indexOf(combinedOptions[i]) > -1) {
-	// 						let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
-	// 						let currentArray = optionKeyMap.get(inputList[indexes[p]]);
-	// 						let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;
-	// 						if (!optionValueOccuranceMap.get(valueString)) {
-	// 							optionValueOccuranceMap.set(valueString, 0);
-	// 						}
-	// 						optionValueOccuranceMap.set(valueString, optionValueOccuranceMap.get(valueString) + 1);
-	// 						currentArray.push(valueString);
-	// 						optionKeyMap.set(inputList[indexes[p]], currentArray);
-	// 					}
-	// 				}
-	// 			}
-
-	// 			// Filter out options that are found in ALL the entries with the same basic name.
-	// 			optionValueOccuranceMap.forEach(function (count, optionValue) {
-	// 				optionKeyMap.forEach(function (connOptionValues, profile) {
-	// 					if (count === optionKeyMap.size) {
-	// 						optionKeyMap.set(profile, connOptionValues.filter(value => value !== optionValue));
-	// 					}
-	// 				});
-	// 			});
-
-	// 			// Generate the final unique connection string for each profile in the list.
-	// 			optionKeyMap.forEach(function (connOptionValues, profile) {
-	// 				let uniqueOptionString = connOptionValues.join(ConnectionProfile.displayIdSeparator);
-	// 				if (uniqueOptionString.length > 0) {
-	// 					profile.title += ' (' + uniqueOptionString + ')';
-	// 				}
-	// 			});
-	// 		}
-	// 	});
-	// }
 
 	/**
 	 * Change the connection title to display only the unique properties among profiles provided. (used for editors)
