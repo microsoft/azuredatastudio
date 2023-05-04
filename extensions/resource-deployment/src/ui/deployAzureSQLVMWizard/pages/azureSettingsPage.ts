@@ -292,8 +292,8 @@ export class AzureSettingsPage extends BasePage {
 
 	private async populateAzureRegionsDropdown() {
 		this._azureRegionsDropdown.loading = true;
-
-		let url = `https://management.azure.com/subscriptions/${this._model.azureSubscription}/locations?api-version=2020-01-01`;
+		const tenantVersion = vscode.workspace.getConfiguration('azure').get('tenantVersion');
+		let url = `https://management.azure.com/subscriptions/${this._model.azureSubscription}/locations?api-version=${tenantVersion}`;
 		const response = await this._model.getRequest(url, false);
 		response.data.value = response.data.value.sort((a: any, b: any) => (a.displayName > b.displayName) ? 1 : -1);
 		this._model.addDropdownValues(
