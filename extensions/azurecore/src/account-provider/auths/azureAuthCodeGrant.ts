@@ -385,12 +385,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		});
 
 		return new Promise<string>((resolve, reject) => {
-			server.onSocketEvents('close', (req, reqUrl, res) => {
-				console.log(req);
-				console.log(reqUrl);
-				console.log(res);
-				reject();
-			})
 			server.on('/redirect', (req, reqUrl, res) => {
 				const state = reqUrl.query.state as string ?? '';
 				const split = state.split(',');
@@ -438,7 +432,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				});
 			});
 
-			server.on('close', (req, reqUrl, res) => {
+			server.on('connection', (req, reqUrl, res) => {
 				console.log('test');
 			});
 			server.on('disconnect', (req, reqUrl, res) => {

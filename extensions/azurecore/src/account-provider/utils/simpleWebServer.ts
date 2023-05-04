@@ -103,9 +103,11 @@ export class SimpleWebServer {
 
 			this.server.on('connection', (socket) => {
 				socket.on('close', (value) => {
-					console.log(value);
-					let test = this.socketHandler.get('close');
-					console.log(test);
+					console.log('connection close');
+				});
+				socket.listenerCount('close');
+				socket.on('data', (value) => {
+					console.log('connection data');
 				});
 			});
 
@@ -123,9 +125,5 @@ export class SimpleWebServer {
 
 	public on(pathMapping: string, handler: WebHandler) {
 		this.pathMappings.set(pathMapping, handler);
-	}
-
-	public onSocketEvents(pathMapping: string, handler: WebHandler) {
-		this.socketHandler.set(pathMapping, handler);
 	}
 }
