@@ -800,6 +800,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _initializeSourceTargetDatabaseMap(): void {
 		// initialize source / target database map
 		this.migrationStateModel._sourceTargetMapping = new Map();
+		this.migrationStateModel._targetSourceMapping = new Map();
 		this.migrationStateModel._targetDatabaseNames = [];
 		this.migrationStateModel._databasesForMigration.forEach(
 			sourceDatabaseName => this.migrationStateModel._sourceTargetMapping.set(
@@ -1097,6 +1098,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._sourceTargetMapping.set(
 							sourceDatabase,
 							targetDatabaseInfo);
+						this.migrationStateModel._targetSourceMapping.set(
+							targetDatabaseName,
+							sourceDatabase);
 						this.migrationStateModel.refreshDatabaseBackupPage = true;
 						this.migrationStateModel._didDatabaseMappingChange = true;
 					}));

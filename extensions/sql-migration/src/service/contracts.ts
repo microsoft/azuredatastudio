@@ -5,6 +5,7 @@
 
 import { RequestType, NotificationType } from 'vscode-languageclient';
 import * as azdata from 'azdata';
+import { QueryResultType } from '../models/RunQueryModel';
 
 export interface IMessage {
 	jsonrpc: string;
@@ -500,7 +501,9 @@ export interface ISqlMigrationService {
 		targetManagedInstanceName: string,
 		networkSharePath: string,
 		accessToken: string,
-		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => void): Promise<TdeMigrationResult | undefined>;
+		reportUpdate: (dbName: string, succeeded: boolean, message: string, statusCode: string) => void): Promise<TdeMigrationResult | undefined>,
+	runQueryAsync<F extends Function>(connectionString: string, databases: string[], queryResultType: QueryResultType, isAzureSqlDb: boolean,
+		callback: F): Promise<void>;
 }
 
 export interface TdeMigrationRequest {

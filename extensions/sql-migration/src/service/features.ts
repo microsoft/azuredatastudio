@@ -15,6 +15,7 @@ import { Disposable } from 'vscode';
 
 import * as contracts from './contracts';
 import { migrationServiceProvider } from './provider';
+import { QueryResultType, RunQueryDatabaseTableInfoResult, RunQueryErrorEvent, RunQueryEvent, RunQueryParams } from '../models/RunQueryModel';
 
 export enum ApiType {
 	SqlMigrationProvider = 'SqlMigrationProvider',
@@ -27,6 +28,8 @@ export abstract class MigrationExtensionService extends SqlOpsFeature<undefined>
 
 export class SqlMigrationService extends MigrationExtensionService implements contracts.ISqlMigrationService {
 	private _reportUpdate: ((dbName: string, succeeded: boolean, error: string, statusCode: string) => void) | undefined = undefined;
+
+	private _reportRunQueryDatabaseTableInfoResults!: Function;
 
 	override providerId = ApiType.SqlMigrationProvider;
 
@@ -41,7 +44,11 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		contracts.MigrateLoginsRequest.type,
 		contracts.EstablishUserMappingRequest.type,
 		contracts.MigrateServerRolesAndSetPermissionsRequest.type,
-		contracts.TdeMigrateRequest.type
+		contracts.TdeMigrateRequest.type,
+		RunQueryEvent.type,
+		RunQueryErrorEvent.type,
+		RunQueryDatabaseTableInfoResult.type,
+
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -59,6 +66,13 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 				return;
 			}
 			this._reportUpdate(e.name, e.success, e.message, e.statusCode ?? '');
+		});
+
+		this._client.onNotification(RunQueryDatabaseTableInfoResult.type, queryResult => {
+			if (this._reportRunQueryDatabaseTableInfoResults === undefined) {
+				return;
+			}
+			this._reportRunQueryDatabaseTableInfoResults(queryResult);
 		});
 	}
 
@@ -315,6 +329,32 @@ export class SqlMigrationService extends MigrationExtensionService implements co
 		}
 
 		return undefined;
+	}
+
+	async runQueryAsync<F extends Function>(
+		connectionString: string,
+		databases: string[],
+		queryResultType: QueryResultType,
+		isAzureSqlDb: boolean,
+		callback: F): Promise<void> {
+		const params: RunQueryParams = {
+			connectionString: connectionString,
+			databases: databases,
+			queryResultType: queryResultType,
+			isAzureSqlDb: isAzureSqlDb
+		};
+		this.setRunQueryCallback(queryResultType, callback);
+		this._client.sendNotification(RunQueryEvent.type, params);
+	}
+
+	private setRunQueryCallback<F extends Function>(queryResultType: QueryResultType, callback: F) {
+		switch (queryResultType) {
+			case QueryResultType.DatabaseTableInfo:
+				this._reportRunQueryDatabaseTableInfoResults = callback;
+				break;
+			default:
+				break;
+		}
 	}
 }
 

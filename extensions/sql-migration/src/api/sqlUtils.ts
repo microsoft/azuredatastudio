@@ -12,7 +12,7 @@ import { TelemetryAction, TelemetryViews, logError } from '../telemetry';
 import * as constants from '../constants/strings';
 import { NetworkInterfaceModel, PrivateEndpointConnection } from './dataModels/azure/networkInterfaceModel';
 
-const query_database_tables_sql = `
+export const query_database_tables_sql = `
 	SELECT
 		DB_NAME() as database_name,
 		QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(o.name) AS table_name,
@@ -432,6 +432,7 @@ export async function collectSourceAndTargetTableInfo(
 	}
 	throw new Error("Source connection error: " + (sourceResult.errorMessage ? sourceResult.errorMessage : "") + ". Target connection error: " + (targetResult.errorMessage ? targetResult.errorMessage : ""));
 }
+
 export async function collectTargetDatabaseInfo(
 	targetServer: AzureSqlDatabaseServer,
 	userName: string,

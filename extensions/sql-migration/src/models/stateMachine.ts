@@ -19,6 +19,7 @@ import { excludeDatabases, getEncryptConnectionValue, getSourceConnectionId, get
 import { LoginMigrationModel } from './loginMigrationModel';
 import { TdeMigrationDbResult, TdeMigrationModel } from './tdeModels';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
+import { RunQueryModel } from './RunQueryModel';
 const localize = nls.loadMessageBundle();
 
 export enum ValidateIrState {
@@ -200,6 +201,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetUserName!: string;
 	public _targetPassword!: string;
 	public _sourceTargetMapping: Map<string, TargetDatabaseInfo | undefined> = new Map();
+	public _targetSourceMapping: Map<string, string> = new Map();
 
 	public _sqlMigrationServiceResourceGroup!: azurecore.azureResource.AzureResourceResourceGroup;
 	public _sqlMigrationService!: SqlMigrationService | undefined;
@@ -268,6 +270,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public serverName!: string;
 
 	public tdeMigrationConfig: TdeMigrationModel = new TdeMigrationModel();
+	public _runQueryModel: RunQueryModel;
 
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
@@ -299,6 +302,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._skuEnablePreview = false;
 		this._skuEnableElastic = false;
 		this._loginMigrationModel = new LoginMigrationModel();
+		this._runQueryModel = new RunQueryModel();
 	}
 
 	public get validationTargetResults(): ValidationResult[] {
