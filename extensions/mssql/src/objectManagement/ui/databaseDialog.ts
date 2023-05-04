@@ -20,14 +20,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		return CreateDatabaseDocUrl;
 	}
 
-	protected override async validateInput(): Promise<string[]> {
-		const errors = await super.validateInput();
-		if (this.objectInfo.name && this.viewInfo.databaseNames.some(name => name === this.objectInfo.name)) {
-			errors.push(localizedConstants.DatabaseExistsError(this.objectInfo.name));
-		}
-		return errors;
-	}
-
 	protected async initializeUI(): Promise<void> {
 		let generalSection = this.initializeGeneralSection();
 		let optionsSection = this.initializeOptionsSection();

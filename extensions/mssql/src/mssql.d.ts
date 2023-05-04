@@ -1310,7 +1310,6 @@ declare module 'mssql' {
 		}
 
 		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
-			databaseNames: string[];
 			loginNames: string[];
 			collationNames: string[];
 			compatibilityLevels: string[];
