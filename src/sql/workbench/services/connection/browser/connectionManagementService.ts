@@ -744,6 +744,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return inputProfile.id === tempProfile.id;
 			});
 
+			let secondarySearch = totalConnections.filter(inputProfile => {
+				return inputProfile.matches(tempProfile)
+			});
+
 			let id = this.findParentConnection(tempProfile);
 			if (initialSearch.length === 0) {
 				if (!forTree && id !== '') {
@@ -751,6 +755,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					let parentProfile = configConnections.filter(profile => profile.id === id);
 					trimTitle = parentProfile[0].getOriginalTitle();
 					idToFind = parentProfile[0].id;
+				}
+				else if (forTree && secondarySearch.length === 1) {
+					// Sometimes the connection id will change for an object explorer connection, especially when connecting from dashboard,
+					// and it will identify as different from the stored one even without changes. Get the info for the stored version as it's the same profile.
+					idToFind = secondarySearch[0].id;
+
 				}
 				else {
 					totalConnections.concat(tempProfile);
