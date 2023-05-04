@@ -6,7 +6,7 @@
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
-    "vscode": "^1.26.0",
+    "vscode": "*",
     "azdata": "^1.11.0"
   },
   "icon": "images/extension.png",

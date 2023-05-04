@@ -726,7 +726,12 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 	let targetPlatform;
 	if (isCloud) {
 		const engineEdition = serverInfo.engineEditionId;
-		targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		const azdataApi = getAzdataApi();
+		if (azdataApi) {
+			targetPlatform = engineEdition === azdataApi.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		} else {
+			targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		}
 	} else {
 		const serverMajorVersion = serverInfo.serverMajorVersion;
 		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;
