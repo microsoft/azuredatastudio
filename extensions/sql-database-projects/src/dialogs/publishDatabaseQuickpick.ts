@@ -21,6 +21,7 @@ import { ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 export async function getPublishDatabaseSettings(project: ISqlProject, promptForConnection: boolean = true): Promise<ISqlProjectPublishSettings | undefined> {
 
 	// 1. Select publish settings file (optional)
+	let publishProfileUri;
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
 	const quickPick = vscode.window.createQuickPick();
 	quickPick.items = [{ label: constants.dontUseProfile }, { label: constants.browseForProfileWithIcon }];
@@ -42,7 +43,7 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 					// If the user cancels out of the file picker then just return and let them choose another option
 					return;
 				}
-				let publishProfileUri = locations[0];
+				publishProfileUri = locations[0];
 				try {
 					// Show loading state while reading profile
 					quickPick.busy = true;
@@ -215,7 +216,8 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 		connectionUri: connectionUri || '',
 		sqlCmdVariables: sqlCmdVariables,
 		deploymentOptions: publishProfile?.options ?? await getDefaultPublishDeploymentOptions(project),
-		profileUsed: !!publishProfile
+		profileUsed: !!publishProfile,
+		publishProfileUri: publishProfileUri
 	};
 	return settings;
 }

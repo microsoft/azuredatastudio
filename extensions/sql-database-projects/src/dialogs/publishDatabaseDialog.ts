@@ -239,7 +239,8 @@ export class PublishDatabaseDialog {
 				connectionUri: await this.getConnectionUri(),
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
-				profileUsed: this.profileUsed
+				profileUsed: this.profileUsed,
+				publishProfileUri: this.publishProfileUri
 			};
 
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -272,7 +273,8 @@ export class PublishDatabaseDialog {
 					connectionUri: '',
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
-					profileUsed: this.profileUsed
+					profileUsed: this.profileUsed,
+					publishProfileUri: this.publishProfileUri
 				}
 			};
 
@@ -293,7 +295,8 @@ export class PublishDatabaseDialog {
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed
+			profileUsed: this.profileUsed,
+			publishProfileUri: this.publishProfileUri
 		};
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -849,15 +852,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		saveProfileAsButton.onDidClick(async () => {
-			const filePath = await vscode.window.showSaveDialog(
-				{
-					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1.publish.xml`)),
-					saveLabel: constants.save,
-					filters: {
-						'Publish Settings Files': ['publish.xml'],
-					}
-				}
-			);
+			const filePath = await promptToSaveProfile(this.project, this.publishProfileUri);
 
 			if (!filePath) {
 				return;
@@ -998,6 +993,18 @@ export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Ur
 			defaultUri: vscode.Uri.file(defaultPath),
 			filters: {
 				[constants.publishSettingsFiles]: ['publish.xml']
+			}
+		}
+	);
+}
+
+export function promptToSaveProfile(project: Project, publishProfileUri?: vscode.Uri) {
+	return vscode.window.showSaveDialog(
+		{
+			defaultUri: publishProfileUri ?? vscode.Uri.file(path.join(project.projectFolderPath, `${project.projectFileName}_1.publish.xml`)),
+			saveLabel: constants.save,
+			filters: {
+				'Publish Settings Files': ['publish.xml'],
 			}
 		}
 	);
