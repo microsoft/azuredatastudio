@@ -57,7 +57,7 @@ import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensio
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog';
-import { enableSqlAuthenticationProviderConfig, mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -1141,7 +1141,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (connectionProfile && connectionProfile.authenticationType === Constants.AuthenticationType.AzureMFA) {
 			// We do not need to reconnect for MSSQL Provider, if 'SQL Authentication Provider' setting is enabled.
 			// Update the token in case it needs refreshing/reauthentication.
-			if (connectionProfile.providerName === mssqlProviderName && this.getEnableSqlAuthenticationProviderConfig()) {
+			if (isMssqlAuthProviderEnabled(connectionProfile.providerName, this._configurationService)) {
 				await this.fillInOrClearToken(connectionProfile);
 				return true;
 			}
@@ -1179,10 +1179,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		else {
 			return false;
 		}
-	}
-
-	private getEnableSqlAuthenticationProviderConfig(): boolean {
-		return this._configurationService.getValue(enableSqlAuthenticationProviderConfig) ?? true;
 	}
 
 	// Request Senders
