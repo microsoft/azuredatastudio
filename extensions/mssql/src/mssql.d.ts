@@ -948,13 +948,13 @@ declare module 'mssql' {
 			/**
 			 * Permissions supported by the securable type.
 			 */
-			permissions: PermissionMetata[];
+			permissions: PermissionMetadata[];
 		}
 
 		/**
 		 * Permission metadata.
 		 */
-		export interface PermissionMetata {
+		export interface PermissionMetadata {
 			/**
 			 * Name of the permission.
 			 */
