@@ -32,6 +32,7 @@ import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { Actions } from 'sql/platform/connection/common/constants';
+import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 
 export interface IOptionsDialogOptions extends IModalOptions {
 	cancelLabel?: string;
@@ -246,7 +247,7 @@ export class OptionsDialog extends Modal {
 						let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
 						// Append required indicator when not present.
 						if (element && element.childElementCount === 1) {
-							DialogHelper.appendRequiredIndicator(element);
+							element.classList.add(RequiredIndicatorClassName);
 						}
 					}
 					// Force selection event if option value is available.
@@ -274,7 +275,7 @@ export class OptionsDialog extends Modal {
 				let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
 				// Append required indicator when not present.
 				if (element && element.childElementCount === 1) {
-					DialogHelper.appendRequiredIndicator(element);
+					element.classList.add(RequiredIndicatorClassName);
 				}
 			}
 		} else {
