@@ -68,7 +68,6 @@ suite('SQL ConnectionManagementService tests', () => {
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		getOptionsKey: () => { return 'connectionId'; },
-		serverCapabilities: undefined,
 		matches: undefined,
 		providerName: 'MSSQL',
 		options: {},
