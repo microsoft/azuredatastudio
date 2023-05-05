@@ -8,27 +8,26 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, kustoProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { GraphData, KustoGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, KustoGraphData> {
 	private static readonly containerId = 'azure.resource.providers.KustoContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.KustoContainerLabel', "Azure Data Explorer Cluster");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.kusto}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
@@ -47,7 +46,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'KUSTO',
+				providerName: kustoProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -55,7 +54,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'KUSTO',
+			childProvider: kustoProvider,
 			type: ExtensionNodeType.Server
 		};
 	}

@@ -12,13 +12,13 @@ import 'mocha';
 
 import { AzureResourceDatabaseServerTreeDataProvider } from '../../../../azureResource/providers/databaseServer/databaseServerTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
-import { IAzureResourceService } from '../../../../azureResource/interfaces';
 
 // Mock services
-let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>;
+let mockDatabaseServerService: TypeMoq.IMock<azureResource.IAzureResourceService>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 import settings from '../../../../account-provider/providerSettings';
 import { AzureAccount, azureResource } from 'azurecore';
+import { DATABASE_SERVER_PROVIDER_ID } from '../../../../constants';
 
 // Mock test data
 const mockAccount: AzureAccount = {
@@ -75,6 +75,7 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 	{
 		name: 'mock database server 1',
 		id: 'mock-id-1',
+		provider: DATABASE_SERVER_PROVIDER_ID,
 		fullName: 'mock database server full name 1',
 		loginName: 'mock login',
 		defaultDatabaseName: 'master',
@@ -87,6 +88,7 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 	{
 		name: 'mock database server 2',
 		id: 'mock-id-2',
+		provider: DATABASE_SERVER_PROVIDER_ID,
 		fullName: 'mock database server full name 2',
 		loginName: 'mock login',
 		defaultDatabaseName: 'master',
@@ -100,14 +102,12 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 
 describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<azureResource.IAzureResourceService>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
-
-		const treeItem = await treeDataProvider.getResourceTreeItem(mockResourceRootNode);
+		const treeItem = mockResourceRootNode.treeItem;
 		should(treeItem.id).equal(mockResourceRootNode.treeItem.id);
 		should(treeItem.label).equal(mockResourceRootNode.treeItem.label);
 		should(treeItem.collapsibleState).equal(mockResourceRootNode.treeItem.collapsibleState);
@@ -117,7 +117,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 
 describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<azureResource.IAzureResourceService>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));

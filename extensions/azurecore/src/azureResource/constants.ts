@@ -34,4 +34,33 @@ export enum AzureResourceServiceNames {
 	terminalService = 'AzureTerminalService',
 }
 
+export enum AzureResourcePrefixes {
+	logAnalytics = 'LogAnalytics_',
+	cosmosdb = 'Cosmosdb_',
+	database = 'database_',
+	databaseServer = 'databaseServer_',
+	kusto = 'Kusto_',
+	mySqlFlexibleServer = 'mySqlFlexibleServer_',
+	postgresServerArc = 'postgresServerArc_',
+	postgresServer = 'postgresServer_',
+	sqlInstance = 'sqlInstance_',
+	sqlInstanceArc = 'sqlInstanceArc_',
+	synapseSqlPool = 'synapseSqlPool_',
+	synapseWorkspace = 'synapseWorkspace_'
+}
+
 export const mssqlProvider = 'MSSQL';
+export const logAnalyticsProvider = 'LOGANALYTICS';
+export const cosmosDBProvider = 'COSMOSDB_MONGO';
+export const kustoProvider = 'KUSTO';
+export const mySqlProvider = 'MySQL';
+export const pgsqlProvider = 'PGSQL';
+
+// Kinds
+export const analyticsKind = 'v12.0,analytics';
+export const mongoDbKind = 'MongoDB';
+
+export enum ResourceCategory {
+	Server = 0,
+	Database = 1
+}

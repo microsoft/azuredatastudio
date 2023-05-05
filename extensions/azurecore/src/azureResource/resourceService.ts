@@ -4,22 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { extensions, TreeItem } from 'vscode';
+import * as azdata from 'azdata';
 
 import { IAzureResourceNodeWithProviderId } from './interfaces';
 import { AzureAccount, azureResource } from 'azurecore';
+import { UNIVERSAL_PROVIDER_ID } from '../constants';
 
 export class AzureResourceService {
 	private _areResourceProvidersLoaded: boolean = false;
 	private _resourceProviders: { [resourceProviderId: string]: azureResource.IAzureResourceProvider } = {};
 	private _treeDataProviders: { [resourceProviderId: string]: azureResource.IAzureResourceTreeDataProvider } = {};
+	private _universalProvider: azureResource.IAzureUniversalResourceProvider | undefined = undefined;
 
 	public constructor() {
+
 	}
 
 	public async listResourceProviderIds(): Promise<string[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		return Object.keys(this._resourceProviders);
+	}
+
+	public async getResourceProviders(): Promise<{ [resourceProviderId: string]: azureResource.IAzureResourceProvider }> {
+		await this.ensureResourceProvidersRegistered();
+		return this._resourceProviders;
 	}
 
 	public registerResourceProvider(resourceProvider: azureResource.IAzureResourceProvider): void {
@@ -35,12 +44,11 @@ export class AzureResourceService {
 	public async getRootChildren(resourceProviderId: string, account: AzureAccount, subscription: azureResource.AzureResourceSubscription): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
-		if (!(resourceProviderId in this._resourceProviders)) {
+		if (!(resourceProviderId in this._resourceProviders) && resourceProviderId !== UNIVERSAL_PROVIDER_ID) {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
-		const treeDataProvider = this._treeDataProviders[resourceProviderId];
-		const rootChildren = await treeDataProvider.getRootChildren();
+		const rootChildren = <azdata.TreeItem[]>await this._treeDataProviders[resourceProviderId]?.getRootChildren();
 
 		return rootChildren.map(rootChild => {
 			return {
@@ -58,13 +66,14 @@ export class AzureResourceService {
 	public async getChildren(resourceProviderId: string, element: azureResource.IAzureResourceNode, browseConnectionMode: boolean = false): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
-		if (!(resourceProviderId in this._resourceProviders)) {
+		if (!(resourceProviderId in this._resourceProviders) && resourceProviderId !== UNIVERSAL_PROVIDER_ID) {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
-		const treeDataProvider = this._treeDataProviders[resourceProviderId];
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const treeDataProvider = <azureResource.IAzureResourceTreeDataProvider>this._treeDataProviders[resourceProviderId];
 		treeDataProvider.browseConnectionMode = browseConnectionMode;
-		const children = await treeDataProvider.getChildren(element);
+		const children = <azureResource.IAzureResourceNode[]>await treeDataProvider.getChildren(element);
 
 		return children.map((child) => <IAzureResourceNodeWithProviderId>{
 			resourceProviderId: resourceProviderId,
@@ -72,15 +81,27 @@ export class AzureResourceService {
 		});
 	}
 
+	public async getAllChildren(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], browseConnectionMode: boolean = false): Promise<IAzureResourceNodeWithProviderId[]> {
+		await this.ensureResourceProvidersRegistered();
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const treeDataProvider = <azureResource.IAzureUniversalTreeDataProvider>this._universalProvider?.getTreeDataProvider();
+		treeDataProvider.browseConnectionMode = browseConnectionMode;
+		const children = <azureResource.IAzureResourceNode[]>await treeDataProvider.getAllChildren(account, subscriptions);
+
+		return children.map((child) => <IAzureResourceNodeWithProviderId>{
+			resourceProviderId: UNIVERSAL_PROVIDER_ID,
+			resourceNode: child
+		});
+	}
+
 	public async getTreeItem(resourceProviderId: string, element: azureResource.IAzureResourceNode): Promise<TreeItem> {
 		await this.ensureResourceProvidersRegistered();
 
-		if (!(resourceProviderId in this._resourceProviders)) {
+		if (!(resourceProviderId in this._resourceProviders) && resourceProviderId !== UNIVERSAL_PROVIDER_ID) {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
-		const treeDataProvider = this._treeDataProviders[resourceProviderId];
-		return treeDataProvider.getResourceTreeItem(element);
+		return element.treeItem;
 	}
 
 	public get areResourceProvidersLoaded(): boolean {
@@ -107,10 +128,14 @@ export class AzureResourceService {
 
 				if (extension.exports && extension.exports.provideResources) {
 					for (const resourceProvider of <azureResource.IAzureResourceProvider[]>extension.exports.provideResources()) {
-						if (resourceProvider) {
+						if (resourceProvider && resourceProvider.providerId !== UNIVERSAL_PROVIDER_ID) {
 							this.doRegisterResourceProvider(resourceProvider);
 						}
 					}
+				}
+				if (extension.exports && extension.exports.getUniversalProvider) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					this._universalProvider = <azureResource.IAzureUniversalResourceProvider>extension.exports.getUniversalProvider();
 				}
 			}
 		}
@@ -119,7 +144,9 @@ export class AzureResourceService {
 	}
 
 	private doRegisterResourceProvider(resourceProvider: azureResource.IAzureResourceProvider): void {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this._resourceProviders[resourceProvider.providerId] = resourceProvider;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this._treeDataProviders[resourceProvider.providerId] = resourceProvider.getTreeDataProvider();
 	}
 
