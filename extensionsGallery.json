@@ -75,14 +75,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.4",
-							"lastUpdated": "4/27/2020",
+							"version": "0.1.5",
+							"lastUpdated": "5/2/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/whoisactive/whoisactive-0.1.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/whoisactive/whoisactive-0.1.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -108,7 +108,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.26.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -136,14 +136,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.3",
-							"lastUpdated": "1/27/2021",
+							"version": "0.2.4",
+							"lastUpdated": "5/2/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.2.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.2.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1535,14 +1535,14 @@
 					},
 					"versions": [
 						{
-							"version": "4.0.3",
-							"lastUpdated": "2/2/2023",
+							"version": "4.1.1",
+							"lastUpdated": "5/2/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-4.0.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-4.1.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4520,34 +4520,34 @@
 					},
 					"versions": [
 						{
-							"version": "4.0.4",
-							"lastUpdated": "03/28/2023",
+							"version": "4.1.2",
+							"lastUpdated": "05/02/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.4/azuredatastudio-dma-oracle-4.0.4.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/azuredatastudio-dma-oracle-4.1.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.4/extension.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.4/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.4/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.4/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.0.4/LICENSE.html"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/LICENSE.html"
 								}
 							],
 							"properties": [
@@ -4650,14 +4650,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.8",
-							"lastUpdated": "03/27/2023",
+							"version": "0.2.9",
+							"lastUpdated": "05/05/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.8.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.9.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4841,14 +4841,14 @@
 					},
 					"versions": [
 						{
-							"version": "7.1.0",
-							"lastUpdated": "02/01/2023",
+							"version": "7.2.1",
+							"lastUpdated": "04/30/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.1.0"
+									"source": "https://github.com/MarkMpn/Sql4Cds/releases/tag/v7.2.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4856,7 +4856,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/README.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
@@ -4864,11 +4864,11 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/AzureDataStudioExtension/package.json"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.1.0/LICENSE"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/LICENSE"
 								}
 							],
 							"properties": [
