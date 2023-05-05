@@ -252,7 +252,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			}
 			return result;
 		});
-		ids = ids.filter(id => id !== '');
+		ids = ids.filter(id => id === '');
 		return ids.join(ProviderConnectionInfo.displayIdSeparator);
 	}
 
