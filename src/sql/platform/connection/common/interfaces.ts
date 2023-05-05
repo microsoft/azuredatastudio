@@ -10,8 +10,7 @@ import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/c
 export type ProfileMatcher = (a: IConnectionProfile, b: IConnectionProfile) => boolean;
 
 export interface IConnectionProfile extends azdata.IConnectionProfile {
-	serverCapabilities: ConnectionProviderProperties | undefined;
-	getOptionsKey(getOriginalOptions?: boolean): string;
+	getOptionsKey(): string;
 	matches(profile: azdata.IConnectionProfile): boolean;
 }
 

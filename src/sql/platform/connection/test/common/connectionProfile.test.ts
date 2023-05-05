@@ -172,8 +172,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		msSQLCapabilities = {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
-			connectionOptions: connectionProvider,
-			useFullOptions: true
+			connectionOptions: connectionProvider
 		};
 		capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
@@ -236,7 +235,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('getOptionsKey should create a valid unique id', () => {
 		let conn = new ConnectionProfile(capabilitiesService, iConnectionProfile);
-		let expectedId = 'providerName:MSSQL|connectionName:new name|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|groupId:group id';
+		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|group:group id';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
