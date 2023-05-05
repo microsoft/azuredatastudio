@@ -21,7 +21,6 @@ class OctoKit {
     }
     async *query(query) {
         const q = query.q + ` repo:${this.params.owner}/${this.params.repo}`;
-        console.log(`Querying for ${q}:`);
         const options = this.octokit.search.issuesAndPullRequests.endpoint.merge({
             ...query,
             q,
@@ -44,7 +43,6 @@ class OctoKit {
             await timeout();
             await (0, utils_1.logRateLimit)(this.token);
             const page = pageResponse.data;
-            console.log(`Page ${++pageNum}: ${page.map(({ number }) => number).join(' ')}`);
             yield page.map((issue) => new OctoKitIssue(this.token, this.params, this.octokitIssueToIssue(issue)));
         }
     }
@@ -170,7 +168,6 @@ class OctoKitIssue extends OctoKit {
             (0, core_1.debug)('Got issue data from query result ' + this.issueData.number);
             return this.issueData;
         }
-        console.log('Fetching issue ' + this.issueData.number);
         const issue = (await this.octokit.issues.get({
             ...this.params,
             issue_number: this.issueData.number,
@@ -246,7 +243,6 @@ class OctoKitIssue extends OctoKit {
         }
         catch (err) {
             if (err.status === 404) {
-                console.log(`Label ${name} not found on issue`);
                 return;
             }
             throw err;
@@ -272,7 +268,6 @@ class OctoKitIssue extends OctoKit {
                 }
             }
         }
-        console.log(`Got ${closingCommit} as closing commit of ${this.issueData.number}`);
         return closingCommit;
     }
 }
