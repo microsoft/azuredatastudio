@@ -115,7 +115,7 @@ function getNodeText(sourceFile: ts.SourceFile, node: { pos: number; end: number
 	return sourceFile.getFullText().substring(node.pos, node.end);
 }
 
-function hasModifier(modifiers: readonly ts.Modifier[] | undefined, kind: ts.SyntaxKind): boolean {
+function hasModifier(modifiers: ts.NodeArray<ts.Modifier> | undefined, kind: ts.SyntaxKind): boolean {
 	if (modifiers) {
 		for (let i = 0; i < modifiers.length; i++) {
 			let mod = modifiers[i];
@@ -128,13 +128,14 @@ function hasModifier(modifiers: readonly ts.Modifier[] | undefined, kind: ts.Syn
 }
 
 function isStatic(member: ts.ClassElement | ts.TypeElement): boolean {
-	const modifiers = ts.canHaveModifiers(member) ? ts.getModifiers(member) : undefined;
-	return hasModifier(modifiers, ts.SyntaxKind.StaticKeyword);
+	return hasModifier(member.modifiers, ts.SyntaxKind.StaticKeyword);
 }
 
 function isDefaultExport(declaration: ts.InterfaceDeclaration | ts.ClassDeclaration): boolean {
-	const modifiers = ts.canHaveModifiers(declaration) ? ts.getModifiers(declaration) : undefined;
-	return hasModifier(modifiers, ts.SyntaxKind.DefaultKeyword) && hasModifier(modifiers, ts.SyntaxKind.ExportKeyword);
+	return (
+		hasModifier(declaration.modifiers, ts.SyntaxKind.DefaultKeyword)
+		&& hasModifier(declaration.modifiers, ts.SyntaxKind.ExportKeyword)
+	);
 }
 
 function getMassagedTopLevelDeclarationText(sourceFile: ts.SourceFile, declaration: TSTopLevelDeclare, importName: string, usage: string[], enums: IEnumEntry[]): string {
@@ -611,7 +612,7 @@ class CacheEntry {
 	constructor(
 		public readonly sourceFile: ts.SourceFile,
 		public readonly mtime: number
-	) { }
+	) {}
 }
 
 export class DeclarationResolver {
