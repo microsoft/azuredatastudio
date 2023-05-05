@@ -599,13 +599,28 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			localize('objectExplorer.nodePath', "Node Path: {0}", node.nodePath),
 			node.filters,
 			async (filters) => {
-				node.forceRefresh = true;
-				node.filters = filters || [];
-				if (this._tree instanceof AsyncServerTree) {
-					await this._tree.rerender(node);
+				let errorListener;
+				try {
+					let expansionerror = undefined;
+					errorListener = this._objectExplorerService.onNodeExpandedError(e => {
+						if (e.errorMessage) {
+							expansionerror = e.errorMessage;
+						}
+					});
+					node.forceRefresh = true;
+					node.filters = filters || [];
+					if (this._tree instanceof AsyncServerTree) {
+						await this._tree.rerender(node);
+					}
+					await this.refreshElement(node);
+					await this._tree.expand(node);
+					if (expansionerror) {
+						throw new Error(expansionerror);
+					}
+				} finally {
+					errorListener.dispose();
+
 				}
-				await this.refreshElement(node);
-				await this._tree.expand(node);
 				return;
 			},
 			this._instantiationService
