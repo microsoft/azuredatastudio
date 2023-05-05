@@ -16,7 +16,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		super(objectManagementService, options);
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return CreateDatabaseDocUrl;
 	}
 
