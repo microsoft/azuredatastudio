@@ -264,7 +264,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		let options: IConnectionCompletionOptions = this._options || {
 			params: params,
-			saveTheConnection: !isTemporaryConnection,
+			saveTheConnection: !isTemporaryConnection && !fromEditor,
 			showDashboard: params?.showDashboard ?? false,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
