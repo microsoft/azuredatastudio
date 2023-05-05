@@ -1012,7 +1012,7 @@ function prepareI18nFiles() {
 }
 exports.prepareI18nFiles = prepareI18nFiles;
 function createI18nFile(originalFilePath, messages) {
-    let result = Object.create(null);
+    const result = Object.create(null);
     result[''] = [
         '--------------------------------------------------------------------------------------------',
         'Copyright (c) Microsoft Corporation. All rights reserved.',
@@ -1035,16 +1035,16 @@ function createI18nFile(originalFilePath, messages) {
 exports.createI18nFile = createI18nFile;
 exports.i18nPackVersion = '1.0.0'; // {{SQL CARBON EDIT}} Needed in locfunc.
 function prepareI18nPackFiles(externalExtensions, resultingTranslationPaths, pseudo = false) {
-    const parsePromises = [];
-    const mainPack = { version: exports.i18nPackVersion, contents: {} };
-    const extensionsPacks = {};
-    const errors = [];
+    let parsePromises = [];
+    let mainPack = { version: exports.i18nPackVersion, contents: {} };
+    let extensionsPacks = {};
+    let errors = [];
     return (0, event_stream_1.through)(function (xlf) {
-        const project = path.basename(path.dirname(path.dirname(xlf.relative)));
-        const resource = path.basename(xlf.relative, '.xlf');
-        const contents = xlf.contents.toString();
+        let project = path.basename(path.dirname(path.dirname(xlf.relative)));
+        let resource = path.basename(xlf.relative, '.xlf');
+        let contents = xlf.contents.toString();
         log(`Found ${project}: ${resource}`);
-        const parsePromise = pseudo ? XLF.parsePseudo(contents) : XLF.parse(contents);
+        let parsePromise = pseudo ? XLF.parsePseudo(contents) : XLF.parse(contents);
         parsePromises.push(parsePromise);
         parsePromise.then(resolvedFiles => {
             resolvedFiles.forEach(file => {

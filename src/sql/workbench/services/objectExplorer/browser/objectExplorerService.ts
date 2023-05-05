@@ -24,9 +24,6 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -190,8 +187,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private logService: ILogService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@INotificationService private _notificationService: INotificationService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -298,27 +293,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._connectionsWaitingForSession.delete(connection.id);
 				}
 				createNewSessionListener.dispose();
-				clearTimeout(timeoutHandle);
 			}
-			const onTimeout = () => {
-				if (!this._sessions[sessionId]) {
-					this.logService.error(`Timed out waiting for session ${sessionId} to be created.
-					This has probably happened because OE service did not recieve a response for createNewSession from the provider.`);
-					reject(new Error(
-						nls.localize('objectExplorerMissingSession',
-							'Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.', sessionId)));
-				} else {
-					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}".
-					This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection."${connection.title}`);
-					reject(new Error(nls.localize(
-						'objectExplorerMissingConnectionForSession',
-						'Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"', sessionId, connection.title
-					)));
-				}
 
-				cleanup();
-			}
-			const timeoutHandle = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
 			const createNewSessionListener = this._onCreateNewSession.event((response) => {
 				checkSessionAndConnection();
 			});
@@ -510,7 +486,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					const resolveExpansion = () => {
 						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 						// Have to delete it after get all responses otherwise couldn't find session for not the first response
-						clearTimeout(expansionTimeout);
 						if (newRequest) {
 							delete self._sessions[session.sessionId!].nodes[node.nodePath];
 							this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
@@ -528,19 +503,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							}
 						}
 					});
-
-					const expansionTimeout = setTimeout(() => {
-						/**
-						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
-						 * it's not going to respond and resolve the promise with the results we have so far
-						 */
-						if (resultMap.size !== allProviders.length) {
-							const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
-							this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
-							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
-						}
-						resolveExpansion();
-					}, this.getObjectExplorerTimeout() * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
@@ -600,8 +562,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo | undefined {
-		let finalResult: azdata.ObjectExplorerExpandInfo | undefined = undefined;
+	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo {
+		let finalResult: azdata.ObjectExplorerExpandInfo | undefined = {
+			sessionId: undefined,
+			nodePath: nodePath,
+			nodes: []
+		};
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
@@ -620,12 +586,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (resultMap.has(provider.providerId)) {
 				let result = resultMap.get(provider.providerId);
 				if (result) {
+
 					if (!result.errorMessage) {
 						finalResult = result;
 						if (result.nodes !== undefined && result.nodes) {
 							allNodes = allNodes.concat(result.nodes);
 						}
 					} else {
+						finalResult.sessionId = result.sessionId;
 						errorMessages.push(result.errorMessage);
 					}
 				}
@@ -639,8 +607,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				errorNode.errorMessage = errorMessages.join('\n');
 				errorNode.label = errorNode.errorMessage;
 				allNodes = [errorNode].concat(allNodes);
+				this._onUpdateObjectExplorerNodes.fire({
+					connection: undefined,
+					errorMessage: errorNode.errorMessage
+				});
 			}
-
 			finalResult.nodes = allNodes;
 		}
 		return finalResult;
@@ -1047,13 +1018,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			currentNode = nextNode;
 		}
 		return currentNode;
-	}
-
-	/**
-	 * returns object explorer timeout in seconds.
-	 */
-	public getObjectExplorerTimeout(): number {
-		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 	}
 
 	private getTreeNodeCacheKey(node: azdata.NodeInfo | TreeNode): string {
