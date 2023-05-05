@@ -35,7 +35,6 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { Codicon } from 'vs/base/common/codicons';
 import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
