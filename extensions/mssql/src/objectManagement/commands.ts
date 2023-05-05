@@ -21,6 +21,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/
 import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
+import { DatabaseDialog } from './ui/databaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -68,6 +69,9 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			break;
 		case FolderType.Users:
 			objectType = ObjectManagement.NodeType.User;
+			break;
+		case FolderType.Databases:
+			objectType = ObjectManagement.NodeType.Database;
 			break;
 		default:
 			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
@@ -240,6 +244,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new ServerRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.Database:
+			return new DatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}
