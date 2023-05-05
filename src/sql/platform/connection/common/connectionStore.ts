@@ -150,6 +150,17 @@ export class ConnectionStore {
 	}
 
 	/**
+	 * Checks to see if a connection profile edit is not identical to an existing saved profile.
+	 *
+	 * @param profile the profile group that is being edited.
+	 * @param matcher the profile matching function for the actual connection we want to edit.
+	 * @returns a boolean value indicating if there's an identical profile to the edit.
+	 */
+	public isDuplicateEdit(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<boolean> {
+		return this.connectionConfig.isDuplicateEdit(profile, matcher);
+	}
+
+	/**
 	 * Gets the list of recently used connections. These will not include the password - a separate call to
 	 * {addSavedPassword} is needed to fill that before connecting
 	 *

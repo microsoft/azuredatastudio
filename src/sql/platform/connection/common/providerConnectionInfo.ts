@@ -8,7 +8,7 @@ import { isString } from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { localize } from 'vs/nls';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
@@ -234,6 +234,23 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
 	}
 
+	/**
+	 * Returns a more readable version of the options key intended for display areas, replaces the regular separators with display separators
+	 * @param optionsKey options key in the original format.
+	 */
+	public static getDisplayOptionsKey(optionsKey: string) {
+		let ids: string[] = optionsKey.split(ProviderConnectionInfo.idSeparator);
+		ids = ids.map(id => {
+			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
+			let result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
+			if (idParts.length >= 2) {
+				result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
+			}
+			return result;
+		});
+		return ids.join(ProviderConnectionInfo.displayIdSeparator);
+	}
+
 	public static getProviderFromOptionsKey(optionsKey: string) {
 		let providerId: string = '';
 		if (optionsKey) {
@@ -291,29 +308,11 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		return ':';
 	}
 
-	public get titleParts(): string[] {
-		let parts: string[] = [];
-		// Always put these three on top. TODO: maybe only for MSSQL?
-		parts.push(this.serverName);
-		parts.push(this.databaseName);
-		parts.push(this.authenticationTypeDisplayName);
+	public static get displayIdSeparator(): string {
+		return '; ';
+	}
 
-		if (this.serverCapabilities) {
-			this.serverCapabilities.connectionOptions.forEach(element => {
-				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
-					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
-					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.password &&
-					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-					element.isIdentity && element.valueType === ServiceOptionType.string) {
-					let value = this.getOptionValue(element.name);
-					if (value) {
-						parts.push(value);
-					}
-				}
-			});
-		}
-
-		return parts;
+	public static get displayNameValueSeparator(): string {
+		return '=';
 	}
 }

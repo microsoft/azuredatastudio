@@ -539,6 +539,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let isEdit = options?.params?.isEditConnection ?? false;
 
+		let matcher: interfaces.ProfileMatcher;
+		if (isEdit) {
+			matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
+
+			//Check to make sure the edits are not identical to another connection.
+			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
+				if (result) {
+					// Must get connection group name here as it may not always be initialized.
+					this._logService.error(`Profile edit for '${connection.id}' matches an existing profile with data: '${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}'`);
+					throw new Error(`Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: \n
+					${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}${(connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
+							ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + connection.groupFullName : ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + '<default>'}`);
+				}
+			});
+		}
+
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
