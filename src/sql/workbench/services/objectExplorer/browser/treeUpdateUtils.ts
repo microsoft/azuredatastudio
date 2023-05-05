@@ -12,11 +12,9 @@ import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType'
 
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { Disposable, isDisposable } from 'vs/base/common/lifecycle';
-import { onUnexpectedError } from 'vs/base/common/errors';
-import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
+import { AsyncServerTree, ConnectionError as AsyncTreeConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
-import * as nls from 'vs/nls';
-import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IExpandableTree extends ITree {
@@ -184,52 +182,58 @@ export class TreeUpdateUtils {
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
 		tree: AsyncServerTree | ITree | undefined): Promise<ConnectionProfile | undefined> {
-		if (!connectionManagementService.isProfileConnected(connection)) {
-			// don't try to reconnect if currently connecting
-			if (connectionManagementService.isProfileConnecting(connection)) {
-				return undefined;
 
-				// else if we aren't connected or connecting then try to connect
-			} else {
-				let callbacks: IConnectionCallbacks | undefined;
-				if (tree instanceof AsyncServerTree) {
-					callbacks = {
-						onConnectStart: () => { },
-						onConnectReject: () => { },
-						onConnectSuccess: () => { },
-						onDisconnect: () => { },
-						onConnectCanceled: () => { },
-					};
-				} else if (tree) {
-					// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
-					tree.addTraits('loading', [connection]);
-					let rejectOrCancelCallback = () => {
-						tree.collapse(connection);
-						tree.removeTraits('loading', [connection]);
-					};
-					callbacks = {
-						onConnectStart: () => { },
-						onConnectReject: rejectOrCancelCallback,
-						onConnectSuccess: () => tree.removeTraits('loading', [connection]),
-						onDisconnect: () => { },
-						onConnectCanceled: rejectOrCancelCallback,
-					};
-				}
+		try {
+			if (!connectionManagementService.isProfileConnected(connection)) {
+				// don't try to reconnect if currently connecting
+				if (connectionManagementService.isProfileConnecting(connection)) {
+					return undefined;
 
-				const result = await connectionManagementService.connect(connection, undefined, options, callbacks);
-				if (result?.connected) {
-					let existingConnection = connectionManagementService.findExistingConnection(connection);
-					return existingConnection;
+					// else if we aren't connected or connecting then try to connect
 				} else {
-					throw new Error(result ? result.errorMessage : nls.localize('connectionFailedError', 'Failed to connect, please try again.'));
+					let callbacks: IConnectionCallbacks | undefined;
+					if (tree instanceof AsyncServerTree) {
+						callbacks = {
+							onConnectStart: () => { },
+							onConnectReject: () => { },
+							onConnectSuccess: () => { },
+							onDisconnect: () => { },
+							onConnectCanceled: () => { },
+						};
+					} else if (tree) {
+						// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
+						tree.addTraits('loading', [connection]);
+						let rejectOrCancelCallback = () => {
+							tree.collapse(connection);
+							tree.removeTraits('loading', [connection]);
+						};
+						callbacks = {
+							onConnectStart: () => { },
+							onConnectReject: rejectOrCancelCallback,
+							onConnectSuccess: () => tree.removeTraits('loading', [connection]),
+							onDisconnect: () => { },
+							onConnectCanceled: rejectOrCancelCallback,
+						};
+					}
+
+					const result = await connectionManagementService.connect(connection, undefined, options, callbacks);
+					if (result?.connected) {
+						let existingConnection = connectionManagementService.findExistingConnection(connection);
+						return existingConnection;
+					} else {
+						throw new Error(result ? result.errorMessage : nls.localize('connectionFailedError', 'Failed to connect, please try again.'));
+					}
 				}
+			} else {
+				let existingConnection = connectionManagementService.findExistingConnection(connection);
+				if (options && options.showDashboard) {
+					await connectionManagementService.showDashboard(connection);
+				}
+				return existingConnection;
 			}
-		} else {
-			let existingConnection = connectionManagementService.findExistingConnection(connection);
-			if (options && options.showDashboard) {
-				await connectionManagementService.showDashboard(connection);
-			}
-			return existingConnection;
+		} catch (e) {
+			// Since the connection dialog handles connection errors, we don't need to do anything here
+			throw new AsyncTreeConnectionError(getErrorMessage(e), connection);
 		}
 	}
 
@@ -249,6 +253,7 @@ export class TreeUpdateUtils {
 		objectExplorerService: IObjectExplorerService,
 		tree: AsyncServerTree | ITree | undefined,
 		requestStatus?: ObjectExplorerRequestStatus | undefined): Promise<boolean> {
+
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
 			// append group ID and original display name to build unique OE session ID
@@ -305,28 +310,18 @@ export class TreeUpdateUtils {
 				return rootNode.children ?? [];
 			} else {
 				const options: IConnectionCompletionOptions = {
+					params: undefined,
 					saveTheConnection: true,
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true,
 					showDashboard: false
 				};
-				const expansionTimeoutValueSec = configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
 				// Need to wait for the OE service to update its nodes in order to resolve the children
 				const nodesUpdatedPromise = new Promise<void>((resolve, reject) => {
 					// Clean up timeout and listener
 					const cleanup = () => {
-						clearTimeout(nodeUpdateTimer);
 						nodesUpdatedListener.dispose();
 					}
-
-					// If the node update takes too long, reject the promise
-					const nodeUpdateTimeout = () => {
-						cleanup();
-						reject(new Error(nls.localize('objectExplorerTimeout', "Object Explorer expansion timed out for '{0}'", connection.databaseName)));
-					}
-					const nodeUpdateTimer = setTimeout(nodeUpdateTimeout, expansionTimeoutValueSec * 1000);
-
-
 					const nodesUpdatedListener = objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.connection && e.connection.id === connection.id) {
 							if (e.errorMessage) {

@@ -151,3 +151,10 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 }
 
 export type ServerTreeElement = ConnectionProfile | ConnectionProfileGroup | TreeNode;
+
+
+export class ConnectionError extends Error {
+	constructor(message: string, public connection: ConnectionProfile) {
+		super(message);
+	}
+}
