@@ -21,7 +21,7 @@ Learn more about the SQL Database Projects extension in the documentation: https
 - Generate SQL projects from OpenAPI/Swagger specs
 
 
-![AdventureWorks SQL project](images/readme-sqlproj.png)
+![AdventureWorks SQL project](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-database-projects/images/readme-sqlproj.png)
 
 
 ## Getting Started with Database Projects
