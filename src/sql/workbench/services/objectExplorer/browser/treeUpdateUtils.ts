@@ -16,6 +16,7 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { AsyncServerTree, ConnectionError as AsyncTreeConnectionError, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { localize } from 'vs/nls';
 
 export interface IExpandableTree extends ITree {
 	/**
@@ -221,7 +222,7 @@ export class TreeUpdateUtils {
 						let existingConnection = connectionManagementService.findExistingConnection(connection);
 						return existingConnection;
 					} else {
-						throw new Error(result ? result.errorMessage : nls.localize('connectionFailedError', 'Failed to connect, please try again.'));
+						throw new Error(result ? result.errorMessage : localize('connectionFailedError', 'Failed to connect, please try again.'));
 					}
 				}
 			} else {
