@@ -600,17 +600,18 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	public async filterElementChildren(node: TreeNode): Promise<void> {
 		await FilterDialog.getFiltersForProperties(
 			node.filterProperties,
-			localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", node.getConnectionProfile().title),
+			localize('objectExplorer.filterDialogTitle', "(Preview) Filter Settings: {0}", node.getConnectionProfile().title),
 			localize('objectExplorer.nodePath', "Node Path: {0}", node.nodePath),
 			node.filters,
 			async (filters) => {
 				let errorListener;
 				try {
-					let expansionerror = undefined;
-					errorListener = this._objectExplorerService.onNodeExpandedError(e => {
+					let expansionError = undefined;
+					errorListener = this._objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.errorMessage) {
-							expansionerror = e.errorMessage;
+							expansionError = e.errorMessage;
 						}
+						errorListener.dispose();
 					});
 					node.forceRefresh = true;
 					node.filters = filters || [];
@@ -619,12 +620,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					}
 					await this.refreshElement(node);
 					await this._tree.expand(node);
-					if (expansionerror) {
-						throw new Error(expansionerror);
+					if (expansionError) {
+						throw new Error(expansionError);
 					}
 				} finally {
-					errorListener.dispose();
-
+					if (errorListener) {
+						errorListener.dispose();
+					}
 				}
 				return;
 			},

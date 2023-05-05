@@ -479,7 +479,7 @@ export class FilterDialog extends Modal {
 					}
 
 				}
-				if (true || value1 !== '' && value2 !== '') {
+				if (value1 !== '' && value2 !== '') {
 					this._appliedFilters.push(filter);
 				}
 			} else {

@@ -95,8 +95,6 @@ export interface IObjectExplorerService {
 
 	onUpdateObjectExplorerNodes: Event<ObjectExplorerNodeEventArgs>;
 
-	onNodeExpandedError: Event<NodeExpandInfoWithProviderId>;
-
 	registerServerTreeView(view: IServerTreeView): void;
 
 	getSelectedProfileAndDatabase(): { profile?: ConnectionProfile, databaseName?: string } | undefined;
@@ -214,10 +212,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
 		return this._onUpdateObjectExplorerNodes.event;
-	}
-
-	public get onNodeExpandedError(): Event<NodeExpandInfoWithProviderId> {
-		return this._onNodeExpandedError.event;
 	}
 
 	/**
@@ -492,13 +486,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 					const resolveExpansion = () => {
 						const expansionResult = self.mergeResults(allProviders, resultMap, node.nodePath);
-						if (expansionResult.errorMessage) {
-							this._onNodeExpandedError.fire({
-								providerId: providerId,
-								sessionId: session.sessionId,
-								nodePath: node.nodePath,
-								nodes: expansionResult.nodes,
-								errorMessage: expansionResult.errorMessage,
+						if (expansionResult.errorMessage || expansionResult.nodes.some(n => n.errorMessage)) {
+							this._onUpdateObjectExplorerNodes.fire({
+								connection: node.getConnectionProfile(),
+								errorMessage: expansionResult.errorMessage
 							});
 						}
 						resolve(expansionResult);
@@ -630,6 +621,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				});
 			}
 			finalResult.nodes = allNodes;
+			finalResult.errorMessage = errorMessages.join('\n');
 		}
 		return finalResult;
 	}

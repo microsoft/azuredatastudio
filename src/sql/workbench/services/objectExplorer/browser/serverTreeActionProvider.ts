@@ -10,7 +10,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
 	DisconnectConnectionAction, EditConnectionAction,
-	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildren, RemoveFilterAction
+	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildrenAction, RemoveFilterAction
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -27,6 +27,8 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 /**
  *  Provides actions for the server tree elements
@@ -41,6 +43,7 @@ export class ServerTreeActionProvider {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private _logService: ILogService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -219,10 +222,9 @@ export class ServerTreeActionProvider {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
 
 			// Adding filter action if the node has filter properties
-			if (treeNode?.filterProperties?.length > 0) {
-				actions.push(this._instantiationService.createInstance(FilterChildren, FilterChildren.ID, FilterChildren.LABEL, context.treeNode));
+			if (treeNode?.filterProperties?.length > 0 && this._configurationService.getValue<boolean>(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
+				actions.push(this._instantiationService.createInstance(FilterChildrenAction, FilterChildrenAction.ID, FilterChildrenAction.LABEL, context.treeNode));
 			}
-
 			// Adding remove filter action if the node has filters applied to it.
 			if (treeNode?.filters?.length > 0) {
 				actions.push(this._instantiationService.createInstance(RemoveFilterAction, RemoveFilterAction.ID, RemoveFilterAction.LABEL, context.treeNode, context.tree, undefined));
