@@ -127,7 +127,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 
 	// 5: Prompt for folder structure
 	const folderStructure = await vscode.window.showQuickPick(
-		[constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
+		[constants.schemaObjectType, constants.file, constants.flat, constants.objectType, constants.schema],
 		{ title: constants.selectFolderStructure, ignoreFocusOut: true, });
 	if (!folderStructure) {
 		// User cancelled
