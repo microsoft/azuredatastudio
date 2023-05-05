@@ -1583,7 +1583,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		const testInstantiationService = new TestInstantiationService();
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
 		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		// Check for invalid profile id
@@ -1613,7 +1613,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
 
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
 		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
@@ -1933,7 +1933,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		createInstanceStub.withArgs(ConnectionStore).returns(connectionStoreMock.object);
 		createInstanceStub.withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
 
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
@@ -1954,42 +1954,42 @@ suite('SQL ConnectionManagementService tests', () => {
 		connections = connectionManagementService.getConnections(true);
 		verifyConnections(connections, ['1', '2'], 'parameter is true');
 	});
-});
 
-test('isRecent should evaluate whether a profile was recently connected or not', () => {
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	const testInstantiationService = new TestInstantiationService();
-	testInstantiationService.stub(IStorageService, new TestStorageService());
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
-	connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
-		return [createConnectionProfile('1')];
+	test('isRecent should evaluate whether a profile was recently connected or not', () => {
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
+			return [createConnectionProfile('1')];
+		});
+		let profile1 = createConnectionProfile('1');
+		let profile2 = createConnectionProfile('2');
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		assert(connectionManagementService.isRecent(profile1));
+		assert(!connectionManagementService.isRecent(profile2));
 	});
-	let profile1 = createConnectionProfile('1');
-	let profile2 = createConnectionProfile('2');
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
-	assert(connectionManagementService.isRecent(profile1));
-	assert(!connectionManagementService.isRecent(profile2));
-});
 
-test('clearRecentConnection and ConnectionsList should call connectionStore functions', () => {
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	let called = false;
-	connectionStoreMock.setup(x => x.clearRecentlyUsed()).returns(() => {
-		called = true;
+	test('clearRecentConnection and ConnectionsList should call connectionStore functions', () => {
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		let called = false;
+		connectionStoreMock.setup(x => x.clearRecentlyUsed()).returns(() => {
+			called = true;
+		});
+		connectionStoreMock.setup(x => x.removeRecentConnection(TypeMoq.It.isAny())).returns(() => {
+			called = true;
+		});
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		let profile1 = createConnectionProfile('1');
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		connectionManagementService.clearRecentConnection(profile1);
+		assert(called);
+		called = false;
+		connectionManagementService.clearRecentConnectionsList();
+		assert(called);
 	});
-	connectionStoreMock.setup(x => x.removeRecentConnection(TypeMoq.It.isAny())).returns(() => {
-		called = true;
-	});
-	const testInstantiationService = new TestInstantiationService();
-	testInstantiationService.stub(IStorageService, new TestStorageService());
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
-	let profile1 = createConnectionProfile('1');
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
-	connectionManagementService.clearRecentConnection(profile1);
-	assert(called);
-	called = false;
-	connectionManagementService.clearRecentConnectionsList();
-	assert(called);
 });
 
 export function createConnectionProfile(id: string, password?: string): ConnectionProfile {
