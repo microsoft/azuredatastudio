@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -17,7 +17,7 @@ const dep_lists_1 = require("./dep-lists");
 // If true, we fail the build if there are new dependencies found during that task.
 // The reference dependencies, which one has to update when the new dependencies
 // are valid, are in dep-lists.ts
-// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = true;
+const FAIL_BUILD_FOR_NEW_DEPENDENCIES = true;
 function getDependencies(buildDir, applicationName, arch, sysroot) {
     // Get the files for which we want to find dependencies.
     const nativeModulesPath = path.join(buildDir, 'resources', 'app', 'node_modules.asar.unpacked');
@@ -49,19 +49,18 @@ function getDependencies(buildDir, applicationName, arch, sysroot) {
     sortedDependencies = sortedDependencies.filter(dependency => {
         return !dep_lists_1.bundledDeps.some(bundledDep => dependency.startsWith(bundledDep));
     });
-    /* {{SQL CARBON EDIT}} - Not needed for SQL
-    const referenceGeneratedDeps = referenceGeneratedDepsByArch[arch];
+    const referenceGeneratedDeps = dep_lists_1.referenceGeneratedDepsByArch[arch];
     if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
         const failMessage = 'The dependencies list has changed.'
             + '\nOld:\n' + referenceGeneratedDeps.join('\n')
             + '\nNew:\n' + sortedDependencies.join('\n');
         if (FAIL_BUILD_FOR_NEW_DEPENDENCIES) {
             throw new Error(failMessage);
-        } else {
+        }
+        else {
             console.warn(failMessage);
         }
     }
-    */
     return sortedDependencies;
 }
 exports.getDependencies = getDependencies;

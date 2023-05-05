@@ -316,7 +316,7 @@ const IntQ: QType<number> = {
 			return undefined;
 		}
 
-		const value = match.captures.filter((c: { name: string; }) => c.name === 'value')[0]?.node.text;
+		const value = match.captures.filter(c => c.name === 'value')[0]?.node.text;
 
 		if (!value) {
 			throw new Error(`Missing required 'value' property.`);
@@ -339,13 +339,13 @@ const StringQ: QType<string | NlsString> = {
 			return undefined;
 		}
 
-		const value = match.captures.filter((c: { name: string; }) => c.name === 'value')[0]?.node.text;
+		const value = match.captures.filter(c => c.name === 'value')[0]?.node.text;
 
 		if (!value) {
 			throw new Error(`Missing required 'value' property.`);
 		}
 
-		const nlsKey = match.captures.filter((c: { name: string; }) => c.name === 'nlsKey')[0]?.node.text;
+		const nlsKey = match.captures.filter(c => c.name === 'nlsKey')[0]?.node.text;
 
 		if (nlsKey) {
 			return { value, nlsKey };
@@ -487,7 +487,7 @@ function getPolicies(moduleName: string, node: Parser.SyntaxNode): Policy[] {
 
 	const categories = new Map<string, Category>();
 
-	return query.matches(node).map((m: { captures: any[]; }) => {
+	return query.matches(node).map(m => {
 		const configurationNode = m.captures.filter(c => c.name === 'configuration')[0].node;
 		const settingNode = m.captures.filter(c => c.name === 'setting')[0].node;
 		const policyNode = m.captures.filter(c => c.name === 'policy')[0].node;
