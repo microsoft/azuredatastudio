@@ -571,8 +571,13 @@ export async function canTargetConnectToStorageAccount(
 
 			break;
 		case MigrationTargetType.SQLVM:
-			// to-do: VM scenario -- get subnet by first checking underlying compute VM, then its network interface
-			return true;
+			const targetVmNetworkInterfaces = Array.from((await NetworkInterfaceModel.getVmNetworkInterfaces(account, subscription, (targetServer as SqlVMServer))).values());
+			const targetVmSubnets = targetVmNetworkInterfaces.map(networkInterface => networkInterface.properties.ipConfigurations.map(ipConfiguration => ipConfiguration.properties.subnet.id.toLowerCase())).flat();
+
+			// 2) check for access from whitelisted vnet
+			if (storageAccountWhitelistedVNets.length > 0) {
+				enabledFromWhitelistedVNet = storageAccountWhitelistedVNets.some(vnet => targetVmSubnets.some(targetVnet => vnet.toLowerCase() === targetVnet.toLowerCase()));
+			}
 		default:
 			return true;
 	}
