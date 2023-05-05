@@ -217,11 +217,11 @@ export class TreeUpdateUtils {
 				}
 
 				const result = await connectionManagementService.connect(connection, undefined, options, callbacks);
-				if (result.connected) {
+				if (result?.connected) {
 					let existingConnection = connectionManagementService.findExistingConnection(connection);
 					return existingConnection;
 				} else {
-					throw new Error(result.errorMessage);
+					throw new Error(result ? result.errorMessage : nls.localize('connectionFailedError', 'Failed to connect, please try again.'));
 				}
 			}
 		} else {

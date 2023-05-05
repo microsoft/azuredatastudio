@@ -981,6 +981,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						account = this._azureAccountList?.find(account => account.key.accountId === this.getModelValue(accountName)
 							|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
 						if (account) {
+							if (!account.properties.tenants?.find(tenant => tenant.id === this._azureTenantId)) {
+								this._azureTenantId = account.properties.tenants[0].id;
+							}
 							this._azureAccountDropdown.selectWithOptionName(account.key.accountId);
 						}
 					}
