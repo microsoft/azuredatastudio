@@ -241,13 +241,18 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	public static getDisplayOptionsKey(optionsKey: string) {
 		let ids: string[] = optionsKey.split(ProviderConnectionInfo.idSeparator);
 		ids = ids.map(id => {
+			let result = '';
 			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
-			let result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
-			if (idParts.length >= 2) {
-				result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
+			// Filter out group name for display purposes.
+			if (idParts[0] === 'group') {
+				result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
+				if (idParts.length >= 2) {
+					result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
+				}
 			}
 			return result;
 		});
+		ids = ids.filter(id => id !== '');
 		return ids.join(ProviderConnectionInfo.displayIdSeparator);
 	}
 
