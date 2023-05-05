@@ -14,7 +14,7 @@ import { MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/util
  * @param configService Configuration service instance
  * @returns True if provider is MSSQL and Sql Auth provider is enabled.
  */
-export function isMssqlAuthProviderEnabled(provider: string, configService: IConfigurationService): boolean {
+export function isMssqlAuthProviderEnabled(provider: string, configService: IConfigurationService | undefined): boolean {
 	return provider === mssqlProviderName && isMSALAuthLibraryEnabled(configService) && (configService?.getValue(enableSqlAuthenticationProviderConfig) ?? true);
 }
 
@@ -25,12 +25,6 @@ export function isMssqlAuthProviderEnabled(provider: string, configService: ICon
  * @param configService Configuration Service to use.
  * @returns true if MSAL_AUTH_LIBRARY is enabled.
  */
-export function isMSALAuthLibraryEnabled(configService: IConfigurationService): boolean {
-	const config = configService.getValue(azureAuthenticationLibraryConfig);
-	if (config) {
-		return config === MSAL_AUTH_LIBRARY;
-	}
-	else {
-		return true; // By default MSAL is enabled.
-	}
+export function isMSALAuthLibraryEnabled(configService: IConfigurationService | undefined): boolean {
+	return configService?.getValue(azureAuthenticationLibraryConfig) === MSAL_AUTH_LIBRARY /*default*/ ?? true;
 }
