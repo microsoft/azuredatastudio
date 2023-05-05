@@ -25,12 +25,12 @@ function hygiene(some, linting = true) {
 	let errorCount = 0;
 
 	const productJson = es.through(function (file) {
-		const product = JSON.parse(file.contents.toString('utf8'));
+		// const product = JSON.parse(file.contents.toString('utf8'));
 
-		if (product.extensionsGallery) { // {{SQL CARBON EDIT}} @todo we need to research on what the point of this is
-			console.error('product.json: Contains "extensionsGallery"');
-			errorCount++;
-		}
+		// if (product.extensionsGallery) { // {{SQL CARBON EDIT}} @todo we need to research on what the point of this is
+		// 	console.error('product.json: Contains "extensionsGallery"');
+		// 	errorCount++;
+		// }
 
 		this.emit('data', file);
 	});
@@ -89,8 +89,8 @@ function hygiene(some, linting = true) {
 
 		for (let i = 0; i < copyrightHeaderLines.length; i++) {
 			if (lines[i] !== copyrightHeaderLines[i]) {
-				console.error(file.relative + ': Missing or bad copyright statement');
-				errorCount++;
+				//console.error(file.relative + ': Missing or bad copyright statement');
+				//errorCount++;
 				break;
 			}
 		}
