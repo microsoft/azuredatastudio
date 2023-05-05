@@ -526,8 +526,12 @@ export class FilterDialog extends Modal {
 			case NodeFilterPropertyDataType.Number:
 				return Number(value);
 			case NodeFilterPropertyDataType.Choice:
-				const choice = (<azdata.NodeFilterChoiceProperty>filterProperty).choices.find(c => c.displayName === value);
-				return choice.value;
+				const choice = ((<azdata.NodeFilterChoiceProperty>filterProperty).choices.find(c => c.displayName === value));
+				if (choice) {
+					return choice.value;
+				} else {
+					return value;
+				}
 			case NodeFilterPropertyDataType.Date:
 			case NodeFilterPropertyDataType.String:
 				return value;
