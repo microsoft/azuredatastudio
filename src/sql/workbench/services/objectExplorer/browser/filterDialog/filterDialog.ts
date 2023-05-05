@@ -301,7 +301,7 @@ export class FilterDialog extends Modal {
 					values: filterOperators
 				},
 				value: {
-					value: appliedFilter ? this.getStringValueForFilter(f.type, appliedFilter.value) : '',
+					value: appliedFilter ? this.getStringValueForFilter(f, appliedFilter.value) : '',
 					values: this.getChoiceValuesForFilterProperties(f)
 				},
 				filterPropertyIndex: i
@@ -309,7 +309,7 @@ export class FilterDialog extends Modal {
 			tableData.push(row);
 
 			if (appliedFilter?.operator === NodeFilterOperator.Between || appliedFilter?.operator === NodeFilterOperator.NotBetween) {
-				row.value.value = this.getStringValueForFilter(f.type, appliedFilter.value[0]);
+				row.value.value = this.getStringValueForFilter(f, appliedFilter.value[0]);
 				const andRow: Slick.SlickData = {
 					property: {
 						value: ''
@@ -319,7 +319,7 @@ export class FilterDialog extends Modal {
 						values: [AND_SELECT_BOX]
 					},
 					value: {
-						value: this.getStringValueForFilter(f.type, appliedFilter.value[1]),
+						value: this.getStringValueForFilter(f, appliedFilter.value[1]),
 						values: []
 					},
 					datatype: f.type,
@@ -356,7 +356,7 @@ export class FilterDialog extends Modal {
 				} else if (filterProperty.type === NodeFilterPropertyDataType.Number) {
 					editor = this._tableCellEditorFactory.getTextEditorClass(this, 'number');
 				} else if (filterProperty.type === NodeFilterPropertyDataType.Choice) {
-					editor = this._tableCellEditorFactory.getDropdownEditorClass(this, (<azdata.NodeFilterChoiceProperty>filterProperty).choices, false);
+					editor = this._tableCellEditorFactory.getDropdownEditorClass(this, this.getDropdownOptionsForChoiceProperty(<azdata.NodeFilterChoiceProperty>filterProperty), false);
 				}
 
 			}
@@ -438,15 +438,15 @@ export class FilterDialog extends Modal {
 			let filter: azdata.NodeFilter = {
 				displayName: row.property.value,
 				operator: this.getFilterOperatorEnum(row.operator.value),
-				value: this.getFilterValue(filterProperty.type, row.value.value),
+				value: this.getFilterValue(filterProperty.type, row.value.value, filterProperty),
 			};
 
 			const isMultipleValueFilter = filter.operator === NodeFilterOperator.Between || filter.operator === NodeFilterOperator.NotBetween;
 			if (isMultipleValueFilter) {
 				i++;
 				const row2 = tableData[i];
-				var value1 = this.getFilterValue(filterProperty.type, row.value.value);
-				var value2 = this.getFilterValue(filterProperty.type, row2.value.value);
+				var value1 = this.getFilterValue(filterProperty.type, row.value.value, filterProperty);
+				var value2 = this.getFilterValue(filterProperty.type, row2.value.value, filterProperty);
 				filter.value = <string[] | number[]>[value1, value2];
 				if (filterProperty.type === NodeFilterPropertyDataType.Date) {
 					if (filter.value[0] === '' && filter.value[1] !== '') {
@@ -508,7 +508,11 @@ export class FilterDialog extends Modal {
 		// noop
 	}
 
-	private getFilterValue(filterType: NodeFilterPropertyDataType, value: string): string | number | boolean {
+	private getFilterValue(
+		filterType: NodeFilterPropertyDataType,
+		value: string,
+		filterProperty: azdata.NodeFilterProperty
+	): string | number | boolean {
 		if (value === '') {
 			return '';
 		}
@@ -521,15 +525,17 @@ export class FilterDialog extends Modal {
 				}
 			case NodeFilterPropertyDataType.Number:
 				return Number(value);
-			case NodeFilterPropertyDataType.Date:
 			case NodeFilterPropertyDataType.Choice:
+				const choice = (<azdata.NodeFilterChoiceProperty>filterProperty).choices.find(c => c.displayName === value);
+				return choice.value;
+			case NodeFilterPropertyDataType.Date:
 			case NodeFilterPropertyDataType.String:
 				return value;
 		}
 	}
 
-	private getStringValueForFilter(filterType: NodeFilterPropertyDataType, value: string | number | boolean | number[] | string[]): string {
-		switch (filterType) {
+	private getStringValueForFilter(filter: azdata.NodeFilterProperty, value: string | number | boolean | number[] | string[]): string {
+		switch (filter.type) {
 			case NodeFilterPropertyDataType.Boolean:
 				if (value === true) {
 					return TRUE_SELECT_BOX;
@@ -539,8 +545,9 @@ export class FilterDialog extends Modal {
 				break;
 			case NodeFilterPropertyDataType.Number:
 				return value.toString();
-			case NodeFilterPropertyDataType.Date:
 			case NodeFilterPropertyDataType.Choice:
+				return (<azdata.NodeFilterChoiceProperty>filter).choices.find(c => c.value === value).displayName;
+			case NodeFilterPropertyDataType.Date:
 			case NodeFilterPropertyDataType.String:
 				return value as string;
 		}
@@ -658,10 +665,16 @@ export class FilterDialog extends Modal {
 			case NodeFilterPropertyDataType.Boolean:
 				return ['', TRUE_SELECT_BOX, FALSE_SELECT_BOX];
 			case NodeFilterPropertyDataType.Choice:
-				return ['', ...(<azdata.NodeFilterChoiceProperty>f).choices];
+				return ['', ...this.getDropdownOptionsForChoiceProperty(<azdata.NodeFilterChoiceProperty>f)];
 			default:
 				return [];
 		}
+	}
+
+	private getDropdownOptionsForChoiceProperty(f: azdata.NodeFilterChoiceProperty): string[] {
+		return f.choices.map(choice => {
+			return choice.displayName ?? choice.value;
+		});
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
