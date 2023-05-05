@@ -123,20 +123,21 @@ steps:
     displayName: Run core unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-  - script: |
-      # Figure out the full absolute path of the product we just built
-      # including the remote server and configure the integration tests
-      # to run with these builds instead of running out of sources.
-      set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
-      DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
-    displayName: Run core integration tests
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
+# {{SQL CARBON EDIT}} - Reenable "Run core integration tests" step
+  # - script: |
+  #     # Figure out the full absolute path of the product we just built
+  #     # including the remote server and configure the integration tests
+  #     # to run with these builds instead of running out of sources.
+  #     set -e
+  #     APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+  #     APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+  #     INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+  #     VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+  #     DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
+  #   displayName: Run core integration tests
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
-# {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)" and "Archive Logs"
+# {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)" and "Archive Logs" and "Copy Coverage"
   # - script: |
   #     # Figure out the full absolute path of the product we just built
   #     # including the remote server and configure the unit tests
@@ -180,12 +181,11 @@ steps:
   #   continueOnError: true
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  # {{SQL CARBON TODO}} - Reenable
-  # - script: |
-  #     set -e
-  #     yarn gulp vscode-linux-x64-build-deb
-  #   displayName: Build Deb
-  #   condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
+  - script: |
+      set -e
+      yarn gulp vscode-linux-x64-build-deb
+    displayName: Build Deb
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
@@ -237,28 +237,29 @@ steps:
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop
 
-  - script: |
-      set -e
-      shopt -s globstar
-      mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
-      cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
-    displayName: Copy Coverage
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # {{SQL CARBON TODO}} Reenable "Run Extension Unit Tests (Continue on Error)" and "Run Extension Unit Tests (Fail on Error)" and "Archive Logs" and "Copy Coverage" and "Publish test results/crash reports"
+  # - script: |
+  #     set -e
+  #     shopt -s globstar
+  #     mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
+  #     cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
+  #   displayName: Copy Coverage
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
-    inputs:
-      testResultsFiles: '*.xml'
-      searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
-    continueOnError: true
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+  # - task: PublishTestResults@2
+  #   displayName: 'Publish Test Results test-results.xml'
+  #   inputs:
+  #     testResultsFiles: '*.xml'
+  #     searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
+  #   continueOnError: true
+  #   condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: crash reports'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
-      ArtifactName: crashes
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+  # - task: PublishBuildArtifacts@1
+  #   displayName: 'Publish Artifact: crash reports'
+  #   inputs:
+  #     PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
+  #     ArtifactName: crashes
+  #   condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
