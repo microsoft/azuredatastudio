@@ -268,7 +268,7 @@ export class FilterDialog extends Modal {
 
 		const clearValueColumn = new ButtonColumn({
 			id: CLEAR_COLUMN_ID,
-			iconCssClass: Codicon.close.classNames,
+			iconCssClass: 'icon erase',
 			name: CLEAR_COLUMN_HEADER,
 			title: CLEAR_COLUMN_HEADER,
 			width: 60,

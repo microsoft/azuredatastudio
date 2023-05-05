@@ -46,24 +46,6 @@
 	padding: 5px;
 }
 
-.profiler-filter-remove-condition {
-	width: 20px;
-	height: 20px;
-	cursor: pointer;
-}
-
-.profiler-filter-clause-table-action {
-	cursor: pointer;
-	margin-right: 10px;
-	padding: 2px;
-	text-decoration: underline;
-	display: inline-block;
-}
-
-.headerRow td {
-	text-align: center;
-}
-
 .filter-table-element .monaco-inputbox {
 	height: 25px;
 	font-size: 11px;
@@ -74,4 +56,22 @@
 	height: 50px;
 	border: 1px solid;
 	padding: 5px;
+}
+
+.vs .icon.erase,
+.hc-light .icon.erase {
+	background-image: url("eraseLight.svg");
+	width: 16px;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.vs-dark .icon.erase,
+.hc-black .icon.erase {
+	background-image: url("eraseDark.svg");
+	width: 16px;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-position: center;
 }
