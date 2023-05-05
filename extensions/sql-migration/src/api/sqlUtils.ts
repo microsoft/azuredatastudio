@@ -578,6 +578,8 @@ export async function canTargetConnectToStorageAccount(
 			if (storageAccountWhitelistedVNets.length > 0) {
 				enabledFromWhitelistedVNet = storageAccountWhitelistedVNets.some(vnet => targetVmSubnets.some(targetVnet => vnet.toLowerCase() === targetVnet.toLowerCase()));
 			}
+
+			break;
 		default:
 			return true;
 	}
