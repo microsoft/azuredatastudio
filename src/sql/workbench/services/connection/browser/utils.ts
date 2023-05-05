@@ -14,5 +14,5 @@ import { enableSqlAuthenticationProviderConfig, mssqlProviderName } from 'sql/pl
  * @returns True if provider is MSSQL and Sql Auth provider is enabled.
  */
 export function isMssqlAuthProviderEnabled(provider: string, configService: IConfigurationService): boolean {
-	return provider === mssqlProviderName && (configService.getValue(enableSqlAuthenticationProviderConfig) ?? true);
+	return provider === mssqlProviderName && (configService?.getValue(enableSqlAuthenticationProviderConfig) ?? true);
 }
