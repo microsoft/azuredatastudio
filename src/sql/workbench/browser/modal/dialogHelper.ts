@@ -9,8 +9,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { wrapStringWithNewLine } from 'sql/workbench/common/sqlWorkbenchUtils';
-
-export const requiredIndicatorSpan = 'span.required-indicator';
+import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 
 export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string, titleMaxWidth?: number): HTMLElement {
 	let rowContainer = append(container, $('tr'));
@@ -31,7 +30,7 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 
 	append(labelContainer, $('div')).innerText = label;
 	if (showRequiredIndicator) {
-		appendRequiredIndicator(labelContainer);
+		labelContainer.classList.add(RequiredIndicatorClassName);
 	}
 	let inputCellContainer = append(rowContainer, $(`td.${cellContainerClass}`));
 
@@ -79,14 +78,6 @@ export function getCategoryName(categories: azdata.CategoryValue[], categoryDisp
 		}
 	});
 	return categoryName;
-}
-
-export function appendRequiredIndicator(labelContainer: HTMLElement): HTMLElement {
-	const indicator = append(labelContainer, $(requiredIndicatorSpan));
-	indicator.innerText = '*';
-	indicator.style.color = 'red';
-	indicator.style.marginLeft = '5px';
-	return indicator;
 }
 
 export function getOptionContainerByName(parentContainer: HTMLElement, optionName: string): HTMLElement | undefined {

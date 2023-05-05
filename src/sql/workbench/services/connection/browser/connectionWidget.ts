@@ -44,6 +44,7 @@ import { createCSSRule } from 'vs/base/browser/dom';
 import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
+import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -365,7 +366,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			if (optionAction.required) {
 				let element = DialogHelper.getOptionContainerByName(this._tableContainer, optionAction.optionName);
 				if (element) {
-					DialogHelper.appendRequiredIndicator(element);
+					element.classList.add(RequiredIndicatorClassName);
 				}
 			}
 		} else {
