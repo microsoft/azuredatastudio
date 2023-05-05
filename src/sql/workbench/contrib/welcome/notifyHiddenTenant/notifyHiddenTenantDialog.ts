@@ -58,7 +58,7 @@ export class NotifyHiddenTenantDialog extends ErrorMessageDialog {
 
 			super.open(TelemetryView.NotifyHiddenTenantDialog, Severity.Info,
 				localize('notifyHiddenTenant.title', 'Important Update'),
-				localize('notifyHiddenTenant.message', `Azure Data Studio has made design changes in the way access tokens are fetched from Azure Active Directory. You will no longer need to select an 'Azure AD Tenant' entry when connecting to Azure SQL instances. Tenant information will now be retrieved from the server during login.`, '\n\n'));
+				localize('notifyHiddenTenant.message', `Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.`, '\n\n'));
 		});
 	}
 
