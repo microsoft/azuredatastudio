@@ -21,9 +21,10 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
-import { NOTIFY_ENCRYPT_SHOWN, NOTIFY_READMORE_LINK } from 'sql/workbench/contrib/welcome/constants';
+import { NOTIFY_HIDETENANT_SHOWN, NOTIFY_READMORE_LINK } from 'sql/workbench/contrib/welcome/constants';
+import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
-export class NotifyEncryptionDialog extends ErrorMessageDialog {
+export class NotifyHiddenTenantDialog extends ErrorMessageDialog {
 
 	constructor(
 		@IThemeService themeService: IThemeService,
@@ -37,24 +38,28 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super(themeService, clipboardService, layoutService, telemetryService, contextKeyService, logService, textResourcePropertiesService, openerService);
 	}
 
 	public override open(): void {
-		if (this._storageService.get(NOTIFY_ENCRYPT_SHOWN, StorageScope.APPLICATION)) {
+		if (this._storageService.get(NOTIFY_HIDETENANT_SHOWN, StorageScope.APPLICATION)) {
 			return;
 		}
 
-		this._storageService.store(NOTIFY_ENCRYPT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this._storageService.store(NOTIFY_HIDETENANT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this._accountManagementService.getAccounts().then(accounts => {
+			// Do not notify users who don't have any Azure connection in their list of connections and no Azure accounts registered.
+			if (!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName
+				&& conn.authenticationType === 'AzureMFA') && (!accounts || accounts.length === 0)) {
+				return;
+			}
 
-		if (!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName)) {
-			return;
-		}
-
-		super.open(TelemetryView.NotifyEncryptionDialog, Severity.Info,
-			localize('notifyEncryption.title', 'Important Update'),
-			localize('notifyEncryption.message', 'Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.', '\n\n'));
+			super.open(TelemetryView.NotifyHiddenTenantDialog, Severity.Info,
+				localize('notifyHiddenTenant.title', 'Important Update'),
+				localize('notifyHiddenTenant.message', `Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.`, '\n\n'));
+		});
 	}
 
 	protected override updateDialogBody(): void {
@@ -62,7 +67,7 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 		let moreInfoLink = DOM.append(this.getBody()!, DOM.$('.more-info'));
 		this._instantiationService.createInstance(Link, moreInfoLink,
 			{
-				label: localize('notifyEncryption.moreInfoLink', 'More information'),
+				label: localize('notifyHiddenTenant.moreInfoLink', 'More information'),
 				href: NOTIFY_READMORE_LINK
 			}, undefined);
 	}
