@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, DisplayType, Component } from 'azdata';
+import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, DisplayType, Component, ModelView, DeclarativeTableComponent, DeclarativeDataType, FlexContainer } from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as crypto from 'crypto';
@@ -14,6 +14,8 @@ import { logError, TelemetryViews } from '../telemetry';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
 import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 import * as os from 'os';
+import * as styles from '../constants/styles';
+import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -957,4 +959,211 @@ export async function isAdmin(): Promise<boolean> {
 	}
 
 	return isAdmin;
+}
+
+export function createAuthenticationKeyTable(view: ModelView, columnWidth: string, stretchWidth: string): DeclarativeTableComponent {
+	const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
+
+	const authKeyTable = view.modelBuilder.declarativeTable()
+		.withProps({
+			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
+			columns: [
+				{
+					displayName: constants.NAME,
+					valueType: DeclarativeDataType.string,
+					width: columnWidth,
+					isReadOnly: true,
+					rowCssStyles: { ...styles.BODY_CSS },
+					headerCssStyles: { ...styles.BODY_CSS, 'font-weight': '600' }
+				},
+				{
+					displayName: constants.AUTH_KEY_COLUMN_HEADER,
+					valueType: DeclarativeDataType.string,
+					width: stretchWidth,
+					isReadOnly: true,
+					rowCssStyles: { ...styles.BODY_CSS },
+					headerCssStyles: { ...styles.BODY_CSS, 'font-weight': '600' }
+				},
+				{
+					displayName: '',
+					valueType: DeclarativeDataType.component,
+					width: columnWidth,
+					isReadOnly: true,
+					rowCssStyles: { ...styles.BODY_CSS },
+					headerCssStyles: { ...styles.BODY_CSS }
+				}
+			],
+			CSSStyles: { 'margin-top': '5px', 'width': WIZARD_INPUT_COMPONENT_WIDTH }
+		}).component();
+	return authKeyTable;
+}
+
+export async function refreshAuthenticationKeyTable(view: ModelView, table: DeclarativeTableComponent, account: Account, subscription: azureResource.AzureResourceSubscription, resourceGroup: string, location: string, service: SqlMigrationService): Promise<void> {
+	var _disposables: vscode.Disposable[] = [];
+
+	const copyKey1Button = view.modelBuilder.button().withProps({
+		title: constants.COPY_KEY1,
+		iconPath: IconPathHelper.copy,
+		ariaLabel: constants.COPY_KEY1,
+	}).component();
+
+	_disposables.push(copyKey1Button.onDidClick(async (e) => {
+		await vscode.env.clipboard.writeText(<string>table.dataValues![0][1].value);
+		void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+	}));
+
+	const copyKey2Button = view.modelBuilder.button().withProps({
+		title: constants.COPY_KEY2,
+		iconPath: IconPathHelper.copy,
+		ariaLabel: constants.COPY_KEY2,
+	}).component();
+
+	_disposables.push(copyKey2Button.onDidClick(async (e) => {
+		await vscode.env.clipboard.writeText(<string>table.dataValues![1][1].value);
+		void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+	}));
+
+	const refreshKey1Button = view.modelBuilder.button().withProps({
+		title: constants.REFRESH_KEY1,
+		iconPath: IconPathHelper.refresh,
+		ariaLabel: constants.REFRESH_KEY1,
+	}).component();
+
+	_disposables.push(refreshKey1Button.onDidClick(async (e) => {
+		const keys = await regenerateSqlMigrationServiceAuthKey(
+			account,
+			subscription,
+			resourceGroup,
+			location,
+			service.name,
+			'authKey1');
+
+		const dataValues = table.dataValues!;
+		dataValues![0][1].value = keys.authKey1;
+		await table.setDataValues([]);
+		await table.setDataValues(dataValues);
+		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(constants.SERVICE_KEY1_LABEL));
+	}));
+
+	const refreshKey2Button = view.modelBuilder.button().withProps({
+		title: constants.REFRESH_KEY2,
+		iconPath: IconPathHelper.refresh,
+		ariaLabel: constants.REFRESH_KEY2,
+	}).component();
+
+	_disposables.push(refreshKey2Button.onDidClick(async (e) => {
+		const keys = await regenerateSqlMigrationServiceAuthKey(
+			account,
+			subscription,
+			resourceGroup,
+			location,
+			service.name,
+			'authKey2');
+
+		const dataValues = table.dataValues!;
+		dataValues![1][1].value = keys.authKey2;
+		await table.setDataValues([]);
+		await table.setDataValues(dataValues);
+		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(constants.SERVICE_KEY2_LABEL));
+	}));
+
+	const keys = await getSqlMigrationServiceAuthKeys(
+		account,
+		subscription,
+		resourceGroup,
+		location,
+		service.name);
+
+
+	await table.updateProperties({
+		dataValues: [
+			[
+				{
+					value: constants.SERVICE_KEY1_LABEL
+				},
+				{
+					value: keys.authKey1
+				},
+				{
+					value: view.modelBuilder.flexContainer().withItems([copyKey1Button, refreshKey1Button]).component()
+				}
+			],
+			[
+				{
+					value: constants.SERVICE_KEY2_LABEL
+				},
+				{
+					value: keys.authKey2
+				},
+				{
+					value: view.modelBuilder.flexContainer().withItems([copyKey2Button, refreshKey2Button]).component()
+				}
+			]
+		]
+	});
+}
+
+export function createRegistrationInstructions(view: ModelView, testConnectionButton: boolean): FlexContainer {
+	const setupIRHeadingText = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_CONTAINER_HEADING,
+		CSSStyles: {
+			...styles.LABEL_CSS
+		}
+	}).component();
+
+	const setupIRdescription1 = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_CONTAINER_DESCRIPTION1,
+		CSSStyles: {
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	const setupIRdescription2 = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_CONTAINER_DESCRIPTION2,
+		CSSStyles: {
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	const irSetupStep1Text = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_STEP1,
+		CSSStyles: {
+			...styles.BODY_CSS
+		},
+		links: [
+			{
+				text: constants.SERVICE_STEP1_LINK,
+				url: 'https://aka.ms/sql-migration-shir-download'
+			}
+		]
+	}).component();
+
+	const irSetupStep2Text = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_STEP2,
+		CSSStyles: {
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	const irSetupStep3Text = view.modelBuilder.text().withProps({
+		value: constants.SERVICE_STEP3(testConnectionButton),
+		CSSStyles: {
+			'margin-top': '10px',
+			'margin-bottom': '10px',
+			...styles.BODY_CSS
+		}
+	}).component();
+
+	return view.modelBuilder.flexContainer().withItems(
+		[
+			setupIRHeadingText,
+			setupIRdescription1,
+			setupIRdescription2,
+			irSetupStep1Text,
+			irSetupStep2Text,
+			irSetupStep3Text,
+		]
+	).withLayout({
+		flexFlow: 'column'
+	}).component();
 }

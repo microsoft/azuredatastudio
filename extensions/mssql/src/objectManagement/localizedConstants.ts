@@ -25,20 +25,11 @@ export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManage
 export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
 
 // Shared Strings
-export const HelpText: string = localize('objectManagement.helpText', "Help");
-export const YesText: string = localize('objectManagement.yesText', "Yes");
-export const OkText: string = localize('objectManagement.OkText', "OK");
-export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...");
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
 export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
-export const ScriptText: string = localize('objectManagement.scriptText', "Script");
-export const NoActionScriptedMessage: string = localize('objectManagement.noActionScriptedMessage', "There is no action to be scripted.");
-export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
 export const BrowseText = localize('objectManagement.browseText', "Browse…");
 export const BrowseOwnerButtonAriaLabel = localize('objectManagement.browseForOwnerText', "Browse for an owner");
-export const AddText = localize('objectManagement.addText', "Add…");
-export const RemoveText = localize('objectManagement.removeText', "Remove");
 export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
 export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
 
@@ -127,12 +118,7 @@ export function RenameObjectError(objectType: string, originalName: string, newN
 	}, "An error occurred while renaming {0} '{1}' to '{2}'. {3}", objectType, originalName, newName, error);
 }
 
-export function ScriptError(error: string): string {
-	return localize('objectManagement.scriptError', "An error occurred while generating script. {0}", error);
-}
-
 export const NameText = localize('objectManagement.nameLabel', "Name");
-export const SelectedText = localize('objectManagement.selectedLabel', "Selected");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
 export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");

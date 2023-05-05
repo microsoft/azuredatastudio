@@ -363,12 +363,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.body" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]D;]A;]D;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]D;]A;]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio はこのテナント {0} ({1}) の認証をトリガーしなくなり、リソースにアクセスできなくなります。]D;]A;]D;]A;このテナントのリソースへのアクセスを再度許可するには、'{2}' 設定の除外リストからテナントを削除する必要があります。]D;]A;]D;]A;続行しますか?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.confirm" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Confirm]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[確認]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.authenticate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cancel and Authenticate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[キャンセルと認証]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          <Val><![CDATA[Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く]5D; をクリックして、認証プロセスを開始してください。]]></Val>
+            <Val><![CDATA[テナント {0} ({1}) では、 {2} リソースにアクセスするために再認証する必要があります。[開く]5D; を押して認証プロセスを開始します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -395,6 +425,24 @@
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[開く]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[トークンを取得するときにアカウント情報が見つかりません。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.resourceNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find configuration for Azure Resource {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Resource {0}の構成が見つかりません]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -521,6 +569,15 @@
           <Val><![CDATA[{0} occurred when acquiring token. ]D;]A;{1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[トークンの取得中に {0} が発生しました。]D;]A;{1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.tenantIgnoredError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無視リストにテナントが見つかりましたが、認証は試行されませんでした。このテナントからリソースにアクセスする場合は、settings.json ファイル: {1} の無視リストからテナント {0} を削除できます。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1640,10 +1697,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.azure.tenant.config.filter.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          <Val><![CDATA[The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure リソースの照会時に無視するテナント ID の一覧。各要素はテナント ID です。]]></Val>
+            <Val><![CDATA[Azure リソースのクエリまたは認証トークンの要求時にスキップされるテナント ID の一覧。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

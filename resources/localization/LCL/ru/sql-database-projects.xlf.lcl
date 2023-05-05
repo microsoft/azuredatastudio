@@ -2077,11 +2077,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.onlyMoveSqlFilesSupported" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.onlyMoveFilesFoldersSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Only moving .sql files is supported]]></Val>
+          <Val><![CDATA[Only moving files and folders are supported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Поддерживается только перемещение файлов .SQL.]]></Val>
+            <Val><![CDATA[Поддерживается только перемещение файлов и папок]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2652,10 +2652,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.saveProfileAsButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Save Profile as...]]></Val>
+          <Val><![CDATA[Save As...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сохранить профиль как…]]></Val>
+            <Val><![CDATA[Сохранить как...]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Save Profile as...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3360,6 +3363,15 @@
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Версия]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.versionMustNotBeEmpty" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Version must not be empty]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Версия не должна быть пустой]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
