@@ -244,7 +244,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			let result = '';
 			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
 			// Filter out group name for display purposes.
-			if (idParts[0] === 'group') {
+			if (idParts[0] !== 'group') {
 				result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
 				if (idParts.length >= 2) {
 					result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
@@ -252,7 +252,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			}
 			return result;
 		});
-		ids = ids.filter(id => id === '');
+		ids = ids.filter(id => id !== '');
 		return ids.join(ProviderConnectionInfo.displayIdSeparator);
 	}
 
