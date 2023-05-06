@@ -13,7 +13,7 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
 import { URI } from 'vs/base/common/uri';
 import { ITreeRenderer, ITreeNode } from 'vs/base/browser/ui/tree/tree';
-import { FuzzyScore } from 'vs/base/common/filters';
+import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeyboardNavigationLabelProvider } from 'vs/base/browser/ui/list/list';
@@ -24,6 +24,7 @@ import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/comm
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ResourceLabel } from 'vs/workbench/browser/labels';
 
 const DefaultConnectionIconClass = 'server-page';
 export interface ConnectionProfileGroupDisplayOptions {
@@ -32,35 +33,40 @@ export interface ConnectionProfileGroupDisplayOptions {
 
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
-	private _nameContainer: HTMLElement;
+	private _labelContainer: HTMLElement;
+	private _label: ResourceLabel;
 
 	constructor(
 		container: HTMLElement,
-		private _option: ConnectionProfileGroupDisplayOptions
+		private _option: ConnectionProfileGroupDisplayOptions,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) {
 		super();
 		container.parentElement!.classList.add('async-server-group');
 		container.classList.add('async-server-group');
 		this._root = dom.append(container, dom.$('.async-server-group-container'));
-		this._nameContainer = dom.append(this._root, dom.$('span.name'));
+		this._labelContainer = dom.append(this._root, dom.$('span.name'));
+		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
 	}
 
-	set(element: ConnectionProfileGroup) {
+	set(element: ConnectionProfileGroup, filterData: FuzzyScore) {
 		let rowElement = findParentElement(this._root, 'monaco-list-row');
 		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
 			if (element.color) {
-				this._nameContainer.style.background = element.color;
+				this._labelContainer.style.background = element.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				this._nameContainer.style.background = DefaultServerGroupColor;
+				this._labelContainer.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (element.description && (element.description !== '')) {
 			this._root.title = element.description;
 		}
-		this._nameContainer.hidden = false;
-		this._nameContainer.textContent = element.name;
+		this._labelContainer.hidden = false;
+		this._label.element.setLabel(element.name, '', {
+			matches: createMatches(filterData)
+		});
 	}
 }
 
@@ -75,7 +81,7 @@ export class ConnectionProfileGroupRenderer implements ITreeRenderer<ConnectionP
 		return this._instantiationService.createInstance(ConnectionProfileGroupTemplate, container, this._options);
 	}
 	renderElement(node: ITreeNode<ConnectionProfileGroup, FuzzyScore>, index: number, template: ConnectionProfileGroupTemplate): void {
-		template.set(node.element);
+		template.set(node.element, node.filterData);
 	}
 	disposeTemplate(templateData: ConnectionProfileGroupTemplate): void {
 		templateData.dispose();
@@ -87,7 +93,8 @@ class ConnectionProfileTemplate extends Disposable {
 	private _root: HTMLElement;
 	private _icon: HTMLElement;
 	private _connectionStatusBadge: HTMLElement;
-	private _label: HTMLElement;
+	private _labelContainer: HTMLElement;
+	private _label: ResourceLabel;
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
 	 * When set to true, like in the connection dialog recent connections tree, the connection
@@ -97,17 +104,19 @@ class ConnectionProfileTemplate extends Disposable {
 		container: HTMLElement,
 		private _isCompact: boolean,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) {
 		super();
 		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-profile-container'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
-		this._label = dom.append(this._root, dom.$('div.label'));
+		this._labelContainer = dom.append(this._root, dom.$('div.label'));
+		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
 	}
 
-	set(element: ConnectionProfile) {
+	set(element: ConnectionProfile, filterData: FuzzyScore) {
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
 				this._connectionStatusBadge.classList.remove('disconnected');
@@ -120,14 +129,15 @@ class ConnectionProfileTemplate extends Disposable {
 
 		const iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
 		renderServerIcon(this._icon, iconPath);
-		let label = element.title;
-		this._label.textContent = label;
-		this._root.title = element.serverInfo;
-
+		let labelText = element.title;
 		const treeNode = this._objectExplorerService.getObjectExplorerNode(element);
 		if (treeNode?.filters?.length > 0) {
-			this._label.textContent = getLabelWithFilteredSuffix(this._label.textContent);
+			this._label.element.setLabel(getLabelWithFilteredSuffix(labelText));
 		}
+		this._root.title = element.serverInfo;
+		this._label.element.setLabel(labelText, '', {
+			matches: createMatches(filterData)
+		})
 	}
 }
 
@@ -143,7 +153,7 @@ export class ConnectionProfileRenderer implements ITreeRenderer<ConnectionProfil
 		return this._instantiationService.createInstance(ConnectionProfileTemplate, container, this._isCompact);
 	}
 	renderElement(node: ITreeNode<ConnectionProfile, FuzzyScore>, index: number, template: ConnectionProfileTemplate): void {
-		template.set(node.element);
+		template.set(node.element, node.filterData);
 	}
 	disposeTemplate(templateData: ConnectionProfileTemplate): void {
 		templateData.dispose();
@@ -153,18 +163,21 @@ export class ConnectionProfileRenderer implements ITreeRenderer<ConnectionProfil
 class TreeNodeTemplate extends Disposable {
 	private _root: HTMLElement;
 	private _icon: HTMLElement;
-	private _label: HTMLElement;
+	private _labelContainer: HTMLElement;
+	private _label: ResourceLabel;
 
 	constructor(
-		container: HTMLElement
+		container: HTMLElement,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) {
 		super();
 		this._root = dom.append(container, dom.$('.object-element-container'));
 		this._icon = dom.append(this._root, dom.$('div.object-icon'));
-		this._label = dom.append(this._root, dom.$('div.label'));
+		this._labelContainer = dom.append(this._root, dom.$('div.label'));
+		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
 	}
 
-	set(element: TreeNode) {
+	set(element: TreeNode, filterData: FuzzyScore) {
 		// Use an explicitly defined iconType first. If not defined, fall back to using nodeType and
 		// other compount indicators instead.
 		let iconName: string | undefined = undefined;
@@ -198,9 +211,12 @@ class TreeNodeTemplate extends Disposable {
 			iconRenderer.putIcon(this._icon, element.icon);
 		}
 
-		this._label.textContent = element.filters.length > 0 ? getLabelWithFilteredSuffix(element.label) :
+		const labelText = element.filters.length > 0 ? getLabelWithFilteredSuffix(element.label) :
 			element.label;
-		this._root.title = element.label;
+		this._label.element.setLabel(labelText, '', {
+			matches: createMatches(filterData)
+		});
+		this._root.title = labelText;
 	}
 }
 
@@ -215,7 +231,7 @@ export class TreeNodeRenderer implements ITreeRenderer<TreeNode, FuzzyScore, Tre
 	}
 
 	renderElement(node: ITreeNode<TreeNode, FuzzyScore>, index: number, template: TreeNodeTemplate): void {
-		template.set(node.element);
+		template.set(node.element, node.filterData);
 	}
 
 	disposeTemplate(templateData: TreeNodeTemplate): void {
