@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "Чтобы использовать Azure Data Studio в {0}, необходимо перезапустить Azure Data Studio.",
 			"appName": "\"${appName}\": например, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "Скачать",
+			"azuredatastudio.downloadTooltip": "Скачать это расширение из внешнего источника",
+			"azuredatastudio.installTooltip": "Установить это расширение",
 			"connectionDialogBrowseTree.context": "Контекстное меню дерева просмотра диалогового окна подключения",
 			"dashboard.toolbar": "Меню действий инструментов панели мониторинга",
 			"dataExplorer.action": "Меню действий раздела контейнера представления обозревателя данных",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "Записная книжка: значки панели инструментов Markdown",
 			"notebookFindMatchHighlight": "Цвет других совпадений при поиске. Цвет не должен быть непрозрачным, чтобы не скрыть расположенные ниже элементы оформления.",
 			"notebookFindRangeHighlight": "Цвет диапазона, ограничивающего поиск. Цвет не должен быть непрозрачным, чтобы не скрыть расположенные ниже элементы оформления.",
-			"queryEditorNullBackground": "Цвет фона для значений NULL в сетке результатов редактора запросов.",
+			"queryEditorNullBackground": "Цвет фона для значений \"null\" в сетке результатов редактора запросов. Чтобы отключить цвет фона, можно использовать прозрачный цвет, например {0}.",
 			"tileBorder": "Цвет границы плиток",
 			"tileBoxShadow": "Цвет тени для поля плитки"
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "{0} является неизвестным контейнером."
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "Подробнее о настройке панели мониторинга",
 			"dashboard.generalTabGroupHeader": "Общие",
 			"home": "Домашняя страница",
 			"missingConnectionInfo": "Не удалось найти сведения о подключении для этой панели мониторинга"
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "Загрузка контекстов…",
 			"localhost": "localhost",
 			"newNotebookAction": "Создать записную книжку",
+			"newNotebookTask.newNotebook": "Новая записная книжка",
 			"newViewLabel": "Создать новое представление",
 			"noContextAvailable": "Нет",
 			"noKernel": "Нет ядра",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "Новое подключение",
+			"serverTreeViewChangeNotification": "Дерево сервера изменено. Перезагрузите окно, чтобы увидеть изменения.",
+			"serverTreeViewChangeNotification.doNotReload": "Не перезагружать",
+			"serverTreeViewChangeNotification.reload": "Перезагрузить",
 			"servers.noConnections": "Подключения не найдены."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Автоматически разворачивать группы серверов во вьюлете обозревателя объектов.",
 			"serverGroup.colors": "Цветовая палитра группы серверов, используемых во вьюлете обозревателя объектов.",
+			"serverTree.configuration.title": "Дерево сервера",
 			"serverTree.nodeExpansionTimeout": "Время ожидания в секундах для расширения узла в представлении \"Серверы\".",
-			"serverTree.useAsyncServerTree": "(Предварительная версия.) Используйте новое дерево асинхронных серверов для представления серверов и диалогового окна подключения с поддержкой новых функций, таких как фильтрация динамических узлов."
+			"serverTree.useAsyncServerTree": "Используйте новое дерево асинхронных серверов для представления серверов и диалогового окна подключения с поддержкой новых функций, таких как фильтрация динамических узлов. Для вступления в силу требуется перезагрузка."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "Встроенные диаграммы",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "Отобразить предполагаемый план выполнения",
 			"focusOnCurrentQueryKeyboardAction": "Фокус на текущем запросе",
 			"parseSyntaxLabel": "Синтаксический анализ запроса",
-			"queryActions.notConnected": "Подключитесь к серверу",
-			"queryActions.parseSyntaxFailure": "Не удалось выполнить команду: ",
-			"queryActions.parseSyntaxSuccess": "Команды выполнены",
+			"queryActions.notConnected": "Прежде чем запускать это действие, подключитесь к серверу.",
+			"queryActions.parseSyntaxFailure": "Не удалось проанализировать запрос: {0}",
+			"queryActions.parseSyntaxSuccess": "Запрос успешно проанализирован.",
 			"queryActions.queryResultsCopySuccess": "Запрос и результаты скопированы.",
 			"queryShortcutNoEditor": "Для выполнения ярлыка требуется параметр редактора.",
 			"refreshIntellisenseKeyboardAction": "Обновить кэш IntelliSense",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "План выполнения",
 			"actualQueryPlan": "Действительное значение",
 			"cancelQueryLabel": "Отмена",
-			"changeConnectionDatabaseLabel": "Изменить подключение",
+			"changeConnectionDatabaseLabel": "Изменить",
+			"changeConnectionDatabaseTooltip": "Изменить подключение",
 			"changeDatabase.failed": "Не удалось изменить базу данных",
 			"changeDatabase.failedWithError": "Не удалось изменить базу данных: {0}",
 			"connectDatabaseLabel": "Подключиться",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "Предполагаемый план",
 			"newQueryTask.newQuery": "Создать запрос",
 			"query.multiSelectionNotSupported": "Выполнение запроса не поддерживается, если редактор находится в режиме выбора нескольких элементов.",
-			"queryEditor.exportSqlAsNotebook": "Экспортировать в виде записной книжки",
+			"queryEditor.exportSqlAsNotebookLabel": "В записную книжку",
+			"queryEditor.exportSqlAsNotebookTooltip": "Экспортировать в виде записной книжки",
+			"queryEditor.parse": "Анализ",
 			"runQueryLabel": "Запуск",
 			"selectDatabase": "Выберите базу данных"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "Закрыть",
 			"addAccountFailedCodeMessage": "{0} \r\nСообщение об ошибке: {1}",
 			"addAccountFailedGenericMessage": "Не удалось добавить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Добавление учетной записи…",
+			"refreshAccountFailedGenericMessage": "Не удалось обновить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.",
 			"refreshCanceled": "Обновление учетной записи было отменено пользователем",
-			"refreshFailed": "0 \r\nСообщение об ошибке: 1"
+			"refreshFailed": "{0} \r\nСообщение об ошибке: {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Учетная запись Azure",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Не удалось создать сеанс обозревателя объектов",
 			"nodeExpansionError": "Несколько ошибок:",
-			"nodeExpansionTimeout": "Истекло время ожидания расширения узла {0} для поставщиков {1}."
+			"nodeExpansionTimeout": "Истекло время ожидания расширения узла {0} для поставщиков {1}.",
+			"objectExplorerMissingConnectionForSession": "Истекло время ожидания создания сеанса {0} для подключения \"{1}\". Это могло произойти из-за того, что служба OE не получила отклик на createNewSession от поставщика для подключения \"{1}\"",
+			"objectExplorerMissingSession": "Истекло время ожидания создания сеанса {0}. Это могло произойти из-за того, что служба OE не получила от поставщика отклик на createNewSession.",
+			"objectExplorerSessionIdMissing": "Идентификатор сеанса, возвращенный поставщиком \"{0}\" для подключения \"{1}\" недопустим."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Диалоговое окно брандмауэра отменено",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0} (применен фильтр)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "Истекло время ожидания расширения обозревателя объектов для \"{0}\""
 		}
 	}
 }
