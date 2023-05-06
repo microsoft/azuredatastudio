@@ -129,15 +129,13 @@ class ConnectionProfileTemplate extends Disposable {
 
 		const iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
 		renderServerIcon(this._icon, iconPath);
-		let labelText = element.title;
+
 		const treeNode = this._objectExplorerService.getObjectExplorerNode(element);
-		if (treeNode?.filters?.length > 0) {
-			this._label.element.setLabel(getLabelWithFilteredSuffix(labelText));
-		}
-		this._root.title = element.serverInfo;
+		let labelText = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(element.title) : element.title;
 		this._label.element.setLabel(labelText, '', {
 			matches: createMatches(filterData)
-		})
+		});
+		this._root.title = labelText;
 	}
 }
 
