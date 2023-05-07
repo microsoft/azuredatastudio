@@ -78,14 +78,13 @@
 .taskbarSeparator {
 	min-width: 1px;
 	background-color:#A5A5A5;
-	margin: 0px 16px;
+	margin: 0px 8px;
 	align-self: stretch;
 }
 
 .taskbarTextSeparator {
 	margin-left: 3px;
 	margin-right: 3px;
-	margin-top: 4px;
 }
 
 /* Taskbar Icons */
