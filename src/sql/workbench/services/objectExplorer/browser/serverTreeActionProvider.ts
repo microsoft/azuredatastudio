@@ -47,9 +47,9 @@ export class ServerTreeActionProvider {
 	/**
 	 * Return actions given an element in the tree
 	 */
-	public getActions(tree: AsyncServerTree | ITree, element: ServerTreeElement): IAction[] {
+	public getActions(tree: AsyncServerTree | ITree, element: ServerTreeElement, inlineOnly: boolean = false): IAction[] {
 		if (element instanceof ConnectionProfile) {
-			return this.getConnectionActions(tree, element);
+			return this.getConnectionActions(tree, element, inlineOnly);
 		}
 		if (element instanceof ConnectionProfileGroup) {
 			return this.getConnectionProfileGroupActions(element);
@@ -61,7 +61,7 @@ export class ServerTreeActionProvider {
 					tree: tree,
 					profile,
 					treeNode: element
-				});
+				}, inlineOnly);
 			}
 		}
 		return [];
@@ -93,7 +93,7 @@ export class ServerTreeActionProvider {
 	/**
 	 * Return actions for connection elements
 	 */
-	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
+	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile, inlineOnly: boolean = false): IAction[] {
 		let node = new TreeNode(NodeType.Server, NodeType.Server, '', false, '', '', '', '', undefined, undefined, undefined, undefined);
 		// Only update password and not access tokens to avoid login prompts when opening context menu.
 		this._connectionManagementService.addSavedPassword(profile, true);
@@ -102,10 +102,11 @@ export class ServerTreeActionProvider {
 			tree: tree,
 			profile: profile,
 			treeNode: node
-		}, (context) => this.getBuiltinConnectionActions(context));
+		}, (context) => this.getBuiltinConnectionActions(context),
+			inlineOnly);
 	}
 
-	private getAllActions(context: ObjectExplorerContext, getDefaultActions: (context: ObjectExplorerContext) => IAction[]) {
+	private getAllActions(context: ObjectExplorerContext, getDefaultActions: (context: ObjectExplorerContext) => IAction[], inlineOnly: boolean = false) {
 		// Create metadata needed to get a useful set of actions
 		let scopedContextService = this.getContextKeyService(context);
 		let menu = this.menuService.createMenu(MenuId.ObjectExplorerItemContext, scopedContextService);
@@ -113,8 +114,19 @@ export class ServerTreeActionProvider {
 		// Fill in all actions
 		const builtIn = getDefaultActions(context);
 		const actions: IAction[] = [];
-		const options = { arg: undefined, shouldForwardArgs: true };
-		const groups = menu.getActions(options);
+		const options = {
+			arg: undefined, shouldForwardArgs: true
+		};
+
+		if (inlineOnly) {
+			options.arg = {
+				connectionProfile: context.profile.toIConnectionProfile(),
+				nodeInfo: context.treeNode?.toNodeInfo(),
+				isConnectionNode: context.treeNode === undefined
+			}
+		}
+
+		let groups = menu.getActions(options);
 		let insertIndex: number | undefined = 0;
 		const queryIndex = groups.findIndex(v => {
 			if (v[0] === '0_query') {
@@ -127,25 +139,30 @@ export class ServerTreeActionProvider {
 			}
 		});
 		insertIndex = queryIndex > -1 ? insertIndex + groups[queryIndex][1].length : undefined;
-		fillInActions(groups, actions, false);
 
-		if (insertIndex) {
-			if (!(actions[insertIndex] instanceof Separator) && builtIn.length > 0) {
-				builtIn.unshift(new Separator());
-			}
-			actions?.splice(insertIndex, 0, ...builtIn);
-		} else {
-			if (actions.length > 0 && builtIn.length > 0) {
-				builtIn.push(new Separator());
-			}
+		if (inlineOnly) {
+			groups = groups.filter(g => g[0] === 'inline');
+			fillInActions(groups, actions, false);
 			actions.unshift(...builtIn);
+		} else {
+			fillInActions(groups, actions, false);
+			if (insertIndex) {
+				if (!(actions[insertIndex] instanceof Separator) && builtIn.length > 0 && !inlineOnly) {
+					builtIn.unshift(new Separator());
+				}
+				actions?.splice(insertIndex, 0, ...builtIn);
+			} else {
+				if (actions.length > 0 && builtIn.length > 0) {
+					builtIn.push(new Separator());
+				}
+				actions.unshift(...builtIn);
+			}
+
+			// Cleanup
+			scopedContextService.dispose();
+			menu.dispose();
 		}
-
-		// Cleanup
-		scopedContextService.dispose();
-		menu.dispose();
 		return actions;
-
 	}
 
 	private getBuiltinConnectionActions(context: ObjectExplorerContext): IAction[] {
@@ -166,6 +183,7 @@ export class ServerTreeActionProvider {
 	}
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
+		context.tree.getHTMLElement().removeAttribute('data-keybinding-context');
 		let scopedContextService = this._contextKeyService.createScoped(context.tree.getHTMLElement());
 		let connectionContextKey = new ConnectionContextKey(scopedContextService, this._queryManagementService);
 		let connectionProfile = context && context.profile;
@@ -199,8 +217,8 @@ export class ServerTreeActionProvider {
 	/**
 	 * Return actions for OE elements
 	 */
-	private getObjectExplorerNodeActions(context: ObjectExplorerContext): IAction[] {
-		return this.getAllActions(context, (context) => this.getBuiltInNodeActions(context));
+	private getObjectExplorerNodeActions(context: ObjectExplorerContext, inlineOnly: boolean = false): IAction[] {
+		return this.getAllActions(context, (context) => this.getBuiltInNodeActions(context), inlineOnly);
 	}
 
 	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {

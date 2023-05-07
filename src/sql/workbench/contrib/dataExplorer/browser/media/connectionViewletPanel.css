@@ -30,7 +30,7 @@
 	line-height: 20px;
 }
 
-.monaco-workbench > .activitybar .monaco-action-bar .action-label.serverTree {
+.monaco-workbench>.activitybar .monaco-action-bar .action-label.serverTree {
 	background-size: 22px;
 	background-repeat: no-repeat;
 	background-position: 50% !important;
@@ -46,13 +46,13 @@
 	color: #ffffff;
 }
 
-.server-explorer-viewlet  .monaco-action-bar .action-label {
+/* .server-explorer-viewlet  .monaco-action-bar .action-label {
 	margin-right: 0.3em;
 	margin-left: 0.3em;
 	line-height: 15px;
 	width: 10px !important;
 	height: 10px !important;
-}
+} */
 
 /* Add space beneath the button */
 .new-connection .monaco-text-button {
@@ -60,7 +60,7 @@
 }
 
 /* display action buttons on hover */
-.server-explorer-viewlet .monaco-tree .monaco-tree-row > .content,
+.server-explorer-viewlet .monaco-tree .monaco-tree-row>.content,
 .server-explorer-viewlet .monaco-list .monaco-list-row {
 	display: flex;
 }
@@ -86,10 +86,10 @@
 }
 
 /* OE and connection element group */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile,
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group,
-.monaco-list .monaco-list-rows > .monaco-list-row .connection-tile,
-.monaco-list .monaco-list-rows > .monaco-list-row .object-element-group {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile,
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.object-element-group,
+.monaco-list .monaco-list-rows>.monaco-list-row .connection-tile,
+.monaco-list .monaco-list-rows>.monaco-list-row .object-element-group {
 	padding-left: 5px;
 	padding-right: 5px;
 	padding-top: 3px;
@@ -98,72 +98,72 @@
 }
 
 /* OE server group */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group,
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group > .server-group {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content.server-group,
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content.server-group>.server-group {
 	padding-left: 5px;
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content.server-group {
 	padding-right: 5px;
 	padding-top: 5px;
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group > .server-group > .name {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content.server-group>.server-group>.name {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
 
 /* OE and connection label */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .label,
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group > .label,
-.monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .label,
-.monaco-list .monaco-list-rows > .monaco-list-row .object-element-group > .label {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile>.label,
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.object-element-group>.label,
+.monaco-list .monaco-list-rows>.monaco-list-row .connection-tile>.label,
+.monaco-list .monaco-list-rows>.monaco-list-row .object-element-group>.label {
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
 /* OE and connection icon */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon,
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .object-element-group > .icon,
-.monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon,
-.monaco-list .monaco-list-rows > .monaco-list-row .object-element-group > .icon {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile>.icon,
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.object-element-group>.icon,
+.monaco-list .monaco-list-rows>.monaco-list-row .connection-tile>.icon,
+.monaco-list .monaco-list-rows>.monaco-list-row .object-element-group>.icon {
 	float: left;
 	height: 16px;
 	width: 16px;
 	padding-right: 10px;
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
-.hc-light .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
-.monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
-.hc-light .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-profile-container > .icon.server-page,
-.hc-light .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-profile-container > .icon.server-page,
-.monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page,
-.hc-light .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile>.icon.server-page,
+.hc-light .monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile>.icon.server-page,
+.monaco-list .monaco-list-rows>.monaco-list-row .connection-tile>.icon.server-page,
+.hc-light .monaco-list .monaco-list-rows>.monaco-list-row .connection-tile>.icon.server-page,
+.monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-profile-container>.icon.server-page,
+.hc-light .monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-profile-container>.icon.server-page,
+.monaco-list .monaco-list-rows>.monaco-list-row .connection-profile-container>.icon.server-page,
+.hc-light .monaco-list .monaco-list-rows>.monaco-list-row .connection-profile-container>.icon.server-page {
 	background-image: url('default_server.svg');
 }
 
-.monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connection-profile-container > .icon.server-page,
-.hc-light .monaco-list:focus .monaco-list-rows > .monaco-list-row.selected .connection-profile-container > .icon.server-page {
+.monaco-list:focus .monaco-list-rows>.monaco-list-row.selected .connection-profile-container>.icon.server-page,
+.hc-light .monaco-list:focus .monaco-list-rows>.monaco-list-row.selected .connection-profile-container>.icon.server-page {
 	background-image: url('default_server_inverse.svg');
 }
 
-.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
-.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .icon.server-page,
-.vs-dark .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
-.hc-black .monaco-list .monaco-list-rows > .monaco-list-row .connection-tile > .icon.server-page,
-.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-profile-container > .icon.server-page,
-.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-profile-container > .icon.server-page,
-.vs-dark .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page,
-.hc-black .monaco-list .monaco-list-rows > .monaco-list-row .connection-profile-container > .icon.server-page {
+.vs-dark .monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile>.icon.server-page,
+.hc-black .monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-tile>.icon.server-page,
+.vs-dark .monaco-list .monaco-list-rows>.monaco-list-row .connection-tile>.icon.server-page,
+.hc-black .monaco-list .monaco-list-rows>.monaco-list-row .connection-tile>.icon.server-page,
+.vs-dark .monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-profile-container>.icon.server-page,
+.hc-black .monaco-tree .monaco-tree-rows>.monaco-tree-row>.content>.connection-profile-container>.icon.server-page,
+.vs-dark .monaco-list .monaco-list-rows>.monaco-list-row .connection-profile-container>.icon.server-page,
+.hc-black .monaco-list .monaco-list-rows>.monaco-list-row .connection-profile-container>.icon.server-page {
 	background-image: url('default_server_inverse.svg');
 }
 
 /* loading for OE node */
-.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .codicon.in-progress .connection-tile:before,
-.server-explorer-viewlet .monaco-tree .monaco-tree-rows > .monaco-tree-row > .codicon.in-progress .object-element-group:before {
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows>.monaco-tree-row>.codicon.in-progress .connection-tile:before,
+.server-explorer-viewlet .monaco-tree .monaco-tree-rows>.monaco-tree-row>.codicon.in-progress .object-element-group:before {
 	position: absolute;
 	display: block;
 	width: 36px;
@@ -237,7 +237,7 @@
 }
 
 .monaco-list-row .object-element-container .icon {
-	flex: 0 30px;
+	flex: 0 22px;
 }
 
 .monaco-list-row .connection-profile .connection-profile-container {
@@ -251,7 +251,7 @@
 }
 
 .monaco-list-row .connection-profile .connection-profile-container .icon {
-	flex: 0 30px;
+	flex: 0 22px;
 	position: relative;
 }
 
@@ -265,9 +265,26 @@
 	border-radius: 50%;
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row .icon,
-.monaco-list .monaco-list-rows > .monaco-list-row .icon {
+.monaco-tree .monaco-tree-rows>.monaco-tree-row .icon,
+.monaco-list .monaco-list-rows>.monaco-list-row .icon {
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: 16px 16px;
+}
+
+.server-explorer-viewlet .monaco-list .monaco-list-row .actions {
+	display: none;
+	padding-right: 10px;
+}
+
+.server-explorer-viewlet .monaco-list .monaco-list-row .actions .action-label {
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.server-explorer-viewlet .monaco-list .monaco-list-row:hover .actions,
+.server-explorer-viewlet .monaco-list .monaco-list-row.selected .actions,
+.server-explorer-viewlet .monaco-list .monaco-list-row.focused .actions {
+	display: block;
 }

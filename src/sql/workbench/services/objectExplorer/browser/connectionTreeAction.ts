@@ -21,6 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { SqlIconId } from 'sql/base/common/codicons';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { Codicon } from 'vs/base/common/codicons';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -42,7 +43,7 @@ export class RefreshAction extends Action {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@ILogService private _logService: ILogService
 	) {
-		super(id, label);
+		super(id, label, Codicon.refresh.classNames);
 	}
 	public override async run(): Promise<void> {
 		let treeNode: TreeNode | undefined = undefined;
@@ -101,8 +102,7 @@ export class EditConnectionAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label);
-		this.class = 'edit-server-action';
+		super(id, label, Codicon.edit.classNames);
 	}
 
 	public override async run(): Promise<void> {
@@ -122,7 +122,7 @@ export class DisconnectConnectionAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label);
+		super(id, label, Codicon.debugDisconnect.classNames);
 	}
 
 	override async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
@@ -221,8 +221,7 @@ export class EditServerGroupAction extends Action {
 		private _group: ConnectionProfileGroup,
 		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
-		super(id, label);
-		this.class = 'edit-server-group-action';
+		super(id, label, Codicon.edit.classNames);
 	}
 
 	public override run(): Promise<void> {
@@ -275,8 +274,7 @@ export class DeleteConnectionAction extends Action {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IDialogService private _dialogService: IDialogService
 	) {
-		super(id, label);
-		this.class = 'delete-connection-action';
+		super(id, label, Codicon.trash.classNames);
 		if (element instanceof ConnectionProfileGroup && element.id === UNSAVED_GROUP_ID) {
 			this.enabled = false;
 		}

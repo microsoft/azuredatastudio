@@ -25,6 +25,7 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ResourceLabel } from 'vs/workbench/browser/labels';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
 const DefaultConnectionIconClass = 'server-page';
 export interface ConnectionProfileGroupDisplayOptions {
@@ -35,11 +36,13 @@ class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
+	private _actionBar: ActionBar;
 
 	constructor(
 		container: HTMLElement,
 		private _option: ConnectionProfileGroupDisplayOptions,
-		@IInstantiationService private readonly _instantiationService: IInstantiationService
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		container.parentElement!.classList.add('async-server-group');
@@ -47,6 +50,9 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		this._root = dom.append(container, dom.$('.async-server-group-container'));
 		this._labelContainer = dom.append(this._root, dom.$('span.name'));
 		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
+		const actionsContainer = dom.append(this._label.element.element, dom.$('.actions'));
+		this._actionBar = new ActionBar(actionsContainer, {
+		});
 	}
 
 	set(element: ConnectionProfileGroup, filterData: FuzzyScore) {
@@ -67,6 +73,12 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		this._label.element.setLabel(element.name, '', {
 			matches: createMatches(filterData)
 		});
+		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
+		const tree = this._objectExplorerService.getServerTreeView().tree;
+		const actions = actionProvider.getActions(tree, element, true);
+		this._actionBar.context = element;
+		this._actionBar.clear();
+		this._actionBar.push(actions, { icon: true, label: false });
 	}
 }
 
@@ -95,6 +107,7 @@ class ConnectionProfileTemplate extends Disposable {
 	private _connectionStatusBadge: HTMLElement;
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
+	private _actionBar: ActionBar;
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
 	 * When set to true, like in the connection dialog recent connections tree, the connection
@@ -114,6 +127,9 @@ class ConnectionProfileTemplate extends Disposable {
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._labelContainer = dom.append(this._root, dom.$('div.label'));
 		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
+		const actionsContainer = dom.append(this._label.element.element, dom.$('.actions'));
+		this._actionBar = new ActionBar(actionsContainer, {
+		});
 	}
 
 	set(element: ConnectionProfile, filterData: FuzzyScore) {
@@ -135,7 +151,17 @@ class ConnectionProfileTemplate extends Disposable {
 		this._label.element.setLabel(labelText, '', {
 			matches: createMatches(filterData)
 		});
-		this._root.title = labelText;
+
+		const tree = this._objectExplorerService.getServerTreeView().tree;
+		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
+		const actions = actionProvider.getActions(tree, element, true);
+		this._actionBar.context = {
+			connectionProfile: element.toIConnectionProfile(),
+			nodeInfo: undefined,
+			isConnectionNode: true
+		}
+		this._actionBar.clear();
+		this._actionBar.push(actions, { icon: true, label: false });
 	}
 }
 
@@ -163,16 +189,21 @@ class TreeNodeTemplate extends Disposable {
 	private _icon: HTMLElement;
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
+	private _actionBar: ActionBar;
 
 	constructor(
 		container: HTMLElement,
-		@IInstantiationService private readonly _instantiationService: IInstantiationService
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		this._root = dom.append(container, dom.$('.object-element-container'));
 		this._icon = dom.append(this._root, dom.$('div.object-icon'));
 		this._labelContainer = dom.append(this._root, dom.$('div.label'));
 		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
+		const actionsContainer = dom.append(this._label.element.element, dom.$('.actions'));
+		this._actionBar = new ActionBar(actionsContainer, {
+		});
 	}
 
 	set(element: TreeNode, filterData: FuzzyScore) {
@@ -215,6 +246,16 @@ class TreeNodeTemplate extends Disposable {
 			matches: createMatches(filterData)
 		});
 		this._root.title = labelText;
+		const tree = this._objectExplorerService.getServerTreeView().tree;
+		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
+		const actions = actionProvider.getActions(tree, element, true);
+		this._actionBar.context = {
+			connectionProfile: element.getConnectionProfile().toIConnectionProfile(),
+			nodeInfo: element?.toNodeInfo(),
+			isConnectionNode: false
+		};
+		this._actionBar.clear();
+		this._actionBar.push(actions, { icon: true, label: false });
 	}
 }
 
