@@ -193,16 +193,9 @@ export class SummaryPage extends ImportPage {
 	 * @returns Updated connection string
 	 */
 	private updateConnectionStringForAccessToken(connString: string): string {
-		if (connString) {
-			let properties = connString.split(';');
-			const newProperties = properties.filter(prop => !prop.toLocaleLowerCase().startsWith('user')
-				&& !prop.toLocaleLowerCase().startsWith('uid')
-				&& !prop.toLocaleLowerCase().startsWith('password')
-				&& !prop.toLocaleLowerCase().startsWith('pwd')
-				&& !prop.toLocaleLowerCase().startsWith('authentication'));
-			connString = newProperties.join(';');
-		}
-		return connString;
+		return connString ? connString.split(';').filter(prop =>
+			!['user', 'uid', 'password', 'pwd', 'authentication'].some(prefix => prop.toLocaleLowerCase().startsWith(prefix))
+		).join(';') : connString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {
