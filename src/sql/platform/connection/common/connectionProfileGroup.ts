@@ -145,7 +145,6 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 			this._childConnections = this._childConnections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
 			conn.groupId = this.id;
-			conn.groupFullName = this.fullName;
 			this._childConnections.push(conn);
 		});
 
