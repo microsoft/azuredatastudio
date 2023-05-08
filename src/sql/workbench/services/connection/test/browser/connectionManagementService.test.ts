@@ -1100,7 +1100,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		originalProfileKey = originalProfile.getOptionsKey();
 		let newProfile = Object.assign({}, connectionProfile);
 		options.params.isEditConnection = true;
-		assert.rejects(async () => await connect(uri1, options, true, newProfile));
+		await assert.rejects(async () => await connect(uri1, options, true, newProfile));
 	});
 
 
