@@ -548,16 +548,6 @@
           "group": "inline@0"
         },
         {
-          "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "inline@1"
-        },
-        {
-          "command": "mssql.renameObject",
-          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
-          "group": "inline@1"
-        },
-        {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "inline@2",
