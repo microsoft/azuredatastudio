@@ -33,6 +33,8 @@ import { ILogService } from 'vs/platform/log/common/log';
  */
 export class ServerTreeActionProvider {
 
+	private scopedContextService: IContextKeyService;
+
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -142,7 +144,6 @@ export class ServerTreeActionProvider {
 		}
 
 		// Cleanup
-		scopedContextService.dispose();
 		menu.dispose();
 		return actions;
 
@@ -166,22 +167,28 @@ export class ServerTreeActionProvider {
 	}
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
-		let scopedContextService = this._contextKeyService.createScoped(context.tree.getHTMLElement());
-		let connectionContextKey = new ConnectionContextKey(scopedContextService, this._queryManagementService);
+		if (!this.scopedContextService) {
+			if (context.tree instanceof AsyncServerTree) {
+				this.scopedContextService = context.tree.contextKeyService;
+			} else {
+				this.scopedContextService = this._contextKeyService.createScoped(context.tree.getHTMLElement());
+			}
+		}
+		let connectionContextKey = new ConnectionContextKey(this.scopedContextService, this._queryManagementService);
 		let connectionProfile = context && context.profile;
 		connectionContextKey.set(connectionProfile);
-		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
+		let serverInfoContextKey = new ServerInfoContextKey(this.scopedContextService);
 		if (connectionProfile.id) {
 			let serverInfo = this._connectionManagementService.getServerInfo(connectionProfile.id);
 			if (serverInfo) {
 				serverInfoContextKey.set(serverInfo);
 			}
 		}
-		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService, this._capabilitiesService);
+		let treeNodeContextKey = new TreeNodeContextKey(this.scopedContextService, this._capabilitiesService);
 		if (context.treeNode) {
 			treeNodeContextKey.set(context.treeNode);
 		}
-		return scopedContextService;
+		return this.scopedContextService;
 	}
 
 	/**
