@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterApplicationRoleDocUrl, CreateApplicationRoleDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from './dialogBase';
+import { DefaultMaxTableHeight } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.ApplicationRoleInfo, ObjectManagement.ApplicationRoleViewInfo> {
@@ -33,7 +33,7 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.
 		this.objectInfo.password = this.objectInfo.password ?? '';
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateApplicationRoleDocUrl : AlterApplicationRoleDocUrl;
 	}
 

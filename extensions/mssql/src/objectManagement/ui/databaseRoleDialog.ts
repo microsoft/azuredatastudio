@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
-import { DefaultMaxTableHeight } from './dialogBase';
+import { DefaultMaxTableHeight } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
@@ -31,7 +31,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		super(objectManagementService, options, true);
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateDatabaseRoleDocUrl : AlterDatabaseRoleDocUrl;
 	}
 

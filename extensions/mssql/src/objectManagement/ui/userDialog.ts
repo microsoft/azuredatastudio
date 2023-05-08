@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from './dialogBase';
+import { DefaultMaxTableHeight } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
@@ -35,7 +35,7 @@ export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, Objec
 		super(objectManagementService, options, true);
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateUserDocUrl : AlterUserDocUrl;
 	}
 

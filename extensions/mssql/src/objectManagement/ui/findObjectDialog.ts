@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as mssql from 'mssql';
-import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableHeight, DialogBase, TableListItemComparer } from './dialogBase';
+import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableHeight, DialogBase, TableListItemComparer } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { getErrorMessage } from '../../utils';
 

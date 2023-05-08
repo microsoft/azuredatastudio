@@ -439,10 +439,18 @@ export class PanelComponent extends Disposable implements IThemable {
 
 			if (styles.selectedTabContrastBorder) {
 				content.push(`
+				.tabbedPanel > .title .tabList .tab-header:focus,
 				.tabbedPanel > .title .tabList .tab-header.selected {
-					outline: 1px solid;
+					outline-width: 1px;
 					outline-offset: -3px;
 					outline-color: ${styles.selectedTabContrastBorder};
+				}
+				.tabbedPanel > .title .tabList .tab-header.selected {
+					outline-style: dashed;
+				}
+				.tabbedPanel > .title .tabList .tab-header:focus,
+				.tabbedPanel > .title .tabList .tab-header.selected:focus {
+					outline-style: solid;
 				}
 			`);
 			}

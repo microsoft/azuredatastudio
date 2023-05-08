@@ -134,16 +134,12 @@
         <source xml:lang="en">Application name</source>
         <target state="translated">Имя приложения</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">Имя вложенного файла базы данных</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+      <trans-unit id="cms.connectionOptions.attachDbFilename.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
         <target state="translated">Имя первичного файла прикрепляемой базы данных, включая полный путь</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
+      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
         <target state="translated">Имя вложенного файла базы данных</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
@@ -167,12 +163,12 @@
         <target state="translated">Тип проверки подлинности</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="translated">Параметр шифрования столбца по умолчанию для всех команд подключения</target>
+        <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
+        <target state="translated">Включает или отключает Always Encrypted для подключения</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Column encryption</source>
-        <target state="translated">Шифрование столбцов</target>
+        <source xml:lang="en">Always Encrypted</source>
+        <target state="translated">Always Encrypted</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.commandTimeout.description">
         <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
@@ -229,6 +225,34 @@
       <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
         <source xml:lang="en">Current language</source>
         <target state="translated">Текущий язык</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
+        <source xml:lang="en">Azure Attestation</source>
+        <target state="translated">Аттестация Azure</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
+        <source xml:lang="en">Host Guardian Service</source>
+        <target state="translated">Служба защиты узла</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+        <source xml:lang="en">None</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.description">
+        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+        <target state="translated">Задает протокол для аттестации анклава на стороне сервера, используемого с Always Encrypted с защищенным анклавами</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.displayName">
+        <source xml:lang="en">Attestation protocol</source>
+        <target state="translated">Протокол аттестации</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.description">
+        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+        <target state="translated">Задает конечную точку для аттестации анклава на стороне сервера, используемого с Always Encrypted с защищенным анклавами</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.displayName">
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">URL-адрес аттестации</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -378,6 +402,14 @@
         <source xml:lang="en">Replication</source>
         <target state="translated">Репликация</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.secureEnclaves.description">
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">Включает или отключает защищенные анклавы для подключения</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.secureEnclaves.displayName">
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">Защищенные анклавы</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.description">
         <source xml:lang="en">Description of the SQL Server instance</source>
         <target state="translated">Описание экземпляра SQL Server</target>
@@ -393,6 +425,10 @@
       <trans-unit id="cms.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
         <target state="translated">Сервер</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.placeholder">
+        <source xml:lang="en">e.g. tcp:servername,1433</source>
+        <target state="translated">например, tcp:servername,1433</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
@@ -434,9 +470,17 @@
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
         <target state="translated">Поддержка управления Центральными серверами управления SQL Server</target>
       </trans-unit>
+      <trans-unit id="cms.disabled">
+        <source xml:lang="en">Disabled</source>
+        <target state="translated">Отключено</target>
+      </trans-unit>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
         <target state="translated">Центральные серверы управления SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Включено</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>

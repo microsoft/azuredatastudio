@@ -31,7 +31,7 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 		super(objectManagementService, options, false);
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateServerRoleDocUrl : AlterServerRoleDocUrl;
 	}
 

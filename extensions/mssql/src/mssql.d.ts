@@ -1365,6 +1365,22 @@ declare module 'mssql' {
 			 */
 			schema: string | undefined;
 		}
+
+		export interface Database extends SqlObject {
+			owner?: string;
+			collationName?: string;
+			recoveryModel?: string;
+			compatibilityLevel?: string;
+			containmentType?: string;
+		}
+
+		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
+			loginNames: string[];
+			collationNames: string[];
+			compatibilityLevels: string[];
+			containmentTypes: string[];
+			recoveryModels: string[];
+		}
 	}
 
 	export interface IObjectManagementService {

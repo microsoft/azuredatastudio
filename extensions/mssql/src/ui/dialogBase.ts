@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
-import * as localizedConstants from '../localizedConstants';
+import * as uiLoc from '../ui/localizedConstants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
@@ -39,7 +39,7 @@ export abstract class DialogBase<DialogResult> {
 
 	constructor(title: string, name: string, width: azdata.window.DialogWidth = 'narrow', style: azdata.window.DialogStyle = 'flyout') {
 		this.dialogObject = azdata.window.createModelViewDialog(title, name, width, style);
-		this.dialogObject.okButton.label = localizedConstants.OkText;
+		this.dialogObject.okButton.label = uiLoc.OkText;
 		this.dialogObject.registerCloseValidator(async (): Promise<boolean> => {
 			const confirmed = await this.onConfirmation();
 			if (!confirmed) {
@@ -83,7 +83,7 @@ export abstract class DialogBase<DialogResult> {
 					this._formContainer = this.createFormContainer([]);
 					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
 						loading: true,
-						loadingText: localizedConstants.LoadingDialogText,
+						loadingText: uiLoc.LoadingDialogText,
 						showText: true,
 						CSSStyles: {
 							width: "100%",
@@ -179,7 +179,7 @@ export abstract class DialogBase<DialogResult> {
 				data: data,
 				columns: [
 					{
-						value: localizedConstants.SelectedText,
+						value: uiLoc.SelectedText,
 						type: azdata.ColumnType.checkBox,
 						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
 					}, ...columnNames.map(name => {
@@ -241,11 +241,11 @@ export abstract class DialogBase<DialogResult> {
 			this.onFormFieldChange();
 			removeButton.enabled = table.selectedRows.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 		}
-		addButton = this.createButton(localizedConstants.AddText, addButtonAriaLabel, async () => {
+		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
 			await addHandler();
 			updateButtons();
 		});
-		removeButton = this.createButton(localizedConstants.RemoveText, removeButtonAriaLabel, async () => {
+		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
 			await removeHandler();
 			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
 				table.selectedRows = [table.data.length - 1];
