@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "若要在 {0} 中使用 Azure Data Studio，Azure Data Studio 需要重新啟動。",
 			"appName": "'${appName}': 例如 Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "下載",
+			"azuredatastudio.downloadTooltip": "從外部來源下載此延伸模組",
+			"azuredatastudio.installTooltip": "安裝此延伸模組",
 			"connectionDialogBrowseTree.context": "連線對話方塊的瀏覽樹狀操作功能表",
 			"dashboard.toolbar": "儀表板工具列動作功能表",
 			"dataExplorer.action": "Dataexplorer 檢視容器標題動作功能表",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "筆記本: Markdown 工具列圖示",
 			"notebookFindMatchHighlight": "其他搜尋相符項目的色彩。其不得為不透明色彩，以免隱藏底層裝飾。",
 			"notebookFindRangeHighlight": "限制搜尋之範圍的色彩。其不得為不透明色彩，以免隱藏底層裝飾。",
-			"queryEditorNullBackground": "查詢編輯器結果方格中 Null 值的背景色彩。",
+			"queryEditorNullBackground": "查詢編輯器結果方格中 Null 值的背景色彩。若要停用背景色彩，您可以使用透明色彩，例如 {0}。",
 			"tileBorder": "磚的框線色彩",
 			"tileBoxShadow": "磚方塊陰影色彩"
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "{0} 是不明容器。"
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "深入了解如何設定儀表板",
 			"dashboard.generalTabGroupHeader": "一般",
 			"home": "首頁",
 			"missingConnectionInfo": "此儀表板上找不到連線資訊"
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "正在載入內容...",
 			"localhost": "localhost",
 			"newNotebookAction": "新增 Notebook",
+			"newNotebookTask.newNotebook": "新增筆記本",
 			"newViewLabel": "建立新檢視",
 			"noContextAvailable": "無",
 			"noKernel": "沒有核心",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "新增連線",
+			"serverTreeViewChangeNotification": "伺服器樹狀已變更。請重新載入視窗以查看變更。",
+			"serverTreeViewChangeNotification.doNotReload": "不要重新載入",
+			"serverTreeViewChangeNotification.reload": "重新載入",
 			"servers.noConnections": "找不到連線。"
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "物件總管 Viewlet 中的自動展開伺服器群組。",
 			"serverGroup.colors": "在物件總管 Viewlet 中使用的伺服器群組調色盤。",
+			"serverTree.configuration.title": "伺服器樹狀目錄",
 			"serverTree.nodeExpansionTimeout": "在伺服器檢視中展開節點的逾時 (以秒為單位)",
-			"serverTree.useAsyncServerTree": "(預覽) 針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。"
+			"serverTree.useAsyncServerTree": "針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。需要重新開機才能生效。"
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "內建圖表",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "顯示預估執行方案",
 			"focusOnCurrentQueryKeyboardAction": "聚焦於目前的查詢",
 			"parseSyntaxLabel": "剖析查詢",
-			"queryActions.notConnected": "請連線至伺服器",
-			"queryActions.parseSyntaxFailure": "命令失敗:",
-			"queryActions.parseSyntaxSuccess": "已成功完成命令",
+			"queryActions.notConnected": "請先連線至伺服器再執行此動作。",
+			"queryActions.parseSyntaxFailure": "無法剖析查詢: {0}",
+			"queryActions.parseSyntaxSuccess": "已成功剖析查詢。",
 			"queryActions.queryResultsCopySuccess": "已成功複製查詢與結果。",
 			"queryShortcutNoEditor": "要執行的捷徑需要編輯器參數",
 			"refreshIntellisenseKeyboardAction": "重新整理 IntelliSense 快取",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "執行計劃",
 			"actualQueryPlan": "實際",
 			"cancelQueryLabel": "取消",
-			"changeConnectionDatabaseLabel": "變更連線",
+			"changeConnectionDatabaseLabel": "變更",
+			"changeConnectionDatabaseTooltip": "變更連線",
 			"changeDatabase.failed": "變更資料庫失敗",
 			"changeDatabase.failedWithError": "無法變更資料庫: {0}",
 			"connectDatabaseLabel": "連線",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "預估方案",
 			"newQueryTask.newQuery": "新增查詢",
 			"query.multiSelectionNotSupported": "當編輯器處於多重選取模式時，不支援執行查詢。",
-			"queryEditor.exportSqlAsNotebook": "匯出為筆記本",
+			"queryEditor.exportSqlAsNotebookLabel": "至筆記本",
+			"queryEditor.exportSqlAsNotebookTooltip": "匯出為筆記本",
+			"queryEditor.parse": "剖析",
 			"runQueryLabel": "執行",
 			"selectDatabase": "選擇資料庫"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "關閉",
 			"addAccountFailedCodeMessage": "{0} \r\n錯誤訊息: {1}",
 			"addAccountFailedGenericMessage": "新增帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "正在新增帳戶...",
+			"refreshAccountFailedGenericMessage": "重新整理帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。",
 			"refreshCanceled": "使用者已取消重新整理帳戶",
-			"refreshFailed": "0 \r\n錯誤訊息: 1"
+			"refreshFailed": "{0} \r\n錯誤訊息: {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure 帳戶",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "建立物件總管工作階段失敗",
 			"nodeExpansionError": "多個錯誤:",
-			"nodeExpansionTimeout": "提供者 {1} 節點 {0} 的節點擴充已逾時"
+			"nodeExpansionTimeout": "提供者 {1} 節點 {0} 的節點擴充已逾時",
+			"objectExplorerMissingConnectionForSession": "等候建立連線 “{1}” 的工作階段 “{0}” 時發生逾時。這可能是因為 OE 服務並未收到連線 “{1}” 的提供者對於 createNewSession 的回應",
+			"objectExplorerMissingSession": "等候建立工作階段 {0} 時逾時。這可能是因為 OE 服務並未收到提供者對於 createNewSession 的回應。",
+			"objectExplorerSessionIdMissing": "提供者 “{0}” 針對連線 “{1}” 傳回的工作階段識別碼無效。"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "已取消防火牆對話方塊",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "開始使用(&&S)",
 			"showReleaseNotes": "顯示入門指南"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0} (已篩選)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "'{0}' 的物件總管擴充逾時"
 		}
 	}
 }

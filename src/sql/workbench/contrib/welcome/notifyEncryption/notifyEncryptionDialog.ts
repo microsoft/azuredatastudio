@@ -21,10 +21,9 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { NOTIFY_ENCRYPT_SHOWN, NOTIFY_READMORE_LINK } from 'sql/workbench/contrib/welcome/constants';
 
 export class NotifyEncryptionDialog extends ErrorMessageDialog {
-	private static NOTIFY_ENCRYPT_SHOWN = 'workbench.notifyEncryptionShown';
-	private static NOTIFY_ENCRYPT_LINK = 'https://aka.ms/azuredatastudio-connection';
 
 	constructor(
 		@IThemeService themeService: IThemeService,
@@ -43,11 +42,11 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 	}
 
 	public override open(): void {
-		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.APPLICATION)) {
+		if (this._storageService.get(NOTIFY_ENCRYPT_SHOWN, StorageScope.APPLICATION)) {
 			return;
 		}
 
-		this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
+		this._storageService.store(NOTIFY_ENCRYPT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 
 		if (!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName)) {
 			return;
@@ -64,7 +63,7 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 		this._instantiationService.createInstance(Link, moreInfoLink,
 			{
 				label: localize('notifyEncryption.moreInfoLink', 'More information'),
-				href: NotifyEncryptionDialog.NOTIFY_ENCRYPT_LINK
+				href: NOTIFY_READMORE_LINK
 			}, undefined);
 	}
 }

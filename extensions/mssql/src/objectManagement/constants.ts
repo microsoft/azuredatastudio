@@ -11,7 +11,8 @@ export const enum FolderType {
 	DatabaseRoles = 'DatabaseRoles',
 	ServerLevelLogins = 'ServerLevelLogins',
 	ServerLevelServerRoles = 'ServerLevelServerRoles',
-	Users = 'Users'
+	Users = 'Users',
+	Databases = 'Databases'
 }
 
 export const PublicServerRoleName = 'public';
@@ -26,6 +27,7 @@ export const CreateApplicationRoleDocUrl = 'https://learn.microsoft.com/sql/t-sq
 export const AlterApplicationRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-application-role-transact-sql';
 export const CreateDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-role-transact-sql';
 export const AlterDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-role-transact-sql';
+export const CreateDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-database-transact-sql';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',

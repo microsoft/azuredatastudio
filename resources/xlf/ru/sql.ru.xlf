@@ -232,6 +232,18 @@
         <source xml:lang="en">Azure Data Studio</source>
         <target state="translated">Azure Data Studio</target>
       </trans-unit>
+      <trans-unit id="azuredatastudio.download">
+        <source xml:lang="en">Download</source>
+        <target state="translated">Скачать</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.downloadTooltip">
+        <source xml:lang="en">Download this extension from an external source</source>
+        <target state="translated">Скачать это расширение из внешнего источника</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.installTooltip">
+        <source xml:lang="en">Install this extension</source>
+        <target state="translated">Установить это расширение</target>
+      </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
         <target state="translated">Контекстное меню дерева просмотра диалогового окна подключения</target>
@@ -895,8 +907,8 @@ Default Skipped Commands:
         <target state="translated">Цвет диапазона, ограничивающего поиск. Цвет не должен быть непрозрачным, чтобы не скрыть расположенные ниже элементы оформления.</target>
       </trans-unit>
       <trans-unit id="queryEditorNullBackground">
-        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
-        <target state="translated">Цвет фона для значений NULL в сетке результатов редактора запросов.</target>
+        <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
+        <target state="translated">Цвет фона для значений "null" в сетке результатов редактора запросов. Чтобы отключить цвет фона, можно использовать прозрачный цвет, например {0}.</target>
       </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
@@ -2635,6 +2647,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="dashboard.configureDashboardTooltip">
+        <source xml:lang="en">Learn more about how to configure the dashboard</source>
+        <target state="translated">Подробнее о настройке панели мониторинга</target>
+      </trans-unit>
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">Общие</target>
@@ -5463,6 +5479,10 @@ Error: {1}</source>
         <source xml:lang="en">New Notebook</source>
         <target state="translated">Создать записную книжку</target>
       </trans-unit>
+      <trans-unit id="newNotebookTask.newNotebook">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">Новая записная книжка</target>
+      </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
         <target state="translated">Создать новое представление</target>
@@ -5835,6 +5855,18 @@ Error: {1}</source>
         <source xml:lang="en">New Connection</source>
         <target state="translated">Новое подключение</target>
       </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification">
+        <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+        <target state="translated">Дерево сервера изменено. Перезагрузите окно, чтобы увидеть изменения.</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+        <source xml:lang="en">Don't Reload</source>
+        <target state="translated">Не перезагружать</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.reload">
+        <source xml:lang="en">Reload</source>
+        <target state="translated">Перезагрузить</target>
+      </trans-unit>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
         <target state="translated">Подключения не найдены.</target>
@@ -5851,13 +5883,17 @@ Error: {1}</source>
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">Цветовая палитра группы серверов, используемых во вьюлете обозревателя объектов.</target>
       </trans-unit>
+      <trans-unit id="serverTree.configuration.title">
+        <source xml:lang="en">Server Tree</source>
+        <target state="translated">Дерево сервера</target>
+      </trans-unit>
       <trans-unit id="serverTree.nodeExpansionTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">Время ожидания в секундах для расширения узла в представлении "Серверы".</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(Предварительная версия.) Используйте новое дерево асинхронных серверов для представления серверов и диалогового окна подключения с поддержкой новых функций, таких как фильтрация динамических узлов.</target>
+        <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
+        <target state="translated">Используйте новое дерево асинхронных серверов для представления серверов и диалогового окна подключения с поддержкой новых функций, таких как фильтрация динамических узлов. Для вступления в силу требуется перезагрузка.</target>
       </trans-unit>
     </body>
   </file>
@@ -6248,16 +6284,16 @@ Error: {1}</source>
         <target state="translated">Синтаксический анализ запроса</target>
       </trans-unit>
       <trans-unit id="queryActions.notConnected">
-        <source xml:lang="en">Please connect to a server</source>
-        <target state="translated">Подключитесь к серверу</target>
+        <source xml:lang="en">Please connect to a server before running this action.</source>
+        <target state="translated">Прежде чем запускать это действие, подключитесь к серверу.</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxFailure">
-        <source xml:lang="en">Command failed: </source>
-        <target state="translated">Не удалось выполнить команду: </target>
+        <source xml:lang="en">Failed to parse the query: {0}</source>
+        <target state="translated">Не удалось проанализировать запрос: {0}</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxSuccess">
-        <source xml:lang="en">Commands completed successfully</source>
-        <target state="translated">Команды выполнены</target>
+        <source xml:lang="en">Successfully parsed the query.</source>
+        <target state="translated">Запрос успешно проанализирован.</target>
       </trans-unit>
       <trans-unit id="queryActions.queryResultsCopySuccess">
         <source xml:lang="en">Successfully copied query and results.</source>
@@ -6440,6 +6476,10 @@ Error: {1}</source>
         <target state="translated">Отмена</target>
       </trans-unit>
       <trans-unit id="changeConnectionDatabaseLabel">
+        <source xml:lang="en">Change</source>
+        <target state="translated">Изменить</target>
+      </trans-unit>
+      <trans-unit id="changeConnectionDatabaseTooltip">
         <source xml:lang="en">Change Connection</source>
         <target state="translated">Изменить подключение</target>
       </trans-unit>
@@ -6487,9 +6527,17 @@ Error: {1}</source>
         <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
         <target state="translated">Выполнение запроса не поддерживается, если редактор находится в режиме выбора нескольких элементов.</target>
       </trans-unit>
-      <trans-unit id="queryEditor.exportSqlAsNotebook">
+      <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+        <source xml:lang="en">To Notebook</source>
+        <target state="translated">В записную книжку</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
         <source xml:lang="en">Export as Notebook</source>
         <target state="translated">Экспортировать в виде записной книжки</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.parse">
+        <source xml:lang="en">Parse</source>
+        <target state="translated">Анализ</target>
       </trans-unit>
       <trans-unit id="runQueryLabel">
         <source xml:lang="en">Run</source>
@@ -7438,23 +7486,23 @@ Error Message: {1}</source>
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
         <target state="translated">Не удалось добавить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.</target>
       </trans-unit>
-      <trans-unit id="addAccountFailedMessage">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
-      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">Добавление учетной записи…</target>
+      </trans-unit>
+      <trans-unit id="refreshAccountFailedGenericMessage">
+        <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">Не удалось обновить учетную запись. Дополнительные сведения см. в журнале учетных записей Azure.</target>
       </trans-unit>
       <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">Обновление учетной записи было отменено пользователем</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
-Error Message: 1</source>
-        <target state="translated">0 
-Сообщение об ошибке: 1</target>
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="translated">{0} 
+Сообщение об ошибке: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -8682,6 +8730,18 @@ Error Message: 1</source>
         <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
         <target state="translated">Истекло время ожидания расширения узла {0} для поставщиков {1}.</target>
       </trans-unit>
+      <trans-unit id="objectExplorerMissingConnectionForSession">
+        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
+        <target state="translated">Истекло время ожидания создания сеанса {0} для подключения "{1}". Это могло произойти из-за того, что служба OE не получила отклик на createNewSession от поставщика для подключения "{1}"</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerMissingSession">
+        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
+        <target state="translated">Истекло время ожидания создания сеанса {0}. Это могло произойти из-за того, что служба OE не получила от поставщика отклик на createNewSession.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerSessionIdMissing">
+        <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
+        <target state="translated">Идентификатор сеанса, возвращенный поставщиком "{0}" для подключения "{1}" недопустим.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="ru">
@@ -8700,6 +8760,14 @@ Error Message: 1</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="filteredTreeElementName">
+        <source xml:lang="en">{0} (filtered)</source>
+        <target state="translated">{0} (применен фильтр)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="serversAriaLabel">
@@ -8713,6 +8781,14 @@ Error Message: 1</source>
       <trans-unit id="treeCreation.regTreeAriaLabel">
         <source xml:lang="en">Servers</source>
         <target state="translated">Серверы</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="objectExplorerTimeout">
+        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
+        <target state="translated">Истекло время ожидания расширения обозревателя объектов для "{0}"</target>
       </trans-unit>
     </body>
   </file>
