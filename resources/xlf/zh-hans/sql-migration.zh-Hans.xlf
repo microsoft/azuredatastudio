@@ -1332,15 +1332,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step2">
         <source xml:lang="en">Step 2: Use the keys below to register your integration runtime</source>
-        <target state="new">Step 2: Use the keys below to register your integration runtime</target>
+        <target state="translated">步骤 2: 使用以下密钥注册集成运行时</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="new">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</target>
+        <target state="translated">步骤 3: 单击“测试连接”按钮，以检查 Azure 数据库迁移服务与集成运行时之间的连接</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3.alternate">
         <source xml:lang="en">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="new">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</target>
+        <target state="translated">步骤 3: 单击上方“刷新”按钮，以检查 Azure 数据库迁移服务与集成运行时之间的连接</target>
       </trans-unit>
       <trans-unit id="sql.migration.issue.aria.label">
         <source xml:lang="en">Blocking Issue: {0}</source>
@@ -2124,15 +2124,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description1">
         <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
-        <target state="new">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</target>
+        <target state="translated">Azure 数据库迁移服务利用 Azure 数据工厂的自承载集成运行时处理源和目标之间的连接，并将备份从本地网络文件共享上传到 Azure (适用时)。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description2">
         <source xml:lang="en">Follow the instructions below to set up self-hosted integration runtime.</source>
-        <target state="new">Follow the instructions below to set up self-hosted integration runtime.</target>
+        <target state="translated">按照下面的说明安装自承载集成运行时。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.heading">
         <source xml:lang="en">Set up integration runtime</source>
-        <target state="new">Set up integration runtime</target>
+        <target state="translated">设置集成运行时</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -2182,9 +2182,9 @@ This may take some time.</source>
         <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
 
 See below for registration instructions.</source>
-        <target state="new">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
+        <target state="translated">未注册 Azure 数据库迁移服务。Azure 数据库迁移服务 "{0}" 需要向任意节点上的自承载集成运行时进行注册。
 
-See below for registration instructions.</target>
+请参阅下面的注册说明。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.prompt">
         <source xml:lang="en">{0} (change)</source>
@@ -2194,17 +2194,17 @@ See below for registration instructions.</target>
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes.</source>
-        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+        <target state="translated">Azure 数据库迁移服务 "{0}" 连接到在节点上运行的自承载集成运行时 - {1}
 
-For improved performance and high availability, you can register additional nodes.</target>
+为了提高性能和高可用性，你可以注册其他节点。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.ready.below">
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes. See below for registration instructions.</source>
-        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+        <target state="translated">Azure 数据库迁移服务 "{0}" 连接到在节点上运行的自承载集成运行时 - {1}
 
-For improved performance and high availability, you can register additional nodes. See below for registration instructions.</target>
+为了提高性能和高可用性，你可以注册其他节点。请参阅下面的注册说明。</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
@@ -2220,7 +2220,7 @@ For improved performance and high availability, you can register additional node
       </trans-unit>
       <trans-unit id="sql.migration.services.container.description.network">
         <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</source>
-        <target state="new">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</target>
+        <target state="translated">输入下面的信息以添加新 Azure 数据库迁移服务。若要注册自承载集成运行时，请在上一页上选择“我的数据库备份位于网络共享上”。</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
