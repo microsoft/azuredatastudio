@@ -1126,7 +1126,7 @@
       </trans-unit>
       <trans-unit id="saveProfileAsButtonText">
         <source xml:lang="en">Save As...</source>
-        <target state="translated">Сохранить как...</target>
+        <target state="translated">Сохранить как…</target>
       </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>

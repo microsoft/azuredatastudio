@@ -289,7 +289,7 @@
 			"runningDockerMessage": "Запуск контейнера Docker...",
 			"sameDatabase": "Та же база данных",
 			"save": "Сохранить",
-			"saveProfileAsButtonText": "Сохранить как...",
+			"saveProfileAsButtonText": "Сохранить как…",
 			"schema": "Схема",
 			"schemaCompare.compareErrorMessage": "Сбой при сравнении схем: {0}",
 			"schemaCompareAction": "Сравнение схем",

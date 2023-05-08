@@ -792,11 +792,11 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.xevents.description">
         <source xml:lang="en">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}</source>
-        <target state="new">For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}</target>
+        <target state="translated">선택한 데이터베이스에 대해 확장 이벤트 세션 파일을 선택적으로 제공하여 임시 또는 동적 SQL 쿼리 또는 응용 프로그램 데이터 계층을 통해 시작된 모든 DML 문을 평가합니다. {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.xevents.instructions">
         <source xml:lang="en">Select a folder where extended events session files (.xel and .xem) are stored</source>
-        <target state="new">Select a folder where extended events session files (.xel and .xem) are stored</target>
+        <target state="translated">확장 이벤트 세션 파일(.xel 및 .xem)이 저장된 폴더를 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.xevents.link">
         <source xml:lang="en">Learn more</source>
@@ -804,7 +804,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.database.assessment.xevents.title">
         <source xml:lang="en">Assess extended event sessions</source>
-        <target state="new">Assess extended event sessions</target>
+        <target state="translated">확장 이벤트 세션 평가</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.backup.load.error">
         <source xml:lang="en">An error occurred while accessing database details.</source>
@@ -1332,15 +1332,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step2">
         <source xml:lang="en">Step 2: Use the keys below to register your integration runtime</source>
-        <target state="new">Step 2: Use the keys below to register your integration runtime</target>
+        <target state="translated">2단계: 아래 키를 사용하여 통합 런타임을 등록합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="new">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</target>
+        <target state="translated">3단계: '연결 테스트' 단추를 클릭하여 Azure Database Migration Service와 통합 런타임 간의 연결을 확인합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3.alternate">
         <source xml:lang="en">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="new">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</target>
+        <target state="translated">3단계: 위의 새로 고침 단추를 클릭하여 Azure Database Migration Service와 통합 런타임 간의 연결을 확인합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.issue.aria.label">
         <source xml:lang="en">Blocking Issue: {0}</source>
@@ -2124,15 +2124,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description1">
         <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
-        <target state="new">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</target>
+        <target state="translated">Azure Database Migration Service는 Azure Data Factory의 자체 호스팅 통합 런타임을 활용하여 원본과 대상 간의 연결을 처리하고 온-프레미스 네트워크 파일 공유에서 Azure로 백업을 업로드합니다(해당하는 경우).</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description2">
         <source xml:lang="en">Follow the instructions below to set up self-hosted integration runtime.</source>
-        <target state="new">Follow the instructions below to set up self-hosted integration runtime.</target>
+        <target state="translated">아래 지침에 따라 자체 호스팅 통합 런타임을 설정합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.heading">
         <source xml:lang="en">Set up integration runtime</source>
-        <target state="new">Set up integration runtime</target>
+        <target state="translated">통합 런타임 설정</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -2182,9 +2182,9 @@ This may take some time.</source>
         <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
 
 See below for registration instructions.</source>
-        <target state="new">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
+        <target state="translated">Azure Database Migration Service가 등록되지 않았습니다. Azure Database Migration Service '{0}'를 노드에서 자체 호스팅 통합 런타임에 등록해야 합니다.
 
-See below for registration instructions.</target>
+아래에서 등록 지침을 확인하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.prompt">
         <source xml:lang="en">{0} (change)</source>
@@ -2194,17 +2194,17 @@ See below for registration instructions.</target>
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes.</source>
-        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+        <target state="translated">Azure Database Migration Service '{0}'이(가) 노드에서 실행되는 자체 호스팅 통합 런타임에 연결됨 - {1}
 
-For improved performance and high availability, you can register additional nodes.</target>
+향상된 성능과 고가용성을 위해 추가 노드를 등록할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.ready.below">
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes. See below for registration instructions.</source>
-        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
+        <target state="translated">Azure Database Migration Service '{0}'이(가) 노드에서 실행되는 자체 호스팅 통합 런타임에 연결됨 - {1}
 
-For improved performance and high availability, you can register additional nodes. See below for registration instructions.</target>
+향상된 성능과 고가용성을 위해 추가 노드를 등록할 수 있습니다. 아래에서 등록 지침을 확인하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
@@ -2220,7 +2220,7 @@ For improved performance and high availability, you can register additional node
       </trans-unit>
       <trans-unit id="sql.migration.services.container.description.network">
         <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</source>
-        <target state="new">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</target>
+        <target state="translated">새 Azure Database Migration Service를 추가하려면 아래에 정보를 입력하세요. 자체 호스팅 통합 런타임을 등록하려면 이전 페이지에서 '내 데이터베이스 백업이 네트워크 공유에 있음'을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
