@@ -5026,7 +5026,7 @@
 				},
 				{
 					"extensionId": "99",
-					"extensionName": "github-copilot",
+					"extensionName": "copilot",
 					"displayName": "GitHub Copilot",
 					"shortDescription": "Your AI pair programmer",
 					"publisher": {
