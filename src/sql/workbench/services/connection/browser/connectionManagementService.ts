@@ -533,6 +533,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.connectWithOptions(connection, uri, options, callbacks);
 	}
 
+
+	private duplicateEditErrorMessage(connection: interfaces.IConnectionProfile): void {
+		let groupNameBase = ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator;
+		let connectionOptionsKey = ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey());
+		// Must get connection group name here as it may not always be initialized.
+		let connectionGroupName = (connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
+			(groupNameBase + connection.groupFullName) : (groupNameBase + '<default>');
+		this._logService.error(`Profile edit for '${connection.id}' matches an existing profile with data: '${connectionOptionsKey}'`);
+		throw new Error(nls.localize('connection.duplicateEditErrorMessage', 'Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: \n\n {0}{1}', connectionOptionsKey, connectionGroupName));
+	}
+
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
@@ -546,11 +557,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			//Check to make sure the edits are not identical to another connection.
 			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
 				if (result) {
-					// Must get connection group name here as it may not always be initialized.
-					this._logService.error(`Profile edit for '${connection.id}' matches an existing profile with data: '${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}'`);
-					throw new Error(`Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: \n
-					${ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey())}${(connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
-							ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + connection.groupFullName : ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator + '<default>'}`);
+					this.duplicateEditErrorMessage(connection);
 				}
 			});
 		}

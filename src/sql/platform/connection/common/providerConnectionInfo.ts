@@ -243,8 +243,8 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		ids = ids.map(id => {
 			let result = '';
 			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
-			// Filter out group name for display purposes.
-			if (idParts[0] !== 'group') {
+			// Filter out group name for display purposes as well as empty values.
+			if (idParts[0] !== 'group' && idParts[1] !== '') {
 				result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
 				if (idParts.length >= 2) {
 					result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
