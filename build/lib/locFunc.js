@@ -71,7 +71,7 @@ function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messa
             delete objectContents[`${contentKey}`];
         }
     }
-    messages.contents = Object.assign(Object.assign({}, objectContents), messages.contents);
+    messages.contents = { ...objectContents, ...messages.contents };
     result[''] = [
         '--------------------------------------------------------------------------------------------',
         'Copyright (c) Microsoft Corporation. All rights reserved.',
@@ -141,9 +141,7 @@ function modifyI18nPackFiles(existingTranslationFolder, resultingTranslationPath
                 this.queue(translatedExtFile);
                 // exclude altered vscode extensions from having a new path even if we provide a new I18n file.
                 if (alteredVSCodeExtensions.indexOf(extension) === -1) {
-                    //handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as extension ID.
-                    //(Other extensions need to have publisher appended in front as their ID.)
-                    let adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
+                    let adsExtensionId = 'Microsoft.' + extension;
                     resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
                 }
             }
@@ -248,7 +246,7 @@ function refreshLangpacks() {
         try {
             fs.statSync(locExtFolder);
         }
-        catch (_a) {
+        catch {
             console.log('Language is not included in ADS yet: ' + langId);
             continue;
         }
@@ -311,7 +309,7 @@ function refreshLangpacks() {
                             }
                             fs.statSync(path.join(translationDataFolder, curr.path.replace('./translations', '')));
                         }
-                        catch (_a) {
+                        catch {
                             nonExistantExtensions.push(curr);
                         }
                     }
@@ -365,7 +363,7 @@ function renameVscodeLangpacks() {
         try {
             fs.statSync(locVSCODEFolder);
         }
-        catch (_a) {
+        catch {
             console.log('vscode pack is not in ADS yet: ' + langId);
             continue;
         }
