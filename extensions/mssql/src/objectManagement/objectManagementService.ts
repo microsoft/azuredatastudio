@@ -79,7 +79,7 @@ const ServerLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
 			displayName: 'VIEW ANY DATABASE'
 		}]
 	}, {
-		name: 'Server Role',
+		name: 'ServerRole',
 		displayName: 'Server Role',
 		permissions: [{
 			name: 'ALTER',
@@ -96,7 +96,7 @@ const ServerLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
 
 const DatabaseLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
 	{
-		name: 'Aggregate Function',
+		name: 'AggregateFunction',
 		displayName: 'Aggregate Function',
 		permissions: [{
 			name: 'EXECUTE',

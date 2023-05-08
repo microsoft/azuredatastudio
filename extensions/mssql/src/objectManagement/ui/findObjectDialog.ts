@@ -36,7 +36,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private objectsTable: azdata.TableComponent;
 	private objectsLoadingComponent: azdata.LoadingComponent;
 	private result: FindObjectDialogResult;
-	private selectedObjectTypes: string[] = [];
+	private selectedObjectTypes: ObjectType[] = [];
 	private allObjects: mssql.ObjectManagement.SearchResultItem[] = [];
 
 	constructor(private readonly objectManagementService: mssql.IObjectManagementService, private readonly options: FindObjectDialogOptions) {
@@ -45,7 +45,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.result = {
 			selectedObjects: []
 		};
-		this.selectedObjectTypes = options.objectTypes.map(item => this.getObjectTypeName(item));
+		this.selectedObjectTypes = [...options.objectTypes];
 	}
 
 	private getObjectTypeName(objectType: ObjectType): string {
@@ -117,7 +117,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.objectsLoadingComponent.loading = true;
 		this.findButton.enabled = false;
 		try {
-			const results = await this.objectManagementService.search(this.options.contextId, this.selectedObjectTypes);
+			const results = await this.objectManagementService.search(this.options.contextId, this.selectedObjectTypes.map(item => this.getObjectTypeName(item)));
 			this.allObjects.splice(0, this.allObjects.length, ...results);
 			let data;
 			if (this.options.multiSelect) {
