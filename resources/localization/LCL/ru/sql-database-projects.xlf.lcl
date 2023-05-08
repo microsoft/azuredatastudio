@@ -2654,7 +2654,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Save As...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сохранить как...]]></Val>
+            <Val><![CDATA[Сохранить как…]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Save Profile as...]]></Val>
