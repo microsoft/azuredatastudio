@@ -232,6 +232,18 @@
         <source xml:lang="en">Azure Data Studio</source>
         <target state="translated">Azure Data Studio</target>
       </trans-unit>
+      <trans-unit id="azuredatastudio.download">
+        <source xml:lang="en">Download</source>
+        <target state="translated">Télécharger</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.downloadTooltip">
+        <source xml:lang="en">Download this extension from an external source</source>
+        <target state="translated">Télécharger cette extension à partir d’une source externe</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.installTooltip">
+        <source xml:lang="en">Install this extension</source>
+        <target state="translated">Installer cette extension</target>
+      </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
         <target state="translated">Menu contextuel de l’arborescence de navigation de la boîte de dialogue de connexion</target>
@@ -895,8 +907,8 @@ Commandes ignorées par défaut :
         <target state="translated">Couleur de la plage limitant la recherche. La couleur ne doit pas être opaque pour ne pas masquer les ornements sous-jacents.</target>
       </trans-unit>
       <trans-unit id="queryEditorNullBackground">
-        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
-        <target state="translated">La couleur d'arrière-plan des valeurs nulles dans la grille de résultats de l'éditeur de requête.</target>
+        <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
+        <target state="translated">La couleur d'arrière-plan des valeurs nulles dans la grille de résultats de l'éditeur de requête. Pour désactiver la couleur de fond, vous pouvez utiliser une couleur transparente comme {0}.</target>
       </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
@@ -2635,6 +2647,10 @@ Commandes ignorées par défaut :
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext" target-language="fr">
     <body>
+      <trans-unit id="dashboard.configureDashboardTooltip">
+        <source xml:lang="en">Learn more about how to configure the dashboard</source>
+        <target state="translated">En savoir plus sur la configuration du tableau de bord</target>
+      </trans-unit>
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">Général</target>
@@ -5463,6 +5479,10 @@ Erreur : {1}</target>
         <source xml:lang="en">New Notebook</source>
         <target state="translated">Nouveau notebook</target>
       </trans-unit>
+      <trans-unit id="newNotebookTask.newNotebook">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">Nouveau Notebook</target>
+      </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
         <target state="translated">Créer une nouvelle vue</target>
@@ -5835,6 +5855,18 @@ Erreur : {1}</target>
         <source xml:lang="en">New Connection</source>
         <target state="translated">Nouvelle connexion</target>
       </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification">
+        <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+        <target state="translated">L'arborescence des serveurs a changé. Veuillez recharger la fenêtre pour voir les changements.</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+        <source xml:lang="en">Don't Reload</source>
+        <target state="translated">Ne pas recharger</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.reload">
+        <source xml:lang="en">Reload</source>
+        <target state="translated">Recharger</target>
+      </trans-unit>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
         <target state="translated">Aucune connexion.</target>
@@ -5851,13 +5883,17 @@ Erreur : {1}</target>
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">Palette de couleurs du groupe de serveurs utilisée dans la viewlet Explorateur d'objets.</target>
       </trans-unit>
+      <trans-unit id="serverTree.configuration.title">
+        <source xml:lang="en">Server Tree</source>
+        <target state="translated">Arborescence du serveur</target>
+      </trans-unit>
       <trans-unit id="serverTree.nodeExpansionTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">Délai d'attente en secondes pour développer un nœud dans la vue Serveurs</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(Préversion) Utilisez la nouvelle arborescence de serveur asynchrone pour la vue des serveurs et la boîte de dialogue de connexion avec prise en charge des nouvelles fonctionnalités, comme le filtrage dynamique de nœuds.</target>
+        <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
+        <target state="translated">Utilisez la nouvelle arborescence de serveurs asynchrones pour la vue Serveurs et la boîte de dialogue de connexion avec prise en charge de nouvelles fonctionnalités telles que le filtrage dynamique des nœuds. Nécessite un redémarrage pour prendre effet.</target>
       </trans-unit>
     </body>
   </file>
@@ -6248,16 +6284,16 @@ Erreur : {1}</target>
         <target state="translated">Analyser la requête</target>
       </trans-unit>
       <trans-unit id="queryActions.notConnected">
-        <source xml:lang="en">Please connect to a server</source>
-        <target state="translated">Connectez-vous à un serveur</target>
+        <source xml:lang="en">Please connect to a server before running this action.</source>
+        <target state="translated">Veuillez vous connecter à un serveur avant d'exécuter cette action.</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxFailure">
-        <source xml:lang="en">Command failed: </source>
-        <target state="translated">La commande a échoué : </target>
+        <source xml:lang="en">Failed to parse the query: {0}</source>
+        <target state="translated">Échec de l'analyse de la requête : {0}</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxSuccess">
-        <source xml:lang="en">Commands completed successfully</source>
-        <target state="translated">Commandes exécutées</target>
+        <source xml:lang="en">Successfully parsed the query.</source>
+        <target state="translated">L'analyse de la requête a réussi.</target>
       </trans-unit>
       <trans-unit id="queryActions.queryResultsCopySuccess">
         <source xml:lang="en">Successfully copied query and results.</source>
@@ -6440,6 +6476,10 @@ Erreur : {1}</target>
         <target state="translated">Annuler</target>
       </trans-unit>
       <trans-unit id="changeConnectionDatabaseLabel">
+        <source xml:lang="en">Change</source>
+        <target state="translated">Changer</target>
+      </trans-unit>
+      <trans-unit id="changeConnectionDatabaseTooltip">
         <source xml:lang="en">Change Connection</source>
         <target state="translated">Changer la connexion</target>
       </trans-unit>
@@ -6487,9 +6527,17 @@ Erreur : {1}</target>
         <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
         <target state="translated">L’exécution de la requête n’est pas prise en charge lorsque l’éditeur est en mode de sélection multiple.</target>
       </trans-unit>
-      <trans-unit id="queryEditor.exportSqlAsNotebook">
+      <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+        <source xml:lang="en">To Notebook</source>
+        <target state="translated">Vers l'ordinateur portable</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
         <source xml:lang="en">Export as Notebook</source>
         <target state="translated">Exporter au format Notebook</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.parse">
+        <source xml:lang="en">Parse</source>
+        <target state="translated">Analyser</target>
       </trans-unit>
       <trans-unit id="runQueryLabel">
         <source xml:lang="en">Run</source>
@@ -7438,23 +7486,23 @@ Message d'erreur : {1}</target>
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
         <target state="translated">Échec de l’ajout du compte. Pour plus d’informations, consultez le journal des comptes Azure.</target>
       </trans-unit>
-      <trans-unit id="addAccountFailedMessage">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
-      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">Ajout du compte...</target>
+      </trans-unit>
+      <trans-unit id="refreshAccountFailedGenericMessage">
+        <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">Échec de l’actualisation du compte. Pour plus d’informations, consultez le journal des comptes Azure.</target>
       </trans-unit>
       <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">L'actualisation du compte a été annulée par l'utilisateur</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
-Error Message: 1</source>
-        <target state="translated">0 
-Message d’erreur : 1</target>
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="translated">{0} 
+Message d’erreur : {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -8682,6 +8730,18 @@ Message d’erreur : 1</target>
         <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
         <target state="translated">L'expansion du nœud a expiré pour le nœud {0} pour les fournisseurs {1}</target>
       </trans-unit>
+      <trans-unit id="objectExplorerMissingConnectionForSession">
+        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
+        <target state="translated">Expiration du délai d’attente pour la création de session {0} pour la connexion « {1} ». Ceci est probablement dû au fait que le service OE n’a pas reçu de réponse pour createNewSession de la part du fournisseur pour la connexion « {1} »</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerMissingSession">
+        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
+        <target state="translated">Expiration du délai d’attente de la création de session {0}. Cela est probablement dû au fait que le service OE n’a pas reçu de réponse du fournisseur pour createNewSession.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerSessionIdMissing">
+        <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
+        <target state="translated">L’ID de session retourné par le fournisseur « {0} » pour le « {1} » de connexion n’est pas valide.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="fr">
@@ -8700,6 +8760,14 @@ Message d’erreur : 1</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="filteredTreeElementName">
+        <source xml:lang="en">{0} (filtered)</source>
+        <target state="translated">{0} (filtré)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="serversAriaLabel">
@@ -8713,6 +8781,14 @@ Message d’erreur : 1</target>
       <trans-unit id="treeCreation.regTreeAriaLabel">
         <source xml:lang="en">Servers</source>
         <target state="translated">Serveurs</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="objectExplorerTimeout">
+        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
+        <target state="translated">Explorateur d’objets d’extension de '{0}' a expiré</target>
       </trans-unit>
     </body>
   </file>

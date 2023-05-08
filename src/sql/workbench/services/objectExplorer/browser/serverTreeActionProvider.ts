@@ -10,7 +10,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
 	DisconnectConnectionAction, EditConnectionAction,
-	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction
+	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildrenAction, RemoveFilterAction
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -27,11 +27,15 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 /**
  *  Provides actions for the server tree elements
  */
 export class ServerTreeActionProvider {
+
+	private scopedContextService: IContextKeyService;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -40,7 +44,8 @@ export class ServerTreeActionProvider {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -156,11 +161,10 @@ export class ServerTreeActionProvider {
 				}
 				actions.unshift(...builtIn);
 			}
-
-			// Cleanup
-			scopedContextService.dispose();
-			menu.dispose();
 		}
+
+		// Cleanup
+		menu.dispose();
 		return actions;
 	}
 
@@ -182,23 +186,28 @@ export class ServerTreeActionProvider {
 	}
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
-		context.tree.getHTMLElement().removeAttribute('data-keybinding-context');
-		let scopedContextService = this._contextKeyService.createScoped(context.tree.getHTMLElement());
-		let connectionContextKey = new ConnectionContextKey(scopedContextService, this._queryManagementService);
+		if (!this.scopedContextService) {
+			if (context.tree instanceof AsyncServerTree) {
+				this.scopedContextService = context.tree.contextKeyService;
+			} else {
+				this.scopedContextService = this._contextKeyService.createScoped(context.tree.getHTMLElement());
+			}
+		}
+		let connectionContextKey = new ConnectionContextKey(this.scopedContextService, this._queryManagementService);
 		let connectionProfile = context && context.profile;
 		connectionContextKey.set(connectionProfile);
-		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
+		let serverInfoContextKey = new ServerInfoContextKey(this.scopedContextService);
 		if (connectionProfile.id) {
 			let serverInfo = this._connectionManagementService.getServerInfo(connectionProfile.id);
 			if (serverInfo) {
 				serverInfoContextKey.set(serverInfo);
 			}
 		}
-		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService, this._capabilitiesService);
+		let treeNodeContextKey = new TreeNodeContextKey(this.scopedContextService, this._capabilitiesService);
 		if (context.treeNode) {
 			treeNodeContextKey.set(context.treeNode);
 		}
-		return scopedContextService;
+		return this.scopedContextService;
 	}
 
 	/**
@@ -234,8 +243,16 @@ export class ServerTreeActionProvider {
 		// Contribute refresh action for scriptable objects via contribution
 		if (!this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
-		}
 
+			// Adding filter action if the node has filter properties
+			if (treeNode?.filterProperties?.length > 0 && this._configurationService.getValue<boolean>(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
+				actions.push(this._instantiationService.createInstance(FilterChildrenAction, FilterChildrenAction.ID, FilterChildrenAction.LABEL, context.treeNode));
+			}
+			// Adding remove filter action if the node has filters applied to it.
+			if (treeNode?.filters?.length > 0) {
+				actions.push(this._instantiationService.createInstance(RemoveFilterAction, RemoveFilterAction.ID, RemoveFilterAction.LABEL, context.treeNode, context.tree, undefined));
+			}
+		}
 		return actions;
 	}
 
