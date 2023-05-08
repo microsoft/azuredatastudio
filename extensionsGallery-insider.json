@@ -5073,12 +5073,13 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": "*"
+									"value": ">=1.44.0"
 								}
 							]
 						}
 					],
-					"statistics": []
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
