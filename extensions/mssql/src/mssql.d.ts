@@ -1359,7 +1359,7 @@ declare module 'mssql' {
 			/**
 			 * type of the object.
 			 */
-			type: NodeType;
+			type: string;
 			/**
 			 * schema of the object.
 			 */
