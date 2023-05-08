@@ -539,12 +539,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
-							self.callExpandOrRefreshFromProvider(provider, {
+							let expandRequest: azdata.ExpandNodeInfo = {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
 								securityToken: session.securityToken,
-								filters: node.filters
-							}, refresh).then(isExpanding => {
+							};
+							if (node?.filters?.length > 0) {
+								expandRequest.filters = node.filters;
+							}
+							self.callExpandOrRefreshFromProvider(provider, expandRequest, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
 									let emptyResult: azdata.ObjectExplorerExpandInfo = {
