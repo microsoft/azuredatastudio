@@ -77,22 +77,26 @@
       {
         "command": "mssql.newObject",
         "category": "MSSQL",
-        "title": "%title.newObject%"
+        "title": "%title.newObject%",
+        "icon": "$(add)"
       },
       {
         "command": "mssql.objectProperties",
         "category": "MSSQL",
-        "title": "%title.objectProperties%"
+        "title": "%title.objectProperties%",
+        "icon": "$(list-flat)"
       },
       {
         "command": "mssql.deleteObject",
         "category": "MSSQL",
-        "title": "%title.deleteObject%"
+        "title": "%title.deleteObject%",
+        "icon": "$(trash)"
       },
       {
         "command": "mssql.renameObject",
         "category": "MSSQL",
-        "title": "%title.renameObject%"
+        "title": "%title.renameObject%",
+        "icon": "$(edit)"
       },
       {
         "command": "mssql.enableGroupBySchema",
@@ -531,13 +535,39 @@
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
-          "group": "inline",
+          "group": "inline@0",
           "isDefault": true
         },
         {
           "command": "mssql.newTable",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
-          "group": "inline"
+          "group": "inline@0"
+        },
+        {
+          "command": "mssql.newObject",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@0"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@1"
+        },
+        {
+          "command": "mssql.renameObject",
+          "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@2",
+          "isDefault": true
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@3"
         }
       ],
       "dataExplorer/context": [

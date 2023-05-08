@@ -46,14 +46,6 @@
 	color: #ffffff;
 }
 
-/* .server-explorer-viewlet  .monaco-action-bar .action-label {
-	margin-right: 0.3em;
-	margin-left: 0.3em;
-	line-height: 15px;
-	width: 10px !important;
-	height: 10px !important;
-} */
-
 /* Add space beneath the button */
 .new-connection .monaco-text-button {
 	margin-bottom: 2px;

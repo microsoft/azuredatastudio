@@ -141,9 +141,16 @@ export class ServerTreeActionProvider {
 		insertIndex = queryIndex > -1 ? insertIndex + groups[queryIndex][1].length : undefined;
 
 		if (inlineOnly) {
-			groups = groups.filter(g => g[0] === 'inline');
+			groups = groups.filter(g => g[0].includes('inline'));
 			fillInActions(groups, actions, false);
 			actions.unshift(...builtIn);
+			// Moving refresh action to the end of the list
+			const refreshIndex = actions.findIndex(f => {
+				return f instanceof RefreshAction;
+			});
+			if (refreshIndex > -1) {
+				actions.push(actions.splice(refreshIndex, 1)[0]);
+			}
 		} else {
 			fillInActions(groups, actions, false);
 			if (insertIndex) {
