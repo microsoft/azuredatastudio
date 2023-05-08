@@ -27,7 +27,6 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IGenericMarkProperties } from 'vs/platform/terminal/common/terminalProcess';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { Codicon } from 'vs/base/common/codicons';
-import { AudioCue, IAudioCueService } from 'vs/workbench/contrib/audioCues/browser/audioCueService';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 const enum DecorationSelector {
@@ -71,7 +70,6 @@ export class DecorationAddon extends Disposable implements ITerminalAddon {
 		@IThemeService private readonly _themeService: IThemeService,
 		@IOpenerService private readonly _openerService: IOpenerService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
-		@IAudioCueService private readonly _audioCueService: IAudioCueService,
 		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		super();
