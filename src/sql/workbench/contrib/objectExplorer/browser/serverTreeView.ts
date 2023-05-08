@@ -336,7 +336,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				}
 				if (newParent) {
 					newParent.addOrReplaceConnection(movedConnection);
+					await this._tree.rerender(newParent);
+					await this._tree.makeElementDirty(newParent);
 					await this._tree.updateChildren(newParent);
+					await this._tree.expand(newParent);
 				}
 				const newConnection = this._tree.getElementById(movedConnection.id);
 				if (newConnection) {
@@ -516,14 +519,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			}
 			// Delete the node from the tree
 			await this._objectExplorerService.deleteObjectExplorerNode(connectionProfile);
-			// Collapse the node
-			await this._tree.collapse(connectionProfile);
 			// Rerendering node to turn the badge red
 			await this._tree.rerender(connectionProfile);
 			connectionProfile.isDisconnecting = true;
 			await this._tree.updateChildren(connectionProfile);
 			connectionProfile.isDisconnecting = false;
 			// Make the connection dirty so that the next expansion will refresh the node
+			// Collapse the node
+			await this._tree.collapse(connectionProfile);
 			await this._tree.makeElementDirty(connectionProfile);
 			await this._tree.revealSelectFocusElement(connectionProfile);
 		}
