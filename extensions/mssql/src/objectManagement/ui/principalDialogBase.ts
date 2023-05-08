@@ -9,8 +9,8 @@ import * as localizedConstants from '../localizedConstants';
 
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { FindObjectDialog } from './findObjectDialog';
-import { getTableHeight } from './dialogBase';
-import { deepClone } from '../utils';
+import { deepClone } from '../../util/objects';
+import { getTableHeight } from '../../ui/dialogBase';
 
 const GrantColumnIndex = 2;
 const WithGrantColumnIndex = 3;
