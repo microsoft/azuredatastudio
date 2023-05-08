@@ -1818,14 +1818,27 @@ declare module 'azdata' {
 		/**
 		 * The list of choices for the filter property if the type is choice
 		 */
-		choices: string[];
+		choices: NodeFilterChoicePropertyValue[];
+	}
+
+	export interface NodeFilterChoicePropertyValue {
+		/**
+		 * The value of the choice
+		 */
+		value: string;
+		/**
+		 * The display name of the choice
+		 * If not specified, the value will be used as the display name
+		 * If specified, the display name will be used in the dropdown
+		 */
+		displayName?: string;
 	}
 
 	export interface NodeFilter {
 		/**
 		 * The name of the filter property
 		 */
-		name: string;
+		displayName: string;
 		/**
 		 * The operator of the filter property
 		 */
@@ -1833,7 +1846,7 @@ declare module 'azdata' {
 		/**
 		 * The applied values of the filter property
 		 */
-		value: string | string[] | number | boolean | undefined;
+		value: string | string[] | number | number[] | boolean | undefined;
 	}
 
 	export enum NodeFilterPropertyDataType {

@@ -47,6 +47,7 @@ import { ActionRunner } from 'vs/base/common/actions';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { USE_ASYNC_SERVER_TREE_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { FilterDialog } from 'sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -586,6 +587,43 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		} else {
 			return this._tree!.refresh(element);
 		}
+	}
+
+	public async filterElementChildren(node: TreeNode): Promise<void> {
+		await FilterDialog.getFiltersForProperties(
+			node.filterProperties,
+			localize('objectExplorer.filterDialogTitle', "(Preview) Filter Settings: {0}", node.getConnectionProfile().title),
+			localize('objectExplorer.nodePath', "Node Path: {0}", node.nodePath),
+			node.filters,
+			async (filters) => {
+				let errorListener;
+				try {
+					let expansionError = undefined;
+					errorListener = this._objectExplorerService.onUpdateObjectExplorerNodes(e => {
+						if (e.errorMessage) {
+							expansionError = e.errorMessage;
+						}
+						errorListener.dispose();
+					});
+					node.forceRefresh = true;
+					node.filters = filters || [];
+					if (this._tree instanceof AsyncServerTree) {
+						await this._tree.rerender(node);
+					}
+					await this.refreshElement(node);
+					await this._tree.expand(node);
+					if (expansionError) {
+						throw new Error(expansionError);
+					}
+				} finally {
+					if (errorListener) {
+						errorListener.dispose();
+					}
+				}
+				return;
+			},
+			this._instantiationService
+		);
 	}
 
 	/**

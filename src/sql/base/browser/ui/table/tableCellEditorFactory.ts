@@ -41,7 +41,7 @@ export class TableCellEditorFactory {
 		};
 	}
 
-	public getTextEditorClass(context: any, inputType: 'text' | 'number' = 'text'): any {
+	public getTextEditorClass(context: any, inputType: 'text' | 'number' | 'date' = 'text', presetValue?: string): any {
 		const self = this;
 		class TextEditor extends Disposable {
 			private _originalValue: string;
@@ -76,6 +76,8 @@ export class TableCellEditorFactory {
 				this._register(self._options.onStyleChange(() => {
 					self._options.editorStyler(this._input);
 				}));
+
+				this._input.value = presetValue ?? '';
 			}
 
 			private async commitEdit(): Promise<void> {
@@ -96,11 +98,21 @@ export class TableCellEditorFactory {
 
 			public loadValue(item: Slick.SlickData): void {
 				this._originalValue = self._options.valueGetter(item, this._args.column) ?? '';
-				this._input.value = this._originalValue;
+				if (inputType === 'date') {
+					this._input.inputElement.valueAsDate = new Date(this._originalValue);
+				} else {
+					this._input.value = this._originalValue;
+				}
 			}
 
 			public applyValue(item: Slick.SlickData, state: string): void {
 				const activeCell = this._args.grid.getActiveCell();
+				if (inputType === 'date') {
+					// Usually, the date picker will return the date in the local time zone and change the date to the previous day.
+					// We need to convert the date to UTC time zone to avoid this behavior so that the date will be the same as the
+					// date picked in the date picker.
+					state = new Date(state).toLocaleDateString(window.navigator.language, { timeZone: 'UTC' });
+				}
 				self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
 			}
 
