@@ -5069,7 +5069,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.25.0"
+									"value": ">=1.68.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
