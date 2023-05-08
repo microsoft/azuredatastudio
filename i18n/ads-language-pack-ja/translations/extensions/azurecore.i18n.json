@@ -20,10 +20,15 @@
 			"azure.owningTenantNotFound": "アカウントの所有テナント情報が見つかりません。",
 			"azure.responseError": "トークンの取得がエラーで失敗しました。詳細は、[開発者ツールを開く]({0})。",
 			"azure.tenantNotFound": "ID '{0}' の指定されたテナントが見つかりません。",
-			"azurecore.consentDialog.body": "テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio はこのテナント {0} ({1}) の認証をトリガーしなくなり、リソースにアクセスできなくなります。\r\n\r\nこのテナントのリソースへのアクセスを再度許可するには、'{2}' 設定の除外リストからテナントを削除する必要があります。\r\n\r\n続行しますか?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "確認",
+			"azurecore.consentDialog.authenticate": "キャンセルと認証",
+			"azurecore.consentDialog.body": "テナント {0} ({1}) では、 {2} リソースにアクセスするために再認証する必要があります。[開く] を押して認証プロセスを開始します。",
 			"azurecore.consentDialog.cancel": "キャンセル",
 			"azurecore.consentDialog.ignore": "テナントの無視",
 			"azurecore.consentDialog.open": "開く",
+			"msal.accountNotFoundError": "トークンを取得するときにアカウント情報が見つかりません。",
+			"msal.resourceNotFoundError": "Azure Resource {0}の構成が見つかりません",
 			"noMicrosoftResource": "プロバイダー '{0}' には、Microsoft リソース エンドポイントが定義されていません。"
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -43,7 +48,8 @@
 			"azure.NoAuthMethod.Selected": "Azure 認証方法が選択されていません。使用する認証方法を選択する必要があります。",
 			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken の呼び出しが行われました。このメソッドは非推奨であり、今後のリリースで削除されます。代わりに getAccountSecurityToken を使用してください。",
 			"genericTokenError": "トークンを取得できませんでした",
-			"msalTokenError": "トークンの取得中に {0} が発生しました。\r\n{1}"
+			"msalTokenError": "トークンの取得中に {0} が発生しました。\r\n{1}",
+			"tenantIgnoredError": "無視リストにテナントが見つかりましたが、認証は試行されませんでした。このテナントからリソースにアクセスする場合は、settings.json ファイル: {1} の無視リストからテナント {0} を削除できます。"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "トークン キャッシュをクリアできませんでした",
@@ -132,6 +138,7 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure アカウントの表示"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.flatAccountTreeNode.noResourcesLabel": "リソースは見つかりませんでした。",
 			"azure.resource.throttleerror": "このアカウントからの要求は抑えられています。再試行するには、より小さいサブスクリプション数を選択してください。",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} サブスクリプション)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 読み込んでいます...",
@@ -170,6 +177,8 @@
 			"azurecore.centralus": "米国中部",
 			"azurecore.centraluseuap": "米国中部 EUAP",
 			"azurecore.deprecated": "警告: ADAL は非推奨となり、今後のリリースで削除される予定です。代わりに MSAL を使用してください。",
+			"azurecore.disable": "無効",
+			"azurecore.dismiss": "却下",
 			"azurecore.eastasia": "東アジア",
 			"azurecore.eastus": "米国東部",
 			"azurecore.eastus2": "米国東部 2",
@@ -191,6 +200,7 @@
 			"azurecore.northeurope": "北ヨーロッパ",
 			"azurecore.norwayeast": "ノルウェー東部",
 			"azurecore.norwaywest": "ノルウェー西部",
+			"azurecore.piiLogging.warning": "警告: Azure PII ログが有効になっています。このオプションを有効にすると、個人を特定できる情報をログに記録でき、デバッグ目的でのみ使用する必要があります。",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL サーバー",
 			"azurecore.reload": "再読み込み",
 			"azurecore.reloadChoice": "Azure Data Studio の再読み込み",
@@ -238,7 +248,7 @@
 			"azure.resource.signin.title": "Azure: サインイン",
 			"azure.resource.startterminal.title": "Cloud Shell の開始",
 			"azure.resource.view.title": "Azure (プレビュー)",
-			"azure.tenant.config.filter.description": "Azure リソースの照会時に無視するテナント ID の一覧。各要素はテナント ID です。",
+			"azure.tenant.config.filter.description": "Azure リソースのクエリまたは認証トークンの要求時にスキップされるテナント ID の一覧。",
 			"azure.title": "Azure",
 			"config.authenticationLibrary": "AAD 認証フローに使用されるライブラリ。このオプションを変更した後は ADS を再起動してください。",
 			"config.azureAccountConfigurationSection": "Azure アカウント構成",

@@ -46,9 +46,29 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">Der angegebene Mandant mit der ID "{0}" wurde nicht gefunden.</target>
       </trans-unit>
+      <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
+        <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
+
+To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
+
+Do you wish to proceed?</source>
+        <target state="translated">Azure Data Studio löst keine Authentifizierung für diesen Mandanten {0} ({1}) aus, und auf Ressourcen kann nicht zugegriffen werden. 
+
+Um den Zugriff auf Ressourcen für diesen Mandanten erneut zuzulassen, müssen Sie den Mandanten aus der Ausschlussliste in der Einstellung '{2}' entfernen.
+
+Möchten Sie den Vorgang fortsetzen?</target>
+      </trans-unit>
+      <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
+        <source xml:lang="en">Confirm</source>
+        <target state="translated">Bestätigen</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.authenticate">
+        <source xml:lang="en">Cancel and Authenticate</source>
+        <target state="translated">Abbrechen und authentifizieren</target>
+      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
-        <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
-        <target state="translated">Für Ihren Mandanten "{0} ({1})" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf "Öffnen", um den Authentifizierungsvorgang zu starten.</target>
+        <source xml:lang="en">Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+        <target state="translated">Für Ihren Mandanten {0} ({1}) müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf "Öffnen", um den Authentifizierungsvorgang zu starten.</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -61,6 +81,14 @@
       <trans-unit id="azurecore.consentDialog.open">
         <source xml:lang="en">Open</source>
         <target state="translated">Öffnen</target>
+      </trans-unit>
+      <trans-unit id="msal.accountNotFoundError">
+        <source xml:lang="en">Unable to find account info when acquiring token.</source>
+        <target state="translated">Beim Abrufen des Tokens wurden keine Kontoinformationen gefunden.</target>
+      </trans-unit>
+      <trans-unit id="msal.resourceNotFoundError">
+        <source xml:lang="en">Unable to find configuration for Azure Resource {0}</source>
+        <target state="translated">Die Konfiguration für Azure-Resource {0} wurde nicht gefunden</target>
       </trans-unit>
       <trans-unit id="noMicrosoftResource">
         <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
@@ -131,6 +159,10 @@
 {1}</source>
         <target state="translated">Beim Abrufen des Tokens ist {0} aufgetreten. 
 {1}</target>
+      </trans-unit>
+      <trans-unit id="tenantIgnoredError">
+        <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
+        <target state="translated">Der Mandant wurde in der Liste "Ignorieren" gefunden. Es wurde keine Authentifizierung versucht. Sie können die Mandanten-{0} aus der Liste der zu ignorierenden Elemente in der Datei "settings.json" entfernen: {1}, wenn Sie auf Ressourcen von diesem Mandanten zugreifen möchten.</target>
       </trans-unit>
     </body>
   </file>
@@ -394,6 +426,10 @@
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found.</source>
+        <target state="translated">Keine Ressourcen gefunden.</target>
+      </trans-unit>
       <trans-unit id="azure.resource.throttleerror">
         <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
         <target state="translated">Anforderungen von diesem Konto wurden gedrosselt. Wählen Sie eine geringere Anzahl von Abonnements aus, um den Vorgang zu wiederholen.</target>
@@ -533,6 +569,14 @@
         <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
         <target state="translated">Warnung: ADAL ist veraltet und wird voraussichtlich in einer zukünftigen Version entfernt werden. Bitte verwenden Sie stattdessen MSAL.</target>
       </trans-unit>
+      <trans-unit id="azurecore.disable">
+        <source xml:lang="en">Disable</source>
+        <target state="translated">Deaktivieren</target>
+      </trans-unit>
+      <trans-unit id="azurecore.dismiss">
+        <source xml:lang="en">Dismiss</source>
+        <target state="translated">Schließen</target>
+      </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>
         <target state="translated">Asien, Osten</target>
@@ -616,6 +660,10 @@
       <trans-unit id="azurecore.norwaywest">
         <source xml:lang="en">Norway West</source>
         <target state="translated">Norwegen, Westen</target>
+      </trans-unit>
+      <trans-unit id="azurecore.piiLogging.warning">
+        <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
+        <target state="translated">Warnung: Die Azure-PII-Protokollierung ist aktiviert. Wenn Sie diese Option aktivieren, können personenbezogene Informationen protokolliert werden. Sie dürfen nur zu Debugzwecken verwendet werden.</target>
       </trans-unit>
       <trans-unit id="azurecore.postgresServer">
         <source xml:lang="en">Azure Database for PostgreSQL server</source>
@@ -802,8 +850,8 @@
         <target state="translated">Azure (Vorschau)</target>
       </trans-unit>
       <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
-        <target state="translated">Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen ignoriert werden sollen. Jedes Element ist eine Mandanten-ID.</target>
+        <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
+        <target state="translated">Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen oder beim Anfordern von Authentifizierungstoken übersprungen werden.</target>
       </trans-unit>
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
