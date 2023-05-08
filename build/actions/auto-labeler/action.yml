@@ -8,5 +8,5 @@ inputs:
     description: Github label to add to the PR
     required: true
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'index.js'
