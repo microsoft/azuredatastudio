@@ -9,11 +9,9 @@ const core = require("@actions/core");
 const github_1 = require("@actions/github");
 const axios_1 = require("axios");
 const octokit_1 = require("../api/octokit");
-const getInput = (name) => core.getInput(name) || undefined;
-exports.getInput = getInput;
-const getRequiredInput = (name) => core.getInput(name, { required: true });
-exports.getRequiredInput = getRequiredInput;
-const normalizeIssue = (issue) => {
+exports.getInput = (name) => core.getInput(name) || undefined;
+exports.getRequiredInput = (name) => core.getInput(name, { required: true });
+exports.normalizeIssue = (issue) => {
     const { body, title } = issue;
     const isBug = body.includes('bug_report_template') || /Issue Type:.*Bug.*/.test(body);
     const isFeatureRequest = body.includes('feature_request_template') || /Issue Type:.*Feature Request.*/.test(body);
@@ -36,25 +34,20 @@ const normalizeIssue = (issue) => {
         issueType: isBug ? 'bug' : isFeatureRequest ? 'feature_request' : 'unknown',
     };
 };
-exports.normalizeIssue = normalizeIssue;
-const loadLatestRelease = async (quality) => (await axios_1.default.get(`https://vscode-update.azurewebsites.net/api/update/darwin/${quality}/latest`)).data;
-exports.loadLatestRelease = loadLatestRelease;
-const daysAgoToTimestamp = (days) => +new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-exports.daysAgoToTimestamp = daysAgoToTimestamp;
-const daysAgoToHumanReadbleDate = (days) => new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}\w$/, '');
-exports.daysAgoToHumanReadbleDate = daysAgoToHumanReadbleDate;
-const logRateLimit = async (token) => {
+exports.loadLatestRelease = async (quality) => (await axios_1.default.get(`https://vscode-update.azurewebsites.net/api/update/darwin/${quality}/latest`)).data;
+exports.daysAgoToTimestamp = (days) => +new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+exports.daysAgoToHumanReadbleDate = (days) => new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}\w$/, '');
+exports.logRateLimit = async (token) => {
     const usageData = (await new github_1.GitHub(token).rateLimit.get()).data.resources;
     ['core', 'graphql', 'search'].forEach(async (category) => {
         const usage = 1 - usageData[category].remaining / usageData[category].limit;
         const message = `Usage at ${usage} for ${category}`;
         if (usage > 0.5) {
-            await (0, exports.logErrorToIssue)(message, false, token);
+            await exports.logErrorToIssue(message, false, token);
         }
     });
 };
-exports.logRateLimit = logRateLimit;
-const logErrorToIssue = async (message, ping, token) => {
+exports.logErrorToIssue = async (message, ping, token) => {
     // Attempt to wait out abuse detection timeout if present
     await new Promise((resolve) => setTimeout(resolve, 10000));
     const dest = github_1.context.repo.repo === 'vscode-internalbacklog'
@@ -75,4 +68,3 @@ ${JSON.stringify(github_1.context, null, 2).replace(/<!--/gu, '<@--').replace(/-
 -->
 `);
 };
-exports.logErrorToIssue = logErrorToIssue;
