@@ -879,7 +879,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 	}
 
-	private getActionContext(element: ServerTreeElement): any {
+	public getActionContext(element: ServerTreeElement): any {
 		let actionContext: any;
 		if (element instanceof TreeNode) {
 			let context = new ObjectExplorerActionsContext();

@@ -84,7 +84,7 @@
         "command": "mssql.objectProperties",
         "category": "MSSQL",
         "title": "%title.objectProperties%",
-        "icon": "$(list-flat)"
+        "icon": "$(edit)"
       },
       {
         "command": "mssql.deleteObject",
@@ -95,8 +95,7 @@
       {
         "command": "mssql.renameObject",
         "category": "MSSQL",
-        "title": "%title.renameObject%",
-        "icon": "$(edit)"
+        "title": "%title.renameObject%"
       },
       {
         "command": "mssql.enableGroupBySchema",
@@ -535,7 +534,7 @@
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
-          "group": "inline@0",
+          "group": "inline@2",
           "isDefault": true
         },
         {

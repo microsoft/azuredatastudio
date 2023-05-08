@@ -118,14 +118,6 @@ export class ServerTreeActionProvider {
 			arg: undefined, shouldForwardArgs: true
 		};
 
-		if (inlineOnly) {
-			options.arg = {
-				connectionProfile: context.profile.toIConnectionProfile(),
-				nodeInfo: context.treeNode?.toNodeInfo(),
-				isConnectionNode: context.treeNode === undefined
-			}
-		}
-
 		let groups = menu.getActions(options);
 		let insertIndex: number | undefined = 0;
 		const queryIndex = groups.findIndex(v => {

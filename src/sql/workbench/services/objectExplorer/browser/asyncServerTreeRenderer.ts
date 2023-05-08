@@ -25,7 +25,7 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ResourceLabel } from 'vs/workbench/browser/labels';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 
 const DefaultConnectionIconClass = 'server-page';
 export interface ConnectionProfileGroupDisplayOptions {
@@ -76,9 +76,9 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
 		const tree = this._objectExplorerService.getServerTreeView().tree;
 		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = element;
+		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
 		this._actionBar.clear();
-		this._actionBar.push(actions, { icon: true, label: false });
+		this._actionBar.pushAction(actions, { icon: true, label: false });
 	}
 }
 
@@ -155,13 +155,9 @@ class ConnectionProfileTemplate extends Disposable {
 		const tree = this._objectExplorerService.getServerTreeView().tree;
 		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
 		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = {
-			connectionProfile: element.toIConnectionProfile(),
-			nodeInfo: undefined,
-			isConnectionNode: true
-		}
+		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
 		this._actionBar.clear();
-		this._actionBar.push(actions, { icon: true, label: false });
+		this._actionBar.pushAction(actions, { icon: true, label: false });
 	}
 }
 
@@ -249,13 +245,9 @@ class TreeNodeTemplate extends Disposable {
 		const tree = this._objectExplorerService.getServerTreeView().tree;
 		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
 		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = {
-			connectionProfile: element.getConnectionProfile().toIConnectionProfile(),
-			nodeInfo: element?.toNodeInfo(),
-			isConnectionNode: false
-		};
+		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
 		this._actionBar.clear();
-		this._actionBar.push(actions, { icon: true, label: false });
+		this._actionBar.pushAction(actions, { icon: true, label: false });
 	}
 }
 
