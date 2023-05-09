@@ -28,7 +28,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	protected effectivePermissionTableLabel: azdata.TextComponent;
 	private securablePermissions: mssql.ObjectManagement.SecurablePermissions[] = [];
 
-	constructor(objectManagementService: mssql.IObjectManagementService, options: ObjectManagementDialogOptions, private readonly showSchemaColumn: boolean) {
+	constructor(objectManagementService: mssql.IObjectManagementService, options: ObjectManagementDialogOptions, private readonly showSchemaColumn: boolean, private readonly supportEffectivePermissions: boolean = true) {
 		super(objectManagementService, options);
 	}
 
@@ -106,7 +106,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		}));
 
 		items.push(this.securableTable, buttonContainer, this.explicitPermissionTableLabel, this.permissionTable);
-		if (!this.options.isNewObject) {
+		if (this.showEffectivePermissions) {
 			this.effectivePermissionTableLabel = this.modelView.modelBuilder.text().withProps({ value: localizedConstants.EffectivePermissionsTableLabel }).component();
 			this.effectivePermissionTable = this.createTable(localizedConstants.EffectivePermissionsTableLabel, [localizedConstants.PermissionColumnHeader], []);
 			items.push(this.effectivePermissionTableLabel, this.effectivePermissionTable);
@@ -198,7 +198,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		}
 		this.explicitPermissionTableLabel.value = explicitPermissionsLabel;
 		await this.setTableData(this.permissionTable, permissionsTableData);
-		if (!this.options.isNewObject) {
+		if (this.showEffectivePermissions) {
 			this.effectivePermissionTableLabel.value = effectivePermissionsLabel;
 			await this.setTableData(this.effectivePermissionTable, effectivePermissionsTableData);
 		}
@@ -218,5 +218,9 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	private getSecurableTypeDisplayName(securableType: string): string {
 		const securableTypeMetadata = this.viewInfo.supportedSecurableTypes.find(securableTypeMetadata => securableTypeMetadata.name === securableType);
 		return securableTypeMetadata ? securableTypeMetadata.displayName : securableType;
+	}
+
+	private get showEffectivePermissions(): boolean {
+		return !this.options.isNewObject && this.supportEffectivePermissions;
 	}
 }

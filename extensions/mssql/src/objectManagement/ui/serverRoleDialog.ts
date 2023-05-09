@@ -28,7 +28,7 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, false);
+		super(objectManagementService, options, false, false);
 	}
 
 	protected override get helpUrl(): string {
