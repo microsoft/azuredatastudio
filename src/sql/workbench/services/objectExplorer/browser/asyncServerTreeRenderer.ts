@@ -21,7 +21,6 @@ import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { ServerTreeRenderer, getLabelWithFilteredSuffix } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ResourceLabel } from 'vs/workbench/browser/labels';
@@ -33,6 +32,7 @@ export interface ConnectionProfileGroupDisplayOptions {
 
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
+	private _icon: HTMLElement;
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
 
@@ -45,20 +45,16 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		container.parentElement!.classList.add('async-server-group');
 		container.classList.add('async-server-group');
 		this._root = dom.append(container, dom.$('.async-server-group-container'));
+		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._labelContainer = dom.append(this._root, dom.$('span.name'));
 		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
 	}
 
 	set(element: ConnectionProfileGroup, filterData: FuzzyScore) {
-		let rowElement = findParentElement(this._root, 'monaco-list-row');
-		if (this._option.showColor && rowElement) {
-			rowElement.style.color = element.textColor;
-			if (element.color) {
-				this._labelContainer.style.background = element.color;
-			} else {
-				// If the group doesn't contain specific color, assign the default color
-				this._labelContainer.style.background = DefaultServerGroupColor;
-			}
+		if (this._option.showColor) {
+			// If the color is not defined, use the default color
+			const backgroundColor = element.color ?? DefaultServerGroupColor;
+			this._icon.style.background = backgroundColor;
 		}
 		if (element.description && (element.description !== '')) {
 			this._root.title = element.description;
@@ -268,20 +264,6 @@ export class ServerTreeAccessibilityProvider implements IListAccessibilityProvid
 		}
 		return element.label;
 	}
-}
-
-/**
- * Returns the first parent which contains the className
- */
-function findParentElement(container: HTMLElement, className: string): HTMLElement | undefined {
-	let currentElement: HTMLElement | null = container;
-	while (currentElement) {
-		if (currentElement.className.indexOf(className) > -1) {
-			break;
-		}
-		currentElement = currentElement.parentElement;
-	}
-	return withNullAsUndefined(currentElement);
 }
 
 function getIconPath(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): IconPath | undefined {
