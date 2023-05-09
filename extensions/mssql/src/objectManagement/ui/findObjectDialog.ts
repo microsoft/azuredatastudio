@@ -128,7 +128,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			else {
 				data = this.allObjects.map(item => { return this.getObjectRowValue(item); });
 			}
-			this.setTableData(this.objectsTable, data, ObjectsTableMaxHeight);
+			await this.setTableData(this.objectsTable, data, ObjectsTableMaxHeight);
 			this.objectsLoadingComponent.loadingCompletedText = localizedConstants.LoadingObjectsCompletedText(results.length);
 		} catch (err) {
 			this.dialogObject.message = {

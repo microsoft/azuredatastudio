@@ -203,9 +203,11 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected setTableData(table: azdata.TableComponent, data: any[][], maxHeight: number = DefaultMaxTableHeight) {
-		table.data = data;
-		table.height = getTableHeight(data.length, DefaultMinTableRowCount, maxHeight);
+	protected async setTableData(table: azdata.TableComponent, data: any[][], maxHeight: number = DefaultMaxTableHeight) {
+		await table.updateProperties({
+			data: data,
+			height: getTableHeight(data.length, DefaultMinTableRowCount, maxHeight)
+		});
 	}
 
 	protected getDataForTableList<T>(

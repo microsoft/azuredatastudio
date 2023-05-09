@@ -40,6 +40,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { deepClone, equals } from 'vs/base/common/objects';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -358,23 +359,26 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
+		const oldColumns = deepClone(this.columns);
 		super.setProperties(properties);
 		this._tableData.clear();
 		this._tableData.push(this.transformData(this.data, this.columns));
-		this._tableColumns = this.transformColumns(this.columns);
-		this._table.columns = this._tableColumns;
+		if (!equals(oldColumns, this.columns)) {
+			this._tableColumns = this.transformColumns(this.columns);
+			this._table.columns = this._tableColumns;
+			this._checkboxColumns.forEach((column, columnName) => { this.registerPlugins(columnName, column); })
+			Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
+			Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
+			Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
+
+			this._table.columns = this._tableColumns;
+			this._table.autosizeColumns();
+		}
 		this._table.setData(this._tableData);
 		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
-
-		this._checkboxColumns.forEach((column, columnName) => {
-			this.registerPlugins(columnName, column);
-		})
-		Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
-		Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
-		Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
 
 		if (this.headerFilter === true) {
 			this.registerFilterPlugin();
@@ -433,7 +437,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				width: col.width,
 				cssClass: col.cssClass,
 				headerCssClass: col.headerCssClass,
-				actionOnCheck: checkboxAction
+				actionOnCheck: checkboxAction,
+				columnId: `checkbox-column-${index}`,
 			}, index));
 
 			this._register(this._checkboxColumns.get(col.value).onChange((state) => {
@@ -589,7 +594,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}> | HyperlinkColumn<{}> | ContextMenuColumn<{}>): void {
-
 		const index = 'index' in plugin ? plugin.index : this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
 		if (index >= 0) {
 			this._tableColumns.splice(index, 0, plugin.definition);
@@ -598,10 +602,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				this._pluginsRegisterStatus[col] = true;
 			}
 		}
-
-		this._table.columns = this._tableColumns;
-		this._table.autosizeColumns();
-
 	}
 
 

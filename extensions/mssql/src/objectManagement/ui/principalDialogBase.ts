@@ -46,8 +46,8 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		this.securableTable = this.createTable(localizedConstants.SecurablesText, securableTableColumns, this.getSecurableTableData());
 		const buttonContainer = this.addButtonsForTable(this.securableTable, localizedConstants.AddSecurableAriaLabel, localizedConstants.RemoveSecurableAriaLabel,
 			() => this.onAddSecurableButtonClicked(), () => this.onRemoveSecurableButtonClicked());
-		this.disposables.push(this.securableTable.onRowSelected(() => {
-			this.updatePermissionsTable();
+		this.disposables.push(this.securableTable.onRowSelected(async () => {
+			await this.updatePermissionsTable();
 		}));
 		this.explicitPermissionTableLabel = this.modelView.modelBuilder.text().withProps({ value: localizedConstants.ExplicitPermissionsTableLabel }).component();
 		this.permissionTable = this.modelView.modelBuilder.table().withProps({
@@ -72,7 +72,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 			data: [],
 			height: getTableHeight(0),
 		}).component();
-		this.disposables.push(this.permissionTable.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+		this.disposables.push(this.permissionTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 			const permissionName = this.permissionTable.data[arg.row][0];
 			const securable = this.securablePermissions[this.securableTable.selectedRows[0]];
 			let permission: mssql.ObjectManagement.SecurablePermissionItem = securable.permissions.find(securablePermission => securablePermission.permission === permissionName);
@@ -99,7 +99,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 					permission.withGrant = undefined;
 				}
 			}
-			this.updatePermissionsTable();
+			await this.updatePermissionsTable();
 			this.updateSecurablePermissions();
 			// Restore the focus to previously selected cell.
 			this.permissionTable.setActiveCell(arg.row, arg.column);
@@ -108,7 +108,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		items.push(this.securableTable, buttonContainer, this.explicitPermissionTableLabel, this.permissionTable);
 		if (!this.options.isNewObject) {
 			this.effectivePermissionTableLabel = this.modelView.modelBuilder.text().withProps({ value: localizedConstants.EffectivePermissionsTableLabel }).component();
-			this.effectivePermissionTable = this.createTable(localizedConstants.ExplicitPermissionsTableLabel, [localizedConstants.PermissionColumnHeader], []);
+			this.effectivePermissionTable = this.createTable(localizedConstants.EffectivePermissionsTableLabel, [localizedConstants.PermissionColumnHeader], []);
 			items.push(this.effectivePermissionTableLabel, this.effectivePermissionTable);
 		}
 		this.securableSection = this.createGroup(localizedConstants.SecurablesText, items);
@@ -146,7 +146,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 				});
 			});
 			const data = this.getSecurableTableData();
-			this.setTableData(this.securableTable, data);
+			await this.setTableData(this.securableTable, data);
 		}
 	}
 
@@ -154,7 +154,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		if (this.securableTable.selectedRows.length === 1) {
 			this.securablePermissions.splice(this.securableTable.selectedRows[0], 1);
 			const data = this.getSecurableTableData();
-			this.setTableData(this.securableTable, data);
+			await this.setTableData(this.securableTable, data);
 			this.updateSecurablePermissions();
 		}
 	}
@@ -169,7 +169,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		});
 	}
 
-	private updatePermissionsTable(): void {
+	private async updatePermissionsTable(): Promise<void> {
 		let permissionsTableData: any[][] = [];
 		let effectivePermissionsTableData: any[][] = [];
 		let explicitPermissionsLabel = localizedConstants.ExplicitPermissionsTableLabel;
@@ -197,12 +197,10 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 			}
 		}
 		this.explicitPermissionTableLabel.value = explicitPermissionsLabel;
-		// this.permissionTable.ariaLabel = explicitPermissionsLabel;
-		this.setTableData(this.permissionTable, permissionsTableData);
+		await this.setTableData(this.permissionTable, permissionsTableData);
 		if (!this.options.isNewObject) {
 			this.effectivePermissionTableLabel.value = effectivePermissionsLabel;
-			// this.effectivePermissionTable.ariaLabel = effectivePermissionsLabel;
-			this.setTableData(this.effectivePermissionTable, effectivePermissionsTableData);
+			await this.setTableData(this.effectivePermissionTable, effectivePermissionsTableData);
 		}
 	}
 

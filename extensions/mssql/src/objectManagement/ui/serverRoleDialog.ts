@@ -90,32 +90,32 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 				});
 				await dialog.open();
 				const result = await dialog.waitForClose();
-				this.addMembers(result.selectedObjects.map(r => r.name));
+				await this.addMembers(result.selectedObjects.map(r => r.name));
 			},
 			async () => {
 				if (this.memberTable.selectedRows.length === 1) {
-					this.removeMember(this.memberTable.selectedRows[0]);
+					await this.removeMember(this.memberTable.selectedRows[0]);
 				}
 			});
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);
 	}
 
-	private addMembers(names: string[]): void {
+	private async addMembers(names: string[]): Promise<void> {
 		names.forEach(n => {
 			if (this.objectInfo.members.indexOf(n) === -1) {
 				this.objectInfo.members.push(n);
 			}
 		});
-		this.updateMembersTable();
+		await this.updateMembersTable();
 	}
 
-	private removeMember(idx: number): void {
+	private async removeMember(idx: number): Promise<void> {
 		this.objectInfo.members.splice(idx, 1);
-		this.updateMembersTable();
+		await this.updateMembersTable();
 	}
 
-	private updateMembersTable(): void {
-		this.setTableData(this.memberTable, this.objectInfo.members.map(m => [m]));
+	private async updateMembersTable(): Promise<void> {
+		await this.setTableData(this.memberTable, this.objectInfo.members.map(m => [m]));
 		this.onFormFieldChange();
 	}
 
