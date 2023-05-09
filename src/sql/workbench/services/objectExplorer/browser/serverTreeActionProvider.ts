@@ -226,10 +226,10 @@ export class ServerTreeActionProvider {
 	 * Return actions for OE elements
 	 */
 	private getObjectExplorerNodeActions(context: ObjectExplorerContext, inlineOnly: boolean = false): IAction[] {
-		return this.getAllActions(context, (context) => this.getBuiltInNodeActions(context), inlineOnly);
+		return this.getAllActions(context, (context) => this.getBuiltInNodeActions(context, inlineOnly), inlineOnly);
 	}
 
-	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {
+	private getBuiltInNodeActions(context: ObjectExplorerContext, inlineOnly: boolean): IAction[] {
 		let actions: IAction[] = [];
 		let treeNode = context.treeNode;
 		if (treeNode) {
@@ -242,16 +242,15 @@ export class ServerTreeActionProvider {
 		}
 		// Contribute refresh action for scriptable objects via contribution
 		if (!this.isScriptableObject(context)) {
-			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
-
 			// Adding filter action if the node has filter properties
 			if (treeNode?.filterProperties?.length > 0 && this._configurationService.getValue<boolean>(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
 				actions.push(this._instantiationService.createInstance(FilterChildrenAction, FilterChildrenAction.ID, FilterChildrenAction.LABEL, context.treeNode));
 			}
-			// Adding remove filter action if the node has filters applied to it.
-			if (treeNode?.filters?.length > 0) {
+			// Adding remove filter action if the node has filters applied to it and the action is not inline only.
+			if (treeNode?.filters?.length > 0 && !inlineOnly) {
 				actions.push(this._instantiationService.createInstance(RemoveFilterAction, RemoveFilterAction.ID, RemoveFilterAction.LABEL, context.treeNode, context.tree, undefined));
 			}
+			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
 		}
 		return actions;
 	}

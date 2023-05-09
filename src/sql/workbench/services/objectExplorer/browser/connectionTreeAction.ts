@@ -318,12 +318,17 @@ export class FilterChildrenAction extends Action {
 		label: string,
 		private _node: TreeNode,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService) {
-		super(id, label);
+		super(id, label, getFilterActionIconClass(_node));
 	}
 
 	public override async run(): Promise<void> {
 		await this._objectExplorerService.getServerTreeView().filterElementChildren(this._node);
+		this.class = getFilterActionIconClass(this._node);
 	}
+}
+
+function getFilterActionIconClass(node: TreeNode): string {
+	return node.filters.length > 0 ? Codicon.filterFilled.classNames : Codicon.filter.classNames;
 }
 
 export class RemoveFilterAction extends Action {
