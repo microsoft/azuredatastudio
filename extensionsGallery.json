@@ -5023,63 +5023,6 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				},
-				{
-					"extensionId": "99",
-					"extensionName": "copilot",
-					"displayName": "GitHub Copilot",
-					"shortDescription": "Your AI pair programmer",
-					"publisher": {
-						"displayName": "GitHub",
-						"publisherId": "GitHub",
-						"publisherName": "GitHub"
-					},
-					"versions": [
-						{
-							"version": "1.83.41",
-							"lastUpdated": "05/08/2023",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/GitHub.copilot-1.83.41.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/Copilot-App-Icon.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/CHANGELOG.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features#github-copilot"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.68.0"
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": "*"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5088,7 +5031,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 83
+							"count": 82
 						}
 					]
 				}
