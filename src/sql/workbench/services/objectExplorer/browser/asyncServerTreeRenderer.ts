@@ -26,6 +26,9 @@ import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/co
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ResourceLabel } from 'vs/workbench/browser/labels';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 
 const DefaultConnectionIconClass = 'server-page';
 export interface ConnectionProfileGroupDisplayOptions {
@@ -59,12 +62,9 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		let rowElement = findParentElement(this._root, 'monaco-list-row');
 		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
-			if (element.color) {
-				this._labelContainer.style.background = element.color;
-			} else {
-				// If the group doesn't contain specific color, assign the default color
-				this._labelContainer.style.background = DefaultServerGroupColor;
-			}
+			const backgroundColor = element.color ?? DefaultServerGroupColor;
+			this._labelContainer.style.background = backgroundColor;
+			this._labelContainer.style.borderColor = backgroundColor;
 		}
 		if (element.description && (element.description !== '')) {
 			this._root.title = element.description;
@@ -79,7 +79,18 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
 		this._actionBar.clear();
 		this._actionBar.pushAction(actions, { icon: true, label: false });
+
+		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			if ([ColorScheme.HIGH_CONTRAST_LIGHT, ColorScheme.HIGH_CONTRAST_DARK].includes(theme.type)) {
+				this._labelContainer.style.background = '';
+			} else {
+				this._labelContainer.style.background = element.color ?? DefaultServerGroupColor;
+			}
+			this._label.element.element.style.color = theme.getColor(buttonForeground).toString();
+		});
 	}
+
+
 }
 
 export class ConnectionProfileGroupRenderer implements ITreeRenderer<ConnectionProfileGroup, FuzzyScore, ConnectionProfileGroupTemplate> {

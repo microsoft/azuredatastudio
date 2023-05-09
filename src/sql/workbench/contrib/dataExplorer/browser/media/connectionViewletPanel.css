@@ -216,6 +216,7 @@
 	text-overflow: ellipsis;
 	height: 25px;
 	line-height: 25px;
+	border: solid 2px;
 }
 
 .monaco-list-row .object-element-container {
