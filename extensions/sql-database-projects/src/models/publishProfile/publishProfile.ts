@@ -176,7 +176,7 @@ export async function promptForSavingProfile(project: Project, settings: ISqlPro
 }
 
 export function ifIsISqlProjectPublishSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlProjectPublishSettings {
-	if ((settings as ISqlProjectPublishSettings).publishProfileUri) {
+	if ((settings as ISqlProjectPublishSettings).connectionUri) {
 		return true
 	}
 	return false
