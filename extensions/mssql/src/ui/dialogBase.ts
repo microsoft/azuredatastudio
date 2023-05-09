@@ -179,7 +179,7 @@ export abstract class DialogBase<DialogResult> {
 				data: data,
 				columns: [
 					{
-						value: uiLoc.SelectText,
+						value: uiLoc.SelectedText,
 						type: azdata.ColumnType.checkBox,
 						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
 					}, ...columnNames.map(name => {
