@@ -7,15 +7,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TestbedIssue = exports.Testbed = void 0;
 class Testbed {
     constructor(config) {
+        var _a, _b, _c, _d, _e;
         this.config = {
-            globalLabels: config?.globalLabels ?? [],
-            configs: config?.configs ?? {},
-            writers: config?.writers ?? [],
-            releasedCommits: config?.releasedCommits ?? [],
-            queryRunner: config?.queryRunner ??
-                async function* () {
-                    yield [];
-                },
+            globalLabels: (_a = config === null || config === void 0 ? void 0 : config.globalLabels) !== null && _a !== void 0 ? _a : [],
+            configs: (_b = config === null || config === void 0 ? void 0 : config.configs) !== null && _b !== void 0 ? _b : {},
+            writers: (_c = config === null || config === void 0 ? void 0 : config.writers) !== null && _c !== void 0 ? _c : [],
+            releasedCommits: (_d = config === null || config === void 0 ? void 0 : config.releasedCommits) !== null && _d !== void 0 ? _d : [],
+            queryRunner: (_e = config === null || config === void 0 ? void 0 : config.queryRunner) !== null && _e !== void 0 ? _e : async function* () {
+                yield [];
+            },
         };
     }
     async *query(query) {
@@ -48,15 +48,16 @@ class Testbed {
 exports.Testbed = Testbed;
 class TestbedIssue extends Testbed {
     constructor(globalConfig, issueConfig) {
+        var _a, _b, _c;
         super(globalConfig);
-        issueConfig = issueConfig ?? {};
-        issueConfig.comments = issueConfig?.comments ?? [];
-        issueConfig.labels = issueConfig?.labels ?? [];
+        issueConfig = issueConfig !== null && issueConfig !== void 0 ? issueConfig : {};
+        issueConfig.comments = (_a = issueConfig === null || issueConfig === void 0 ? void 0 : issueConfig.comments) !== null && _a !== void 0 ? _a : [];
+        issueConfig.labels = (_b = issueConfig === null || issueConfig === void 0 ? void 0 : issueConfig.labels) !== null && _b !== void 0 ? _b : [];
         issueConfig.issue = {
             author: { name: 'JacksonKearl' },
             body: 'issue body',
             locked: false,
-            numComments: issueConfig?.comments?.length || 0,
+            numComments: ((_c = issueConfig === null || issueConfig === void 0 ? void 0 : issueConfig.comments) === null || _c === void 0 ? void 0 : _c.length) || 0,
             number: 1,
             open: true,
             title: 'issue title',
@@ -90,7 +91,7 @@ class TestbedIssue extends Testbed {
     }
     async postComment(body, author) {
         this.issueConfig.comments.push({
-            author: { name: author ?? 'bot' },
+            author: { name: author !== null && author !== void 0 ? author : 'bot' },
             body,
             id: Math.random(),
             timestamp: +new Date(),
