@@ -4,6 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.logErrorToIssue = exports.logRateLimit = exports.daysAgoToHumanReadbleDate = exports.daysAgoToTimestamp = exports.loadLatestRelease = exports.normalizeIssue = exports.getRequiredInput = exports.getInput = void 0;
 const core = require("@actions/core");
 const github_1 = require("@actions/github");
 const axios_1 = require("axios");
@@ -41,9 +42,6 @@ exports.logRateLimit = async (token) => {
     ['core', 'graphql', 'search'].forEach(async (category) => {
         const usage = 1 - usageData[category].remaining / usageData[category].limit;
         const message = `Usage at ${usage} for ${category}`;
-        if (usage > 0) {
-            console.log(message);
-        }
         if (usage > 0.5) {
             await exports.logErrorToIssue(message, false, token);
         }

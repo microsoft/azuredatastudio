@@ -1332,15 +1332,15 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step2">
         <source xml:lang="en">Step 2: Use the keys below to register your integration runtime</source>
-        <target state="translated">Étape 2 : Utiliser les clés ci-dessous pour inscrire votre runtime d’intégration</target>
+        <target state="new">Step 2: Use the keys below to register your integration runtime</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="translated">Étape 3 : cliquez sur le bouton « Tester la connexion » pour vérifier la connexion entre Azure Database Migration Service et le runtime d’intégration</target>
+        <target state="new">Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.setup.step3.alternate">
         <source xml:lang="en">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</source>
-        <target state="translated">Étape 3 : Cliquez sur le bouton Actualiser ci-dessus pour vérifier la connexion entre Azure Database Migration Service et le runtime d’intégration</target>
+        <target state="new">Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime</target>
       </trans-unit>
       <trans-unit id="sql.migration.issue.aria.label">
         <source xml:lang="en">Blocking Issue: {0}</source>
@@ -2124,15 +2124,15 @@ Cela peut prendre un certain temps.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description1">
         <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</source>
-        <target state="translated">Azure Database Migration Service tire parti du runtime d’intégration auto-hébergé de Azure Data Factory pour gérer la connectivité entre la source et la cible, et charger des sauvegardes à partir d’un partage de fichiers réseau local vers Azure (le cas échéant).</target>
+        <target state="new">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description2">
         <source xml:lang="en">Follow the instructions below to set up self-hosted integration runtime.</source>
-        <target state="translated">Suivez les instructions ci-dessous pour configurer le runtime d’intégration auto-hébergé.</target>
+        <target state="new">Follow the instructions below to set up self-hosted integration runtime.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.heading">
         <source xml:lang="en">Set up integration runtime</source>
-        <target state="translated">Configurer le runtime d’intégration</target>
+        <target state="new">Set up integration runtime</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.loading.help">
         <source xml:lang="en">Loading Migration Services</source>
@@ -2182,9 +2182,9 @@ Cela peut prendre un certain temps.</target>
         <source xml:lang="en">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
 
 See below for registration instructions.</source>
-        <target state="translated">Azure Database Migration Service n’est pas inscrit. Azure Database Migration Service « {0} » doit être inscrit auprès d’un runtime d'intégration auto-hébergé sur n’importe quel nœud.
+        <target state="new">Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.
 
-Voir ci-dessous pour les instructions d’inscription.</target>
+See below for registration instructions.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.prompt">
         <source xml:lang="en">{0} (change)</source>
@@ -2194,17 +2194,17 @@ Voir ci-dessous pour les instructions d’inscription.</target>
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes.</source>
-        <target state="translated">Azure Database Migration Service '{0}' est connecté au runtime d’intégration autohébergé exécuté sur le ou les nœuds - {1}
+        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
-Pour améliorer les performances et la haute disponibilité, vous pouvez inscrire des nœuds supplémentaires.</target>
+For improved performance and high availability, you can register additional nodes.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.ready.below">
         <source xml:lang="en">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
 For improved performance and high availability, you can register additional nodes. See below for registration instructions.</source>
-        <target state="translated">Azure Database Migration Service '{0}' est connecté au runtime d’intégration autohébergé exécuté sur le ou les nœuds - {1}
+        <target state="new">Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}
 
-Pour améliorer les performances et la haute disponibilité, vous pouvez inscrire des nœuds supplémentaires. Voir ci-dessous pour les instructions d’inscription.</target>
+For improved performance and high availability, you can register additional nodes. See below for registration instructions.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.selection.location.msg">
         <source xml:lang="en">Please select the location of your database backup files before continuing.</source>
@@ -2220,7 +2220,7 @@ Pour améliorer les performances et la haute disponibilité, vous pouvez inscrir
       </trans-unit>
       <trans-unit id="sql.migration.services.container.description.network">
         <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</source>
-        <target state="translated">Entrez les informations ci-dessous pour ajouter une nouvelle Azure Database Migration Service. Pour inscrire le runtime d’intégration auto-hébergé, sélectionnez « Mes sauvegardes de base de données se trouvent sur un partage réseau » dans la page précédente.</target>
+        <target state="new">Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
