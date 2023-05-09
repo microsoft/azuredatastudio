@@ -8,15 +8,15 @@ const core = require("@actions/core");
 const github_1 = require("@actions/github");
 const octokit_1 = require("../api/octokit");
 const utils_1 = require("../utils/utils");
-const token = utils_1.getRequiredInput('token');
-const label = utils_1.getRequiredInput('label');
+const token = (0, utils_1.getRequiredInput)('token');
+const label = (0, utils_1.getRequiredInput)('label');
 async function main() {
     const pr = new octokit_1.OctoKitIssue(token, github_1.context.repo, { number: github_1.context.issue.number });
     pr.addLabel(label);
 }
 main()
-    .then(() => utils_1.logRateLimit(token))
+    .then(() => (0, utils_1.logRateLimit)(token))
     .catch(async (error) => {
     core.setFailed(error.message);
-    await utils_1.logErrorToIssue(error.message, true, token);
+    await (0, utils_1.logErrorToIssue)(error.message, true, token);
 });
