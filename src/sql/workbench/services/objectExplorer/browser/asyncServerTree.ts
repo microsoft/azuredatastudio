@@ -144,6 +144,12 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	}
 
 	public async revealSelectFocusElement(element: ServerTreeElement) {
+		const dataNode = this.getDataNode(element);
+		// The root of the tree is a special case as it is not rendered
+		// so we instead reveal select and focus on the first child of the root.
+		if (dataNode === this.root) {
+			element = dataNode.children[0].element;
+		}
 		await this.reveal(element);
 		await this.setSelection([element]);
 		this.setFocus([element]);

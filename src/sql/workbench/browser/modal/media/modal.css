@@ -333,3 +333,7 @@
 	-webkit-mask-size: 100%;
 	mask-size: 100%;
 }
+
+.modal-dialog form {
+	height: 100%;
+}

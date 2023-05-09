@@ -1,0 +1,77 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.filter-dialog-body {
+	height: 400px;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+.filter-table-container .filter-table {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.filter-dialog-body .filter-dialog-node-path {
+	padding: 10px 0px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.filter-table-container {
+	max-height: 270px;
+	overflow-y: scroll;
+	flex: 1;
+}
+
+.filter-table-container table.filter-table-element {
+	width: 97.2%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.filter-table-container table.filter-table-element td {
+	width: calc((100% - 36px) / (4 - 1));
+	/* equal width for all but last column */
+}
+
+.filter-table-container table.filter-table-element td.delete-cell {
+	width: 36px;
+}
+
+.filter-action-button-container div {
+	padding: 5px;
+}
+
+.filter-table-element .monaco-inputbox {
+	height: 25px;
+	font-size: 11px;
+}
+
+
+.filter-dialog-body .filter-dialog-description {
+	height: 50px;
+	border: 1px solid;
+	padding: 5px;
+}
+
+.vs .icon.erase,
+.hc-light .icon.erase {
+	background-image: url("eraseLight.svg");
+	width: 16px;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.vs-dark .icon.erase,
+.hc-black .icon.erase {
+	background-image: url("eraseDark.svg");
+	width: 16px;
+	height: 100%;
+	background-repeat: no-repeat;
+	background-position: center;
+}
