@@ -26,7 +26,7 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.
 	private ownedSchemaTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, true);
+		super(objectManagementService, options, true, false);
 	}
 
 	protected override postInitializeData(): void {
