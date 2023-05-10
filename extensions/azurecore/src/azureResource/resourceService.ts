@@ -16,9 +16,7 @@ export class AzureResourceService {
 	private _treeDataProviders: { [resourceProviderId: string]: azureResource.IAzureResourceTreeDataProvider } = {};
 	private _universalProvider: azureResource.IAzureUniversalResourceProvider | undefined = undefined;
 
-	public constructor() {
-
-	}
+	public constructor() { }
 
 	public async listResourceProviderIds(): Promise<string[]> {
 		await this.ensureResourceProvidersRegistered();
@@ -49,7 +47,6 @@ export class AzureResourceService {
 		}
 
 		const rootChildren = <azdata.TreeItem[]>await this._treeDataProviders[resourceProviderId]?.getRootChildren();
-
 		return rootChildren.map(rootChild => {
 			return {
 				resourceProviderId,
@@ -70,7 +67,6 @@ export class AzureResourceService {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const treeDataProvider = <azureResource.IAzureResourceTreeDataProvider>this._treeDataProviders[resourceProviderId];
 		treeDataProvider.browseConnectionMode = browseConnectionMode;
 		const children = <azureResource.IAzureResourceNode[]>await treeDataProvider.getChildren(element);
@@ -83,7 +79,6 @@ export class AzureResourceService {
 
 	public async getAllChildren(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], browseConnectionMode: boolean = false): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const treeDataProvider = <azureResource.IAzureUniversalTreeDataProvider>this._universalProvider?.getTreeDataProvider();
 		treeDataProvider.browseConnectionMode = browseConnectionMode;
 		const children = <azureResource.IAzureResourceNode[]>await treeDataProvider.getAllChildren(account, subscriptions);
@@ -134,7 +129,6 @@ export class AzureResourceService {
 					}
 				}
 				if (extension.exports && extension.exports.getUniversalProvider) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					this._universalProvider = <azureResource.IAzureUniversalResourceProvider>extension.exports.getUniversalProvider();
 				}
 			}
@@ -144,10 +138,7 @@ export class AzureResourceService {
 	}
 
 	private doRegisterResourceProvider(resourceProvider: azureResource.IAzureResourceProvider): void {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this._resourceProviders[resourceProvider.providerId] = resourceProvider;
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this._treeDataProviders[resourceProvider.providerId] = resourceProvider.getTreeDataProvider();
 	}
-
 }

@@ -32,7 +32,6 @@ export class AzureResourceUniversalTreeDataProvider<S extends GraphData, D exten
 
 	public getTreeItemForResource(resource: azureResource.AzureResource, account: AzureAccount): azdata.TreeItem {
 		let service: AzureResourceUniversalService = this.universalService as AzureResourceUniversalService;
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		let provider = service.getRegisteredTreeDataProviderInstance(resource.provider!);
 		provider.browseConnectionMode = this.browseConnectionMode;
 		return provider.getTreeItemForResource(resource, account);

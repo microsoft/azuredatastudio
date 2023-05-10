@@ -140,11 +140,14 @@ export class AzureResourceUniversalService implements azureResource.IAzureResour
 
 	/**
 	 * Resource Id format:
-	 *'/subscriptions/<subscriptionid>/resourceGroups/<resourcegroupname>/providers/Microsoft.Sql/servers/<servername>/databases/<dbname>'
+	 * '/subscriptions/<subscriptionid>/resourceGroups/<resourcegroupname>/providers/Microsoft.Sql/servers/<servername>/databases/<dbname>'
+	 * We find server with it's name in the same subscription, as resource groups can still be different.
 	 */
 	private getServerResource(resource: UniversalGraphData, allResources: UniversalGraphData[]): UniversalGraphData | undefined {
 		const resourceParts = resource.id.split('/');
 		const serverNameIndex = resourceParts.length - 3;
-		return allResources.find(res => res.name === resourceParts[serverNameIndex]) ?? undefined;
+		const subscriptionId = resourceParts[2];
+		return allResources.find(res => res.name === resourceParts[serverNameIndex]
+			&& res.subscriptionId === subscriptionId) ?? undefined;
 	}
 }

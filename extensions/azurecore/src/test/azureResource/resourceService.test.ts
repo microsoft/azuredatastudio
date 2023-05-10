@@ -48,6 +48,7 @@ const mockSubscription: azureResource.AzureResourceSubscription = {
 
 let mockResourceTreeDataProvider1: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
 let mockResourceProvider1: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
+let mockResourceNode1: TypeMoq.IMock<azureResource.IAzureResourceNode>;
 
 let mockResourceTreeDataProvider2: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
 let mockResourceProvider2: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
@@ -155,9 +156,11 @@ describe('AzureResourceService.getChildren', function (): void {
 
 describe('AzureResourceService.getTreeItem', function (): void {
 	beforeEach(() => {
+		mockResourceNode1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>();
+		mockResourceNode1.setup((o) => o.treeItem).returns(() => TypeMoq.Mock.ofType<azdata.TreeItem>().object);
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
 		mockResourceTreeDataProvider1.setup((o) => o.getRootChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azdata.TreeItem>().object]));
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([mockResourceNode1.object]));
 		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
@@ -168,7 +171,7 @@ describe('AzureResourceService.getTreeItem', function (): void {
 	});
 
 	it('Should be correct when provider id is correct.', async function (): Promise<void> {
-		const treeItem = await resourceService.getTreeItem(mockResourceProvider1.object.providerId, TypeMoq.It.isAny());
+		const treeItem = await resourceService.getTreeItem(mockResourceProvider1.object.providerId, mockResourceNode1.object);
 		should(treeItem).Object();
 	});
 
