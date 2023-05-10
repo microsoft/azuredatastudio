@@ -4585,14 +4585,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.1",
-							"lastUpdated": "3/27/2023",
+							"version": "0.3.3",
+							"lastUpdated": "5/9/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.3.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.3.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4971,14 +4971,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.0",
-							"lastUpdated": "04/12/2023",
+							"version": "1.0.1",
+							"lastUpdated": "05/08/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-1.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-1.0.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -5016,13 +5016,70 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
+									"value": "https://github.com/Azure/ads-extension-mongo-migration-assets"
 								}
 							]
 						}
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "99",
+					"extensionName": "copilot",
+					"displayName": "GitHub Copilot",
+					"shortDescription": "Your AI pair programmer",
+					"publisher": {
+						"displayName": "GitHub",
+						"publisherId": "GitHub",
+						"publisherName": "GitHub"
+					},
+					"versions": [
+						{
+							"version": "1.83.41",
+							"lastUpdated": "05/08/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/GitHub.copilot-1.83.41.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/Copilot-App-Icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features#github-copilot"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.68.0"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -5031,7 +5088,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 82
+							"count": 83
 						}
 					]
 				}
