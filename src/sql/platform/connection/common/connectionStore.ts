@@ -89,8 +89,11 @@ export class ConnectionStore {
 						credentialsItem.password = savedCred.password;
 						credentialsItem.options['password'] = savedCred.password;
 					} else if (credentialsItem.providerName === mssqlProviderName) {
-						// Special handling for MSSQL provider as "applicationName:azdata" is no longer included in credential string.
-						// We will try to read credential including applicationName and if it is found, we will update the saved credential with new credential key.
+						// Special handling for MSSQL provider as "applicationName:azdata" is no longer included
+						// in credential string starting with MAY 2023 release.
+						// We will try to read credential including applicationName and if it is found,
+						// we will update the saved credential with new credential key.
+						// This special case handling should be removed in a future release.
 						let credParts = credentialId.split('|');
 						credParts.splice(3, 0, 'applicationName:azdata');
 						const oldCredentialId = credParts.join('|');
@@ -98,6 +101,7 @@ export class ConnectionStore {
 						if (savedMssqlCred?.password) {
 							credentialsItem.password = savedMssqlCred.password;
 							credentialsItem.options['password'] = savedMssqlCred.password;
+							// Update credential in credential store.
 							await this.credentialService.deleteCredential(oldCredentialId);
 							await this.credentialService.saveCredential(credentialId, savedMssqlCred.password);
 							savedCred.password = savedMssqlCred.password;
