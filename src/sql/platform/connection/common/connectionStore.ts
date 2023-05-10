@@ -9,7 +9,7 @@ import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfi
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { isDisposable } from 'vs/base/common/lifecycle';
@@ -84,10 +84,24 @@ export class ConnectionStore {
 		if (credentialsItem.savePassword && this.isPasswordRequired(credentialsItem) && !credentialsItem.password) {
 			const credentialId = this.formatCredentialId(credentialsItem, CRED_PROFILE_USER);
 			return this.credentialService.readCredential(credentialId)
-				.then(savedCred => {
-					if (savedCred) {
+				.then(async savedCred => {
+					if (savedCred?.password) {
 						credentialsItem.password = savedCred.password;
 						credentialsItem.options['password'] = savedCred.password;
+					} else if (credentialsItem.providerName === mssqlProviderName) {
+						// Special handling for MSSQL provider as "applicationName:azdata" is no longer included in credential string.
+						// We will try to read credential including applicationName and if it is found, we will update the saved credential with new credential key.
+						let credParts = credentialId.split('|');
+						credParts.splice(3, 0, 'applicationName:azdata');
+						const oldCredentialId = credParts.join('|');
+						const savedMssqlCred = await this.credentialService.readCredential(oldCredentialId);
+						if (savedMssqlCred?.password) {
+							credentialsItem.password = savedMssqlCred.password;
+							credentialsItem.options['password'] = savedMssqlCred.password;
+							await this.credentialService.deleteCredential(oldCredentialId);
+							await this.credentialService.saveCredential(credentialId, savedMssqlCred.password);
+							savedCred.password = savedMssqlCred.password;
+						}
 					}
 					return { profile: credentialsItem, savedCred: !!savedCred };
 				});
