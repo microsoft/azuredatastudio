@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { extensions, TreeItem } from 'vscode';
+import { extensions } from 'vscode';
 import * as azdata from 'azdata';
 
 import { IAzureResourceNodeWithProviderId } from './interfaces';
@@ -87,16 +87,6 @@ export class AzureResourceService {
 			resourceProviderId: UNIVERSAL_PROVIDER_ID,
 			resourceNode: child
 		});
-	}
-
-	public async getTreeItem(resourceProviderId: string, element: azureResource.IAzureResourceNode): Promise<TreeItem> {
-		await this.ensureResourceProvidersRegistered();
-
-		if (!(resourceProviderId in this._resourceProviders) && resourceProviderId !== UNIVERSAL_PROVIDER_ID) {
-			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
-		}
-
-		return element.treeItem;
 	}
 
 	public get areResourceProvidersLoaded(): boolean {
