@@ -627,7 +627,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 						.withAdditionalProperties({
 							filterPropertyNames: JSON.stringify(filters.map(f => f.displayName)),
 							filterCount: filters.length,
-							nodeName: node.objectType
+							objectType: node.objectType
 						}).send();
 				}
 				return;
