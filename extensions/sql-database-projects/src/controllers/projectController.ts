@@ -471,7 +471,7 @@ export class ProjectsController {
 
 		if (publishTarget === constants.PublishTargetType.docker) {
 			const publishToDockerSettings = await getPublishToDockerSettings(project);
-			void promptForSavingProfile(project, publishToDockerSettings);
+			void promptForSavingProfile(project, publishToDockerSettings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (!publishToDockerSettings) {
 				// User cancelled
 				return;
@@ -480,7 +480,7 @@ export class ProjectsController {
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			try {
 				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
-				void promptForSavingProfile(project, settings);
+				void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 				if (settings?.deploySettings && settings?.sqlDbSetting) {
 					await this.publishToNewAzureServer(project, settings);
 				}
@@ -491,7 +491,7 @@ export class ProjectsController {
 		} else {
 			let settings: ISqlProjectPublishSettings | undefined = await getPublishDatabaseSettings(project);
 
-			void promptForSavingProfile(project, settings);
+			void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (settings) {
 				// 5. Select action to take
 				const action = await vscode.window.showQuickPick(

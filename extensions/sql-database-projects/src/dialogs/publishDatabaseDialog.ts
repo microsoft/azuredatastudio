@@ -20,6 +20,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
+import { promptToSaveProfile } from '../models/publishProfile/publishProfile';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -993,18 +994,6 @@ export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Ur
 			defaultUri: vscode.Uri.file(defaultPath),
 			filters: {
 				[constants.publishSettingsFiles]: ['publish.xml']
-			}
-		}
-	);
-}
-
-export function promptToSaveProfile(project: Project, publishProfileUri?: vscode.Uri) {
-	return vscode.window.showSaveDialog(
-		{
-			defaultUri: publishProfileUri ?? vscode.Uri.file(path.join(project.projectFolderPath, `${project.projectFileName}_1.publish.xml`)),
-			saveLabel: constants.save,
-			filters: {
-				'Publish Settings Files': ['publish.xml'],
 			}
 		}
 	);
