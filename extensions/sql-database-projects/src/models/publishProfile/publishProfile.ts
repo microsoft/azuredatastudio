@@ -163,8 +163,8 @@ export async function promptForSavingProfile(project: Project, settings: ISqlPro
 		}
 
 		const targetConnectionString = await getConnectionString(settings);
-		const targetDatabaseName = getDatabaseName(settings);
-		const deploymentOptions = getDeploymentOptions(settings);
+		const targetDatabaseName = getDatabaseName(settings, project.projectFileName);
+		const deploymentOptions = await getDeploymentOptions(settings, project);
 		const sqlCmdVariables = getSqlCmdVariables(settings);
 		await savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, sqlCmdVariables, deploymentOptions);
 
@@ -198,7 +198,7 @@ export function ifIsIPublishToDockerSettings(settings: ISqlProjectPublishSetting
 
 export async function getConnectionString(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): Promise<string> {
 	let connectionUri: string = '';
-	let connectionString;
+	let connectionString: string = '';
 
 	if (settings) {
 		if (ifIsISqlProjectPublishSettings(settings)) {
@@ -210,12 +210,14 @@ export async function getConnectionString(settings: ISqlProjectPublishSettings |
 		}
 	}
 
-	connectionString = (await utils.getVscodeMssqlApi()).getConnectionString(connectionUri, false);
+	if (connectionUri) {
+		connectionString = await (await utils.getVscodeMssqlApi()).getConnectionString(connectionUri, false);
+	}
 	return connectionString;
 }
 
-export function getDatabaseName(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): string {
-	let databaseName: string = '';
+export function getDatabaseName(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined, projectName: string): string {
+	let databaseName: string = projectName;
 
 	if (settings) {
 		if (ifIsISqlProjectPublishSettings(settings)) {
@@ -230,7 +232,7 @@ export function getDatabaseName(settings: ISqlProjectPublishSettings | ISqlDbDep
 	return databaseName;
 }
 
-export function getDeploymentOptions(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): vscodeMssql.DeploymentOptions | undefined {
+export async function getDeploymentOptions(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined, project: Project): Promise<vscodeMssql.DeploymentOptions | undefined> {
 	let deploymentOptions: vscodeMssql.DeploymentOptions | undefined;
 
 	if (settings) {
@@ -241,6 +243,8 @@ export function getDeploymentOptions(settings: ISqlProjectPublishSettings | ISql
 		} else if (ifIsIPublishToDockerSettings(settings)) {
 			deploymentOptions = settings.sqlProjectPublishSettings.deploymentOptions;
 		}
+	} else {
+		deploymentOptions = await utils.getDefaultPublishDeploymentOptions(project);
 	}
 
 	return deploymentOptions;
