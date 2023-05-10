@@ -9,6 +9,7 @@ import { ImportPage } from '../api/importPage';
 import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
 import { EOL } from 'os';
+import { isMssqlAuthProviderEnabled } from '../../common/utils';
 
 export class SummaryPage extends ImportPage {
 	private _table: azdata.TableComponent;
@@ -137,10 +138,14 @@ export class SummaryPage extends ImportPage {
 
 		const currentServer = this.model.server;
 		const includePasswordInConnectionString = (currentServer.options.authenticationType === azdata.connection.AuthenticationType.Integrated) ? false : true;
-		const connectionString = await azdata.connection.getConnectionString(currentServer.connectionId, includePasswordInConnectionString);
+		let connectionString = await azdata.connection.getConnectionString(currentServer.connectionId, includePasswordInConnectionString);
 
 		let accessToken = undefined;
 		if (currentServer.options.authenticationType === azdata.connection.AuthenticationType.AzureMFA) {
+			// Remove authentication properties from connection string if SQL Authentication Provider is enabled
+			if (isMssqlAuthProviderEnabled()) {
+				connectionString = this.updateConnectionStringForAccessToken(connectionString);
+			}
 			const azureAccount = (await azdata.accounts.getAllAccounts()).filter(v => v.key.accountId === currentServer.options.azureAccount)[0];
 			accessToken = (await azdata.accounts.getAccountSecurityToken(azureAccount, currentServer.options.azureTenantId, azdata.AzureResource.Sql)).token;
 		}
@@ -176,6 +181,21 @@ export class SummaryPage extends ImportPage {
 		this.statusText.updateProperties({
 			value: updateText
 		});
+	}
+
+	/**
+	 * Removes authentication related properties from connection string as SQL Tools Service now supports
+	 * 'EnableSqlAuthenticationProvider' which sets the below properties on connection string that conflict with access token:
+	 *   1. User Id
+	 *   2. Authentication
+	 * Since we need to set access token, we cannot use the same connection string as is.
+	 * @param connString Connection string to fix
+	 * @returns Updated connection string
+	 */
+	private updateConnectionStringForAccessToken(connString: string): string {
+		return connString ? connString.split(';').filter(prop =>
+			!['user', 'uid', 'password', 'pwd', 'authentication'].some(prefix => prop.toLocaleLowerCase().startsWith(prefix))
+		).join(';') : connString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {

@@ -130,7 +130,6 @@ function getEnv(name) {
     return result;
 }
 async function main() {
-    var _a;
     const [, , product, os, arch, unprocessedType, fileName, filePath] = process.argv;
     // getPlatform needs the unprocessedType
     const platform = getPlatform(product, os, arch, unprocessedType);
@@ -169,7 +168,7 @@ async function main() {
             console.log('Blob successfully uploaded to Azure storage.');
         })
     ];
-    const shouldUploadToMooncake = /true/i.test((_a = process.env['VSCODE_PUBLISH_TO_MOONCAKE']) !== null && _a !== void 0 ? _a : 'true');
+    const shouldUploadToMooncake = /true/i.test(process.env['VSCODE_PUBLISH_TO_MOONCAKE'] ?? 'true');
     if (shouldUploadToMooncake) {
         const mooncakeCredential = new identity_1.ClientSecretCredential(process.env['AZURE_MOONCAKE_TENANT_ID'], process.env['AZURE_MOONCAKE_CLIENT_ID'], process.env['AZURE_MOONCAKE_CLIENT_SECRET']);
         const mooncakeBlobServiceClient = new storage_blob_1.BlobServiceClient(`https://vscode.blob.core.chinacloudapi.cn`, mooncakeCredential, storagePipelineOptions);

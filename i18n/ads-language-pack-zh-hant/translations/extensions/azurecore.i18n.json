@@ -20,10 +20,15 @@
 			"azure.owningTenantNotFound": "找不到帳戶的擁有租用戶資訊。",
 			"azure.responseError": "權杖擷取失敗，發生錯誤。[開啟開發人員工具]({0}) 以了解更多詳細資料。",
 			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
-			"azurecore.consentDialog.body": "您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio 不會再觸發此租用戶 {0} ({1}) 的驗證，且資源無法存取。\r\n\r\n若要再次允許存取此租用戶的資源，您必須從 '{2}' 設定的排除清單中移除該租用戶。\r\n\r\n是否要繼續?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "確認",
+			"azurecore.consentDialog.authenticate": "註冊並驗證",
+			"azurecore.consentDialog.body": "您的租用戶 {0} ({1}) 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租用戶",
 			"azurecore.consentDialog.open": "開啟",
+			"msal.accountNotFoundError": "取得權杖時找不到帳戶資訊。",
+			"msal.resourceNotFoundError": "找不到 Azure 資源的設定 {0}",
 			"noMicrosoftResource": "提供者 '{0}' 未定義 Microsoft 資源端點。"
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -43,7 +48,8 @@
 			"azure.NoAuthMethod.Selected": "未選取任何 Azure 驗證方法。您必須選取要使用的驗證方法。",
 			"azure.deprecatedGetSecurityToken": "已對 azdata.accounts.getSecurityToken 發出呼叫，此方法已淘汰，並將於日後的版本中移除。請改用 getAccountSecurityToken。",
 			"genericTokenError": "無法取得權杖",
-			"msalTokenError": "取得權杖時發生{0}。\r\n{1}"
+			"msalTokenError": "取得權杖時發生{0}。\r\n{1}",
+			"tenantIgnoredError": "在忽略清單中找到的租用戶未嘗試過驗證。如果想要存取此租用戶 {0} 的資源，可以從 settings.json 檔案中的忽略清單 {1} 中移除該租用戶。"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "無法清除權杖快取",
@@ -132,6 +138,7 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "顯示 Azure 帳戶"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.flatAccountTreeNode.noResourcesLabel": "找不到資源。",
 			"azure.resource.throttleerror": "已節流來自此帳戶的要求。若要重試，請選取較少的訂閱數目。",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 個訂閱)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在載入...",
@@ -170,6 +177,8 @@
 			"azurecore.centralus": "美國中部",
 			"azurecore.centraluseuap": "美國中部 EUAP",
 			"azurecore.deprecated": "警告: ADAL 已被取代，並排定在未來的版本中移除。請改用 MSAL。",
+			"azurecore.disable": "停用",
+			"azurecore.dismiss": "關閉",
 			"azurecore.eastasia": "東亞",
 			"azurecore.eastus": "美國東部",
 			"azurecore.eastus2": "美國東部 2",
@@ -191,6 +200,7 @@
 			"azurecore.northeurope": "北歐",
 			"azurecore.norwayeast": "挪威東部",
 			"azurecore.norwaywest": "挪威西部",
+			"azurecore.piiLogging.warning": "警告: Azure PII 記錄已啟用。啟用此選項後即可記錄個人識別資訊，且只能用於偵錯用途。",
 			"azurecore.postgresServer": "適用於 PostgreSQL 的 Azure 資料庫伺服器",
 			"azurecore.reload": "重新載入",
 			"azurecore.reloadChoice": "重新載入 Azure Data Studio",
@@ -238,7 +248,7 @@
 			"azure.resource.signin.title": "Azure: 登入",
 			"azure.resource.startterminal.title": "啟動 Cloud Shell",
 			"azure.resource.view.title": "Azure (預覽)",
-			"azure.tenant.config.filter.description": "查詢 Azure 資源時要忽略的租用戶識別碼清單。每個項目都是租用戶識別碼。",
+			"azure.tenant.config.filter.description": "查詢 Azure 資源或要求驗證權杖時會略過的租用戶識別碼清單。",
 			"azure.title": "Azure",
 			"config.authenticationLibrary": "用於 AAD 驗證流程的程式庫。請先變更此選項，然後重新啟動 ADS。",
 			"config.azureAccountConfigurationSection": "Azure 帳戶組態",

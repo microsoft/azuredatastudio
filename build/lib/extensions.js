@@ -119,7 +119,10 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
             };
             const exportedConfig = require(webpackConfigPath);
             return (Array.isArray(exportedConfig) ? exportedConfig : [exportedConfig]).map(config => {
-                const webpackConfig = Object.assign(Object.assign({}, config), { mode: 'production' });
+                const webpackConfig = {
+                    ...config,
+                    ...{ mode: 'production' }
+                };
                 const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
                 return webpackGulp(webpackConfig, webpack, webpackDone)
                     .pipe(es.through(function (data) {
@@ -209,7 +212,10 @@ const ghApiHeaders = {
 if (process.env.GITHUB_TOKEN) {
     ghApiHeaders.Authorization = 'Basic ' + Buffer.from(process.env.GITHUB_TOKEN).toString('base64');
 }
-const ghDownloadHeaders = Object.assign(Object.assign({}, ghApiHeaders), { Accept: 'application/octet-stream' });
+const ghDownloadHeaders = {
+    ...ghApiHeaders,
+    Accept: 'application/octet-stream',
+};
 function fromGithub({ name, version, repo, metadata }) {
     const remote = require('gulp-remote-retry-src');
     const json = require('gulp-json-editor');
@@ -259,7 +265,6 @@ const externalExtensions = [
     'arc',
     'asde-deployment',
     'azcli',
-    'azurehybridtoolkit',
     'azuremonitor',
     'cms',
     'dacpac',
@@ -531,7 +536,7 @@ async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
                     reject();
                 }
                 else {
-                    reporter(stats === null || stats === void 0 ? void 0 : stats.toJson());
+                    reporter(stats?.toJson());
                 }
             });
         }
@@ -542,7 +547,7 @@ async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
                     reject();
                 }
                 else {
-                    reporter(stats === null || stats === void 0 ? void 0 : stats.toJson());
+                    reporter(stats?.toJson());
                     resolve();
                 }
             });

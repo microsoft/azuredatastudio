@@ -55,6 +55,7 @@ export interface IServerTreeView {
 	renderBody(container: HTMLElement): Promise<void>;
 	layout(size: number): void;
 	showFilteredTree(view: ServerTreeViewView): void;
+	filterElementChildren(node: TreeNode): Promise<void>;
 	view: ServerTreeViewView;
 }
 
@@ -484,7 +485,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
 
 					const resolveExpansion = () => {
-						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+						const expansionResult = self.mergeResults(allProviders, resultMap, node.nodePath);
+						if (expansionResult.errorMessage || expansionResult.nodes.some(n => n.errorMessage)) {
+							this._onUpdateObjectExplorerNodes.fire({
+								connection: node.getConnectionProfile(),
+								errorMessage: expansionResult.errorMessage
+							});
+						}
+						resolve(expansionResult);
 						// Have to delete it after get all responses otherwise couldn't find session for not the first response
 						if (newRequest) {
 							delete self._sessions[session.sessionId!].nodes[node.nodePath];
@@ -531,12 +539,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
-							self.callExpandOrRefreshFromProvider(provider, {
+							let expandRequest: azdata.ExpandNodeInfo = {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
 								securityToken: session.securityToken,
-								filters: node.filters
-							}, refresh).then(isExpanding => {
+							};
+							if (node?.filters?.length > 0) {
+								expandRequest.filters = node.filters;
+							}
+							self.callExpandOrRefreshFromProvider(provider, expandRequest, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
 									let emptyResult: azdata.ObjectExplorerExpandInfo = {
@@ -613,6 +624,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				});
 			}
 			finalResult.nodes = allNodes;
+			finalResult.errorMessage = errorMessages.join('\n');
 		}
 		return finalResult;
 	}

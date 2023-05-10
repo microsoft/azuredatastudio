@@ -519,8 +519,8 @@
         <target state="translated">Entrer le nom de la nouvelle variable SQLCMD</target>
       </trans-unit>
       <trans-unit id="enterNewValueForVar">
-        <source xml:lang="en">Enter new value for variable '{0}'</source>
-        <target state="translated">Entrer une nouvelle valeur pour la variable « {0} »</target>
+        <source xml:lang="en">Enter new default value for variable '{0}'</source>
+        <target state="translated">Entrez une nouvelle valeur par défaut pour la variable « {0} »</target>
       </trans-unit>
       <trans-unit id="enterPassword">
         <source xml:lang="en">Enter {0} admin password</source>
@@ -542,6 +542,10 @@
         <source xml:lang="en">The project is already up to date with the database.</source>
         <target state="translated">Le projet est déjà à jour avec la base de données.</target>
       </trans-unit>
+      <trans-unit id="errorAddingDatabaseReference">
+        <source xml:lang="en">Error adding database reference to {0}. Error: {1}</source>
+        <target state="translated">Erreur lors de l’ajout d’une référence de base de données à {0}. Erreur : {1}</target>
+      </trans-unit>
       <trans-unit id="errorDownloading">
         <source xml:lang="en">Error downloading {0}. Error: {1}</source>
         <target state="translated">Erreur de téléchargement{0}. Erreur : {1}</target>
@@ -558,9 +562,17 @@
         <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
         <target state="translated">Erreur lors du déplacement du fichier de {0} vers {1}. Erreur : {2}</target>
       </trans-unit>
+      <trans-unit id="errorNotSupportedInVsCode">
+        <source xml:lang="en">Error: {0} is not currently supported in SQL Database Projects for VS Code.</source>
+        <target state="translated">Erreur : {0} n’est actuellement pas pris en charge dans SQL Database Projets pour VS Code.</target>
+      </trans-unit>
+      <trans-unit id="errorPrefix">
+        <source xml:lang="en">Error: {0}</source>
+        <target state="translated">Erreur : {0}</target>
+      </trans-unit>
       <trans-unit id="errorReadingProjectGuid">
-        <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
-        <target state="translated">Erreur lors de la tentative de lecture {0} du projet '{1}'</target>
+        <source xml:lang="en">Error trying to read {0} of project '{1}'. {2}</source>
+        <target state="translated">Erreur lors de la tentative de lecture {0} du projet '{1}'. {2}</target>
       </trans-unit>
       <trans-unit id="errorRenamingFile">
         <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
@@ -591,6 +603,10 @@
       <trans-unit id="excludeAction">
         <source xml:lang="en">Exclude</source>
         <target state="translated">Exclure</target>
+      </trans-unit>
+      <trans-unit id="excludeFolderNotSupported">
+        <source xml:lang="en">Excluding folders is not yet supported</source>
+        <target state="translated">L’exclusion de dossiers n’est pas encore prise en charge</target>
       </trans-unit>
       <trans-unit id="excludeObjectTypes">
         <source xml:lang="en">Exclude Object Types</source>
@@ -848,9 +864,13 @@
         <source xml:lang="en">None Elements</source>
         <target state="translated">Aucun élément</target>
       </trans-unit>
-      <trans-unit id="notValidVariableName">
-        <source xml:lang="en">The variable name '{0}' is not valid.</source>
-        <target state="translated">Le nom de variable '{0}' n'est pas valide.</target>
+      <trans-unit id="nupkgNamePlaceholder">
+        <source xml:lang="en">NuGet package name</source>
+        <target state="translated">Nom du package NuGet</target>
+      </trans-unit>
+      <trans-unit id="nupkgText">
+        <source xml:lang="en">Published data-tier application (.nupkg)</source>
+        <target state="translated">Application de niveau données publiée (.nupkg)</target>
       </trans-unit>
       <trans-unit id="objectType">
         <source xml:lang="en">Object Type</source>
@@ -860,9 +880,9 @@
         <source xml:lang="en">Ok</source>
         <target state="translated">OK</target>
       </trans-unit>
-      <trans-unit id="onlyMoveSqlFilesSupported">
-        <source xml:lang="en">Only moving .sql files is supported</source>
-        <target state="translated">Seul le déplacement de fichiers .sql est pris en charge</target>
+      <trans-unit id="onlyMoveFilesFoldersSupported">
+        <source xml:lang="en">Only moving files and folders are supported</source>
+        <target state="translated">Seul le déplacement des fichiers et des dossiers est pris en charge</target>
       </trans-unit>
       <trans-unit id="openEulaString">
         <source xml:lang="en">Open License Agreement</source>
@@ -956,6 +976,10 @@
         <source xml:lang="en">Enter project name</source>
         <target state="translated">Entrer le nom du projet</target>
       </trans-unit>
+      <trans-unit id="projectNeedsUpdatingForCrossPlat">
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'.</source>
+        <target state="translated">Les cibles, les références et les références de la base de données système doivent être mises à jour pour générer le projet '{0}'.</target>
+      </trans-unit>
       <trans-unit id="projectReferenceElement">
         <source xml:lang="en">Project reference</source>
         <target state="translated">Référence du projet</target>
@@ -1048,10 +1072,6 @@
         <source xml:lang="en">Would you like to reload your database project?</source>
         <target state="translated">Voulez-vous recharger votre projet de base de données ?</target>
       </trans-unit>
-      <trans-unit id="reloadValuesFromProjectButtonTitle">
-        <source xml:lang="en">Reload values from project</source>
-        <target state="translated">Recharger les valeurs à partir du projet</target>
-      </trans-unit>
       <trans-unit id="reset">
         <source xml:lang="en">Reset</source>
         <target state="translated">Réinitialiser</target>
@@ -1084,6 +1104,10 @@
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
         <target state="translated">En attente de {0} secondes avant une autre tentative d’opération «{1}»</target>
       </trans-unit>
+      <trans-unit id="revertSqlCmdVarsButtonTitle">
+        <source xml:lang="en">Revert values to project defaults</source>
+        <target state="translated">Rétablir les valeurs par défaut du projet</target>
+      </trans-unit>
       <trans-unit id="runViaNpx">
         <source xml:lang="en">Run via npx</source>
         <target state="translated">Exécuter via npx</target>
@@ -1095,6 +1119,14 @@
       <trans-unit id="sameDatabase">
         <source xml:lang="en">Same database</source>
         <target state="translated">Même base de données</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Enregistrer</target>
+      </trans-unit>
+      <trans-unit id="saveProfileAsButtonText">
+        <source xml:lang="en">Save As...</source>
+        <target state="translated">Enregistrer sous...</target>
       </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
@@ -1264,6 +1296,14 @@
         <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
         <target state="translated">Une variable SQLCMD portant le même nom existe déjà dans ce projet</target>
       </trans-unit>
+      <trans-unit id="sqlcmdVariableNameCannotBeWhitespace">
+        <source xml:lang="en">SQLCMD variable name '{0}' cannot contain whitespace</source>
+        <target state="translated">Le nom de la variable SQLCMD '{0}' ne peut pas contenir d’espaces blancs</target>
+      </trans-unit>
+      <trans-unit id="sqlcmdVariableNameCannotContainIllegalChars">
+        <source xml:lang="en">SQLCMD variable name '{0}' cannot contain any of the following characters: {1}</source>
+        <target state="translated">Le nom de la variable SQLCMD '{0}' ne peut contenir aucun des caractères suivants : {1}</target>
+      </trans-unit>
       <trans-unit id="sqlcmdVariablesNodeName">
         <source xml:lang="en">SQLCMD Variables</source>
         <target state="translated">Variables SQLCMD</target>
@@ -1324,6 +1364,14 @@
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">Impossible d’établir le contexte du projet.  Commande appelée à partir d’un emplacement inattendu : {0}</target>
       </trans-unit>
+      <trans-unit id="unhandledDeleteType">
+        <source xml:lang="en">Unhandled item type during delete: '{0}</source>
+        <target state="translated">Type d’élément non géré durant la suppression : '{0}</target>
+      </trans-unit>
+      <trans-unit id="unhandledMoveNode">
+        <source xml:lang="en">Unhandled node type for move</source>
+        <target state="translated">Type de nœud non géré pour le déplacement</target>
+      </trans-unit>
       <trans-unit id="unknownDataSourceType">
         <source xml:lang="en">Unknown data source type: </source>
         <target state="translated">Type de source de données inconnu : </target>
@@ -1344,9 +1392,13 @@
         <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">Les références de la base de données système doivent être mises à jour pour générer le projet "{0}". Si le projet a été créé dans SSDT, il continuera à fonctionner dans les deux outils. Voulez-vous mettre à jour le projet ?</target>
       </trans-unit>
-      <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">Les cibles, les références et les références de la base de données système doivent être mises à jour pour générer le projet « {0} ». Si le projet a été créé dans SSDT, il continuera à fonctionner dans les deux outils. Voulez-vous mettre à jour le projet ?</target>
+      <trans-unit id="updateProjectForCrossPlatform">
+        <source xml:lang="en">{0} If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">{0} Si le projet a été créé dans SSDT, il continuera à fonctionner dans les deux outils. Voulez-vous mettre à jour le projet ?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectForCrossPlatformShort">
+        <source xml:lang="en">Update {0} for cross-platform support?</source>
+        <target state="translated">Mise à jour {0} pour le support multiplate-forme ?</target>
       </trans-unit>
       <trans-unit id="updateProjectFromDatabaseDialogName">
         <source xml:lang="en">Update project from database</source>
@@ -1379,6 +1431,18 @@
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">La valeur ne peut pas être vide</target>
+      </trans-unit>
+      <trans-unit id="version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Version</target>
+      </trans-unit>
+      <trans-unit id="versionMustNotBeEmpty">
+        <source xml:lang="en">Version must not be empty</source>
+        <target state="translated">La version ne doit pas être vide</target>
+      </trans-unit>
+      <trans-unit id="versionPlaceholder">
+        <source xml:lang="en">NuGet package version</source>
+        <target state="translated">Version du package NuGet</target>
       </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>

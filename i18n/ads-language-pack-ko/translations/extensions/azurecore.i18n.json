@@ -20,10 +20,15 @@
 			"azure.owningTenantNotFound": "계정에 대한 소유 테넌트 정보를 찾을 수 없습니다.",
 			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
-			"azurecore.consentDialog.body": "'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio에서 이 테넌트 {0}({1})에 대한 인증을 더 이상 트리거하지 않으며 리소스에 액세스할 수 없게 됩니다. \r\n\r\n이 테넌트의 리소스에 대한 액세스를 다시 허용하려면 '{2}' 설정의 제외 목록에서 테넌트를 제거해야 합니다.\r\n\r\n계속하시겠습니까?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "확인",
+			"azurecore.consentDialog.authenticate": "취소 및 인증",
+			"azurecore.consentDialog.body": "{0}({1}) 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. 열기를 눌러 인증 프로세스를 시작하세요.",
 			"azurecore.consentDialog.cancel": "취소",
 			"azurecore.consentDialog.ignore": "테넌트 무시",
 			"azurecore.consentDialog.open": "열기",
+			"msal.accountNotFoundError": "토큰을 가져올 때 계정 정보를 찾을 수 없습니다.",
+			"msal.resourceNotFoundError": "Azure 리소스 {0}에 대한 구성을 찾을 수 없습니다.",
 			"noMicrosoftResource": "'{0}' 공급자에 정의된 Microsoft 리소스 엔드포인트가 없습니다."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -43,7 +48,8 @@
 			"azure.NoAuthMethod.Selected": "Azure 인증 방법이 선택되지 않았습니다. 사용할 인증 방법을 선택해야 합니다.",
 			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요.",
 			"genericTokenError": "토큰을 가져오지 못했습니다.",
-			"msalTokenError": "토큰을 획득할 때 {0}이(가) 발생했습니다. \r\n{1}"
+			"msalTokenError": "토큰을 획득할 때 {0}이(가) 발생했습니다. \r\n{1}",
+			"tenantIgnoredError": "테넌트가 무시 목록에 있습니다. 인증이 시도되지 않았습니다. {1} settings.json 파일의 무시 목록에서 {0} 테넌트를 제거하여 이 테넌트의 리소스에 액세스할 수 있습니다."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "토큰 캐시를 지우지 못했습니다.",
@@ -132,6 +138,7 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure 계정 표시"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.flatAccountTreeNode.noResourcesLabel": "리소스를 찾을 수 없습니다.",
 			"azure.resource.throttleerror": "이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.",
 			"azure.resource.tree.accountTreeNode.title": "{0}({1}/{2}개 구독)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 로드 중...",
@@ -170,6 +177,8 @@
 			"azurecore.centralus": "미국 중부",
 			"azurecore.centraluseuap": "미국 중부 EUAP",
 			"azurecore.deprecated": "경고: ADAL은 더 이상 사용되지 않으며 향후 릴리스에서 제거될 예정입니다. 대신 MSAL을 사용하세요.",
+			"azurecore.disable": "사용 안 함",
+			"azurecore.dismiss": "해제",
 			"azurecore.eastasia": "동아시아",
 			"azurecore.eastus": "미국 동부",
 			"azurecore.eastus2": "미국 동부 2",
@@ -191,6 +200,7 @@
 			"azurecore.northeurope": "북유럽",
 			"azurecore.norwayeast": "노르웨이 동부",
 			"azurecore.norwaywest": "노르웨이 서부",
+			"azurecore.piiLogging.warning": "경고: Azure PII 로깅이 활성화되어 있습니다. 이 옵션을 활성화하면 개인 식별 정보가 기록될 수 있으며 디버깅 용도로만 사용해야 합니다.",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 서버",
 			"azurecore.reload": "다시 로드",
 			"azurecore.reloadChoice": "Azure 데이터 스튜디오 다시 로드",
@@ -238,7 +248,7 @@
 			"azure.resource.signin.title": "Azure: 로그인",
 			"azure.resource.startterminal.title": "Cloud Shell 시작",
 			"azure.resource.view.title": "Azure(미리 보기)",
-			"azure.tenant.config.filter.description": "Azure 리소스를 쿼리할 때 무시할 테넌트 ID 목록입니다. 각 요소는 테넌트 ID입니다.",
+			"azure.tenant.config.filter.description": "Azure 리소스를 쿼리하거나 인증 토큰을 요청할 때 건너뛸 테넌트 ID 목록입니다.",
 			"azure.title": "Azure",
 			"config.authenticationLibrary": "AAD 인증 흐름에 사용되는 라이브러리입니다. 이 옵션을 변경한 후 ADS를 다시 시작하세요.",
 			"config.azureAccountConfigurationSection": "Azure 계정 구성",

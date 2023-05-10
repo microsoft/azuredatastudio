@@ -310,3 +310,57 @@ export class DeleteConnectionAction extends Action {
 		}
 	}
 }
+
+export class FilterChildrenAction extends Action {
+	public static ID = 'objectExplorer.filterChildren';
+	public static LABEL = localize('objectExplorer.filterChildren', "Filter (Preview)");
+
+	constructor(
+		id: string,
+		label: string,
+		private _node: TreeNode,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService) {
+		super(id, label);
+	}
+
+	public override async run(): Promise<void> {
+		await this._objectExplorerService.getServerTreeView().filterElementChildren(this._node);
+	}
+}
+
+export class RemoveFilterAction extends Action {
+	public static ID = 'objectExplorer.removeFilter';
+	public static LABEL = localize('objectExplorer.removeFilter', "Remove Filter");
+
+	constructor(
+		id: string,
+		label: string,
+		private _node: TreeNode,
+		private _tree: AsyncServerTree | ITree,
+		private _profile: ConnectionProfile | undefined,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+	) {
+		super(id, label);
+	}
+
+	public override async run(): Promise<void> {
+		let node = this._node;
+		let nodeToRefresh: ServerTreeElement = this._node;
+		if (this._profile) {
+			node = this._objectExplorerService.getObjectExplorerNode(this._profile);
+			nodeToRefresh = this._profile;
+		}
+		node.filters = [];
+		if (nodeToRefresh instanceof TreeNode) {
+			nodeToRefresh.forceRefresh = true;
+		}
+		if (this._tree instanceof AsyncServerTree) {
+			await this._tree.rerender(nodeToRefresh);
+			await this._tree.updateChildren(nodeToRefresh);
+			await this._tree.expand(nodeToRefresh);
+		} else {
+			await this._tree.refresh(nodeToRefresh);
+			await this._tree.expand(nodeToRefresh);
+		}
+	}
+}
