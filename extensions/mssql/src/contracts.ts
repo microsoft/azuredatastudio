@@ -555,7 +555,7 @@ export interface SavePublishProfileParams {
 	profilePath: string;
 	databaseName: string;
 	connectionString: string;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 }
 
