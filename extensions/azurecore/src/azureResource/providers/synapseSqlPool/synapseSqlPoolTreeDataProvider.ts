@@ -28,7 +28,7 @@ export class AzureResourceSynapseSqlPoolTreeDataProvider extends ResourceTreeDat
 
 	public getTreeItemForResource(synapse: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.synapseWorkspace}${synapse.serverFullName}.${AzureResourcePrefixes.synapseSqlPool}${synapse.id ?? synapse.name}`,
+			id: `${AzureResourcePrefixes.synapseWorkspace}${account.key.accountId}${synapse.serverFullName}.${AzureResourcePrefixes.synapseSqlPool}${synapse.id ?? synapse.name}`,
 			label: this.browseConnectionMode ? `${synapse.serverName}/${synapse.name} (${AzureResourceSynapseSqlPoolTreeDataProvider.containerLabel}, ${synapse.subscription.name})` : `${synapse.name} (${synapse.serverName})`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),

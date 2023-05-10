@@ -27,7 +27,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphDat
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.kusto}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.kusto}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),

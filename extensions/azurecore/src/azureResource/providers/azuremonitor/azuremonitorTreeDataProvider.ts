@@ -27,7 +27,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<G
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.logAnalytics}${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.logAnalytics}${account.key.accountId}${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${AzureMonitorTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azure_monitor_dark.svg'),

@@ -27,7 +27,7 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<Gr
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.sqlInstance}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.sqlInstance}${account.key.accountId}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${SqlInstanceTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),

@@ -27,7 +27,7 @@ export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeD
 
 	public getTreeItemForResource(synapseWorkspace: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.synapseWorkspace}${synapseWorkspace.id ?? synapseWorkspace.name}`,
+			id: `${AzureResourcePrefixes.synapseWorkspace}${account.key.accountId}${synapseWorkspace.id ?? synapseWorkspace.name}`,
 			label: this.browseConnectionMode ? `${synapseWorkspace.name} (${AzureResourceSynapseWorkspaceTreeDataProvider.containerLabel}, ${synapseWorkspace.subscription.name})` : synapseWorkspace.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),

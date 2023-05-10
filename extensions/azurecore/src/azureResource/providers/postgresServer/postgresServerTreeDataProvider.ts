@@ -27,7 +27,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.postgresServer}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.postgresServer}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),

@@ -160,7 +160,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 			should(child.account).equal(mockAccount);
 			should(child.subscription).equal(mockSubscription);
 			should(child.tenantId).equal(mockTenantId);
-			should(child.treeItem.id).equal(`databaseServer_${database.serverFullName}.database_${database.id}`);
+			should(child.treeItem.id).equal(`databaseServer_${mockAccount.key.accountId}${database.serverFullName}.database_${database.id}`);
 			should(child.treeItem.label).equal(`${database.name} (${database.serverName})`);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 			should(child.treeItem.contextValue).equal(AzureResourceItemType.database);

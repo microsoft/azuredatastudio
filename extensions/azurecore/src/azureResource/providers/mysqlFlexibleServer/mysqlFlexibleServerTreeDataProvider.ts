@@ -27,7 +27,7 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.mySqlFlexibleServer}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.mySqlFlexibleServer}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${MysqlFlexibleServerTreeDataProvider.CONTAINER_LABEL}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/mysql_server_inverse.svg'),

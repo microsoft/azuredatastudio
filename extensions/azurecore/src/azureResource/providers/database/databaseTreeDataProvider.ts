@@ -28,7 +28,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 
 	public getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.databaseServer}${database.serverFullName}.${AzureResourcePrefixes.database}${database.id ?? database.name}`,
+			id: `${AzureResourcePrefixes.databaseServer}${account.key.accountId}${database.serverFullName}.${AzureResourcePrefixes.database}${database.id ?? database.name}`,
 			label: this.browseConnectionMode ? `${database.serverName}/${database.name} (${AzureResourceDatabaseTreeDataProvider.containerLabel}, ${database.subscription.name})` : `${database.name} (${database.serverName})`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
