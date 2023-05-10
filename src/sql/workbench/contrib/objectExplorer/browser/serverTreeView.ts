@@ -226,10 +226,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}));
 
 		this._register(this._connectionManagementService.onDisconnect(async (connectionParams) => {
-			if (this._tree instanceof AsyncServerTree) {
-				await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
-			} else {
-				if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+				if (this._tree instanceof AsyncServerTree) {
+					await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
+				} else {
 					this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
 				}
 			}
