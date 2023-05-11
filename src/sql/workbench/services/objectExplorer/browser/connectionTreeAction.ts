@@ -22,6 +22,8 @@ import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objec
 import { SqlIconId } from 'sql/base/common/codicons';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { Codicon } from 'vs/base/common/codicons';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -341,7 +343,8 @@ export class RemoveFilterAction extends Action {
 		private _node: TreeNode,
 		private _tree: AsyncServerTree | ITree,
 		private _profile: ConnectionProfile | undefined,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(id, label, SqlIconId.removeFilter);
 	}
@@ -365,5 +368,11 @@ export class RemoveFilterAction extends Action {
 			await this._tree.refresh(nodeToRefresh);
 			await this._tree.expand(nodeToRefresh);
 		}
+		this._telemetryService.createActionEvent(
+			TelemetryKeys.TelemetryView.ObjectExplorer,
+			TelemetryKeys.TelemetryAction.ObjectExplorerRemoveFilter
+		).withAdditionalProperties({
+			objectType: node.objectType
+		}).send();
 	}
 }

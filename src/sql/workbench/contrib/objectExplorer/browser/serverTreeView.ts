@@ -48,6 +48,8 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { USE_ASYNC_SERVER_TREE_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { FilterDialog } from 'sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -79,7 +81,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IHostService private _hostService: IHostService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super();
 		this._hasConnectionsKey = CONTEXT_SERVER_TREE_HAS_CONNECTIONS.bindTo(contextKeyService);
@@ -619,6 +622,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					if (errorListener) {
 						errorListener.dispose();
 					}
+
+					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ObjectExplorer, TelemetryKeys.TelemetryAction.ObjectExplorerFilter)
+						.withAdditionalProperties({
+							filterPropertyNames: JSON.stringify(filters.map(f => node.filterProperties.find(p => f.displayName === p.displayName)?.name)),
+							filterCount: filters.length,
+							objectType: node.objectType
+						}).send();
 				}
 				return;
 			},
