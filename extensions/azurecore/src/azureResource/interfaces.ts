@@ -3,9 +3,125 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as msRest from '@azure/ms-rest-js';
-
 import { AzureAccount, Tenant, azureResource } from 'azurecore';
+
+export interface GraphData {
+	subscriptionId: string,
+	subscriptionName?: string,
+	tenantId: string;
+	id: string;
+	name: string;
+	location: string;
+	type: string;
+	resourceGroup: string;
+}
+
+export interface AzureMonitorGraphData extends GraphData {
+	properties: {
+		fullyQualifiedDomainName: string;
+		administratorLogin: string;
+		uri: string;
+		customerId: string
+	};
+}
+
+export interface SqlInstanceArcGraphData extends GraphData {
+	properties: {
+		admin: string;
+		hybridDataManager: string;
+	};
+}
+
+export interface PostgresArcServerGraphData extends GraphData {
+	properties: {
+		admin: string;
+	};
+}
+
+export interface DatabaseGraphData extends GraphData {
+	kind: string;
+}
+
+export interface SynapseGraphData extends GraphData {
+	kind: string;
+}
+
+export interface DbServerGraphData extends GraphData {
+	properties: {
+		fullyQualifiedDomainName: string;
+		administratorLogin: string;
+	};
+}
+
+export interface KustoGraphData extends GraphData {
+	properties: {
+		fullyQualifiedDomainName: string;
+		administratorLogin: string;
+		uri: string;
+	};
+}
+
+export interface SqlInstanceGraphData extends GraphData {
+	properties: {
+		fullyQualifiedDomainName: string;
+		administratorLogin: string;
+	};
+}
+
+/**
+ * Properties combined from all providers to create a universal interface that can be translated to any resource provider.
+ */
+export interface UniversalGraphData extends GraphData {
+	kind?: string,
+	properties?: {
+		/**
+		 * SQL connectivity endpoint and other endpoints are found here, instead of fullyQualifiedDomainName.
+		 */
+		connectivityEndpoints?: { sql: string };
+		/**
+		 * managedResourceGroupName is the resource group used by any SQL pools inside the workspace
+		 * which is different from the resource group of the workspace itself.
+		 */
+		managedResourceGroupName?: string;
+		/**
+		 * administratorLogin is called sqlAdministratorLogin for Synapse.
+		 */
+		sqlAdministratorLogin?: string;
+
+		admin?: string;
+
+		hybridDataManager?: string;
+
+		fullyQualifiedDomainName?: string;
+
+		administratorLogin?: string;
+
+		uri?: string;
+
+		customerId?: string
+	}
+}
+
+/**
+ * Properties returned by the Synapse query are different from the server ones and have to be treated differently.
+ */
+export interface SynapseWorkspaceGraphData extends GraphData {
+	properties: {
+		/**
+		 * SQL connectivity endpoint and other endpoints are found here, instead of fullyQualifiedDomainName.
+		 */
+		connectivityEndpoints: { sql: string };
+		/**
+		 * managedResourceGroupName is the resource group used by any SQL pools inside the workspace
+		 * which is different from the resource group of the workspace itself.
+		 */
+		managedResourceGroupName: string;
+		/**
+		 * administratorLogin is called sqlAdministratorLogin here.
+		 */
+		sqlAdministratorLogin: string;
+	};
+}
 
 export interface IAzureResourceSubscriptionService {
 	/**
@@ -41,6 +157,10 @@ export interface IAzureResourceNodeWithProviderId {
 	resourceNode: azureResource.IAzureResourceNode;
 }
 
-export interface IAzureResourceService<T extends azureResource.AzureResource> {
-	getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<T[]>;
+export interface IAzureResourceDbService<S extends GraphData, T extends GraphData> extends azureResource.IAzureResourceService {
+	convertDatabaseResource(resource: T, server?: S): azureResource.AzureResource | undefined;
+}
+
+export interface IAzureResourceServerService<T extends GraphData> extends azureResource.IAzureResourceService {
+	convertServerResource(resource: T): azureResource.AzureResource | undefined;
 }
