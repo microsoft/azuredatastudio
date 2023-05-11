@@ -25,7 +25,6 @@ export class OctoKit implements GitHub {
 
 	async *query(query: Query): AsyncIterableIterator<GitHubIssue[]> {
 		const q = query.q + ` repo:${this.params.owner}/${this.params.repo}`
-		console.log(`Querying for ${q}:`)
 
 		const options = this.octokit.search.issuesAndPullRequests.endpoint.merge({
 			...query,
@@ -50,7 +49,6 @@ export class OctoKit implements GitHub {
 			await timeout()
 			await logRateLimit(this.token)
 			const page: Array<Octokit.SearchIssuesAndPullRequestsResponseItemsItem> = pageResponse.data
-			console.log(`Page ${++pageNum}: ${page.map(({ number }) => number).join(' ')}`)
 			yield page.map(
 				(issue) => new OctoKitIssue(this.token, this.params, this.octokitIssueToIssue(issue)),
 			)
@@ -199,7 +197,6 @@ export class OctoKitIssue extends OctoKit implements GitHubIssue {
 			return this.issueData
 		}
 
-		console.log('Fetching issue ' + this.issueData.number)
 		const issue = (
 			await this.octokit.issues.get({
 				...this.params,
@@ -286,7 +283,6 @@ export class OctoKitIssue extends OctoKit implements GitHubIssue {
 				})
 		} catch (err) {
 			if (err.status === 404) {
-				console.log(`Label ${name} not found on issue`)
 				return
 			}
 			throw err
@@ -314,7 +310,6 @@ export class OctoKitIssue extends OctoKit implements GitHubIssue {
 				}
 			}
 		}
-		console.log(`Got ${closingCommit} as closing commit of ${this.issueData.number}`)
 		return closingCommit
 	}
 }

@@ -75,7 +75,10 @@ export class InputBox extends vsInputBox implements AdsWidget {
 		if (this._sqlOptions.ariaDescription) {
 			this.inputElement.setAttribute('aria-description', this._sqlOptions.ariaDescription);
 		}
-		this.inputElement.id = id;
+
+		if (id !== undefined) {
+			this.inputElement.id = id;
+		}
 	}
 
 	public override style(styles: IInputBoxStyles): void {

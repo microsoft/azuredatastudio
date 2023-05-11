@@ -3,24 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionContext } from 'vscode';
-
 import { azureResource } from 'azurecore';
-import { IAzureResourceService } from '../../interfaces';
-import { KustoTreeDataProvider as KustoTreeDataProvider } from './kustoTreeDataProvider';
 
-export class KustoProvider implements azureResource.IAzureResourceProvider {
+export class ResourceProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		private _service: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
-		private _extensionContext: ExtensionContext
-	) {
-	}
+		private _providerId: string,
+		private _treeProvider: azureResource.IAzureResourceTreeDataProvider
+	) { }
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new KustoTreeDataProvider(this._service, this._extensionContext);
+		return this._treeProvider;
 	}
 
 	public get providerId(): string {
-		return 'azure.resource.providers.azureDataExplorer';
+		return this._providerId;
 	}
 }

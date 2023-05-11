@@ -109,7 +109,6 @@ async function assertContainer(containerClient) {
     return containerResponse && !!containerResponse.errorCode;
 }
 async function uploadBlob(blobClient, file) {
-    var _a, _b;
     const result = await blobClient.uploadFile(file, {
         blobHTTPHeaders: {
             blobContentType: mime.lookup(file),
@@ -117,10 +116,10 @@ async function uploadBlob(blobClient, file) {
         }
     });
     if (result && !result.errorCode) {
-        console.log(`Blobs uploaded successfully, response status: ${(_a = result === null || result === void 0 ? void 0 : result._response) === null || _a === void 0 ? void 0 : _a.status}`);
+        console.log(`Blobs uploaded successfully, response status: ${result?._response?.status}`);
     }
     else {
-        console.error(`Blobs failed to upload, response status: ${(_b = result === null || result === void 0 ? void 0 : result._response) === null || _b === void 0 ? void 0 : _b.status}, errorcode: ${result === null || result === void 0 ? void 0 : result.errorCode}`);
+        console.error(`Blobs failed to upload, response status: ${result?._response?.status}, errorcode: ${result?.errorCode}`);
     }
 }
 async function publish(commit, quality, platform, type, name, version, _isUpdate, file, opts) {
