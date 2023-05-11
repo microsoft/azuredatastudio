@@ -27,7 +27,7 @@ export class LinkHandlerDirective {
 		@Inject(INotebookService) private readonly notebookService: INotebookService,
 		@Inject(IFileService) private readonly fileService: IFileService
 	) {
-		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-browser/workbench/workbench.html'));
+		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-sandbox/workbench/workbench.html'));
 	}
 
 	@HostListener('click', ['$event'])
