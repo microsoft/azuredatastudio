@@ -20,6 +20,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
+import { PublishProfile } from '../models/publishProfile/publishProfile';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -69,7 +70,7 @@ export class PublishDatabaseDialog {
 	public publish: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
 	public generateScript: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
-	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
+	public readPublishProfile: ((profileUri: vscode.Uri) => Promise<PublishProfile>) | undefined;
 	public savePublishProfile: ((profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions) => any) | undefined;
 
 	constructor(private project: Project) {
@@ -814,8 +815,8 @@ export class PublishDatabaseDialog {
 					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 				}
 
-				for (let key in result.sqlCmdVariables) {
-					this.sqlCmdVars?.set(key, result.sqlCmdVariableColumn.get(key));
+				for (let key in result.sqlCmdVariables.keys()) {
+					this.sqlCmdVars?.set(key, result.sqlCmdVariables.get(key)!);
 				}
 
 				this.updateRevertSqlCmdVarsButtonState();
@@ -983,7 +984,7 @@ export class PublishDatabaseDialog {
 	/*
 	* Sets the default deployment options to deployment options model object
 	*/
-	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
+	public setDeploymentOptions(deploymentOptions: DeploymentOptions | undefined): void {
 		this.deploymentOptions = deploymentOptions;
 	}
 }
