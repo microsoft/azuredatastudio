@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
@@ -55,6 +55,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
 				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+				selectAllObjectTypes: true,
 				multiSelect: false,
 				contextId: this.contextId,
 				title: localizedConstants.SelectDatabaseRoleOwnerDialogTitle,
@@ -78,6 +79,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
 					objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+					selectAllObjectTypes: true,
 					multiSelect: true,
 					contextId: this.contextId,
 					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
@@ -119,7 +121,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;

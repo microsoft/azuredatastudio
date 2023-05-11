@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterApplicationRoleDocUrl, CreateApplicationRoleDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.ApplicationRoleInfo, ObjectManagement.ApplicationRoleViewInfo> {
@@ -86,7 +86,7 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;

@@ -10,7 +10,7 @@ import * as objectManagementLoc from '../localizedConstants';
 import * as uiLoc from '../../ui/localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
@@ -206,7 +206,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
 		}
 
-		this.advancedSection = this.createGroup(objectManagementLoc.AdvancedSectionHeader, items);
+		this.advancedSection = this.createGroup(objectManagementLoc.AdvancedSectionHeader, items, true, true);
 	}
 
 	private initializeServerRolesSection(): void {
@@ -214,7 +214,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 			[objectManagementLoc.ServerRoleTypeDisplayNameInTitle],
 			this.viewInfo.serverRoles,
 			this.objectInfo.serverRoles,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				return item !== PublicServerRoleName
 			});

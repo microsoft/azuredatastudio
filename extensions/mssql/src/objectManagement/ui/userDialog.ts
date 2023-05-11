@@ -8,7 +8,7 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
 
 export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
@@ -121,7 +121,7 @@ export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, Objec
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;

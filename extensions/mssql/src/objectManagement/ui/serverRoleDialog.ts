@@ -60,6 +60,7 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
 				objectTypes: [ObjectManagement.NodeType.ServerLevelLogin, ObjectManagement.NodeType.ServerLevelServerRole],
+				selectAllObjectTypes: true,
 				multiSelect: false,
 				contextId: this.contextId,
 				title: localizedConstants.SelectServerRoleOwnerDialogTitle
@@ -84,6 +85,7 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
 					objectTypes: [ObjectManagement.NodeType.ServerLevelLogin, ObjectManagement.NodeType.ServerLevelServerRole],
+					selectAllObjectTypes: true,
 					multiSelect: true,
 					contextId: this.contextId,
 					title: localizedConstants.SelectServerRoleMemberDialogTitle

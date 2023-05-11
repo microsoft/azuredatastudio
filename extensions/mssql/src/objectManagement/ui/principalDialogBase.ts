@@ -117,6 +117,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	private async onAddSecurableButtonClicked(): Promise<void> {
 		const dialog = new FindObjectDialog(this.objectManagementService, {
 			objectTypes: this.viewInfo.supportedSecurableTypes,
+			selectAllObjectTypes: false,
 			multiSelect: true,
 			contextId: this.contextId,
 			title: localizedConstants.SelectSecurablesDialogTitle,

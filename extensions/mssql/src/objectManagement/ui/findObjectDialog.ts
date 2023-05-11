@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as mssql from 'mssql';
-import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableHeight, DialogBase, TableListItemComparer } from '../../ui/dialogBase';
+import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableRowCount, DialogBase, TableListItemComparer } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { getErrorMessage } from '../../utils';
 
@@ -13,6 +13,7 @@ type ObjectType = string | { name: string, displayName: string };
 
 export interface FindObjectDialogOptions {
 	objectTypes: ObjectType[];
+	selectAllObjectTypes: boolean;
 	multiSelect: boolean;
 	contextId: string;
 	title: string;
@@ -28,7 +29,7 @@ const ObjectComparer: TableListItemComparer<mssql.ObjectManagement.SearchResultI
 		return item1.name === item2.name && item1.type === item2.type && item1.schema === item2.schema;
 	};
 
-const ObjectsTableMaxHeight = 700;
+const ObjectsTableMaxRowCount = 20;
 
 export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private objectTypesTable: azdata.TableComponent;
@@ -45,7 +46,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.result = {
 			selectedObjects: []
 		};
-		this.selectedObjectTypes = [...options.objectTypes];
+		this.selectedObjectTypes = options.selectAllObjectTypes ? [...options.objectTypes] : [];
 	}
 
 	private getObjectTypeName(objectType: ObjectType): string {
@@ -62,7 +63,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			[localizedConstants.ObjectTypeText],
 			this.options.objectTypes,
 			this.selectedObjectTypes,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			DefaultTableListItemEnabledStateGetter, (item) => {
 				return [this.getObjectTypeDisplayName(item)];
 			}, (item1, item2) => {
@@ -70,7 +71,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			});
 		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();
-		});
+		}, this.options.selectAllObjectTypes);
 		const buttonContainer = this.createButtonContainer([this.findButton]);
 		const objectTypeSection = this.createGroup(localizedConstants.ObjectTypeText, [this.objectTypesTable, buttonContainer]);
 		const columns = [localizedConstants.NameText, localizedConstants.ObjectTypeText];
@@ -83,14 +84,14 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 				columns,
 				this.allObjects,
 				this.result.selectedObjects,
-				ObjectsTableMaxHeight,
+				ObjectsTableMaxRowCount,
 				DefaultTableListItemEnabledStateGetter,
 				(item) => {
 					return this.getObjectRowValue(item);
 				},
 				ObjectComparer);
 		} else {
-			this.objectsTable = this.createTable(localizedConstants.ObjectsText, columns, []);
+			this.objectsTable = this.createTable(localizedConstants.ObjectsText, columns, [], ObjectsTableMaxRowCount);
 			this.disposables.push(this.objectsTable.onRowSelected(async () => {
 				if (this.objectsTable.selectedRows.length > 0) {
 					this.result.selectedObjects = [this.allObjects[this.objectsTable.selectedRows[0]]];
@@ -128,7 +129,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			else {
 				data = this.allObjects.map(item => { return this.getObjectRowValue(item); });
 			}
-			await this.setTableData(this.objectsTable, data, ObjectsTableMaxHeight);
+			await this.setTableData(this.objectsTable, data, ObjectsTableMaxRowCount);
 			this.objectsLoadingComponent.loadingCompletedText = localizedConstants.LoadingObjectsCompletedText(results.length);
 		} catch (err) {
 			this.dialogObject.message = {
