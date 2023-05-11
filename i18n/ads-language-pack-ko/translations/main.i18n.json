@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "{0}에서 Azure Data Studio를 사용하려면 Azure Data Studio를 다시 시작해야 합니다.",
 			"appName": "`${appName}`: 예 - Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "다운로드",
+			"azuredatastudio.downloadTooltip": "외부 원본에서 이 확장 다운로드",
+			"azuredatastudio.installTooltip": "이 확장 설치",
 			"connectionDialogBrowseTree.context": "연결 대화 상자의 찾아보기 트리 상황에 맞는 메뉴",
 			"dashboard.toolbar": "대시보드 도구 모음 작업 메뉴",
 			"dataExplorer.action": "dataexplorer 뷰 컨테이너 제목 작업 메뉴",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "Notebook: Markdown 도구 모음 아이콘",
 			"notebookFindMatchHighlight": "기타 검색 일치 항목의 색입니다. 기본 장식을 숨기지 않도록 색은 불투명하지 않아야 합니다.",
 			"notebookFindRangeHighlight": "검색을 제한하는 범위의 색입니다. 기본 장식을 숨기지 않도록 색은 불투명하지 않아야 합니다.",
-			"queryEditorNullBackground": "쿼리 편집기 결과 표에서 null 값의 배경색입니다.",
+			"queryEditorNullBackground": "쿼리 편집기 결과 표에서 null 값의 배경색입니다. 배경색을 비활성화하려면 {0}과(와) 같은 투명색을 사용할 수 있습니다.",
 			"tileBorder": "타일의 테두리 색",
 			"tileBoxShadow": "타일 상자 그림자 색"
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "{0}은(는) 알 수 없는 컨테이너입니다."
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "대시보드를 구성하는 방법에 대해 자세히 알아보기",
 			"dashboard.generalTabGroupHeader": "일반",
 			"home": "홈",
 			"missingConnectionInfo": "이 대시보드의 연결 정보를 찾을 수 없습니다."
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "컨텍스트를 로드하는 중...",
 			"localhost": "localhost",
 			"newNotebookAction": "새 Notebook",
+			"newNotebookTask.newNotebook": "새 Notebook",
 			"newViewLabel": "새 보기 만들기",
 			"noContextAvailable": "없음",
 			"noKernel": "커널 없음",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "새 연결",
+			"serverTreeViewChangeNotification": "서버 트리가 변경되었습니다. 변경 내용을 보려면 창을 다시 로드하세요.",
+			"serverTreeViewChangeNotification.doNotReload": "다시 로드 안 함",
+			"serverTreeViewChangeNotification.reload": "다시 로드",
 			"servers.noConnections": "연결이 없습니다."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "개체 탐색기 뷰렛에서 서버 그룹을 자동으로 확장합니다.",
 			"serverGroup.colors": "개체 탐색기 뷰렛에서 사용되는 서버 그룹 색상표입니다.",
+			"serverTree.configuration.title": "서버 트리",
 			"serverTree.nodeExpansionTimeout": "서버 보기에서 노드를 확장하는 데 대한 시간 제한(초)",
-			"serverTree.useAsyncServerTree": "(미리 보기) 동적 노드 필터링과 같은 새로운 기능 지원을 사용하여 서버 보기 및 연결 대화 상자에 새 비동기 서버 트리를 사용합니다."
+			"serverTree.useAsyncServerTree": "동적 노드 필터링과 같은 새로운 기능 지원을 사용하여 서버 보기 및 연결 대화 상자에 새 비동기 서버 트리를 사용합니다. 적용하려면 다시 시작해야 합니다."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "기본 제공 차트",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "예상 실행 계획 표시",
 			"focusOnCurrentQueryKeyboardAction": "현재 쿼리에 포커스",
 			"parseSyntaxLabel": "쿼리 구문 분석",
-			"queryActions.notConnected": "서버에 연결하세요.",
-			"queryActions.parseSyntaxFailure": "명령 실패: ",
-			"queryActions.parseSyntaxSuccess": "명령을 완료했습니다.",
+			"queryActions.notConnected": "이 작업을 실행하기 전에 서버에 연결하세요.",
+			"queryActions.parseSyntaxFailure": "쿼리를 구문 분석하지 못했습니다: {0}",
+			"queryActions.parseSyntaxSuccess": "쿼리를 구문 분석했습니다.",
 			"queryActions.queryResultsCopySuccess": "쿼리 및 결과를 복사했습니다.",
 			"queryShortcutNoEditor": "바로 가기를 실행하려면 편집기 매개 변수가 필요합니다.",
 			"refreshIntellisenseKeyboardAction": "IntelliSense 캐시 새로 고침",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "실행 계획",
 			"actualQueryPlan": "실제",
 			"cancelQueryLabel": "취소",
-			"changeConnectionDatabaseLabel": "연결 변경",
+			"changeConnectionDatabaseLabel": "변경",
+			"changeConnectionDatabaseTooltip": "연결 변경",
 			"changeDatabase.failed": "데이터베이스를 변경하지 못함",
 			"changeDatabase.failedWithError": "데이터베이스 {0}을(를) 변경하지 못함",
 			"connectDatabaseLabel": "연결",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "예상 플랜",
 			"newQueryTask.newQuery": "새 쿼리",
 			"query.multiSelectionNotSupported": "편집기가 다중 선택 모드에 있는 경우 쿼리 실행이 지원되지 않습니다.",
-			"queryEditor.exportSqlAsNotebook": "Notebook으로 내보내기",
+			"queryEditor.exportSqlAsNotebookLabel": "Notebook으로",
+			"queryEditor.exportSqlAsNotebookTooltip": "Notebook으로 내보내기",
+			"queryEditor.parse": "구문 분석",
 			"runQueryLabel": "실행",
 			"selectDatabase": "데이터베이스 선택"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "닫기",
 			"addAccountFailedCodeMessage": "{0} \r\n오류 메시지: {1}",
 			"addAccountFailedGenericMessage": "계정을 추가하지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "계정 추가...",
+			"refreshAccountFailedGenericMessage": "계정을 새로 고치지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.",
 			"refreshCanceled": "사용자가 계정 새로 고침을 취소했습니다.",
-			"refreshFailed": "0 \r\n오류 메시지: 1"
+			"refreshFailed": "{0} \r\n오류 메시지: {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure 계정",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "개체 탐색기 세션을 만들지 못함",
 			"nodeExpansionError": "여러 오류:",
-			"nodeExpansionTimeout": "{1} 공급자의 {0} 노드에 대한 노드 확장 시간을 초과했습니다."
+			"nodeExpansionTimeout": "{1} 공급자의 {0} 노드에 대한 노드 확장 시간을 초과했습니다.",
+			"objectExplorerMissingConnectionForSession": "연결 \"{1}\"에 대해 세션 {0} 생성을 기다리는 동안 시간이 초과되었습니다. 이 문제는 OE 서비스가 연결 \"{1}\"에 대해 공급자로부터 createNewSession에 대한 응답을 받지 못했기 때문에 발생했을 수 있습니다.",
+			"objectExplorerMissingSession": "세션 {0} 생성을 기다리는 동안 시간이 초과되었습니다. 이 문제는 OE 서비스가 공급자로부터 createNewSession에 대한 응답을 받지 못했기 때문에 발생했을 수 있습니다.",
+			"objectExplorerSessionIdMissing": "연결 \"{1}\"에 대해 공급자 \"{0}\"에서 반환한 세션 ID가 잘못되었습니다."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "방화벽 대화 상자를 취소함",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0}(필터링됨)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "'{0}'에 대한 개체 탐색기 확장 시간이 초과되었습니다."
 		}
 	}
 }

@@ -232,6 +232,18 @@
         <source xml:lang="en">Azure Data Studio</source>
         <target state="translated">Azure Data Studio</target>
       </trans-unit>
+      <trans-unit id="azuredatastudio.download">
+        <source xml:lang="en">Download</source>
+        <target state="translated">下載</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.downloadTooltip">
+        <source xml:lang="en">Download this extension from an external source</source>
+        <target state="translated">從外部來源下載此延伸模組</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.installTooltip">
+        <source xml:lang="en">Install this extension</source>
+        <target state="translated">安裝此延伸模組</target>
+      </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
         <target state="translated">連線對話方塊的瀏覽樹狀操作功能表</target>
@@ -895,8 +907,8 @@ Default Skipped Commands:
         <target state="translated">限制搜尋之範圍的色彩。其不得為不透明色彩，以免隱藏底層裝飾。</target>
       </trans-unit>
       <trans-unit id="queryEditorNullBackground">
-        <source xml:lang="en">The background color for null values in the query editor results grid.</source>
-        <target state="translated">查詢編輯器結果方格中 Null 值的背景色彩。</target>
+        <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
+        <target state="translated">查詢編輯器結果方格中 Null 值的背景色彩。若要停用背景色彩，您可以使用透明色彩，例如 {0}。</target>
       </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
@@ -2635,6 +2647,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
+      <trans-unit id="dashboard.configureDashboardTooltip">
+        <source xml:lang="en">Learn more about how to configure the dashboard</source>
+        <target state="translated">深入了解如何設定儀表板</target>
+      </trans-unit>
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">一般</target>
@@ -5463,6 +5479,10 @@ Error: {1}</source>
         <source xml:lang="en">New Notebook</source>
         <target state="translated">新增 Notebook</target>
       </trans-unit>
+      <trans-unit id="newNotebookTask.newNotebook">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">新增筆記本</target>
+      </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
         <target state="translated">建立新檢視</target>
@@ -5835,6 +5855,18 @@ Error: {1}</source>
         <source xml:lang="en">New Connection</source>
         <target state="translated">新增連線</target>
       </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification">
+        <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+        <target state="translated">伺服器樹狀已變更。請重新載入視窗以查看變更。</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+        <source xml:lang="en">Don't Reload</source>
+        <target state="translated">不要重新載入</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.reload">
+        <source xml:lang="en">Reload</source>
+        <target state="translated">重新載入</target>
+      </trans-unit>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
         <target state="translated">找不到連線。</target>
@@ -5851,13 +5883,17 @@ Error: {1}</source>
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">在物件總管 Viewlet 中使用的伺服器群組調色盤。</target>
       </trans-unit>
+      <trans-unit id="serverTree.configuration.title">
+        <source xml:lang="en">Server Tree</source>
+        <target state="translated">伺服器樹狀目錄</target>
+      </trans-unit>
       <trans-unit id="serverTree.nodeExpansionTimeout">
         <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
         <target state="translated">在伺服器檢視中展開節點的逾時 (以秒為單位)</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(預覽) 針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。</target>
+        <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
+        <target state="translated">針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。需要重新開機才能生效。</target>
       </trans-unit>
     </body>
   </file>
@@ -6248,16 +6284,16 @@ Error: {1}</source>
         <target state="translated">剖析查詢</target>
       </trans-unit>
       <trans-unit id="queryActions.notConnected">
-        <source xml:lang="en">Please connect to a server</source>
-        <target state="translated">請連線至伺服器</target>
+        <source xml:lang="en">Please connect to a server before running this action.</source>
+        <target state="translated">請先連線至伺服器再執行此動作。</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxFailure">
-        <source xml:lang="en">Command failed: </source>
-        <target state="translated">命令失敗:</target>
+        <source xml:lang="en">Failed to parse the query: {0}</source>
+        <target state="translated">無法剖析查詢: {0}</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxSuccess">
-        <source xml:lang="en">Commands completed successfully</source>
-        <target state="translated">已成功完成命令</target>
+        <source xml:lang="en">Successfully parsed the query.</source>
+        <target state="translated">已成功剖析查詢。</target>
       </trans-unit>
       <trans-unit id="queryActions.queryResultsCopySuccess">
         <source xml:lang="en">Successfully copied query and results.</source>
@@ -6440,6 +6476,10 @@ Error: {1}</source>
         <target state="translated">取消</target>
       </trans-unit>
       <trans-unit id="changeConnectionDatabaseLabel">
+        <source xml:lang="en">Change</source>
+        <target state="translated">變更</target>
+      </trans-unit>
+      <trans-unit id="changeConnectionDatabaseTooltip">
         <source xml:lang="en">Change Connection</source>
         <target state="translated">變更連線</target>
       </trans-unit>
@@ -6487,9 +6527,17 @@ Error: {1}</source>
         <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
         <target state="translated">當編輯器處於多重選取模式時，不支援執行查詢。</target>
       </trans-unit>
-      <trans-unit id="queryEditor.exportSqlAsNotebook">
+      <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+        <source xml:lang="en">To Notebook</source>
+        <target state="translated">至筆記本</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
         <source xml:lang="en">Export as Notebook</source>
         <target state="translated">匯出為筆記本</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.parse">
+        <source xml:lang="en">Parse</source>
+        <target state="translated">剖析</target>
       </trans-unit>
       <trans-unit id="runQueryLabel">
         <source xml:lang="en">Run</source>
@@ -7438,23 +7486,23 @@ Error Message: {1}</source>
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
         <target state="translated">新增帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。</target>
       </trans-unit>
-      <trans-unit id="addAccountFailedMessage">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
-      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">正在新增帳戶...</target>
+      </trans-unit>
+      <trans-unit id="refreshAccountFailedGenericMessage">
+        <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">重新整理帳戶失敗，如需詳細資訊，請查看 Azure 帳戶記錄。</target>
       </trans-unit>
       <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">使用者已取消重新整理帳戶</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
-Error Message: 1</source>
-        <target state="translated">0 
-錯誤訊息: 1</target>
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="translated">{0} 
+錯誤訊息: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -8682,6 +8730,18 @@ Error Message: 1</source>
         <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
         <target state="translated">提供者 {1} 節點 {0} 的節點擴充已逾時</target>
       </trans-unit>
+      <trans-unit id="objectExplorerMissingConnectionForSession">
+        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
+        <target state="translated">等候建立連線 “{1}” 的工作階段 “{0}” 時發生逾時。這可能是因為 OE 服務並未收到連線 “{1}” 的提供者對於 createNewSession 的回應</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerMissingSession">
+        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
+        <target state="translated">等候建立工作階段 {0} 時逾時。這可能是因為 OE 服務並未收到提供者對於 createNewSession 的回應。</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerSessionIdMissing">
+        <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
+        <target state="translated">提供者 “{0}” 針對連線 “{1}” 傳回的工作階段識別碼無效。</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="zh-Hant">
@@ -8700,6 +8760,14 @@ Error Message: 1</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="filteredTreeElementName">
+        <source xml:lang="en">{0} (filtered)</source>
+        <target state="translated">{0} (已篩選)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="serversAriaLabel">
@@ -8713,6 +8781,14 @@ Error Message: 1</source>
       <trans-unit id="treeCreation.regTreeAriaLabel">
         <source xml:lang="en">Servers</source>
         <target state="translated">伺服器</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="objectExplorerTimeout">
+        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
+        <target state="translated">'{0}' 的物件總管擴充逾時</target>
       </trans-unit>
     </body>
   </file>

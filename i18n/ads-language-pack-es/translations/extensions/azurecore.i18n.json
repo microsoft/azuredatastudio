@@ -20,10 +20,15 @@
 			"azure.owningTenantNotFound": "No se encontró la información del inquilino propietario para la cuenta.",
 			"azure.responseError": "Error al recuperar el token. [Abra las herramientas de desarrollo]({0}) para obtener más detalles.",
 			"azure.tenantNotFound": "No se encuentra el inquilino especificado con el id. \"{0}\".",
-			"azurecore.consentDialog.body": "El inquilino \"{0} ({1})\" requiere que vuelva a autenticarse para acceder a {2} recursos. Presione Abrir para iniciar el proceso de autenticación.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio ya no desencadenará la autenticación para este inquilino {0} ({1}) y no se podrá acceder a los recursos. \r\n\r\nPara permitir de nuevo el acceso a los recursos de este inquilino, deberá quitar el inquilino de la lista de exclusión de la configuración de '{2}'.\r\n\r\n¿Desea continuar?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "Confirmar",
+			"azurecore.consentDialog.authenticate": "Cancelar y autenticar",
+			"azurecore.consentDialog.body": "El inquilino {0} ({1}) requiere que vuelva a autenticarse para acceder a {2} recursos. Presione Abrir para iniciar el proceso de autenticación.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Omitir inquilino",
 			"azurecore.consentDialog.open": "Abrir",
+			"msal.accountNotFoundError": "No se encuentra la información de la cuenta al adquirir el token.",
+			"msal.resourceNotFoundError": "No se encuentra la configuración del recurso de Azure {0}",
 			"noMicrosoftResource": "El proveedor “{0}” no tiene definido un punto de conexión de recursos de Microsoft."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -43,7 +48,8 @@
 			"azure.NoAuthMethod.Selected": "No se ha seleccionado ningún método de autenticación de Azure. Debe seleccionar el método de autenticación que quiera usar.",
 			"azure.deprecatedGetSecurityToken": "Se ha realizado una llamada a azdata.accounts.getSecurityToken. Este método está en desuso y se quitará en versiones futuras. En su lugar, use getAccountSecurityToken.",
 			"genericTokenError": "No se pudo obtener el token.",
-			"msalTokenError": "{0} al adquirir el token. \r\n{1}"
+			"msalTokenError": "{0} al adquirir el token. \r\n{1}",
+			"tenantIgnoredError": "Inquilino encontrado en la lista de omitidos, autenticación no intentada. Puede quitar al inquilino {0} de la lista de omitidos en el archivo settings.json: {1} si quiere acceder a los recursos de este inquilino."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "No se pudo borrar la memoria caché de tokens",
@@ -132,6 +138,7 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Mostrar cuentas de Azure"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.flatAccountTreeNode.noResourcesLabel": "No se han encontrado recursos.",
 			"azure.resource.throttleerror": "Las solicitudes de esta cuenta se han acelerado Para volver a intentarlo, seleccione un número menor de suscripciones.",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1} de {2} suscripciones)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0}: carga en curso...",
@@ -170,6 +177,8 @@
 			"azurecore.centralus": "Centro de EE. UU.",
 			"azurecore.centraluseuap": "EUAP del centro de EE. UU.",
 			"azurecore.deprecated": "Advertencia: ADAL está en desuso y está programado para quitarse en una versión futura. Use MSAL en su lugar.",
+			"azurecore.disable": "Deshabilitar",
+			"azurecore.dismiss": "Descartar",
 			"azurecore.eastasia": "Este de Asia",
 			"azurecore.eastus": "Este de EE. UU.",
 			"azurecore.eastus2": "Este de EE. UU. 2",
@@ -191,6 +200,7 @@
 			"azurecore.northeurope": "Norte de Europa",
 			"azurecore.norwayeast": "Este de Noruega",
 			"azurecore.norwaywest": "Oeste de Noruega",
+			"azurecore.piiLogging.warning": "Advertencia: Azure PII Logging está habilitado. Habilitar esta opción permite registrar información de identificación personal y solo debe utilizarse con fines de depuración.",
 			"azurecore.postgresServer": "Servidor de Azure Database for PostgreSQL",
 			"azurecore.reload": "Recargar",
 			"azurecore.reloadChoice": "Vuelva a cargar Azure Data Studio",
@@ -238,7 +248,7 @@
 			"azure.resource.signin.title": "Azure: iniciar sesión",
 			"azure.resource.startterminal.title": "Inicio de Cloud Shell",
 			"azure.resource.view.title": "Azure (versión preliminar)",
-			"azure.tenant.config.filter.description": "Lista de id. de inquilino para ignorar al realizar una consultar relativa a recursos de Azure. Cada elemento es un id. de inquilino.",
+			"azure.tenant.config.filter.description": "Lista de id. de inquilino que se omitirán al consultar recursos de Azure o solicitar tokens de autenticación.",
 			"azure.title": "Azure",
 			"config.authenticationLibrary": "Biblioteca usada para el flujo de autenticación de AAD. Reinicie ADS después de cambiar esta opción.",
 			"config.azureAccountConfigurationSection": "Configuración de la cuenta de Azure",

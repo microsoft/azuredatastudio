@@ -134,17 +134,13 @@
         <source xml:lang="en">Application name</source>
         <target state="translated">應用程式名稱</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">附加 DB 檔案名稱</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+      <trans-unit id="cms.connectionOptions.attachDbFilename.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
         <target state="translated">主要檔案的名稱，包含可附加資料庫的完整路徑名稱</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">已附加的 DB 檔案名稱</target>
+      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">附加 DB 檔案名稱</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -167,12 +163,12 @@
         <target state="translated">驗證類型</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="translated">連線上所有命令的預設資料行加密設定</target>
+        <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
+        <target state="translated">啟用或停用連線的 Always Encrypted 功能</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Column encryption</source>
-        <target state="translated">資料行加密</target>
+        <source xml:lang="en">Always Encrypted</source>
+        <target state="translated">Always Encrypted</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.commandTimeout.description">
         <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
@@ -229,6 +225,34 @@
       <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
         <source xml:lang="en">Current language</source>
         <target state="translated">目前的語言</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
+        <source xml:lang="en">Azure Attestation</source>
+        <target state="translated">Azure 證明</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
+        <source xml:lang="en">Host Guardian Service</source>
+        <target state="translated">主機守護者服務</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+        <source xml:lang="en">None</source>
+        <target state="translated">無</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.description">
+        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+        <target state="translated">指定用來證明與有安全記憶體保護區的 Always Encrypted 一起使用的伺服器端記憶體保護區的通訊協定</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.displayName">
+        <source xml:lang="en">Attestation protocol</source>
+        <target state="translated">證明通訊協定</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.description">
+        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+        <target state="translated">指定用來證明與有安全記憶體保護區的 Always Encrypted 一起使用的伺服器端記憶體保護區的端點</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.displayName">
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">證明 URL</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -378,6 +402,14 @@
         <source xml:lang="en">Replication</source>
         <target state="translated">複寫</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.secureEnclaves.description">
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">啟用或停用連線的安全隔離區</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.secureEnclaves.displayName">
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">安全記憶體保護區</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.description">
         <source xml:lang="en">Description of the SQL Server instance</source>
         <target state="translated">SQL Server 執行個體描述</target>
@@ -393,6 +425,10 @@
       <trans-unit id="cms.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
         <target state="translated">伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.placeholder">
+        <source xml:lang="en">e.g. tcp:servername,1433</source>
+        <target state="translated">例如: tcp:servername，1433</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
@@ -434,9 +470,17 @@
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
         <target state="translated">管理 SQL Server 中央管理伺服器的支援</target>
       </trans-unit>
+      <trans-unit id="cms.disabled">
+        <source xml:lang="en">Disabled</source>
+        <target state="translated">已停用</target>
+      </trans-unit>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
         <target state="translated">SQL Server 中央管理伺服器</target>
+      </trans-unit>
+      <trans-unit id="cms.enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">已啟用</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>

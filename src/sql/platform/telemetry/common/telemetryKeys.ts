@@ -46,6 +46,7 @@ export const enum TelemetryView {
 	LinkedAccounts = 'LinkedAccounts',
 	Notebook = 'Notebook',
 	NotifyEncryptionDialog = 'NotifyEncryptionDialog',
+	NotifyHiddenTenantDialog = 'NotifyHiddenTenantDialog',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',

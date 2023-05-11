@@ -8,27 +8,27 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, mssqlProvider } from '../../../azureResource/constants';
+import { AzureResourceItemType, AzureResourcePrefixes, mssqlProvider } from '../../../azureResource/constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { DatabaseGraphData, DbServerGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
+export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<DbServerGraphData, DatabaseGraphData> {
 
 	private static readonly containerId = 'azure.resource.providers.database.treeDataProvider.databaseContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL database");
 
 	public constructor(
-		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
+		databaseService: azureResource.IAzureResourceService,
 		private _extensionContext: vscode.ExtensionContext
 	) {
 		super(databaseService);
 	}
 
-	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
-			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
+			id: `${AzureResourcePrefixes.databaseServer}${account.key.accountId}${database.serverFullName}.${AzureResourcePrefixes.database}${database.id ?? database.name}`,
 			label: this.browseConnectionMode ? `${database.serverName}/${database.name} (${AzureResourceDatabaseTreeDataProvider.containerLabel}, ${database.subscription.name})` : `${database.name} (${database.serverName})`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),

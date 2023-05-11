@@ -30,7 +30,7 @@ export class ServerRoleDialog extends ObjectManagementDialogBase<ObjectManagemen
 		super(objectManagementService, options);
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateServerRoleDocUrl : AlterServerRoleDocUrl;
 	}
 

@@ -309,7 +309,6 @@ export class QueryEditor extends EditorPane {
 		const content: ITaskbarContent[] = [
 			{ action: this._runQueryAction },
 			{ action: this._cancelQueryAction },
-			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._toggleConnectDatabaseAction },
 			{ action: this._changeConnectionAction }
 		];
@@ -327,6 +326,8 @@ export class QueryEditor extends EditorPane {
 		// Only show the databases dropdown if the connection provider supports it.
 		// If the provider we're using isn't registered yet then default to not showing it - we'll update once the provider is registered
 		if (this.capabilitiesService.getCapabilities(providerId)?.connection?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+			content.push({ element: Taskbar.createTaskbarSeparator() });
+			content.push({ element: Taskbar.createTaskbarText(localize("queryActions.selectDatabase.label", "Database:")) });
 			content.push({ action: this._listDatabasesAction });
 		}
 

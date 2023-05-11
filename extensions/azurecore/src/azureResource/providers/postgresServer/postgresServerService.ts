@@ -4,27 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
 import { postgresServerQuery } from '../queryStringConstants';
+import { DbServerGraphData } from '../../interfaces';
+import { POSTGRES_SERVER_PROVIDER_ID } from '../../../constants';
 
-interface DbServerGraphData extends GraphData {
-	properties: {
-		fullyQualifiedDomainName: string;
-		administratorLogin: string;
-	};
-}
+export class PostgresServerService extends ResourceServiceBase<DbServerGraphData> {
 
-export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
+	public override queryFilter: string = postgresServerQuery;
 
-	protected get query(): string {
-		return postgresServerQuery;
-	}
-
-	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
+	public override convertServerResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: POSTGRES_SERVER_PROVIDER_ID,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'postgres',

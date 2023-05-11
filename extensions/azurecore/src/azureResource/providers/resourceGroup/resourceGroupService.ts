@@ -3,18 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DbServerGraphData } from '../databaseServer/databaseServerService';
 import { azureResource } from 'azurecore';
 import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
 import { resourceGroupQuery } from '../queryStringConstants';
+import { DbServerGraphData } from '../../interfaces';
 
-export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceResourceGroup> {
+export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraphData> {
 
-	protected get query(): string {
-		return resourceGroupQuery;
-	}
+	public override queryFilter: string = resourceGroupQuery;
 
-	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceResourceGroup {
+	public override convertServerResource(resource: DbServerGraphData): azureResource.AzureResourceResourceGroup | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,

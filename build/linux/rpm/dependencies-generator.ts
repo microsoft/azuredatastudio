@@ -6,7 +6,7 @@
 import { spawnSync } from 'child_process';
 import { constants, statSync } from 'fs';
 import path = require('path');
-import { additionalDeps, bundledDeps } from './dep-lists';
+import { additionalDeps, bundledDeps/*, referenceGeneratedDepsByArch*/ } from './dep-lists'; // {{SQL CARBON EDIT}} Not needed
 import { ArchString } from './types';
 
 // A flag that can easily be toggled.
@@ -16,7 +16,7 @@ import { ArchString } from './types';
 // If true, we fail the build if there are new dependencies found during that task.
 // The reference dependencies, which one has to update when the new dependencies
 // are valid, are in dep-lists.ts
-// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false;
+// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false; // {{SQL CARBON EDIT}} Not needed
 
 export function getDependencies(buildDir: string, applicationName: string, arch: ArchString): string[] {
 	// Get the files for which we want to find dependencies.
@@ -57,7 +57,7 @@ export function getDependencies(buildDir: string, applicationName: string, arch:
 		return !bundledDeps.some(bundledDep => dependency.startsWith(bundledDep));
 	});
 
-	/* {{SQL CARBON EDIT}} - Not needed for SQL
+	/* {{SQL CARBON EDIT}} Not needed
 	const referenceGeneratedDeps = referenceGeneratedDepsByArch[arch];
 	if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
 		const failMessage = 'The dependencies list has changed. '
@@ -70,6 +70,7 @@ export function getDependencies(buildDir: string, applicationName: string, arch:
 		}
 	}
 	*/
+
 	return sortedDependencies;
 }
 
