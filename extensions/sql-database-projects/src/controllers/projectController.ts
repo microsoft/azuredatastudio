@@ -891,12 +891,12 @@ export class ProjectsController {
 				.send();
 
 			this.refreshProjectsTree(context);
-		} catch {
+		} catch (err) {
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
-			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.relativeProjectUri.path));
+			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.relativeProjectUri.path, utils.getErrorMessage(err)));
 		}
 	}
 

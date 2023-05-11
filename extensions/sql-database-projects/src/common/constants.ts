@@ -421,7 +421,7 @@ export function circularProjectReference(project1: string, project2: string) { r
 export function errorFindingBuildFilesLocation(err: any) { return localize('errorFindingBuildFilesLocation', "Error finding build files location: {0}", utils.getErrorMessage(err)); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
-export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
+export function unableToPerformAction(action: string, uri: string, error?: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'. {2}", action, uri, error); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
 export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency", project); }

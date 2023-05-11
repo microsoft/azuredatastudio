@@ -101,7 +101,8 @@
 	padding: 4px;
 	z-index: 100000;
 	cursor: default;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	margin: 0;
 	position: absolute;
 }
@@ -118,10 +119,14 @@
 	background: none repeat scroll 0 0 #000000;
 }
 
+.slick-header-menu-image-button-container {
+	flex: 0 0 auto;
+}
+
 .slick-header-menu a.monaco-button.monaco-text-button {
 	width: 60px;
-	margin: 6px 6px 6px 6px;
-	padding: 4px;
+	margin: 5px;
+	padding: 2px;
 }
 
 .slick-header-menu .searchbox-row
@@ -130,6 +135,7 @@
 	align-items: center;
 	padding-left: 5px;
 	margin-top: 5px;
+	flex: 0 0 auto;
 }
 
 .slick-header-menu .searchbox-row .select-all-checkbox
@@ -168,7 +174,6 @@
 {
 	border: 1px solid #BFBDBD;
 	font-size: 8pt;
-	height: 250px;
 	margin-top: 6px;
 	overflow: hidden;
 	padding: 1px;
@@ -176,6 +181,7 @@
 	align-content: flex-start;
 	display: flex;
 	flex-direction: column;
+	flex: 1 1 auto;
 }
 
 .slick-header-menu .filter .filter-option {
@@ -188,6 +194,7 @@
 	display: flex;
 	flex-direction: row;
 	width: 100%;
+	flex: 0 0 auto;
 }
 
 .slick-header-menu .filter-menu-button {

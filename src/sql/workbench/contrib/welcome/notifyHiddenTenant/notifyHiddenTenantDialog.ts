@@ -23,6 +23,8 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { NOTIFY_HIDETENANT_SHOWN, NOTIFY_READMORE_LINK } from 'sql/workbench/contrib/welcome/constants';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class NotifyHiddenTenantDialog extends ErrorMessageDialog {
 
@@ -38,7 +40,8 @@ export class NotifyHiddenTenantDialog extends ErrorMessageDialog {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IAccountManagementService private _accountManagementService: IAccountManagementService
+		@IAccountManagementService private _accountManagementService: IAccountManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 	) {
 		super(themeService, clipboardService, layoutService, telemetryService, contextKeyService, logService, textResourcePropertiesService, openerService);
 	}
@@ -50,9 +53,11 @@ export class NotifyHiddenTenantDialog extends ErrorMessageDialog {
 
 		this._storageService.store(NOTIFY_HIDETENANT_SHOWN, true, StorageScope.APPLICATION, StorageTarget.MACHINE);
 		this._accountManagementService.getAccounts().then(accounts => {
-			// Do not notify users who don't have any Azure connection in their list of connections and no Azure accounts registered.
+			// Do not notify users who don't have any Azure connection in their list of connections and no Azure accounts registered
+			// or are not yet impacted with the changes from 'Enable Sql Authentication Provider' with MSAL
 			if (!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName
-				&& conn.authenticationType === 'AzureMFA') && (!accounts || accounts.length === 0)) {
+				&& conn.authenticationType === 'AzureMFA') && (!accounts || accounts.length === 0)
+				&& isMssqlAuthProviderEnabled(mssqlProviderName, this._configurationService)) {
 				return;
 			}
 

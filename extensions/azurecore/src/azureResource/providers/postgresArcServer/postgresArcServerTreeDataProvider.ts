@@ -8,28 +8,27 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, pgsqlProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
+import { GraphData, PostgresArcServerGraphData } from '../../interfaces';
 
-export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, PostgresArcServerGraphData> {
 	private static readonly containerId = 'azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainer';
 	// allow-any-unicode-next-line
 	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale – Azure Arc");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.postgresServerArc}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresServerArcTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
@@ -48,7 +47,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'PGSQL',
+				providerName: pgsqlProvider,
 				saveProfile: false,
 				options: {
 					// Set default for SSL or will get error complaining about it not being set correctly
@@ -59,7 +58,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'PGSQL',
+			childProvider: pgsqlProvider,
 			type: ExtensionNodeType.Server
 		};
 	}

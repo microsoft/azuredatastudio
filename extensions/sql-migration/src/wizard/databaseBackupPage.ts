@@ -641,7 +641,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 							this.wizard.message = {
 								text: this._inaccessibleStorageAccounts.length > 0
-									? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+									? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts, this.migrationStateModel.isSqlMiTarget)
 									: '',
 								level: azdata.window.MessageLevel.Warning
 							}
@@ -679,7 +679,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 						this.wizard.message = {
 							text: this._inaccessibleStorageAccounts.length > 0
-								? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+								? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts, this.migrationStateModel.isSqlMiTarget)
 								: '',
 							level: azdata.window.MessageLevel.Warning
 						}
@@ -1152,7 +1152,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 										this.wizard.message = {
 											text: this._inaccessibleStorageAccounts.length > 0
-												? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+												? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts, this.migrationStateModel.isSqlMiTarget)
 												: '',
 											level: azdata.window.MessageLevel.Warning
 										}

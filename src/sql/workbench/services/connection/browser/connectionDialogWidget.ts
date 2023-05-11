@@ -45,6 +45,7 @@ import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/c
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -224,18 +225,21 @@ export class ConnectionDialogWidget extends Modal {
 		}));
 
 		this._panel.pushTab(this.browsePanel);
+		const connectionDetailsGroupLabel = localize('connectionDetailsTitle', "Connection Details");
+		const connectionDetailsFieldSet = new FieldSet(this._body, { ariaLabel: connectionDetailsGroupLabel });
+		this._register(connectionDetailsFieldSet);
+		this._connectionDetailTitle = DOM.append(connectionDetailsFieldSet.element, DOM.$('.connection-details-title'));
 
-		this._connectionDetailTitle = DOM.append(this._body, DOM.$('.connection-details-title'));
+		this._connectionDetailTitle.innerText = connectionDetailsGroupLabel;
 
-		this._connectionDetailTitle.innerText = localize('connectionDetailsTitle', "Connection Details");
-
-		this._connectionTypeContainer = DOM.append(this._body, DOM.$('.connection-type'));
+		this._connectionTypeContainer = DOM.append(connectionDetailsFieldSet.element, DOM.$('.connection-type'));
 		const table = DOM.append(this._connectionTypeContainer, DOM.$('table.connection-table-content'));
+		table.setAttribute('role', 'presentation');
 		DialogHelper.appendInputSelectBox(
 			DialogHelper.appendRow(table, connectTypeLabel, 'connection-label', 'connection-input'), this._providerTypeSelectBox);
 
 		this._connectionUIContainer = DOM.$('.connection-provider-info', { id: 'connectionProviderInfo' });
-		this._body.append(this._connectionUIContainer);
+		connectionDetailsFieldSet.element.append(this._connectionUIContainer);
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
