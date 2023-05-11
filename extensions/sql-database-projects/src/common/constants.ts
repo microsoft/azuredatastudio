@@ -456,6 +456,7 @@ export const externalStreamFriendlyName = localize('externalStream', "External S
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
+export const publishProfileFriendlyName = localize('publishProfileFriendlyName', "Publish Profile");
 
 //#endregion
 

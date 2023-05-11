@@ -729,7 +729,10 @@ export class ProjectsController {
 
 		const itemType = templates.get(itemTypeName);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePath);
-		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, constants.sqlFileExtension, options?.defaultName);
+		const isItemTypePublishProfile = itemTypeName === constants.publishProfileFriendlyName || itemTypeName === ItemType.publishProfile;
+		const fileExtension = isItemTypePublishProfile ? constants.publishProfileExtension : constants.sqlFileExtension;
+		const defaultName = isItemTypePublishProfile ? `${project.projectFileName}_` : options?.defaultName;
+		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, fileExtension, defaultName);
 
 		itemObjectName = itemObjectName?.trim();
 
@@ -737,7 +740,7 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
+		const relativeFilePath = path.join(relativePath, itemObjectName + fileExtension);
 
 		const telemetryProps: Record<string, string> = { itemType: itemType.type };
 		const telemetryMeasurements: Record<string, number> = {};
@@ -749,7 +752,7 @@ export class ProjectsController {
 		}
 
 		try {
-			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName]]));
+			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName], ['PROJECT_NAME', project.projectFileName]]));
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)

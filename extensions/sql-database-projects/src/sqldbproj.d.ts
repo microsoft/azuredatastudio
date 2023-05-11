@@ -104,7 +104,8 @@ declare module 'sqldbproj' {
 		externalStreamingJob = 'externalStreamingJob',
 		folder = 'folder',
 		preDeployScript = 'preDeployScript',
-		postDeployScript = 'postDeployScript'
+		postDeployScript = 'postDeployScript',
+		publishProfile = 'publishProfile'
 	}
 
 	/**
