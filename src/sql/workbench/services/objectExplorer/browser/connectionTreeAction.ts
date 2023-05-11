@@ -365,6 +365,11 @@ export class RemoveFilterAction extends Action {
 			await this._tree.refresh(nodeToRefresh);
 			await this._tree.expand(nodeToRefresh);
 		}
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ObjectExplorer, TelemetryKeys.TelemetryAction.ObjectExplorerRemoveFilter)
+		this._telemetryService.createActionEvent(
+			TelemetryKeys.TelemetryView.ObjectExplorer,
+			TelemetryKeys.TelemetryAction.ObjectExplorerRemoveFilter
+		).withAdditionalProperties({
+			objectType: node.objectType
+		}).send();
 	}
 }

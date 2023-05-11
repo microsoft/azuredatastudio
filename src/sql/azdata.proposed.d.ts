@@ -1798,6 +1798,10 @@ declare module 'azdata' {
 
 	export interface NodeFilterProperty {
 		/**
+		 * The name of the filter property
+		 */
+		name: string;
+		/**
 		 * The name of the filter property displayed to the user
 		 */
 		displayName: string;
