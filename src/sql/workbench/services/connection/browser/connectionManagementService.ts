@@ -555,11 +555,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
 
 			//Check to make sure the edits are not identical to another connection.
-			await this._connectionStore.isDuplicateEdit(connection, matcher).then(result => {
-				if (result) {
-					this.duplicateEditErrorMessage(connection);
-				}
-			});
+			let result = await this._connectionStore.isDuplicateEdit(connection, matcher);
+			if (result) {
+				this.duplicateEditErrorMessage(connection);
+			}
 		}
 
 		if (!uri) {

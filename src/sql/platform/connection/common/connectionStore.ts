@@ -141,9 +141,10 @@ export class ConnectionStore {
 		return this.connectionConfig.addGroup(profile);
 	}
 
-	private saveProfileToConfig(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
+	private async saveProfileToConfig(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<IConnectionProfile> {
 		if (profile.saveProfile) {
-			return this.connectionConfig.addConnection(profile, matcher);
+			let result = await this.connectionConfig.addConnection(profile, matcher);
+			return result;
 		} else {
 			return Promise.resolve(profile);
 		}
@@ -156,8 +157,9 @@ export class ConnectionStore {
 	 * @param matcher the profile matching function for the actual connection we want to edit.
 	 * @returns a boolean value indicating if there's an identical profile to the edit.
 	 */
-	public isDuplicateEdit(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<boolean> {
-		return this.connectionConfig.isDuplicateEdit(profile, matcher);
+	public async isDuplicateEdit(profile: IConnectionProfile, matcher?: ProfileMatcher): Promise<boolean> {
+		let result = await this.connectionConfig.isDuplicateEdit(profile, matcher);
+		return result;
 	}
 
 	/**
