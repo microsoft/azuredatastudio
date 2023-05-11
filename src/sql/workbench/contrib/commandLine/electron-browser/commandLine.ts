@@ -31,17 +31,61 @@ import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/envi
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
 export interface SqlArgs {
+	/**
+	 * Used to determine file paths to be opened with SQL Editor.
+	 * If provided, we connect the given profile to to it.
+	 * More than one files can be passed to connect to provided profile.
+	 */
 	_?: string[];
+	/**
+	 * Provide authenticationType to be used.
+	 * accepted values: AzureMFA, SqlLogin, Integrated, etc.
+	 */
 	authenticationType?: string
+	/**
+	 * Name of database
+	 */
 	database?: string;
+	/**
+	 * Name of server
+	 */
 	server?: string;
+	/**
+	 * User name/email address
+	 */
 	user?: string;
+	/**
+	 * Operation to perform:
+	 * accepted values: connect, openConnectionDialog
+	 */
 	command?: string;
+	/**
+	 * Name of connection provider,
+	 * accepted values: mssql (by default), pgsql, etc.
+	 */
 	provider?: string;
-	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
-	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
+	/**
+	 * Deprecated - used by SSMS - authenticationType should be used instead
+	 */
+	aad?: boolean;
+	/**
+	 * Deprecated - used by SSMS - authenticationType should be used instead.
+	 */
+	integrated?: boolean;
+	/**
+	 * Whether or not to show dashboard
+	 * accepted values: true, false (by default).
+	 */
 	showDashboard?: boolean;
+	/**
+	 * Supports providing applicationName that will be used for connection profile app name.
+	 */
 	applicationName?: string;
+	/**
+	 *  Supports providing advanced options that providers support.
+	 *  Value must be a json object containing key-value pairs in format: '{"key1":"value1","key2":"value2",...}'
+	 */
+	options?: string;
 }
 
 //#region decorators
@@ -324,7 +368,24 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		profile.setOptionValue('applicationName', applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
 		profile.setOptionValue('groupId', profile.groupId);
+		// Set all advanced options
+		let advancedOptions = this.getAdvancedOptions(args.options, profile.getOptionKeyIdNames());
+		advancedOptions.forEach((v, k) => {
+			profile.setOptionValue(k, v);
+		});
 		return this._connectionManagementService ? this.tryMatchSavedProfile(profile) : profile;
+	}
+
+	private getAdvancedOptions(options: string, idNames: string[]): Map<string, string> {
+		let advancedOptionsMap = new Map<string, string>();
+		if (options) {
+			JSON.parse(options, (k, v) => {
+				if (!(k in idNames)) {
+					advancedOptionsMap.set(k, v);
+				}
+			});
+		}
+		return advancedOptionsMap;
 	}
 
 	private tryMatchSavedProfile(profile: ConnectionProfile) {
