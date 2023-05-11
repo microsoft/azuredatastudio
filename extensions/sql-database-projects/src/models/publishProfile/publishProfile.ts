@@ -148,7 +148,7 @@ export function promptToSaveProfile(project: Project, publishProfileUri?: vscode
 			defaultUri: publishProfileUri ?? vscode.Uri.file(path.join(project.projectFolderPath, `${project.projectFileName}_1.publish.xml`)),
 			saveLabel: constants.save,
 			filters: {
-				'Publish Settings Files': ['publish.xml'],
+				'Publish files': ['publish.xml'],
 			}
 		}
 	);
@@ -165,11 +165,11 @@ export async function promptForSavingProfile(project: Project, settings: ISqlPro
 	if (result === constants.yesString) {
 		let publishProfileUri: vscode.Uri | undefined;
 		if (settings) {
-			if (ifIsISqlProjectPublishSettings(settings)) {
+			if (isISqlProjectPublishSettings(settings)) {
 				publishProfileUri = settings.publishProfileUri;
-			} else if (ifIsISqlDbDeployProfile(settings)) {
+			} else if (isISqlDbDeployProfile(settings)) {
 				publishProfileUri = settings.deploySettings?.publishProfileUri;
-			} else if (ifIsIPublishToDockerSettings(settings)) {
+			} else if (isIPublishToDockerSettings(settings)) {
 				publishProfileUri = settings.sqlProjectPublishSettings.publishProfileUri;
 			}
 		}
@@ -192,21 +192,21 @@ export async function promptForSavingProfile(project: Project, settings: ISqlPro
 	}
 }
 
-function ifIsISqlProjectPublishSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlProjectPublishSettings {
+function isISqlProjectPublishSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlProjectPublishSettings {
 	if ((settings as ISqlProjectPublishSettings).connectionUri) {
 		return true
 	}
 	return false
 }
 
-function ifIsISqlDbDeployProfile(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlDbDeployProfile {
+function isISqlDbDeployProfile(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlDbDeployProfile {
 	if ((settings as ISqlDbDeployProfile).deploySettings) {
 		return true
 	}
 	return false
 }
 
-function ifIsIPublishToDockerSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is IPublishToDockerSettings {
+function isIPublishToDockerSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is IPublishToDockerSettings {
 	if ((settings as IPublishToDockerSettings).dockerSettings) {
 		return true
 	}
@@ -218,11 +218,11 @@ async function getConnectionString(settings: ISqlProjectPublishSettings | ISqlDb
 	let connectionString: string = '';
 
 	if (settings) {
-		if (ifIsISqlProjectPublishSettings(settings)) {
+		if (isISqlProjectPublishSettings(settings)) {
 			connectionUri = settings.connectionUri;
-		} else if (ifIsISqlDbDeployProfile(settings)) {
+		} else if (isISqlDbDeployProfile(settings)) {
 			connectionUri = settings.deploySettings?.connectionUri ?? '';
-		} else if (ifIsIPublishToDockerSettings(settings)) {
+		} else if (isIPublishToDockerSettings(settings)) {
 			connectionUri = settings.sqlProjectPublishSettings.connectionUri;
 		}
 	}
@@ -237,11 +237,11 @@ function getDatabaseName(settings: ISqlProjectPublishSettings | ISqlDbDeployProf
 	let databaseName: string = projectName;
 
 	if (settings) {
-		if (ifIsISqlProjectPublishSettings(settings)) {
+		if (isISqlProjectPublishSettings(settings)) {
 			databaseName = settings.databaseName;
-		} else if (ifIsISqlDbDeployProfile(settings)) {
+		} else if (isISqlDbDeployProfile(settings)) {
 			databaseName = settings.deploySettings?.databaseName ?? '';
-		} else if (ifIsIPublishToDockerSettings(settings)) {
+		} else if (isIPublishToDockerSettings(settings)) {
 			databaseName = settings.sqlProjectPublishSettings.databaseName;
 		}
 	}
@@ -253,11 +253,11 @@ async function getDeploymentOptions(settings: ISqlProjectPublishSettings | ISqlD
 	let deploymentOptions: vscodeMssql.DeploymentOptions | undefined;
 
 	if (settings) {
-		if (ifIsISqlProjectPublishSettings(settings)) {
+		if (isISqlProjectPublishSettings(settings)) {
 			deploymentOptions = settings.deploymentOptions;
-		} else if (ifIsISqlDbDeployProfile(settings)) {
+		} else if (isISqlDbDeployProfile(settings)) {
 			deploymentOptions = settings.deploySettings?.deploymentOptions;
-		} else if (ifIsIPublishToDockerSettings(settings)) {
+		} else if (isIPublishToDockerSettings(settings)) {
 			deploymentOptions = settings.sqlProjectPublishSettings.deploymentOptions;
 		}
 	} else {
@@ -271,11 +271,11 @@ function getSqlCmdVariables(settings: ISqlProjectPublishSettings | ISqlDbDeployP
 	let sqlCmdVariables: Map<string, string> | undefined;
 
 	if (settings) {
-		if (ifIsISqlProjectPublishSettings(settings)) {
+		if (isISqlProjectPublishSettings(settings)) {
 			sqlCmdVariables = settings.sqlCmdVariables;
-		} else if (ifIsISqlDbDeployProfile(settings)) {
+		} else if (isISqlDbDeployProfile(settings)) {
 			sqlCmdVariables = settings.deploySettings?.sqlCmdVariables;
-		} else if (ifIsIPublishToDockerSettings(settings)) {
+		} else if (isIPublishToDockerSettings(settings)) {
 			sqlCmdVariables = settings.sqlProjectPublishSettings.sqlCmdVariables;
 		}
 	}
@@ -285,15 +285,15 @@ function getSqlCmdVariables(settings: ISqlProjectPublishSettings | ISqlDbDeployP
 
 function setProfileParameters(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined, profilePath: vscode.Uri) {
 	if (settings) {
-		if (ifIsISqlProjectPublishSettings(settings)) {
+		if (isISqlProjectPublishSettings(settings)) {
 			settings.profileUsed = true;
 			settings.publishProfileUri = profilePath;
-		} else if (ifIsISqlDbDeployProfile(settings)) {
+		} else if (isISqlDbDeployProfile(settings)) {
 			if (settings.deploySettings) {
 				settings.deploySettings.profileUsed = true;
 				settings.deploySettings.publishProfileUri = profilePath;
 			}
-		} else if (ifIsIPublishToDockerSettings(settings)) {
+		} else if (isIPublishToDockerSettings(settings)) {
 			settings.sqlProjectPublishSettings.profileUsed = true;
 			settings.sqlProjectPublishSettings.publishProfileUri = profilePath;
 		}
