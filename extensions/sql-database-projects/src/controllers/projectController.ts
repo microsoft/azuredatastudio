@@ -246,6 +246,9 @@ export class ProjectsController {
 			case ItemType.postDeployScript:
 				await project.addPostDeploymentScript(relativePath);
 				break;
+			case ItemType.publishProfile:
+				await project.addNoneItem(relativePath);
+				break;
 			default: // a normal SQL object script
 				await project.addSqlObjectScript(relativePath);
 				break;

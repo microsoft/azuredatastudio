@@ -154,6 +154,12 @@ declare module 'sqldbproj' {
 		addPostDeploymentScript(relativePath: string): Promise<void>;
 
 		/**
+		 * Adds a none item that is not included in "Build"
+		 * @param relativePath
+		 */
+		addNoneItem(relativePath: string): Promise<void>;
+
+		/**
 		 * Add a SQL object script that will be included in the schema
 		 * @param relativePath
 		 */
