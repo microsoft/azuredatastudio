@@ -625,7 +625,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ObjectExplorer, TelemetryKeys.TelemetryAction.ObjectExplorerFilter)
 						.withAdditionalProperties({
-							filterPropertyNames: JSON.stringify(filters.map(f => node.filterProperties.find(p => f.displayName === p.displayName).name)),
+							filterPropertyNames: JSON.stringify(filters.map(f => node.filterProperties.find(p => f.displayName === p.displayName)?.name)),
 							filterCount: filters.length,
 							objectType: node.objectType
 						}).send();
