@@ -515,7 +515,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -524,7 +524,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -555,7 +555,7 @@ export interface SavePublishProfileParams {
 	profilePath: string;
 	databaseName: string;
 	connectionString: string;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 }
 

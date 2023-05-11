@@ -217,8 +217,14 @@
 	border-radius: 5px;
 }
 
+.monaco-list-row .async-server-group .async-server-group .async-server-group-container .icon {
+	width: 7px;
+	height: 20px;
+	border-radius: 3px;
+}
+
 .monaco-list-row .async-server-group .async-server-group .async-server-group-container .name {
-	padding-left: 10px;
+	padding-left: 5px;
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -254,7 +260,6 @@
 	flex: 0 30px;
 	position: relative;
 }
-
 
 .monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge {
 	position: absolute;

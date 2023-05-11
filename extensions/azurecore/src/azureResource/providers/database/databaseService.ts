@@ -4,24 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
-import { IAzureResourceService } from '../../interfaces';
-import { DbServerGraphData } from '../databaseServer/databaseServerService';
-import { sqlServerQuery, sqlDatabaseQuery } from '../queryStringConstants';
+import { DatabaseGraphData, DbServerGraphData, GraphData, IAzureResourceDbService } from '../../interfaces';
+import { sqlServerQuery, sqlDatabaseQuery, where } from '../queryStringConstants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
+import { queryGraphResources } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
+import { DATABASE_PROVIDER_ID } from '../../../constants';
 
-interface DatabaseGraphData extends GraphData {
-	kind: string;
-}
-export class AzureResourceDatabaseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
+export class AzureResourceDatabaseService implements IAzureResourceDbService<DbServerGraphData, DatabaseGraphData> {
+
+	public queryFilter: string = sqlDatabaseQuery;
+
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabase[]> {
 		const databases: azureResource.AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query servers and databases in parallel (start all promises before waiting on the 1st)
-		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, sqlServerQuery);
-		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, sqlDatabaseQuery);
+		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, where + sqlServerQuery);
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, where + this.queryFilter);
 		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
 
@@ -39,7 +39,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		const synapseDBRegExp = new RegExp(`\/subscriptions\/.+\/resourceGroups\/(.+)\/providers\/Microsoft\.Synapse\/workspaces\/(.+)\/databases\/.+`);
 
 		dbByGraph.forEach(db => {
-			// Filter master DBs, and for all others find their server to get login info
+			// Filter master DBs, and for all others find their server to get login information
 			let serversForRg = rgMap.get(db.resourceGroup);
 			if (serversForRg && !db.kind.endsWith('system') && (svrIdRegExp.test(db.id) || synapseDBRegExp.test(db.id))) {
 				const founds = svrIdRegExp.exec(db.id) ?? synapseDBRegExp.exec(db.id);
@@ -50,23 +50,32 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 				const serverName = founds[2];
 				let server = servers.find(s => s.name === serverName);
 				if (server) {
-					databases.push({
-						name: db.name,
-						id: db.id,
-						serverName: server.name,
-						serverFullName: server.properties.fullyQualifiedDomainName,
-						loginName: server.properties.administratorLogin,
-						subscription: {
-							id: db.subscriptionId,
-							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name || ''
-						},
-						tenant: db.tenantId,
-						resourceGroup: db.resourceGroup
-					});
+					databases.push(this.convertDatabaseResource(db, server)!);
 				}
 			}
 		});
 
 		return databases;
+	}
+
+	public convertDatabaseResource(resource: DatabaseGraphData, server?: DbServerGraphData | undefined): azureResource.AzureResourceDatabase | undefined {
+		if (server) {
+			return {
+				name: resource.name,
+				id: resource.id,
+				provider: DATABASE_PROVIDER_ID,
+				serverName: server.name,
+				serverFullName: server.properties.fullyQualifiedDomainName,
+				loginName: server.properties.administratorLogin,
+				subscription: {
+					id: resource.subscriptionId,
+					name: resource.subscriptionName!
+				},
+				tenant: resource.tenantId,
+				resourceGroup: resource.resourceGroup
+			};
+		} else {
+			return undefined;
+		}
 	}
 }
