@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ExtHostContext, MainThreadTreeViewsShape, ExtHostTreeViewsShape, MainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { ITreeViewDataProvider, ITreeItem, IViewsService, ITreeView, IViewsRegistry, ITreeViewDescriptor, IRevealOptions, Extensions, ResolvableTreeItem, ITreeViewDragAndDropController, IViewBadge } from 'vs/workbench/common/views';
+import { ExtHostContext, MainThreadTreeViewsShape, ExtHostTreeViewsShape, MainContext, CheckboxUpdate } from 'vs/workbench/api/common/extHost.protocol';
+import { ITreeViewDataProvider, ITreeItem, IViewsService, ITreeView, IViewsRegistry, ITreeViewDescriptor, IRevealOptions, Extensions, ResolvableTreeItem, ITreeViewDragAndDropController, IViewBadge, NoTreeViewError } from 'vs/workbench/common/views';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { distinct } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -126,12 +126,19 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		}
 	}
 
-	$resolveDropFileData(destinationViewId: string, requestId: number, dataItemIndex: number): Promise<VSBuffer> {
+	$resolveDropFileData(destinationViewId: string, requestId: number, dataItemId: string): Promise<VSBuffer> {
 		const controller = this._dndControllers.get(destinationViewId);
 		if (!controller) {
 			throw new Error('Unknown tree');
 		}
-		return controller.resolveDropFileData(requestId, dataItemIndex);
+		return controller.resolveDropFileData(requestId, dataItemId);
+	}
+
+	public async $disposeTree(treeViewId: string): Promise<void> {
+		const viewer = this.getTreeView(treeViewId);
+		if (viewer) {
+			viewer.dataProvider = undefined;
+		}
 	}
 
 	private async reveal(treeView: ITreeView, dataProvider: TreeViewDataProvider, itemIn: ITreeItem, parentChain: ITreeItem[], options: IRevealOptions): Promise<void> {
@@ -156,7 +163,9 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 			if (select) {
 				treeView.setSelection([item]);
 			}
-			if (focus) {
+			if (focus === false) {
+				treeView.setFocus();
+			} else if (focus) {
 				treeView.setFocus(item);
 			}
 			let itemsToExpand = [item];
@@ -177,7 +186,13 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		this._register(treeView.onDidExpandItem(item => this._proxy.$setExpanded(treeViewId, item.handle, true)));
 		this._register(treeView.onDidCollapseItem(item => this._proxy.$setExpanded(treeViewId, item.handle, false)));
 		this._register(treeView.onDidChangeSelection(items => this._proxy.$setSelection(treeViewId, items.map(({ handle }) => handle))));
+		this._register(treeView.onDidChangeFocus(item => this._proxy.$setFocus(treeViewId, item.handle)));
 		this._register(treeView.onDidChangeVisibility(isVisible => this._proxy.$setVisible(treeViewId, isVisible)));
+		this._register(treeView.onDidChangeCheckboxState(items => {
+			this._proxy.$changeCheckboxState(treeViewId, <CheckboxUpdate[]>items.map(item => {
+				return { treeItemHandle: item.handle, newState: item.checkbox?.isChecked ?? false };
+			}));
+		}));
 	}
 
 	private getTreeView(treeViewId: string): ITreeView | null {
@@ -239,8 +254,8 @@ class TreeViewDragAndDropController implements ITreeViewDragAndDropController {
 		return additionalDataTransfer;
 	}
 
-	public resolveDropFileData(requestId: number, dataItemIndex: number): Promise<VSBuffer> {
-		return this.dataTransfersCache.resolveDropFileData(requestId, dataItemIndex);
+	public resolveDropFileData(requestId: number, dataItemId: string): Promise<VSBuffer> {
+		return this.dataTransfersCache.resolveFileData(requestId, dataItemId);
 	}
 }
 
@@ -263,7 +278,11 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 			.then(
 				children => this.postGetChildren(children),
 				err => {
-					this.notificationService.error(err);
+					// It can happen that a tree view is disposed right as `getChildren` is called. This results in an error because the data provider gets removed.
+					// The tree will shortly get cleaned up in this case. We just need to handle the error here.
+					if (!NoTreeViewError.is(err)) {
+						this.notificationService.error(err);
+					}
 					return [];
 				});
 	}

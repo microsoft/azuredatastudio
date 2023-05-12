@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Codicon } from 'vs/base/common/codicons';
+import { getAllCodicons } from 'vs/base/common/codicons';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import { OperatingSystem } from 'vs/base/common/platform';
 import { localize } from 'vs/nls';
@@ -30,8 +30,8 @@ export const terminalColorSchema: IJSONSchema = {
 
 export const terminalIconSchema: IJSONSchema = {
 	type: 'string',
-	enum: Array.from(Codicon.getAll(), icon => icon.id),
-	markdownEnumDescriptions: Array.from(Codicon.getAll(), icon => `$(${icon.id})`),
+	enum: Array.from(getAllCodicons(), icon => icon.id),
+	markdownEnumDescriptions: Array.from(getAllCodicons(), icon => `$(${icon.id})`),
 };
 
 const terminalProfileBaseProperties: IJSONSchemaMap = {
@@ -139,7 +139,7 @@ const terminalPlatformConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.AutomationProfileLinux]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.automationProfile.linux', "The terminal profile to use on Linux for automation-related terminal usage like tasks and debug. This setting will currently be ignored if {0} is set.", '`#terminal.integrated.automationShell.linux#`'),
+			markdownDescription: localize('terminal.integrated.automationProfile.linux', "The terminal profile to use on Linux for automation-related terminal usage like tasks and debug. This setting will currently be ignored if {0} (now deprecated) is set.", '`terminal.integrated.automationShell.linux`'),
 			type: ['object', 'null'],
 			default: null,
 			'anyOf': [
@@ -157,7 +157,7 @@ const terminalPlatformConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.AutomationProfileMacOs]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.automationProfile.osx', "The terminal profile to use on macOS for automation-related terminal usage like tasks and debug. This setting will currently be ignored if {0} is set.", '`#terminal.integrated.automationShell.osx#`'),
+			markdownDescription: localize('terminal.integrated.automationProfile.osx', "The terminal profile to use on macOS for automation-related terminal usage like tasks and debug. This setting will currently be ignored if {0} (now deprecated) is set.", '`terminal.integrated.automationShell.osx`'),
 			type: ['object', 'null'],
 			default: null,
 			'anyOf': [
@@ -175,7 +175,7 @@ const terminalPlatformConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.AutomationProfileWindows]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.automationProfile.windows', "The terminal profile to use for automation-related terminal usage like tasks and debug. This setting will currently be ignored if {0} is set.", '`#terminal.integrated.automationShell.windows#`'),
+			markdownDescription: localize('terminal.integrated.automationProfile.windows', "The terminal profile to use for automation-related terminal usage like tasks and debug. This setting will currently be ignored if {0} (now deprecated) is set.", '`terminal.integrated.automationShell.windows`'),
 			type: ['object', 'null'],
 			default: null,
 			'anyOf': [
@@ -288,7 +288,7 @@ const terminalPlatformConfiguration: IConfigurationNode = {
 						required: ['source'],
 						properties: {
 							source: {
-								description: localize('terminalProfile.windowsSource', 'A profile source that will auto detect the paths to the shell.'),
+								description: localize('terminalProfile.windowsSource', 'A profile source that will auto detect the paths to the shell. Note that non-standard executable locations are not supported and must be created manually in a new profile.'),
 								enum: ['PowerShell', 'Git Bash']
 							},
 							...terminalProfileBaseProperties

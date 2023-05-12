@@ -33,12 +33,13 @@
 		"slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.43",
 		"turndown": "^7.0.0",
 		"turndown-plugin-gfm": "^1.0.2",
-		"tas-client-umd": "0.1.6",
-		"vscode-oniguruma": "1.6.1",
-		"vscode-textmate": "7.0.1",
-		"xterm": "4.20.0-beta.20",
-		"xterm-addon-search": "0.10.0-beta.3",
-		"xterm-addon-unicode11": "0.4.0-beta.3",
-		"xterm-addon-webgl": "0.13.0-beta.9"
+		"tas-client-umd": "0.1.8",
+		"vscode-oniguruma": "1.7.0",
+		"vscode-textmate": "9.0.0",
+		"xterm": "5.2.0-beta.35",
+		"xterm-addon-canvas": "0.4.0-beta.9",
+		"xterm-addon-search": "0.11.0",
+		"xterm-addon-unicode11": "0.5.0",
+		"xterm-addon-webgl": "0.15.0-beta.8"
 	}
 }

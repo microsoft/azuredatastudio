@@ -6,15 +6,15 @@
 import { Emitter, Event, PauseableEmitter } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { DisposableStore, IDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
-import { TernarySearchTree } from 'vs/base/common/map';
 import { MarshalledObject } from 'vs/base/common/marshalling';
 import { MarshalledId } from 'vs/base/common/marshallingIds';
 import { cloneAndChange, distinct } from 'vs/base/common/objects';
+import { TernarySearchTree } from 'vs/base/common/ternarySearchTree';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ContextKeyExpression, ContextKeyInfo, IContext, IContextKey, IContextKeyChangeEvent, IContextKeyService, IContextKeyServiceTarget, IReadableSet, RawContextKey, SET_CONTEXT_COMMAND_ID } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpression, ContextKeyInfo, ContextKeyValue, IContext, IContextKey, IContextKeyChangeEvent, IContextKeyService, IContextKeyServiceTarget, IReadableSet, RawContextKey, SET_CONTEXT_COMMAND_ID } from 'vs/platform/contextkey/common/contextkey';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 const KEYBINDING_CONTEXT_ATTR = 'data-keybinding-context';
@@ -115,7 +115,7 @@ class ConfigAwareContextValuesContainer extends Context {
 		this._listener = this._configurationService.onDidChangeConfiguration(event => {
 			if (event.source === ConfigurationTarget.DEFAULT) {
 				// new setting, reset everything
-				const allKeys = Array.from(Iterable.map(this._values, ([k]) => k));
+				const allKeys = Array.from(this._values, ([k]) => k);
 				this._values.clear();
 				emitter.fire(new ArrayContextKeyChangeEvent(allKeys));
 			} else {
@@ -283,8 +283,6 @@ export abstract class AbstractContextKeyService implements IContextKeyService {
 		return this._myContextId;
 	}
 
-	abstract dispose(): void;
-
 	//public createKey<T extends ContextKeyValue>(key: string, defaultValue: T | undefined): IContextKey<T> {
 	public createKey<T>(key: string, defaultValue: T | undefined): IContextKey<T> {
 		if (this._isDisposed) {
@@ -303,7 +301,7 @@ export abstract class AbstractContextKeyService implements IContextKeyService {
 		}
 	}
 
-	public createScoped(domNode: IContextKeyServiceTarget): IContextKeyService {
+	public createScoped(domNode: IContextKeyServiceTarget): IScopedContextKeyService {
 		if (this._isDisposed) {
 			throw new Error(`AbstractContextKeyService has been disposed`);
 		}
@@ -502,6 +500,10 @@ class ScopedContextKeyService extends AbstractContextKeyService {
 	}
 
 	public updateParent(parentContextKeyService: AbstractContextKeyService): void {
+		if (this._parent === parentContextKeyService) {
+			return;
+		}
+
 		const thisContainer = this._parent.getContextValuesContainer(this._myContextId);
 		const oldAllValues = thisContainer.collectAllValues();
 		this._parent = parentContextKeyService;
@@ -574,7 +576,7 @@ class OverlayContextKeyService implements IContextKeyService {
 		return this.overlay.has(key) ? this.overlay.get(key) : this.parent.getContextKeyValue(key);
 	}
 
-	createScoped(): IContextKeyService {
+	createScoped(): IScopedContextKeyService {
 		throw new Error('Not supported.');
 	}
 
@@ -584,10 +586,6 @@ class OverlayContextKeyService implements IContextKeyService {
 
 	updateParent(): void {
 		throw new Error('Not supported.');
-	}
-
-	dispose(): void {
-		// noop
 	}
 }
 
@@ -606,7 +604,8 @@ function findContextAttr(domNode: IContextKeyServiceTarget | null): number {
 }
 
 export function setContext(accessor: ServicesAccessor, contextKey: any, contextValue: any) {
-	accessor.get(IContextKeyService).createKey(String(contextKey), stringifyURIs(contextValue));
+	const contextKeyService = accessor.get(IContextKeyService);
+	contextKeyService.createKey(String(contextKey), stringifyURIs(contextValue));
 }
 
 function stringifyURIs(contextValue: any): any {
@@ -621,7 +620,7 @@ function stringifyURIs(contextValue: any): any {
 	});
 }
 
-CommandsRegistry.registerCommand(SET_CONTEXT_COMMAND_ID, setContext);
+CommandsRegistry.registerCommand('_setContext', setContext);
 
 CommandsRegistry.registerCommand({
 	id: 'getContextKeyInfo',

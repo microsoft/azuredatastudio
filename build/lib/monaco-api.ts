@@ -115,7 +115,7 @@ function getNodeText(sourceFile: ts.SourceFile, node: { pos: number; end: number
 	return sourceFile.getFullText().substring(node.pos, node.end);
 }
 
-function hasModifier(modifiers: readonly ts.Modifier[] | undefined, kind: ts.SyntaxKind): boolean {
+function hasModifier(modifiers: readonly ts.ModifierLike[] | undefined, kind: ts.SyntaxKind): boolean {
 	if (modifiers) {
 		for (let i = 0; i < modifiers.length; i++) {
 			const mod = modifiers[i];
@@ -128,8 +128,10 @@ function hasModifier(modifiers: readonly ts.Modifier[] | undefined, kind: ts.Syn
 }
 
 function isStatic(ts: typeof import('typescript'), member: ts.ClassElement | ts.TypeElement): boolean {
-	const modifiers = ts.canHaveModifiers(member) ? ts.getModifiers(member) : undefined;
-	return hasModifier(modifiers, ts.SyntaxKind.StaticKeyword);
+	if (ts.canHaveModifiers(member)) {
+		return hasModifier(ts.getModifiers(member), ts.SyntaxKind.StaticKeyword);
+	}
+	return false;
 }
 
 function isDefaultExport(ts: typeof import('typescript'), declaration: ts.InterfaceDeclaration | ts.ClassDeclaration): boolean {

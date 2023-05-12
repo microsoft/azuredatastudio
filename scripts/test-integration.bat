@@ -9,13 +9,10 @@ set VSCODELOGSDIR=%~dp0\..\.build\logs\integration-tests
 
 :: Figure out which Electron to use for running tests
 if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
-	:: Run out of sources: no need to compile as code.bat takes care of it
 	chcp 65001
 	set INTEGRATION_TEST_ELECTRON_PATH=.\scripts\code.bat
 	set VSCODE_BUILD_BUILTIN_EXTENSIONS_SILENCE_PLEASE=1
 
-	echo Storing crash reports into '%VSCODECRASHDIR%'.
-	echo Storing log files into '%VSCODELOGSDIR%'.
 	echo Running integration tests out of sources.
 ) else (
 	:: Run from a built: need to compile all test extensions
@@ -40,8 +37,6 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	set VSCODE_CLI=1
 	set ELECTRON_ENABLE_LOGGING=1
 
-	echo Storing crash reports into '%VSCODECRASHDIR%'.
-	echo Storing log files into '%VSCODELOGSDIR%'.
 	echo Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build.
 )
 

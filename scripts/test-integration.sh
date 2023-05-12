@@ -22,11 +22,8 @@ cd $ROOT
 # Figure out which Electron to use for running tests
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
-	# Run out of sources: no need to compile as code.sh takes care of it
 	INTEGRATION_TEST_ELECTRON_PATH="./scripts/code.sh"
 
-	echo "Storing crash reports into '$VSCODECRASHDIR'."
-	echo "Storing log files into '$VSCODELOGSDIR'."
 	echo "Running integration tests out of sources."
 else
 	# Run from a built: need to compile all test extensions
@@ -53,10 +50,11 @@ else
 	export ELECTRON_ENABLE_STACK_DUMPING=1
 	export ELECTRON_ENABLE_LOGGING=1
 
-	echo "Storing crash reports into '$VSCODECRASHDIR'."
-	echo "Storing log files into '$VSCODELOGSDIR'."
 	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
+
+echo "Storing crash reports into '$VSCODECRASHDIR'."
+echo "Storing log files into '$VSCODELOGSDIR'."
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
 	after_suite() { true; }

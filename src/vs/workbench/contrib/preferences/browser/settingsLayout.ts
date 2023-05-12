@@ -197,7 +197,17 @@ export const tocData: ITOCEntry<string> = {
 					id: 'features/audioCues',
 					label: localize('audioCues', 'Audio Cues'),
 					settings: ['audioCues.*']
-				}
+				},
+				{
+					id: 'features/mergeEditor',
+					label: localize('mergeEditor', 'Merge Editor'),
+					settings: ['mergeEditor.*']
+				},
+				{
+					id: 'features/interactiveSession',
+					label: localize('interactiveSession', 'Interactive Session'),
+					settings: ['interactiveSession.*']
+				},
 			]
 		},
 		{
@@ -228,6 +238,16 @@ export const tocData: ITOCEntry<string> = {
 					id: 'application/settingsSync',
 					label: localize('settingsSync', "Settings Sync"),
 					settings: ['settingsSync.*']
+				},
+				{
+					id: 'application/experimental',
+					label: localize('experimental', "Experimental"),
+					settings: ['application.experimental.*']
+				},
+				{
+					id: 'application/other',
+					label: localize('other', "Other"),
+					settings: ['application.*']
 				}
 			]
 		},

@@ -10,9 +10,13 @@
 const withDefaults = require('../shared.webpack.config');
 
 module.exports = withDefaults({
-	context: __dirname,
+	context: path.join(__dirname),
 	entry: {
-		main: './src/main.ts'
+		extension: './src/node/htmlServerNodeMain.ts',
+	},
+	output: {
+		filename: 'htmlServerMain.js',
+		path: path.join(__dirname, 'dist', 'node'),
 	},
 	externals: {
 		'native-is-elevated': 'commonjs native-is-elevated',

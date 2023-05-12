@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+const fs = require('fs');
+
 // Complete list of directories where yarn should be executed to install node modules
-exports.dirs = [
+const dirs = [
 	'',
 	'build',
 	'extensions',
@@ -24,7 +26,6 @@ exports.dirs = [
 	'extensions/git-base',
 	'extensions/github',
 	'extensions/github-authentication',
-	'extensions/image-preview',
 	'extensions/import',
 	'extensions/integration-tests',
 	'extensions/ipynb',
@@ -35,6 +36,7 @@ exports.dirs = [
 	'extensions/markdown-language-features/server',
 	'extensions/markdown-language-features',
 	'extensions/markdown-math',
+	'extensions/media-preview',
 	'extensions/merge-conflict',
 	'extensions/microsoft-authentication',
 	'extensions/mssql',
@@ -51,7 +53,7 @@ exports.dirs = [
 	'extensions/sql-assessment',
 	'extensions/sql-bindings',
 	'extensions/sql-database-projects',
-	'extensions/sql-migration',
+	'extensions/vscode-notebook-tests',
 	'extensions/vscode-test-resolver',
 	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End
@@ -62,3 +64,11 @@ exports.dirs = [
 	'test/monaco',
 	'test/smoke',
 ];
+
+if (fs.existsSync(`${__dirname}/../../.build/distro/npm`)) {
+	dirs.push('.build/distro/npm');
+	dirs.push('.build/distro/npm/remote');
+	dirs.push('.build/distro/npm/remote/web');
+}
+
+exports.dirs = dirs;

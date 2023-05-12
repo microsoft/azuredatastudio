@@ -17,11 +17,11 @@ import { ISCMService } from 'vs/workbench/contrib/scm/common/scm';
 import { SCMService } from 'vs/workbench/contrib/scm/common/scmService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { mock } from 'vs/base/test/common/mock';
 import * as sinon from 'sinon';
 import * as assert from 'assert';
-import { ChangeType, FileType, IEditSessionsLogService, IEditSessionsWorkbenchService } from 'vs/workbench/contrib/editSessions/common/editSessions';
+import { ChangeType, FileType, IEditSessionsLogService, IEditSessionsStorageService } from 'vs/workbench/contrib/editSessions/common/editSessions';
 import { URI } from 'vs/base/common/uri';
 import { joinPath } from 'vs/base/common/resources';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -34,6 +34,15 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
+import { IDialogService, IPrompt } from 'vs/platform/dialogs/common/dialogs';
+import { IEditorService, ISaveAllEditorsOptions } from 'vs/workbench/services/editor/common/editorService';
+import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
+import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IEditSessionIdentityService } from 'vs/platform/workspace/common/editSessions';
 
 const folderName = 'test-folder';
 const folderUri = URI.file(`/${folderName}`);
@@ -60,11 +69,35 @@ suite('Edit session sync', () => {
 		// Stub out all services
 		instantiationService.stub(IEditSessionsLogService, logService);
 		instantiationService.stub(IFileService, fileService);
+		instantiationService.stub(ILifecycleService, new class extends mock<ILifecycleService>() {
+			override onWillShutdown = Event.None;
+		});
 		instantiationService.stub(INotificationService, new TestNotificationService());
-		instantiationService.stub(IEditSessionsWorkbenchService, new class extends mock<IEditSessionsWorkbenchService>() { });
+		instantiationService.stub(IEditSessionsStorageService, new class extends mock<IEditSessionsStorageService>() {
+			override onDidSignIn = Event.None;
+			override onDidSignOut = Event.None;
+		});
+		instantiationService.stub(IExtensionService, new class extends mock<IExtensionService>() {
+			override onDidChangeExtensions = Event.None;
+		});
 		instantiationService.stub(IProgressService, ProgressService);
 		instantiationService.stub(ISCMService, SCMService);
 		instantiationService.stub(IEnvironmentService, TestEnvironmentService);
+		instantiationService.stub(ITelemetryService, NullTelemetryService);
+		instantiationService.stub(IDialogService, new class extends mock<IDialogService>() {
+			override async prompt(prompt: IPrompt<any>) {
+				const result = prompt.buttons?.[0].run({ checkboxChecked: false });
+				return { result };
+			}
+			override async confirm() {
+				return { confirmed: false };
+			}
+		});
+		instantiationService.stub(IRemoteAgentService, new class extends mock<IRemoteAgentService>() {
+			override async getEnvironment() {
+				return null;
+			}
+		});
 		instantiationService.stub(IConfigurationService, new TestConfigurationService({ workbench: { experimental: { editSessions: { enabled: true } } } }));
 		instantiationService.stub(IWorkspaceContextService, new class extends mock<IWorkspaceContextService>() {
 			override getWorkspace() {
@@ -77,6 +110,9 @@ suite('Edit session sync', () => {
 						toResource: (relativePath: string) => joinPath(folderUri, relativePath)
 					}]
 				};
+			}
+			override getWorkbenchState() {
+				return WorkbenchState.FOLDER;
 			}
 		});
 
@@ -92,6 +128,14 @@ suite('Edit session sync', () => {
 		});
 		instantiationService.stub(ITextModelService, new class extends mock<ITextModelService>() {
 			override registerTextModelContentProvider = () => ({ dispose: () => { } });
+		});
+		instantiationService.stub(IEditorService, new class extends mock<IEditorService>() {
+			override saveAll = async (_options: ISaveAllEditorsOptions) => { return { success: true, editors: [] }; };
+		});
+		instantiationService.stub(IEditSessionIdentityService, new class extends mock<IEditSessionIdentityService>() {
+			override async getEditSessionIdentifier() {
+				return 'test-identity';
+			}
 		});
 
 		editSessionsContribution = instantiationService.createInstance(EditSessionsContribution);
@@ -124,7 +168,7 @@ suite('Edit session sync', () => {
 
 		// Stub sync service to return edit session data
 		const readStub = sandbox.stub().returns({ editSession, ref: '0' });
-		instantiationService.stub(IEditSessionsWorkbenchService, 'read', readStub);
+		instantiationService.stub(IEditSessionsStorageService, 'read', readStub);
 
 		// Create root folder
 		await fileService.createFolder(folderUri);
@@ -138,12 +182,12 @@ suite('Edit session sync', () => {
 
 	test('Edit session not stored if there are no edits', async function () {
 		const writeStub = sandbox.stub();
-		instantiationService.stub(IEditSessionsWorkbenchService, 'write', writeStub);
+		instantiationService.stub(IEditSessionsStorageService, 'write', writeStub);
 
 		// Create root folder
 		await fileService.createFolder(folderUri);
 
-		await editSessionsContribution.storeEditSession(true);
+		await editSessionsContribution.storeEditSession(true, new CancellationTokenSource().token);
 
 		// Verify that we did not attempt to write the edit session
 		assert.equal(writeStub.called, false);

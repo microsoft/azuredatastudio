@@ -14,6 +14,18 @@
 	"contributes": {
 		"themes": [
       {
+        "id": "Default Dark Modern",
+        "label": "%darkPlusExperimentalColorThemeLabel%",
+        "uiTheme": "vs-dark",
+        "path": "./themes/dark_plus_experimental.json"
+      },
+      {
+      },
+      {
+        "id": "Default Light Modern",
+        "label": "%lightPlusExperimentalColorThemeLabel%",
+        "uiTheme": "vs",
+        "path": "./themes/light_plus_experimental.json"
         "id": "Default High Contrast",
         "label": "%hcColorThemeLabel%",
         "uiTheme": "hc-black",
