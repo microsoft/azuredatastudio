@@ -96,7 +96,7 @@ class TestParsedArgs implements NativeParsedArgs, SqlArgs {
 	waitMarkerFilePath?: string;
 	authenticationType?: string;
 	applicationName?: string;
-	properties?: string;
+	connectionProperties?: string;
 }
 suite('commandLineService tests', () => {
 
@@ -231,7 +231,7 @@ suite('commandLineService tests', () => {
 		args.authenticationType = Constants.AuthenticationType.SqlLogin;
 		args.applicationName = 'myapplication';
 		// Pass advanced connection properties
-		args.properties = `{"trustServerCertificate":"true"}`;
+		args.connectionProperties = `{"trustServerCertificate":"true"}`;
 
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
