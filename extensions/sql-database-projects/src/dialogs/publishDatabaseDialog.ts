@@ -815,7 +815,7 @@ export class PublishDatabaseDialog {
 					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 				}
 
-				for (let key in result.sqlCmdVariables.keys()) {
+				for (let key of result.sqlCmdVariables.keys()) {
 					this.sqlCmdVars?.set(key, result.sqlCmdVariables.get(key)!);
 				}
 
