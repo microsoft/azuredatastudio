@@ -82,10 +82,10 @@ export interface SqlArgs {
 	 */
 	applicationName?: string;
 	/**
-	 *  Supports providing advanced options that providers support.
+	 *  Supports providing advanced connection properties that providers support.
 	 *  Value must be a json object containing key-value pairs in format: '{"key1":"value1","key2":"value2",...}'
 	 */
-	options?: string;
+	properties?: string;
 }
 
 //#region decorators
@@ -369,7 +369,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
 		profile.setOptionValue('groupId', profile.groupId);
 		// Set all advanced options
-		let advancedOptions = this.getAdvancedOptions(args.options, profile.getOptionKeyIdNames());
+		let advancedOptions = this.getAdvancedOptions(args.properties, profile.getOptionKeyIdNames());
 		advancedOptions.forEach((v, k) => {
 			profile.setOptionValue(k, v);
 		});
@@ -377,13 +377,18 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	private getAdvancedOptions(options: string, idNames: string[]): Map<string, string> {
+		const ignoredProperties = idNames.concat(['password', 'azureAccountToken']);
 		let advancedOptionsMap = new Map<string, string>();
 		if (options) {
-			JSON.parse(options, (k, v) => {
-				if (!(k in idNames)) {
-					advancedOptionsMap.set(k, v);
-				}
-			});
+			try {
+				JSON.parse(options, (k, v) => {
+					if (!(k in ignoredProperties)) {
+						advancedOptionsMap.set(k, v);
+					}
+				});
+			} catch (e) {
+				throw new Error(localize('commandline.propertiesFormatError', 'Advanced connection properties could be parsed as JSON. Received properties value: {0}', options));
+			}
 		}
 		return advancedOptionsMap;
 	}
