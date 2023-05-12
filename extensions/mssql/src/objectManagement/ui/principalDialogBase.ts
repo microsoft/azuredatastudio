@@ -10,7 +10,7 @@ import * as localizedConstants from '../localizedConstants';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { FindObjectDialog } from './findObjectDialog';
 import { deepClone } from '../../util/objects';
-import { getTableHeight } from '../../ui/dialogBase';
+import { DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 
 const GrantColumnIndex = 2;
 const WithGrantColumnIndex = 3;
@@ -71,6 +71,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 				}],
 			data: [],
 			height: getTableHeight(0),
+			width: DefaultTableWidth
 		}).component();
 		this.disposables.push(this.permissionTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 			const permissionName = this.permissionTable.data[arg.row][0];
@@ -111,7 +112,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 			this.effectivePermissionTable = this.createTable(localizedConstants.EffectivePermissionsTableLabel, [localizedConstants.PermissionColumnHeader], []);
 			items.push(this.effectivePermissionTableLabel, this.effectivePermissionTable);
 		}
-		this.securableSection = this.createGroup(localizedConstants.SecurablesText, items);
+		this.securableSection = this.createGroup(localizedConstants.SecurablesText, items, true, true);
 	}
 
 	private async onAddSecurableButtonClicked(): Promise<void> {
