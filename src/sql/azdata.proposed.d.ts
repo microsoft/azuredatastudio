@@ -1842,7 +1842,7 @@ declare module 'azdata' {
 		/**
 		 * The name of the filter property
 		 */
-		displayName: string;
+		name: string;
 		/**
 		 * The operator of the filter property
 		 */
