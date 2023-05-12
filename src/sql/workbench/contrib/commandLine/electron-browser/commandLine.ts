@@ -381,6 +381,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let advancedOptionsMap = new Map<string, string>();
 		if (options) {
 			try {
+				// Decode options if they contain any encoded URL characters
+				options = decodeURI(options);
 				JSON.parse(options, (k, v) => {
 					if (!(k in ignoredProperties)) {
 						advancedOptionsMap.set(k, v);
