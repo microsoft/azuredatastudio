@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "{0}で Azure Data Studio を使用するには、Azure Data Studio を再起動する必要があります。",
 			"appName": "'${appName}': 例: Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "ダウンロード",
+			"azuredatastudio.downloadTooltip": "外部ソースからこの拡張機能をダウンロードする",
+			"azuredatastudio.installTooltip": "この拡張機能をインストールする",
 			"connectionDialogBrowseTree.context": "接続ダイアログの閲覧ツリーのコンテキスト メニュー",
 			"dashboard.toolbar": "ダッシュボード ツールバーのアクション メニュー",
 			"dataExplorer.action": "dataexplorer ビュー コンテナーのタイトル アクション メニュー",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "Notebook: マークダウン ツールバー アイコン",
 			"notebookFindMatchHighlight": "その他の検索条件に一致する項目の色。この色は、基本装飾が非表示にならないよう不透明にすることはできません。",
 			"notebookFindRangeHighlight": "検索を制限する範囲の色。この色は、基本装飾が非表示にならないよう不透明にすることはできません。",
-			"queryEditorNullBackground": "クエリ エディターの結果グリッドの null 値の背景色。",
+			"queryEditorNullBackground": "クエリ エディターの結果グリッドで null 値に使用する背景色。透明色 ({0} など) を指定すると、この背景色を無効にすることができます。",
 			"tileBorder": "タイルの境界線の色",
 			"tileBoxShadow": "タイル ボックスの影の色"
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "{0} は不明なコンテナーです。"
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "ダッシュボードの構成方法に関する詳細情報",
 			"dashboard.generalTabGroupHeader": "全般",
 			"home": "ホーム",
 			"missingConnectionInfo": "このダッシュ ボードには接続情報が見つかりませんでした"
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "コンテキストを読み込んでいます...",
 			"localhost": "localhost",
 			"newNotebookAction": "新しいノートブック",
+			"newNotebookTask.newNotebook": "新しい Notebook",
 			"newViewLabel": "新しいビューの作成",
 			"noContextAvailable": "なし",
 			"noKernel": "カーネルなし",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "新しい接続",
+			"serverTreeViewChangeNotification": "サーバー ツリーが変更されました。変更を表示するには、このウィンドウを再読み込みしてください。",
+			"serverTreeViewChangeNotification.doNotReload": "再読み込みしない",
+			"serverTreeViewChangeNotification.reload": "再読み込み",
 			"servers.noConnections": "接続が見つかりません。"
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "オブジェクト エクスプローラー ビューレットの自動展開サーバー グループ。",
 			"serverGroup.colors": "オブジェクト エクスプローラー ビューレットで使用するサーバー グループ カラー パレット。",
+			"serverTree.configuration.title": "サーバー ツリー",
 			"serverTree.nodeExpansionTimeout": "[サーバー] ビューでノードを展開する際のタイムアウト (秒)",
-			"serverTree.useAsyncServerTree": "(プレビュー) 動的ノード フィルターなどの新機能をサポートする、新しい非同期サーバー ツリーをサーバー ビューおよび接続ダイアログに使用します。"
+			"serverTree.useAsyncServerTree": "サーバー ビューと接続ダイアログに、動的ノード フィルターなどの新機能をサポートする新しい非同期サーバー ツリーを使用します。設定を有効にするには再起動が必要です。"
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "組み込みグラフ",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "推定実行プランの表示",
 			"focusOnCurrentQueryKeyboardAction": "現在のクエリにフォーカスを移動する",
 			"parseSyntaxLabel": "クエリの解析",
-			"queryActions.notConnected": "サーバーに接続してください",
-			"queryActions.parseSyntaxFailure": "コマンドが失敗しました: ",
-			"queryActions.parseSyntaxSuccess": "コマンドが正常に完了しました",
+			"queryActions.notConnected": "このアクションを実行する前に、サーバーに接続してください。",
+			"queryActions.parseSyntaxFailure": "クエリを解析できませんでした: {0}",
+			"queryActions.parseSyntaxSuccess": "クエリが正常に解析されました。",
 			"queryActions.queryResultsCopySuccess": "クエリと結果が正常にコピーされました。",
 			"queryShortcutNoEditor": "ショートカットを実行するにはエディター パラメーターが必須です",
 			"refreshIntellisenseKeyboardAction": "IntelliSense キャッシュの更新",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "実行プラン",
 			"actualQueryPlan": "実際",
 			"cancelQueryLabel": "キャンセル",
-			"changeConnectionDatabaseLabel": "接続の変更",
+			"changeConnectionDatabaseLabel": "変更",
+			"changeConnectionDatabaseTooltip": "接続の変更",
 			"changeDatabase.failed": "データベースを変更できませんでした",
 			"changeDatabase.failedWithError": "データベースを変更できませんでした: {0}",
 			"connectDatabaseLabel": "接続",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "推定プラン",
 			"newQueryTask.newQuery": "新しいクエリ",
 			"query.multiSelectionNotSupported": "エディターが複数選択モードの場合、クエリの実行はサポートされません。",
-			"queryEditor.exportSqlAsNotebook": "ノートブックとしてエクスポート",
+			"queryEditor.exportSqlAsNotebookLabel": "ノートブックへ",
+			"queryEditor.exportSqlAsNotebookTooltip": "ノートブックとしてエクスポート",
+			"queryEditor.parse": "解析",
 			"runQueryLabel": "実行",
 			"selectDatabase": "データベースの選択"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "閉じる",
 			"addAccountFailedCodeMessage": "{0} \r\nエラー メッセージ: {1}",
 			"addAccountFailedGenericMessage": "アカウントの追加に失敗しました。詳細については、Azure アカウント ログを確認してください。",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "アカウントを追加しています...",
+			"refreshAccountFailedGenericMessage": "アカウントの更新に失敗しました。詳細については、Azure アカウント ログを確認してください。",
 			"refreshCanceled": "ユーザーがアカウントの更新をキャンセルしました",
-			"refreshFailed": "0 \r\nエラー メッセージ: 1"
+			"refreshFailed": "{0} \r\nエラー メッセージ: {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure アカウント",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "オブジェクト エクスプローラー セッションを作成できませんでした",
 			"nodeExpansionError": "複数のエラー:",
-			"nodeExpansionTimeout": "プロバイダー {1} のノード {0} のノード拡張がタイムアウトしました"
+			"nodeExpansionTimeout": "プロバイダー {1} のノード {0} のノード拡張がタイムアウトしました",
+			"objectExplorerMissingConnectionForSession": "接続「{1}」に対してセッション{0}が作成されるのを待機中にタイムアウトしました。これは、OEM サービスが接続「{1}」のプロバイダーから createNewSession の応答を受信しなかったために発生した可能性があります",
+			"objectExplorerMissingSession": "セッション {0} の作成を待機中にタイムアウトしました。これは、OEM サービスがプロバイダーから createNewSession に対する応答を受信しなかったために発生した可能性があります。",
+			"objectExplorerSessionIdMissing": "接続「{1}」のプロバイダー「{0}」によって返されたセッション ID が無効です。"
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "ファイアウォール ダイアログが取り消されました",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0} (フィルター処理済み)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "'{0}' オブジェクト エクスプローラー拡張がタイムアウトしました"
 		}
 	}
 }

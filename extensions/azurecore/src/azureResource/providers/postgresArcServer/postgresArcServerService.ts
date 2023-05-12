@@ -3,26 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
 import { postgresArcServerQuery } from '../queryStringConstants';
+import { PostgresArcServerGraphData } from '../../interfaces';
+import { POSTGRES_ARC_SERVER_PROVIDER_ID } from '../../../constants';
 
-export interface PostgresArcServerGraphData extends GraphData {
-	properties: {
-		admin: string;
-	};
-}
+export class PostgresServerArcService extends ResourceServiceBase<PostgresArcServerGraphData> {
 
-export class PostgresServerArcService extends ResourceServiceBase<PostgresArcServerGraphData, azureResource.AzureResourceDatabaseServer> {
+	public override queryFilter: string = postgresArcServerQuery;
 
-	protected get query(): string {
-		return postgresArcServerQuery;
-	}
-
-	protected convertResource(resource: PostgresArcServerGraphData): azureResource.AzureResourceDatabaseServer {
+	public convertServerResource(resource: PostgresArcServerGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: POSTGRES_ARC_SERVER_PROVIDER_ID,
 			fullName: resource.name,
 			loginName: resource.properties.admin,
 			defaultDatabaseName: 'postgres',

@@ -288,9 +288,7 @@ suite('SQL Object Explorer Service tests', () => {
 			connectionManagementService.object,
 			new NullAdsTelemetryService(),
 			capabilitiesService,
-			logService,
-			configurationService.object,
-			notificationService.object);
+			logService);
 
 		objectExplorerService.registerProvider(mssqlProviderName, sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {

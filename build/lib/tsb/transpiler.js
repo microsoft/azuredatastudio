@@ -3,7 +3,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SwcTranspiler = exports.TscTranspiler = void 0;
 const swc = require("@swc/core");
@@ -12,21 +11,20 @@ const threads = require("node:worker_threads");
 const Vinyl = require("vinyl");
 const node_os_1 = require("node:os");
 function transpile(tsSrc, options) {
-    var _a, _b;
     const isAmd = /\n(import|export)/m.test(tsSrc);
-    if (!isAmd && ((_a = options.compilerOptions) === null || _a === void 0 ? void 0 : _a.module) === ts.ModuleKind.AMD) {
+    if (!isAmd && options.compilerOptions?.module === ts.ModuleKind.AMD) {
         // enforce NONE module-system for not-amd cases
-        options = Object.assign(Object.assign({}, options), { compilerOptions: Object.assign(Object.assign({}, options.compilerOptions), { module: ts.ModuleKind.None }) });
+        options = { ...options, ...{ compilerOptions: { ...options.compilerOptions, module: ts.ModuleKind.None } } };
     }
     const out = ts.transpileModule(tsSrc, options);
     return {
         jsSrc: out.outputText,
-        diag: (_b = out.diagnostics) !== null && _b !== void 0 ? _b : []
+        diag: out.diagnostics ?? []
     };
 }
 if (!threads.isMainThread) {
     // WORKER
-    (_a = threads.parentPort) === null || _a === void 0 ? void 0 : _a.addListener('message', (req) => {
+    threads.parentPort?.addListener('message', (req) => {
         const res = {
             jsSrcs: [],
             diagnostics: []
@@ -77,7 +75,6 @@ class TranspileWorker {
     _durations = [];
     constructor(outFileFn) {
         this._worker.addListener('message', (res) => {
-            var _a, _b;
             if (!this._pending) {
                 console.error('RECEIVING data WITHOUT request');
                 return;
@@ -108,7 +105,7 @@ class TranspileWorker {
                 if (suffixLen === 5 /* SuffixTypes.Dts */ && _isDefaultEmpty(jsSrc)) {
                     continue;
                 }
-                const outBase = (_b = (_a = options.compilerOptions) === null || _a === void 0 ? void 0 : _a.outDir) !== null && _b !== void 0 ? _b : file.base;
+                const outBase = options.compilerOptions?.outDir ?? file.base;
                 const outPath = outFileFn(file.path);
                 outFiles.push(new Vinyl({
                     path: outPath,

@@ -95,7 +95,7 @@ suite('ConnectionDialogService tests', () => {
 			testInstantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetry service
-			undefined, // configuration service
+			new TestConfigurationService(), // configuration service
 			new TestCapabilitiesService());
 		testInstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
 		testInstantiationService.stub(IContextKeyService, new MockContextKeyService());

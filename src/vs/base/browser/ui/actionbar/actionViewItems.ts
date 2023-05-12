@@ -436,7 +436,7 @@ export class ActionViewItem extends BaseActionViewItem {
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} - BEGIN
 	override updateExpanded(): void {
 		if (this.label) {
 			if (this.getAction().expanded !== undefined) {
@@ -446,6 +446,16 @@ export class ActionViewItem extends BaseActionViewItem {
 			}
 		}
 	}
+
+	override updateTooltip(): void {
+		super.updateTooltip();
+		const tooltip = this.getTooltip();
+		if (tooltip) {
+			this.label?.setAttribute('aria-label', tooltip);
+		}
+	}
+
+	// {{SQL CARBON EDIT}} - END
 }
 
 export class SelectActionViewItem<T = string> extends BaseActionViewItem {

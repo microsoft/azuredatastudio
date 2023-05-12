@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "Para usar o Azure Data Studio em {0}, o Azure Data Studio precisa ser reiniciado.",
 			"appName": "'${appName}': por exemplo, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "Download",
+			"azuredatastudio.downloadTooltip": "Baixar esta extensão de uma fonte externa",
+			"azuredatastudio.installTooltip": "Instalar esta extensão",
 			"connectionDialogBrowseTree.context": "O menu de contexto da árvore de navegação da caixa de diálogo de conexão",
 			"dashboard.toolbar": "O menu de ação da barra de ferramentas do painel",
 			"dataExplorer.action": "O menu de ação do título do contêiner de exibição dataexplorer",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "Notebook: ícones da barra de ferramentas do Markdown",
 			"notebookFindMatchHighlight": "Cor das outras correspondências da pesquisa. A cor não deve ser opaca para não ocultar decorações subjacentes.",
 			"notebookFindRangeHighlight": "Cor do intervalo que limita a pesquisa. A cor não deve ser opaca para não ocultar decorações subjacentes.",
-			"queryEditorNullBackground": "A cor da tela de fundo para valores nulos na grade de resultados do editor de consultas.",
+			"queryEditorNullBackground": "A cor de fundo para valores nulos na grade de resultados do editor de consultas. Para desabilitar a cor da tela de fundo, você pode usar uma cor transparente como {0}.",
 			"tileBorder": "A cor da borda dos blocos",
 			"tileBoxShadow": "A cor da sombra da caixa do bloco"
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "{0} é um contêiner desconhecido."
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "Saiba mais sobre como configurar o painel",
 			"dashboard.generalTabGroupHeader": "Geral",
 			"home": "Página Inicial",
 			"missingConnectionInfo": "Nenhuma informação de conexão foi encontrada para este painel"
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "Carregando contextos...",
 			"localhost": "localhost",
 			"newNotebookAction": "Novo Notebook",
+			"newNotebookTask.newNotebook": "Novo Bloco de Anotações",
 			"newViewLabel": "Criar novo modo de exibição",
 			"noContextAvailable": "Nenhum",
 			"noKernel": "Nenhum Kernel",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "Nova Conexão",
+			"serverTreeViewChangeNotification": "A árvore do servidor foi alterada. Recarregue a janela para ver as alterações.",
+			"serverTreeViewChangeNotification.doNotReload": "Não Recarregue",
+			"serverTreeViewChangeNotification.reload": "Recarregar",
 			"servers.noConnections": "Nenhuma conexão encontrada."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Expanda automaticamente grupos de servidores no viewlet do Pesquisador de Objetos.",
 			"serverGroup.colors": "Paleta de cores do grupo de servidores usada no viewlet do Pesquisador de Objetos.",
+			"serverTree.configuration.title": "Árvore do Servidor",
 			"serverTree.nodeExpansionTimeout": "O tempo limite em segundos para expandir um nó na visualização Servidores",
-			"serverTree.useAsyncServerTree": "(Versão Prévia) Use a nova árvore de servidor assíncrono para o modo de exibição Servidores e a caixa de diálogo Conexão com suporte para novos recursos, como filtragem dinâmica de nós."
+			"serverTree.useAsyncServerTree": "Use a nova árvore de servidor assíncrono para a exibição de Servidores e a Caixa de Diálogo de Conexão com suporte para novos recursos, como filtragem de nó dinâmico. Requer uma reinicialização para entrar em vigor."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "Gráficos Integrados",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "Exibir Plano de Execução Estimado",
 			"focusOnCurrentQueryKeyboardAction": "Foco na Consulta Atual",
 			"parseSyntaxLabel": "Analisar Consulta",
-			"queryActions.notConnected": "Conecte-se a um servidor",
-			"queryActions.parseSyntaxFailure": "Falha no comando: ",
-			"queryActions.parseSyntaxSuccess": "Comandos concluídos com êxito",
+			"queryActions.notConnected": "Conecte-se a um servidor antes de executar esta ação.",
+			"queryActions.parseSyntaxFailure": "Falha ao analisar a consulta: {0}",
+			"queryActions.parseSyntaxSuccess": "A consulta foi analisada com êxito.",
 			"queryActions.queryResultsCopySuccess": "Consulta e resultados copiados com êxito.",
 			"queryShortcutNoEditor": "O editor de parâmetro é necessário para um atalho ser executado",
 			"refreshIntellisenseKeyboardAction": "Atualizar Cache do IntelliSense",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "Plano de Execução",
 			"actualQueryPlan": "Real",
 			"cancelQueryLabel": "Cancelar",
-			"changeConnectionDatabaseLabel": "Alterar Conexão",
+			"changeConnectionDatabaseLabel": "Alterar",
+			"changeConnectionDatabaseTooltip": "Alterar Conexão",
 			"changeDatabase.failed": "Falha ao alterar o banco de dados",
 			"changeDatabase.failedWithError": "Falha ao alterar o banco de dados: {0}",
 			"connectDatabaseLabel": "Conectar",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "Plano Estimado",
 			"newQueryTask.newQuery": "Nova Consulta",
 			"query.multiSelectionNotSupported": "A execução da consulta não é suportada quando o editor está no modo de seleção múltipla.",
-			"queryEditor.exportSqlAsNotebook": "Exportar o Notebook",
+			"queryEditor.exportSqlAsNotebookLabel": "Para Bloco de Anotações",
+			"queryEditor.exportSqlAsNotebookTooltip": "Exportar o Notebook",
+			"queryEditor.parse": "Analisar",
 			"runQueryLabel": "Executar",
 			"selectDatabase": "Selecionar Banco de Dados"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "Fechar",
 			"addAccountFailedCodeMessage": "{0} \r\nMensagem de Erro: {1}",
 			"addAccountFailedGenericMessage": "Adicionando falha na conta, verifique o log do Azure Contas para obter mais informações.",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Adicionando conta...",
+			"refreshAccountFailedGenericMessage": "A atualização da conta falhou, verifique o log de Contas do Azure para obter mais informações.",
 			"refreshCanceled": "A conta de atualização foi cancelada pelo usuário",
-			"refreshFailed": "0 \r\nMensagem de erro: 1"
+			"refreshFailed": "{0} \r\nMensagem de Erro: {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Conta do Azure",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Falha ao criar a sessão do Pesquisador de Objetos",
 			"nodeExpansionError": "Múltiplos erros:",
-			"nodeExpansionTimeout": "A expansão do nó expirou para o nó {0} para provedores{1}"
+			"nodeExpansionTimeout": "A expansão do nó expirou para o nó {0} para provedores{1}",
+			"objectExplorerMissingConnectionForSession": "Tempo limite atingido aguardando a criação da sessão {0} para a conexão \"{1}\". Isso provavelmente aconteceu porque o serviço OE não recebeu uma resposta para createNewSession do provedor para conexão \"{1}\"",
+			"objectExplorerMissingSession": "Tempo limite atingido aguardando a criação da sessão {0}. Isso provavelmente aconteceu porque o serviço OE não recebeu uma resposta para createNewSession do provedor.",
+			"objectExplorerSessionIdMissing": "A ID da sessão retornada pelo provedor \"{0}\" para a conexão \"{1}\" é inválida."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Caixa de diálogo do Firewall cancelada",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntrodução",
 			"showReleaseNotes": "Mostrar Introdução"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0} (filtrado)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "Pesquisador de Objetos expansão atingiu o tempo limite para '{0}'"
 		}
 	}
 }

@@ -19,6 +19,7 @@ import { CommandInvalidationReason, ICommandDetectionCapability, IMarkProperties
 import { TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { terminalDecorationError, terminalDecorationIncomplete, terminalDecorationMark, terminalDecorationSuccess } from 'vs/workbench/contrib/terminal/browser/terminalIcons';
 import { DecorationSelector, TerminalDecorationHoverManager, updateLayout } from 'vs/workbench/contrib/terminal/browser/xterm/decorationStyles';
 import { ITerminalCommand } from 'vs/workbench/contrib/terminal/common/terminal';

@@ -20,13 +20,14 @@
 		"useUnknownInCatchVariables": false,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"newLine": "lf"
+		"newLine": "lf",
+		"noEmit": true
 	},
 	"include": [
-		"**/*.ts"
+		"**/*.ts",
+		"**/*.js"
 	],
 	"exclude": [
-		"node_modules/**",
-		"actions/**" // {{SQL CARBON EDIT}}
+		"node_modules/**"
 	]
 }

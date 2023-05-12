@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "Um Azure Data Studio in {0} zu verwenden, muss Azure Data Studio neu gestartet werden.",
 			"appName": "\"${appName}\": z. B. Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "Herunterladen",
+			"azuredatastudio.downloadTooltip": "Diese Erweiterung aus einer externen Quelle herunterladen",
+			"azuredatastudio.installTooltip": "Diese Erweiterung installieren",
 			"connectionDialogBrowseTree.context": "Kontextmenü zum Durchsuchen der Struktur des Verbindungsdialogfelds",
 			"dashboard.toolbar": "Das Aktionsmenü für die Dashboard-Symbolleiste",
 			"dataExplorer.action": "Das Aktionsmenü für den Container-Titel der Dataexplorer-Ansicht",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "Notebook: Symbole der Markdownsymbolleiste",
 			"notebookFindMatchHighlight": "Farbe der anderen Suchergebnisse. Die Farbe darf nicht deckend sein, weil sie sonst die zugrunde liegenden Dekorationen verdeckt.",
 			"notebookFindRangeHighlight": "Farbe des Bereichs, der die Suche eingrenzt. Die Farbe darf nicht deckend sein, damit sie nicht die zugrunde liegenden Dekorationen verdeckt.",
-			"queryEditorNullBackground": "Die Hintergrundfarbe für NULL-Werte im Ergebnisraster des Abfrage-Editors.",
+			"queryEditorNullBackground": "Die Hintergrundfarbe für NULL-Werte im Ergebnisraster des Abfrage-Editors. Um die Hintergrundfarbe zu deaktivieren, können Sie eine transparente Farbe wie {0} verwenden.",
 			"tileBorder": "Die Rahmenfarbe von Kacheln.",
 			"tileBoxShadow": "Die Schattenfarbe des Kachelfelds."
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "\"{0}\" ist ein unbekannter Container."
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "Weitere Informationen über die Konfiguration des Dashboards",
 			"dashboard.generalTabGroupHeader": "Allgemein",
 			"home": "Start",
 			"missingConnectionInfo": "Für dieses Dashboard wurden keine Verbindungsinformationen gefunden."
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "Kontexte werden geladen...",
 			"localhost": "localhost",
 			"newNotebookAction": "Neues Notebook",
+			"newNotebookTask.newNotebook": "Neues Notizbuch",
 			"newViewLabel": "Neue Ansicht erstellen",
 			"noContextAvailable": "Keine",
 			"noKernel": "Kein Kernel",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "Neue Verbindung",
+			"serverTreeViewChangeNotification": "Die Serverstruktur wurde geändert. Laden Sie das Fenster neu, um die Änderungen anzuzeigen.",
+			"serverTreeViewChangeNotification.doNotReload": "Nicht neu laden",
+			"serverTreeViewChangeNotification.reload": "Neu laden",
 			"servers.noConnections": "Keine Verbindungen gefunden."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Servergruppen im Objekt-Explorer-Viewlet automatisch erweitern",
 			"serverGroup.colors": "Farbpalette für die Servergruppe, die im Objekt-Explorer-Viewlet verwendet wird.",
+			"serverTree.configuration.title": "Serverstruktur",
 			"serverTree.nodeExpansionTimeout": "Timeout in Sekunden für das Erweitern eines Knotens in der Serveransicht",
-			"serverTree.useAsyncServerTree": "(Vorschau) Verwenden Sie die neue asynchrone Serverstruktur für die Serveransicht und das Verbindungsdialogfeld. Sie bietet Unterstützung für neue Features wie die dynamische Knotenfilterung."
+			"serverTree.useAsyncServerTree": "Verwenden Sie die neue asynchrone Serverstruktur für die Serveransicht und das Verbindungsdialogfeld. Sie bietet Unterstützung für neue Features wie die dynamische Knotenfilterung. Es ist ein Neustart erforderlich."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "Integrierte Diagramme",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "Geschätzten Ausführungsplan anzeigen",
 			"focusOnCurrentQueryKeyboardAction": "Fokus auf aktuelle Abfrage",
 			"parseSyntaxLabel": "Abfrage analysieren",
-			"queryActions.notConnected": "Stellen Sie eine Verbindung mit einem Server her.",
-			"queryActions.parseSyntaxFailure": "Fehler bei Befehl:",
-			"queryActions.parseSyntaxSuccess": "Die Befehle wurden erfolgreich ausgeführt.",
+			"queryActions.notConnected": "Stellen Sie eine Verbindung mit einem Server her, bevor Sie diese Aktion ausführen.",
+			"queryActions.parseSyntaxFailure": "Fehler beim Analysieren der Abfrage: {0}",
+			"queryActions.parseSyntaxSuccess": "Die Abfrage wurde erfolgreich analysiert.",
 			"queryActions.queryResultsCopySuccess": "Die Abfrage und die Ergebnisse wurden erfolgreich kopiert.",
 			"queryShortcutNoEditor": "Editor-Parameter zum Ausführen einer Tastenkombination erforderlich.",
 			"refreshIntellisenseKeyboardAction": "IntelliSense-Cache aktualisieren",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "Ausführungsplan",
 			"actualQueryPlan": "Tatsächlich",
 			"cancelQueryLabel": "Abbrechen",
-			"changeConnectionDatabaseLabel": "Verbindung ändern",
+			"changeConnectionDatabaseLabel": "Ändern",
+			"changeConnectionDatabaseTooltip": "Verbindung ändern",
 			"changeDatabase.failed": "Fehler beim Ändern der Datenbank.",
 			"changeDatabase.failedWithError": "Fehler beim Ändern der Datenbank: {0}",
 			"connectDatabaseLabel": "Verbinden",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "Geschätzter Plan",
 			"newQueryTask.newQuery": "Neue Abfrage",
 			"query.multiSelectionNotSupported": "Das Ausführen einer Abfrage wird nicht unterstützt, wenn sich der Editor im Mehrfachauswahlmodus befindet.",
-			"queryEditor.exportSqlAsNotebook": "Als Notebook exportieren",
+			"queryEditor.exportSqlAsNotebookLabel": "Zum Notebook",
+			"queryEditor.exportSqlAsNotebookTooltip": "Als Notebook exportieren",
+			"queryEditor.parse": "Analysieren",
 			"runQueryLabel": "Ausführen",
 			"selectDatabase": "Datenbank auswählen"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "Schließen",
 			"addAccountFailedCodeMessage": "{0} \r\nFehlermeldung: {1}",
 			"addAccountFailedGenericMessage": "Fehler beim Hinzufügen des Kontos. Weitere Informationen finden Sie im Azure-Kontoprotokoll.",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Konto wird hinzugefügt...",
+			"refreshAccountFailedGenericMessage": "Fehler beim Aktualisieren des Kontos. Weitere Informationen finden Sie im Azure-Kontoprotokoll.",
 			"refreshCanceled": "Die Kontoaktualisierung wurde durch den Benutzer abgebrochen.",
-			"refreshFailed": "0 \r\nFehlermeldung: 1"
+			"refreshFailed": "{0} \r\nFehlermeldung: {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Azure-Konto",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Fehler beim Erstellen der Objekt-Explorer-Sitzung.",
 			"nodeExpansionError": "Mehrere Fehler:",
-			"nodeExpansionTimeout": "Timeout bei der Knotenerweiterung für Knoten {0} für Anbieter {1}"
+			"nodeExpansionTimeout": "Timeout bei der Knotenerweiterung für Knoten {0} für Anbieter {1}",
+			"objectExplorerMissingConnectionForSession": "Timeout beim Warten auf die Erstellung der Sitzung {0} für die Verbindung „{1}\". Dies ist wahrscheinlich darauf zurückzuführen, dass der OE-Dienst keine Antwort auf createNewSession vom Anbieter für die Verbindung „{1}“",
+			"objectExplorerMissingSession": "Timeout beim Warten auf die Erstellung der Sitzung {0}. Dies ist wahrscheinlich darauf zurückzuführen, dass der OE-Dienst keine Antwort für createNewSession vom Anbieter erhalten hat.",
+			"objectExplorerSessionIdMissing": "Die vom Anbieter „{0}“ für die Verbindung „{1}“ zurückgegebene Sitzungs-ID ist ungültig."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Firewalldialogfeld abgebrochen",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Erste &&Schritte",
 			"showReleaseNotes": "\"Erste Schritte\" anzeigen"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0} (gefiltert)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "Timeout bei Objekt-Explorer Erweiterung für „{0}“"
 		}
 	}
 }

@@ -117,7 +117,7 @@ const RULES = [
     },
     // Common: vs/platform/native/common/native.ts
     {
-        target: '**/vs/platform/native/common/native.ts',
+        target: '**/{vs,sql}/platform/native/common/native.ts',
         allowedTypes: CORE_TYPES,
         disallowedTypes: [ /* Ignore native types that are defined from here */],
         disallowedDefinitions: [
@@ -213,7 +213,6 @@ let hasErrors = false;
 function checkFile(program, sourceFile, rule) {
     checkNode(sourceFile);
     function checkNode(node) {
-        var _a, _b;
         if (node.kind !== ts.SyntaxKind.Identifier) {
             return ts.forEachChild(node, checkNode); // recurse down
         }
@@ -228,10 +227,10 @@ function checkFile(program, sourceFile, rule) {
         }
         const parentSymbol = _parentSymbol;
         const text = parentSymbol.getName();
-        if ((_a = rule.allowedTypes) === null || _a === void 0 ? void 0 : _a.some(allowed => allowed === text)) {
+        if (rule.allowedTypes?.some(allowed => allowed === text)) {
             return; // override
         }
-        if ((_b = rule.disallowedTypes) === null || _b === void 0 ? void 0 : _b.some(disallowed => disallowed === text)) {
+        if (rule.disallowedTypes?.some(disallowed => disallowed === text)) {
             const { line, character } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
             console.log(`[build/lib/layersChecker.ts]: Reference to type '${text}' violates layer '${rule.target}' (${sourceFile.fileName} (${line + 1},${character + 1})`);
             hasErrors = true;
