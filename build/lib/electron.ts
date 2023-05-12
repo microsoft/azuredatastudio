@@ -92,7 +92,7 @@ function darwinBundleDocumentType(extensions: string[], icon: string, nameOrSuff
 // }
 
 export const config = {
-	version: product.electronRepository ? '22.4.8' : util.getElectronVersion(),
+	version: product.electronRepository ? '22.5.2' : util.getElectronVersion(),
 	productAppName: product.nameLong,
 	companyName: 'Microsoft Corporation',
 	copyright: 'Copyright (C) 2023 Microsoft. All rights reserved',
@@ -139,7 +139,7 @@ function getElectron(arch: string): () => NodeJS.ReadWriteStream {
 }
 
 async function main(arch = process.arch): Promise<void> {
-	const version = product.electronRepository ? '22.4.8' : util.getElectronVersion();
+	const version = product.electronRepository ? '22.5.2' : util.getElectronVersion();
 	const electronPath = path.join(root, '.build', 'electron');
 	const versionFile = path.join(electronPath, 'version');
 	const isUpToDate = fs.existsSync(versionFile) && fs.readFileSync(versionFile, 'utf8') === `${version}`;
