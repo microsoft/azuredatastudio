@@ -97,10 +97,24 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 				valueType: ServiceOptionType.string
 			}
 		];
+		let mssqlAdvancedOptions: azdata.ConnectionOption[] = [
+			{
+				name: 'trustServerCertificate',
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: 'false',
+				isIdentity: false,
+				isRequired: false,
+				specialValueType: undefined!,
+				valueType: ServiceOptionType.boolean
+			}
+		];
 		let msSQLCapabilities = {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
-			connectionOptions: connectionProvider,
+			connectionOptions: connectionProvider.concat(mssqlAdvancedOptions),
 		};
 		let pgSQLCapabilities = {
 			providerId: this.pgsqlProviderName,
