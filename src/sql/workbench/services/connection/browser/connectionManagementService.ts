@@ -533,11 +533,33 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.connectWithOptions(connection, uri, options, callbacks);
 	}
 
+
+	private duplicateEditErrorMessage(connection: interfaces.IConnectionProfile): void {
+		let groupNameBase = ConnectionProfile.displayIdSeparator + 'groupName' + ConnectionProfile.displayNameValueSeparator;
+		let connectionOptionsKey = ConnectionProfile.getDisplayOptionsKey(connection.getOptionsKey());
+		// Must get connection group name here as it may not always be initialized.
+		let connectionGroupName = (connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
+			(groupNameBase + connection.groupFullName) : (groupNameBase + '<default>');
+		this._logService.error(`Profile edit for '${connection.id}' matches an existing profile with data: '${connectionOptionsKey}'`);
+		throw new Error(nls.localize('connection.duplicateEditErrorMessage', 'Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: \n\n {0}{1}', connectionOptionsKey, connectionGroupName));
+	}
+
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
 		let isEdit = options?.params?.isEditConnection ?? false;
+
+		let matcher: interfaces.ProfileMatcher;
+		if (isEdit) {
+			matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
+
+			//Check to make sure the edits are not identical to another connection.
+			let result = await this._connectionStore.isDuplicateEdit(connection, matcher);
+			if (result) {
+				this.duplicateEditErrorMessage(connection);
+			}
+		}
 
 		if (!uri) {
 			uri = Utils.generateUri(connection);
@@ -586,10 +608,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
 				if (options.saveTheConnection || isEdit) {
-					let matcher: interfaces.ProfileMatcher;
-					if (isEdit) {
-						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
-					}
 
 					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
