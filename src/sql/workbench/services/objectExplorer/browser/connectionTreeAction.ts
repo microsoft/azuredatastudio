@@ -376,3 +376,23 @@ export class RemoveFilterAction extends Action {
 		}).send();
 	}
 }
+
+export class DeleteRecentConnectionsAction extends Action {
+	public static ID = 'registeredServers.clearRecentConnections';
+	public static LABEL = localize('registeredServers.clearRecentConnections', "Delete");
+
+	constructor(
+		id: string,
+		label: string,
+		private _connectionProfile: ConnectionProfile,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+	) {
+		super(id, label, Codicon.trash.classNames);
+	}
+
+	public override async run(): Promise<void> {
+		if (this._connectionProfile) {
+			this._connectionManagementService.clearRecentConnection(this._connectionProfile);
+		}
+	}
+}

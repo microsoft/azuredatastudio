@@ -46,6 +46,7 @@ import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserve
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -358,13 +359,16 @@ export class ConnectionDialogWidget extends Modal {
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
-			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
-			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from action provider: ${err}`));
+			this.refreshTree();
 		});
 		controller.onRecentConnectionRemoved(() => {
-			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
-			this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
+			this.refreshTree();
 		});
+
+		this.connectionManagementService.onRecentConnectionProfileDeleted((e) => {
+			this.refreshTree();
+		});
+
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
 			this._recentConnectionTree.onMouseClick(e => {
@@ -379,10 +383,24 @@ export class ConnectionDialogWidget extends Modal {
 					this.onConnectionClick(e.element, true).catch(onUnexpectedError);
 				}
 			});
+			this._recentConnectionTree.onKeyDown(e => {
+				const keyboardEvent = new StandardKeyboardEvent(e);
+				if (keyboardEvent.keyCode === KeyCode.Delete) {
+					const element = this._recentConnectionTree.getSelection()[0];
+					if (element instanceof ConnectionProfile) {
+						this.connectionManagementService.clearRecentConnection(element);
+					}
+				}
+			})
 		}
 
 		// Theme styler
 		this._register(styler.attachListStyler(this._recentConnectionTree, this._themeService));
+	}
+
+	private async refreshTree() {
+		const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
+		await this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
 	}
 
 	private createRecentConnections() {

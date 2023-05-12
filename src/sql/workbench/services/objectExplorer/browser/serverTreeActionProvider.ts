@@ -10,7 +10,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
 	DisconnectConnectionAction, EditConnectionAction,
-	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildrenAction, RemoveFilterAction
+	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildrenAction, RemoveFilterAction, DeleteRecentConnectionsAction
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -93,6 +93,14 @@ export class ServerTreeActionProvider {
 			this._logService.error(`Multiple default actions defined for node: ${nodeName}, actions: ${actions.map(a => a.id).join(', ')}`);
 		}
 		return undefined;
+	}
+
+
+	public getRecentConnectionActions(element: ConnectionProfile): IAction[] {
+		return [
+			this._instantiationService.createInstance(EditConnectionAction, EditConnectionAction.ID, EditConnectionAction.LABEL, element),
+			this._instantiationService.createInstance(DeleteRecentConnectionsAction, DeleteRecentConnectionsAction.ID, DeleteRecentConnectionsAction.LABEL, element)
+		]
 	}
 
 	/**

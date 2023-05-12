@@ -150,13 +150,19 @@ class ConnectionProfileTemplate extends Disposable {
 			matches: createMatches(filterData)
 		});
 		this._root.title = labelText;
-
-		const tree = this._objectExplorerService.getServerTreeView().tree;
 		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
-		const actions = actionProvider.getActions(tree, element, true);
-		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
-		this._actionBar.clear();
-		this._actionBar.pushAction(actions, { icon: true, label: false });
+		if (!this._isCompact) {
+			const tree = this._objectExplorerService.getServerTreeView().tree;
+			const actions = actionProvider.getActions(tree, element, true);
+			this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
+			this._actionBar.clear();
+			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			const actions = actionProvider.getRecentConnectionActions(element);
+			this._actionBar.context = undefined;
+			this._actionBar.clear();
+			this._actionBar.pushAction(actions, { icon: true, label: false });
+		}
 	}
 }
 
