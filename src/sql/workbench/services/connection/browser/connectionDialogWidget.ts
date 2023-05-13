@@ -358,32 +358,33 @@ export class ConnectionDialogWidget extends Modal {
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);
-		actionProvider.onRecentConnectionRemoved(() => {
-			this.refreshTree();
-		});
-		controller.onRecentConnectionRemoved(() => {
-			this.refreshTree();
-		});
+		this._register(actionProvider.onRecentConnectionRemoved(async () => {
+			await this.refreshTree();
+		}));
+		this._register(controller.onRecentConnectionRemoved(async () => {
+			await this.refreshTree();
+		}));
 
-		this.connectionManagementService.onRecentConnectionProfileDeleted((e) => {
-			this.refreshTree();
-		});
+		this._register(this.connectionManagementService.onRecentConnectionProfileDeleted(async (e) => {
+			await this.refreshTree();
+		}));
 
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
-			this._recentConnectionTree.onMouseClick(e => {
+			this._register(this._recentConnectionTree.onMouseClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this._connectionSource = 'recent';
 					this.onConnectionClick(e.element, false).catch(onUnexpectedError);
 				}
-			});
-			this._recentConnectionTree.onMouseDblClick(e => {
+			}));
+
+			this._register(this._recentConnectionTree.onMouseDblClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this._connectionSource = 'recent';
 					this.onConnectionClick(e.element, true).catch(onUnexpectedError);
 				}
-			});
-			this._recentConnectionTree.onKeyDown(e => {
+			}));
+			this._register(this._recentConnectionTree.onKeyDown(e => {
 				const keyboardEvent = new StandardKeyboardEvent(e);
 				if (keyboardEvent.keyCode === KeyCode.Delete) {
 					const element = this._recentConnectionTree.getSelection()[0];
@@ -391,7 +392,7 @@ export class ConnectionDialogWidget extends Modal {
 						this.connectionManagementService.clearRecentConnection(element);
 					}
 				}
-			})
+			}));
 		}
 
 		// Theme styler
@@ -399,8 +400,12 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private async refreshTree() {
-		const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
-		await this.open(recentConnections.length > 0).catch(err => this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`));
+		try {
+			const recentConnections: ConnectionProfile[] = this.connectionManagementService.getRecentConnections();
+			await this.open(recentConnections.length > 0);
+		} catch (err) {
+			this.logService.error(`Unexpected error opening connection widget after a recent connection was removed from controller : ${err}`);
+		}
 	}
 
 	private createRecentConnections() {
