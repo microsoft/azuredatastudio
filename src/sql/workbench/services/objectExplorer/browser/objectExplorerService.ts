@@ -56,6 +56,7 @@ export interface IServerTreeView {
 	layout(size: number): void;
 	showFilteredTree(view: ServerTreeViewView): void;
 	filterElementChildren(node: TreeNode): Promise<void>;
+	getActionContext(element: ServerTreeElement): any;
 	view: ServerTreeViewView;
 }
 
