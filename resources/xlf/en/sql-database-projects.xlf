@@ -1018,7 +1018,7 @@
       <source xml:lang="en">Unable to find SQLCMD variable '{0}'</source>
     </trans-unit>
     <trans-unit id="unableToPerformAction">
-      <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
+      <source xml:lang="en">Unable to locate '{0}' target: '{1}'. {2}</source>
     </trans-unit>
     <trans-unit id="unexpectedProjectContext">
       <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
