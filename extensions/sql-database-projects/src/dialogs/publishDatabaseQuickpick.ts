@@ -215,7 +215,6 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 		connectionUri: connectionUri || '',
 		sqlCmdVariables: sqlCmdVariables,
 		deploymentOptions: publishProfile?.options ?? await getDefaultPublishDeploymentOptions(project),
-		profileUsed: !!publishProfile,
 		publishProfileUri: publishProfileUri
 	};
 	return settings;

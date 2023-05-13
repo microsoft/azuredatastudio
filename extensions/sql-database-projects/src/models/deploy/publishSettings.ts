@@ -19,7 +19,6 @@ export interface ISqlProjectPublishSettings {
 	connectionUri: string;
 	sqlCmdVariables?: Map<string, string>;
 	deploymentOptions?: DeploymentOptions;
-	profileUsed?: boolean;
 	publishProfileUri?: vscode.Uri;
 }
 

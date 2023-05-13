@@ -537,7 +537,7 @@ export class ProjectsController {
 		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
-		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		telemetryProps.profileUsed = (settings.publishProfileUri !== undefined ? true : false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getTime();
 		const currentPublishTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;

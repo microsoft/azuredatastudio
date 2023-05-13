@@ -286,15 +286,12 @@ function getSqlCmdVariables(settings: ISqlProjectPublishSettings | ISqlDbDeployP
 function setProfileParameters(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined, profilePath: vscode.Uri) {
 	if (settings) {
 		if (isISqlProjectPublishSettings(settings)) {
-			settings.profileUsed = true;
 			settings.publishProfileUri = profilePath;
 		} else if (isISqlDbDeployProfile(settings)) {
 			if (settings.deploySettings) {
-				settings.deploySettings.profileUsed = true;
 				settings.deploySettings.publishProfileUri = profilePath;
 			}
 		} else if (isIPublishToDockerSettings(settings)) {
-			settings.sqlProjectPublishSettings.profileUsed = true;
 			settings.sqlProjectPublishSettings.publishProfileUri = profilePath;
 		}
 	}

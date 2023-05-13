@@ -56,7 +56,6 @@ export class PublishDatabaseDialog {
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Map<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
-	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
@@ -240,7 +239,6 @@ export class PublishDatabaseDialog {
 				connectionUri: await this.getConnectionUri(),
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
-				profileUsed: this.profileUsed,
 				publishProfileUri: this.publishProfileUri
 			};
 
@@ -274,7 +272,6 @@ export class PublishDatabaseDialog {
 					connectionUri: '',
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
-					profileUsed: this.profileUsed,
 					publishProfileUri: this.publishProfileUri
 				}
 			};
@@ -296,7 +293,6 @@ export class PublishDatabaseDialog {
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed,
 			publishProfileUri: this.publishProfileUri
 		};
 
@@ -834,7 +830,6 @@ export class PublishDatabaseDialog {
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
 				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 
-				this.profileUsed = true;
 				this.publishProfileUri = fileUris[0];
 			}
 		});
@@ -868,7 +863,6 @@ export class PublishDatabaseDialog {
 				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileSaved);
 			}
 
-			this.profileUsed = true;
 			this.publishProfileUri = filePath;
 
 			await this.project.addNoneItem(path.relative(this.project.projectFolderPath, filePath.fsPath));
