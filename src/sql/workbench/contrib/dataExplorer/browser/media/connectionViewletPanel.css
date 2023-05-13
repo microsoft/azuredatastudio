@@ -286,3 +286,24 @@
 	display: block;
 }
 
+.server-explorer-viewlet .monaco-list .async-server-group-container {
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.server-explorer-viewlet .monaco-list:focus .monaco-list-row.selected .async-server-group-container {
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+}
+
+.server-explorer-viewlet .monaco-list .monaco-tl-contents.async-server-group {
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-left-width: 10px;
+	border-left-style: solid;
+	box-sizing: border-box;
+}
