@@ -96,9 +96,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider.azure.resource" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider.azure.resou" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) rce.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -704,6 +704,24 @@
           <Val><![CDATA[Failed to get subscriptions for account {0}. Please refresh the account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[无法获取帐户 {0} 的订阅。请刷新帐户。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法识别的提供程序资源:{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProviderType" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource type: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法识别的提供程序资源类型:{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

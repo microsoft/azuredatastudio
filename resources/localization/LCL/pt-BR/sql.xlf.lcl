@@ -1683,6 +1683,42 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.greaterThanOrEqualsSel" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ectBox" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Greater Than Or Equals]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Maior Que ou Igual]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.lessThanOrEqualsSelect" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Box" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Less Than Or Equals]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Menor ou Igual]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.propertyNameColumnHead" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) er" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Property]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Propriedade]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/services/resourceProvider/browser/firewallRuleDialogController.firewallDialog.addAccountErrorTi" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) tle" ItemType="0" PsrId="308" Leaf="true">
@@ -6431,6 +6467,15 @@
           <Val><![CDATA[Don't Show Again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Não Mostrar Novamente]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/commandLine/electron-browser/commandLine.commandline.propertiesFormatError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[As propriedades de conexão avançadas não puderam ser analisadas como JSON, ocorreu um erro: {0} Valor das propriedades recebidas: {1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12285,6 +12330,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.objectExplorer.filterDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[(Preview) Filter Settings: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Versão prévia) Configurações de Filtro: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.objectExplorer.nodePath" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Node Path: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Caminho do Nó: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.serverTree.newConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Connection]]></Val>
@@ -12353,15 +12416,6 @@
           <Val><![CDATA[Server Tree]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Árvore do Servidor]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution.serverTree.nodeExpansionTimeout" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The timeout in seconds for expanding a node in the Servers view]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O tempo limite em segundos para expandir um nó na visualização Servidores]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13755,6 +13809,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/queryEditor.queryActions.selectDatabase.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Database:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Base de dados:]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryEditor.queryEditor.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query Editor]]></Val>
@@ -14527,6 +14590,33 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Important Update]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Atualização Importante]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[As conexões que usam a autenticação do Azure Active Directory agora recuperam as informações do locatário do servidor durante o login. A entrada 'Azure AD Tenant' não precisa mais ser fornecida ao se conectar a instâncias SQL do Azure.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.moreInfoLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mais informações]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Important Update]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -16035,6 +16125,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.duplicateEditErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: ]D;]A;]D;]A; {0}{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não é possível salvar o perfil, a conexão selecionada corresponde a um perfil existente com as mesmas informações do servidor no mesmo grupo: ]D;]A;]D;]A; {0}{1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.extensionNotInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The extension '{0}' is required in order to connect to this resource. Do you want to install it?]]></Val>
@@ -16214,6 +16313,33 @@
           <Val><![CDATA[Connection string]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Cadeia de conexão]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.inputType.connectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connection String]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cadeia de Conexão]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.inputType.parameters" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Parameters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Parâmetros]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.connectionWidget.inputTypeLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Input type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipo de entrada]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17658,11 +17784,263 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.objectExplorer.filterChildren" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Filter (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Filtro (Versão prévia)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.objectExplorer.removeFilter" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Remove Filter]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Remover Filtro]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.showAllConnections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show All Connections]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Mostrar Todas as Conexões]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorDateRange" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start date cannot be greater than end date.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A data de início não pode ser posterior à data de término.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorEndDate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[End date is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A data final não é especificada.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorEndNumber" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[End number is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O número final não é especificado.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorNumberRange" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start number cannot be greater than end number.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O número inicial não pode ser maior que o número final.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorStartDate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start date is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A data de início não é especificada.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorStartNumber" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start number is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O número inicial não é especificado.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.andSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[And]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[E]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.betweenSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Between]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Entre]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.cancelButtonText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cancel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cancelar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.clearAllButtonText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Clear All]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Limpar Tudo]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.clearColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Clear]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Claro]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.containsSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Contains]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Contém]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.equalsSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Equals]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[É igual a]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.falseSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[False]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[False]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.greaterThanSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Greater Than]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Maior Que]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.isNotNullSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Is Not Null]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não é Nulo]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.isNullSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Is Null]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[É Nulo]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.lessThanSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Less Than]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Menor Que]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.nodePath" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Node Path: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Caminho do Nó: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.notBetweenSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Not Between]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não está Entre]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.notContainsSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Not Contains]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não Contém]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.notEqualsSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Not Equals]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Diferente]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.okButtonText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[OK]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[OK]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.operatorColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Operator]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Operador]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.trueSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[True]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[True]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.valueColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Value]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Valor]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17681,33 +18059,6 @@
           <Val><![CDATA[Multiple errors:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Múltiplos erros:]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.nodeExpansionTimeout" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Node expansion timed out for node {0} for providers {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A expansão do nó expirou para o nó {0} para provedores{1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.objectExplorerMissingConnectionForSession" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tempo limite atingido aguardando a criação da sessão {0} para a conexão "{1}". Isso provavelmente aconteceu porque o serviço OE não recebeu uma resposta para createNewSession do provedor para conexão "{1}"]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/objectExplorerService.objectExplorerMissingSession" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tempo limite atingido aguardando a criação da sessão {0}. Isso provavelmente aconteceu porque o serviço OE não recebeu uma resposta para createNewSession do provedor.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17784,11 +18135,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils.objectExplorerTimeout" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils.connectionFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Object Explorer expansion timed out for '{0}']]></Val>
+          <Val><![CDATA[Failed to connect, please try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Pesquisador de Objetos expansão atingiu o tempo limite para '{0}']]></Val>
+            <Val><![CDATA[Falha ao conectar, tente novamente.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
