@@ -96,7 +96,7 @@ export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, Objec
 
 		this.loginDropdown = this.createDropdown(localizedConstants.LoginText, async (newValue) => {
 			this.objectInfo.loginName = newValue;
-		}, this.viewInfo.logins, this.objectInfo.loginName, this.options.isNewObject);
+		}, this.options.isNewObject ? this.viewInfo.logins : [this.objectInfo.loginName], this.objectInfo.loginName, this.options.isNewObject);
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
 
 		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, async (newValue) => {
@@ -158,6 +158,11 @@ export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, Objec
 				this.addItem(this.generalSection, this.passwordContainer);
 				this.addItem(this.generalSection, this.confirmPasswordContainer);
 				this.addItem(this.formContainer, this.advancedSection);
+				break;
+			case ObjectManagement.UserType.WindowsUser:
+				if (this.objectInfo.loginName) {
+					this.addItem(this.generalSection, this.loginContainer);
+				}
 				break;
 			default:
 				break;
