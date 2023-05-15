@@ -16,7 +16,8 @@
     "Programming Languages"
   ],
   "enabledApiProposals": [
-    "documentPaste"
+    "documentPaste",
+    "notebookEditor"
   ],
   "activationEvents": [
     "onLanguage:markdown",

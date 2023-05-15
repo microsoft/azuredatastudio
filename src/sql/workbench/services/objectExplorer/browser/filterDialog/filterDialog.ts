@@ -290,11 +290,12 @@ export class FilterDialog extends Modal {
 			this._appliedFilters = [];
 		}
 		this._properties.forEach((f, i) => {
-			const appliedFilter = this._appliedFilters.find(filter => filter.displayName === f.displayName);
+			const appliedFilter = this._appliedFilters.find(filter => filter.name === f.name);
 			const filterOperators = this.getOperatorsForType(f.type);
 			const row: Slick.SlickData = {
 				property: {
-					value: f.displayName
+					value: f.displayName,
+					id: f.name
 				},
 				operator: {
 					value: appliedFilter ? this.getFilterOperatorString(appliedFilter.operator) : filterOperators[0],
@@ -312,7 +313,8 @@ export class FilterDialog extends Modal {
 				row.value.value = this.getStringValueForFilter(f, appliedFilter.value[0]);
 				const andRow: Slick.SlickData = {
 					property: {
-						value: ''
+						value: '',
+						id: ''
 					},
 					operator: {
 						value: AND_SELECT_BOX,
@@ -436,7 +438,7 @@ export class FilterDialog extends Modal {
 			const row = tableData[i];
 			let filterProperty = this._properties[row.filterPropertyIndex]
 			let filter: azdata.NodeFilter = {
-				displayName: row.property.value,
+				name: row.property.id,
 				operator: this.getFilterOperatorEnum(row.operator.value),
 				value: this.getFilterValue(filterProperty.type, row.value.value, filterProperty),
 			};

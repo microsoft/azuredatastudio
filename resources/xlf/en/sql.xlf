@@ -1642,6 +1642,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="commandline.propertiesFormatError">
+      <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
+    </trans-unit>
     <trans-unit id="confirmConnect">
       <source xml:lang="en">Are you sure you want to connect?</source>
     </trans-unit>
@@ -4176,6 +4179,12 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorer.filterDialogTitle">
+      <source xml:lang="en">(Preview) Filter Settings: {0}</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.nodePath">
+      <source xml:lang="en">Node Path: {0}</source>
+    </trans-unit>
     <trans-unit id="serverTree.newConnection">
       <source xml:lang="en">New Connection</source>
     </trans-unit>
@@ -4201,9 +4210,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverTree.configuration.title">
       <source xml:lang="en">Server Tree</source>
-    </trans-unit>
-    <trans-unit id="serverTree.nodeExpansionTimeout">
-      <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
     </trans-unit>
     <trans-unit id="serverTree.useAsyncServerTree">
       <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
@@ -4685,6 +4691,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/queryEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryActions.selectDatabase.label">
+      <source xml:lang="en">Database:</source>
+    </trans-unit>
     <trans-unit id="queryEditor.name">
       <source xml:lang="en">Query Editor</source>
     </trans-unit>
@@ -5006,6 +5015,17 @@ Error: {1}</source>
       <source xml:lang="en">More information</source>
     </trans-unit>
     <trans-unit id="notifyEncryption.title">
+      <source xml:lang="en">Important Update</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notifyHiddenTenant.message">
+      <source xml:lang="en">Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.</source>
+    </trans-unit>
+    <trans-unit id="notifyHiddenTenant.moreInfoLink">
+      <source xml:lang="en">More information</source>
+    </trans-unit>
+    <trans-unit id="notifyHiddenTenant.title">
       <source xml:lang="en">Important Update</source>
     </trans-unit>
 </body></file>
@@ -5583,6 +5603,11 @@ Error Message: {1}</source>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
     </trans-unit>
+    <trans-unit id="connection.duplicateEditErrorMessage">
+      <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
+
+ {0}{1}</source>
+    </trans-unit>
     <trans-unit id="connection.extensionNotInstalled">
       <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
     </trans-unit>
@@ -5656,6 +5681,15 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="connectionWidget.connectionString">
       <source xml:lang="en">Connection string</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputType.connectionString">
+      <source xml:lang="en">Connection String</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputType.parameters">
+      <source xml:lang="en">Parameters</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputTypeLabel">
+      <source xml:lang="en">Input type</source>
     </trans-unit>
     <trans-unit id="connectionWidget.invalidAzureAccount">
       <source xml:lang="en">You must select an account</source>
@@ -6223,8 +6257,103 @@ Error Message: {1}</source>
     <trans-unit id="deleteConnectionGroupConfirmation">
       <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
     </trans-unit>
+    <trans-unit id="objectExplorer.filterChildren">
+      <source xml:lang="en">Filter (Preview)</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.removeFilter">
+      <source xml:lang="en">Remove Filter</source>
+    </trans-unit>
     <trans-unit id="showAllConnections">
       <source xml:lang="en">Show All Connections</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filterDialog.errorDateRange">
+      <source xml:lang="en">Start date cannot be greater than end date.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorEndDate">
+      <source xml:lang="en">End date is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorEndNumber">
+      <source xml:lang="en">End number is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorNumberRange">
+      <source xml:lang="en">Start number cannot be greater than end number.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorStartDate">
+      <source xml:lang="en">Start date is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorStartNumber">
+      <source xml:lang="en">Start number is not specified.</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.andSelectBox">
+      <source xml:lang="en">And</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.betweenSelectBox">
+      <source xml:lang="en">Between</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.cancelButtonText">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.clearAllButtonText">
+      <source xml:lang="en">Clear All</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.clearColumnHeader">
+      <source xml:lang="en">Clear</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.containsSelectBox">
+      <source xml:lang="en">Contains</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.equalsSelectBox">
+      <source xml:lang="en">Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.falseSelectBox">
+      <source xml:lang="en">False</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.greaterThanOrEqualsSelectBox">
+      <source xml:lang="en">Greater Than Or Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.greaterThanSelectBox">
+      <source xml:lang="en">Greater Than</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.isNotNullSelectBox">
+      <source xml:lang="en">Is Not Null</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.isNullSelectBox">
+      <source xml:lang="en">Is Null</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
+      <source xml:lang="en">Less Than Or Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.lessThanSelectBox">
+      <source xml:lang="en">Less Than</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.nodePath">
+      <source xml:lang="en">Node Path: {0}</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notBetweenSelectBox">
+      <source xml:lang="en">Not Between</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notContainsSelectBox">
+      <source xml:lang="en">Not Contains</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notEqualsSelectBox">
+      <source xml:lang="en">Not Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.okButtonText">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.operatorColumnHeader">
+      <source xml:lang="en">Operator</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.propertyNameColumnHeader">
+      <source xml:lang="en">Property</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.trueSelectBox">
+      <source xml:lang="en">True</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.valueColumnHeader">
+      <source xml:lang="en">Value</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerService" source-language="en" datatype="plaintext"><body>
@@ -6233,15 +6362,6 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="nodeExpansionError">
       <source xml:lang="en">Multiple errors:</source>
-    </trans-unit>
-    <trans-unit id="nodeExpansionTimeout">
-      <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
-    </trans-unit>
-    <trans-unit id="objectExplorerMissingConnectionForSession">
-      <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
-    </trans-unit>
-    <trans-unit id="objectExplorerMissingSession">
-      <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
     </trans-unit>
     <trans-unit id="objectExplorerSessionIdMissing">
       <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
@@ -6275,8 +6395,8 @@ Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="objectExplorerTimeout">
-      <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
+    <trans-unit id="connectionFailedError">
+      <source xml:lang="en">Failed to connect, please try again.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/profiler/browser/profilerColumnEditorDialog" source-language="en" datatype="plaintext"><body>

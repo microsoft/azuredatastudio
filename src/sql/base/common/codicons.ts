@@ -13,5 +13,6 @@ export const enum SqlIconId {
 	addServerGroupAction = 'add-server-group-action',
 	addServerAction = 'add-server-action',
 	activeConnectionsAction = 'active-connections-action',
-	serverPage = 'server-page'
+	serverPage = 'server-page',
+	removeFilter = 'remove-filter-action'
 }

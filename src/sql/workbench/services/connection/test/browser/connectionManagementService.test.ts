@@ -1013,6 +1013,11 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			//In a real scenario this would be false as it would match the first instance and not find a duplicate.
+			return Promise.resolve(false);
+		});
+
 		await connect(uri1, options, true, profile);
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
@@ -1047,6 +1052,9 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
+		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we check the test uris instead here.
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(uri1 === uri2));
+
 		await connect(uri1, options, true, profile);
 		options.params.isEditConnection = true;
 		await connect(uri2, options, true, profile);
@@ -1054,6 +1062,47 @@ suite('SQL ConnectionManagementService tests', () => {
 		let uri2info = connectionManagementService.getConnectionInfo(uri2);
 		assert.strictEqual(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
 	});
+
+	test('Edit Connection - Connecting with an already connected profile via edit should throw an error', async () => {
+		let uri1 = 'test_uri1';
+		let profile = Object.assign({}, connectionProfile);
+		profile.id = '0451';
+		let options: IConnectionCompletionOptions = {
+			params: {
+				connectionType: ConnectionType.editor,
+				input: {
+					onConnectSuccess: undefined,
+					onConnectReject: undefined,
+					onConnectStart: undefined,
+					onDisconnect: undefined,
+					onConnectCanceled: undefined,
+					uri: uri1
+				},
+				queryRange: undefined,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				isEditConnection: true
+			},
+			saveTheConnection: true,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+
+		let originalProfileKey = '';
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
+			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
+			let result = newProfile.getOptionsKey() === originalProfileKey;
+			return Promise.resolve(result)
+		});
+
+		await connect(uri1, options, true, profile);
+		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
+		originalProfileKey = originalProfile.getOptionsKey();
+		let newProfile = Object.assign({}, connectionProfile);
+		options.params.isEditConnection = true;
+		await assert.rejects(async () => await connect(uri1, options, true, newProfile));
+	});
+
 
 
 	test('failed firewall rule should open the firewall rule dialog', async () => {
