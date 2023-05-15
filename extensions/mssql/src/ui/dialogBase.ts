@@ -11,13 +11,13 @@ import * as uiLoc from '../ui/localizedConstants';
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
-export const DefaultMaxTableHeight = 400;
+export const DefaultMaxTableRowCount = 10;
 export const DefaultMinTableRowCount = 1;
-export const TableRowHeight = 25;
-export const TableColumnHeaderHeight = 30;
+const TableRowHeight = 25;
+const TableColumnHeaderHeight = 30;
 
-export function getTableHeight(rowCount: number, minRowCount: number = DefaultMinTableRowCount, maxHeight: number = DefaultMaxTableHeight): number {
-	return Math.min(Math.max(rowCount, minRowCount) * TableRowHeight + TableColumnHeaderHeight, maxHeight);
+export function getTableHeight(rowCount: number, minRowCount: number = DefaultMinTableRowCount, maxRowCount: number = DefaultMaxTableRowCount): number {
+	return Math.min(Math.max(rowCount, minRowCount), maxRowCount) * TableRowHeight + TableColumnHeaderHeight;
 }
 
 export type TableListItemEnabledStateGetter<T> = (item: T) => boolean;
@@ -168,7 +168,7 @@ export abstract class DialogBase<DialogResult> {
 		columnNames: string[],
 		allItems: T[],
 		selectedItems: T[],
-		maxHeight: number = DefaultMaxTableHeight,
+		maxRowCount: number = DefaultMaxTableRowCount,
 		enabledStateGetter: TableListItemEnabledStateGetter<T> = DefaultTableListItemEnabledStateGetter,
 		rowValueGetter: TableListItemValueGetter<T> = DefaultTableListItemValueGetter,
 		itemComparer: TableListItemComparer<T> = DefaultTableListItemComparer): azdata.TableComponent {
@@ -179,7 +179,7 @@ export abstract class DialogBase<DialogResult> {
 				data: data,
 				columns: [
 					{
-						value: uiLoc.SelectedText,
+						value: uiLoc.SelectText,
 						type: azdata.ColumnType.checkBox,
 						options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
 					}, ...columnNames.map(name => {
@@ -187,7 +187,7 @@ export abstract class DialogBase<DialogResult> {
 					})
 				],
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length, DefaultMinTableRowCount, maxHeight)
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
 			}
 		).component();
 		this.disposables.push(table.onCellAction!((arg: azdata.ICheckboxCellActionEventArgs) => {
@@ -203,9 +203,11 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected setTableData(table: azdata.TableComponent, data: any[][], maxHeight: number = DefaultMaxTableHeight) {
-		table.data = data;
-		table.height = getTableHeight(data.length, DefaultMinTableRowCount, maxHeight);
+	protected async setTableData(table: azdata.TableComponent, data: any[][], maxRowCount: number = DefaultMaxTableRowCount) {
+		await table.updateProperties({
+			data: data,
+			height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
+		});
 	}
 
 	protected getDataForTableList<T>(
@@ -221,14 +223,14 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
-	protected createTable(ariaLabel: string, columns: azdata.TableColumn[], data: any[][], maxHeight: number = DefaultMaxTableHeight): azdata.TableComponent {
+	protected createTable(ariaLabel: string, columns: string[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,
 				data: data,
 				columns: columns,
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length, DefaultMinTableRowCount, maxHeight)
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
 			}
 		).component();
 		return table;
@@ -238,7 +240,8 @@ export abstract class DialogBase<DialogResult> {
 		let addButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
 		const updateButtons = () => {
-			removeButton.enabled = table.selectedRows.length > 0;
+			this.onFormFieldChange();
+			removeButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 		}
 		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
 			await addHandler();
@@ -246,6 +249,9 @@ export abstract class DialogBase<DialogResult> {
 		});
 		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
 			await removeHandler();
+			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
+				table.selectedRows = [table.data.length - 1];
+			}
 			updateButtons();
 		}, false);
 		this.disposables.push(table.onRowSelected(() => {
@@ -308,12 +314,12 @@ export abstract class DialogBase<DialogResult> {
 		}
 	}
 
-	protected addItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component, index?: number): void {
+	protected addItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component, itemLayout?: azdata.FlexItemLayout, index?: number): void {
 		if (container.items.indexOf(item) === -1) {
 			if (index === undefined) {
-				container.addItem(item);
+				container.addItem(item, itemLayout);
 			} else {
-				container.insertItem(item, index);
+				container.insertItem(item, index, itemLayout);
 			}
 		}
 	}
@@ -327,6 +333,10 @@ export abstract class DialogBase<DialogResult> {
 	private createFormContainer(items: azdata.Component[]): azdata.DivContainer {
 		return this.modelView.modelBuilder.divContainer().withLayout({ width: 'calc(100% - 20px)', height: 'calc(100% - 20px)' }).withProps({
 			CSSStyles: { 'padding': '10px' }
-		}).withItems(items, { CSSStyles: { 'margin-block-end': '10px' } }).component();
+		}).withItems(items, this.getSectionItemLayout()).component();
+	}
+
+	protected getSectionItemLayout(): azdata.FlexItemLayout {
+		return { CSSStyles: { 'margin-block-end': '5px' } };
 	}
 }

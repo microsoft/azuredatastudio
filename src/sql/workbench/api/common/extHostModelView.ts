@@ -1503,6 +1503,10 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	public appendData(v: any[][]): Thenable<void> {
 		return this.doAction(ModelViewAction.AppendData, v);
 	}
+
+	public setActiveCell(row: number, column: number): void {
+		this.doAction(ModelViewAction.SetActiveCell, row, column);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {
