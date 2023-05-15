@@ -275,7 +275,7 @@ async function validateVersion(galleryFilePath, extensionName, extensionJson, ex
         throw new Error(`${galleryFilePath} - ${extensionName} - Invalid version files\n${JSON.stringify(extensionVersionJson)}`)
     }
 
-    validateHasRequiredAssets(galleryFilePath, extensionName, extensionVersionJson.files);
+    await validateHasRequiredAssets(galleryFilePath, extensionName, extensionVersionJson.files);
 
     for (const file of extensionVersionJson.files) {
         await validateExtensionFile(galleryFilePath, extensionName, extensionJson, file);
@@ -306,6 +306,40 @@ function parseVersion(galleryFilePath, extensionName, version) {
     return parsedVersion;
 }
 
+// Simple regex to search for license header within an extensions' README
+const licenseHeaderRegex = new RegExp('#+\\s*License', 'm')
+
+// List of extensions that don't have the expected license header, but as they are 3rd party
+// will ignore them for now. All future extensions will be expected to have a proper license
+// header in their readme.
+const extensionsToSkipLicenseHeaderCheck = [
+    'mssql-db-insights',
+    'alwayson-insights',
+    'sqlops-combine-scripts',
+    'newdatabase',
+    'mssql-instance-insights',
+    'sp_executesqlToSQL',
+    'tsqlchecker',
+    'ADS-add-columns',
+    'sql-server-diagnostic-book',
+    'sql-prompt',
+    'sql-search',
+    'simple-data-scripter',
+    'delete-database',
+    'db-snapshot-creator',
+    'poor-sql-formatter',
+    'vscode-wakatime',
+    'extra-sql-script-as',
+    'column-aligner-ads',
+    'mark carrington.azuredatastudio-sql4cds',
+    'azuredatastudio-select-top-n',
+    'schema-visualization',
+    'plan-explorer',
+    // TODO: These should have licenses, following up with team
+    'azuredatastudio-oracle',
+    'net-6-runtime'
+];
+
 /**
  * Validates that an extension version has the expected files for displaying in the gallery.
  * There are some existing 3rd party extensions that don't have all the files, but that's ok for now.
@@ -314,7 +348,7 @@ function parseVersion(galleryFilePath, extensionName, version) {
  * @param {string} extensionName
  * @param {IRawGalleryExtensionFile[]} filesJson
  */
-function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
+async function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
     // VSIXPackage or DownloadPage
     const vsixFile = filesJson.find(file => file.assetType === MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE);
     const downloadPageFile = filesJson.find(file => file.assetType === MICROSOFT_SQLOPS_DOWNLOADPAGE);
@@ -335,6 +369,20 @@ function validateHasRequiredAssets(galleryFilePath, extensionName, filesJson) {
     const detailsFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Content.Details');
     if (!detailsFile) {
         throw new Error(`${galleryFilePath} - ${extensionName} - Must have a details file (README)`);
+    }
+
+    // For any non-skipped extensions check that they have a license header in their README. This is a very simple check
+    // (we don't actually check that the content is accurate) - but is enough for now.
+    let readmeBody;
+    if (!extensionsToSkipLicenseHeaderCheck.includes(extensionName)) {
+        try {
+            readmeBody = (await got.get(detailsFile.source)).body;
+        } catch (err) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - Error checking README for license header. ${err}`);
+        }
+        if (!licenseHeaderRegex.test(readmeBody)) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - README is missing License header. Extensions must contain a License section with details about the license for this extension.`);
+        }
     }
 
     // Manifest
