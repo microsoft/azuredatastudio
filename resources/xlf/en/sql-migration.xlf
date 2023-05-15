@@ -2260,6 +2260,12 @@ For improved performance and high availability, you can register additional node
     <trans-unit id="sql.migration.storageAccount.warning.one">
       <source xml:lang="en">Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.storageAccount.warning.vm.many">
+      <source xml:lang="en">Target server '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target server is whitelisted on the storage account.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.storageAccount.warning.vm.one">
+      <source xml:lang="en">Target server '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target server is whitelisted on the storage accounts.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.subscription">
       <source xml:lang="en">Subscription</source>
     </trans-unit>

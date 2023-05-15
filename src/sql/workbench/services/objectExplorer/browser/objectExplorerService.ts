@@ -56,6 +56,7 @@ export interface IServerTreeView {
 	layout(size: number): void;
 	showFilteredTree(view: ServerTreeViewView): void;
 	filterElementChildren(node: TreeNode): Promise<void>;
+	getActionContext(element: ServerTreeElement): any;
 	view: ServerTreeViewView;
 }
 
@@ -748,7 +749,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			}
 			const children = expandResult.nodes.map(node => {
-				let treeNode;
+				let treeNode: TreeNode | undefined;
 				const cacheKey = this.getTreeNodeCacheKey(node);
 				// In case of refresh, we want to update the existing node in the cache
 				if (!refresh && sessionTreeNodeCache.has(cacheKey)) {
@@ -760,10 +761,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 				const filterCacheKey = this.getTreeNodeCacheKey(treeNode);
 				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
-				// Making sure we retain the filters for the node.
-				if (sessionFilterCache?.has(filterCacheKey)) {
-					treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
+				// If we get the node without any filter properties, we want to clear the filters for the node.
+				if (treeNode?.filterProperties?.length > 0) {
+					// Making sure we retain the filters for the node.
+					if (sessionFilterCache?.has(filterCacheKey)) {
+						treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
+					} else {
+						treeNode.filters = [];
+					}
 				} else {
+					sessionFilterCache.delete(filterCacheKey);
 					treeNode.filters = [];
 				}
 				return treeNode;

@@ -778,4 +778,72 @@ suite('ConnectionConfig', () => {
 			assert.strictEqual(editGroups.length, testGroups.length);
 		}
 	});
+
+	test('isDuplicateEdit should return true if an edit profile matches an existing profile', async () => {
+		let originalProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			getOptionsKey: () => { return 'connectionId'; },
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let changedProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			getOptionsKey: () => { return 'connectionId'; },
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			getOptionsKey: () => { return 'connectionId'; },
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'server3',
+			connectionName: undefined!
+		});
+
+		let _testConnections = [...deepClone(testConnections), existingProfile, originalProfile];
+
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
+
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changedProfile);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+
+		let matcher = (a: IConnectionProfile, b: IConnectionProfile) => a.id === originalProfile.id;
+		let result = await config.isDuplicateEdit(connectionProfile, matcher);
+
+		assert(result, 'Matcher did not find a match for identical edit');
+	});
 });
