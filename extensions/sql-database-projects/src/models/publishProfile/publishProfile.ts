@@ -192,6 +192,11 @@ export async function promptForSavingProfile(project: Project, settings: ISqlPro
 	}
 }
 
+/**
+ * Function to confirm the Publish to existing server workflow
+ * @param settings
+ * @returns true if the settings is of type ISqlProjectPublishSettings
+ */
 function isISqlProjectPublishSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlProjectPublishSettings {
 	if ((settings as ISqlProjectPublishSettings).connectionUri) {
 		return true
@@ -199,6 +204,11 @@ function isISqlProjectPublishSettings(settings: ISqlProjectPublishSettings | ISq
 	return false
 }
 
+/**
+ * Function to confirm the Publish to New Azure server workflow
+ * @param settings
+ * @returns true if the settings is of type ISqlDbDeployProfile
+ */
 function isISqlDbDeployProfile(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is ISqlDbDeployProfile {
 	if ((settings as ISqlDbDeployProfile).deploySettings) {
 		return true
@@ -206,6 +216,11 @@ function isISqlDbDeployProfile(settings: ISqlProjectPublishSettings | ISqlDbDepl
 	return false
 }
 
+/**
+ * Function to confirm the Publish to Docker workflow
+ * @param settings
+ * @returns true if the settings is of type IPublishToDockerSettings
+ */
 function isIPublishToDockerSettings(settings: ISqlProjectPublishSettings | ISqlDbDeployProfile | IPublishToDockerSettings | undefined): settings is IPublishToDockerSettings {
 	if ((settings as IPublishToDockerSettings).dockerSettings) {
 		return true
