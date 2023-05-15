@@ -1688,6 +1688,9 @@
         <Item ItemId=";(...) ectBox" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Greater Than Or Equals]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[大於或等於]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1697,6 +1700,9 @@
         <Item ItemId=";(...) Box" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Less Than Or Equals]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[小於或等於]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -6468,6 +6474,9 @@
       <Item ItemId=";src/sql/workbench/contrib/commandLine/electron-browser/commandLine.commandline.propertiesFormatError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法將進階連線屬性剖析為 JSON，發生錯誤: {0} 收到的屬性值: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12324,12 +12333,18 @@
       <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.objectExplorer.filterDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) Filter Settings: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(預覽) 篩選設定: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.objectExplorer.nodePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Node Path: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[節點路徑: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14586,6 +14601,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.message" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用 Azure Active Directory 驗證的連線現在將在登入期間從伺服器擷取租用戶資訊。連線到 Azure SQL 執行個體時，不再需要提供「Azure AD 租用戶」項目。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16110,6 +16128,9 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.duplicateEditErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: ]D;]A;]D;]A; {0}{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法儲存設定檔，選取的連線符合相同群組中具有相同伺服器資訊的現有設定檔: ]D;]A;]D;]A; {0}{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17766,6 +17787,9 @@
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.objectExplorer.filterChildren" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filter (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[篩選 (預覽)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17799,30 +17823,45 @@
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorEndDate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[End date is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未指定結束日期。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorEndNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[End number is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未指定結束號碼。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorNumberRange" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start number cannot be greater than end number.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[起始號碼不能大於結束號碼。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorStartDate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start date is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未指定開始日期。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.filterDialog.errorStartNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start number is not specified.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未指定開始號碼。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17911,7 +17950,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is Not Null]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[非 Null]]></Val>
+            <Val><![CDATA[不是 Null]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17920,7 +17959,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is Null]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[為 Null]]></Val>
+            <Val><![CDATA[是 Null]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17937,6 +17976,9 @@
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.nodePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Node Path: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[節點路徑: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18096,6 +18138,9 @@
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils.connectionFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to connect, please try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法連線，請再試一次。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

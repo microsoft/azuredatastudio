@@ -711,12 +711,18 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProvider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unrecognized Provider resource: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法辨識的提供者資源: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProviderType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unrecognized Provider resource type: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法辨識的提供者資源類型: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
