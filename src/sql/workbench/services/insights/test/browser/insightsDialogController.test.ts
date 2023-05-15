@@ -75,6 +75,7 @@ suite('Insights Dialog Controller Tests', () => {
 			groupFullName: '',
 			groupId: '',
 			getOptionsKey: () => '',
+			serverCapabilities: undefined,
 			matches: undefined,
 			providerName: '',
 			saveProfile: true,

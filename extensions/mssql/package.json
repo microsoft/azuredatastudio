@@ -802,6 +802,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "useFullOptions": true,
       "isExecutionPlanProvider": true,
       "azureResource": "Sql",
       "supportedExecutionPlanFileExtensions": [
