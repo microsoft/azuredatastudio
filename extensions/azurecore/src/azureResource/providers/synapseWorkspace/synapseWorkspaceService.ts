@@ -5,60 +5,39 @@
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { GraphData, queryGraphResources } from '../resourceTreeDataProviderBase';
+import { queryGraphResources } from '../resourceTreeDataProviderBase';
 import { azureResource, AzureAccount } from 'azurecore';
-import { IAzureResourceService } from '../../interfaces';
-import { synapseWorkspacesQuery } from '../queryStringConstants';
+import { IAzureResourceServerService, SynapseWorkspaceGraphData } from '../../interfaces';
+import { synapseWorkspacesQuery, where } from '../queryStringConstants';
+import { SYNAPSE_WORKSPACE_PROVIDER_ID } from '../../../constants';
 
-/**
- * Properties returned by the Synapse query are different from the server ones and have to be treated differently.
- */
-export interface SynapseWorkspaceGraphData extends GraphData {
-	properties: {
-		/**
-		 * SQL connectivity endpoint and other endpoints are found here, instead of fullyQualifiedDomainName.
-		 */
-		connectivityEndpoints: { sql: string };
-		/**
-		 * managedResourceGroupName is the resource group used by any SQL pools inside the workspace
-		 * which is different from the resource group of the workspace itself.
-		 */
-		managedResourceGroupName: string;
-		/**
-		 * administratorLogin is called sqlAdministratorLogin here.
-		 */
-		sqlAdministratorLogin: string;
-	};
-}
+export class AzureResourceSynapseWorkspaceService implements IAzureResourceServerService<SynapseWorkspaceGraphData> {
 
-export class AzureResourceSynapseWorkspaceService implements IAzureResourceService<azureResource.AzureResourceDatabaseServer> {
-
-	protected get query(): string {
-		return synapseWorkspacesQuery;
-	}
+	public queryFilter: string = synapseWorkspacesQuery;
 
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabaseServer[]> {
 		const convertedResources: azureResource.AzureResourceDatabaseServer[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		let serverGraphResources: SynapseWorkspaceGraphData[] = await queryGraphResources<SynapseWorkspaceGraphData>(resourceClient, subscriptions, this.query);
+		let serverGraphResources: SynapseWorkspaceGraphData[] = await queryGraphResources<SynapseWorkspaceGraphData>(resourceClient, subscriptions, where + this.queryFilter);
 		const ids = new Set<string>();
 		serverGraphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
 				ids.add(res.id);
 				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId)?.name;
-				const converted = this.convertResource(res);
-				convertedResources.push(converted);
+				const converted = this.convertServerResource(res);
+				convertedResources.push(converted!);
 			}
 		});
 
 		return convertedResources;
 	}
 
-	protected convertResource(resource: SynapseWorkspaceGraphData): azureResource.AzureResourceDatabaseServer {
+	public convertServerResource(resource: SynapseWorkspaceGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: SYNAPSE_WORKSPACE_PROVIDER_ID,
 			fullName: resource.properties.connectivityEndpoints?.sql,
 			loginName: resource.properties.sqlAdministratorLogin,
 			defaultDatabaseName: 'master',

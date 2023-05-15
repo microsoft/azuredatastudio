@@ -2077,11 +2077,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.onlyMoveSqlFilesSupported" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.onlyMoveFilesFoldersSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Only moving .sql files is supported]]></Val>
+          <Val><![CDATA[Only moving files and folders are supported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[仅支持移动 .sql 文件]]></Val>
+            <Val><![CDATA[仅支持移动文件和文件夹]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2652,10 +2652,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.saveProfileAsButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Save Profile as...]]></Val>
+          <Val><![CDATA[Save As...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[将配置文件另存为...]]></Val>
+            <Val><![CDATA[另存为…]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Save Profile as...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3183,10 +3186,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.unableToPerformAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unable to locate '{0}' target: '{1}']]></Val>
+          <Val><![CDATA[Unable to locate '{0}' target: '{1}'. {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[无法定位“{0}”目标:“{1}”]]></Val>
+            <Val><![CDATA[无法定位“{0}”目标:“{1}”。{2}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Unable to locate '{0}' target: '{1}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3360,6 +3366,15 @@
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[版本]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.versionMustNotBeEmpty" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Version must not be empty]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[版本不得为空]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

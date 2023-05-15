@@ -4,37 +4,39 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { azureResource } from 'azurecore';
+import * as Constants from '../constants';
 
+export const where = `where `;
 /**
  * Lists all SQL Databases and Synapse SQL Databases
  */
-export const sqlDatabaseQuery = `where type == "${azureResource.AzureResourceType.sqlDatabase}" or type == "${azureResource.AzureResourceType.sqlSynapseSqlDatabase}"`;
+export const sqlDatabaseQuery = `type == "${azureResource.AzureResourceType.sqlDatabase}" or type == "${azureResource.AzureResourceType.sqlSynapseSqlDatabase}"`;
 
 /**
  * Lists all Synapse Workspaces with information such as SQL connection endpoints.
  */
-export const synapseWorkspacesQuery = `where type == "${azureResource.AzureResourceType.sqlSynapseWorkspace}"`;
+export const synapseWorkspacesQuery = `type == "${azureResource.AzureResourceType.sqlSynapseWorkspace}"`;
 
 /**
  * Lists all Synapse Dedicated SQL Pools
  */
-export const synapseSqlPoolsQuery = `where type == "${azureResource.AzureResourceType.sqlSynapseSqlPool}"`;
+export const synapseSqlPoolsQuery = `type == "${azureResource.AzureResourceType.sqlSynapseSqlPool}"`;
 
 /**
  * Lists all Sql Servers excluding Synapse Pool Servers
  * (they have different properties and need to be handled separately)
  */
-export const sqlServerQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
+export const sqlServerQuery = `type == "${azureResource.AzureResourceType.sqlServer}" and kind != "${Constants.analyticsKind}"`;
 
 /**
  * Lists all Azure Arc SQL Managed Instances
  */
-export const sqlInstanceArcQuery = `where type == "${azureResource.AzureResourceType.azureArcSqlManagedInstance}"`;
+export const sqlInstanceArcQuery = `type == "${azureResource.AzureResourceType.azureArcSqlManagedInstance}"`;
 
 /**
  * Lists all Azure SQL Managed Instances
  */
-export const sqlInstanceQuery = `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`;
+export const sqlInstanceQuery = `type == "${azureResource.AzureResourceType.sqlManagedInstance}"`;
 
 /**
  * Lists all resource containers and resource groups
@@ -44,27 +46,27 @@ export const resourceGroupQuery = `ResourceContainers | where type=="${azureReso
 /**
  * Lists all postgreSQL servers
  */
-export const postgresServerQuery = `where type == "${azureResource.AzureResourceType.postgresServer}"`;
+export const postgresServerQuery = `type == "${azureResource.AzureResourceType.postgresServer}"`;
 
 /**
  * Lists all Azure Arc PostgreSQL servers
  */
-export const postgresArcServerQuery = `where type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
+export const postgresArcServerQuery = `type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
 
 /**
  * Lists all MySQL Flexible servers
  */
-export const mysqlFlexibleServerQuery = `where type == "${azureResource.AzureResourceType.mysqlFlexibleServer}"`;
+export const mysqlFlexibleServerQuery = `type == "${azureResource.AzureResourceType.mysqlFlexibleServer}"`;
 
 /**
  * Lists all Kusto Clusters
  */
-export const kustoClusterQuery = `where type == "${azureResource.AzureResourceType.kustoClusters}"`;
+export const kustoClusterQuery = `type == "${azureResource.AzureResourceType.kustoClusters}"`;
 
 /**
  * Lists all Cosmos DB for MongoDB accounts
  */
-export const cosmosMongoDbQuery = `where type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "MongoDB"`;
+export const cosmosMongoDbQuery = `type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.mongoDbKind}"`;
 
 /**
  * Lists all Cosmos DB for NoSQL accounts
@@ -74,4 +76,4 @@ export const cosmosNoSqlQuery = `where type == "${azureResource.AzureResourceTyp
 /**
  * Lists all Log Analytics workspaces
  */
-export const logAnalyticsQuery = `where type == "${azureResource.AzureResourceType.logAnalytics}"`;
+export const logAnalyticsQuery = `type == "${azureResource.AzureResourceType.logAnalytics}"`;

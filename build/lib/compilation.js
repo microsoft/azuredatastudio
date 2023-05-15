@@ -38,7 +38,7 @@ function createCompile(src, build, emitError, transpileOnly) {
     const tsb = require('./tsb');
     const sourcemaps = require('gulp-sourcemaps');
     const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
-    const overrideOptions = Object.assign(Object.assign({}, getTypeScriptCompilerOptions(src)), { inlineSources: Boolean(build) });
+    const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
     // {{SQL CARBON EDIT}} Add override for not inlining the sourcemap during build so we can get code coverage - it
     // currently expects a *.map.js file to exist next to the source file for proper source mapping
     if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
@@ -52,7 +52,7 @@ function createCompile(src, build, emitError, transpileOnly) {
         console.warn('* and re-run the build/watch task                                                          *');
         console.warn('********************************************************************************************');
     }
-    const compilation = tsb.create(projectPath, overrideOptions, { verbose: false }, err => reporter(err));
+    const compilation = tsb.create(projectPath, overrideOptions, { verbose: false, transpileOnly }, err => reporter(err));
     function pipeline(token) {
         const bom = require('gulp-bom');
         const utf8Filter = util.filter(data => /(\/|\\)test(\/|\\).*utf8/.test(data.path));
@@ -204,7 +204,7 @@ function generateApiProposalNames() {
         const match = /\r?\n/m.exec(src);
         eol = match ? match[0] : os.EOL;
     }
-    catch (_a) {
+    catch {
         eol = os.EOL;
     }
     const pattern = /vscode\.proposed\.([a-zA-Z]+)\.d\.ts$/;

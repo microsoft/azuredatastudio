@@ -123,7 +123,7 @@ const RULES: IRule[] = [
 
 	// Common: vs/platform/native/common/native.ts
 	{
-		target: '**/vs/platform/native/common/native.ts',
+		target: '**/{vs,sql}/platform/native/common/native.ts',
 		allowedTypes: CORE_TYPES,
 		disallowedTypes: [/* Ignore native types that are defined from here */],
 		disallowedDefinitions: [

@@ -26,6 +26,12 @@ export enum LoginMigrationStep {
 	MigrationCompleted = 3,
 }
 
+export const CollectingSourceLoginsFailed = 'Collecting source logins failed';
+export const CollectingTargetLoginsFailed = 'Collecting target logins failed';
+export const ConnectingToTargetFailed = 'Connecting to target failed';
+export const InternalServerError = 'Login Migrations Internal Server Error';
+
+
 export function GetLoginMigrationStepString(step: LoginMigrationStep): string {
 	switch (step) {
 		case LoginMigrationStep.NotStarted:
@@ -159,8 +165,21 @@ export class LoginMigrationModel {
 	}
 
 	private setErrorCountMapPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
-		const errorCount = result.exceptionMap ? Object.keys(result.exceptionMap).length : 0;
-		this.errorCountMap.set(LoginMigrationStep[step], errorCount);
+		const errorBuckets: Map<string, number> = new Map<string, number>();
+
+		if (!result.exceptionMap) {
+			return;
+		}
+
+		for (const exceptions of Object.values(result.exceptionMap)) {
+			for (const exception of exceptions) {
+				// Get the value for the key, or the default value of t0 if he key is not in the map
+				const errorCount = errorBuckets.get(exception.ErrorCodeString) ?? 0;
+				errorBuckets.set(exception.ErrorCodeString, errorCount + 1)
+			}
+		}
+
+		this.errorCountMap.set(LoginMigrationStep[step], errorBuckets);
 	}
 
 	private setDurationPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {

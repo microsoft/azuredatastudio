@@ -96,9 +96,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider.azure.resource" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider.azure.resou" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) rce.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -363,12 +363,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.body" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]D;]A;]D;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]D;]A;]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O Azure Data Studio não acionará mais a autenticação para este locatário {0} ({1}) e os recursos não estarão acessíveis.]D;]A;]D;]A;Para permitir o acesso aos recursos para este inquilino novamente, você precisará remover o inquilino da lista de exclusão na configuração '{2}'.]D;]A;]D;]A;Você deseja continuar?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.confirm" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Confirm]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.authenticate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cancel and Authenticate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cancelar e autenticar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          <Val><![CDATA[Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O locatário '{0} ({1})' requer que você seja autenticado novamente para acessar os recursos de {2}. Pressione Abrir para iniciar o processo de autenticação.]]></Val>
+            <Val><![CDATA[Seu locatário {0} ({1}) exige que você se autentique novamente para acessar os {2} recursos. Pressione Abrir para iniciar o processo de autenticação.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -395,6 +425,24 @@
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Abrir]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não foi possível encontrar as informações da conta ao adquirir o token.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.resourceNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find configuration for Azure Resource {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não é possível encontrar a configuração para o Azure Resource {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -525,6 +573,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.tenantIgnoredError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Inquilino encontrado na lista de ignorados, autenticação não tentada. Você pode remover o locatário {0} da lista de ignorados no arquivo settings.json: {1} se desejar acessar os recursos deste inquilino.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProviderService.clearTokenCacheFailure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to clear token cache]]></Val>
@@ -647,6 +704,24 @@
           <Val><![CDATA[Failed to get subscriptions for account {0}. Please refresh the account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Falha ao obter assinaturas da conta {0}. Atualize a conta.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Recurso de Provedor não reconhecido: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProviderType" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource type: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipo de recurso de Provedor não reconhecido: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1640,10 +1715,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.azure.tenant.config.filter.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          <Val><![CDATA[The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A lista de IDs de locatário a serem ignoradas ao consultar os recursos do Azure. Cada elemento é uma ID de locatário.]]></Val>
+            <Val><![CDATA[A lista de IDs de locatário que serão ignoradas ao consultar recursos do Azure ou solicitar tokens de autenticação.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -8,7 +8,7 @@ exports.getDependencies = void 0;
 const child_process_1 = require("child_process");
 const fs_1 = require("fs");
 const path = require("path");
-const dep_lists_1 = require("./dep-lists");
+const dep_lists_1 = require("./dep-lists"); // {{SQL CARBON EDIT}} Not needed
 // A flag that can easily be toggled.
 // Make sure to compile the build directory after toggling the value.
 // If false, we warn about new dependencies if they show up
@@ -16,7 +16,7 @@ const dep_lists_1 = require("./dep-lists");
 // If true, we fail the build if there are new dependencies found during that task.
 // The reference dependencies, which one has to update when the new dependencies
 // are valid, are in dep-lists.ts
-// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false;
+// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false; // {{SQL CARBON EDIT}} Not needed
 function getDependencies(buildDir, applicationName, arch) {
     // Get the files for which we want to find dependencies.
     const nativeModulesPath = path.join(buildDir, 'resources', 'app', 'node_modules.asar.unpacked');
@@ -48,7 +48,7 @@ function getDependencies(buildDir, applicationName, arch) {
     sortedDependencies = sortedDependencies.filter(dependency => {
         return !dep_lists_1.bundledDeps.some(bundledDep => dependency.startsWith(bundledDep));
     });
-    /* {{SQL CARBON EDIT}} - Not needed for SQL
+    /* {{SQL CARBON EDIT}} Not needed
     const referenceGeneratedDeps = referenceGeneratedDepsByArch[arch];
     if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
         const failMessage = 'The dependencies list has changed. '

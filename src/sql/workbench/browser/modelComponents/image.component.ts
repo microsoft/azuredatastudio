@@ -17,7 +17,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-image',
 	template: `
-		<div #imageContainer [ngStyle]="CSSStyles" [title]="title">`
+		<div #imageContainer role="img" [ngStyle]="CSSStyles" [title]="title">`
 })
 export default class ImageComponent extends ComponentWithIconBase<azdata.ImageComponentProperties> implements ITitledComponent, IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;

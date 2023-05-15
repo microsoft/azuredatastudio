@@ -5,6 +5,7 @@
 
 import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { mixin } from 'sql/base/common/objects';
+import { escape } from 'sql/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -92,7 +93,8 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		const state = this.getCheckboxPropertyValue(row);
 		const checked = state.checked ? 'checked' : '';
 		const enable = state.enabled ? '' : 'disabled';
-		return `<input type="checkbox" style="pointer-events: none;" tabIndex="-1" ${checked} ${enable}/>`;
+		const escapedTitle = escape(columnDef.name ?? '');
+		return `<input type="checkbox" style="pointer-events: none;" aria-label="${escapedTitle}" tabIndex="-1" ${checked} ${enable}/>`;
 	}
 
 
@@ -101,7 +103,8 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		this._handler
 			.subscribe(this._grid.onClick, (e: Event, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
 			.subscribe(this._grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e as KeyboardEvent, args))
-			.subscribe(this._grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args));
+			.subscribe(this._grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args))
+			.subscribe(grid.onActiveCellChanged, (e: DOMEvent, args: Slick.OnActiveCellChangedEventArgs<T>) => { this.handleActiveCellChanged(args); });
 		if (this.isCheckAllHeaderCheckboxShown()) {
 			this._handler.subscribe(this._grid.onHeaderClick, (e: Event, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args));
 		}
@@ -127,6 +130,15 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			e.stopPropagation();
 			e.stopImmediatePropagation();
 			e.preventDefault();
+		}
+	}
+
+	private handleActiveCellChanged(args: Slick.OnActiveCellChangedEventArgs<T>): void {
+		if (args.cell === this.index) {
+			const checkbox = this._grid.getActiveCellNode() as HTMLInputElement;
+			if (checkbox) {
+				checkbox.focus();
+			}
 		}
 	}
 

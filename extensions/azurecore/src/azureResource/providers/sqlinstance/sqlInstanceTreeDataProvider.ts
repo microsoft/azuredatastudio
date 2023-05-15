@@ -8,27 +8,26 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, mssqlProvider } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, mssqlProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { GraphData, SqlInstanceGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, SqlInstanceGraphData> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "Azure SQL DB managed instance");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.sqlInstance}${account.key.accountId}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${SqlInstanceTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),

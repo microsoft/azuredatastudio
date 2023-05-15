@@ -185,12 +185,11 @@ class StringEnumPolicy extends BasePolicy {
 const IntQ = {
     Q: `(number) @value`,
     value(matches) {
-        var _a;
         const match = matches[0];
         if (!match) {
             return undefined;
         }
-        const value = (_a = match.captures.filter((c) => c.name === 'value')[0]) === null || _a === void 0 ? void 0 : _a.node.text;
+        const value = match.captures.filter(c => c.name === 'value')[0]?.node.text;
         if (!value) {
             throw new Error(`Missing required 'value' property.`);
         }
@@ -203,16 +202,15 @@ const StringQ = {
 		(call_expression function: (identifier) @localizeFn arguments: (arguments (string (string_fragment) @nlsKey) (string (string_fragment) @value)) (#eq? @localizeFn localize))
 	]`,
     value(matches) {
-        var _a, _b;
         const match = matches[0];
         if (!match) {
             return undefined;
         }
-        const value = (_a = match.captures.filter((c) => c.name === 'value')[0]) === null || _a === void 0 ? void 0 : _a.node.text;
+        const value = match.captures.filter(c => c.name === 'value')[0]?.node.text;
         if (!value) {
             throw new Error(`Missing required 'value' property.`);
         }
-        const nlsKey = (_b = match.captures.filter((c) => c.name === 'nlsKey')[0]) === null || _b === void 0 ? void 0 : _b.node.text;
+        const nlsKey = match.captures.filter(c => c.name === 'nlsKey')[0]?.node.text;
         if (nlsKey) {
             return { value, nlsKey };
         }
@@ -323,7 +321,7 @@ function getPolicies(moduleName, node) {
 		)
 	`);
     const categories = new Map();
-    return query.matches(node).map((m) => {
+    return query.matches(node).map(m => {
         const configurationNode = m.captures.filter(c => c.name === 'configuration')[0].node;
         const settingNode = m.captures.filter(c => c.name === 'setting')[0].node;
         const policyNode = m.captures.filter(c => c.name === 'policy')[0].node;
@@ -463,13 +461,12 @@ async function parsePolicies() {
     return policies;
 }
 async function getTranslations() {
-    var _a;
     const updateUrl = product.updateUrl;
     if (!updateUrl) {
         console.warn(`Skipping policy localization: No 'updateUrl' found in 'product.json'.`);
         return [];
     }
-    const resourceUrlTemplate = (_a = product.extensionsGallery) === null || _a === void 0 ? void 0 : _a.resourceUrlTemplate;
+    const resourceUrlTemplate = product.extensionsGallery?.resourceUrlTemplate;
     if (!resourceUrlTemplate) {
         console.warn(`Skipping policy localization: No 'resourceUrlTemplate' found in 'product.json'.`);
         return [];

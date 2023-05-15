@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+import * as Constants from '../constants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
-import * as azdata from 'azdata';
 import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata, AzureNetworkResponse } from 'azurecore';
 import { EOL } from 'os';
-import * as nls from 'vscode-nls';
 import { AppContext } from '../appContext';
 import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../localizedConstants';
 import { AzureResourceServiceNames } from './constants';
@@ -16,12 +18,36 @@ import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionServ
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
-import * as Constants from '../constants';
 import { getProxyEnabledHttpClient } from '../utils';
 import { HttpClient } from '../account-provider/auths/httpClient';
 import { NetworkRequestOptions } from '@azure/msal-common';
 import { ErrorResponseBody } from '@azure/arm-subscriptions/esm/models';
 import { TenantIgnoredError } from '../utils/TenantIgnoredError';
+import { AzureMonitorResourceService } from './providers/azuremonitor/azuremonitorService';
+import { AzureMonitorTreeDataProvider } from './providers/azuremonitor/azuremonitorTreeDataProvider';
+import { CosmosDbMongoService } from './providers/cosmosdb/mongo/cosmosDbMongoService';
+import { CosmosDbMongoTreeDataProvider } from './providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider';
+import { AzureResourceDatabaseService } from './providers/database/databaseService';
+import { AzureResourceDatabaseTreeDataProvider } from './providers/database/databaseTreeDataProvider';
+import { AzureResourceDatabaseServerService } from './providers/databaseServer/databaseServerService';
+import { AzureResourceDatabaseServerTreeDataProvider } from './providers/databaseServer/databaseServerTreeDataProvider';
+import { KustoResourceService } from './providers/kusto/kustoService';
+import { KustoTreeDataProvider } from './providers/kusto/kustoTreeDataProvider';
+import { MysqlFlexibleServerService } from './providers/mysqlFlexibleServer/mysqlFlexibleServerService';
+import { MysqlFlexibleServerTreeDataProvider } from './providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider';
+import { PostgresServerArcService } from './providers/postgresArcServer/postgresArcServerService';
+import { PostgresServerArcTreeDataProvider } from './providers/postgresArcServer/postgresArcServerTreeDataProvider';
+import { PostgresServerService } from './providers/postgresServer/postgresServerService';
+import { PostgresServerTreeDataProvider } from './providers/postgresServer/postgresServerTreeDataProvider';
+import { ResourceProvider } from './providers/resourceProvider';
+import { SqlInstanceResourceService } from './providers/sqlinstance/sqlInstanceService';
+import { SqlInstanceTreeDataProvider } from './providers/sqlinstance/sqlInstanceTreeDataProvider';
+import { SqlInstanceArcResourceService } from './providers/sqlinstanceArc/sqlInstanceArcService';
+import { SqlInstanceArcTreeDataProvider } from './providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider';
+import { AzureResourceSynapseService } from './providers/synapseSqlPool/synapseSqlPoolService';
+import { AzureResourceSynapseSqlPoolTreeDataProvider } from './providers/synapseSqlPool/synapseSqlPoolTreeDataProvider';
+import { AzureResourceSynapseWorkspaceService } from './providers/synapseWorkspace/synapseWorkspaceService';
+import { AzureResourceSynapseWorkspaceTreeDataProvider } from './providers/synapseWorkspace/synapseWorkspaceTreeDataProvider';
 
 const localize = nls.loadMessageBundle();
 
@@ -231,6 +257,30 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 	}
 
 	return result;
+}
+
+export function getAllResourceProviders(extensionContext: vscode.ExtensionContext): azureResource.IAzureResourceProvider[] {
+	const arcFeaturedEnabled = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.EnableArcFeaturesSection);
+	const providers: azureResource.IAzureResourceProvider[] = [
+		new ResourceProvider(Constants.AZURE_MONITOR_PROVIDER_ID, new AzureMonitorTreeDataProvider(new AzureMonitorResourceService(), extensionContext)),
+		new ResourceProvider(Constants.COSMOSDB_MONGO_PROVIDER_ID, new CosmosDbMongoTreeDataProvider(new CosmosDbMongoService(), extensionContext)),
+		new ResourceProvider(Constants.DATABASE_PROVIDER_ID, new AzureResourceDatabaseTreeDataProvider(new AzureResourceDatabaseService(), extensionContext)),
+		new ResourceProvider(Constants.DATABASE_SERVER_PROVIDER_ID, new AzureResourceDatabaseServerTreeDataProvider(new AzureResourceDatabaseServerService(), extensionContext)),
+		new ResourceProvider(Constants.KUSTO_PROVIDER_ID, new KustoTreeDataProvider(new KustoResourceService(), extensionContext)),
+		new ResourceProvider(Constants.MYSQL_FLEXIBLE_SERVER_PROVIDER_ID, new MysqlFlexibleServerTreeDataProvider(new MysqlFlexibleServerService(), extensionContext)),
+		new ResourceProvider(Constants.POSTGRES_SERVER_PROVIDER_ID, new PostgresServerTreeDataProvider(new PostgresServerService(), extensionContext)),
+		new ResourceProvider(Constants.SQLINSTANCE_PROVIDER_ID, new SqlInstanceTreeDataProvider(new SqlInstanceResourceService(), extensionContext)),
+		new ResourceProvider(Constants.SYNAPSE_SQL_POOL_PROVIDER_ID, new AzureResourceSynapseSqlPoolTreeDataProvider(new AzureResourceSynapseService(), extensionContext)),
+		new ResourceProvider(Constants.SYNAPSE_WORKSPACE_PROVIDER_ID, new AzureResourceSynapseWorkspaceTreeDataProvider(new AzureResourceSynapseWorkspaceService(), extensionContext)),
+	];
+
+	if (arcFeaturedEnabled) {
+		providers.push(
+			new ResourceProvider(Constants.SQLINSTANCE_ARC_PROVIDER_ID, new SqlInstanceArcTreeDataProvider(new SqlInstanceArcResourceService(), extensionContext)),
+			new ResourceProvider(Constants.POSTGRES_ARC_SERVER_PROVIDER_ID, new PostgresServerArcTreeDataProvider(new PostgresServerArcService(), extensionContext))
+		);
+	}
+	return providers;
 }
 
 export async function runResourceQuery<T extends azureResource.AzureGraphResource>(
