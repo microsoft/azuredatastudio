@@ -334,7 +334,10 @@ const extensionsToSkipLicenseHeaderCheck = [
     'mark carrington.azuredatastudio-sql4cds',
     'azuredatastudio-select-top-n',
     'schema-visualization',
-    'plan-explorer'
+    'plan-explorer',
+    // TODO: These should have licenses, following up with team
+    'azuredatastudio-oracle',
+    'net-6-runtime'
 ];
 
 /**
