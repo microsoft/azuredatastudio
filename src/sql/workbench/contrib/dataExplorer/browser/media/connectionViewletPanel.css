@@ -307,3 +307,10 @@
 	border-left-style: solid;
 	box-sizing: border-box;
 }
+
+.server-explorer-viewlet .monaco-list .monaco-list-row.focused .monaco-tl-contents.async-server-group,
+.server-explorer-viewlet .monaco-list .monaco-list-row:hover .monaco-tl-contents.async-server-group,
+.server-explorer-viewlet .monaco-list .monaco-list-row.focused .monaco-tl-contents.async-server-group {
+	border-top-width: 0px;
+	border-bottom-width: 0px;
+}
