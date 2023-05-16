@@ -257,9 +257,10 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
-	 * and all the other properties if useFullOptions is enabled for the provider.
+	 * and all the other properties (except empty ones) if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
-	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (original format): "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (new format): "providerName:MSSQL|databaseName:database|serverName:server3|userName:user|groupId:testid"
 	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
 	public override getOptionsKey(getOriginalOptions?: boolean): string {
@@ -269,7 +270,12 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
 		}
 
-		return id + ProviderConnectionInfo.idSeparator + 'groupId' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
+		let groupProp = 'group'
+		if (!getOriginalOptions && this.serverCapabilities && this.serverCapabilities.useFullOptions) {
+			groupProp = 'groupId'
+		}
+
+		return id + ProviderConnectionInfo.idSeparator + groupProp + ProviderConnectionInfo.nameValueSeparator + this.groupId;
 	}
 
 	/**

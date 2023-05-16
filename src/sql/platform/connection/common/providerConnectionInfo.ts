@@ -206,9 +206,10 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
-	 * and all the other properties if useFullOptions is enabled for the provider.
+	 * and all the other properties (except empty ones) if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
-	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (original format): "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (new format): "providerName:MSSQL|databaseName:database|serverName:server3|userName:user|groupId:testid"
 	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
 	public getOptionsKey(getOriginalOptions?: boolean): string {
@@ -222,7 +223,9 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
 			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			if (value && !getOriginalOptions || getOriginalOptions || (this.serverCapabilities && !this.serverCapabilities.useFullOptions)) {
+				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			}
 		}
 
 		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
