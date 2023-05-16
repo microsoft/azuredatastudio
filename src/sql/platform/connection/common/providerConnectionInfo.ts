@@ -224,7 +224,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			let value = this.options[idNames[index]!];
 
 			// If we're using the new URI format, we do not include any values that are empty or are default.
-			let useFullOptions = (this.serverCapabilities && !this.serverCapabilities.useFullOptions)
+			let useFullOptions = (this.serverCapabilities && this.serverCapabilities.useFullOptions)
 			let isFullOptions = useFullOptions && !getOriginalOptions;
 
 			if (isFullOptions) {
@@ -235,10 +235,10 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 					if (options[0].specialValueType === 'appName' && this.providerName === Constants.mssqlProviderName) {
 						finalValue = (value as string).startsWith('azdata') ? undefined : finalValue
 					}
-					else if (options[0].specialValueType === 'authType' && finalValue === undefined) {
-						// Include auth type as it is a required part of the option key.
-						finalValue = '';
-					}
+				}
+				else if (options.length > 0 && options[0].specialValueType === 'authType') {
+					// Include default auth type as it is a required part of the option key.
+					finalValue = '';
 				}
 				value = finalValue;
 			}
