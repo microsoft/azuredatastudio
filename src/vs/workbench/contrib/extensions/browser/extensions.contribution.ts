@@ -846,7 +846,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 							const accept = await new Promise<boolean>(resolve => {
 								notificationService.prompt(
 									Severity.Warning,
-									localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
+									localize('thirdPartyExtension.vsix', 'This is a third party extension that might involve security risk and the license terms are different from Azure Data Studio. Are you sure you want to install this extension?'),
 									[
 										{
 											label: localize('thirdPartExt.yes', 'Yes'),
