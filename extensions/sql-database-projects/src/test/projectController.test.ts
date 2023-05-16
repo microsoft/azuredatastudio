@@ -429,6 +429,19 @@ describe('ProjectsController', function (): void {
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
 			});
 
+			it('Should be able to add publish profile', async function (): Promise<void> {
+				const publishProfileName = 'profile.publish.xml';
+
+				const projController = new ProjectsController(testContext.outputChannel);
+				const project = await testUtils.createTestProject(this.test, baselines.newProjectFileBaseline);
+
+				sinon.stub(vscode.window, 'showInputBox').resolves(publishProfileName);
+				sinon.stub(utils, 'sanitizeStringForFilename').returns(publishProfileName);
+				should(project.publishProfiles.length).equal(0, 'There should be no publish profiles');
+				await projController.addItemPrompt(project, '', { itemType: ItemType.publishProfile });
+				should(project.publishProfiles.length).equal(1, 'Publish profile should be successfully added.');
+			});
+
 			it('Should change target platform', async function (): Promise<void> {
 				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: SqlTargetPlatform.sqlAzure });
 

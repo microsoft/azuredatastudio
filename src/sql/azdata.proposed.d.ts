@@ -1955,4 +1955,11 @@ declare module 'azdata' {
 			isPrimary: boolean;
 		}
 	}
+
+	export interface TableComponent {
+		/**
+		 * Set active cell.
+		 */
+		setActiveCell(row: number, column: number): void;
+	}
 }

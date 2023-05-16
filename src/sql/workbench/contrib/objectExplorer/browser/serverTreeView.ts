@@ -970,5 +970,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput]);
 		treeInput = treeArray[0];
 		await this._tree!.setInput(treeInput);
+  }
+  
+	public collapseAllConnections(): void {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		connections.forEach(con => {
+			this._tree!.collapse(con, true);
+		});
 	}
 }
