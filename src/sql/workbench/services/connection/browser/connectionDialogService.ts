@@ -257,14 +257,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return;
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
-		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary;
+		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary || !connection.saveProfile;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
 		}
 		let options: IConnectionCompletionOptions = this._options || {
 			params: params,
-			saveTheConnection: !isTemporaryConnection && !fromEditor,
+			saveTheConnection: !isTemporaryConnection,
 			showDashboard: params?.showDashboard ?? false,
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
