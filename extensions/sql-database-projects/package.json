@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -207,6 +207,11 @@
         "command": "sqlDatabaseProjects.rename",
         "title": "%sqlDatabaseProjects.rename%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPublishProfile",
+        "title": "%sqlDatabaseProjects.newPublishProfile%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -334,6 +339,10 @@
         {
           "command": "sqlDatabaseProjects.rename",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPublishProfile",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -401,6 +410,11 @@
           "command": "sqlDatabaseProjects.newPostDeploymentScript",
           "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPublishProfile",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@10"
         },
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",

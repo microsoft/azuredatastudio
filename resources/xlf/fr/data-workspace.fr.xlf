@@ -134,6 +134,10 @@
         <source xml:lang="en">Select project file</source>
         <target state="translated">Sélectionner un fichier de projet</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.projectFileTitle">
+        <source xml:lang="en">Project file</source>
+        <target state="translated">Fichier projet</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.projectLocationPlaceholder">
         <source xml:lang="en">Select location to create project</source>
         <target state="translated">Sélectionner l’emplacement de création du projet</target>
@@ -153,10 +157,6 @@
       <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
         <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
         <target state="translated">L’emplacement de projet sélectionné « {0} » n’existe pas ou n’est pas un répertoire.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectsFailedToLoad">
-        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
-        <target state="translated">Échec du chargement de certains projets. Pour afficher plus de détails, [ouvrez la console du développeur](command:workbench.action.toggleDevTools)</target>
       </trans-unit>
       <trans-unit id="dataworkspace.remoteGitRepo">
         <source xml:lang="en">Remote git repository</source>
@@ -242,6 +242,10 @@
         <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
         <target state="translated">La liste des projets ouverts ne doit pas être indéfinie après l’actualisation à partir du disque.</target>
       </trans-unit>
+      <trans-unit id="projectFailedToLoad">
+        <source xml:lang="en">Project '{0}' failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).</source>
+        <target state="translated">Échec du chargement du projet '{0}' : {1} pour afficher plus de détails, [ouvrez la console du développeur] (commande : workbench.action.toggleDevTools).</target>
+      </trans-unit>
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>
         <target state="translated">Le nom de la feuille est Null</target>
@@ -259,8 +263,8 @@
         <target state="translated">Le nom de fichier ne peut pas dépasser 255 caractères</target>
       </trans-unit>
       <trans-unit id="trailingWhitespaceErrorMessage">
-        <source xml:lang="en">File name cannot end with a whitespace</source>
-        <target state="translated">Le nom ne peut pas se terminer par un espace</target>
+        <source xml:lang="en">File name cannot start or end with whitespace</source>
+        <target state="translated">Le nom de fichier ne peut pas commencer ou se terminer par un espace blanc</target>
       </trans-unit>
       <trans-unit id="undefinedFilenameErrorMessage">
         <source xml:lang="en">Undefined name</source>

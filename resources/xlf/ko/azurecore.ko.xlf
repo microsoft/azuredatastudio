@@ -46,9 +46,29 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.</target>
       </trans-unit>
+      <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
+        <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
+
+To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
+
+Do you wish to proceed?</source>
+        <target state="translated">Azure Data Studio에서 이 테넌트 {0}({1})에 대한 인증을 더 이상 트리거하지 않으며 리소스에 액세스할 수 없게 됩니다. 
+
+이 테넌트의 리소스에 대한 액세스를 다시 허용하려면 '{2}' 설정의 제외 목록에서 테넌트를 제거해야 합니다.
+
+계속하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
+        <source xml:lang="en">Confirm</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.authenticate">
+        <source xml:lang="en">Cancel and Authenticate</source>
+        <target state="translated">취소 및 인증</target>
+      </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
-        <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
-        <target state="translated">'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.</target>
+        <source xml:lang="en">Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+        <target state="translated">{0}({1}) 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. 열기를 눌러 인증 프로세스를 시작하세요.</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -61,6 +81,14 @@
       <trans-unit id="azurecore.consentDialog.open">
         <source xml:lang="en">Open</source>
         <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="msal.accountNotFoundError">
+        <source xml:lang="en">Unable to find account info when acquiring token.</source>
+        <target state="translated">토큰을 가져올 때 계정 정보를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="msal.resourceNotFoundError">
+        <source xml:lang="en">Unable to find configuration for Azure Resource {0}</source>
+        <target state="translated">Azure 리소스 {0}에 대한 구성을 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="noMicrosoftResource">
         <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
@@ -131,6 +159,10 @@
 {1}</source>
         <target state="translated">토큰을 획득할 때 {0}이(가) 발생했습니다. 
 {1}</target>
+      </trans-unit>
+      <trans-unit id="tenantIgnoredError">
+        <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
+        <target state="translated">테넌트가 무시 목록에 있습니다. 인증이 시도되지 않았습니다. {1} settings.json 파일의 무시 목록에서 {0} 테넌트를 제거하여 이 테넌트의 리소스에 액세스할 수 있습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -394,6 +426,10 @@
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found.</source>
+        <target state="translated">리소스를 찾을 수 없습니다.</target>
+      </trans-unit>
       <trans-unit id="azure.resource.throttleerror">
         <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
         <target state="translated">이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.</target>
@@ -533,6 +569,14 @@
         <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
         <target state="translated">경고: ADAL은 더 이상 사용되지 않으며 향후 릴리스에서 제거될 예정입니다. 대신 MSAL을 사용하세요.</target>
       </trans-unit>
+      <trans-unit id="azurecore.disable">
+        <source xml:lang="en">Disable</source>
+        <target state="translated">사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="azurecore.dismiss">
+        <source xml:lang="en">Dismiss</source>
+        <target state="translated">해제</target>
+      </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>
         <target state="translated">동아시아</target>
@@ -616,6 +660,10 @@
       <trans-unit id="azurecore.norwaywest">
         <source xml:lang="en">Norway West</source>
         <target state="translated">노르웨이 서부</target>
+      </trans-unit>
+      <trans-unit id="azurecore.piiLogging.warning">
+        <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
+        <target state="translated">경고: Azure PII 로깅이 활성화되어 있습니다. 이 옵션을 활성화하면 개인 식별 정보가 기록될 수 있으며 디버깅 용도로만 사용해야 합니다.</target>
       </trans-unit>
       <trans-unit id="azurecore.postgresServer">
         <source xml:lang="en">Azure Database for PostgreSQL server</source>
@@ -802,8 +850,8 @@
         <target state="translated">Azure(미리 보기)</target>
       </trans-unit>
       <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
-        <target state="translated">Azure 리소스를 쿼리할 때 무시할 테넌트 ID 목록입니다. 각 요소는 테넌트 ID입니다.</target>
+        <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
+        <target state="translated">Azure 리소스를 쿼리하거나 인증 토큰을 요청할 때 건너뛸 테넌트 ID 목록입니다.</target>
       </trans-unit>
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>

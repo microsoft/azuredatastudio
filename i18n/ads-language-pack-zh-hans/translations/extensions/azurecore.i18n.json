@@ -20,10 +20,15 @@
 			"azure.owningTenantNotFound": "找不到帐户的拥有租户信息。",
 			"azure.responseError": "令牌检索失败，出现错误。[打开开发人员工具]({0})了解更多详细信息。",
 			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
-			"azurecore.consentDialog.body": "你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio 将不再触发此租户 {0} ({1}) 的身份验证，并且资源将无法访问。\r\n\r\n若要再次允许访问此租户的资源，需要从 \"{2}\" 设置的排除列表中删除租户。\r\n\r\n是否要继续?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "确认",
+			"azurecore.consentDialog.authenticate": "取消并进行身份验证",
+			"azurecore.consentDialog.body": "你的租户 {0} ({1}) 需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租户",
 			"azurecore.consentDialog.open": "打开",
+			"msal.accountNotFoundError": "获取令牌时找不到帐户信息。",
+			"msal.resourceNotFoundError": "找不到 Azure 资源 {0} 的配置",
 			"noMicrosoftResource": "提供程序 \"{0}\" 未定义 Microsoft 资源终结点。"
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -43,7 +48,8 @@
 			"azure.NoAuthMethod.Selected": "未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。",
 			"azure.deprecatedGetSecurityToken": "对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。",
 			"genericTokenError": "无法获取令牌",
-			"msalTokenError": "{0} 获取令牌时发生。 \r\n{1}"
+			"msalTokenError": "{0} 获取令牌时发生。 \r\n{1}",
+			"tenantIgnoredError": "在忽略列表中找到租户，未尝试身份验证。 如果要从此租户访问资源，可以从 settings.json 文件: {1} 中的忽略列表中删除租户 {0}。"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "未能清除令牌缓存",
@@ -132,6 +138,7 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "显示 Azure 帐户"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.flatAccountTreeNode.noResourcesLabel": "未找到资源。",
 			"azure.resource.throttleerror": "已限制来自此帐户的请求。要重试，请选择少量订阅。",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 个订阅)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在加载...",
@@ -170,6 +177,8 @@
 			"azurecore.centralus": "美国中部",
 			"azurecore.centraluseuap": "美国中部 EUAP",
 			"azurecore.deprecated": "警告: ADAL 已弃用，并计划在将来的版本中删除。请改用 MSAL。",
+			"azurecore.disable": "禁用",
+			"azurecore.dismiss": "忽略",
 			"azurecore.eastasia": "东亚",
 			"azurecore.eastus": "美国东部",
 			"azurecore.eastus2": "美国东部 2",
@@ -191,6 +200,7 @@
 			"azurecore.northeurope": "北欧",
 			"azurecore.norwayeast": "挪威东部",
 			"azurecore.norwaywest": "挪威西部",
+			"azurecore.piiLogging.warning": "警告: 已启用 Azure PII 日志记录。启用此选项可允许记录个人身份信息，并且只能用于调试目的。",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 服务器",
 			"azurecore.reload": "重载",
 			"azurecore.reloadChoice": "重新加载 Azure Data Studio",
@@ -238,7 +248,7 @@
 			"azure.resource.signin.title": "Azure: 登录",
 			"azure.resource.startterminal.title": "启动 Cloud Shell",
 			"azure.resource.view.title": "Azure (预览)",
-			"azure.tenant.config.filter.description": "查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。",
+			"azure.tenant.config.filter.description": "查询 Azure 资源或请求身份验证令牌时将跳过的租户 ID 列表。",
 			"azure.title": "Azure",
 			"config.authenticationLibrary": "用于 AAD 身份验证流的库。请在更改此选项后重新启动 ADS。",
 			"config.azureAccountConfigurationSection": "Azure 帐户配置",

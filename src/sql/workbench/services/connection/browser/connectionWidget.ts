@@ -45,6 +45,7 @@ import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManag
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
+import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -214,9 +215,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private addInputOptionRadioButtons(): void {
 		if (this._connectionStringOptions.isEnabled) {
 			const groupName = 'input-option-type';
-			const inputOptionsContainer = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'connection-input-options');
-			this._defaultInputOptionRadioButton = new RadioButton(inputOptionsContainer, { label: 'Parameters', checked: !this._connectionStringOptions.isDefault });
-			this._connectionStringRadioButton = new RadioButton(inputOptionsContainer, { label: 'Connection String', checked: this._connectionStringOptions.isDefault });
+			const inputTypeLabel = localize('connectionWidget.inputTypeLabel', "Input type");
+			const inputOptionsContainer = DialogHelper.appendRow(this._tableContainer, inputTypeLabel, 'connection-label', 'connection-input', 'connection-input-options');
+			const inputTypeGroup = new FieldSet(inputOptionsContainer, { ariaLabel: inputTypeLabel });
+			this._defaultInputOptionRadioButton = new RadioButton(inputTypeGroup.element, { label: localize('connectionWidget.inputType.parameters', "Parameters"), checked: !this._connectionStringOptions.isDefault });
+			this._connectionStringRadioButton = new RadioButton(inputTypeGroup.element, { label: localize('connectionWidget.inputType.connectionString', "Connection String"), checked: this._connectionStringOptions.isDefault });
 			this._defaultInputOptionRadioButton.name = groupName;
 			this._connectionStringRadioButton.name = groupName;
 			this._register(this._defaultInputOptionRadioButton);
