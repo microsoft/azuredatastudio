@@ -18,7 +18,8 @@ import * as vscodeMssql from 'vscode-mssql';
 
 const buildDirectory = 'BuildDirectory';
 const sdkName = 'Microsoft.Build.Sql';
-const microsoftBuildSqlDefaultVersion = '0.1.9-preview'; // default version of Microsoft.Build.Sql nuget to use for building legacy style projects, update in README when updating this
+const microsoftBuildSqlDefaultVersion = '0.1.10-preview'; // default version of Microsoft.Build.Sql nuget to use for building legacy style projects, update in README when updating this
+const scriptdomNugetPkgName = 'Microsoft.SqlServer.TransactSql.ScriptDom';
 
 const buildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
@@ -27,7 +28,6 @@ const buildFiles: string[] = [
 	'Microsoft.Data.Tools.Utilities.dll',
 	'Microsoft.SqlServer.Dac.dll',
 	'Microsoft.SqlServer.Dac.Extensions.dll',
-	'Microsoft.SqlServer.TransactSql.ScriptDom.dll',
 	'Microsoft.SqlServer.Types.dll',
 	'System.ComponentModel.Composition.dll',
 	'System.IO.Packaging.dll',
@@ -122,6 +122,31 @@ export class BuildHelper {
 
 		// cleanup extracted folder
 		await fs.rm(extractedFolderPath, { recursive: true });
+
+		// download scriptdom
+		const scriptdomNugetPath = path.join(this.extensionBuildDir, `${scriptdomNugetPkgName}.nupkg`);
+
+		const scriptDomUrl = `https://www.nuget.org/api/v2/package/${scriptdomNugetPkgName}/161.8812.0`;
+		try {
+			const httpClient = new HttpClient();
+			outputChannel.appendLine(constants.downloadingFromTo(scriptDomUrl, scriptdomNugetPath));
+			await httpClient.download(scriptDomUrl, scriptdomNugetPath, outputChannel);
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorDownloading(scriptDomUrl, utils.getErrorMessage(e)));
+			return false;
+		}
+
+		const scriptDomExtractedFolderPath = path.join(this.extensionDir, buildDirectory, scriptdomNugetPkgName);
+
+		try {
+			await extractZip(scriptdomNugetPath, { dir: scriptDomExtractedFolderPath });
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorExtracting(scriptdomNugetPath, utils.getErrorMessage(e)));
+			return false;
+		}
+
+		const extractedScriptDomPath = path.join(scriptDomExtractedFolderPath, 'lib', 'netstandard2.1', 'Microsoft.SqlServer.TransactSql.ScriptDom.dll')
+		await fs.copyFile(extractedScriptDomPath, path.join(this.extensionBuildDir, 'Microsoft.SqlServer.TransactSql.ScriptDom.dll'));
 
 		this.initialized = true;
 		return true;
