@@ -47,6 +47,9 @@ import { ActionRunner } from 'vs/base/common/actions';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { USE_ASYNC_SERVER_TREE_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { FilterDialog } from 'sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -78,7 +81,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IHostService private _hostService: IHostService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super();
 		this._hasConnectionsKey = CONTEXT_SERVER_TREE_HAS_CONNECTIONS.bindTo(contextKeyService);
@@ -226,10 +230,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}));
 
 		this._register(this._connectionManagementService.onDisconnect(async (connectionParams) => {
-			if (this._tree instanceof AsyncServerTree) {
-				await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
-			} else {
-				if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+				if (this._tree instanceof AsyncServerTree) {
+					await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
+				} else {
 					this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
 				}
 			}
@@ -342,7 +346,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				}
 				if (newParent) {
 					newParent.addOrReplaceConnection(movedConnection);
+					await this._tree.rerender(newParent);
+					await this._tree.makeElementDirty(newParent);
 					await this._tree.updateChildren(newParent);
+					await this._tree.expand(newParent);
 				}
 				await this.refreshConnectionTreeTitles();
 				const newConnection = this._tree.getElementById(movedConnection.id);
@@ -527,14 +534,14 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			}
 			// Delete the node from the tree
 			await this._objectExplorerService.deleteObjectExplorerNode(connectionProfile);
-			// Collapse the node
-			await this._tree.collapse(connectionProfile);
 			// Rerendering node to turn the badge red
 			await this._tree.rerender(connectionProfile);
 			connectionProfile.isDisconnecting = true;
 			await this._tree.updateChildren(connectionProfile);
 			connectionProfile.isDisconnecting = false;
 			// Make the connection dirty so that the next expansion will refresh the node
+			// Collapse the node
+			await this._tree.collapse(connectionProfile);
 			await this._tree.makeElementDirty(connectionProfile);
 			await this._tree.revealSelectFocusElement(connectionProfile);
 		}
@@ -594,6 +601,50 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		} else {
 			return this._tree!.refresh(element);
 		}
+	}
+
+	public async filterElementChildren(node: TreeNode): Promise<void> {
+		await FilterDialog.getFiltersForProperties(
+			node.filterProperties,
+			localize('objectExplorer.filterDialogTitle', "(Preview) Filter Settings: {0}", node.getConnectionProfile().title),
+			localize('objectExplorer.nodePath', "Node Path: {0}", node.nodePath),
+			node.filters,
+			async (filters) => {
+				let errorListener;
+				try {
+					let expansionError = undefined;
+					errorListener = this._objectExplorerService.onUpdateObjectExplorerNodes(e => {
+						if (e.errorMessage) {
+							expansionError = e.errorMessage;
+						}
+						errorListener.dispose();
+					});
+					node.forceRefresh = true;
+					node.filters = filters || [];
+					if (this._tree instanceof AsyncServerTree) {
+						await this._tree.rerender(node);
+					}
+					await this.refreshElement(node);
+					await this._tree.expand(node);
+					if (expansionError) {
+						throw new Error(expansionError);
+					}
+				} finally {
+					if (errorListener) {
+						errorListener.dispose();
+					}
+
+					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ObjectExplorer, TelemetryKeys.TelemetryAction.ObjectExplorerFilter)
+						.withAdditionalProperties({
+							filterPropertyNames: JSON.stringify(filters.map(f => f.name)),
+							filterCount: filters.length,
+							objectType: node.objectType
+						}).send();
+				}
+				return;
+			},
+			this._instantiationService
+		);
 	}
 
 	/**
@@ -892,7 +943,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 	}
 
-	private getActionContext(element: ServerTreeElement): any {
+	public getActionContext(element: ServerTreeElement): any {
 		let actionContext: any;
 		if (element instanceof TreeNode) {
 			let context = new ObjectExplorerActionsContext();
@@ -920,5 +971,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], this._connectionManagementService, isActiveOnly);
 		treeInput = treeArray[0];
 		await this._tree!.setInput(treeInput);
+	}
+
+	public collapseAllConnections(): void {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		connections.forEach(con => {
+			this._tree!.collapse(con, true);
+		});
 	}
 }

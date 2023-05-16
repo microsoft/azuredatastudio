@@ -36,6 +36,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	public onConnectionProfileGroupEdited: Event<any> = Event.None;
 	public onConnectionProfileGroupDeleted: Event<any> = Event.None;
 	public onConnectionProfileGroupMoved: Event<any> = Event.None;
+	public onRecentConnectionProfileDeleted: Event<any> = Event.None;
 
 	public get onConnect(): Event<any> {
 		return Event.None;

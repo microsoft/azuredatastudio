@@ -99,7 +99,9 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
 		}
 
-		this.selectElement.id = id;
+		if (id !== undefined) {
+			this.selectElement.id = id;
+		}
 		this._selectBoxOptions = selectBoxOptions;
 		let focusTracker = dom.trackFocus(this.selectElement);
 		this._register(focusTracker);

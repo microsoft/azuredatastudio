@@ -126,6 +126,9 @@ export interface IConnectionManagementService {
 	onConnectionProfileGroupMoved: Event<ConnectionElementMovedParams>;
 	// End of Event Emitters for async tree
 
+	// Event emitters for recent connections tree
+	onRecentConnectionProfileDeleted: Event<ConnectionProfile>;
+
 	// Properties
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
 

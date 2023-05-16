@@ -20,6 +20,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
 import { IPublishToDockerSettings, ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
+import { PublishProfile, promptToSaveProfile } from '../models/publishProfile/publishProfile';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -55,7 +56,6 @@ export class PublishDatabaseDialog {
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Map<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
-	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
@@ -69,7 +69,7 @@ export class PublishDatabaseDialog {
 	public publish: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
 	public generateScript: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
-	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
+	public readPublishProfile: ((profileUri: vscode.Uri) => Promise<PublishProfile>) | undefined;
 	public savePublishProfile: ((profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions) => any) | undefined;
 
 	constructor(private project: Project) {
@@ -239,7 +239,7 @@ export class PublishDatabaseDialog {
 				connectionUri: await this.getConnectionUri(),
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
-				profileUsed: this.profileUsed
+				publishProfileUri: this.publishProfileUri
 			};
 
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -272,7 +272,7 @@ export class PublishDatabaseDialog {
 					connectionUri: '',
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
-					profileUsed: this.profileUsed
+					publishProfileUri: this.publishProfileUri
 				}
 			};
 
@@ -293,7 +293,7 @@ export class PublishDatabaseDialog {
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed
+			publishProfileUri: this.publishProfileUri
 		};
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -814,8 +814,8 @@ export class PublishDatabaseDialog {
 					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 				}
 
-				for (let key in result.sqlCmdVariables) {
-					this.sqlCmdVars?.set(key, result.sqlCmdVariableColumn.get(key));
+				for (let key of result.sqlCmdVariables.keys()) {
+					this.sqlCmdVars?.set(key, result.sqlCmdVariables.get(key)!);
 				}
 
 				this.updateRevertSqlCmdVarsButtonState();
@@ -830,7 +830,6 @@ export class PublishDatabaseDialog {
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
 				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 
-				this.profileUsed = true;
 				this.publishProfileUri = fileUris[0];
 			}
 		});
@@ -849,15 +848,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		saveProfileAsButton.onDidClick(async () => {
-			const filePath = await vscode.window.showSaveDialog(
-				{
-					defaultUri: this.publishProfileUri ?? vscode.Uri.file(path.join(this.project.projectFolderPath, `${this.project.projectFileName}_1`)),
-					saveLabel: constants.save,
-					filters: {
-						'Publish Settings Files': ['publish.xml'],
-					}
-				}
-			);
+			const filePath = await promptToSaveProfile(this.project, this.publishProfileUri);
 
 			if (!filePath) {
 				return;
@@ -868,9 +859,10 @@ export class PublishDatabaseDialog {
 				const targetDatabaseName = this.targetDatabaseName ?? '';
 				const deploymentOptions = await this.getDeploymentOptions();
 				await this.savePublishProfile(filePath.fsPath, targetDatabaseName, targetConnectionString, this.getSqlCmdVariablesForPublish(), deploymentOptions);
+
+				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileSaved);
 			}
 
-			this.profileUsed = true;
 			this.publishProfileUri = filePath;
 
 			await this.project.addNoneItem(path.relative(this.project.projectFolderPath, filePath.fsPath));
@@ -981,7 +973,7 @@ export class PublishDatabaseDialog {
 	/*
 	* Sets the default deployment options to deployment options model object
 	*/
-	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
+	public setDeploymentOptions(deploymentOptions: DeploymentOptions | undefined): void {
 		this.deploymentOptions = deploymentOptions;
 	}
 }

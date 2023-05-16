@@ -27,16 +27,16 @@ If (-NOT ($Quality -eq "stable")) {
 node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformLinux archive-unsigned "$TarballUploadName.tar.gz" $Version true $TarballPath $CommitId
 
 # Publish DEB
-# $PlatformDeb = "linux-deb-$Arch"
-# $DebFilename = "$(Get-ChildItem -File -Name $artifactsDir\linux\deb\amd64\deb\*.deb)"
-# $DebPath = "$artifactsDir\linux\deb\amd64\deb\$DebFilename"
-# $DebUploadName = "azuredatastudio-linux-$Version"
+$PlatformDeb = "linux-deb-$Arch"
+$DebFilename = "$(Get-ChildItem -File -Name $artifactsDir\linux\deb\amd64\deb\*.deb)"
+$DebPath = "$artifactsDir\linux\deb\amd64\deb\$DebFilename"
+$DebUploadName = "azuredatastudio-linux-$Version"
 
-# If (-NOT ($Quality -eq "stable")) {
-# 	$DebUploadName = "$DebUploadName-$Quality"
-# }
+If (-NOT ($Quality -eq "stable")) {
+	$DebUploadName = "$DebUploadName-$Quality"
+}
 
-# node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformDeb package "$DebUploadName.deb" $Version true $DebPath $CommitId
+node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $PlatformDeb package "$DebUploadName.deb" $Version true $DebPath $CommitId
 
 # Publish RPM
 $PlatformRpm = "linux-rpm-$Arch"

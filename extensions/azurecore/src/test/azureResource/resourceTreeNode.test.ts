@@ -101,7 +101,6 @@ let appContext: AppContext;
 describe('AzureResourceResourceTreeNode.info', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider.setup((o) => o.getResourceTreeItem(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceRootNode.treeItem));
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
 
 		mockResourceProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();

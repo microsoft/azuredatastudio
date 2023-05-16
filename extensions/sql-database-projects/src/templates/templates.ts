@@ -48,7 +48,8 @@ export async function loadTemplates(templateFolderPath: string) {
 		loadObjectTypeInfo(ItemType.dataSource, constants.dataSourceFriendlyName, templateFolderPath, 'newTsqlDataSourceTemplate.sql'),
 		loadObjectTypeInfo(ItemType.fileFormat, constants.fileFormatFriendlyName, templateFolderPath, 'newTsqlFileFormatTemplate.sql'),
 		loadObjectTypeInfo(ItemType.externalStream, constants.externalStreamFriendlyName, templateFolderPath, 'newTsqlExternalStreamTemplate.sql'),
-		loadObjectTypeInfo(ItemType.externalStreamingJob, constants.externalStreamingJobFriendlyName, templateFolderPath, 'newTsqlExternalStreamingJobTemplate.sql')
+		loadObjectTypeInfo(ItemType.externalStreamingJob, constants.externalStreamingJobFriendlyName, templateFolderPath, 'newTsqlExternalStreamingJobTemplate.sql'),
+		loadObjectTypeInfo(ItemType.publishProfile, constants.publishProfileFriendlyName, templateFolderPath, 'newPublishProfileTemplate.publish.xml')
 	]);
 
 	for (const scriptType of scriptTypes) {
@@ -65,7 +66,7 @@ export function macroExpansion(template: string, macroDict: Map<string, string>)
 	const macroIndicator = '@@';
 	let output = template;
 
-	for (const macro in macroDict) {
+	for (const macro of macroDict.keys()) {
 		// check if value contains the macroIndicator, which could break expansion for successive macros
 		if (macroDict.get(macro)!.includes(macroIndicator)) {
 			throw new Error(`Macro value ${macroDict.get(macro)} is invalid because it contains ${macroIndicator}`);

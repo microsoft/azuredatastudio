@@ -134,6 +134,10 @@
         <source xml:lang="en">Select project file</source>
         <target state="translated">프로젝트 파일 선택</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.projectFileTitle">
+        <source xml:lang="en">Project file</source>
+        <target state="translated">프로젝트 파일</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.projectLocationPlaceholder">
         <source xml:lang="en">Select location to create project</source>
         <target state="translated">프로젝트를 만들 위치 선택</target>
@@ -153,10 +157,6 @@
       <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
         <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
         <target state="translated">선택한 프로젝트 위치 '{0}'이(가) 없거나 디렉터리가 아닙니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectsFailedToLoad">
-        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
-        <target state="translated">일부 프로젝트를 로드하지 못했습니다. 자세한 내용을 보려면 [개발자 콘솔 열기](command:workbench.action.toggleDevTools)</target>
       </trans-unit>
       <trans-unit id="dataworkspace.remoteGitRepo">
         <source xml:lang="en">Remote git repository</source>
@@ -242,6 +242,10 @@
         <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
         <target state="translated">디스크에서 새로 고친 후에는 열린 프로젝트 목록을 정의하지 않아야 합니다.</target>
       </trans-unit>
+      <trans-unit id="projectFailedToLoad">
+        <source xml:lang="en">Project '{0}' failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).</source>
+        <target state="translated">‘{0}’ 프로젝트를 로드하지 못했습니다. {1}. 자세한 내용을 보려면 [개발자 콘솔을 여세요](command:workbench.action.toggleDevTools).</target>
+      </trans-unit>
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>
         <target state="translated">프로젝트 이름이 Null입니다.</target>
@@ -259,8 +263,8 @@
         <target state="translated">파일 이름은 255자를 초과할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="trailingWhitespaceErrorMessage">
-        <source xml:lang="en">File name cannot end with a whitespace</source>
-        <target state="translated">파일 이름은 공백으로 끝날 수 없습니다.</target>
+        <source xml:lang="en">File name cannot start or end with whitespace</source>
+        <target state="translated">파일 이름은 공백으로 시작하거나 끝날 수 없습니다</target>
       </trans-unit>
       <trans-unit id="undefinedFilenameErrorMessage">
         <source xml:lang="en">Undefined name</source>
