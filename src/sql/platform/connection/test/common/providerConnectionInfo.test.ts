@@ -232,7 +232,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	test('getOptionsKey should create a valid unique id', () => {
 		// Test the new option key format
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let expectedId = 'providerName:MSSQL|connectionName:name|databaseName:database|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|authenticationType:|connectionName:name|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 

@@ -223,7 +223,13 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
 			value = value ? value : '';
-			if (value && !getOriginalOptions || getOriginalOptions || (this.serverCapabilities && !this.serverCapabilities.useFullOptions)) {
+			// We can add the value if:
+			// 1. It is non empty and we support all options.
+			// 2. It is one of the original core properties and we want only core options.
+			// 3. We don't support all options even if we want it, so we must only have the core options.
+			// 4. It is authenticationType which is a core property that must be part of the option string no matter what.
+			let addValue = value && !getOriginalOptions || getOriginalOptions || (this.serverCapabilities && !this.serverCapabilities.useFullOptions) || idNames[index] === 'authenticationType'
+			if (addValue) {
 				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 			}
 		}

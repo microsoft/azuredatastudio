@@ -236,7 +236,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('getOptionsKey should create a valid unique id', () => {
 		let conn = new ConnectionProfile(capabilitiesService, iConnectionProfile);
-		let expectedId = 'providerName:MSSQL|connectionName:new name|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|groupId:group id';
+		let expectedId = 'providerName:MSSQL|authenticationType:|connectionName:new name|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|groupId:group id';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
