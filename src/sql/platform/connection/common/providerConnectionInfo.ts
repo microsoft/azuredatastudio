@@ -222,7 +222,9 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
 			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			if (value !== '') {
+				idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			}
 		}
 
 		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
