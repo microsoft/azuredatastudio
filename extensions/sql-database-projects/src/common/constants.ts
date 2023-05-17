@@ -671,6 +671,7 @@ export const downloading = localize('downloading', "Downloading");
 
 //#region buildHelper
 export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
+export const downloadingScriptDom = localize('downloadingScriptDom', "Downloading Microsoft.SqlServer.TransactSql.ScriptDom nuget to get DLL for build");
 export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
 export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
