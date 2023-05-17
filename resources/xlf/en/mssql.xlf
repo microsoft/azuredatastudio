@@ -74,6 +74,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.DatabaseDisplayName">
       <source xml:lang="en">database</source>
     </trans-unit>
+    <trans-unit id="objectManagement.DatabaseDisplayNameInTitle">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
     <trans-unit id="objectManagement.DatabaseRoleTypeDisplayName">
       <source xml:lang="en">database role</source>
     </trans-unit>
@@ -85,9 +88,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
       <source xml:lang="en">Login</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.OkText">
-      <source xml:lang="en">OK</source>
     </trans-unit>
     <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
       <source xml:lang="en">server role</source>
@@ -110,9 +110,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.addMemberText">
       <source xml:lang="en">Add a member</source>
     </trans-unit>
-    <trans-unit id="objectManagement.addText">
-      <source xml:lang="en">Add…</source>
-    </trans-unit>
     <trans-unit id="objectManagement.advancedSectionHeader">
       <source xml:lang="en">Advanced</source>
     </trans-unit>
@@ -125,12 +122,24 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.browseText">
       <source xml:lang="en">Browse…</source>
     </trans-unit>
+    <trans-unit id="objectManagement.collationLabel">
+      <source xml:lang="en">Collation</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.compatibilityLevelLabel">
+      <source xml:lang="en">Compatibility Level</source>
+    </trans-unit>
     <trans-unit id="objectManagement.confirmPasswordLabel">
       <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.containmentTypeLabel">
+      <source xml:lang="en">Containment Type</source>
     </trans-unit>
     <trans-unit id="objectManagement.createObjectOperationName">
       <source xml:lang="en">Create {0}</source>
       <note>{0} object type</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseExistsError">
+      <source xml:lang="en">Database '{0}' already exists. Choose a different database name.</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
       <source xml:lang="en">Select Database Role Members</source>
@@ -165,14 +174,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.generalSectionHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
-    <trans-unit id="objectManagement.helpText">
-      <source xml:lang="en">Help</source>
-    </trans-unit>
     <trans-unit id="objectManagement.invalidPasswordError">
       <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.loadingDialog">
-      <source xml:lang="en">Loading dialog...</source>
     </trans-unit>
     <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
       <source xml:lang="en">Loading objects completed, {0} objects found</source>
@@ -247,9 +250,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">{0} - New (Preview)</source>
       <note>{0} object type.</note>
     </trans-unit>
-    <trans-unit id="objectManagement.noActionScriptedMessage">
-      <source xml:lang="en">There is no action to be scripted.</source>
-    </trans-unit>
     <trans-unit id="objectManagement.noConnectionUriError">
       <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
     </trans-unit>
@@ -271,6 +271,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.optionsSectionHeader">
+      <source xml:lang="en">Options</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ownerText">
       <source xml:lang="en">Owner</source>
     </trans-unit>
@@ -283,15 +286,15 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.passwordsNotMatchError">
       <source xml:lang="en">Password must match the confirm password.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.recoveryModelLabel">
+      <source xml:lang="en">Recovery Model</source>
+    </trans-unit>
     <trans-unit id="objectManagement.refreshOEError">
       <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
       <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="objectManagement.removeMemberText">
       <source xml:lang="en">Remove selected member</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.removeText">
-      <source xml:lang="en">Remove</source>
     </trans-unit>
     <trans-unit id="objectManagement.renameObjectDialogTitle">
       <source xml:lang="en">Enter new name</source>
@@ -307,20 +310,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.schemaLabel">
       <source xml:lang="en">Schema</source>
     </trans-unit>
-    <trans-unit id="objectManagement.scriptError">
-      <source xml:lang="en">An error occurred while generating script. {0}</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.scriptGenerated">
-      <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.scriptText">
-      <source xml:lang="en">Script</source>
-    </trans-unit>
     <trans-unit id="objectManagement.selectText">
       <source xml:lang="en">Select</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.selectedLabel">
-      <source xml:lang="en">Selected</source>
     </trans-unit>
     <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
       <source xml:lang="en">Select Server Role Members</source>
@@ -358,9 +349,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.user.windowsUser">
       <source xml:lang="en">Mapped to a Windows user/group</source>
-    </trans-unit>
-    <trans-unit id="objectManagement.yesText">
-      <source xml:lang="en">Yes</source>
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
@@ -421,6 +409,41 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="viewKnownIssuesText">
       <source xml:lang="en">View Known Issues</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/ui/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="mssql.ui.OkText">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.helpText">
+      <source xml:lang="en">Help</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.loadingDialog">
+      <source xml:lang="en">Loading dialog...</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.noActionScriptedMessage">
+      <source xml:lang="en">There is no action to be scripted.</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.scriptError">
+      <source xml:lang="en">An error occurred while generating the script. {0}</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.scriptGenerated">
+      <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.scriptText">
+      <source xml:lang="en">Script</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.yesText">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.addText">
+      <source xml:lang="en">Add…</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.removeText">
+      <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.selectedLabel">
+      <source xml:lang="en">Selected</source>
     </trans-unit>
 </body></file>
   <file original="extensions/mssql/package" source-language="en" datatype="plaintext"><body>

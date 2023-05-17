@@ -46,10 +46,12 @@ export const enum TelemetryView {
 	LinkedAccounts = 'LinkedAccounts',
 	Notebook = 'Notebook',
 	NotifyEncryptionDialog = 'NotifyEncryptionDialog',
+	NotifyHiddenTenantDialog = 'NotifyHiddenTenantDialog',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',
-	TableDesigner = 'TableDesigner'
+	TableDesigner = 'TableDesigner',
+	ObjectExplorer = 'ObjectExplorer'
 }
 
 export const enum TelemetryError {
@@ -98,6 +100,8 @@ export const enum TelemetryAction {
 	MoveServerGroup = 'MoveServerGroup',
 	NewQuery = 'NewQuery',
 	ObjectExplorerExpand = 'ObjectExplorerExpand',
+	ObjectExplorerFilter = 'ObjectExplorerFilter',
+	ObjectExplorerRemoveFilter = 'ObjectExplorerRemoveFilter',
 	Open = 'Open',
 	OpenQuery = 'OpenQuery',
 	OpenExecutionPlanProperties = 'OpenExecutionPlanProperties',

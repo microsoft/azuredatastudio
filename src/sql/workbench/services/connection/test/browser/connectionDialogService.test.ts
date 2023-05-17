@@ -53,6 +53,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { Emitter } from 'vs/base/common/event';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -90,12 +91,12 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
 		let errorMessageService = getMockErrorMessageService();
 		let capabilitiesService = new TestCapabilitiesService();
-		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
+		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
 			undefined, // connection dialog service
 			testInstantiationService, // instantiation service
 			undefined, // editor service
 			undefined, // telemetry service
-			undefined, // configuration service
+			new TestConfigurationService(), // configuration service
 			new TestCapabilitiesService());
 		testInstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
 		testInstantiationService.stub(IContextKeyService, new MockContextKeyService());
@@ -129,6 +130,7 @@ suite('ConnectionDialogService tests', () => {
 				}
 			};
 		});
+		mockConnectionManagementService.setup(x => x.onRecentConnectionProfileDeleted).returns(() => new Emitter<ConnectionProfile>().event);
 		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService), new TestConfigurationService(), new TestCapabilitiesService());
 		testConnectionDialog.render();
 		testConnectionDialog['renderBody'](DOM.createStyleSheet());
@@ -184,6 +186,7 @@ suite('ConnectionDialogService tests', () => {
 			return Promise.resolve(connectionProfile);
 		});
 		mockConnectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => true);
+
 		mockWidget = TypeMoq.Mock.ofType(ConnectionWidget, TypeMoq.MockBehavior.Strict, [], undefined, 'MSSQL', undefined, undefined, mockConnectionManagementService.object);
 		mockWidget.setup(x => x.focusOnOpen());
 		mockWidget.setup(x => x.handleOnConnecting());

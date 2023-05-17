@@ -36,7 +36,6 @@ suite('AsyncServerTreeDragAndDrop', () => {
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		getOptionsKey: undefined!,
-		serverCapabilities: undefined,
 		matches: undefined!,
 		providerName: mssqlProviderName,
 		options: {},

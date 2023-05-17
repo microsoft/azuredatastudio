@@ -508,14 +508,6 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
-
-		/**
-		 * Gets the formatted title of the connection profile for display
-		 * @param profile The connection profile we want to get the full display info for (without non default options).
-		 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
-		 * @returns The title formatted with connection name in front, server info in the middle, with non default options at the end.
-		 */
-		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): Thenable<string>;
 	}
 
 	/*
@@ -1806,6 +1798,10 @@ declare module 'azdata' {
 
 	export interface NodeFilterProperty {
 		/**
+		 * The non-localized name of the filter property
+		 */
+		name: string;
+		/**
 		 * The name of the filter property displayed to the user
 		 */
 		displayName: string;
@@ -1826,7 +1822,20 @@ declare module 'azdata' {
 		/**
 		 * The list of choices for the filter property if the type is choice
 		 */
-		choices: string[];
+		choices: NodeFilterChoicePropertyValue[];
+	}
+
+	export interface NodeFilterChoicePropertyValue {
+		/**
+		 * The value of the choice
+		 */
+		value: string;
+		/**
+		 * The display name of the choice
+		 * If not specified, the value will be used as the display name
+		 * If specified, the display name will be used in the dropdown
+		 */
+		displayName?: string;
 	}
 
 	export interface NodeFilter {
@@ -1841,7 +1850,7 @@ declare module 'azdata' {
 		/**
 		 * The applied values of the filter property
 		 */
-		value: string | string[] | number | boolean | undefined;
+		value: string | string[] | number | number[] | boolean | undefined;
 	}
 
 	export enum NodeFilterPropertyDataType {
@@ -1937,5 +1946,12 @@ declare module 'azdata' {
 			 */
 			isPrimary: boolean;
 		}
+	}
+
+	export interface TableComponent {
+		/**
+		 * Set active cell.
+		 */
+		setActiveCell(row: number, column: number): void;
 	}
 }

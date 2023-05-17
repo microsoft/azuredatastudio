@@ -36,6 +36,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	public onConnectionProfileGroupEdited: Event<any> = Event.None;
 	public onConnectionProfileGroupDeleted: Event<any> = Event.None;
 	public onConnectionProfileGroupMoved: Event<any> = Event.None;
+	public onRecentConnectionProfileDeleted: Event<any> = Event.None;
 
 	public get onConnect(): Event<any> {
 		return Event.None;
@@ -352,10 +353,6 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined> {
 		return undefined;
-	}
-
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): string {
-		return undefined!;
 	}
 
 	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {

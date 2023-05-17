@@ -63,7 +63,6 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			for (const account of accounts) {
 				try {
 					const accountNode = new FlatAccountTreeNode(account, this.appContext, this);
-					await accountNode.updateLabel();
 					accountNodes.push(accountNode);
 				}
 				catch (error) {

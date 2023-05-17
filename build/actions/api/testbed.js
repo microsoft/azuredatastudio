@@ -4,6 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestbedIssue = exports.Testbed = void 0;
 class Testbed {
     constructor(config) {
         var _a, _b, _c, _d, _e;

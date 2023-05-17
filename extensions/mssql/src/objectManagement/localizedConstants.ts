@@ -22,25 +22,30 @@ export const ApplicationRoleTypeDisplayName: string = localize('objectManagement
 export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectManagement.ApplicationRoleTypeDisplayNameInTitle', "Application Role");
 export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
 export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
+export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
 
 // Shared Strings
-export const HelpText: string = localize('objectManagement.helpText', "Help");
-export const YesText: string = localize('objectManagement.yesText', "Yes");
-export const OkText: string = localize('objectManagement.OkText', "OK");
-export const LoadingDialogText: string = localize('objectManagement.loadingDialog', "Loading dialog...");
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
 export const RenameObjectDialogTitle: string = localize('objectManagement.renameObjectDialogTitle', "Enter new name");
-export const ScriptText: string = localize('objectManagement.scriptText', "Script");
-export const NoActionScriptedMessage: string = localize('objectManagement.noActionScriptedMessage', "There is no action to be scripted.");
-export const ScriptGeneratedText: string = localize('objectManagement.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
 export const BrowseText = localize('objectManagement.browseText', "Browse…");
 export const BrowseOwnerButtonAriaLabel = localize('objectManagement.browseForOwnerText', "Browse for an owner");
-export const AddText = localize('objectManagement.addText', "Add…");
-export const RemoveText = localize('objectManagement.removeText', "Remove");
-export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
+export const AddMemberAriaLabel = localize('objectManagement.addMembersText', "Add members");
 export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
+export const AddSecurableAriaLabel = localize('objectManagement.addSecurablesText', "Add securables");
+export const RemoveSecurableAriaLabel = localize('objectManagement.removeSecurablesText', "Remove selected securable");
+export const SecurablesText = localize('objectManagement.securablesText', "Securables");
+export const ExplicitPermissionsTableLabel = localize('objectManagement.explicitPermissionsTableLabel', "Explicit permissions for selected securable");
+export const EffectivePermissionsTableLabel = localize('objectManagement.effectivePermissionsTableLabel', "Effective permissions for selected securable");
+export const PermissionColumnHeader = localize('objectManagement.permissionColumnHeader', "Permission");
+export const GrantorColumnHeader = localize('objectManagement.grantorColumnHeader', "Grantor");
+export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', "Grant");
+export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
+export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
+export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
 
+export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
+export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
@@ -126,14 +131,10 @@ export function RenameObjectError(objectType: string, originalName: string, newN
 	}, "An error occurred while renaming {0} '{1}' to '{2}'. {3}", objectType, originalName, newName, error);
 }
 
-export function ScriptError(error: string): string {
-	return localize('objectManagement.scriptError', "An error occurred while generating script. {0}", error);
-}
-
 export const NameText = localize('objectManagement.nameLabel', "Name");
-export const SelectedText = localize('objectManagement.selectedLabel', "Selected");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
+export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
@@ -145,6 +146,14 @@ export const LoginNotSelectedError = localize('objectManagement.loginNotSelected
 export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
 export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
 export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
+
+// Database
+export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
+export const CollationText = localize('objectManagement.collationLabel', "Collation");
+export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
+export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");
+export const ContainmentTypeText = localize('objectManagement.containmentTypeLabel', "Containment Type");
+
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -217,7 +226,7 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 		case ObjectManagement.NodeType.Column:
 			return ColumnTypeDisplayName;
 		case ObjectManagement.NodeType.Database:
-			return DatabaseTypeDisplayName;
+			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unknown node type: ${type}`);
 	}
