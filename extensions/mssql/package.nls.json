@@ -186,5 +186,6 @@
 	"title.newObject": "New",
 	"title.objectProperties": "Properties (Preview)",
 	"title.deleteObject": "Delete",
-	"title.renameObject": "Rename"
+	"title.renameObject": "Rename",
+	"mssql.backup": "Backup"
 }

@@ -132,6 +132,11 @@
           "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
           "light": "resources/light/groupBySchemaDisabled.svg"
         }
+      },
+      {
+        "command": "mssql.backup",
+        "category": "MSSQL",
+        "title": "%mssql.backup%"
       }
     ],
     "outputChannels": [
