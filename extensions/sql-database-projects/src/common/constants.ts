@@ -149,7 +149,7 @@ export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
 export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
 export const selectProfile = localize('selectProfile', "Select Profile");
-export const saveProfileAsButtonText = localize('saveProfileAsButtonText', "Save Profile as...");
+export const saveProfileAsButtonText = localize('saveProfileAsButtonText', "Save As...");
 export const save = localize('save', "Save");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfileWithIcon = `$(folder) ${localize('browseForProfile', "Browse for profile")}`;
@@ -166,6 +166,8 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+export const versionMustNotBeEmpty = localize('versionMustNotBeEmpty', "Version must not be empty");
+export const saveProfile = localize('saveProfile', "Would you like to save the settings in a profile (.publish.xml)?");
 
 //#endregion
 
@@ -419,7 +421,7 @@ export function circularProjectReference(project1: string, project2: string) { r
 export function errorFindingBuildFilesLocation(err: any) { return localize('errorFindingBuildFilesLocation', "Error finding build files location: {0}", utils.getErrorMessage(err)); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
-export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
+export function unableToPerformAction(action: string, uri: string, error?: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'. {2}", action, uri, error); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
 export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency", project); }
@@ -455,6 +457,7 @@ export const externalStreamFriendlyName = localize('externalStream', "External S
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
+export const publishProfileFriendlyName = localize('publishProfileFriendlyName', "Publish Profile");
 
 //#endregion
 
@@ -531,16 +534,6 @@ export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac
 export const PublishProfileElements = localize('publishProfileElements', "Publish profile elements");
 
 //#endregion
-
-
-
-/**
- * Well-known database source values that are allowed to be sent in telemetry.
- *
- * 'dsct-oracle-to-ms-sql' is the name of an extension which allows users to migrate from Oracle to Microsoft SQL platform.
- * When looking at telemetry, we would like to know if a built or deployed database originated from the DSCT extension.
- */
-export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
 
 export function defaultOutputPath(configuration: string) { return path.join('.', 'bin', configuration); }
 
@@ -688,7 +681,7 @@ export function errorExtracting(path: string, error: string) { return localize('
 //#endregion
 
 //#region move
-export const onlyMoveSqlFilesSupported = localize('onlyMoveSqlFilesSupported', "Only moving .sql files is supported");
+export const onlyMoveFilesFoldersSupported = localize('onlyMoveFilesFoldersSupported', "Only moving files and folders are supported");
 export const movingFilesBetweenProjectsNotSupported = localize('movingFilesBetweenProjectsNotSupported', "Moving files between projects is not supported");
 export function errorMovingFile(source: string, destination: string, error: string) { return localize('errorMovingFile', "Error when moving file from {0} to {1}. Error: {2}", source, destination, error); }
 export function moveConfirmationPrompt(source: string, destination: string) { return localize('moveConfirmationPrompt', "Are you sure you want to move {0} to {1}?", source, destination); }

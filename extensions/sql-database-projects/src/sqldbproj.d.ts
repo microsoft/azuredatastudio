@@ -104,7 +104,8 @@ declare module 'sqldbproj' {
 		externalStreamingJob = 'externalStreamingJob',
 		folder = 'folder',
 		preDeployScript = 'preDeployScript',
-		postDeployScript = 'postDeployScript'
+		postDeployScript = 'postDeployScript',
+		publishProfile = 'publishProfile'
 	}
 
 	/**
@@ -153,6 +154,12 @@ declare module 'sqldbproj' {
 		addPostDeploymentScript(relativePath: string): Promise<void>;
 
 		/**
+		 * Adds a none item that is not included in "Build"
+		 * @param relativePath
+		 */
+		addNoneItem(relativePath: string): Promise<void>;
+
+		/**
 		 * Add a SQL object script that will be included in the schema
 		 * @param relativePath
 		 */
@@ -186,6 +193,11 @@ declare module 'sqldbproj' {
 		 * @param defaultValue
 		 */
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
+
+		/**
+		 * Gets an array of all database sources specified in the project.
+		 */
+		getDatabaseSourceValues(): string[];
 
 		/**
 		 * Appends given database source to the DatabaseSource property element.
@@ -241,9 +253,9 @@ declare module 'sqldbproj' {
 		readonly projectFileName: string;
 
 		/**
-		 * Files and folders that are included in the project
+		 * SQL object scripts in this project
 		 */
-		readonly files: IFileProjectEntry[];
+		readonly sqlObjectScripts: IFileProjectEntry[];
 
 		/**
 		 * SqlCmd variables and their values

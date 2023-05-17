@@ -8,7 +8,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import * as azdata from 'azdata';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { Action2, MenuId, MenuRegistry, SyncActionDescriptor, registerAction2 } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { ConnectionStatusbarItem } from 'sql/workbench/contrib/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -28,8 +28,10 @@ const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(Workbench
 workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, LifecyclePhase.Restored);
 
 import 'sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint';
-import { ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IObjectExplorerService, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { Codicon } from 'vs/base/common/codicons';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 
 // Connection Dashboard registration
 
@@ -111,6 +113,26 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID),
 });
 
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: 'registeredServers.collapseAll',
+			title: localize('registeredServers.collapseAll', "Collapse All Connections"),
+			menu: {
+				id: MenuId.ViewTitle,
+				when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID),
+				group: 'navigation',
+				order: Number.MAX_SAFE_INTEGER - 1,
+			},
+			icon: Codicon.collapseAll
+		});
+	}
+	async run(accessor: ServicesAccessor): Promise<void> {
+		const objectExplorerService = accessor.get(IObjectExplorerService);
+		await objectExplorerService.getServerTreeView().collapseAllConnections();
+	}
+});
+
 CommandsRegistry.registerCommand('azdata.connect',
 	function (accessor, args: {
 		serverName: string,
@@ -147,12 +169,16 @@ CommandsRegistry.registerCommand('azdata.connect',
 			connectionManagementService.connect(connectionProfile, undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
-				params: undefined,
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			});
 		} else {
-			connectionManagementService.showConnectionDialog();
+			connectionManagementService.showConnectionDialog(undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 		}
 	});
 

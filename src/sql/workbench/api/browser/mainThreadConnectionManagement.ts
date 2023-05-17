@@ -172,7 +172,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
-				params: undefined,
 				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
 				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
 			});
@@ -184,11 +183,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		// Need to have access to getOptionsKey, so recreate profile from details.
 		let convertedProfile = new ConnectionProfile(this._capabilitiesService, profile);
 		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
-	}
-
-	public $getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): Thenable<string | undefined> {
-		// Need to have access to getOptionsKey, so recreate profile from details.
-		return Promise.resolve(this._connectionManagementService.getEditorConnectionProfileTitle(profile, getNonDefaultsOnly));
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
@@ -248,7 +242,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
 			saveTheConnection: saveConnection,
 			showDashboard: showDashboard,
-			params: undefined,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		}).then((result) => {

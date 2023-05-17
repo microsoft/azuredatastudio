@@ -11089,6 +11089,9 @@
 			"activateLanguagePack": "Pour utiliser Azure Data Studio dans {0}, Azure Data Studio doit redémarrer.",
 			"appName": "`${appName} : par exemple, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
+			"azuredatastudio.download": "Télécharger",
+			"azuredatastudio.downloadTooltip": "Télécharger cette extension à partir d’une source externe",
+			"azuredatastudio.installTooltip": "Installer cette extension",
 			"connectionDialogBrowseTree.context": "Menu contextuel de l’arborescence de navigation de la boîte de dialogue de connexion",
 			"dashboard.toolbar": "Menu action de la barre d’outils tableau de bord",
 			"dataExplorer.action": "Menu d’action du conteneur d’affichage DataExplorer",
@@ -11251,7 +11254,7 @@
 			"notebook.toolbarIcon": "Notebook : icônes de la barre d'outils Markdown",
 			"notebookFindMatchHighlight": "Couleur des autres correspondances de recherche. La couleur ne doit pas être opaque pour ne pas masquer les ornements sous-jacents.",
 			"notebookFindRangeHighlight": "Couleur de la plage limitant la recherche. La couleur ne doit pas être opaque pour ne pas masquer les ornements sous-jacents.",
-			"queryEditorNullBackground": "La couleur d'arrière-plan des valeurs nulles dans la grille de résultats de l'éditeur de requête.",
+			"queryEditorNullBackground": "La couleur d'arrière-plan des valeurs nulles dans la grille de résultats de l'éditeur de requête. Pour désactiver la couleur de fond, vous pouvez utiliser une couleur transparente comme {0}.",
 			"tileBorder": "Couleur de bordure des vignettes",
 			"tileBoxShadow": "Couleur de l'ombre de la zone de vignette"
 		},
@@ -11757,6 +11760,7 @@
 			"unknownDashboardContainerError": "{0} est un conteneur inconnu."
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
+			"dashboard.configureDashboardTooltip": "En savoir plus sur la configuration du tableau de bord",
 			"dashboard.generalTabGroupHeader": "Général",
 			"home": "Accueil",
 			"missingConnectionInfo": "Aucune information de connexion pour ce tableau de bord"
@@ -12547,6 +12551,7 @@
 			"loadingContexts": "Chargement des contextes...",
 			"localhost": "localhost",
 			"newNotebookAction": "Nouveau notebook",
+			"newNotebookTask.newNotebook": "Nouveau Notebook",
 			"newViewLabel": "Créer une nouvelle vue",
 			"noContextAvailable": "Aucun(e)",
 			"noKernel": "Pas de noyau",
@@ -12655,13 +12660,17 @@
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"serverTree.newConnection": "Nouvelle connexion",
+			"serverTreeViewChangeNotification": "L'arborescence des serveurs a changé. Veuillez recharger la fenêtre pour voir les changements.",
+			"serverTreeViewChangeNotification.doNotReload": "Ne pas recharger",
+			"serverTreeViewChangeNotification.reload": "Recharger",
 			"servers.noConnections": "Aucune connexion."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
 			"serverGroup.autoExpand": "Développez automatiquement les groupes de serveurs dans la viewlet Explorateur d'objets.",
 			"serverGroup.colors": "Palette de couleurs du groupe de serveurs utilisée dans la viewlet Explorateur d'objets.",
+			"serverTree.configuration.title": "Arborescence du serveur",
 			"serverTree.nodeExpansionTimeout": "Délai d'attente en secondes pour développer un nœud dans la vue Serveurs",
-			"serverTree.useAsyncServerTree": "(Préversion) Utilisez la nouvelle arborescence de serveur asynchrone pour la vue des serveurs et la boîte de dialogue de connexion avec prise en charge des nouvelles fonctionnalités, comme le filtrage dynamique de nœuds."
+			"serverTree.useAsyncServerTree": "Utilisez la nouvelle arborescence de serveurs asynchrones pour la vue Serveurs et la boîte de dialogue de connexion avec prise en charge de nouvelles fonctionnalités telles que le filtrage dynamique des nœuds. Nécessite un redémarrage pour prendre effet."
 		},
 		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
 			"builtinCharts": "Graphiques intégrés",
@@ -12770,9 +12779,9 @@
 			"estimatedExecutionPlanKeyboardAction": "Afficher le plan d’exécution estimé",
 			"focusOnCurrentQueryKeyboardAction": "Se concentrer sur la requête actuelle",
 			"parseSyntaxLabel": "Analyser la requête",
-			"queryActions.notConnected": "Connectez-vous à un serveur",
-			"queryActions.parseSyntaxFailure": "La commande a échoué : ",
-			"queryActions.parseSyntaxSuccess": "Commandes exécutées",
+			"queryActions.notConnected": "Veuillez vous connecter à un serveur avant d'exécuter cette action.",
+			"queryActions.parseSyntaxFailure": "Échec de l'analyse de la requête : {0}",
+			"queryActions.parseSyntaxSuccess": "L'analyse de la requête a réussi.",
 			"queryActions.queryResultsCopySuccess": "La requête et les résultats ont été copiés.",
 			"queryShortcutNoEditor": "Le paramètre de l'éditeur est nécessaire pour exécuter un raccourci",
 			"refreshIntellisenseKeyboardAction": "Actualiser le cache IntelliSense",
@@ -12821,7 +12830,8 @@
 			"ExecutionPlan": "Plan d'exécution",
 			"actualQueryPlan": "Réel",
 			"cancelQueryLabel": "Annuler",
-			"changeConnectionDatabaseLabel": "Changer la connexion",
+			"changeConnectionDatabaseLabel": "Changer",
+			"changeConnectionDatabaseTooltip": "Changer la connexion",
 			"changeDatabase.failed": "Le changement de base de données a échoué",
 			"changeDatabase.failedWithError": "Le changement de la base de données {0} a échoué",
 			"connectDatabaseLabel": "Connecter",
@@ -12833,7 +12843,9 @@
 			"estimatedQueryPlan": "Plan estimé",
 			"newQueryTask.newQuery": "Nouvelle requête",
 			"query.multiSelectionNotSupported": "L’exécution de la requête n’est pas prise en charge lorsque l’éditeur est en mode de sélection multiple.",
-			"queryEditor.exportSqlAsNotebook": "Exporter au format Notebook",
+			"queryEditor.exportSqlAsNotebookLabel": "Vers l'ordinateur portable",
+			"queryEditor.exportSqlAsNotebookTooltip": "Exporter au format Notebook",
+			"queryEditor.parse": "Analyser",
 			"runQueryLabel": "Exécuter",
 			"selectDatabase": "Sélectionner une base de données"
 		},
@@ -13101,10 +13113,10 @@
 			"accountManagementService.close": "Fermer",
 			"addAccountFailedCodeMessage": "{0} \r\nMessage d'erreur : {1}",
 			"addAccountFailedGenericMessage": "Échec de l’ajout du compte. Pour plus d’informations, consultez le journal des comptes Azure.",
-			"addAccountFailedMessage": "{0}",
 			"loggingIn": "Ajout du compte...",
+			"refreshAccountFailedGenericMessage": "Échec de l’actualisation du compte. Pour plus d’informations, consultez le journal des comptes Azure.",
 			"refreshCanceled": "L'actualisation du compte a été annulée par l'utilisateur",
-			"refreshFailed": "0 \r\nMessage d’erreur : 1"
+			"refreshFailed": "{0} \r\nMessage d’erreur : {1}"
 		},
 		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
 			"azureAccount": "Compte Azure",
@@ -13460,7 +13472,10 @@
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "La création d'une session de l'Explorateur d'objets a échoué",
 			"nodeExpansionError": "Plusieurs erreurs :",
-			"nodeExpansionTimeout": "L'expansion du nœud a expiré pour le nœud {0} pour les fournisseurs {1}"
+			"nodeExpansionTimeout": "L'expansion du nœud a expiré pour le nœud {0} pour les fournisseurs {1}",
+			"objectExplorerMissingConnectionForSession": "Expiration du délai d’attente pour la création de session {0} pour la connexion « {1} ». Ceci est probablement dû au fait que le service OE n’a pas reçu de réponse pour createNewSession de la part du fournisseur pour la connexion « {1} »",
+			"objectExplorerMissingSession": "Expiration du délai d’attente de la création de session {0}. Cela est probablement dû au fait que le service OE n’a pas reçu de réponse du fournisseur pour createNewSession.",
+			"objectExplorerSessionIdMissing": "L’ID de session retourné par le fournisseur « {0} » pour le « {1} » de connexion n’est pas valide."
 		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
 			"firewallCanceled": "Boîte de dialogue de pare-feu annulée",
@@ -13719,6 +13734,12 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Pri&&se en main",
 			"showReleaseNotes": "Afficher la prise en main"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"filteredTreeElementName": "{0} (filtré)"
+		},
+		"sql/workbench/services/objectExplorer/browser/treeUpdateUtils": {
+			"objectExplorerTimeout": "Explorateur d’objets d’extension de '{0}' a expiré"
 		}
 	}
 }

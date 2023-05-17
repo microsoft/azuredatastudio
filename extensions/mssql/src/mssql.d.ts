@@ -396,10 +396,10 @@ declare module 'mssql' {
 		/**
 		 * Move a folder and its contents within a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Path of the folder, typically relative to the .sqlproj file
-		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 * @param sourcePath Source path of the folder, typically relative to the .sqlproj file
+		 * @param destinationPath Destination path of the folder, typically relative to the .sqlproj file
 		 */
-		moveFolder(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveFolder(projectUri: string, sourcePath: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a post-deployment script to a project
@@ -446,18 +446,18 @@ declare module 'mssql' {
 		/**
 		 * Move a post-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Move a pre-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Close a SQL project
@@ -561,10 +561,10 @@ declare module 'mssql' {
 		/**
 		 * Move a SQL object script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Get all the database references in a project
@@ -632,10 +632,10 @@ declare module 'mssql' {
 		/**
 		 * Move a None item in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 	}
 
 
@@ -895,9 +895,12 @@ declare module 'mssql' {
 		 * Object types.
 		 */
 		export const enum NodeType {
+			ApplicationRole = "ApplicationRole",
 			Column = "Column",
 			Database = "Database",
+			DatabaseRole = "DatabaseRole",
 			ServerLevelLogin = "ServerLevelLogin",
+			ServerLevelServerRole = "ServerLevelServerRole",
 			Table = "Table",
 			User = "User",
 			View = "View"
@@ -914,7 +917,14 @@ declare module 'mssql' {
 		}
 
 		/**
-		 * Base interface for the object view information
+		 * Base interface for all the security principal objects. e.g. Login, Server Role, Database Role...
+		 */
+		export interface SecurityPrincipalObject extends SqlObject {
+			securablePermissions: SecurablePermissions[];
+		}
+
+		/**
+		 * Base interface for the object view information.
 		 */
 		export interface ObjectViewInfo<T extends SqlObject> {
 			/**
@@ -924,9 +934,51 @@ declare module 'mssql' {
 		}
 
 		/**
+		 * Securable type metadata.
+		 */
+		export interface SecurableTypeMetadata {
+			/**
+			 * Name of the securable type.
+			 */
+			name: string;
+			/**
+			 * Display name of the securable type.
+			 */
+			displayName: string;
+			/**
+			 * Permissions supported by the securable type.
+			 */
+			permissions: PermissionMetadata[];
+		}
+
+		/**
+		 * Permission metadata.
+		 */
+		export interface PermissionMetadata {
+			/**
+			 * Name of the permission.
+			 */
+			name: string;
+			/**
+			 * Display name of the permission.
+			 */
+			displayName: string;
+		}
+
+		/**
+		 * Base interface for security principal object's view information.
+		 */
+		export interface SecurityPrincipalViewInfo<T extends SecurityPrincipalObject> extends ObjectViewInfo<T> {
+			/**
+			 * The securable types that the security principal object can be granted permissions on.
+			 */
+			supportedSecurableTypes: SecurableTypeMetadata[];
+		}
+
+		/**
 		 * Server level login.
 		 */
-		export interface Login extends SqlObject {
+		export interface Login extends SecurityPrincipalObject {
 			/**
 			 * Authentication type.
 			 */
@@ -1022,19 +1074,11 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the login view.
 		 */
-		export interface LoginViewInfo extends ObjectViewInfo<Login> {
+		export interface LoginViewInfo extends SecurityPrincipalViewInfo<Login> {
 			/**
-			 * Whether Windows Authentication is supported.
+			 * The authentication types supported by the server.
 			 */
-			supportWindowsAuthentication: boolean;
-			/**
-			 * Whether Azure Active Directory Authentication is supported.
-			 */
-			supportAADAuthentication: boolean;
-			/**
-			 * Whether SQL Authentication is supported.
-			 */
-			supportSQLAuthentication: boolean;
+			authenticationTypes: AuthenticationType[];
 			/**
 			 * Whether the locked out state can be changed.
 			 */
@@ -1067,20 +1111,24 @@ declare module 'mssql' {
 		/**
 		 * The permission information a principal has on a securable.
 		 */
-		export interface Permission {
+		export interface SecurablePermissionItem {
 			/**
-			 * Name of the permission.
+			 * name of the permission.
 			 */
-			name: string;
+			permission: string;
 			/**
-			 * Whether the permission is granted or denied.
+			 * Name of the grantor.
 			 */
-			grant: boolean;
+			grantor: string;
+			/**
+			 * Whether the permission is granted or denied. Undefined means not specified.
+			 */
+			grant?: boolean;
 			/**
 			 * Whether the pincipal can grant this permission to other principals.
 			 * The value will be ignored if the grant property is set to false.
 			 */
-			withGrant: boolean;
+			withGrant?: boolean;
 		}
 
 		/**
@@ -1088,13 +1136,25 @@ declare module 'mssql' {
 		 */
 		export interface SecurablePermissions {
 			/**
-			 * The securable.
+			 * The securable name.
 			 */
-			securable: SqlObject;
+			name: string;
 			/**
-			 * The Permissions.
+			 * The securable type.
 			 */
-			permissions: Permission[];
+			type: string;
+			/**
+			 * The schema name of the object if applicable.
+			 */
+			schema?: string;
+			/**
+			 * The permissions.
+			 */
+			permissions: SecurablePermissionItem[];
+			/**
+			 * The effective permissions. Includes all permissions granted to the principal, including those granted through role memberships.
+			 */
+			effectivePermissions: string[];
 		}
 
 		/**
@@ -1116,27 +1176,31 @@ declare module 'mssql' {
 		 */
 		export const enum UserType {
 			/**
-			 * User with a server level login.
+			 * Mapped to a server login.
 			 */
-			WithLogin = 'WithLogin',
+			LoginMapped = 'LoginMapped',
 			/**
-			 * User based on a Windows user/group that has no login, but can connect to the Database Engine through membership in a Windows group.
+			 * Mapped to a Windows user or group.
 			 */
-			WithWindowsGroupLogin = 'WithWindowsGroupLogin',
+			WindowsUser = 'WindowsUser',
 			/**
-			 * Contained user, authentication is done within the database.
+			 * Authenticate with password.
 			 */
-			Contained = 'Contained',
+			SqlAuthentication = 'SqlAuthentication',
+			/**
+			 * Authenticate with Azure Active Directory.
+			 */
+			AADAuthentication = 'AADAuthentication',
 			/**
 			 * User that cannot authenticate.
 			 */
-			NoConnectAccess = 'NoConnectAccess'
+			NoLoginAccess = 'NoLoginAccess'
 		}
 
 		/**
 		 * Database user.
 		 */
-		export interface User extends SqlObject {
+		export interface User extends SecurityPrincipalObject {
 			/**
 			 * Type of the user.
 			 */
@@ -1164,11 +1228,6 @@ declare module 'mssql' {
 			 */
 			defaultLanguage: string | undefined;
 			/**
-			 * Authentication type.
-			 * Only applicable when user type is 'Contained'.
-			 */
-			authenticationType: AuthenticationType | undefined;
-			/**
 			 * Password of the user.
 			 * Only applicable when the user type is 'Contained' and the authentication type is 'Sql'.
 			 */
@@ -1178,23 +1237,11 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the user view.
 		 */
-		export interface UserViewInfo extends ObjectViewInfo<User> {
+		export interface UserViewInfo extends SecurityPrincipalViewInfo<User> {
 			/**
-			 * Whether contained user is supported.
+			 * All user types supported by the database.
 			 */
-			supportContainedUser: boolean;
-			/**
-			 * Whether Windows authentication is supported.
-			 */
-			supportWindowsAuthentication: boolean;
-			/**
-			 * Whether Azure Active Directory authentication is supported.
-			 */
-			supportAADAuthentication: boolean;
-			/**
-			 * Whether SQL Authentication is supported.
-			 */
-			supportSQLAuthentication: boolean;
+			userTypes: UserType[];
 			/**
 			 * All languages supported by the database.
 			 */
@@ -1211,6 +1258,128 @@ declare module 'mssql' {
 			 * Name of all the database roles.
 			 */
 			databaseRoles: string[];
+		}
+
+		/**
+		 * Interface representing the server role object.
+		 */
+		export interface ServerRoleInfo extends SecurityPrincipalObject {
+			/**
+			 * Name of the server principal that owns the server role.
+			 */
+			owner: string;
+			/**
+			 * Name of the server principals that are members of the server role.
+			 */
+			members: string[];
+			/**
+			 * Server roles that the server role is a member of.
+			 */
+			memberships: string[];
+		}
+
+		/**
+		 * Interface representing the information required to render the server role view.
+		 */
+		export interface ServerRoleViewInfo extends SecurityPrincipalViewInfo<ServerRoleInfo> {
+			/**
+			 * Whether the server role is a fixed role.
+			 */
+			isFixedRole: boolean;
+			/**
+			 * List of all the server roles.
+			 */
+			serverRoles: string[];
+		}
+
+		/**
+		 * Interface representing the application role object.
+		 */
+		export interface ApplicationRoleInfo extends SecurityPrincipalObject {
+			/**
+			 * Default schema of the application role.
+			 */
+			defaultSchema: string;
+			/**
+			 * Schemas owned by the application role.
+			 */
+			ownedSchemas: string[];
+			/**
+			 * Password of the application role.
+			 */
+			password: string;
+		}
+
+		/**
+		 * Interface representing the information required to render the application role view.
+		 */
+		export interface ApplicationRoleViewInfo extends SecurityPrincipalViewInfo<ApplicationRoleInfo> {
+			/**
+			 * List of all the schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Interface representing the database role object.
+		 */
+		export interface DatabaseRoleInfo extends SecurityPrincipalObject {
+			/**
+			 * Name of the database principal that owns the database role.
+			 */
+			owner: string;
+			/**
+			 * Schemas owned by the database role.
+			 */
+			ownedSchemas: string[];
+			/**
+			 * Name of the user or database role that are members of the database role.
+			 */
+			members: string[];
+		}
+
+		/**
+		 * Interface representing the information required to render the database role view.
+		 */
+		export interface DatabaseRoleViewInfo extends SecurityPrincipalViewInfo<DatabaseRoleInfo> {
+			/**
+			 * List of all the schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Interface representing an item in the search result.
+		 */
+		export interface SearchResultItem {
+			/**
+			 * name of the object.
+			 */
+			name: string;
+			/**
+			 * type of the object.
+			 */
+			type: string;
+			/**
+			 * schema of the object.
+			 */
+			schema: string | undefined;
+		}
+
+		export interface Database extends SqlObject {
+			owner?: string;
+			collationName?: string;
+			recoveryModel?: string;
+			compatibilityLevel?: string;
+			containmentType?: string;
+		}
+
+		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
+			loginNames: string[];
+			collationNames: string[];
+			compatibilityLevels: string[];
+			containmentTypes: string[];
+			recoveryModels: string[];
 		}
 	}
 
@@ -1258,6 +1427,14 @@ declare module 'mssql' {
 		 * @param objectUrn SMO Urn of the object to be dropped. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 */
 		drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Thenable<void>;
+		/**
+		 * Search for objects.
+		 * @param contextId The object view's context id.
+		 * @param objectTypes The object types to search for.
+		 * @param searchText Search text.
+		 * @param schema Schema to search in.
+		 */
+		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
 }

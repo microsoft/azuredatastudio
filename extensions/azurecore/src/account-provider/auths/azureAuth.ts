@@ -24,12 +24,12 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
-import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBody as isErrorResponseBodyWithError } from '../../azureResource/utils';
+import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBodyWithError } from '../../azureResource/utils';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -327,13 +327,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource}`);
-			return null;
-		}
-
-		// The user wants to ignore this tenant.
-		if (getTenantIgnoreList().includes(tenantId)) {
-			Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted.`);
-			return null;
+			throw new Error(localize('msal.resourceNotFoundError', `Unable to find configuration for Azure Resource {0}`, azureResource));
 		}
 
 		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
@@ -342,7 +336,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let account: AccountInfo | null = await this.getAccountFromMsalCache(accountId);
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
-			return null;
+			throw new Error(localize('msal.accountNotFoundError', `Unable to find account info when acquiring token.`));
 		}
 		let newScope;
 		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
@@ -365,7 +359,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
 			Logger.error('Failed to acquireTokenSilent', e);
-			if (e instanceof InteractionRequiredAuthError) {
+			if (e instanceof AuthError && this.accountNeedsRefresh(e)) {
 				// build refresh token request
 				const tenant: Tenant = {
 					id: tenantId,
@@ -509,6 +503,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
+
 			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
 			// remove home tenant from list of tenants
@@ -632,7 +627,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 	//#endregion
 
-
 	//#region interaction handling
 	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | null> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
@@ -655,6 +649,17 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	/**
+	 * Determines whether the account needs to be refreshed based on received error instance
+	 * and STS error codes from errorMessage.
+	 * @param error AuthError instance
+	 */
+	private accountNeedsRefresh(error: AuthError): boolean {
+		return error instanceof InteractionRequiredAuthError
+			|| error.errorMessage.includes(Constants.AADSTS70043)
+			|| error.errorMessage.includes(Constants.AADSTS50173);
+	}
+
+	/**
 	 * Asks the user if they would like to do the interaction based authentication as required by OAuth2
 	 * @param tenant
 	 * @param resource
@@ -673,7 +678,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		interface ConsentMessageItem extends vscode.MessageItem {
 			booleanResult: boolean;
-			action?: (tenantId: string) => Promise<void>;
+			action?: (tenantId: string) => Promise<boolean>;
 		}
 
 		const openItem: ConsentMessageItem = {
@@ -687,23 +692,50 @@ export abstract class AzureAuth implements vscode.Disposable {
 			booleanResult: false
 		};
 
+		const cancelAndAuthenticate: ConsentMessageItem = {
+			title: localize('azurecore.consentDialog.authenticate', "Cancel and Authenticate"),
+			isCloseAffordance: true,
+			booleanResult: true
+		};
+
 		const dontAskAgainItem: ConsentMessageItem = {
 			title: localize('azurecore.consentDialog.ignore', "Ignore Tenant"),
 			booleanResult: false,
 			action: async (tenantId: string) => {
+				return await confirmIgnoreTenantDialog();
+			}
+		};
+
+		const confirmIgnoreTenantItem: ConsentMessageItem = {
+			title: localize('azurecore.confirmIgnoreTenantDialog.confirm', "Confirm"),
+			booleanResult: false,
+			action: async (tenantId: string) => {
 				tenantIgnoreList.push(tenantId);
 				await updateTenantIgnoreList(tenantIgnoreList);
+				return false;
 			}
 
 		};
-		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
-		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+		const confirmIgnoreTenantDialog = async () => {
+			const confirmMessage = localize('azurecore.confirmIgnoreTenantDialog.body', "Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. \n\nTo allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.\n\nDo you wish to proceed?", tenant.displayName, tenant.id, Constants.AzureTenantConfigFilterSetting);
+			let confirmation = await vscode.window.showInformationMessage(confirmMessage, { modal: true }, cancelAndAuthenticate, confirmIgnoreTenantItem);
 
-		if (result?.action) {
-			await result.action(tenant.id);
+			if (confirmation?.action) {
+				await confirmation.action(tenant.id);
+			}
+
+			return confirmation?.booleanResult || false;
 		}
 
-		return result?.booleanResult || false;
+		const messageBody = localize('azurecore.consentDialog.body', "Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.endpoint);
+		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
+
+		let response = false;
+		if (result?.action) {
+			response = await result.action(tenant.id);
+		}
+
+		return result?.booleanResult || response;
 	}
 	//#endregion
 

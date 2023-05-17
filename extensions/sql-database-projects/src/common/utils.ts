@@ -16,6 +16,7 @@ import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabase } from './typeHelper';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -157,11 +158,19 @@ export function convertSlashesForSqlProj(filePath: string): string {
  * @param systemDb
  * @returns
  */
-export function systemDatabaseToString(systemDb: mssql.SystemDatabase): string {
-	if (systemDb === mssql.SystemDatabase.Master) {
+export function systemDatabaseToString(systemDb: SystemDatabase): string {
+	if (systemDb === mssql.SystemDatabase.Master || systemDb === vscodeMssql.SystemDatabase.Master) {
 		return constants.master;
 	} else {
 		return constants.msdb;
+	}
+}
+
+export function getSystemDatabase(name: string): SystemDatabase {
+	if (getAzdataApi()) {
+		return name === constants.master ? mssql.SystemDatabase.Master : mssql.SystemDatabase.MSDB;
+	} else {
+		return name === constants.master ? vscodeMssql.SystemDatabase.Master : vscodeMssql.SystemDatabase.MSDB;
 	}
 }
 
@@ -315,15 +324,14 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
-export async function getSqlProjectsService(): Promise<mssql.ISqlProjectsService> {
+export async function getSqlProjectsService(): Promise<ISqlProjectsService> {
 	if (getAzdataApi()) {
 		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.sqlProjects;
 	} else {
-		throw new Error(constants.errorNotSupportedInVsCode('SqlProjectService'));
-		// const api = await getVscodeMssqlApi();
-		// return api.sqlProjects;
+		const api = await getVscodeMssqlApi();
+		return api.sqlProjects;
 	}
 }
 
@@ -636,36 +644,6 @@ export function getFoldersAlongPath(startFolder: string, endFolder: string): str
 }
 
 /**
- * Determines whether provided value is a well-known database source and therefore is allowed to be sent in telemetry.
- *
- * @param value Value to check if it is a well-known database source
- * @returns Normalized database source value if it is well-known, otherwise returns undefined
- */
-export function getWellKnownDatabaseSource(value: string): string | undefined {
-	const upperCaseValue = value.toUpperCase();
-	return constants.WellKnownDatabaseSources
-		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
-}
-
-/**
- * Filters an array of specified database project sources to only those that are well-known.
- *
- * @param databaseSourceValues Array of database source values to filter
- * @returns Array of well-known database sources
- */
-export function getWellKnownDatabaseSources(databaseSourceValues: string[]): string[] {
-	const databaseSourceSet = new Set<string>();
-	for (let databaseSourceValue of databaseSourceValues) {
-		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSource(databaseSourceValue);
-		if (wellKnownDatabaseSourceValue) {
-			databaseSourceSet.add(wellKnownDatabaseSourceValue);
-		}
-	}
-
-	return Array.from(databaseSourceSet);
-}
-
-/**
  * Returns SQL version number from docker image name which is in the beginning of the image name
  * @param imageName docker image name
  * @returns SQL server version
@@ -748,7 +726,12 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 	let targetPlatform;
 	if (isCloud) {
 		const engineEdition = serverInfo.engineEditionId;
-		targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		const azdataApi = getAzdataApi();
+		if (azdataApi) {
+			targetPlatform = engineEdition === azdataApi.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		} else {
+			targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		}
 	} else {
 		const serverMajorVersion = serverInfo.serverMajorVersion;
 		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;

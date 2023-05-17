@@ -100,11 +100,5 @@
 		"version": "0.0.76",
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
-	"builtInExtensions": [
-		{
-			"name": "Microsoft.sqlservernotebook",
-			"version": "0.5.0",
-			"repo": "https://github.com/microsoft/azuredatastudio"
-		}
-	]
+	"builtInExtensions": [ ]
 }

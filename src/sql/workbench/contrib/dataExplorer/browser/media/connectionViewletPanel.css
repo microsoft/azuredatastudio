@@ -46,14 +46,6 @@
 	color: #ffffff;
 }
 
-.server-explorer-viewlet  .monaco-action-bar .action-label {
-	margin-right: 0.3em;
-	margin-left: 0.3em;
-	line-height: 15px;
-	width: 10px !important;
-	height: 10px !important;
-}
-
 /* Add space beneath the button */
 .new-connection .monaco-text-button {
 	margin-bottom: 2px;
@@ -217,8 +209,14 @@
 	border-radius: 5px;
 }
 
+.monaco-list-row .async-server-group .async-server-group .async-server-group-container .icon {
+	width: 7px;
+	height: 20px;
+	border-radius: 3px;
+}
+
 .monaco-list-row .async-server-group .async-server-group .async-server-group-container .name {
-	padding-left: 10px;
+	padding-left: 5px;
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -255,7 +253,6 @@
 	position: relative;
 }
 
-
 .monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge {
 	position: absolute;
 	bottom: 0;
@@ -271,3 +268,21 @@
 	background-repeat: no-repeat;
 	background-size: 16px 16px;
 }
+
+.server-explorer-viewlet .monaco-list .monaco-list-row .actions {
+	display: none;
+	padding-right: 10px;
+}
+
+.server-explorer-viewlet .monaco-list .monaco-list-row .actions .action-label {
+	background-size: 14px 14px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.server-explorer-viewlet .monaco-list .monaco-list-row:hover .actions,
+.server-explorer-viewlet .monaco-list .monaco-list-row.selected .actions,
+.server-explorer-viewlet .monaco-list .monaco-list-row.focused .actions {
+	display: block;
+}
+

@@ -515,7 +515,7 @@ export interface DeployParams {
 	packageFilePath: string;
 	databaseName: string;
 	upgradeExisting: boolean;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -524,7 +524,7 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -555,7 +555,7 @@ export interface SavePublishProfileParams {
 	profilePath: string;
 	databaseName: string;
 	connectionString: string;
-	sqlCommandVariableValues?: Map<string, string>;
+	sqlCommandVariableValues?: Record<string, string>;
 	deploymentOptions?: mssql.DeploymentOptions;
 }
 
@@ -1610,6 +1610,17 @@ export interface DropObjectRequestParams {
 
 export namespace DropObjectRequest {
 	export const type = new RequestType<DropObjectRequestParams, void, void, void>('objectManagement/drop');
+}
+
+export interface SearchObjectRequestParams {
+	contextId: string;
+	searchText: string | undefined;
+	schema: string | undefined;
+	objectTypes: mssql.ObjectManagement.NodeType[];
+}
+
+export namespace SearchObjectRequest {
+	export const type = new RequestType<SearchObjectRequestParams, mssql.ObjectManagement.SearchResultItem[], void, void>('objectManagement/search');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

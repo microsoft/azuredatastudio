@@ -24,9 +24,6 @@ import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ObjectExplorerRequestStatus } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { NODE_EXPANSION_CONFIG } from 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -58,6 +55,9 @@ export interface IServerTreeView {
 	renderBody(container: HTMLElement): Promise<void>;
 	layout(size: number): void;
 	showFilteredTree(view: ServerTreeViewView): void;
+	filterElementChildren(node: TreeNode): Promise<void>;
+	getActionContext(element: ServerTreeElement): any;
+	collapseAllConnections(): void;
 	view: ServerTreeViewView;
 }
 
@@ -182,13 +182,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	// Cache of tree nodes for each connection by session ids
 	private _treeNodeCache: Map<string, Map<string, TreeNode>> = new Map<string, Map<string, TreeNode>>();
 
+	// Cache of node filters for each connection by session ids
+	private _nodeFilterCache: Map<string, Map<string, azdata.NodeFilter[]>> = new Map<string, Map<string, azdata.NodeFilter[]>>();
+
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private logService: ILogService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@INotificationService private _notificationService: INotificationService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
@@ -237,6 +238,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				return;
 			}
 			this._treeNodeCache.delete(session.sessionId);
+			this._nodeFilterCache.delete(session.sessionId);
 			await this.closeSession(connection.providerName, session);
 			delete this._activeObjectExplorerNodes[connectionUri];
 			delete this._sessions[session.sessionId!];
@@ -294,27 +296,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._connectionsWaitingForSession.delete(connection.id);
 				}
 				createNewSessionListener.dispose();
-				clearTimeout(timeoutHandle);
 			}
-			const onTimeout = () => {
-				if (!this._sessions[sessionId]) {
-					this.logService.error(`Timed out waiting for session ${sessionId} to be created.
-					This has probably happened because OE service did not recieve a response for createNewSession from the provider.`);
-					reject(new Error(
-						nls.localize('objectExplorerMissingSession',
-							'Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.', sessionId)));
-				} else {
-					this.logService.error(`Timeout waiting for session ${sessionId} to be created for connection "${connection.title}".
-					This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection."${connection.title}`);
-					reject(new Error(nls.localize(
-						'objectExplorerMissingConnectionForSession',
-						'Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"', sessionId, connection.title
-					)));
-				}
 
-				cleanup();
-			}
-			const timeoutHandle = setTimeout(onTimeout, this.getObjectExplorerTimeout() * 1000);
 			const createNewSessionListener = this._onCreateNewSession.event((response) => {
 				checkSessionAndConnection();
 			});
@@ -346,6 +329,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				let server = this.toTreeNode(session.rootNode, undefined);
 				this._treeNodeCache.set(sessionId, new Map<string, TreeNode>());
 				this._treeNodeCache.get(sessionId)!.set(this.getTreeNodeCacheKey(server.toNodeInfo()), server);
+				this._nodeFilterCache.set(sessionId, new Map<string, azdata.NodeFilter[]>());
 				server.connection = connection;
 				server.session = session;
 				this._activeObjectExplorerNodes[connection!.id] = server;
@@ -475,6 +459,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
+			const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
+			// If the node has filters we need to cache them so that we can reapply them when the node is refreshed.
+			if (node.filters && sessionFilterCache) {
+				sessionFilterCache.set(this.getTreeNodeCacheKey(node), node.filters);
+			}
+
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId!].nodes[node.nodePath]) {
@@ -497,9 +487,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this.logService.trace(`${session.sessionId}: got providers for node expansion: ${allProviders.map(p => p.providerId).join(', ')}`);
 
 					const resolveExpansion = () => {
-						resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
+						const expansionResult = self.mergeResults(allProviders, resultMap, node.nodePath);
+						if (expansionResult.errorMessage || expansionResult.nodes.some(n => n.errorMessage)) {
+							this._onUpdateObjectExplorerNodes.fire({
+								connection: node.getConnectionProfile(),
+								errorMessage: expansionResult.errorMessage
+							});
+						}
+						resolve(expansionResult);
 						// Have to delete it after get all responses otherwise couldn't find session for not the first response
-						clearTimeout(expansionTimeout);
 						if (newRequest) {
 							delete self._sessions[session.sessionId!].nodes[node.nodePath];
 							this.logService.trace(`Deleted node ${node.nodePath} from session ${session.sessionId}`);
@@ -517,19 +513,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							}
 						}
 					});
-
-					const expansionTimeout = setTimeout(() => {
-						/**
-						 * If we don't get a response back from all the providers in specified expansion timeout seconds then we assume
-						 * it's not going to respond and resolve the promise with the results we have so far
-						 */
-						if (resultMap.size !== allProviders.length) {
-							const missingProviders = allProviders.filter(p => !resultMap.has(p.providerId));
-							this.logService.warn(`${session.sessionId}: Node expansion timed out for node ${node.nodePath} for providers ${missingProviders.map(p => p.providerId).join(', ')}`);
-							this._notificationService.error(nls.localize('nodeExpansionTimeout', "Node expansion timed out for node {0} for providers {1}", node.nodePath, missingProviders.map(p => p.providerId).join(', ')));
-						}
-						resolveExpansion();
-					}, this.getObjectExplorerTimeout() * 1000);
 
 					self._sessions[session.sessionId!].nodes[node.nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
@@ -558,11 +541,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
-							self.callExpandOrRefreshFromProvider(provider, {
+							let expandRequest: azdata.ExpandNodeInfo = {
 								sessionId: session.sessionId!,
 								nodePath: node.nodePath,
-								securityToken: session.securityToken
-							}, refresh).then(isExpanding => {
+								securityToken: session.securityToken,
+							};
+							if (node?.filters?.length > 0) {
+								expandRequest.filters = node.filters;
+							}
+							self.callExpandOrRefreshFromProvider(provider, expandRequest, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
 									let emptyResult: azdata.ObjectExplorerExpandInfo = {
@@ -588,8 +575,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo | undefined {
-		let finalResult: azdata.ObjectExplorerExpandInfo | undefined = undefined;
+	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo {
+		let finalResult: azdata.ObjectExplorerExpandInfo | undefined = {
+			sessionId: undefined,
+			nodePath: nodePath,
+			nodes: []
+		};
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
@@ -608,12 +599,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (resultMap.has(provider.providerId)) {
 				let result = resultMap.get(provider.providerId);
 				if (result) {
+
 					if (!result.errorMessage) {
 						finalResult = result;
 						if (result.nodes !== undefined && result.nodes) {
 							allNodes = allNodes.concat(result.nodes);
 						}
 					} else {
+						finalResult.sessionId = result.sessionId;
 						errorMessages.push(result.errorMessage);
 					}
 				}
@@ -627,9 +620,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				errorNode.errorMessage = errorMessages.join('\n');
 				errorNode.label = errorNode.errorMessage;
 				allNodes = [errorNode].concat(allNodes);
+				this._onUpdateObjectExplorerNodes.fire({
+					connection: undefined,
+					errorMessage: errorNode.errorMessage
+				});
 			}
-
 			finalResult.nodes = allNodes;
+			finalResult.errorMessage = errorMessages.join('\n');
 		}
 		return finalResult;
 	}
@@ -699,8 +696,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
-		// Always refresh the node if it has an error, otherwise expand it normally
-		let needsRefresh = !!parentTree.errorStateMessage;
+		// Always refresh the node if it has an error or forceRefresh is set to true, otherwise expand it normally
+		let needsRefresh = !!parentTree.errorStateMessage || parentTree.forceRefresh;
+		parentTree.forceRefresh = false;
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
@@ -752,15 +750,31 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 			}
 			const children = expandResult.nodes.map(node => {
+				let treeNode: TreeNode | undefined;
 				const cacheKey = this.getTreeNodeCacheKey(node);
 				// In case of refresh, we want to update the existing node in the cache
 				if (!refresh && sessionTreeNodeCache.has(cacheKey)) {
-					return sessionTreeNodeCache.get(cacheKey);
+					treeNode = sessionTreeNodeCache.get(cacheKey);
 				} else {
-					const treeNode = this.toTreeNode(node, parentTree);
+					treeNode = this.toTreeNode(node, parentTree);
 					sessionTreeNodeCache.set(cacheKey, treeNode);
-					return treeNode;
 				}
+
+				const filterCacheKey = this.getTreeNodeCacheKey(treeNode);
+				const sessionFilterCache = this._nodeFilterCache.get(session.sessionId!);
+				// If we get the node without any filter properties, we want to clear the filters for the node.
+				if (treeNode?.filterProperties?.length > 0) {
+					// Making sure we retain the filters for the node.
+					if (sessionFilterCache?.has(filterCacheKey)) {
+						treeNode.filters = sessionFilterCache.get(filterCacheKey) ?? [];
+					} else {
+						treeNode.filters = [];
+					}
+				} else {
+					sessionFilterCache.delete(filterCacheKey);
+					treeNode.filters = [];
+				}
+				return treeNode;
 			});
 			parentTree.children = children.filter(c => c !== undefined);
 			return children;
@@ -785,7 +799,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.objectType, nodeInfo.label, isLeaf, nodeInfo.nodePath, nodeInfo.parentNodePath,
-			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, nodeInfo.filterableProperties, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
@@ -1026,14 +1040,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return currentNode;
 	}
 
-	/**
-	 * returns object explorer timeout in seconds.
-	 */
-	public getObjectExplorerTimeout(): number {
-		return this._configurationService.getValue<number>(NODE_EXPANSION_CONFIG);
-	}
-
-	private getTreeNodeCacheKey(node: azdata.NodeInfo): string {
+	private getTreeNodeCacheKey(node: azdata.NodeInfo | TreeNode): string {
 		return node.nodePath;
 	}
 }

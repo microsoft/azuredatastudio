@@ -198,7 +198,7 @@ function main() {
 		// report failing test for every unexpected error during any of the tests
 		const unexpectedErrors = [];
 		mocha.suite('Errors', function () {
-			test.skip('should not have unexpected errors in tests', function () { // {{SQL CARBON TODO}} Reinstate test - failing due to "SDK is not initialized"
+			test('should not have unexpected errors in tests', function () {
 				if (unexpectedErrors.length) {
 					unexpectedErrors.forEach(function (stack) {
 						console.error('');

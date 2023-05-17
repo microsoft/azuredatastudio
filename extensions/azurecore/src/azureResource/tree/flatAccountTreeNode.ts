@@ -43,8 +43,7 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 			this.treeChangeHandler.notifyNodeChanged(this);
 		});
 
-		this._loader.onLoadingStatusChanged(async () => {
-			await this.updateLabel();
+		this._loader.onLoadingStatusChanged(() => {
 			this.treeChangeHandler.notifyNodeChanged(this);
 		});
 	}
@@ -69,6 +68,7 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 
 	public async getChildren(): Promise<TreeNode[]> {
 		if (this._isClearingCache) {
+			await this.updateLabel();
 			this._loader.start().catch(err => console.error('Error loading Azure FlatAccountTreeNodes ', err));
 			this._isClearingCache = false;
 			return [];
@@ -183,12 +183,15 @@ class FlatAccountTreeNodeLoader {
 		try {
 
 			// Authenticate to tenants to filter out subscriptions that are not accessible.
-
 			let tenants = this._account.properties.tenants;
 			// Filter out tenants that we can't authenticate to.
 			tenants = tenants.filter(async tenant => {
-				const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
-				return token !== undefined;
+				try {
+					const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
+					return token !== undefined;
+				} catch (e) {
+					return false;
+				}
 			});
 
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
@@ -205,21 +208,13 @@ class FlatAccountTreeNodeLoader {
 				});
 			}
 
-			const resourceProviderIds = await this._resourceService.listResourceProviderIds();
-			for (const subscription of subscriptions) {
-				for (const providerId of resourceProviderIds) {
-					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription);
-					for (const resourceType of resourceTypes) {
-						const resources = await this._resourceService.getChildren(providerId, resourceType.resourceNode, true);
-						if (resources?.length > 0) {
-							this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._accountNode, this.appContext)));
-							this._nodes = this.nodes.sort((a, b) => {
-								return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
-							});
-							newNodesAvailable = true;
-						}
-					}
-				}
+			const resources = await this._resourceService.getAllChildren(this._account, subscriptions, true);
+			if (resources?.length > 0) {
+				this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._accountNode, this.appContext)));
+				this._nodes = this.nodes.sort((a, b) => {
+					return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
+				});
+				newNodesAvailable = true;
 			}
 			// Create "No Resources Found" message node if no resources found under azure account.
 			if (this._nodes.length === 0) {

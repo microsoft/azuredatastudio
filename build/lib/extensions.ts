@@ -301,7 +301,6 @@ const externalExtensions = [
 	'arc',
 	'asde-deployment',
 	'azcli',
-	'azurehybridtoolkit',
 	'azuremonitor',
 	'cms',
 	'dacpac',

@@ -2,12 +2,12 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.43.0"
+    "azdata": ">=1.44.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -207,6 +207,11 @@
         "command": "sqlDatabaseProjects.rename",
         "title": "%sqlDatabaseProjects.rename%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPublishProfile",
+        "title": "%sqlDatabaseProjects.newPublishProfile%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -334,6 +339,10 @@
         {
           "command": "sqlDatabaseProjects.rename",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPublishProfile",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -403,6 +412,11 @@
           "group": "3_dbProjects_newItem@9"
         },
         {
+          "command": "sqlDatabaseProjects.newPublishProfile",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@10"
+        },
+        {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.referencesRoot",
           "group": "4_dbProjects_addDatabaseReference"
@@ -419,7 +433,7 @@
         },
         {
           "command": "sqlDatabaseProjects.exclude",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^databaseProject.itemType.file/",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
         },
         {
@@ -429,7 +443,7 @@
         },
         {
           "command": "sqlDatabaseProjects.rename",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^databaseProject.itemType.file/",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@3"
         },
         {

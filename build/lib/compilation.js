@@ -1,8 +1,8 @@
-"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.watchApiProposalNamesTask = exports.compileApiProposalNamesTask = exports.watchTask = exports.compileTask = exports.transpileTask = void 0;
 const es = require("event-stream");
@@ -38,7 +38,7 @@ function createCompile(src, build, emitError, transpileOnly) {
     const tsb = require('./tsb');
     const sourcemaps = require('gulp-sourcemaps');
     const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
-    const overrideOptions = Object.assign(Object.assign({}, getTypeScriptCompilerOptions(src)), { inlineSources: Boolean(build) });
+    const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
     // {{SQL CARBON EDIT}} Add override for not inlining the sourcemap during build so we can get code coverage - it
     // currently expects a *.map.js file to exist next to the source file for proper source mapping
     if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
@@ -52,7 +52,7 @@ function createCompile(src, build, emitError, transpileOnly) {
         console.warn('* and re-run the build/watch task                                                          *');
         console.warn('********************************************************************************************');
     }
-    const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
+    const compilation = tsb.create(projectPath, overrideOptions, { verbose: false, transpileOnly }, err => reporter(err));
     function pipeline(token) {
         const bom = require('gulp-bom');
         const utf8Filter = util.filter(data => /(\/|\\)test(\/|\\).*utf8/.test(data.path));

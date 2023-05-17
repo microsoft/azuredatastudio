@@ -6,6 +6,7 @@
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
+	import * as msRest from '@azure/ms-rest-js';
 	import { BlobItem } from '@azure/storage-blob';
 
 	/**
@@ -287,13 +288,6 @@ declare module 'azurecore' {
 		status: number;
 	};
 
-	export interface HttpClientResponse<B> {
-		body: B;
-		headers: any;
-		status: Number;
-		error: any;
-	}
-
 	export interface IExtension {
 		/**
 		 * Gets the list of subscriptions for the specified AzureAccount
@@ -334,6 +328,7 @@ declare module 'azurecore' {
 		getRegionDisplayName(region?: string): string;
 		getProviderMetadataForAccount(account: AzureAccount): AzureAccountProviderMetadata;
 		provideResources(): azureResource.IAzureResourceProvider[];
+		getUniversalProvider(): azureResource.IAzureUniversalResourceProvider;
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
 		/**
 		 * Event emitted when MSAL cache encryption keys are updated in credential store.
@@ -390,11 +385,23 @@ declare module 'azurecore' {
 			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
+		export interface IAzureUniversalTreeDataProvider extends IAzureResourceTreeDataProvider {
+			/**
+			 * Gets all the children for user account for provided subscription list.
+			 */
+			getAllChildren(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[]): Promise<IAzureResourceNode[]>;
+		}
+
+		export interface IAzureUniversalResourceProvider extends IAzureResourceProvider {
+			getTreeDataProvider(): IAzureUniversalTreeDataProvider;
+		}
+
 		export interface IAzureResourceProvider extends azdata.DataProvider {
 			getTreeDataProvider(): IAzureResourceTreeDataProvider;
 		}
 
 		export interface IAzureResourceTreeDataProvider {
+			getService(): azureResource.IAzureResourceService;
 			/**
 			 * Gets the root tree item nodes for this provider - these will be used as
 			 * direct children of the Account node in the Azure tree view.
@@ -406,10 +413,11 @@ declare module 'azurecore' {
 			 */
 			getChildren(element: IAzureResourceNode): Promise<IAzureResourceNode[]>;
 			/**
-			 * Gets the tree item to display for a given {@link IAzureResourceNode}
-			 * @param element The resource node to get the TreeItem for
+			 * Converts resource to VS Code treeItem
+			 * @param resource Azure resource to convert.
+			 * @param account User account
 			 */
-			getResourceTreeItem(element: IAzureResourceNode): Promise<azdata.TreeItem>;
+			getTreeItemForResource(resource: azureResource.AzureResource, account: AzureAccount): vscode.TreeItem;
 			browseConnectionMode: boolean;
 		}
 
@@ -429,8 +437,14 @@ declare module 'azurecore' {
 			name: string;
 			id: string;
 			subscription: IAzureSubscriptionInfo;
+			provider?: string,
 			resourceGroup?: string;
 			tenant?: string;
+		}
+
+		export interface IAzureResourceService {
+			queryFilter: string;
+			getResources(subscriptions: AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<AzureResource[]>;
 		}
 
 		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscription'> {

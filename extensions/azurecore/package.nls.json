@@ -2,7 +2,6 @@
 	"azure.displayName": "Azure (Core)",
 	"azure.description": "Browse and work with Azure resources",
 	"azure.title": "Azure",
-
 	"azure.resource.config.title": "Azure Resource Configuration",
 	"azure.resource.config.filter.description": "The resource filter, each element is an account id, a subscription id and name separated by a slash",
 	"azure.resource.explorer.title": "Azure",
@@ -14,12 +13,9 @@
 	"azure.resource.connectsqlserver.title": "Connect",
 	"azure.resource.connectsqldb.title": "Add to Servers",
 	"azure.resource.view.title": "Azure (Preview)",
-	"azure.tenant.config.filter.description": "The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.",
-
+	"azure.tenant.config.filter.description": "The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.",
 	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
-
 	"azure.openInAzurePortal.title": "Open in Azure Portal",
-
 	"config.azureAccountConfigurationSection": "Azure Account Configuration",
 	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",
 	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
@@ -33,5 +29,4 @@
 	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.",
 	"config.loggingLevel": "[Optional] The verbosity of logging for the Azure Accounts extension.",
 	"config.authenticationLibrary": "The library used for the AAD auth flow. Please restart ADS after changing this option."
-
 }

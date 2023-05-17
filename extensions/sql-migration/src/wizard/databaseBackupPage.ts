@@ -228,7 +228,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				description: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
-				CSSStyles: { ...styles.LABEL_CSS }
+				CSSStyles: { ...styles.LABEL_CSS },
 			}).component();
 		this._windowsUserAccountText = this._view.modelBuilder.inputBox()
 			.withProps({
@@ -627,7 +627,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 						// check for storage account connectivity
 						if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget)) {
-							if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+							if (!(await canTargetConnectToStorageAccount(
+								this.migrationStateModel._targetType,
+								this.migrationStateModel._targetServerInstance,
+								selectedStorageAccount,
+								this.migrationStateModel._azureAccount,
+								this.migrationStateModel._targetSubscription))) {
+
 								this._inaccessibleStorageAccounts = [selectedStorageAccount.name];
 							} else {
 								this._inaccessibleStorageAccounts = [];
@@ -635,7 +641,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 							this.wizard.message = {
 								text: this._inaccessibleStorageAccounts.length > 0
-									? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+									? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts, this.migrationStateModel.isSqlMiTarget)
 									: '',
 								level: azdata.window.MessageLevel.Warning
 							}
@@ -661,7 +667,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					// check for storage account connectivity
 					const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === (this._networkShareContainerStorageAccountDropdown.value as azdata.CategoryValue).displayName);
 					if ((this.migrationStateModel.isSqlMiTarget || this.migrationStateModel.isSqlVmTarget) && selectedStorageAccount) {
-						if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+						if (!(await canTargetConnectToStorageAccount(
+							this.migrationStateModel._targetType,
+							this.migrationStateModel._targetServerInstance,
+							selectedStorageAccount, this.migrationStateModel._azureAccount,
+							this.migrationStateModel._targetSubscription))) {
 							this._inaccessibleStorageAccounts = [selectedStorageAccount.name];
 						} else {
 							this._inaccessibleStorageAccounts = [];
@@ -669,7 +679,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 						this.wizard.message = {
 							text: this._inaccessibleStorageAccounts.length > 0
-								? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+								? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts, this.migrationStateModel.isSqlMiTarget)
 								: '',
 							level: azdata.window.MessageLevel.Warning
 						}
@@ -1129,14 +1139,20 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 											this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== oldSelectedStorageAccount.toLowerCase());
 										}
 
-										if (!(await canTargetConnectToStorageAccount(this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance, selectedStorageAccount, this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription))) {
+										if (!(await canTargetConnectToStorageAccount(
+											this.migrationStateModel._targetType,
+											this.migrationStateModel._targetServerInstance,
+											selectedStorageAccount,
+											this.migrationStateModel._azureAccount,
+											this.migrationStateModel._targetSubscription))) {
+
 											this._inaccessibleStorageAccounts = this._inaccessibleStorageAccounts.filter(storageAccountName => storageAccountName.toLowerCase() !== selectedStorageAccount.name.toLowerCase());
 											this._inaccessibleStorageAccounts.push(selectedStorageAccount.name);
 										}
 
 										this.wizard.message = {
 											text: this._inaccessibleStorageAccounts.length > 0
-												? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts)
+												? constants.STORAGE_ACCOUNT_CONNECTIVITY_WARNING(this.migrationStateModel._targetServerInstance.name, this._inaccessibleStorageAccounts, this.migrationStateModel.isSqlMiTarget)
 												: '',
 											level: azdata.window.MessageLevel.Warning
 										}
@@ -1452,10 +1468,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async getSubscriptionValues(): Promise<void> {
 		this._networkShareContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
-		this._networkShareContainerLocation.value = await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
+		this._networkShareContainerLocation.value = await this.migrationStateModel._location.displayName;
 
 		this._blobContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
-		this._blobContainerLocation.value = await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
+		this._blobContainerLocation.value = this.migrationStateModel._location.displayName;
 
 		this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel._targetSubscription;
 

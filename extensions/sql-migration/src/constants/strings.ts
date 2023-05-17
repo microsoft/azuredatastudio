@@ -76,6 +76,12 @@ export const RUN_VALIDATION = localize('sql.migration.run.validation', "Run vali
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
 export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.description', "Select the databases that you want to assess for migration to Azure SQL.");
 
+// XEvents assessment
+export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.database.assessment.xevents.title', "Assess extended event sessions");
+export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.xevents.description', "For the selected databases, optionally provide extended event session files to assess ad-hoc or dynamic SQL queries or any DML statements initiated through the application data layer. {0}");
+export const XEVENTS_ASSESSMENT_HELPLINK = localize('sql.migration.database.assessment.xevents.link', "Learn more");
+export const XEVENTS_ASSESSMENT_OPEN_FOLDER = localize('sql.migration.database.assessment.xevents.instructions', "Select a folder where extended events session files (.xel and .xem) are stored");
+
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
@@ -194,8 +200,6 @@ export const AZURE_RECOMMENDATION_OPEN_EXISTING = localize('sql.migration.sku.az
 export const AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER = localize('sql.migration.sku.azureRecommendation.collectDataSelectFolder.instructions', "Select a folder on your local drive where performance data will be saved");
 export const AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER = localize('sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions', "Select a folder on your local drive where previously collected performance data was saved");
 export const FOLDER_NAME = localize('sql.migration.azureRecommendation.folder.name', "Folder name");
-export const BROWSE = localize('sql.migration.azureRecommendation.browse', "Browse");
-export const OPEN = localize('sql.migration.azureRecommendation.open', "Open");
 
 export const VIEW_DETAILS = localize('sql.migration.sku.viewDetails', "View details");
 export function ASSESSED_DBS(totalDbs: number): string {
@@ -619,10 +623,14 @@ export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.reso
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "To continue, select a valid storage account.");
 export const MISSING_TARGET_USERNAME_ERROR = localize('sql.migration.missing.targetUserName.error', "To continue, enter a valid target user name.");
 export const MISSING_TARGET_PASSWORD_ERROR = localize('sql.migration.missing.targetPassword.error', "To continue, enter a valid target password.");
-export function STORAGE_ACCOUNT_CONNECTIVITY_WARNING(targetServer: string, databases: string[]): string {
-	return databases.length === 1
-		? localize('sql.migration.storageAccount.warning.many', "Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.", targetServer, databases[0])
-		: localize('sql.migration.storageAccount.warning.one', "Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.", targetServer, databases.join("', '"));
+export function STORAGE_ACCOUNT_CONNECTIVITY_WARNING(targetServer: string, databases: string[], isSqlMiTarget: boolean): string {
+	return isSqlMiTarget
+		? databases.length === 1
+			? localize('sql.migration.storageAccount.warning.many', "Target instance '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage account, and if applicable, that the private endpoint is in the same virtual network as the target server.", targetServer, databases[0])
+			: localize('sql.migration.storageAccount.warning.one', "Target instance '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target instance is whitelisted on the storage accounts, and if applicable, that the private endpoints are on the same virtual network as the target server.", targetServer, databases.join("', '"))
+		: databases.length === 1
+			? localize('sql.migration.storageAccount.warning.vm.many', "Target server '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target server is whitelisted on the storage account.", targetServer, databases[0])
+			: localize('sql.migration.storageAccount.warning.vm.one', "Target server '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target server is whitelisted on the storage accounts.", targetServer, databases.join("', '"));
 }
 
 export const TARGET_TABLE_NOT_EMPTY = localize('sql.migration.target.table.not.empty', "Target table is not empty.");
@@ -734,15 +742,23 @@ export const MIGRATION_SERVICE_LOCATION_INFO = localize('sql.migration.services.
 export const MIGRATION_SERVICE_RESOURCE_GROUP_INFO = localize('sql.migration.services.resource.group', "Resource group for your Azure Database Migration Service.");
 export const MIGRATION_SERVICE_NAME_INFO = localize('sql.migration.services.name', "Azure Database Migration Service name.");
 export const MIGRATION_SERVICE_TARGET_INFO = localize('sql.migration.services.target', "Azure SQL target selected as default.");
-export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "Enter the information below to add a new Azure Database Migration Service.");
+export function MIGRATION_SERVICE_DIALOG_DESCRIPTION(networkShareScenario: boolean) {
+	return networkShareScenario
+		? localize('sql.migration.services.container.description.network', "Enter the information below to add a new Azure Database Migration Service. To register self-hosted integration runtime, select 'My database backups are on a network share' on the previous page.")
+		: localize('sql.migration.services.container.description', "Enter the information below to add a new Azure Database Migration Service.");
+}
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
-export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Setup integration runtime");
-export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network file share to Azure.");
-export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to setup self-hosted integration runtime.");
+export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Set up integration runtime");
+export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to handle connectivity between source and target and upload backups from an on-premises network file share to Azure (if applicable).");
+export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to set up self-hosted integration runtime.");
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
-export const SERVICE_STEP2 = localize('sql.migration.ir.setup.step2', "Step 2: Use this key to register your integration runtime");
-export const SERVICE_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime");
+export const SERVICE_STEP2 = localize('sql.migration.ir.setup.step2', "Step 2: Use the keys below to register your integration runtime");
+export function SERVICE_STEP3(testConnectionButton: boolean) {
+	return testConnectionButton
+		? localize('sql.migration.ir.setup.step3', "Step 3: Click on the 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime")
+		: localize('sql.migration.ir.setup.step3.alternate', "Step 3: Click on the Refresh button above to check the connection between Azure Database Migration Service and integration runtime")
+}
 export const SERVICE_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection status");
 export const SERVICE_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
 export const SERVICE_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
@@ -756,11 +772,22 @@ export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authKeys.header', 
 export function AUTH_KEY_REFRESHED(keyName: string): string {
 	return localize('sql.migration.authKeys.refresh.message', "Authentication key '{0}' has been refreshed.", keyName);
 }
-export function SERVICE_NOT_READY(serviceName: string): string {
-	return localize('sql.migration.service.not.ready', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.", serviceName);
+export function SERVICE_NOT_READY(serviceName: string, instructionsBelow: boolean): string {
+	return instructionsBelow
+		? localize('sql.migration.service.not.ready.below', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.\n\nSee below for registration instructions.", serviceName)
+		: localize('sql.migration.service.not.ready', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.", serviceName);
 }
-export function SERVICE_READY(serviceName: string, host: string): string {
-	return localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}", serviceName, host);
+export function SERVICE_ERROR_NOT_READY(serviceName: string, error: string): string {
+	return localize('sql.migration.service.error.not.ready',
+		"The following error occurred while retrieving registration information for Azure Database Migration Service '{0}'. Please click refresh and try again. Error: '{1}'.",
+		serviceName,
+		error);
+}
+export function SERVICE_READY(serviceName: string, nodes: string, instructionsBelow: boolean): string {
+	return instructionsBelow
+		? localize('sql.migration.service.ready.below', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes. See below for registration instructions.", serviceName, nodes)
+		: localize('sql.migration.service.ready', "Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}\n\nFor improved performance and high availability, you can register additional nodes.", serviceName, nodes);
+
 }
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Enter a valid name for the Migration Service.");
 export const SERVICE_NOT_FOUND = localize('sql.migration.service.not.found', "No Migration Services found. To continue, create a new one.");
@@ -920,6 +947,10 @@ export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy t
 export const NEW_SUPPORT_REQUEST = localize('sql.migration.newSupportRequest', "New support request");
 export const IMPACT = localize('sql.migration.impact', "Impact");
 export const ALL_FIELDS_REQUIRED = localize('sql.migration.all.fields.required', 'All fields are required.');
+export const CLEAR = localize('sql.migration.clear', "Clear");
+export const SELECT = localize('sql.migration.select', "Select");
+export const BROWSE = localize('sql.migration.browse', "Browse");
+export const OPEN = localize('sql.migration.open', "Open");
 
 //Summary Page
 export const START_MIGRATION_TEXT = localize('sql.migration.start.migration.button', "Start migration");
@@ -1164,7 +1195,6 @@ export const OPEN_MIGRATION_DETAILS_ERROR = localize('sql.migration.open.migrati
 export const OPEN_MIGRATION_TARGET_ERROR = localize('sql.migration.open.migration.target.error', "Error opening migration target");
 export const OPEN_MIGRATION_SERVICE_ERROR = localize('sql.migration.open.migration.service.error', "Error opening migration service dialog");
 export const LOAD_MIGRATION_LIST_ERROR = localize('sql.migration.load.migration.list.error', "Error loading migrations list");
-export const ERROR_DIALOG_CLEAR_BUTTON_LABEL = localize('sql.migration.error.dialog.clear.button.label', "Clear");
 export const ERROR_DIALOG_ARIA_CLICK_VIEW_ERROR_DETAILS = localize('sql.migration.error.aria.view.details', 'Click to view error details');
 
 export interface LookupTable<T> {
