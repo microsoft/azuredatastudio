@@ -952,4 +952,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 		return actionContext;
 	}
+
+	public collapseAllConnections(): void {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		connections.forEach(con => {
+			this._tree!.collapse(con, true);
+		});
+	}
 }

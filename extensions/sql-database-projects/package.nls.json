@@ -28,6 +28,7 @@
 	"sqlDatabaseProjects.newItem": "Add Item...",
 	"sqlDatabaseProjects.addExistingItem": "Add Existing Item...",
 	"sqlDatabaseProjects.newFolder": "Add Folder",
+	"sqlDatabaseProjects.newPublishProfile": "Add Publish Profile",
 
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
 	"sqlDatabaseProjects.addSqlCmdVariable": "Add SQLCMD Variable",
