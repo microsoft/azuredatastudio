@@ -32,19 +32,26 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	let dbs: string[] | undefined = undefined;
 	while (!dbs) {
 		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
-		try {
-			connectionUri = await vscodeMssqlApi.connect(connectionProfile);
-			dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
-				.filter(db => !constants.systemDbs.includes(db)); // Filter out system dbs
-		} catch (err) {
-			// The mssql extension handles showing the error to the user. Prompt the user
-			// for a new connection and then go and try getting the DBs again
+		let shouldPromptForConnection = connectionProfile?.server === undefined;
+
+		if (!shouldPromptForConnection) {
+			try {
+				connectionUri = await vscodeMssqlApi.connect(connectionProfile);
+				dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
+					.filter(db => !constants.systemDbs.includes(db)); // Filter out system dbs
+			} catch {
+				// The mssql extension handles showing the error to the user.
+				// Prompt the user for a new connection and then go and try getting the DBs again
+				shouldPromptForConnection = true;
+			}
+		}
+
+		if (shouldPromptForConnection) {
 			connectionProfile = await vscodeMssqlApi.promptForConnection(true);
 			if (!connectionProfile) {
 				// User cancelled
 				return undefined;
 			}
-
 		}
 	}
 
