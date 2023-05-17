@@ -257,7 +257,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			return;
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
-		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary || !connection.saveProfile;
+		let saveProfile = !!(connection as ConnectionProfile).saveProfile
+		let isTemporaryConnection = params && params.connectionType === ConnectionType.temporary || !saveProfile;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
 			uri = params.input.uri;
