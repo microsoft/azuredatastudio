@@ -534,8 +534,7 @@
         {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
-          "group": "inline@2",
-          "isDefault": true
+          "group": "inline@2"
         },
         {
           "command": "mssql.newTable",
@@ -550,8 +549,7 @@
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "inline@2",
-          "isDefault": true
+          "group": "inline@2"
         },
         {
           "command": "mssql.deleteObject",

@@ -25,7 +25,7 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -245,6 +245,9 @@ export class ProjectsController {
 				break;
 			case ItemType.postDeployScript:
 				await project.addPostDeploymentScript(relativePath);
+				break;
+			case ItemType.publishProfile:
+				await project.addNoneItem(relativePath);
 				break;
 			default: // a normal SQL object script
 				await project.addSqlObjectScript(relativePath);
@@ -471,6 +474,7 @@ export class ProjectsController {
 
 		if (publishTarget === constants.PublishTargetType.docker) {
 			const publishToDockerSettings = await getPublishToDockerSettings(project);
+			void promptForSavingProfile(project, publishToDockerSettings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (!publishToDockerSettings) {
 				// User cancelled
 				return;
@@ -479,6 +483,7 @@ export class ProjectsController {
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			try {
 				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
+				void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 				if (settings?.deploySettings && settings?.sqlDbSetting) {
 					await this.publishToNewAzureServer(project, settings);
 				}
@@ -489,6 +494,7 @@ export class ProjectsController {
 		} else {
 			let settings: ISqlProjectPublishSettings | undefined = await getPublishDatabaseSettings(project);
 
+			void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (settings) {
 				// 5. Select action to take
 				const action = await vscode.window.showQuickPick(
@@ -534,7 +540,7 @@ export class ProjectsController {
 		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
-		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		telemetryProps.profileUsed = (settings.publishProfileUri !== undefined ? true : false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getTime();
 		const currentPublishTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
@@ -729,7 +735,10 @@ export class ProjectsController {
 
 		const itemType = templates.get(itemTypeName);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePath);
-		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, constants.sqlFileExtension, options?.defaultName);
+		const isItemTypePublishProfile = itemTypeName === constants.publishProfileFriendlyName || itemTypeName === ItemType.publishProfile;
+		const fileExtension = isItemTypePublishProfile ? constants.publishProfileExtension : constants.sqlFileExtension;
+		const defaultName = isItemTypePublishProfile ? `${project.projectFileName}_` : options?.defaultName;
+		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, fileExtension, defaultName);
 
 		itemObjectName = itemObjectName?.trim();
 
@@ -737,7 +746,7 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
+		const relativeFilePath = path.join(relativePath, itemObjectName + fileExtension);
 
 		const telemetryProps: Record<string, string> = { itemType: itemType.type };
 		const telemetryMeasurements: Record<string, number> = {};
@@ -749,7 +758,7 @@ export class ProjectsController {
 		}
 
 		try {
-			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName]]));
+			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName], ['PROJECT_NAME', project.projectFileName]]));
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)

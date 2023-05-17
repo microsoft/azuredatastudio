@@ -57,6 +57,7 @@ export interface IServerTreeView {
 	showFilteredTree(view: ServerTreeViewView): void;
 	filterElementChildren(node: TreeNode): Promise<void>;
 	getActionContext(element: ServerTreeElement): any;
+	collapseAllConnections(): void;
 	view: ServerTreeViewView;
 }
 
