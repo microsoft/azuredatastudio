@@ -1,5 +1,98 @@
 # Change Log
 
+## Version 1.43.0
+* Release number: 1.43.0
+* Release date: April 12, 2023
+
+### What's new in 1.43.0
+
+| New Item | Details |
+| --- | --- |
+| Connection | Added notation for required properties (e.g. Attestation protocol and Attestation URL) when Secure Enclaves are enabled |
+| SQL Database Projects extension | General Availability |
+| SQL Database Projects extension | Move and rename files within Database Projects view |
+| SQL Database Projects extension | SQLCMD variables available for editing in Database Projects view |
+| Object Explorer | Double-clicking on a user or table in Object Explorer will open the designer for the object |
+| Query Editor | Added a Parse button to the Query Editor toolbar for parsing queries before execution |
+| Query Results | Added support to select a row in query results via double click |
+
+### Bug fixes in 1.43.0
+
+| New Item | Details |
+| --- | --- |
+| Connection | Added support for linked accounts with same username but different domains |
+| Connection | Fixed issue with incorrect cache write path |
+| Connection | Added ability to include optional name and grouping when creating a new connection using a connection string |
+| Connection | Updating username in MSSQL connections to use Preferred username for the display name |
+| Connection | Fixed issue with encoding for OSX keychain on macOS |
+| Connection | Added support for Azure MFA and ‘Sql Authentication Provider’ on Linux |
+| Dataverse | Addressed error generated when expanding the database node for a Dataverse database in Object Explorer |
+| IntelliCode extension | Fixed error that occurred when launching Azure Data Studio with Visual Studio Code IntelliCode extension installed |
+| PostgreSQL extension | Implemented support for exporting query results on Apple M1 from a notebook |
+| SQL Database Projects extension | Added Accessibility Fixes related to screen reader, label names, and improved focus when navigating |
+
+For a full list of bug fixes addressed for the April 2023 release, visit the [April 2023 Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/99?closed=1).
+
+## Version 1.42.0
+* Release number: 1.42.0
+* Release date: March 22, 2023
+
+### What's new in 1.42.0
+
+| New Item | Details |
+| --- | --- |
+| ARM64 Support for macOS | Implemented native arm64 SqlToolsService support for arm64 Windows and macOS. |
+| Connection | Changed the icon under Linked Accounts when adding a new Azure account. |
+| Connection | Introduced support for the Command Timeout connection property. |
+| Connection | Added support for all three connection encryption options: Strict, Mandatory, and Optional. |
+| Connection | Introduced HostNameInCertificate connection property under Security on the Advanced tab, for server with a certificate configured. |
+| Connection | Added new advanced option in the Connection dialog to support Secure Enclaves. |
+| Connection | Introduced a new setting, Mssql Enable Sql Authentication Provider to allow connections to be maintained without the concern of losing access token lifetime or getting dropped by server. Access tokens will be refreshed internally by the SqlClient driver whenever they are found to be expired.  This option is disabled by default.  |
+| Connection | Added support for connections to Microsoft Dataverse using the TDS endpoint. |
+| Connection | Introduced additional error reporting for Azure connections. |
+| Connection | Introduced support for change password. |
+| Connection | Added support for encryption options for Arc SQL Managed Instance when server certificates are not installed. |
+| Deployment | Moved the New Deployment option from the Connections breadcrumb to the File Menu. |
+| Object Explorer | Introduced ability to group objects in Object Explorer by database schema.  This applies to all MSSQL connections when enabled or disabled. |
+| Object Explorer | Introduced a new option to allow a custom timeout to be configured for Object Explorer.  Within Settings, enable Mssql > Object Explorer: Expand Timeout. |
+| Query Results | Added option to disable special handling for JSON strings. |
+
+### Bug fixes in 1.42.0
+
+| New Item | Details |
+| --- | --- |
+| Accessibility	| Updated server group color display to improve visibility and contrast. |
+| Backup | Addressed inability to select "Backup Set" checkbox. |
+| Connection | Removed refresh action for connections which are disconnected. |
+| Connection | Fixed issue with MSAL not properly set for connections. |
+| Connection | Added ability to delete a server group if no connections exist for it. |
+| Connection | Added connection display name to the Delete Connection dialog. |
+| Connection | Azure connections with "Do not save" for the server group are no longer added to the default server group list. |
+| Connection | Improved error handling in the connection dialog. |
+| Connection | Fixed issue where saved passwords were not retained for Azure SQL connections. |
+| Connection | Improved method to retrieve database access when connecting to Azure SQL. |
+| Connection | Improved connection experience for cloud users. |
+| Connection | Improved account and tenant selection when connecting to Azure SQL in the connection dialog. |
+| Deployment | Improved narration for deployment wizard. |
+| Installation | Updated default install location for the Windows on ARM installer. |
+| MySQL Extension | Addressed issue where dialog boxes in the MySQL connection pane were not editable. |
+| Notebooks | Fixed issue with updating the relative path in a Notebook cell. |
+| Notebooks | Fixed issue that caused internal notebook links to break when editing characters in the page. |
+| Notebooks | Addressed error thrown when opening a Notebook via a link. |
+| Object Explorer | Fixed issue with Object Explorer node not expanding. |
+| Query Editor | Fixed database dropdown list for contained users to display correctly. |
+| Query Editor | Addressed issue where database dropdown list was not ordered the same as in Object Explorer. |
+| Query Editor | Added the ability to properly escape special characters when they exist in object names. |
+| Query Editor | Fixed issue which caused query timer to continue to run even though execution was complete. |
+| Query Plan Viewer | Addressed an issue where a query plan would not render when opened via a URL. |
+| Query Results | Improved precision formatting for datetimeoffset data type. |
+
+For a full list of bug fixes addressed for the March 2023 release, visit the [bugs and issues list on GitHub](https://github.com/microsoft/azuredatastudio/milestone/95?closed=1).
+
+#### Known issues
+
+For a list of the current known issues, visit the [issues list on GitHub](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue).
+
 ## Version 1.41.2
 * Release date: February 10, 2023
 * Release status: General Availability

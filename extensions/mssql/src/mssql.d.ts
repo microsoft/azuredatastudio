@@ -135,7 +135,7 @@ declare module 'mssql' {
 		connectionName?: string;
 		projectFilePath: string;
 		targetScripts: string[];
-		folderStructure: ExtractTarget;
+		extractTarget: ExtractTarget;
 		dataSchemaProvider: string;
 	}
 
@@ -236,12 +236,13 @@ declare module 'mssql' {
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode, includePermissions?: boolean): Thenable<DacFxResult>;
-		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
+		savePublishProfile(profilePath: string, databaseName: string, connectionString: string, sqlCommandVariableValues?: Map<string, string>, deploymentOptions?: DeploymentOptions): Thenable<azdata.ResultStatus>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -352,11 +353,24 @@ declare module 'mssql' {
 		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus>;
 
 		/**
+		 * Add a nuget package database reference to a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param packageName Name of the referenced nuget package
+		 * @param packageVersion Version of the referenced nuget package
+		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+		 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project.
+			 If this is set, DatabaseVariable must also be set.
+		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+		 */
+		addNugetPackageReference(projectUri: string, packageName: string, packageVersion: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+
+		/**
 		 * Delete a database reference from a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param name Name of the reference to be deleted. Name of the System DB, path of the sqlproj, or path of the dacpac
 		 */
-		deleteDatabaseReference(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+		deleteDatabaseReference(projectUri: string, name: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a folder to a project
@@ -371,6 +385,21 @@ declare module 'mssql' {
 		 * @param path Path of the folder, typically relative to the .sqlproj file
 		 */
 		deleteFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Exclude a folder and its contents from a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param path Path of the folder, typically relative to the .sqlproj file
+		 */
+		excludeFolder(projectUri: string, path: string): Promise<azdata.ResultStatus>;
+
+		/**
+		 * Move a folder and its contents within a project
+		 * @param projectUri Absolute path of the project, including .sqlproj
+		 * @param sourcePath Source path of the folder, typically relative to the .sqlproj file
+		 * @param destinationPath Destination path of the folder, typically relative to the .sqlproj file
+		 */
+		moveFolder(projectUri: string, sourcePath: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a post-deployment script to a project
@@ -417,18 +446,18 @@ declare module 'mssql' {
 		/**
 		 * Move a post-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Move a pre-deployment script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Close a SQL project
@@ -490,9 +519,8 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
 		 * @param defaultValue Default value of the SQLCMD variable
-		 * @param value Value of the SQLCMD variable, with or without the $()
 		 */
-		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Delete a SQLCMD variable from a project
@@ -506,9 +534,8 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param name Name of the SQLCMD variable
 		 * @param defaultValue Default value of the SQLCMD variable
-		 * @param value Value of the SQLCMD variable, with or without the $()
 		 */
-		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus>;
+		updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a SQL object script to a project
@@ -534,10 +561,10 @@ declare module 'mssql' {
 		/**
 		 * Move a SQL object script in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the script, including .sql, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Get all the database references in a project
@@ -570,7 +597,7 @@ declare module 'mssql' {
 		getSqlCmdVariables(projectUri: string): Promise<GetSqlCmdVariablesResult>;
 
 		/**
-		 * getSqlObjectScripts
+		 * Get all the SQL object scripts in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 */
 		getSqlObjectScripts(projectUri: string): Promise<GetScriptsResult>;
@@ -605,10 +632,10 @@ declare module 'mssql' {
 		/**
 		 * Move a None item in a project
 		 * @param projectUri Absolute path of the project, including .sqlproj
-		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 * @param path Path of the item, including extension, relative to the .sqlproj
+		 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 		 */
-		moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus>;
+		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 	}
 
 
@@ -627,6 +654,10 @@ declare module 'mssql' {
 		 * Array of SQL project references contained in the project
 		 */
 		sqlProjectReferences: SqlProjectReference[];
+		/**
+		 * Array of NuGet package references contained in the project
+		 */
+		nugetPackageReferences: NugetPackageReference[];
 	}
 
 	export interface GetFoldersResult extends azdata.ResultStatus {
@@ -708,7 +739,7 @@ declare module 'mssql' {
 	}
 
 	interface UserDatabaseReference extends DatabaseReference {
-		databaseVariable: SqlCmdVariable;
+		databaseVariable?: SqlCmdVariable;
 		serverVariable?: SqlCmdVariable;
 	}
 
@@ -725,14 +756,14 @@ declare module 'mssql' {
 		dacpacPath: string;
 	}
 
-	export const enum SystemDatabase {
-		master = 0,
-		msdb = 1
+	export interface NugetPackageReference extends UserDatabaseReference {
+		packageName: string;
+		packageVersion: string;
 	}
 
-	export const enum ProjectType {
-		sdkStyle = 0,
-		legacyStyle = 1
+	export const enum SystemDatabase {
+		Master = 0,
+		MSDB = 1
 	}
 
 	export interface SqlCmdVariable {
@@ -859,6 +890,22 @@ declare module 'mssql' {
 
 	// Object Management - Begin.
 	export namespace ObjectManagement {
+
+		/**
+		 * Object types.
+		 */
+		export const enum NodeType {
+			ApplicationRole = "ApplicationRole",
+			Column = "Column",
+			Database = "Database",
+			DatabaseRole = "DatabaseRole",
+			ServerLevelLogin = "ServerLevelLogin",
+			ServerLevelServerRole = "ServerLevelServerRole",
+			Table = "Table",
+			User = "User",
+			View = "View"
+		}
+
 		/**
 		 * Base interface for all the objects.
 		 */
@@ -870,7 +917,14 @@ declare module 'mssql' {
 		}
 
 		/**
-		 * Base interface for the object view information
+		 * Base interface for all the security principal objects. e.g. Login, Server Role, Database Role...
+		 */
+		export interface SecurityPrincipalObject extends SqlObject {
+			securablePermissions: SecurablePermissions[];
+		}
+
+		/**
+		 * Base interface for the object view information.
 		 */
 		export interface ObjectViewInfo<T extends SqlObject> {
 			/**
@@ -880,9 +934,51 @@ declare module 'mssql' {
 		}
 
 		/**
+		 * Securable type metadata.
+		 */
+		export interface SecurableTypeMetadata {
+			/**
+			 * Name of the securable type.
+			 */
+			name: string;
+			/**
+			 * Display name of the securable type.
+			 */
+			displayName: string;
+			/**
+			 * Permissions supported by the securable type.
+			 */
+			permissions: PermissionMetadata[];
+		}
+
+		/**
+		 * Permission metadata.
+		 */
+		export interface PermissionMetadata {
+			/**
+			 * Name of the permission.
+			 */
+			name: string;
+			/**
+			 * Display name of the permission.
+			 */
+			displayName: string;
+		}
+
+		/**
+		 * Base interface for security principal object's view information.
+		 */
+		export interface SecurityPrincipalViewInfo<T extends SecurityPrincipalObject> extends ObjectViewInfo<T> {
+			/**
+			 * The securable types that the security principal object can be granted permissions on.
+			 */
+			supportedSecurableTypes: SecurableTypeMetadata[];
+		}
+
+		/**
 		 * Server level login.
 		 */
-		export interface Login extends SqlObject {
+		export interface Login extends SecurityPrincipalObject {
 			/**
 			 * Authentication type.
 			 */
@@ -947,7 +1043,7 @@ declare module 'mssql' {
 		/**
 		 * The authentication types.
 		 */
-		export enum AuthenticationType {
+		export const enum AuthenticationType {
 			Windows = 'Windows',
 			Sql = 'Sql',
 			AzureActiveDirectory = 'AAD'
@@ -978,19 +1074,11 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the login view.
 		 */
-		export interface LoginViewInfo extends ObjectViewInfo<Login> {
+		export interface LoginViewInfo extends SecurityPrincipalViewInfo<Login> {
 			/**
-			 * Whether Windows Authentication is supported.
+			 * The authentication types supported by the server.
 			 */
-			supportWindowsAuthentication: boolean;
-			/**
-			 * Whether Azure Active Directory Authentication is supported.
-			 */
-			supportAADAuthentication: boolean;
-			/**
-			 * Whether SQL Authentication is supported.
-			 */
-			supportSQLAuthentication: boolean;
+			authenticationTypes: AuthenticationType[];
 			/**
 			 * Whether the locked out state can be changed.
 			 */
@@ -1023,20 +1111,24 @@ declare module 'mssql' {
 		/**
 		 * The permission information a principal has on a securable.
 		 */
-		export interface Permission {
+		export interface SecurablePermissionItem {
 			/**
-			 * Name of the permission.
+			 * name of the permission.
 			 */
-			name: string;
+			permission: string;
 			/**
-			 * Whether the permission is granted or denied.
+			 * Name of the grantor.
 			 */
-			grant: boolean;
+			grantor: string;
+			/**
+			 * Whether the permission is granted or denied. Undefined means not specified.
+			 */
+			grant?: boolean;
 			/**
 			 * Whether the pincipal can grant this permission to other principals.
 			 * The value will be ignored if the grant property is set to false.
 			 */
-			withGrant: boolean;
+			withGrant?: boolean;
 		}
 
 		/**
@@ -1044,13 +1136,25 @@ declare module 'mssql' {
 		 */
 		export interface SecurablePermissions {
 			/**
-			 * The securable.
+			 * The securable name.
 			 */
-			securable: SqlObject;
+			name: string;
 			/**
-			 * The Permissions.
+			 * The securable type.
 			 */
-			permissions: Permission[];
+			type: string;
+			/**
+			 * The schema name of the object if applicable.
+			 */
+			schema?: string;
+			/**
+			 * The permissions.
+			 */
+			permissions: SecurablePermissionItem[];
+			/**
+			 * The effective permissions. Includes all permissions granted to the principal, including those granted through role memberships.
+			 */
+			effectivePermissions: string[];
 		}
 
 		/**
@@ -1070,29 +1174,33 @@ declare module 'mssql' {
 		/**
 		 * User types.
 		 */
-		export enum UserType {
+		export const enum UserType {
 			/**
-			 * User with a server level login.
+			 * Mapped to a server login.
 			 */
-			WithLogin = 'WithLogin',
+			LoginMapped = 'LoginMapped',
 			/**
-			 * User based on a Windows user/group that has no login, but can connect to the Database Engine through membership in a Windows group.
+			 * Mapped to a Windows user or group.
 			 */
-			WithWindowsGroupLogin = 'WithWindowsGroupLogin',
+			WindowsUser = 'WindowsUser',
 			/**
-			 * Contained user, authentication is done within the database.
+			 * Authenticate with password.
 			 */
-			Contained = 'Contained',
+			SqlAuthentication = 'SqlAuthentication',
+			/**
+			 * Authenticate with Azure Active Directory.
+			 */
+			AADAuthentication = 'AADAuthentication',
 			/**
 			 * User that cannot authenticate.
 			 */
-			NoConnectAccess = 'NoConnectAccess'
+			NoLoginAccess = 'NoLoginAccess'
 		}
 
 		/**
 		 * Database user.
 		 */
-		export interface User extends SqlObject {
+		export interface User extends SecurityPrincipalObject {
 			/**
 			 * Type of the user.
 			 */
@@ -1104,11 +1212,11 @@ declare module 'mssql' {
 			/**
 			 * Schemas owned by the user.
 			 */
-			ownedSchemas: string[] | undefined;
+			ownedSchemas: string[];
 			/**
 			 * Database roles that the user belongs to.
 			 */
-			databaseRoles: string[] | undefined;
+			databaseRoles: string[];
 			/**
 			 * The name of the server login associated with the user.
 			 * Only applicable when the user type is 'WithLogin'.
@@ -1120,11 +1228,6 @@ declare module 'mssql' {
 			 */
 			defaultLanguage: string | undefined;
 			/**
-			 * Authentication type.
-			 * Only applicable when user type is 'Contained'.
-			 */
-			authenticationType: AuthenticationType | undefined;
-			/**
 			 * Password of the user.
 			 * Only applicable when the user type is 'Contained' and the authentication type is 'Sql'.
 			 */
@@ -1134,23 +1237,11 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the user view.
 		 */
-		export interface UserViewInfo extends ObjectViewInfo<User> {
+		export interface UserViewInfo extends SecurityPrincipalViewInfo<User> {
 			/**
-			 * Whether contained user is supported.
+			 * All user types supported by the database.
 			 */
-			supportContainedUser: boolean;
-			/**
-			 * Whether Windows authentication is supported.
-			 */
-			supportWindowsAuthentication: boolean;
-			/**
-			 * Whether Azure Active Directory authentication is supported.
-			 */
-			supportAADAuthentication: boolean;
-			/**
-			 * Whether SQL Authentication is supported.
-			 */
-			supportSQLAuthentication: boolean;
+			userTypes: UserType[];
 			/**
 			 * All languages supported by the database.
 			 */
@@ -1168,73 +1259,182 @@ declare module 'mssql' {
 			 */
 			databaseRoles: string[];
 		}
+
+		/**
+		 * Interface representing the server role object.
+		 */
+		export interface ServerRoleInfo extends SecurityPrincipalObject {
+			/**
+			 * Name of the server principal that owns the server role.
+			 */
+			owner: string;
+			/**
+			 * Name of the server principals that are members of the server role.
+			 */
+			members: string[];
+			/**
+			 * Server roles that the server role is a member of.
+			 */
+			memberships: string[];
+		}
+
+		/**
+		 * Interface representing the information required to render the server role view.
+		 */
+		export interface ServerRoleViewInfo extends SecurityPrincipalViewInfo<ServerRoleInfo> {
+			/**
+			 * Whether the server role is a fixed role.
+			 */
+			isFixedRole: boolean;
+			/**
+			 * List of all the server roles.
+			 */
+			serverRoles: string[];
+		}
+
+		/**
+		 * Interface representing the application role object.
+		 */
+		export interface ApplicationRoleInfo extends SecurityPrincipalObject {
+			/**
+			 * Default schema of the application role.
+			 */
+			defaultSchema: string;
+			/**
+			 * Schemas owned by the application role.
+			 */
+			ownedSchemas: string[];
+			/**
+			 * Password of the application role.
+			 */
+			password: string;
+		}
+
+		/**
+		 * Interface representing the information required to render the application role view.
+		 */
+		export interface ApplicationRoleViewInfo extends SecurityPrincipalViewInfo<ApplicationRoleInfo> {
+			/**
+			 * List of all the schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Interface representing the database role object.
+		 */
+		export interface DatabaseRoleInfo extends SecurityPrincipalObject {
+			/**
+			 * Name of the database principal that owns the database role.
+			 */
+			owner: string;
+			/**
+			 * Schemas owned by the database role.
+			 */
+			ownedSchemas: string[];
+			/**
+			 * Name of the user or database role that are members of the database role.
+			 */
+			members: string[];
+		}
+
+		/**
+		 * Interface representing the information required to render the database role view.
+		 */
+		export interface DatabaseRoleViewInfo extends SecurityPrincipalViewInfo<DatabaseRoleInfo> {
+			/**
+			 * List of all the schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Interface representing an item in the search result.
+		 */
+		export interface SearchResultItem {
+			/**
+			 * name of the object.
+			 */
+			name: string;
+			/**
+			 * type of the object.
+			 */
+			type: string;
+			/**
+			 * schema of the object.
+			 */
+			schema: string | undefined;
+		}
+
+		export interface Database extends SqlObject {
+			owner?: string;
+			collationName?: string;
+			recoveryModel?: string;
+			compatibilityLevel?: string;
+			containmentType?: string;
+		}
+
+		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
+			loginNames: string[];
+			collationNames: string[];
+			compatibilityLevels: string[];
+			containmentTypes: string[];
+			recoveryModels: string[];
+		}
 	}
 
 	export interface IObjectManagementService {
 		/**
-		 * Initialize the login view and return the information to render the view.
+		 * Initialize the object view and return the information to render the view.
+		 * @param contextId The context id of the view, generated by the extension and will be used in subsequent save/script/dispose operations.
+		 * @param objectType The object type.
 		 * @param connectionUri The original connection's URI.
-		 * @param contextId The context id of the view, generated by the extension and will be used in subsequent create/update/dispose operations.
-		 * @param isNewObject Whether the view is for creating a new login object.
-		 * @param name Name of the login. Only applicable when isNewObject is false.
+		 * @param database The target database.
+		 * @param isNewObject Whether the view is for creating a new object.
+		 * @param parentUrn The parent object's URN.
+		 * @param objectUrn The object's URN.
 		 */
-		initializeLoginView(connectionUri: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.LoginViewInfo>;
+		initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>>;
 		/**
-		 * Create a login.
-		 * @param contextId The login view's context id.
-		 * @param login The login information.
+		 * Save an object.
+		 * @param contextId The object view's context id.
+		 * @param object The object to be saved.
 		 */
-		createLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
+		save(contextId: string, object: ObjectManagement.SqlObject): Thenable<void>;
 		/**
-		 * Update a login.
-		 * @param contextId The login view's context id.
-		 * @param login The login information.
+		 * Script an object.
+		 * @param contextId The object view's context id.
+		 * @param object The object to be scripted.
 		 */
-		updateLogin(contextId: string, login: ObjectManagement.Login): Thenable<void>;
+		script(contextId: string, object: ObjectManagement.SqlObject): Thenable<string>;
 		/**
-		 * Delete a login.
-		 * @param connectionUri The URI of the server connection.
-		 * @param name Name of the login.
-		 */
-		deleteLogin(connectionUri: string, name: string): Thenable<void>;
-		/**
-		 * Dispose the login view.
+		 * Dispose a view.
 		 * @param contextId The id of the view.
 		 */
-		disposeLoginView(contextId: string): Thenable<void>;
+		disposeView(contextId: string): Thenable<void>;
 		/**
-		 * Initialize the user view and return the information to render the view.
-		 * @param connectionUri The original connection's URI.
-		 * @param database Name of the database.
-		 * @param contextId The id of the view, generated by the extension and will be used in subsequent create/update/dispose operations.
-		 * @param isNewObject Whether the view is for creating a new user object.
-		 * @param name Name of the user. Only applicable when isNewObject is false.
-		 */
-		initializeUserView(connectionUri: string, database: string, contextId: string, isNewObject: boolean, name: string | undefined): Thenable<ObjectManagement.UserViewInfo>;
-		/**
-		 * Create a user.
-		 * @param contextId Id of the view.
-		 * @param user The user information.
-		 */
-		createUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
-		/**
-		 * Create a login.
-		 * @param contextId Id of the view.
-		 * @param user The user information.
-		 */
-		updateUser(contextId: string, user: ObjectManagement.User): Thenable<void>;
-		/**
-		 * Create a login.
+		 * Rename an object.
 		 * @param connectionUri The URI of the server connection.
-		 * @param database Name of the database.
-		 * @param name Name of the user.
+		 * @param objectType The object type.
+		 * @param objectUrn SMO Urn of the object to be renamed. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param newName The new name of the object.
 		 */
-		deleteUser(connectionUri: string, database: string, name: string): Thenable<void>;
+		rename(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string, newName: string): Thenable<void>;
 		/**
-		 * Dispose the user view.
-		 * @param contextId The id of the view.
+		 * Drop an object.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectType The object type.
+		 * @param objectUrn SMO Urn of the object to be dropped. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
 		 */
-		disposeUserView(contextId: string): Thenable<void>;
+		drop(connectionUri: string, objectType: ObjectManagement.NodeType, objectUrn: string): Thenable<void>;
+		/**
+		 * Search for objects.
+		 * @param contextId The object view's context id.
+		 * @param objectTypes The object types to search for.
+		 * @param searchText Search text.
+		 * @param schema Schema to search in.
+		 */
+		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
 }

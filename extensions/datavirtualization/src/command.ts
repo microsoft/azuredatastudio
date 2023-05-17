@@ -6,11 +6,9 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from './apiWrapper';
 import { TreeNode } from './treeNodes';
-import { QuestionTypes, IPrompter, IQuestion } from './prompts/question';
 import * as utils from './utils';
 import * as constants from './constants';
 import { AppContext } from './appContext';
@@ -119,57 +117,5 @@ export abstract class Command extends vscode.Disposable {
 		}
 
 		return [{ command: command, type: 'unknown', editor: editor }, args];
-	}
-}
-
-export abstract class ProgressCommand extends Command {
-	static progressId = 0;
-	constructor(private command: string, protected prompter: IPrompter, appContext: AppContext) {
-		super(command, appContext);
-	}
-
-	protected async executeWithProgress(
-		execution: (cancelToken: vscode.CancellationTokenSource) => Promise<void>,
-		label: string,
-		isCancelable: boolean = false,
-		onCanceled?: () => void
-	): Promise<void> {
-		let disposables: vscode.Disposable[] = [];
-		const tokenSource = new vscode.CancellationTokenSource();
-		const statusBarItem = this.apiWrapper.createStatusBarItem(vscode.StatusBarAlignment.Left);
-		disposables.push(vscode.Disposable.from(statusBarItem));
-		statusBarItem.text = localize('progress', '$(sync~spin) {0}...', label);
-		if (isCancelable) {
-			const cancelCommandId = `cancelProgress${ProgressCommand.progressId++}`;
-			disposables.push(this.apiWrapper.registerCommand(cancelCommandId, async () => {
-				if (await this.confirmCancel()) {
-					tokenSource.cancel();
-				}
-			}));
-			statusBarItem.tooltip = localize('cancelTooltip', 'Cancel');
-			statusBarItem.command = cancelCommandId;
-		}
-		statusBarItem.show();
-
-		try {
-			await execution(tokenSource);
-		} catch (error) {
-			if (isCancelable && onCanceled && tokenSource.token.isCancellationRequested) {
-				// The error can be assumed to be due to cancelation occurring. Do the callback
-				onCanceled();
-			} else {
-				throw error;
-			}
-		} finally {
-			disposables.forEach(d => d.dispose());
-		}
-	}
-
-	private async confirmCancel(): Promise<boolean> {
-		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
-			message: localize('cancel', 'Cancel operation?'),
-			default: true
-		});
 	}
 }

@@ -7,16 +7,18 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
+import { MigrationTargetType } from '../api/utils';
 import { azureResource } from 'azurecore';
 import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/azure';
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
+import { ConnectingToTargetFailed, } from '../models/loginMigrationModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -635,7 +637,16 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
 
-						logError(TelemetryViews.LoginMigrationTargetSelectionPage, 'ConnectingToTargetFailed', error);
+						logError(TelemetryViews.LoginMigrationTargetSelectionPage, ConnectingToTargetFailed, error);
+						sendSqlMigrationActionEvent(
+							TelemetryViews.LoginMigrationTargetSelectionPage,
+							TelemetryAction.LoginMigrationError,
+							{
+								...getTelemetryProps(this.migrationStateModel),
+								'errorMessage': ConnectingToTargetFailed,
+							},
+							{}
+						);
 						connectionSuccessful = false;
 					}
 					finally {
@@ -877,7 +888,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private async populateTenantsDropdown(): Promise<void> {
 		try {
 			this._accountTenantDropdown.loading = true;
-			if (this.migrationStateModel._azureAccount && this.migrationStateModel._azureAccount.isStale === false && this.migrationStateModel._azureAccount.properties.tenants.length > 0) {
+			if (!utils.isAccountTokenStale(this.migrationStateModel._azureAccount) &&
+				this.migrationStateModel._azureAccount?.properties?.tenants?.length > 0) {
 				this.migrationStateModel._accountTenants = utils.getAzureTenants(this.migrationStateModel._azureAccount);
 				this._accountTenantDropdown.values = utils.getAzureTenantsDropdownValues(this.migrationStateModel._accountTenants);
 			}

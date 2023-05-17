@@ -24,7 +24,6 @@ const ansiColors = require("ansi-colors");
 const buffer = require('gulp-buffer');
 const jsoncParser = require("jsonc-parser");
 const dependencies_1 = require("./dependencies");
-const _ = require("underscore");
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
@@ -69,7 +68,7 @@ function fromLocal(extensionPath, forWeb) {
             delete data.dependencies;
             delete data.devDependencies;
             if (data.main) {
-                data.main = data.main.replace('/out/', /dist/);
+                data.main = data.main.replace('/out/', '/dist/');
             }
             return data;
         });
@@ -78,6 +77,9 @@ function fromLocal(extensionPath, forWeb) {
 }
 exports.fromLocal = fromLocal;
 function fromLocalWebpack(extensionPath, webpackConfigFileName) {
+    const vsce = require('@vscode/vsce');
+    const webpack = require('webpack');
+    const webpackGulp = require('webpack-stream');
     const result = es.through();
     const packagedDependencies = [];
     const packageJsonConfig = require(path.join(extensionPath, 'package.json'));
@@ -89,9 +91,6 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
             }
         }
     }
-    const vsce = require('vsce');
-    const webpack = require('webpack');
-    const webpackGulp = require('webpack-stream');
     vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn, packagedDependencies }).then(fileNames => {
         const files = fileNames
             .map(fileName => path.join(extensionPath, fileName))
@@ -104,7 +103,7 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
         // check for a webpack configuration files, then invoke webpack
         // and merge its output with the files stream.
         const webpackConfigLocations = glob.sync(path.join(extensionPath, '**', webpackConfigFileName), { ignore: ['**/node_modules'] });
-        const webpackStreams = webpackConfigLocations.map(webpackConfigPath => {
+        const webpackStreams = webpackConfigLocations.flatMap(webpackConfigPath => {
             const webpackDone = (err, stats) => {
                 fancyLog(`Bundled extension: ${ansiColors.yellow(path.join(path.basename(extensionPath), path.relative(extensionPath, webpackConfigPath)))}...`);
                 if (err) {
@@ -118,24 +117,30 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
                     result.emit('error', compilation.warnings.join('\n'));
                 }
             };
-            const webpackConfig = Object.assign(Object.assign({}, require(webpackConfigPath)), { mode: 'production' });
-            const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
-            return webpackGulp(webpackConfig, webpack, webpackDone)
-                .pipe(es.through(function (data) {
-                data.stat = data.stat || {};
-                data.base = extensionPath;
-                this.emit('data', data);
-            }))
-                .pipe(es.through(function (data) {
-                // source map handling:
-                // * rewrite sourceMappingURL
-                // * save to disk so that upload-task picks this up
-                const contents = data.contents.toString('utf8');
-                data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
-                    return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
-                }), 'utf8');
-                this.emit('data', data);
-            }));
+            const exportedConfig = require(webpackConfigPath);
+            return (Array.isArray(exportedConfig) ? exportedConfig : [exportedConfig]).map(config => {
+                const webpackConfig = {
+                    ...config,
+                    ...{ mode: 'production' }
+                };
+                const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
+                return webpackGulp(webpackConfig, webpack, webpackDone)
+                    .pipe(es.through(function (data) {
+                    data.stat = data.stat || {};
+                    data.base = extensionPath;
+                    this.emit('data', data);
+                }))
+                    .pipe(es.through(function (data) {
+                    // source map handling:
+                    // * rewrite sourceMappingURL
+                    // * save to disk so that upload-task picks this up
+                    const contents = data.contents.toString('utf8');
+                    data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
+                        return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
+                    }), 'utf8');
+                    this.emit('data', data);
+                }));
+            });
         });
         es.merge(...webpackStreams, es.readArray(files))
             // .pipe(es.through(function (data) {
@@ -152,8 +157,8 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
     return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
 }
 function fromLocalNormal(extensionPath) {
+    const vsce = require('@vscode/vsce');
     const result = es.through();
-    const vsce = require('vsce');
     vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
         .then(fileNames => {
         const files = fileNames
@@ -207,7 +212,10 @@ const ghApiHeaders = {
 if (process.env.GITHUB_TOKEN) {
     ghApiHeaders.Authorization = 'Basic ' + Buffer.from(process.env.GITHUB_TOKEN).toString('base64');
 }
-const ghDownloadHeaders = Object.assign(Object.assign({}, ghApiHeaders), { Accept: 'application/octet-stream' });
+const ghDownloadHeaders = {
+    ...ghApiHeaders,
+    Accept: 'application/octet-stream',
+};
 function fromGithub({ name, version, repo, metadata }) {
     const remote = require('gulp-remote-retry-src');
     const json = require('gulp-json-editor');
@@ -242,6 +250,7 @@ const excludedExtensions = [
     'ms-vscode.node-debug',
     'ms-vscode.node-debug2',
     'vscode-custom-editor-tests',
+    'vscode-notebook-tests',
     'integration-tests', // {{SQL CARBON EDIT}}
 ];
 // {{SQL CARBON EDIT}}
@@ -256,7 +265,6 @@ const externalExtensions = [
     'arc',
     'asde-deployment',
     'azcli',
-    'azurehybridtoolkit',
     'azuremonitor',
     'cms',
     'dacpac',
@@ -342,8 +350,9 @@ function packageLocalExtensionsStream(forWeb) {
     else {
         // also include shared production node modules
         const productionDependencies = (0, dependencies_1.getProductionDependencies)('extensions/');
-        const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]));
-        result = es.merge(localExtensionsStream, gulp.src(dependenciesSrc, { base: '.' }));
+        const dependenciesSrc = productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]).flat();
+        result = es.merge(localExtensionsStream, gulp.src(dependenciesSrc, { base: '.' })
+            .pipe(util2.cleanNodeModules(path.join(root, 'build', '.moduleignore'))));
     }
     return (result
         .pipe(util2.setExecutableBit(['**/*.sh'])));
@@ -381,7 +390,7 @@ function scanBuiltinExtensions(extensionsRoot, exclude = []) {
             if (!fs.existsSync(packageJSONPath)) {
                 continue;
             }
-            let packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
+            const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
             if (!isWebExtension(packageJSON)) {
                 continue;
             }
@@ -447,7 +456,7 @@ function translatePackageJSON(packageJSON, packageNLSPath) {
     const CharCode_PC = '%'.charCodeAt(0);
     const packageNls = JSON.parse(fs.readFileSync(packageNLSPath).toString());
     const translate = (obj) => {
-        for (let key in obj) {
+        for (const key in obj) {
             const val = obj[key];
             if (Array.isArray(val)) {
                 val.forEach(translate);
@@ -474,6 +483,7 @@ const esbuildMediaScripts = [
     'markdown-language-features/esbuild-preview.js',
     'markdown-math/esbuild.js',
     'notebook-renderers/esbuild.js',
+    'ipynb/esbuild.js',
     'simple-browser/esbuild-preview.js',
 ];
 async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
@@ -526,7 +536,7 @@ async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
                     reject();
                 }
                 else {
-                    reporter(stats === null || stats === void 0 ? void 0 : stats.toJson());
+                    reporter(stats?.toJson());
                 }
             });
         }
@@ -537,7 +547,7 @@ async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
                     reject();
                 }
                 else {
-                    reporter(stats === null || stats === void 0 ? void 0 : stats.toJson());
+                    reporter(stats?.toJson());
                     resolve();
                 }
             });

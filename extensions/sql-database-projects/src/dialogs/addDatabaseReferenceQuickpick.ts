@@ -6,18 +6,16 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import { getSqlProjectsInWorkspace, isValidSqlCmdVariableName, removeSqlCmdVariableFormatting } from '../common/utils';
+import { getSqlProjectsInWorkspace, getSystemDatabase, validateSqlCmdVariableName } from '../common/utils';
+import { DbServerValues, populateResultWithVars } from './utils';
 import { AddDatabaseReferenceSettings } from '../controllers/projectController';
-import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Project } from '../models/project';
-import { getSystemDatabase, getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
+import { getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { ProjectType } from 'mssql';
 
-interface DbServerValues {
-	dbName?: string,
-	dbVariable?: string,
-	serverName?: string,
-	serverVariable?: string
-}
+
 
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
@@ -31,6 +29,11 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 	const referenceTypes = otherProjectsInWorkspace.length > 0 ?
 		[constants.projectLabel, constants.systemDatabase, constants.dacpacText] :
 		[constants.systemDatabase, constants.dacpacText];
+
+	// only add nupkg database reference option if project is SDK-style
+	if (project.sqlProjStyle === ProjectType.SdkStyle) {
+		referenceTypes.push(constants.nupkgText);
+	}
 
 	const referenceType = await vscode.window.showQuickPick(
 		referenceTypes,
@@ -47,6 +50,8 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 			return addSystemDatabaseReference(project);
 		case constants.dacpacText:
 			return addDacpacReference(project);
+		case constants.nupkgText:
+			return addNupkgReference();
 		default:
 			console.log(`Unknown reference type ${referenceType}`);
 			return undefined;
@@ -93,14 +98,16 @@ async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Prom
 		// User cancelled
 		return;
 	}
-	referenceSettings.databaseName = dbServerValues.dbName;
-	referenceSettings.databaseVariable = dbServerValues.dbVariable;
-	referenceSettings.serverName = dbServerValues.serverName;
-	referenceSettings.serverVariable = dbServerValues.serverVariable;
+
+	populateResultWithVars(referenceSettings, dbServerValues);
 
 	// 7. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 	referenceSettings.suppressMissingDependenciesErrors = suppressErrors;
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.projectLabel })
+		.send();
 
 	return referenceSettings;
 }
@@ -123,8 +130,12 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 	// 4. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.systemDatabase })
+		.send();
+
 	return {
-		databaseName: dbName,
+		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
 		suppressMissingDependenciesErrors: suppressErrors
 	};
@@ -181,14 +192,89 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 	// 5. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
-	return {
-		databaseName: dbServerValues.dbName,
+	// 6. Construct result
+
+	const referenceSettings: IDacpacReferenceSettings = {
 		dacpacFileLocation: dacPacLocation,
-		databaseVariable: removeSqlCmdVariableFormatting(dbServerValues.dbVariable),
-		serverName: dbServerValues.serverName,
-		serverVariable: removeSqlCmdVariableFormatting(dbServerValues.serverVariable),
 		suppressMissingDependenciesErrors: suppressErrors
 	};
+
+	populateResultWithVars(referenceSettings, dbServerValues);
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.dacpacText })
+		.send();
+
+	return referenceSettings;
+}
+
+async function addNupkgReference(): Promise<INugetPackageReferenceSettings | undefined> {
+	// (steps continued from addDatabaseReferenceQuickpick)
+	// 2. Prompt for location
+	const location = await promptLocation();
+	if (!location) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 3. Prompt for NuGet package name
+	const nupkgName = await vscode.window.showInputBox(
+		{
+			title: constants.nupkgText,
+			placeHolder: constants.nupkgNamePlaceholder,
+			validateInput: (value) => {
+				return value ? undefined : constants.nameMustNotBeEmpty;
+			},
+			ignoreFocusOut: true
+		});
+
+	if (!nupkgName) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 4. Prompt for NuGet package version
+	const nupkgVersion = await vscode.window.showInputBox(
+		{
+			title: constants.version,
+			placeHolder: constants.versionPlaceholder,
+			validateInput: (value) => {
+				return value ? undefined : constants.versionMustNotBeEmpty;
+			},
+			ignoreFocusOut: true
+		});
+
+	if (!nupkgVersion) {
+		// User cancelled
+		return undefined;
+	}
+
+
+	// 5. Prompt for db/server values
+	const dbServerValues = await promptDbServerValues(location, path.parse(nupkgName).name);
+	if (!dbServerValues) {
+		// User cancelled
+		return;
+	}
+
+	// 6. Prompt suppress unresolved ref errors
+	const suppressErrors = await promptSuppressUnresolvedRefErrors();
+
+	// 7. Construct result
+
+	const referenceSettings: INugetPackageReferenceSettings = {
+		packageName: nupkgName,
+		packageVersion: nupkgVersion,
+		suppressMissingDependenciesErrors: suppressErrors
+	};
+
+	populateResultWithVars(referenceSettings, dbServerValues);
+
+	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+		.withAdditionalProperties({ referenceType: constants.nupkgText })
+		.send();
+
+	return referenceSettings;
 }
 
 async function promptLocation(): Promise<string | undefined> {
@@ -215,7 +301,7 @@ async function promptDbVar(defaultValue: string): Promise<string> {
 			title: constants.databaseVariable,
 			value: defaultValue,
 			validateInput: (value: string) => {
-				return isValidSqlCmdVariableName(value) ? '' : constants.notValidVariableName(value);
+				return validateSqlCmdVariableName(value) ?? '';
 			},
 			ignoreFocusOut: true
 		}) ?? '';
@@ -239,7 +325,7 @@ async function promptServerVar(): Promise<string> {
 			title: constants.serverVariable,
 			value: constants.otherSeverVariable,
 			validateInput: (value: string) => {
-				return isValidSqlCmdVariableName(value) ? '' : constants.notValidVariableName(value);
+				return validateSqlCmdVariableName(value) ?? '';
 			},
 			ignoreFocusOut: true
 		}) ?? '';

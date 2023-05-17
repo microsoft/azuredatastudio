@@ -31,16 +31,61 @@ import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/envi
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
 export interface SqlArgs {
+	/**
+	 * Used to determine file paths to be opened with SQL Editor.
+	 * If provided, we connect the given profile to to it.
+	 * More than one files can be passed to connect to provided profile.
+	 */
 	_?: string[];
+	/**
+	 * Provide authenticationType to be used.
+	 * accepted values: AzureMFA, SqlLogin, Integrated, etc.
+	 */
 	authenticationType?: string
+	/**
+	 * Name of database
+	 */
 	database?: string;
+	/**
+	 * Name of server
+	 */
 	server?: string;
+	/**
+	 * User name/email address
+	 */
 	user?: string;
+	/**
+	 * Operation to perform:
+	 * accepted values: connect, openConnectionDialog
+	 */
 	command?: string;
+	/**
+	 * Name of connection provider,
+	 * accepted values: mssql (by default), pgsql, etc.
+	 */
 	provider?: string;
-	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
-	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
+	/**
+	 * Deprecated - used by SSMS - authenticationType should be used instead
+	 */
+	aad?: boolean;
+	/**
+	 * Deprecated - used by SSMS - authenticationType should be used instead.
+	 */
+	integrated?: boolean;
+	/**
+	 * Whether or not to show dashboard
+	 * accepted values: true, false (by default).
+	 */
 	showDashboard?: boolean;
+	/**
+	 * Supports providing applicationName that will be used for connection profile app name.
+	 */
+	applicationName?: string;
+	/**
+	 *  Supports providing advanced connection properties that providers support.
+	 *  Value must be a json object containing key-value pairs in format: '{"key1":"value1","key2":"value2",...}'
+	 */
+	connectionProperties?: string;
 }
 
 //#region decorators
@@ -123,7 +168,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
 		if (showConnectDialogOnStartup && !commandName && !profile && !this._connectionManagementService.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
-			await this._connectionManagementService.showConnectionDialog();
+			await this._connectionManagementService.showConnectionDialog(undefined, {
+				showDashboard: true,
+				saveTheConnection: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 			return;
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
@@ -234,7 +284,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			}
 
 			const connectionProfile = this.readProfileFromArgs(args);
-			await this._connectionManagementService.showConnectionDialog(undefined, undefined, connectionProfile);
+			await this._connectionManagementService.showConnectionDialog(undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			}, connectionProfile);
 		} catch (err) {
 			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
@@ -307,10 +362,37 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 							Constants.AuthenticationType.Integrated;
 
 		profile.connectionName = '';
-		profile.setOptionValue('applicationName', Constants.applicationName);
+		const applicationName = args.applicationName
+			? args.applicationName + '-' + Constants.applicationName
+			: Constants.applicationName;
+		profile.setOptionValue('applicationName', applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
 		profile.setOptionValue('groupId', profile.groupId);
+		// Set all advanced options
+		let advancedOptions = this.getAdvancedOptions(args.connectionProperties, profile.getOptionKeyIdNames());
+		advancedOptions.forEach((v, k) => {
+			profile.setOptionValue(k, v);
+		});
 		return this._connectionManagementService ? this.tryMatchSavedProfile(profile) : profile;
+	}
+
+	private getAdvancedOptions(options: string, idNames: string[]): Map<string, string> {
+		const ignoredProperties = idNames.concat(['password', 'azureAccountToken']);
+		let advancedOptionsMap = new Map<string, string>();
+		if (options) {
+			try {
+				// Decode options if they contain any encoded URL characters
+				options = decodeURI(options);
+				JSON.parse(options, (k, v) => {
+					if (!(k in ignoredProperties)) {
+						advancedOptionsMap.set(k, v);
+					}
+				});
+			} catch (e) {
+				throw new Error(localize('commandline.propertiesFormatError', 'Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}', e, options));
+			}
+		}
+		return advancedOptionsMap;
 	}
 
 	private tryMatchSavedProfile(profile: ConnectionProfile) {

@@ -159,6 +159,15 @@
     <trans-unit id="azuredatastudio">
       <source xml:lang="en">Azure Data Studio</source>
     </trans-unit>
+    <trans-unit id="azuredatastudio.download">
+      <source xml:lang="en">Download</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.downloadTooltip">
+      <source xml:lang="en">Download this extension from an external source</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.installTooltip">
+      <source xml:lang="en">Install this extension</source>
+    </trans-unit>
     <trans-unit id="connectionDialogBrowseTree.context">
       <source xml:lang="en">The connection dialog's browse tree context menu</source>
     </trans-unit>
@@ -633,6 +642,9 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="notebookFindRangeHighlight">
       <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
+    </trans-unit>
+    <trans-unit id="queryEditorNullBackground">
+      <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
     </trans-unit>
     <trans-unit id="tileBorder">
       <source xml:lang="en">The border color of tiles</source>
@@ -1630,6 +1642,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="commandline.propertiesFormatError">
+      <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
+    </trans-unit>
     <trans-unit id="confirmConnect">
       <source xml:lang="en">Are you sure you want to connect?</source>
     </trans-unit>
@@ -1866,6 +1881,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboard.configureDashboardTooltip">
+      <source xml:lang="en">Learn more about how to configure the dashboard</source>
+    </trans-unit>
     <trans-unit id="dashboard.generalTabGroupHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -2476,6 +2494,11 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="revertRow">
       <source xml:lang="en">Revert Current Row</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="editData.cellWithNullCharMessage">
+      <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext"><body>
@@ -3892,6 +3915,9 @@ Error: {1}</source>
     <trans-unit id="newNotebookAction">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
+    <trans-unit id="newNotebookTask.newNotebook">
+      <source xml:lang="en">New Notebook</source>
+    </trans-unit>
     <trans-unit id="newViewLabel">
       <source xml:lang="en">Create New View</source>
     </trans-unit>
@@ -4130,7 +4156,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error: {0}</source>
+      <source xml:lang="en">Copy failed with error {0}</source>
     </trans-unit>
     <trans-unit id="notebook.showChart">
       <source xml:lang="en">Show chart</source>
@@ -4153,8 +4179,23 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorer.filterDialogTitle">
+      <source xml:lang="en">(Preview) Filter Settings: {0}</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.nodePath">
+      <source xml:lang="en">Node Path: {0}</source>
+    </trans-unit>
     <trans-unit id="serverTree.newConnection">
       <source xml:lang="en">New Connection</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification">
+      <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+      <source xml:lang="en">Don't Reload</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification.reload">
+      <source xml:lang="en">Reload</source>
     </trans-unit>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
@@ -4167,8 +4208,11 @@ Error: {1}</source>
     <trans-unit id="serverGroup.colors">
       <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
     </trans-unit>
+    <trans-unit id="serverTree.configuration.title">
+      <source xml:lang="en">Server Tree</source>
+    </trans-unit>
     <trans-unit id="serverTree.useAsyncServerTree">
-      <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
+      <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext"><body>
@@ -4451,13 +4495,13 @@ Error: {1}</source>
       <source xml:lang="en">Parse Query</source>
     </trans-unit>
     <trans-unit id="queryActions.notConnected">
-      <source xml:lang="en">Please connect to a server</source>
+      <source xml:lang="en">Please connect to a server before running this action.</source>
     </trans-unit>
     <trans-unit id="queryActions.parseSyntaxFailure">
-      <source xml:lang="en">Command failed: </source>
+      <source xml:lang="en">Failed to parse the query: {0}</source>
     </trans-unit>
     <trans-unit id="queryActions.parseSyntaxSuccess">
-      <source xml:lang="en">Commands completed successfully</source>
+      <source xml:lang="en">Successfully parsed the query.</source>
     </trans-unit>
     <trans-unit id="queryActions.queryResultsCopySuccess">
       <source xml:lang="en">Successfully copied query and results.</source>
@@ -4592,6 +4636,9 @@ Error: {1}</source>
       <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="changeConnectionDatabaseLabel">
+      <source xml:lang="en">Change</source>
+    </trans-unit>
+    <trans-unit id="changeConnectionDatabaseTooltip">
       <source xml:lang="en">Change Connection</source>
     </trans-unit>
     <trans-unit id="changeDatabase.failed">
@@ -4627,8 +4674,14 @@ Error: {1}</source>
     <trans-unit id="query.multiSelectionNotSupported">
       <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
     </trans-unit>
-    <trans-unit id="queryEditor.exportSqlAsNotebook">
+    <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+      <source xml:lang="en">To Notebook</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
       <source xml:lang="en">Export as Notebook</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.parse">
+      <source xml:lang="en">Parse</source>
     </trans-unit>
     <trans-unit id="runQueryLabel">
       <source xml:lang="en">Run</source>
@@ -4638,6 +4691,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/queryEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryActions.selectDatabase.label">
+      <source xml:lang="en">Database:</source>
+    </trans-unit>
     <trans-unit id="queryEditor.name">
       <source xml:lang="en">Query Editor</source>
     </trans-unit>
@@ -4959,6 +5015,17 @@ Error: {1}</source>
       <source xml:lang="en">More information</source>
     </trans-unit>
     <trans-unit id="notifyEncryption.title">
+      <source xml:lang="en">Important Update</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notifyHiddenTenant.message">
+      <source xml:lang="en">Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.</source>
+    </trans-unit>
+    <trans-unit id="notifyHiddenTenant.moreInfoLink">
+      <source xml:lang="en">More information</source>
+    </trans-unit>
+    <trans-unit id="notifyHiddenTenant.title">
       <source xml:lang="en">Important Update</source>
     </trans-unit>
 </body></file>
@@ -5309,18 +5376,18 @@ Error Message: {1}</source>
     <trans-unit id="addAccountFailedGenericMessage">
       <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
     </trans-unit>
-    <trans-unit id="addAccountFailedMessage">
-      <source xml:lang="en">{0}</source>
-    </trans-unit>
     <trans-unit id="loggingIn">
       <source xml:lang="en">Adding account...</source>
+    </trans-unit>
+    <trans-unit id="refreshAccountFailedGenericMessage">
+      <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
     </trans-unit>
     <trans-unit id="refreshCanceled">
       <source xml:lang="en">Refresh account was canceled by the user</source>
     </trans-unit>
     <trans-unit id="refreshFailed">
-      <source xml:lang="en">0 
-Error Message: 1</source>
+      <source xml:lang="en">{0} 
+Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountPickerImpl" source-language="en" datatype="plaintext"><body>
@@ -5536,6 +5603,11 @@ Error Message: 1</source>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
     </trans-unit>
+    <trans-unit id="connection.duplicateEditErrorMessage">
+      <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
+
+ {0}{1}</source>
+    </trans-unit>
     <trans-unit id="connection.extensionNotInstalled">
       <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
     </trans-unit>
@@ -5550,6 +5622,9 @@ Error Message: 1</source>
     </trans-unit>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+    </trans-unit>
+    <trans-unit id="connection.unknownProvider">
+      <source xml:lang="en">Unknown provider '{0}'</source>
     </trans-unit>
     <trans-unit id="connection.unsupportedServerVersionWarning">
       <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
@@ -5596,13 +5671,25 @@ Error Message: 1</source>
       <source xml:lang="en">Add an account...</source>
     </trans-unit>
     <trans-unit id="connectionWidget.ConnectionStringError">
-      <source xml:lang="en">Failed to parse the connection string.</source>
+      <source xml:lang="en">Failed to parse the connection string. {0}</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.ConnectionStringUndefined">
+      <source xml:lang="en">No connection info returned.</source>
     </trans-unit>
     <trans-unit id="connectionWidget.Error">
       <source xml:lang="en">Error</source>
     </trans-unit>
     <trans-unit id="connectionWidget.connectionString">
       <source xml:lang="en">Connection string</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputType.connectionString">
+      <source xml:lang="en">Connection String</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputType.parameters">
+      <source xml:lang="en">Parameters</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputTypeLabel">
+      <source xml:lang="en">Input type</source>
     </trans-unit>
     <trans-unit id="connectionWidget.invalidAzureAccount">
       <source xml:lang="en">You must select an account</source>
@@ -6170,8 +6257,103 @@ Error Message: 1</source>
     <trans-unit id="deleteConnectionGroupConfirmation">
       <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
     </trans-unit>
+    <trans-unit id="objectExplorer.filterChildren">
+      <source xml:lang="en">Filter (Preview)</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.removeFilter">
+      <source xml:lang="en">Remove Filter</source>
+    </trans-unit>
     <trans-unit id="showAllConnections">
       <source xml:lang="en">Show All Connections</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filterDialog.errorDateRange">
+      <source xml:lang="en">Start date cannot be greater than end date.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorEndDate">
+      <source xml:lang="en">End date is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorEndNumber">
+      <source xml:lang="en">End number is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorNumberRange">
+      <source xml:lang="en">Start number cannot be greater than end number.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorStartDate">
+      <source xml:lang="en">Start date is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorStartNumber">
+      <source xml:lang="en">Start number is not specified.</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.andSelectBox">
+      <source xml:lang="en">And</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.betweenSelectBox">
+      <source xml:lang="en">Between</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.cancelButtonText">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.clearAllButtonText">
+      <source xml:lang="en">Clear All</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.clearColumnHeader">
+      <source xml:lang="en">Clear</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.containsSelectBox">
+      <source xml:lang="en">Contains</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.equalsSelectBox">
+      <source xml:lang="en">Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.falseSelectBox">
+      <source xml:lang="en">False</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.greaterThanOrEqualsSelectBox">
+      <source xml:lang="en">Greater Than Or Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.greaterThanSelectBox">
+      <source xml:lang="en">Greater Than</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.isNotNullSelectBox">
+      <source xml:lang="en">Is Not Null</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.isNullSelectBox">
+      <source xml:lang="en">Is Null</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
+      <source xml:lang="en">Less Than Or Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.lessThanSelectBox">
+      <source xml:lang="en">Less Than</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.nodePath">
+      <source xml:lang="en">Node Path: {0}</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notBetweenSelectBox">
+      <source xml:lang="en">Not Between</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notContainsSelectBox">
+      <source xml:lang="en">Not Contains</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notEqualsSelectBox">
+      <source xml:lang="en">Not Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.okButtonText">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.operatorColumnHeader">
+      <source xml:lang="en">Operator</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.propertyNameColumnHeader">
+      <source xml:lang="en">Property</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.trueSelectBox">
+      <source xml:lang="en">True</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.valueColumnHeader">
+      <source xml:lang="en">Value</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerService" source-language="en" datatype="plaintext"><body>
@@ -6180,6 +6362,9 @@ Error Message: 1</source>
     </trans-unit>
     <trans-unit id="nodeExpansionError">
       <source xml:lang="en">Multiple errors:</source>
+    </trans-unit>
+    <trans-unit id="objectExplorerSessionIdMissing">
+      <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext"><body>
@@ -6193,6 +6378,11 @@ Error Message: 1</source>
       <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filteredTreeElementName">
+      <source xml:lang="en">{0} (filtered)</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext"><body>
     <trans-unit id="serversAriaLabel">
       <source xml:lang="en">Servers</source>
@@ -6202,6 +6392,11 @@ Error Message: 1</source>
     </trans-unit>
     <trans-unit id="treeCreation.regTreeAriaLabel">
       <source xml:lang="en">Servers</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectionFailedError">
+      <source xml:lang="en">Failed to connect, please try again.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/profiler/browser/profilerColumnEditorDialog" source-language="en" datatype="plaintext"><body>
@@ -6316,7 +6511,7 @@ Error Message: 1</source>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error: {0}</source>
+      <source xml:lang="en">Copy failed with error {0}</source>
     </trans-unit>
     <trans-unit id="elapsedBatchTime">
       <source xml:lang="en">Batch execution time: {0}</source>

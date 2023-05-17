@@ -52,8 +52,10 @@ suite('Notebook integration test suite', function () {
 		let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
 		console.log('Got first output');
 		assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Actual: ${actualOutput0}`);
-		let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
-		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
+		let dataResource = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'];
+		let actualOutput2 = dataResource.data[0];
+		let columnName = dataResource.schema.fields[0].name;
+		assert(actualOutput2[columnName] === '1', `Expected result: 1, Actual: '${actualOutput2[columnName]}'`);
 	});
 
 	test('Sql NB multiple cells test', async function () {
@@ -283,8 +285,9 @@ async function multipleCellsTest(relativeFilePath: string): Promise<void> {
 
 		assert(Object.keys(applicationDataResource).includes('data'), `Execute result did not include data key. It included ${Object.keys(applicationDataResource)}`);
 		const actualOutput2 = applicationDataResource.data[0];
+		const columnName = applicationDataResource.schema.fields[0].name;
 
-		assert(actualOutput2[0] === i.toString(), `Expected result: ${i.toString()}, Actual: '${actualOutput2[0]}'`);
+		assert(actualOutput2[columnName] === i.toString(), `Expected result: ${i.toString()}, Actual: '${actualOutput2[columnName]}'`);
 		console.log('Sql multiple cells NB done');
 	}
 }

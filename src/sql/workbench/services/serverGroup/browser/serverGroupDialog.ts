@@ -30,6 +30,7 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 
 interface IRenderedServerGroupDialog {
 	groupNameInputBox: InputBox;
@@ -96,13 +97,14 @@ export class ServerGroupDialog extends Modal {
 		// Connection Group Name
 		const serverGroupNameLabel = localize('connectionGroupName', "Server group name");
 
-		DOM.append(body, DOM.$('.dialog-label')).innerText = serverGroupNameLabel;
+		DOM.append(body, DOM.$(`.dialog-label.${RequiredIndicatorClassName}`)).innerText = serverGroupNameLabel;
 
 		this._groupNameInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: localize('MissingGroupNameError', "Group name is required.") }) : null
 			},
-			ariaLabel: serverGroupNameLabel
+			ariaLabel: serverGroupNameLabel,
+			required: true
 		});
 
 		// Connection Group Description

@@ -146,8 +146,8 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return undefined;
 		}
 
-		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
-		let connectionType = ConnectionType.editor;
+		// Here we default to ConnectionType.default which saves the connection in the connection store and server tree by default
+		let connectionType = ConnectionType.default;
 
 		// If the API call explicitly set saveConnection to false, set it to ConnectionType.extension
 		// which doesn't save the connection by default
@@ -172,7 +172,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
-				params: undefined,
 				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
 				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
 			});
@@ -243,7 +242,6 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
 			saveTheConnection: saveConnection,
 			showDashboard: showDashboard,
-			params: undefined,
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		}).then((result) => {

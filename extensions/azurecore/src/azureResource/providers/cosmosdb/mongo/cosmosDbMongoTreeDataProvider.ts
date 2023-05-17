@@ -7,28 +7,27 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBProvider } from '../../../constants';
 import { generateGuid } from '../../../utils';
-import { IAzureResourceService } from '../../../interfaces';
+import { DbServerGraphData, GraphData } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
-import { azureResource } from 'azurecore';
+import { AzureAccountProperties, azureResource } from 'azurecore';
 import * as azdata from 'azdata';
 
-export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
-	private static readonly COSMOSDG_MONGO_PROVIDER_ID = 'COSMOSDB_MONGO';
+export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainer';
 	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "CosmosDB for Mongo");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
-			id: `Cosmosdb_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: `${databaseServer.name} (CosmosDB Mongo API)`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/cosmosdb_inverse.svg'),
@@ -46,15 +45,15 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: CosmosDbMongoTreeDataProvider.COSMOSDG_MONGO_PROVIDER_ID,
+				providerName: cosmosDBProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
 				azureResourceId: databaseServer.id,
-				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
+				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
-			childProvider: CosmosDbMongoTreeDataProvider.COSMOSDG_MONGO_PROVIDER_ID,
+			childProvider: cosmosDBProvider,
 			type: azdata.ExtensionNodeType.Server
 		};
 	}

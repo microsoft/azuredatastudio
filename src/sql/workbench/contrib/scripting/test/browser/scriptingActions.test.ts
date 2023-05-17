@@ -23,6 +23,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { TestTree } from 'sql/workbench/test/treeMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 const connection: azdata.IConnectionProfile = {
 	options: [],
@@ -42,6 +43,7 @@ const connection: azdata.IConnectionProfile = {
 
 const nodeInfo: azdata.NodeInfo = {
 	nodePath: 'MyServer',
+	parentNodePath: '',
 	objectType: '',
 	nodeStatus: '',
 	nodeSubType: '',
@@ -52,7 +54,7 @@ const nodeInfo: azdata.NodeInfo = {
 	errorMessage: ''
 };
 
-const treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '', undefined, undefined, undefined, undefined);
+const treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '', '', undefined, undefined, undefined, undefined);
 const oeActionArgs: ObjectExplorerActionsContext = { connectionProfile: connection, isConnectionNode: false, nodeInfo: nodeInfo };
 
 let instantiationService: IInstantiationService;
@@ -66,7 +68,7 @@ suite('Scripting Actions', () => {
 		instantiationService = new InstantiationService(collection);
 		const capabilitiesService = new TestCapabilitiesService();
 		const connectionManagementServiceMock = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose);
-		const serverTreeViewMock = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Loose, connectionManagementServiceMock.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
+		const serverTreeViewMock = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Loose, connectionManagementServiceMock.object, instantiationService, undefined, undefined, undefined, new TestConfigurationService(), capabilitiesService, undefined, undefined, new MockContextKeyService());
 		treeMock = TypeMoq.Mock.ofType(TestTree);
 		serverTreeViewMock.setup(x => x.tree).returns(() => treeMock.object);
 		collection.set(IObjectExplorerService, createObjectExplorerServiceMock({ serverTreeView: serverTreeViewMock.object, treeNode: treeNode }));

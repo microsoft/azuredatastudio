@@ -9,7 +9,7 @@ import * as cp from 'child_process';
 import * as glob from 'glob';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import * as through2 from 'through2';
+import * as through2 from 'through2'
 import got from 'got';
 import { Stream } from 'stream';
 import * as File from 'vinyl';
@@ -24,7 +24,6 @@ const buffer = require('gulp-buffer');
 import * as jsoncParser from 'jsonc-parser';
 import webpack = require('webpack');
 import { getProductionDependencies } from './dependencies';
-import _ = require('underscore');
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
@@ -74,7 +73,7 @@ export function fromLocal(extensionPath: string, forWeb: boolean): Stream { // {
 			delete data.dependencies;
 			delete data.devDependencies;
 			if (data.main) {
-				data.main = data.main.replace('/out/', /dist/);
+				data.main = data.main.replace('/out/', '/dist/');
 			}
 			return data;
 		});
@@ -83,8 +82,10 @@ export function fromLocal(extensionPath: string, forWeb: boolean): Stream { // {
 	return input;
 }
 
-
 function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string): Stream {
+	const vsce = require('@vscode/vsce') as typeof import('@vscode/vsce');
+	const webpack = require('webpack');
+	const webpackGulp = require('webpack-stream');
 	const result = es.through();
 
 	const packagedDependencies: string[] = [];
@@ -97,10 +98,6 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 			}
 		}
 	}
-
-	const vsce = require('vsce') as typeof import('vsce');
-	const webpack = require('webpack');
-	const webpackGulp = require('webpack-stream');
 
 	vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn, packagedDependencies }).then(fileNames => {
 		const files = fileNames
@@ -119,7 +116,7 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 			{ ignore: ['**/node_modules'] }
 		));
 
-		const webpackStreams = webpackConfigLocations.map(webpackConfigPath => {
+		const webpackStreams = webpackConfigLocations.flatMap(webpackConfigPath => {
 
 			const webpackDone = (err: any, stats: any) => {
 				fancyLog(`Bundled extension: ${ansiColors.yellow(path.join(path.basename(extensionPath), path.relative(extensionPath, webpackConfigPath)))}...`);
@@ -135,29 +132,32 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 				}
 			};
 
-			const webpackConfig = {
-				...require(webpackConfigPath),
-				...{ mode: 'production' }
-			};
-			const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
+			const exportedConfig = require(webpackConfigPath);
+			return (Array.isArray(exportedConfig) ? exportedConfig : [exportedConfig]).map(config => {
+				const webpackConfig = {
+					...config,
+					...{ mode: 'production' }
+				};
+				const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
 
-			return webpackGulp(webpackConfig, webpack, webpackDone)
-				.pipe(es.through(function (data) {
-					data.stat = data.stat || {};
-					data.base = extensionPath;
-					this.emit('data', data);
-				}))
-				.pipe(es.through(function (data: File) {
-					// source map handling:
-					// * rewrite sourceMappingURL
-					// * save to disk so that upload-task picks this up
-					const contents = (<Buffer>data.contents).toString('utf8');
-					data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
-						return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
-					}), 'utf8');
+				return webpackGulp(webpackConfig, webpack, webpackDone)
+					.pipe(es.through(function (data) {
+						data.stat = data.stat || {};
+						data.base = extensionPath;
+						this.emit('data', data);
+					}))
+					.pipe(es.through(function (data: File) {
+						// source map handling:
+						// * rewrite sourceMappingURL
+						// * save to disk so that upload-task picks this up
+						const contents = (<Buffer>data.contents).toString('utf8');
+						data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
+							return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
+						}), 'utf8');
 
-					this.emit('data', data);
-				}));
+						this.emit('data', data);
+					}));
+			});
 		});
 
 		es.merge(...webpackStreams, es.readArray(files))
@@ -178,9 +178,8 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 }
 
 export function fromLocalNormal(extensionPath: string): Stream { // {{SQL CARBON EDIT}} - Needed in locFunc
+	const vsce = require('@vscode/vsce') as typeof import('@vscode/vsce');
 	const result = es.through();
-
-	const vsce = require('vsce') as typeof import('vsce');
 
 	vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
 		.then(fileNames => {
@@ -286,6 +285,7 @@ const excludedExtensions = [
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
 	'vscode-custom-editor-tests',
+	'vscode-notebook-tests',
 	'integration-tests', // {{SQL CARBON EDIT}}
 ];
 
@@ -301,7 +301,6 @@ const externalExtensions = [
 	'arc',
 	'asde-deployment',
 	'azcli',
-	'azurehybridtoolkit',
 	'azuremonitor',
 	'cms',
 	'dacpac',
@@ -415,8 +414,12 @@ export function packageLocalExtensionsStream(forWeb: boolean): Stream {
 	} else {
 		// also include shared production node modules
 		const productionDependencies = getProductionDependencies('extensions/');
-		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]));
-		result = es.merge(localExtensionsStream, gulp.src(dependenciesSrc, { base: '.' }));
+		const dependenciesSrc = productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]).flat();
+
+		result = es.merge(
+			localExtensionsStream,
+			gulp.src(dependenciesSrc, { base: '.' })
+				.pipe(util2.cleanNodeModules(path.join(root, 'build', '.moduleignore'))));
 	}
 
 	return (
@@ -473,7 +476,7 @@ export function scanBuiltinExtensions(extensionsRoot: string, exclude: string[] 
 			if (!fs.existsSync(packageJSONPath)) {
 				continue;
 			}
-			let packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
+			const packageJSON = JSON.parse(fs.readFileSync(packageJSONPath).toString('utf8'));
 			if (!isWebExtension(packageJSON)) {
 				continue;
 			}
@@ -546,7 +549,7 @@ export function translatePackageJSON(packageJSON: string, packageNLSPath: string
 	const CharCode_PC = '%'.charCodeAt(0);
 	const packageNls: NLSFormat = JSON.parse(fs.readFileSync(packageNLSPath).toString());
 	const translate = (obj: any) => {
-		for (let key in obj) {
+		for (const key in obj) {
 			const val = obj[key];
 			if (Array.isArray(val)) {
 				val.forEach(translate);
@@ -572,6 +575,7 @@ const esbuildMediaScripts = [
 	'markdown-language-features/esbuild-preview.js',
 	'markdown-math/esbuild.js',
 	'notebook-renderers/esbuild.js',
+	'ipynb/esbuild.js',
 	'simple-browser/esbuild-preview.js',
 ];
 
@@ -585,7 +589,7 @@ export async function webpackExtensions(taskName: string, isWatch: boolean, webp
 		function addConfig(configOrFn: webpack.Configuration | Function) {
 			let config;
 			if (typeof configOrFn === 'function') {
-				config = configOrFn({}, {});
+				config = (configOrFn as Function)({}, {});
 				webpackConfigs.push(config);
 			} else {
 				config = configOrFn;

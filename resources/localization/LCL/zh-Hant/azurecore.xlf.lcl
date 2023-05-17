@@ -96,9 +96,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider.azure.resource" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider.azure.resou" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) rce.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -234,6 +234,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.flatAccountTreeNode.noResourcesLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Resources found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[找不到資源。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode.azure.resource.tree.subscriptionTreeNode.noReso" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) urcesLabel" ItemType="0" PsrId="308" Leaf="true">
@@ -351,12 +363,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.body" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]D;]A;]D;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]D;]A;]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 不會再觸發此租用戶 {0} ({1}) 的驗證，且資源無法存取。]D;]A;]D;]A;若要再次允許存取此租用戶的資源，您必須從 '{2}' 設定的排除清單中移除該租用戶。]D;]A;]D;]A;是否要繼續?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.confirm" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Confirm]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[確認]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.authenticate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cancel and Authenticate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[註冊並驗證]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          <Val><![CDATA[Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟]5D; 啟動驗證程序。]]></Val>
+            <Val><![CDATA[您的租用戶 {0} ({1}) 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟]5D; 啟動驗證程序。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -383,6 +425,24 @@
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[開啟]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取得權杖時找不到帳戶資訊。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.resourceNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find configuration for Azure Resource {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到 Azure 資源的設定 {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -513,6 +573,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.tenantIgnoredError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在忽略清單中找到的租用戶未嘗試過驗證。如果想要存取此租用戶 {0} 的資源，可以從 settings.json 檔案中的忽略清單 {1} 中移除該租用戶。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProviderService.clearTokenCacheFailure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to clear token cache]]></Val>
@@ -635,6 +704,24 @@
           <Val><![CDATA[Failed to get subscriptions for account {0}. Please refresh the account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[無法取得帳戶 {0} 的訂用帳戶。請重新整理該帳戶。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法辨識的提供者資源: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProviderType" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource type: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法辨識的提供者資源類型: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -849,6 +936,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azure.credStoreSaveFailedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[權杖快取的金鑰無法儲存在認證存放區中，這可能會導致 Azure 存取權杖持續性問題和連線不穩定。SqlTools 可能已達到 Windows 的認證儲存限制，請清除 Windows 認證管理員中以 「Microsoft.SqlTools|」 開始的至少 2 個認證，然後重新載入。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azure.unableToOpenAzureLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to open link, missing required values]]></Val>
@@ -983,6 +1079,33 @@
           <Val><![CDATA[Central US EUAP]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[美國中部 EUAP]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.deprecated" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[警告: ADAL 已被取代，並排定在未來的版本中移除。請改用 MSAL。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.disable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[停用]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.dismiss" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Dismiss]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1172,6 +1295,15 @@
           <Val><![CDATA[Norway West]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[挪威西部]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.piiLogging.warning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[警告: Azure PII 記錄已啟用。啟用此選項後即可記錄個人識別資訊，且只能用於偵錯用途。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1583,10 +1715,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.azure.tenant.config.filter.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          <Val><![CDATA[The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[查詢 Azure 資源時要忽略的租用戶識別碼清單。每個項目都是租用戶識別碼。]]></Val>
+            <Val><![CDATA[查詢 Azure 資源或要求驗證權杖時會略過的租用戶識別碼清單。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

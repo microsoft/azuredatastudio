@@ -11,15 +11,23 @@ export const outputChannelName = 'MSSQL';
 export const capabilitiesOptions = 'OPTIONS_METADATA';
 
 export const mssqlProviderName = 'MSSQL';
+export const mssqlCmsProviderName = 'MSSQL-CMS';
+export const mysqlProviderName = 'MYSQL';
 export const pgsqlProviderName = 'PGSQL';
 export const anyProviderName = '*';
 export const connectionProviderContextKey = 'connectionProvider';
 
 export const applicationName = 'azdata';
+export const mssqlApplicationNameOption = 'applicationName';
 
 export const defaultEngine = 'defaultEngine';
 
 export const passwordChars = '***************';
+
+export const enableSqlAuthenticationProviderConfig = 'mssql.enableSqlAuthenticationProvider';
+
+/** Configuration for Azure Authentication Library */
+export const azureAuthenticationLibraryConfig = 'azure.authenticationLibrary';
 
 /* default authentication type setting name*/
 export const defaultAuthenticationType = 'defaultAuthenticationType';

@@ -223,12 +223,13 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
+		const formElement = DOM.append(this._modalDialog, DOM.$('form'));
 
 		if (this._modalOptions.dialogStyle === 'callout') {
 			let arrowClass = `.callout-arrow.from-${this._modalOptions.dialogPosition}`;
-			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
+			this._modalContent = DOM.append(formElement, DOM.$(`.modal-content${arrowClass}`));
 		} else {
-			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+			this._modalContent = DOM.append(formElement, DOM.$('.modal-content'));
 		}
 
 		if (typeof this._modalOptions.width === 'number') {
@@ -612,7 +613,11 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected set messagesElementVisible(visible: boolean) {
 		if (visible) {
 			if (this._useDefaultMessageBoxLocation) {
-				DOM.prepend(this._modalContent!, this._messageElement!);
+				// To avoid stealing focus from the user, only reset the keyboard focus when the message is not currently visible.
+				if (!this._messageElement!.parentNode) {
+					DOM.prepend(this._modalContent!, this._messageElement!);
+					this.setInitialFocusedElement();
+				}
 			}
 		} else {
 			// only do the removal when the messageElement has parent element.

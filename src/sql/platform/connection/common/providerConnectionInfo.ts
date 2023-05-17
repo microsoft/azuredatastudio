@@ -3,18 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { localize } from 'vs/nls';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
 
-export class ProviderConnectionInfo extends Disposable implements azdata.ConnectionInfo {
+export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 
 	options: { [name: string]: any } = {};
 
@@ -25,7 +24,6 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		protected capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined
 	) {
-		super();
 		// we can't really do a whole lot if we don't have a provider
 		if (model) {
 			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
@@ -67,14 +65,6 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public set providerName(name: string) {
 		this._providerName = name;
-	}
-
-	public override dispose(): void {
-		// Notes:
-		// 1. It is not recommended to add disposables to this class considering the way we create and use the connection objects,
-		//    there are places that the connection objects are not being disposed properly.
-		// 2. Remember to dispose the listeners added to this class.
-		super.dispose();
 	}
 
 	public clone(): ProviderConnectionInfo {
@@ -212,6 +202,27 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
 	 */
 	public getOptionsKey(): string {
+		let idNames = this.getOptionKeyIdNames();
+		idNames = idNames.filter(x => x !== undefined);
+
+		//Sort to make sure using names in the same order every time otherwise the ids would be different
+		idNames.sort();
+
+		let idValues: string[] = [];
+		for (let index = 0; index < idNames.length; index++) {
+			let value = this.options[idNames[index]!];
+			value = value ? value : '';
+			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+		}
+
+		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
+			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
+	}
+
+	/**
+	 * @returns Array of option key names
+	 */
+	public getOptionKeyIdNames(): string[] {
 		let idNames = [];
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
@@ -227,21 +238,29 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			// This should never happen but just incase the serverCapabilities was not ready at this time
 			idNames = ['authenticationType', 'database', 'server', 'user'];
 		}
+		return idNames;
+	}
 
-		idNames = idNames.filter(x => x !== undefined);
-
-		//Sort to make sure using names in the same order every time otherwise the ids would be different
-		idNames.sort();
-
-		let idValues: string[] = [];
-		for (let index = 0; index < idNames.length; index++) {
-			let value = this.options[idNames[index]!];
-			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
-		}
-
-		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
-			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
+	/**
+	 * Returns a more readable version of the options key intended for display areas, replaces the regular separators with display separators
+	 * @param optionsKey options key in the original format.
+	 */
+	public static getDisplayOptionsKey(optionsKey: string) {
+		let ids: string[] = optionsKey.split(ProviderConnectionInfo.idSeparator);
+		ids = ids.map(id => {
+			let result = '';
+			let idParts = id.split(ProviderConnectionInfo.nameValueSeparator);
+			// Filter out group name for display purposes as well as empty values.
+			if (idParts[0] !== 'group' && idParts[1] !== '') {
+				result = idParts[0] + ProviderConnectionInfo.displayNameValueSeparator;
+				if (idParts.length >= 2) {
+					result += idParts.slice(1).join(ProviderConnectionInfo.nameValueSeparator);
+				}
+			}
+			return result;
+		});
+		ids = ids.filter(id => id !== '');
+		return ids.join(ProviderConnectionInfo.displayIdSeparator);
 	}
 
 	public static getProviderFromOptionsKey(optionsKey: string) {
@@ -301,29 +320,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return ':';
 	}
 
-	public get titleParts(): string[] {
-		let parts: string[] = [];
-		// Always put these three on top. TODO: maybe only for MSSQL?
-		parts.push(this.serverName);
-		parts.push(this.databaseName);
-		parts.push(this.authenticationTypeDisplayName);
+	public static get displayIdSeparator(): string {
+		return '; ';
+	}
 
-		if (this.serverCapabilities) {
-			this.serverCapabilities.connectionOptions.forEach(element => {
-				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
-					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
-					element.specialValueType !== ConnectionOptionSpecialType.authType &&
-					element.specialValueType !== ConnectionOptionSpecialType.password &&
-					element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
-					element.isIdentity && element.valueType === ServiceOptionType.string) {
-					let value = this.getOptionValue(element.name);
-					if (value) {
-						parts.push(value);
-					}
-				}
-			});
-		}
-
-		return parts;
+	public static get displayNameValueSeparator(): string {
+		return '=';
 	}
 }

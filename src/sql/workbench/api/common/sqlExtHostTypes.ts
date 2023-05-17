@@ -186,7 +186,8 @@ export enum ModelComponentTypes {
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
 	AppendData = 'appendData',
-	Filter = 'filter'
+	Filter = 'filter',
+	SetActiveCell = 'setActiveCell'
 }
 
 export enum ColumnSizingMode {
@@ -476,6 +477,29 @@ export enum AzureResource {
 	AzureKusto = 10,
 	PowerBi = 11,
 	Custom = 12 // Handles custom resource URIs as received from server endpoint.
+}
+
+export enum NodeFilterPropertyDataType {
+	String = 0,
+	Number = 1,
+	Boolean = 2,
+	Date = 3,
+	Choice = 4
+}
+
+export enum NodeFilterOperator {
+	Equals = 0,
+	NotEquals = 1,
+	LessThan = 2,
+	LessThanOrEquals = 3,
+	GreaterThan = 4,
+	GreaterThanOrEquals = 5,
+	Between = 6,
+	NotBetween = 7,
+	Contains = 8,
+	NotContains = 9,
+	IsNull = 10,
+	IsNotNull = 11
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

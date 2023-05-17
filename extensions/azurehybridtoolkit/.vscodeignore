@@ -1,7 +1,0 @@
-.gitignore
-src/**
-out/**
-tsconfig.json
-extension.webpack.config.js
-*.vsix
-yarn.lock

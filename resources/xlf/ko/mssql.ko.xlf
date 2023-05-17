@@ -50,6 +50,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
         <target state="translated">보안 토큰을 새로 고칠 때 '{1}' 계정에서 '{0}' 테넌트를 찾지 못했습니다.</target>
       </trans-unit>
+      <trans-unit id="mssql.noConvertResult">
+        <source xml:lang="en">No result returned from Notebook convert request</source>
+        <target state="translated">Notebook 변환 요청에서 반환된 결과가 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.noDocumentFound">
+        <source xml:lang="en">No document found for URI {0}</source>
+        <target state="translated">URI {0}에 대한 문서를 찾을 수 없음</target>
+      </trans-unit>
       <trans-unit id="mssql.tokenRefreshFailed">
         <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
         <target state="translated">{0} AAD 토큰 새로 고침에 실패했습니다. {0}을(를) 활성화하려면 다시 연결하세요.</target>
@@ -57,6 +65,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
         <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
         <target state="translated">편집기 토큰 새로 고침에 실패했습니다. 편집기 연결을 끊고 다시 연결할 때까지 자동 완성이 비활성화됩니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.unsupportedPlatform">
+        <source xml:lang="en">Unsupported platform {0}</source>
+        <target state="translated">지원되지 않는 플랫폼 {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -78,6 +90,30 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="objectManagement.ApplicationRoleTypeDisplayName">
+        <source xml:lang="en">application role</source>
+        <target state="translated">애플리케이션 역할</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ApplicationRoleTypeDisplayNameInTitle">
+        <source xml:lang="en">Application Role</source>
+        <target state="translated">애플리케이션 역할</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ColumnDisplayName">
+        <source xml:lang="en">column</source>
+        <target state="translated">열</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayName">
+        <source xml:lang="en">database</source>
+        <target state="translated">데이터 베이스</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseRoleTypeDisplayName">
+        <source xml:lang="en">database role</source>
+        <target state="translated">데이터베이스 역할</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseRoleTypeDisplayNameInTitle">
+        <source xml:lang="en">Database Role</source>
+        <target state="translated">데이터베이스 역할</target>
+      </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
         <target state="translated">로그인</target>
@@ -90,6 +126,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
       </trans-unit>
+      <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
+        <source xml:lang="en">server role</source>
+        <target state="translated">서버 역할</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ServerRoleTypeDisplayNameInTitle">
+        <source xml:lang="en">Server Role</source>
+        <target state="translated">서버 역할</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.TableDisplayName">
+        <source xml:lang="en">table</source>
+        <target state="translated">테이블</target>
+      </trans-unit>
       <trans-unit id="objectManagement.UserDisplayName">
         <source xml:lang="en">user</source>
         <target state="translated">사용자</target>
@@ -97,6 +145,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.UserTypeDisplayNameInTitle">
         <source xml:lang="en">User</source>
         <target state="translated">사용자</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ViewDisplayName">
+        <source xml:lang="en">view</source>
+        <target state="translated">보기</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addMemberText">
+        <source xml:lang="en">Add a member</source>
+        <target state="translated">구성원 추가</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addText">
+        <source xml:lang="en">Add…</source>
+        <target state="translated">추가…</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
@@ -106,6 +166,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
         <target state="translated">암호가 없는 로그인을 만들면 보안상 위험합니다. 계속하시겠습니까?</target>
       </trans-unit>
+      <trans-unit id="objectManagement.browseForOwnerText">
+        <source xml:lang="en">Browse for an owner</source>
+        <target state="translated">소유자 찾아보기</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.browseText">
+        <source xml:lang="en">Browse…</source>
+        <target state="translated">찾아보기...</target>
+      </trans-unit>
       <trans-unit id="objectManagement.confirmPasswordLabel">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">암호 확인</target>
@@ -114,6 +182,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Create {0}</source>
         <note>{0} object type</note>
         <target state="translated">{0} 만들기</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
+        <source xml:lang="en">Select Database Role Members</source>
+        <target state="translated">데이터베이스 역할 구성원 선택</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseRole.SelectOwnerDialogTitle">
+        <source xml:lang="en">Select Database Role Owner</source>
+        <target state="translated">데이터베이스 역할 소유자 선택</target>
       </trans-unit>
       <trans-unit id="objectManagement.deleteLoginConfirmation">
         <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
@@ -138,6 +214,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Enabled</source>
         <target state="translated">사용</target>
       </trans-unit>
+      <trans-unit id="objectManagement.filterText">
+        <source xml:lang="en">Filter</source>
+        <target state="translated">필터</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.findText">
+        <source xml:lang="en">Find</source>
+        <target state="translated">찾기</target>
+      </trans-unit>
       <trans-unit id="objectManagement.generalSectionHeader">
         <source xml:lang="en">General</source>
         <target state="translated">일반</target>
@@ -153,6 +237,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.loadingDialog">
         <source xml:lang="en">Loading dialog...</source>
         <target state="translated">대화 상자를 로드하는 중...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
+        <source xml:lang="en">Loading objects completed, {0} objects found</source>
+        <target state="translated">개체 로드가 완료되었습니다. {0} 개체를 찾았습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingObjectsLabel">
+        <source xml:lang="en">Loading objects…</source>
+        <target state="translated">개체 로드 중...</target>
       </trans-unit>
       <trans-unit id="objectManagement.login.aadAuthenticationType">
         <source xml:lang="en">Azure Active Directory Authentication</source>
@@ -218,6 +310,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Windows 인증</target>
       </trans-unit>
+      <trans-unit id="objectManagement.loginNotSelectedError">
+        <source xml:lang="en">Login is not selected.</source>
+        <target state="translated">로그인이 선택되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.membersLabel">
+        <source xml:lang="en">Members</source>
+        <target state="translated">구성원</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.membershipLabel">
+        <source xml:lang="en">Membership</source>
+        <target state="translated">멤버십</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">이름은 비워둘 수 없습니다.</target>
@@ -231,10 +335,26 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type.</note>
         <target state="translated">{0} 신규(미리 보기)</target>
       </trans-unit>
+      <trans-unit id="objectManagement.noActionScriptedMessage">
+        <source xml:lang="en">There is no action to be scripted.</source>
+        <target state="translated">스크립팅할 동작이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.noConnectionUriError">
+        <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
+        <target state="translated">연결 정보를 검색하지 못했습니다. 다시 연결하고 다시 시도하세요.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.objectPropertiesDialogTitle">
         <source xml:lang="en">{0} - {1} (Preview)</source>
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">{0} - {1}(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectTypeLabel">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">개체 유형</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectsLabel">
+        <source xml:lang="en">Objects</source>
+        <target state="translated">개체</target>
       </trans-unit>
       <trans-unit id="objectManagement.openNewObjectDialogError">
         <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
@@ -245,6 +365,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
         <note>{0} object type, {1}: object name, {2}: error message.</note>
         <target state="translated">{0}: {1}에 대한 속성 대화 상자를 여는 동안 오류가 발생했습니다. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ownerText">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">소유자</target>
       </trans-unit>
       <trans-unit id="objectManagement.passwordCannotBeEmptyError">
         <source xml:lang="en">Password cannot be empty.</source>
@@ -263,18 +387,68 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0}: error message.</note>
         <target state="translated">개체 탐색기를 새로 고치는 동안 오류가 발생했습니다. {0}</target>
       </trans-unit>
+      <trans-unit id="objectManagement.removeMemberText">
+        <source xml:lang="en">Remove selected member</source>
+        <target state="translated">선택한 구성원 제거</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.removeText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">제거</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectDialogTitle">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">새 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectError">
+        <source xml:lang="en">An error occurred while renaming {0} '{1}' to '{2}'. {3}</source>
+        <note>{0} object type, {1}: original name, {2}: new name, {3}: error message.</note>
+        <target state="translated">{0} '{1}'의 이름을 '{2}'(으)로 바꾸는 동안 오류가 발생했습니다. {3}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.renameObjectOperationName">
+        <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
+        <note>{0} object type, {1}: original name, {2}: new name</note>
+        <target state="translated">{0} '{1}'의 이름을 '{2}'(으)로 변경</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.schemaLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">스키마</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.scriptError">
+        <source xml:lang="en">An error occurred while generating script. {0}</source>
+        <target state="translated">스크립트를 생성하는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.scriptGenerated">
+        <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
+        <target state="translated">스크립트가 생성되었습니다. 대화 상자를 닫아 새로 연 편집기에서 스크립트를 볼 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.scriptText">
+        <source xml:lang="en">Script</source>
+        <target state="translated">스크립트</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectText">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
         <target state="translated">선택됨</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
+        <source xml:lang="en">Select Server Role Members</source>
+        <target state="translated">서버 역할 멤버 선택</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
+        <source xml:lang="en">Select Server Role Owner</source>
+        <target state="translated">서버 역할 소유자 선택</target>
       </trans-unit>
       <trans-unit id="objectManagement.updateObjectOperationName">
         <source xml:lang="en">Update {0} '{1}'</source>
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">{0} '{1}' 업데이트</target>
       </trans-unit>
-      <trans-unit id="objectManagement.user.containedUser">
-        <source xml:lang="en">Contained user</source>
-        <target state="translated">포함된 사용자</target>
+      <trans-unit id="objectManagement.user.aadAuth">
+        <source xml:lang="en">Authenticate with Azure Active Directory</source>
+        <target state="translated">Azure Active Directory로 인증</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.defaultSchemaLabel">
         <source xml:lang="en">Default schema</source>
@@ -284,29 +458,29 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Login</source>
         <target state="translated">로그인</target>
       </trans-unit>
-      <trans-unit id="objectManagement.user.membershipLabel">
-        <source xml:lang="en">Membership</source>
-        <target state="translated">멤버십</target>
+      <trans-unit id="objectManagement.user.loginMapped">
+        <source xml:lang="en">Mapped to a server login</source>
+        <target state="translated">서버 로그인에 매핑됨</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.noLogin">
+        <source xml:lang="en">No Login Access</source>
+        <target state="translated">로그인 액세스 권한 없음</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.ownedSchemasLabel">
         <source xml:lang="en">Owned Schemas</source>
         <target state="translated">소유한 스키마</target>
       </trans-unit>
+      <trans-unit id="objectManagement.user.sqlAuth">
+        <source xml:lang="en">Authenticate with password</source>
+        <target state="translated">암호로 인증</target>
+      </trans-unit>
       <trans-unit id="objectManagement.user.type">
         <source xml:lang="en">Type</source>
         <target state="translated">유형</target>
       </trans-unit>
-      <trans-unit id="objectManagement.user.userWithGroupLogin">
-        <source xml:lang="en">User with Windows group login</source>
-        <target state="translated">Windows 그룹 로그인을 사용하는 사용자</target>
-      </trans-unit>
-      <trans-unit id="objectManagement.user.userWithLogin">
-        <source xml:lang="en">User with login</source>
-        <target state="translated">로그인한 사용자</target>
-      </trans-unit>
-      <trans-unit id="objectManagement.user.userWithNoConnectAccess">
-        <source xml:lang="en">User with no connect access</source>
-        <target state="translated">연결 액세스 권한이 없는 사용자</target>
+      <trans-unit id="objectManagement.user.windowsUser">
+        <source xml:lang="en">Mapped to a Windows user/group</source>
+        <target state="translated">Windows 사용자/그룹에 매핑됨</target>
       </trans-unit>
       <trans-unit id="objectManagement.yesText">
         <source xml:lang="en">Yes</source>
@@ -364,6 +538,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   </file>
   <file original="extensions/mssql/dist/tableDesigner/tableDesigner" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="tableDesigner.FailedToGetConnectionStringError">
+        <source xml:lang="en">Failed to get connection string for the table. Please reconnect to the server and try again.</source>
+        <target state="translated">테이블에 대한 연결 문자열을 가져오지 못했습니다. 서버에 다시 연결하고 다시 시도하세요.</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.NewTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">새 테이블</target>
@@ -480,17 +658,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Application name</source>
         <target state="translated">애플리케이션 이름</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">DB 파일 이름 연결</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
+      <trans-unit id="mssql.connectionOptions.attachDbFilename.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
         <target state="translated">연결할 수 있는 데이터베이스의 기본 파일 이름(전체 경로 이름 포함)</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">연결된 DB 파일 이름</target>
+      <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">DB 파일 이름 연결</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -597,20 +771,20 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">없음</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
-        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
         <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 프로토콜 지정</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
+        <source xml:lang="en">Attestation protocol</source>
         <target state="translated">증명 프로토콜</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
-        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
         <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 엔드포인트 지정</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">Enclave 증명 URL</target>
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">증명 URL</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.categoryValues.false">
         <source xml:lang="en">Optional (False)</source>
@@ -761,11 +935,11 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <target state="translated">복제</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.description">
-        <source xml:lang="en">Enables or disables Secure Enclaves for the connection</source>
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
         <target state="translated">연결에 대해 보안 Enclave를 사용하거나 사용하지 않도록 설정합니다.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.secureEnclaves.displayName">
-        <source xml:lang="en">Secure Enclaves</source>
+        <source xml:lang="en">Secure enclaves</source>
         <target state="translated">보안 Enclave</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
@@ -775,6 +949,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
         <target state="translated">서버</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.serverName.placeholder">
+        <source xml:lang="en">e.g. tcp:servername,1433</source>
+        <target state="translated">예: tcp:servername,1433</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
@@ -814,7 +992,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.enableSqlAuthenticationProvider">
         <source xml:lang="en">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">Enables use of the Sql Authentication Provider for 'Active Directory Interactive' authentication mode when user selects 'AzureMFA' authentication. This enables Server-side resource endpoint integration when fetching access tokens. This option is only supported for 'MSAL' Azure Authentication Library. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">사용자가 'AzureMFA' 인증을 선택할 때 'Active Directory Interactive' 인증 모드에서 SQL 인증 공급자를 사용하도록 설정합니다. 이를 통해 액세스 토큰을 가져올 때 서버 쪽 리소스 엔드포인트 통합을 사용할 수 있습니다. 이 옵션은 'MSAL' Azure 인증 라이브러리에 대해서만 지원됩니다. 값을 변경하면 Azure Data Studio를 다시 시작해야 합니다.</target>
       </trans-unit>
       <trans-unit id="mssql.enabled">
         <source xml:lang="en">Enabled</source>
@@ -942,11 +1120,11 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       </trans-unit>
       <trans-unit id="mssql.parallelMessageProcessing">
         <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</source>
-        <target state="new">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Azure Data Studio is required to be relaunched when the value is changed.</target>
+        <target state="translated">[실험적] SQL 도구 서비스에 대한 요청을 병렬로 처리할지 여부입니다. 모든 요청을 병렬로 처리할 때 발생할 수 있는 문제를 검색하기 위해 도입되었습니다. 기본값은 false입니다. 값을 변경하면 Azure Data Studio를 다시 시작해야 합니다.</target>
       </trans-unit>
       <trans-unit id="mssql.piiLogging">
         <source xml:lang="en">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</source>
-        <target state="new">[Optional] Should Personally Identifiable Information (PII) be logged in the log file.</target>
+        <target state="translated">[선택 사항] PII(개인 식별 정보)가 로그 파일에 기록되게 합니다.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -1124,33 +1302,21 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Design</source>
         <target state="translated">디자인</target>
       </trans-unit>
-      <trans-unit id="title.newApplicationRole">
-        <source xml:lang="en">New Application Role</source>
-        <target state="translated">새 애플리케이션 역할</target>
-      </trans-unit>
-      <trans-unit id="title.newDatabaseRole">
-        <source xml:lang="en">New Database Role</source>
-        <target state="translated">새 데이터베이스 역할</target>
-      </trans-unit>
-      <trans-unit id="title.newLogin">
-        <source xml:lang="en">New Login</source>
-        <target state="translated">새 로그인</target>
-      </trans-unit>
-      <trans-unit id="title.newServerRole">
-        <source xml:lang="en">New Server Role</source>
-        <target state="translated">새 서버 역할</target>
+      <trans-unit id="title.newObject">
+        <source xml:lang="en">New</source>
+        <target state="translated">새로 만들기</target>
       </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">새 테이블</target>
       </trans-unit>
-      <trans-unit id="title.newUser">
-        <source xml:lang="en">New User</source>
-        <target state="translated">새 사용자</target>
-      </trans-unit>
       <trans-unit id="title.objectProperties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">속성</target>
+        <source xml:lang="en">Properties (Preview)</source>
+        <target state="translated">속성(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="title.renameObject">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">이름 바꾸기</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>

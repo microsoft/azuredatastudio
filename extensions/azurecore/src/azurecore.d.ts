@@ -5,7 +5,8 @@
 
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
-	import { TreeDataProvider } from 'vscode';
+	import * as vscode from 'vscode';
+	import * as msRest from '@azure/ms-rest-js';
 	import { BlobItem } from '@azure/storage-blob';
 
 	/**
@@ -35,8 +36,11 @@ declare module 'azurecore' {
 		/**
 		 * Auth type of azure used to authenticate this account.
 		 */
-		azureAuthType?: AzureAuthType
+		azureAuthType?: AzureAuthType;
 
+		/**
+		 * Provider settings for account.
+		 */
 		providerSettings: AzureAccountProviderMetadata;
 
 		/**
@@ -53,7 +57,6 @@ declare module 'azurecore' {
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
 		tenants: Tenant[];
-
 	}
 
 	export const enum AzureAuthType {
@@ -274,6 +277,17 @@ declare module 'azurecore' {
 		DELETE
 	}
 
+	/**
+	 * Custom version of NetworkResponse from @azure\msal-common\dist\network\NetworkManager.d.ts
+	 * with body renamed to data to avoid breaking changes with extensions. See
+	 * https://github.com/microsoft/azuredatastudio/pull/22761 for details.
+	 */
+	export type AzureNetworkResponse<T> = {
+		headers: Record<string, string>;
+		data: T;
+		status: number;
+	};
+
 	export interface IExtension {
 		/**
 		 * Gets the list of subscriptions for the specified AzureAccount
@@ -306,7 +320,7 @@ declare module 'azurecore' {
 		 * @param host Use this to override the host. The default host is https://management.azure.com
 		 * @param requestHeaders Provide additional request headers
 		 */
-		makeAzureRestRequest(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string, requestHeaders?: { [key: string]: string }): Promise<AzureRestResponse>;
+		makeAzureRestRequest<B>(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string, requestHeaders?: Record<string, string>): Promise<AzureRestResponse<B>>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -314,8 +328,18 @@ declare module 'azurecore' {
 		getRegionDisplayName(region?: string): string;
 		getProviderMetadataForAccount(account: AzureAccount): AzureAccountProviderMetadata;
 		provideResources(): azureResource.IAzureResourceProvider[];
-
+		getUniversalProvider(): azureResource.IAzureUniversalResourceProvider;
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
+		/**
+		 * Event emitted when MSAL cache encryption keys are updated in credential store.
+		 * Returns encryption keys used for encryption/decryption of MSAL cache that can be used
+		 * by connection providers to read/write to the same access token cache for stable connectivity.
+		 */
+		onEncryptionKeysUpdated: vscode.Event<CacheEncryptionKeys>;
+		/**
+		 * Fetches MSAL cache encryption keys currently in use.
+		 */
+		getEncryptionKeys(): Promise<CacheEncryptionKeys>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
@@ -328,11 +352,12 @@ declare module 'azurecore' {
 	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetBlobContainersResult = { blobContainers: azureResource.BlobContainer[], errors: Error[] };
 	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
-	export type CreateResourceGroupResult = { resourceGroup: azureResource.AzureResourceResourceGroup, errors: Error[] };
+	export type CreateResourceGroupResult = { resourceGroup: azureResource.AzureResourceResourceGroup | undefined, errors: Error[] };
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
-	export type AzureRestResponse = { response: any, errors: Error[] };
+	export type AzureRestResponse<B> = { response: AzureNetworkResponse<B> | undefined, errors: Error[] };
 	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
 	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
+	export type CacheEncryptionKeys = { key: string; iv: string; }
 
 	export namespace azureResource {
 
@@ -360,11 +385,23 @@ declare module 'azurecore' {
 			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
+		export interface IAzureUniversalTreeDataProvider extends IAzureResourceTreeDataProvider {
+			/**
+			 * Gets all the children for user account for provided subscription list.
+			 */
+			getAllChildren(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[]): Promise<IAzureResourceNode[]>;
+		}
+
+		export interface IAzureUniversalResourceProvider extends IAzureResourceProvider {
+			getTreeDataProvider(): IAzureUniversalTreeDataProvider;
+		}
+
 		export interface IAzureResourceProvider extends azdata.DataProvider {
 			getTreeDataProvider(): IAzureResourceTreeDataProvider;
 		}
 
 		export interface IAzureResourceTreeDataProvider {
+			getService(): azureResource.IAzureResourceService;
 			/**
 			 * Gets the root tree item nodes for this provider - these will be used as
 			 * direct children of the Account node in the Azure tree view.
@@ -376,10 +413,11 @@ declare module 'azurecore' {
 			 */
 			getChildren(element: IAzureResourceNode): Promise<IAzureResourceNode[]>;
 			/**
-			 * Gets the tree item to display for a given {@link IAzureResourceNode}
-			 * @param element The resource node to get the TreeItem for
+			 * Converts resource to VS Code treeItem
+			 * @param resource Azure resource to convert.
+			 * @param account User account
 			 */
-			getResourceTreeItem(element: IAzureResourceNode): Promise<azdata.TreeItem>;
+			getTreeItemForResource(resource: azureResource.AzureResource, account: AzureAccount): vscode.TreeItem;
 			browseConnectionMode: boolean;
 		}
 
@@ -399,8 +437,14 @@ declare module 'azurecore' {
 			name: string;
 			id: string;
 			subscription: IAzureSubscriptionInfo;
+			provider?: string,
 			resourceGroup?: string;
 			tenant?: string;
+		}
+
+		export interface IAzureResourceService {
+			queryFilter: string;
+			getResources(subscriptions: AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<AzureResource[]>;
 		}
 
 		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscription'> {

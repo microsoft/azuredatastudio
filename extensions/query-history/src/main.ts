@@ -29,7 +29,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	// Create the global storage folder now for storing the query history persistance file
 	const storageUri = context.globalStorageUri;
 	try {
-		throw new Error('Test');
 		await fs.mkdir(storageUri.fsPath);
 	} catch (err) {
 		if (err.code !== 'EEXIST') {

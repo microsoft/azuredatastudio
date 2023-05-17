@@ -45,8 +45,7 @@ function isUpToDate(extension) {
     }
 }
 function syncMarketplaceExtension(extension) {
-    var _a;
-    const galleryServiceUrl = (_a = productjson.extensionsGallery) === null || _a === void 0 ? void 0 : _a.serviceUrl;
+    const galleryServiceUrl = productjson.extensionsGallery?.serviceUrl;
     const source = ansiColors.blue(galleryServiceUrl ? '[marketplace]' : '[github]');
     if (isUpToDate(extension)) {
         log(source, `${extension.name}@${extension.version}`, ansiColors.green('✔︎'));
@@ -98,12 +97,12 @@ function writeControlFile(control) {
     fs.writeFileSync(controlFilePath, JSON.stringify(control, null, 2));
 }
 function getBuiltInExtensions() {
-    log('Syncronizing built-in extensions...');
+    log('Synchronizing built-in extensions...');
     log(`You can manage built-in extensions with the ${ansiColors.cyan('--builtin')} flag`);
     const control = readControlFile();
     const streams = [];
     for (const extension of [...builtInExtensions, ...webBuiltInExtensions]) {
-        let controlState = control[extension.name] || 'marketplace';
+        const controlState = control[extension.name] || 'marketplace';
         control[extension.name] = controlState;
         streams.push(syncExtension(extension, controlState));
     }

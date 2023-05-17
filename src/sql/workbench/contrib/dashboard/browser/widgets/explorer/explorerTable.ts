@@ -20,6 +20,7 @@ import { ExplorerFilter } from 'sql/workbench/contrib/dashboard/browser/widgets/
 import { ExplorerView, NameProperty } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView';
 import { ObjectMetadataWrapper } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
+import { ITableService } from 'sql/workbench/services/table/browser/tableService';
 import * as DOM from 'vs/base/browser/dom';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IAction } from 'vs/base/common/actions';
@@ -67,7 +68,8 @@ export class ExplorerTable extends Disposable {
 		private readonly logService: ILogService,
 		private readonly dashboardService: IDashboardService,
 		readonly accessibilityService: IAccessibilityService,
-		readonly quickInputService: IQuickInputService) {
+		readonly quickInputService: IQuickInputService,
+		private readonly tableService: ITableService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
@@ -113,6 +115,7 @@ export class ExplorerTable extends Disposable {
 			this._table.grid.invalidateAllRows();
 			this._table.updateRowCount();
 		}));
+		this._register(this.tableService.registerTable(this._table));
 	}
 
 	private showContextMenu(item: Slick.SlickData, anchor: HTMLElement | { x: number, y: number }): void {

@@ -36,7 +36,7 @@ describe('Update Project From Database Dialog', () => {
 	});
 
 	it('Should populate endpoints correctly when Project context is passed', async function (): Promise<void> {
-		const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+		const project = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 		const dialog = new UpdateProjectFromDatabaseDialog(undefined, project, mockURIList);
 		await dialog.openDialog();
 
@@ -62,7 +62,7 @@ describe('Update Project From Database Dialog', () => {
 	});
 
 	it('Should populate endpoints correctly when context is complete', async function (): Promise<void> {
-		const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+		const project = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 		sinon.stub(azdata.connection, 'getConnections').resolves([<azdata.connection.ConnectionProfile><unknown>mockConnectionProfile]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves([mockConnectionProfile.databaseName!]);
 

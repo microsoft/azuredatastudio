@@ -11,8 +11,9 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo, IFireWallRuleError } from 'vscode-mssql';
 import { getPublishServerName } from './utils';
-import { ISqlProjectPublishSettings, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 import { DBProjectConfigurationKey } from '../tools/netcoreTool';
+import { ISqlProjectPublishSettings } from '../models/deploy/publishSettings';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
@@ -20,6 +21,7 @@ import { DBProjectConfigurationKey } from '../tools/netcoreTool';
 export async function getPublishDatabaseSettings(project: ISqlProject, promptForConnection: boolean = true): Promise<ISqlProjectPublishSettings | undefined> {
 
 	// 1. Select publish settings file (optional)
+	let publishProfileUri;
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
 	const quickPick = vscode.window.createQuickPick();
 	quickPick.items = [{ label: constants.dontUseProfile }, { label: constants.browseForProfileWithIcon }];
@@ -41,7 +43,7 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 					// If the user cancels out of the file picker then just return and let them choose another option
 					return;
 				}
-				let publishProfileUri = locations[0];
+				publishProfileUri = locations[0];
 				try {
 					// Show loading state while reading profile
 					quickPick.busy = true;
@@ -158,24 +160,23 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 	}
 
 	// 4. Modify sqlcmd vars
-	// If a publish profile is provided then the values from there will overwrite the ones in the
-	// project file (if they exist)
-	let sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
+	let sqlCmdVariables: Map<string, string> = getInitialSqlCmdVariables(project, publishProfile);
 
-	if (Object.keys(sqlCmdVariables).length > 0) {
+	if (sqlCmdVariables.size > 0) {
 		// Continually loop here, allowing the user to modify SQLCMD variables one
 		// at a time until they're done (either by selecting the "Done" option or
 		// escaping out of the quick pick dialog). Users can modify each variable
 		// as many times as they wish - with an option to reset all the variables
 		// to their starting values being provided as well.
 		while (true) {
-			const quickPickItems = Object.keys(sqlCmdVariables).map(key => {
-				return {
+			let quickPickItems = [];
+			for (const key of sqlCmdVariables.keys()) {
+				quickPickItems.push({
 					label: key,
-					description: sqlCmdVariables[key],
+					description: sqlCmdVariables.get(key),
 					key: key
-				} as vscode.QuickPickItem & { key?: string, isResetAllVars?: boolean, isDone?: boolean };
-			});
+				} as vscode.QuickPickItem & { key?: string, isResetAllVars?: boolean, isDone?: boolean })
+			}
 			quickPickItems.push({ label: `$(refresh) ${constants.resetAllVars}`, isResetAllVars: true });
 			quickPickItems.unshift({ label: `$(check) ${constants.done}`, isDone: true });
 			const sqlCmd = await vscode.window.showQuickPick(
@@ -191,15 +192,15 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 				const newValue = await vscode.window.showInputBox(
 					{
 						title: constants.enterNewValueForVar(sqlCmd.key),
-						value: sqlCmdVariables[sqlCmd.key],
+						value: sqlCmdVariables.get(sqlCmd.key),
 						ignoreFocusOut: true
 					}
 				);
 				if (newValue) {
-					sqlCmdVariables[sqlCmd.key] = newValue;
+					sqlCmdVariables.set(sqlCmd.key, newValue);
 				}
 			} else if (sqlCmd.isResetAllVars) {
-				sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
+				sqlCmdVariables = getInitialSqlCmdVariables(project, publishProfile);
 			} else if (sqlCmd.isDone) {
 				break;
 			}
@@ -214,9 +215,27 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 		connectionUri: connectionUri || '',
 		sqlCmdVariables: sqlCmdVariables,
 		deploymentOptions: publishProfile?.options ?? await getDefaultPublishDeploymentOptions(project),
-		profileUsed: !!publishProfile
+		publishProfileUri: publishProfileUri
 	};
 	return settings;
+}
+
+/**
+ * Loads the sqlcmd variables from a sql projects. If a publish profile is provided then the values from there will overwrite the ones in the project file (if they exist)
+ * @param project
+ * @param publishProfile
+ * @returns Map of sqlcmd variables
+ */
+function getInitialSqlCmdVariables(project: ISqlProject, publishProfile?: PublishProfile): Map<string, string> {
+	// create a copy of the sqlcmd variable map so that the original ones don't get overwritten
+	let sqlCmdVariables = new Map(project.sqlCmdVariables);
+	if (publishProfile?.sqlCmdVariables) {
+		for (const [key, value] of publishProfile.sqlCmdVariables) {
+			sqlCmdVariables.set(key, value);
+		}
+	}
+
+	return sqlCmdVariables;
 }
 
 export async function launchPublishTargetOption(project: Project): Promise<constants.PublishTargetType | undefined> {

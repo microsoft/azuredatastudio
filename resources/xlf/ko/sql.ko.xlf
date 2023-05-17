@@ -232,6 +232,18 @@
         <source xml:lang="en">Azure Data Studio</source>
         <target state="translated">Azure Data Studio</target>
       </trans-unit>
+      <trans-unit id="azuredatastudio.download">
+        <source xml:lang="en">Download</source>
+        <target state="translated">다운로드</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.downloadTooltip">
+        <source xml:lang="en">Download this extension from an external source</source>
+        <target state="translated">외부 원본에서 이 확장 다운로드</target>
+      </trans-unit>
+      <trans-unit id="azuredatastudio.installTooltip">
+        <source xml:lang="en">Install this extension</source>
+        <target state="translated">이 확장 설치</target>
+      </trans-unit>
       <trans-unit id="connectionDialogBrowseTree.context">
         <source xml:lang="en">The connection dialog's browse tree context menu</source>
         <target state="translated">연결 대화 상자의 찾아보기 트리 상황에 맞는 메뉴</target>
@@ -893,6 +905,10 @@ Default Skipped Commands:
       <trans-unit id="notebookFindRangeHighlight">
         <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
         <target state="translated">검색을 제한하는 범위의 색입니다. 기본 장식을 숨기지 않도록 색은 불투명하지 않아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditorNullBackground">
+        <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
+        <target state="translated">쿼리 편집기 결과 표에서 null 값의 배경색입니다. 배경색을 비활성화하려면 {0}과(와) 같은 투명색을 사용할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="tileBorder">
         <source xml:lang="en">The border color of tiles</source>
@@ -2631,6 +2647,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="dashboard.configureDashboardTooltip">
+        <source xml:lang="en">Learn more about how to configure the dashboard</source>
+        <target state="translated">대시보드를 구성하는 방법에 대해 자세히 알아보기</target>
+      </trans-unit>
       <trans-unit id="dashboard.generalTabGroupHeader">
         <source xml:lang="en">General</source>
         <target state="translated">일반</target>
@@ -3490,6 +3510,14 @@ Default Skipped Commands:
       <trans-unit id="revertRow">
         <source xml:lang="en">Revert Current Row</source>
         <target state="translated">현재 행 되돌리기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="editData.cellWithNullCharMessage">
+        <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+        <target state="translated">이 셀에는 현재 편집이 지원되지 않는 유니코드 null 문자가 포함되어 있습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -5451,6 +5479,10 @@ Error: {1}</source>
         <source xml:lang="en">New Notebook</source>
         <target state="translated">새 Notebook</target>
       </trans-unit>
+      <trans-unit id="newNotebookTask.newNotebook">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">새 Notebook</target>
+      </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
         <target state="translated">새 보기 만들기</target>
@@ -5784,8 +5816,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">복사하지 못했습니다(오류: {0}).</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">{0} 오류를 나타내며 복사 실패</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5823,6 +5855,18 @@ Error: {1}</source>
         <source xml:lang="en">New Connection</source>
         <target state="translated">새 연결</target>
       </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification">
+        <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+        <target state="translated">서버 트리가 변경되었습니다. 변경 내용을 보려면 창을 다시 로드하세요.</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+        <source xml:lang="en">Don't Reload</source>
+        <target state="translated">다시 로드 안 함</target>
+      </trans-unit>
+      <trans-unit id="serverTreeViewChangeNotification.reload">
+        <source xml:lang="en">Reload</source>
+        <target state="translated">다시 로드</target>
+      </trans-unit>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
         <target state="translated">연결이 없습니다.</target>
@@ -5839,9 +5883,17 @@ Error: {1}</source>
         <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
         <target state="translated">개체 탐색기 뷰렛에서 사용되는 서버 그룹 색상표입니다.</target>
       </trans-unit>
+      <trans-unit id="serverTree.configuration.title">
+        <source xml:lang="en">Server Tree</source>
+        <target state="translated">서버 트리</target>
+      </trans-unit>
+      <trans-unit id="serverTree.nodeExpansionTimeout">
+        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
+        <target state="translated">서버 보기에서 노드를 확장하는 데 대한 시간 제한(초)</target>
+      </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
-        <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
-        <target state="translated">(미리 보기) 동적 노드 필터링과 같은 새로운 기능 지원을 사용하여 서버 보기 및 연결 대화 상자에 새 비동기 서버 트리를 사용합니다.</target>
+        <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
+        <target state="translated">동적 노드 필터링과 같은 새로운 기능 지원을 사용하여 서버 보기 및 연결 대화 상자에 새 비동기 서버 트리를 사용합니다. 적용하려면 다시 시작해야 합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -6232,16 +6284,16 @@ Error: {1}</source>
         <target state="translated">쿼리 구문 분석</target>
       </trans-unit>
       <trans-unit id="queryActions.notConnected">
-        <source xml:lang="en">Please connect to a server</source>
-        <target state="translated">서버에 연결하세요.</target>
+        <source xml:lang="en">Please connect to a server before running this action.</source>
+        <target state="translated">이 작업을 실행하기 전에 서버에 연결하세요.</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxFailure">
-        <source xml:lang="en">Command failed: </source>
-        <target state="translated">명령 실패: </target>
+        <source xml:lang="en">Failed to parse the query: {0}</source>
+        <target state="translated">쿼리를 구문 분석하지 못했습니다: {0}</target>
       </trans-unit>
       <trans-unit id="queryActions.parseSyntaxSuccess">
-        <source xml:lang="en">Commands completed successfully</source>
-        <target state="translated">명령을 완료했습니다.</target>
+        <source xml:lang="en">Successfully parsed the query.</source>
+        <target state="translated">쿼리를 구문 분석했습니다.</target>
       </trans-unit>
       <trans-unit id="queryActions.queryResultsCopySuccess">
         <source xml:lang="en">Successfully copied query and results.</source>
@@ -6424,6 +6476,10 @@ Error: {1}</source>
         <target state="translated">취소</target>
       </trans-unit>
       <trans-unit id="changeConnectionDatabaseLabel">
+        <source xml:lang="en">Change</source>
+        <target state="translated">변경</target>
+      </trans-unit>
+      <trans-unit id="changeConnectionDatabaseTooltip">
         <source xml:lang="en">Change Connection</source>
         <target state="translated">연결 변경</target>
       </trans-unit>
@@ -6471,9 +6527,17 @@ Error: {1}</source>
         <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
         <target state="translated">편집기가 다중 선택 모드에 있는 경우 쿼리 실행이 지원되지 않습니다.</target>
       </trans-unit>
-      <trans-unit id="queryEditor.exportSqlAsNotebook">
+      <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+        <source xml:lang="en">To Notebook</source>
+        <target state="translated">Notebook으로</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
         <source xml:lang="en">Export as Notebook</source>
         <target state="translated">Notebook으로 내보내기</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.parse">
+        <source xml:lang="en">Parse</source>
+        <target state="translated">구문 분석</target>
       </trans-unit>
       <trans-unit id="runQueryLabel">
         <source xml:lang="en">Run</source>
@@ -7422,23 +7486,23 @@ Error Message: {1}</source>
         <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
         <target state="translated">계정을 추가하지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.</target>
       </trans-unit>
-      <trans-unit id="addAccountFailedMessage">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
-      </trans-unit>
       <trans-unit id="loggingIn">
         <source xml:lang="en">Adding account...</source>
         <target state="translated">계정 추가...</target>
+      </trans-unit>
+      <trans-unit id="refreshAccountFailedGenericMessage">
+        <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
+        <target state="translated">계정을 새로 고치지 못했습니다. 자세한 내용은 Azure 계정 로그를 확인하세요.</target>
       </trans-unit>
       <trans-unit id="refreshCanceled">
         <source xml:lang="en">Refresh account was canceled by the user</source>
         <target state="translated">사용자가 계정 새로 고침을 취소했습니다.</target>
       </trans-unit>
       <trans-unit id="refreshFailed">
-        <source xml:lang="en">0 
-Error Message: 1</source>
-        <target state="translated">0 
-오류 메시지: 1</target>
+        <source xml:lang="en">{0} 
+Error Message: {1}</source>
+        <target state="translated">{0} 
+오류 메시지: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -7764,6 +7828,10 @@ Error Message: 1</source>
         <source xml:lang="en">Failed to refresh Azure account token for connection</source>
         <target state="translated">연결을 위한 Azure 계정 토큰을 새로 고침하지 못함</target>
       </trans-unit>
+      <trans-unit id="connection.unknownProvider">
+        <source xml:lang="en">Unknown provider '{0}'</source>
+        <target state="translated">알 수 없는 공급자 '{0}'</target>
+      </trans-unit>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">서버 버전은 Azure Data Studio에서 지원되지 않으므로 계속 연결할 수 있지만 Azure Data Studio의 일부 기능이 예상대로 작동하지 않을 수 있습니다.</target>
@@ -7825,8 +7893,12 @@ Error Message: 1</source>
         <target state="translated">계정 추가...</target>
       </trans-unit>
       <trans-unit id="connectionWidget.ConnectionStringError">
-        <source xml:lang="en">Failed to parse the connection string.</source>
-        <target state="translated">연결 문자열을 구문 분석하지 못했습니다.</target>
+        <source xml:lang="en">Failed to parse the connection string. {0}</source>
+        <target state="translated">연결 문자열을 구문 분석하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.ConnectionStringUndefined">
+        <source xml:lang="en">No connection info returned.</source>
+        <target state="translated">반환된 연결 정보가 없습니다.</target>
       </trans-unit>
       <trans-unit id="connectionWidget.Error">
         <source xml:lang="en">Error</source>
@@ -8047,11 +8119,11 @@ Error Message: 1</source>
     <body>
       <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
         <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
-        <target state="new">Provider with id {0} was not registered after 30 seconds.</target>
+        <target state="translated">ID가 {0}인 공급자가 30초 후에 등록되지 않았습니다.</target>
       </trans-unit>
       <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
         <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
-        <target state="new">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</target>
+        <target state="translated">파일 형식 '{0}'을(를) 지원하는 실행 계획 공급자가 30초 후에 등록되지 않았습니다.</target>
       </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No valid execution plan handler is registered</source>
@@ -8654,6 +8726,22 @@ Error Message: 1</source>
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">여러 오류:</target>
       </trans-unit>
+      <trans-unit id="nodeExpansionTimeout">
+        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
+        <target state="translated">{1} 공급자의 {0} 노드에 대한 노드 확장 시간을 초과했습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerMissingConnectionForSession">
+        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
+        <target state="translated">연결 "{1}"에 대해 세션 {0} 생성을 기다리는 동안 시간이 초과되었습니다. 이 문제는 OE 서비스가 연결 "{1}"에 대해 공급자로부터 createNewSession에 대한 응답을 받지 못했기 때문에 발생했을 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerMissingSession">
+        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
+        <target state="translated">세션 {0} 생성을 기다리는 동안 시간이 초과되었습니다. 이 문제는 OE 서비스가 공급자로부터 createNewSession에 대한 응답을 받지 못했기 때문에 발생했을 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorerSessionIdMissing">
+        <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
+        <target state="translated">연결 "{1}"에 대해 공급자 "{0}"에서 반환한 세션 ID가 잘못되었습니다.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext" target-language="ko">
@@ -8672,6 +8760,14 @@ Error Message: 1</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="filteredTreeElementName">
+        <source xml:lang="en">{0} (filtered)</source>
+        <target state="translated">{0}(필터링됨)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="serversAriaLabel">
@@ -8685,6 +8781,14 @@ Error Message: 1</source>
       <trans-unit id="treeCreation.regTreeAriaLabel">
         <source xml:lang="en">Servers</source>
         <target state="translated">서버</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="objectExplorerTimeout">
+        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
+        <target state="translated">'{0}'에 대한 개체 탐색기 확장 시간이 초과되었습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -8843,8 +8947,8 @@ Error Message: 1</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error: {0}</source>
-        <target state="translated">복사하지 못했습니다(오류: {0}).</target>
+        <source xml:lang="en">Copy failed with error {0}</source>
+        <target state="translated">{0} 오류를 나타내며 복사 실패</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>

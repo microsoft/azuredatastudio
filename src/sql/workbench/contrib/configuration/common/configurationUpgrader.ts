@@ -31,7 +31,7 @@ const settingsToMove: { [key: string]: string } = deepFreeze({
 export class ConfigurationUpgraderContribution implements IWorkbenchContribution {
 
 	private static readonly STORAGE_KEY = 'configurationUpgrader';
-	private readonly globalStorage: { [key: string]: boolean } = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.GLOBAL, '{}'));
+	private readonly globalStorage: { [key: string]: boolean } = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.APPLICATION, '{}'));
 	private readonly workspaceStorage: { [key: string]: boolean } = JSON.parse(this.storageService.get(ConfigurationUpgraderContribution.STORAGE_KEY, StorageScope.WORKSPACE, '{}'));
 
 	public readonly processingPromise: Promise<void>;
@@ -43,7 +43,7 @@ export class ConfigurationUpgraderContribution implements IWorkbenchContribution
 	) {
 		this.processingPromise = (async () => {
 			await this.processSettings();
-			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.globalStorage), StorageScope.GLOBAL, StorageTarget.MACHINE);
+			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.globalStorage), StorageScope.APPLICATION, StorageTarget.MACHINE);
 			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.workspaceStorage), StorageScope.WORKSPACE, StorageTarget.MACHINE);
 		})();
 	}

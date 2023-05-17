@@ -248,7 +248,7 @@ export class MockInputBoxComponent extends MockUIComponent implements azdata.Inp
 	onEnterKeyPressed: vscode.Event<string>;
 	value?: string;
 	ariaLabel?: string;
-	ariaLive?: string;
+	ariaLive?: azdata.AriaLiveValue;
 	placeHolder?: string;
 	inputType?: azdata.InputBoxInputType;
 	required?: boolean;
@@ -299,6 +299,9 @@ export class MockTableComponent extends MockUIComponent implements azdata.TableC
 	position?: azdata.PositionType;
 	CSSStyles?: { [key: string]: string; };
 	appendData(data: any[][]): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	setActiveCell(row: number, column: number): void {
 		throw new Error('Method not implemented.');
 	}
 }

@@ -33,8 +33,8 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	 * @param fileExtension Execution plan file format
 	 */
 	public async ensureFileExtensionHandlerRegistered(fileExtension: string): Promise<void> {
-		for (let providerId in Object.keys(this._capabilitiesService.providers)) {
-			if (this._capabilitiesService.providers[providerId].connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
+		for (let providerId of Object.keys(this._capabilitiesService.providers)) {
+			if (this._capabilitiesService.providers[providerId].connection?.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 				// We already have a provider registered that can handle this file extension so we're done
 				return;
 			}
@@ -43,7 +43,7 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		let listener: IDisposable;
 		await new Promise<void>((resolve, reject) => {
 			listener = this._capabilitiesService.onCapabilitiesRegistered(e => {
-				if (e.features.connection.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
+				if (e.features.connection?.supportedExecutionPlanFileExtensions?.includes(fileExtension)) {
 					listener.dispose();
 					resolve();
 				}

@@ -20,10 +20,15 @@
 			"azure.owningTenantNotFound": "Informations sur le locataire propriétaire introuvables pour le compte.",
 			"azure.responseError": "La récupération du jeton a échoué avec une erreur. [Ouvrir les outils de développement]({0}) pour plus de détails.",
 			"azure.tenantNotFound": "Le locataire spécifié avec l'ID « {0} » est introuvable.",
-			"azurecore.consentDialog.body": "Votre locataire « {0} ({1}) » exige une nouvelle authentification pour accéder aux ressources {2}. Appuyez sur Ouvrir pour démarrer le processus d'authentification.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio ne déclenchera plus l’authentification pour ce locataire {0} ({1}), et les ressources ne seront pas accessibles. \r\n\r\nPour autoriser à nouveau l’accès aux ressources pour ce locataire, vous devez supprimer le locataire de la liste d’exclusion dans le paramètre « {2} ».\r\n\r\nVoulez-vous continuer ?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "Confirmer",
+			"azurecore.consentDialog.authenticate": "Annuler et authentifier",
+			"azurecore.consentDialog.body": "Votre locataire {0} ({1}) exige une nouvelle authentification pour accéder aux ressources {2}. Appuyez sur Ouvrir pour démarrer le processus d’authentification.",
 			"azurecore.consentDialog.cancel": "Annuler",
 			"azurecore.consentDialog.ignore": "Ignorer le locataire",
 			"azurecore.consentDialog.open": "Ouvrir",
+			"msal.accountNotFoundError": "Informations de compte introuvables lors de l’acquisition du jeton.",
+			"msal.resourceNotFoundError": "Configuration d’Azure Resource {0} introuvable",
 			"noMicrosoftResource": "Le fournisseur '{0}' n'a pas de point de terminaison de ressource Microsoft défini."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -43,7 +48,8 @@
 			"azure.NoAuthMethod.Selected": "Aucune méthode d'authentification Azure sélectionnée. Vous devez sélectionner la méthode d'authentification à utiliser.",
 			"azure.deprecatedGetSecurityToken": "Un appel a été effectué à azdata.accounts.getSecurityToken, cette méthode est dépréciée et sera supprimée dans les mises en production futures. Utilisez getAccountSecurityToken à la place.",
 			"genericTokenError": "Impossible d'obtenir le jeton",
-			"msalTokenError": "{0} s'est produit lors de l'acquisition du jeton. \r\n{1}"
+			"msalTokenError": "{0} s'est produit lors de l'acquisition du jeton. \r\n{1}",
+			"tenantIgnoredError": "Locataire trouvé dans la liste Ignorer, authentification non tentée. Vous pouvez supprimer le locataire {0} de la liste Ignorer dans le fichier settings.json : {1} si vous souhaitez accéder aux ressources de ce locataire."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "L'effacement du cache de jetons a échoué",
@@ -132,6 +138,7 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Afficher les comptes Azure"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.flatAccountTreeNode.noResourcesLabel": "Aucune ressource trouvée.",
 			"azure.resource.throttleerror": "Les demandes de ce compte ont été limitées. Pour réessayer, sélectionnez un nombre plus petit d’abonnements.",
 			"azure.resource.tree.accountTreeNode.title": "{0} (abonnements {1}/{2})",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - Chargement...",
@@ -153,6 +160,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Ressources Azure (préversion)",
+			"azure.credStoreSaveFailedError": "Impossible d’enregistrer les clés du cache de jetons dans le magasin d’informations d’identification. Cela peut entraîner des problèmes de persistance de jeton d’accès Azure et des instabilités de connexion. Il est probable que SqlTools ait atteint la limite de stockage des informations d’identification sur Windows. Effacez au moins 2 informations d’identification qui commencent par « Microsoft.SqlTools| » dans Windows Gestionnaire d'informations d'identification et rechargez.",
 			"azure.unableToOpenAzureLink": "Impossible d'ouvrir le lien, valeurs obligatoires manquantes",
 			"azurecore.australiacentral": "Australie Centre",
 			"azurecore.australiacentral2": "Australie Centre 2",
@@ -168,6 +176,9 @@
 			"azurecore.centralindia": "Inde Centre",
 			"azurecore.centralus": "USA Centre",
 			"azurecore.centraluseuap": "USA Centre EUAP",
+			"azurecore.deprecated": "Avertissement : ADAL a été déprécié et est planifié pour être supprimé dans une prochaine version. Utilisez MSAL à la place.",
+			"azurecore.disable": "Désactiver",
+			"azurecore.dismiss": "Ignorer",
 			"azurecore.eastasia": "Asie Est",
 			"azurecore.eastus": "USA Est",
 			"azurecore.eastus2": "USA Est 2",
@@ -189,6 +200,7 @@
 			"azurecore.northeurope": "Europe Nord",
 			"azurecore.norwayeast": "Norvège Est",
 			"azurecore.norwaywest": "Norvège Ouest",
+			"azurecore.piiLogging.warning": "Avertissement : la journalisation des informations personnelles (PII) Azure est activée. L’activation de cette option permet de consigner les informations d’identification personnelles et ne doit être utilisée qu’à des fins de débogage.",
 			"azurecore.postgresServer": "Serveur Azure Database pour PostgreSQL",
 			"azurecore.reload": "Recharger",
 			"azurecore.reloadChoice": "Recharger Azure Data Studio",
@@ -236,7 +248,7 @@
 			"azure.resource.signin.title": "Azure : Se connecter",
 			"azure.resource.startterminal.title": "Démarrer Cloud Shell",
 			"azure.resource.view.title": "Azure (préversion)",
-			"azure.tenant.config.filter.description": "Liste des ID de locataire à ignorer pendant l'interrogation des ressources Azure. Chaque élément est un ID de locataire.",
+			"azure.tenant.config.filter.description": "Liste des ID de locataire qui sont ignorés lors de l’interrogation des ressources Azure ou de la demande de jetons d’authentification.",
 			"azure.title": "Azure",
 			"config.authenticationLibrary": "La bibliothèque utilisée pour le flux d'authentification AAD. Veuillez redémarrer ADS après avoir modifié cette option.",
 			"config.azureAccountConfigurationSection": "Configuration du compte Azure",

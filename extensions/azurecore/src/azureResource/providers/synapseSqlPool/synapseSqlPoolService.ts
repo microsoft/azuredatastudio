@@ -4,24 +4,45 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
-import { IAzureResourceService } from '../../interfaces';
-import { SynapseWorkspaceGraphData } from '../synapseWorkspace/synapseWorkspaceService';
-import { synapseWorkspacesQuery, synapseSqlPoolsQuery } from '../queryStringConstants';
+import { GraphData, IAzureResourceDbService, SynapseGraphData, SynapseWorkspaceGraphData } from '../../interfaces';
+import { synapseWorkspacesQuery, synapseSqlPoolsQuery, where } from '../queryStringConstants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
+import { queryGraphResources } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
+import { SYNAPSE_SQL_POOL_PROVIDER_ID } from '../../../constants';
 
-interface SynapseGraphData extends GraphData {
-	kind: string;
-}
-export class AzureResourceSynapseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
+export class AzureResourceSynapseService implements IAzureResourceDbService<SynapseWorkspaceGraphData, SynapseGraphData> {
+
+	// TODO: @Cheena
+	public convertDatabaseResource(resource: SynapseGraphData, server?: SynapseWorkspaceGraphData | undefined): azureResource.AzureResourceDatabase | undefined {
+		if (server) {
+			return {
+				name: resource.name,
+				id: resource.id,
+				provider: SYNAPSE_SQL_POOL_PROVIDER_ID,
+				serverName: server.name,
+				serverFullName: server.properties.connectivityEndpoints?.sql,
+				loginName: server.properties.sqlAdministratorLogin,
+				subscription: {
+					id: resource.subscriptionId,
+					name: resource.subscriptionName!
+				},
+				tenant: resource.tenantId,
+				resourceGroup: resource.resourceGroup
+			};
+		} else {
+			return undefined;
+		}
+	}
+
+	public queryFilter: string = synapseSqlPoolsQuery;
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabase[]> {
 		const databases: azureResource.AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query synapse servers, and databases in parallel (start all promises before waiting on the 1st)
-		let synapseQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, synapseSqlPoolsQuery);
-		let synapseWorkspaceQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, synapseWorkspacesQuery);
+		let synapseQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, where + this.queryFilter);
+		let synapseWorkspaceQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, where + synapseWorkspacesQuery);
 		let synapse = await synapseQueryPromise as SynapseGraphData[];
 		let synapseWorkspaceByGraph: SynapseWorkspaceGraphData[] = await synapseWorkspaceQueryPromise as SynapseWorkspaceGraphData[];
 
@@ -50,19 +71,8 @@ export class AzureResourceSynapseService implements IAzureResourceService<azureR
 				const serverName = founds[2];
 				let server = synapseWorkspaceByGraph.find(s => s.name === serverName);
 				if (server) {
-					databases.push({
-						name: db.name,
-						id: db.id,
-						serverName: server.name,
-						serverFullName: server.properties.connectivityEndpoints?.sql,
-						loginName: server.properties.sqlAdministratorLogin,
-						subscription: {
-							id: db.subscriptionId,
-							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name || ''
-						},
-						tenant: db.tenantId,
-						resourceGroup: db.resourceGroup
-					});
+					let res = this.convertDatabaseResource(db, server);
+					databases.push(res!);
 				}
 			}
 		});

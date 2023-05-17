@@ -53,7 +53,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		return this._resourceService.getTreeItem(this.resourceNodeWithProviderId.resourceProviderId, this.resourceNodeWithProviderId.resourceNode);
+		return this.resourceNodeWithProviderId.resourceNode.treeItem;
 	}
 
 	public getNodeInfo(): NodeInfo {
@@ -65,6 +65,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
+			parentNodePath: this.parent?.generateNodePath() ?? '',
 			nodeStatus: undefined,
 			nodeType: treeItem.contextValue || '',
 			nodeSubType: undefined,

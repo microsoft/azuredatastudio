@@ -8,27 +8,27 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/languageFeatures/documentLinkProvider": {
-			"documentLink.tooltip": "Link folgen"
+		"dist/client": {
+			"markdownServer.name": "Markdown Sprachserver"
+		},
+		"dist/languageFeatures/diagnostics": {
+			"ignoreLinksQuickFix.title": "Schließen Sie '{0}' von der Linkvalidierung aus."
 		},
 		"dist/languageFeatures/fileReferences": {
 			"error.noResource": "Fehler beim Suchen nach Dateiverweisen. Es wurde keine Ressource angegeben.",
 			"progress.title": "Dateiverweise werden gesucht"
 		},
-		"dist/languageFeatures/rename": {
-			"invalidRenameLocation": "Umbenennen am Standort nicht unterstützt"
+		"dist/preview/documentRenderer": {
+			"preview.notFound": "{0} kann nicht gefunden werden.",
+			"preview.securityMessage.label": "Sicherheitswarnung – Inhalt deaktiviert",
+			"preview.securityMessage.text": "In diesem Dokument wurden einige Inhalte deaktiviert.",
+			"preview.securityMessage.title": "Potenziell unsichere Inhalte wurden in der Markdown-Vorschau deaktiviert. Ändern Sie die Sicherheitseinstellung der Markdown-Vorschau, um unsichere Inhalte zuzulassen oder Skripts zu aktivieren."
 		},
 		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Vorschau] {0}",
 			"onPreviewStyleLoadError": "'markdown.styles' konnte nicht geladen werden: {0}",
 			"preview.clickOpenFailed": "{0} konnte nicht geöffnet werden.",
 			"previewTitle": "Vorschau von {0}"
-		},
-		"dist/preview/previewContentProvider": {
-			"preview.notFound": "{0} kann nicht gefunden werden.",
-			"preview.securityMessage.label": "Sicherheitswarnung – Inhalt deaktiviert",
-			"preview.securityMessage.text": "In diesem Dokument wurden einige Inhalte deaktiviert.",
-			"preview.securityMessage.title": "Potenziell unsichere Inhalte wurden in der Markdown-Vorschau deaktiviert. Ändern Sie die Sicherheitseinstellung der Markdown-Vorschau, um unsichere Inhalte zuzulassen oder Skripts zu aktivieren."
 		},
 		"dist/preview/security": {
 			"disable.description": "Alle Inhalte und Skriptausführung zulassen. Nicht empfohlen.",
@@ -46,7 +46,14 @@
 			"toggleSecurityWarning.description": "Hat keinen Einfluss auf die Inhaltssicherheitsebene"
 		},
 		"package": {
-			"configuration.markdown.editor.drop.enabled": "Aktivieren/deaktivieren Sie das Ablegen in den Markdown-Editor, um eine Verschiebung einzufügen. Erfordert die Aktivierung von „#workbenck.experimental.editor.dropIntoEditor.enabled#“.",
+			"configuration.markdown.editor.drop.enabled": "Aktivieren/deaktivieren Sie das Ablegen in den Markdown-Editor, um eine Verschiebung einzufügen. Erfordert die Aktivierung von `#editor.dropIntoEditor.enabled#`.",
+			"configuration.markdown.editor.pasteLinks.enabled": "Aktivieren/Deaktivieren des Einfügens von Dateien in einen Markdown-Editor fügt Markdown-Links ein. Erfordert die Aktivierung von `#editor.experimental.pasteActions.enabled#`.",
+			"configuration.markdown.experimental.validate.enabled.description": "Aktiviert/deaktiviert alle Fehlerberichte in Markdown-Dateien.",
+			"configuration.markdown.experimental.validate.fileLinks.enabled.description": "Überprüfen Sie Links zu anderen Dateien in Markdown-Dateien, z. B. „[link](/path/to/file.md)“. Hiermit wird überprüft, ob die Zieldateien vorhanden sind. Erfordert die Aktivierung von „#markdown.experimental.validate.enabled#“.",
+			"configuration.markdown.experimental.validate.fileLinks.markdownFragmentLinks.description": "Überprüfen Sie den Fragmentteil von Links zu Headern in anderen Dateien in Markdowndateien, z. B. \"[link](/path/to/file.md#header)\". Erbt standardmäßig den Einstellungswert von \"#markdown.experimental.validate.fragmentLinks.enabled#\".",
+			"configuration.markdown.experimental.validate.fragmentLinks.enabled.description": "Überprüfen Sie Fragmentlinks zu Headern in der aktuellen Markdowndatei, z. B. \"[link](#header)\". Erfordert die Aktivierung von \"#markdown.experimental.validate.enabled#\".",
+			"configuration.markdown.experimental.validate.ignoreLinks.description": "Konfigurieren Sie Links, die nicht validiert werden sollen. Zum Beispiel würde „/about“ den Link „[about](/about)“ nicht validieren, während der Glob „/assets/**/*.svg“ es Ihnen ermöglichen würde, die Validierung für jeden Link zu „.svg“-Dateien darunter zu überspringen das `assets`-Verzeichnis.",
+			"configuration.markdown.experimental.validate.referenceLinks.enabled.description": "Überprüfen Sie verweisende Links in Markdown-Dateien, z. B. „[link][ref]“. Erfordert die Aktivierung von „#markdown.experimental.validate.enabled#“.",
 			"configuration.markdown.links.openLocation.beside": "Öffnen Sie die Links neben dem aktiven Editor.",
 			"configuration.markdown.links.openLocation.currentGroup": "Öffnen Sie Links in der aktiven Editor-Gruppe.",
 			"configuration.markdown.links.openLocation.description": "Steuert, wo Links in Markdowndateien geöffnet werden sollen.",
@@ -74,8 +81,9 @@
 			"markdown.showLockedPreviewToSide.title": "Gesperrte Vorschau an der Seite öffnen",
 			"markdown.showPreviewSecuritySelector.title": "Sicherheitseinstellungen für Vorschau ändern",
 			"markdown.showSource.title": "Quelle anzeigen",
-			"markdown.styles.dec": "Eine Liste von URLs oder lokalen Pfaden zu CSS-Stylesheets, die aus der Markdownvorschau verwendet werden sollen. Relative Pfade werden relativ zum im Explorer geöffneten Ordner interpretiert. Wenn kein geöffneter Ordner vorhanden ist, werden sie relativ zum Speicherort der Markdowndatei interpretiert. Alle \"\\\" müssen als \"\\\\\" geschrieben werden.",
-			"markdown.trace.desc": "Aktiviert die Debugprotokollierung für die Markdownerweiterung.",
+			"markdown.styles.dec": "Eine Liste von URLs oder lokalen Pfaden zu CSS-Stylesheets, die aus der Markdownvorschau verwendet werden sollen. Relative Pfade werden relativ zum im Explorer geöffneten Ordner interpretiert. Wenn kein geöffneter Ordner vorhanden ist, werden sie relativ zum Speicherort der Markdowndatei interpretiert. Alle '\\ müssen als '\\\\' geschrieben werden.",
+			"markdown.trace.extension.desc": "Aktiviert die Debugprotokollierung für die Markdownerweiterung.",
+			"markdown.trace.server.desc": "Verfolgt die Kommunikation zwischen VS Code und Markdown-Sprachserver nach.",
 			"workspaceTrust": "Erforderlich, um Formatvorlagen zu laden, die im Arbeitsbereich konfiguriert sind."
 		}
 	}

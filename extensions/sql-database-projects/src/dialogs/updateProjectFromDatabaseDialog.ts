@@ -179,7 +179,9 @@ export class UpdateProjectFromDatabaseDialog {
 		this.serverDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
 			fireOnTextChange: true,
-			width: cssStyles.updateProjectFromDatabaseTextboxWidth
+			width: cssStyles.updateProjectFromDatabaseTextboxWidth,
+			ariaLabel: constants.server,
+			required: true
 		}).component();
 
 		this.createConnectionButton(view);
@@ -193,7 +195,9 @@ export class UpdateProjectFromDatabaseDialog {
 		this.databaseDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
 			fireOnTextChange: true,
-			width: cssStyles.updateProjectFromDatabaseTextboxWidth
+			width: cssStyles.updateProjectFromDatabaseTextboxWidth,
+			ariaLabel: constants.databaseNameLabel,
+			required: true
 		}).component();
 
 		this.databaseDropdown.onValueChanged(() => {
@@ -348,6 +352,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createConnectionButton(view: azdata.ModelView) {
 		this.connectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
+			title: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '20px',
 			width: '20px'
@@ -382,7 +387,9 @@ export class UpdateProjectFromDatabaseDialog {
 			fireOnTextChange: true,
 			value: value,
 			values: values,
-			width: cssStyles.updateProjectFromDatabaseTextboxWidth
+			width: cssStyles.updateProjectFromDatabaseTextboxWidth,
+			ariaLabel: constants.location,
+			required: true
 		}).component();
 
 		this.projectFileDropdown.onValueChanged(async () => {
@@ -406,6 +413,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createBrowseFileButton(view: azdata.ModelView): azdata.ButtonComponent {
 		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.browseButtonText,
+			title: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
 			width: '18px'
@@ -437,7 +445,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createFolderStructureRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.folderStructureDropDown = view.modelBuilder.dropDown().withProps({
 			values: [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
-			value: constants.schemaObjectType,			//TODO: Read this value from project info after fixing https://github.com/microsoft/azuredatastudio/issues/20332
+			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
@@ -473,25 +481,28 @@ export class UpdateProjectFromDatabaseDialog {
 		await this.compareActionRadioButton.updateProperties({ checked: true });
 		this.action = UpdateProjectAction.Compare;
 
-		this.compareActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Compare;
-			this.tryEnableUpdateButton();
+		this.compareActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Compare;
+				this.tryEnableUpdateButton();
+			}
 		});
 
-		this.updateActionRadioButton.onDidClick(async () => {
-			this.action = UpdateProjectAction.Update;
-			this.tryEnableUpdateButton();
+		this.updateActionRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.action = UpdateProjectAction.Update;
+				this.tryEnableUpdateButton();
+			}
 		});
 
 		let radioButtons = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.compareActionRadioButton, this.updateActionRadioButton])
-			.withProps({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.actionLabel })
 			.component();
 
 		const actionLabel = view.modelBuilder.text().withProps({
 			value: constants.actionLabel,
-			requiredIndicator: true,
 			width: cssStyles.updateProjectFromDatabaseLabelWidth
 		}).component();
 
@@ -549,7 +560,7 @@ export class UpdateProjectFromDatabaseDialog {
 			connectionDetails: connectionDetails,
 			ownerUri: ownerUri,
 			projectFilePath: '',
-			folderStructure: mssql.ExtractTarget.schemaObjectType,
+			extractTarget: mssql.ExtractTarget.schemaObjectType,
 			targetScripts: [],
 			dataSchemaProvider: '',
 			packageFilePath: '',
@@ -559,9 +570,9 @@ export class UpdateProjectFromDatabaseDialog {
 		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Project,
 			projectFilePath: this.projectFileDropdown!.value! as string,
-			folderStructure: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
+			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
-			dataSchemaProvider: '',
+			dataSchemaProvider: this.project!.getProjectTargetVersion(),
 			connectionDetails: connectionDetails,
 			databaseName: '',
 			serverDisplayName: '',

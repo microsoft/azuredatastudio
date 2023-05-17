@@ -1,8 +1,8 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 const fs = require("fs");
@@ -40,7 +40,7 @@ const darwinCreditsTemplate = product.darwinCredits && _.template(fs.readFileSyn
 function darwinBundleDocumentType(extensions, icon, nameOrSuffix, utis) {
     // If given a suffix, generate a name from it. If not given anything, default to 'document'
     if (isDocumentSuffix(nameOrSuffix) || !nameOrSuffix) {
-        nameOrSuffix = icon.charAt(0).toUpperCase() + icon.slice(1) + ' ' + (nameOrSuffix !== null && nameOrSuffix !== void 0 ? nameOrSuffix : 'document');
+        nameOrSuffix = icon.charAt(0).toUpperCase() + icon.slice(1) + ' ' + (nameOrSuffix ?? 'document');
     }
     return {
         name: nameOrSuffix,

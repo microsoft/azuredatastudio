@@ -1,8 +1,8 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildWebNodePaths = exports.createExternalLoaderConfig = exports.acquireWebNodePaths = exports.getElectronVersion = exports.streamToPromise = exports.versionStringToNumber = exports.filter = exports.rebase = exports.getVersion = exports.ensureDir = exports.rreddir = exports.rimraf = exports.rewriteSourceMappingURL = exports.stripSourceMappingURL = exports.loadSourcemaps = exports.cleanNodeModules = exports.skipDirectories = exports.toFileUri = exports.setExecutableBit = exports.fixWin32DirectoryPermissions = exports.debounce = exports.incremental = void 0;
 const es = require("event-stream");
@@ -240,7 +240,7 @@ function _rreaddir(dirPath, prepend, result) {
     }
 }
 function rreddir(dirPath) {
-    let result = [];
+    const result = [];
     _rreaddir(dirPath, '', result);
     return result;
 }
@@ -304,7 +304,6 @@ function getElectronVersion() {
 }
 exports.getElectronVersion = getElectronVersion;
 function acquireWebNodePaths() {
-    var _a;
     const root = path.join(__dirname, '..', '..');
     const webPackageJSON = path.join(root, '/remote/web', 'package.json');
     const webPackages = JSON.parse(fs.readFileSync(webPackageJSON, 'utf8')).dependencies;
@@ -312,7 +311,7 @@ function acquireWebNodePaths() {
     for (const key of Object.keys(webPackages)) {
         const packageJSON = path.join(root, 'node_modules', key, 'package.json');
         const packageData = JSON.parse(fs.readFileSync(packageJSON, 'utf8'));
-        let entryPoint = typeof packageData.browser === 'string' ? packageData.browser : (_a = packageData.main) !== null && _a !== void 0 ? _a : packageData.main; // {{SQL CARBON EDIT}} Some packages (like Turndown) have objects in this field instead of the entry point, fall back to main in that case
+        let entryPoint = typeof packageData.browser === 'string' ? packageData.browser : packageData.main ?? packageData.main; // {{SQL CARBON EDIT}} Some packages (like Turndown) have objects in this field instead of the entry point, fall back to main in that case
         // On rare cases a package doesn't have an entrypoint so we assume it has a dist folder with a min.js
         if (!entryPoint) {
             // TODO @lramos15 remove this when jschardet adds an entrypoint so we can warn on all packages w/out entrypoint
@@ -337,6 +336,13 @@ function acquireWebNodePaths() {
         }
         nodePaths[key] = entryPoint;
     }
+    // @TODO lramos15 can we make this dynamic like the rest of the node paths
+    // Add these paths as well for 1DS SDK dependencies.
+    // Not sure why given the 1DS entrypoint then requires these modules
+    // they are not fetched from the right location and instead are fetched from out/
+    nodePaths['@microsoft/dynamicproto-js'] = 'lib/dist/umd/dynamicproto-js.min.js';
+    nodePaths['@microsoft/applicationinsights-shims'] = 'dist/umd/applicationinsights-shims.min.js';
+    nodePaths['@microsoft/applicationinsights-core-js'] = 'browser/applicationinsights-core-js.min.js';
     return nodePaths;
 }
 exports.acquireWebNodePaths = acquireWebNodePaths;
@@ -345,7 +351,7 @@ function createExternalLoaderConfig(webEndpoint, commit, quality) {
         return undefined;
     }
     webEndpoint = webEndpoint + `/${quality}/${commit}`;
-    let nodePaths = acquireWebNodePaths();
+    const nodePaths = acquireWebNodePaths();
     Object.keys(nodePaths).map(function (key, _) {
         nodePaths[key] = `${webEndpoint}/node_modules/${key}/${nodePaths[key]}`;
     });

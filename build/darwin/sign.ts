@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as codesign from 'electron-osx-sign';
 import * as path from 'path';
 import * as util from '../lib/util';

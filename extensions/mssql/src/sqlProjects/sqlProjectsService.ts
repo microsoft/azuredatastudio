@@ -8,12 +8,12 @@ import * as constants from '../constants';
 import * as Utils from '../utils';
 import * as azdata from 'azdata';
 import * as contracts from '../contracts';
-import { AppContext } from '../appContext';
-import { ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
-import { ClientCapabilities } from 'vscode-languageclient';
-import { RequestType } from 'vscode-languageclient';
 
-export class SqlProjectsService implements mssql.ISqlProjectsService {
+import { AppContext } from '../appContext';
+import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
+import { ClientCapabilities } from 'vscode-languageclient';
+
+export class SqlProjectsService extends BaseService implements mssql.ISqlProjectsService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
 		return class extends SqlProjectsService {
 			constructor(client: SqlOpsDataClient) {
@@ -29,7 +29,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 		};
 	}
 
-	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+	private constructor(context: AppContext, client: SqlOpsDataClient) {
+		super(client);
 		context.registerService(constants.SqlProjectsService, this);
 	}
 
@@ -77,12 +78,27 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	}
 
 	/**
+	 * Add a nuget package database reference to a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param packageName Name of the referenced nuget package
+	 * @param packageVersion Version of the referenced nuget package
+	 * @param suppressMissingDependencies Whether to suppress missing dependencies
+	 * @param databaseVariable SQLCMD variable name for specifying the other database this reference is to, if different from that of the current project
+	 * @param serverVariable SQLCMD variable name for specifying the other server this reference is to, if different from that of the current project. If this is set, DatabaseVariable must also be set.
+	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
+	 */
+	public async addNugetPackageReference(projectUri: string, packageName: string, packageVersion: string, suppressMissingDependencies: boolean, databaseVariable?: string, serverVariable?: string, databaseLiteral?: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddNugetPackageReferenceParams = { projectUri: projectUri, packageName: packageName, packageVersion: packageVersion, suppressMissingDependencies: suppressMissingDependencies, databaseVariable: databaseVariable, serverVariable: serverVariable, databaseLiteral: databaseLiteral };
+		return await this.runWithErrorHandling(contracts.AddNugetPackageReferenceRequest.type, params);
+	}
+
+	/**
 	 * Delete a database reference from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param name Name of the reference to be deleted. Name of the System DB, path of the sqlproj, or path of the dacpac
 	 */
-	public async deleteDatabaseReference(projectUri: string, path: string): Promise<azdata.ResultStatus> {
-		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
+	public async deleteDatabaseReference(projectUri: string, name: string): Promise<azdata.ResultStatus> {
+		const params: contracts.DeleteDatabaseReferenceParams = { projectUri: projectUri, name: name };
 		return await this.runWithErrorHandling(contracts.DeleteDatabaseReferenceRequest.type, params);
 	}
 
@@ -169,10 +185,10 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Move a post-deployment script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async movePostDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async movePostDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MovePostDeploymentScriptRequest.type, params);
 	}
@@ -180,10 +196,10 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Move a pre-deployment script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async movePreDeploymentScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async movePreDeploymentScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MovePreDeploymentScriptRequest.type, params);
 	}
@@ -274,8 +290,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param defaultValue Default value of the SQLCMD variable
 	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
-	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
+	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
 		return await this.runWithErrorHandling(contracts.AddSqlCmdVariableRequest.type, params);
 	}
 
@@ -296,8 +312,8 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	 * @param defaultValue Default value of the SQLCMD variable
 	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
-	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string, value: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue, value: value };
+	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
 		return await this.runWithErrorHandling(contracts.UpdateSqlCmdVariableRequest.type, params);
 	}
 
@@ -334,10 +350,10 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Move a SQL object script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async moveSqlObjectScript(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async moveSqlObjectScript(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveSqlObjectScriptRequest.type, params);
 	}
@@ -399,7 +415,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Add a SQL object script to a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the file, including extension, relative to the .sqlproj
 	 */
 	public async addNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -409,7 +425,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Delete a SQL object script from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the file, including extension, relative to the .sqlproj
 	 */
 	public async deleteNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -419,7 +435,7 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Exclude a SQL object script from a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param path Path of the file, including extension, relative to the .sqlproj
 	 */
 	public async excludeNoneItem(projectUri: string, path: string): Promise<azdata.ResultStatus> {
 		const params: contracts.SqlProjectScriptParams = { projectUri: projectUri, path: path };
@@ -438,21 +454,32 @@ export class SqlProjectsService implements mssql.ISqlProjectsService {
 	/**
 	 * Move a SQL object script in a project
 	 * @param projectUri Absolute path of the project, including .sqlproj
-	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 * @param path Path of the script, including .sql, relative to the .sqlproj
+	 * @param destinationPath Destination path of the file or folder, relative to the .sqlproj
 	 */
-	public async moveNoneItem(projectUri: string, destinationPath: string, path: string): Promise<azdata.ResultStatus> {
+	public async moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus> {
 		const params: contracts.MoveItemParams = { projectUri: projectUri, destinationPath: destinationPath, path: path };
 		return await this.runWithErrorHandling(contracts.MoveNoneItemRequest.type, params);
 	}
 
-	private async runWithErrorHandling<P, R, E, RO>(type: RequestType<P, R, E, RO>, params: P): Promise<R> {
-		try {
-			const result = await this.client.sendRequest(type, params);
-			return result;
-		} catch (e) {
-			this.client.logFailedRequest(type, e);
-			throw e;
-		}
+	/**
+	 * Exclude a folder and its contents from a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param path Path of the folder, typically relative to the .sqlproj file
+	 */
+	public async excludeFolder(projectUri: string, path: string): Promise<azdata.ResultStatus> {
+		const params: contracts.FolderParams = { projectUri: projectUri, path: path };
+		return await this.runWithErrorHandling(contracts.ExcludeFolderRequest.type, params);
+	}
+
+	/**
+	 * Move a folder and its contents within a project
+	 * @param projectUri Absolute path of the project, including .sqlproj
+	 * @param sourcePath Source path of the folder, typically relative to the .sqlproj file
+	 * @param destinationPath Destination path of the folder, typically relative to the .sqlproj file
+	 */
+	public async moveFolder(projectUri: string, sourcePath: string, destinationPath: string): Promise<azdata.ResultStatus> {
+		const params: contracts.MoveFolderParams = { projectUri: projectUri, path: sourcePath, destinationPath: destinationPath };
+		return await this.runWithErrorHandling(contracts.MoveFolderRequest.type, params);
 	}
 }

@@ -1,8 +1,8 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const codesign = require("electron-osx-sign");
 const path = require("path");
@@ -40,14 +40,26 @@ async function main() {
         identity: '99FM488X57',
         'gatekeeper-assess': false
     };
-    const appOpts = Object.assign(Object.assign({}, defaultOpts), { 
+    const appOpts = {
+        ...defaultOpts,
         // TODO(deepak1556): Incorrectly declared type in electron-osx-sign
         ignore: (filePath) => {
             return filePath.includes(gpuHelperAppName) ||
                 filePath.includes(rendererHelperAppName);
-        } });
-    const gpuHelperOpts = Object.assign(Object.assign({}, defaultOpts), { app: path.join(appFrameworkPath, gpuHelperAppName), entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist'), 'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist') });
-    const rendererHelperOpts = Object.assign(Object.assign({}, defaultOpts), { app: path.join(appFrameworkPath, rendererHelperAppName), entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist'), 'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist') });
+        }
+    };
+    const gpuHelperOpts = {
+        ...defaultOpts,
+        app: path.join(appFrameworkPath, gpuHelperAppName),
+        entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist'),
+        'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist'),
+    };
+    const rendererHelperOpts = {
+        ...defaultOpts,
+        app: path.join(appFrameworkPath, rendererHelperAppName),
+        entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist'),
+        'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist'),
+    };
     // Only overwrite plist entries for x64 and arm64 builds,
     // universal will get its copy from the x64 build.
     if (arch !== 'universal') {

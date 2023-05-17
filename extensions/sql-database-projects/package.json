@@ -2,12 +2,12 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.22.0",
+  "version": "1.1.1",
   "publisher": "Microsoft",
-  "preview": true,
+  "preview": false,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.42.0"
+    "azdata": ">=1.44.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -189,11 +189,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.convertToSdkStyleProject",
-        "title": "%sqlDatabaseProjects.convertToSdkStyleProject%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.openInDesigner",
         "title": "%sqlDatabaseProjects.openInDesigner%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -211,6 +206,11 @@
       {
         "command": "sqlDatabaseProjects.rename",
         "title": "%sqlDatabaseProjects.rename%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPublishProfile",
+        "title": "%sqlDatabaseProjects.newPublishProfile%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -321,10 +321,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.convertToSdkStyleProject",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.openInDesigner",
           "when": "false"
         },
@@ -342,6 +338,10 @@
         },
         {
           "command": "sqlDatabaseProjects.rename",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPublishProfile",
           "when": "false"
         }
       ],
@@ -412,6 +412,11 @@
           "group": "3_dbProjects_newItem@9"
         },
         {
+          "command": "sqlDatabaseProjects.newPublishProfile",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@10"
+        },
+        {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.referencesRoot",
           "group": "4_dbProjects_addDatabaseReference"
@@ -438,7 +443,7 @@
         },
         {
           "command": "sqlDatabaseProjects.rename",
-          "when": "view == dataworkspace.views.main && viewItem =~ /^databaseProject.itemType.file/",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@3"
         },
         {
@@ -508,7 +513,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^2.0.0",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@xmldom/xmldom": "0.8.4",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",
@@ -523,7 +528,7 @@
     "xml-formatter": "2.1.0"
   },
   "devDependencies": {
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.1",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^7.0.2",

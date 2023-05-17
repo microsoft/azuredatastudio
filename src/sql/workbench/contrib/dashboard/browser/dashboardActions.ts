@@ -38,7 +38,6 @@ CommandsRegistry.registerCommand({
 				let options = {
 					showDashboard: true,
 					saveTheConnection: false,
-					params: undefined,
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true
 				};
@@ -122,7 +121,6 @@ export class OEManageConnectionAction extends Action {
 		}
 
 		let options: IConnectionCompletionOptions = {
-			params: undefined,
 			saveTheConnection: false,
 			showConnectionDialogOnError: true,
 			showDashboard: true,

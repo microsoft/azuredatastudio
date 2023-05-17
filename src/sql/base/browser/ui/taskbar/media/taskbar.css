@@ -78,14 +78,13 @@
 .taskbarSeparator {
 	min-width: 1px;
 	background-color:#A5A5A5;
-	margin: 0px 16px;
+	margin: 0px 8px;
 	align-self: stretch;
 }
 
 .taskbarTextSeparator {
 	margin-left: 3px;
 	margin-right: 3px;
-	margin-top: 4px;
 }
 
 /* Taskbar Icons */
@@ -142,4 +141,16 @@
 	height: 1px;
 	width: 100%;
 	margin-left: 0;
+}
+
+.carbon-taskbar .monaco-action-bar .action-item .codicon.action-label[class*='codicon-'] {
+	font-size: 11px;
+	padding-left: 0px;
+	font-family: inherit;
+}
+
+.carbon-taskbar .monaco-action-bar .action-item .codicon.action-label[class*='codicon-']:before {
+	font-size: 16px;
+	font-family: 'codicon';
+	padding-right: 2px;
 }

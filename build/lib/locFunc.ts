@@ -157,10 +157,7 @@ export function modifyI18nPackFiles(existingTranslationFolder: string, resulting
 
 					// exclude altered vscode extensions from having a new path even if we provide a new I18n file.
 					if (alteredVSCodeExtensions.indexOf(extension) === -1) {
-						//handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as extension ID.
-						//(Other extensions need to have publisher appended in front as their ID.)
-						let adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
-
+						let adsExtensionId = 'Microsoft.' + extension;
 						resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
 					}
 				}
@@ -197,6 +194,7 @@ const VSCODEExtensions = [
 	"github-authentication",
 	"html",
 	"image-preview",
+	"ipynb",
 	"javascript",
 	"json",
 	"json-language-features",

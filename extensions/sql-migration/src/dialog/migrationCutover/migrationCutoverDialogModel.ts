@@ -14,23 +14,26 @@ export class MigrationCutoverDialogModel {
 	public CancelMigrationError?: Error;
 
 	constructor(
-		public serviceConstext: MigrationServiceContext,
+		public serviceContext: MigrationServiceContext,
 		public migration: DatabaseMigration) { }
 
 	public async fetchStatus(): Promise<void> {
-		const migrationStatus = await getMigrationDetails(
-			this.serviceConstext.azureAccount!,
-			this.serviceConstext.subscription!,
-			this.migration.id,
-			this.migration.properties?.migrationOperationId);
-
-		sendSqlMigrationActionEvent(
-			TelemetryViews.MigrationCutoverDialog,
-			TelemetryAction.MigrationStatus,
-			{ 'migrationStatus': migrationStatus.properties?.migrationStatus },
-			{});
-
-		this.migration = migrationStatus;
+		try {
+			const migrationStatus = await getMigrationDetails(
+				this.serviceContext.azureAccount!,
+				this.serviceContext.subscription!,
+				this.migration.id,
+				this.migration.properties?.migrationOperationId);
+			this.migration = migrationStatus;
+		} catch (error) {
+			logError(TelemetryViews.MigrationDetailsTab, 'fetchStatus', error);
+		} finally {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationDetailsTab,
+				TelemetryAction.MigrationStatus,
+				{ 'migrationStatus': this.migration.properties?.migrationStatus },
+				{});
+		}
 	}
 
 	public async startCutover(): Promise<DatabaseMigration | undefined> {
@@ -38,14 +41,14 @@ export class MigrationCutoverDialogModel {
 			this.CutoverError = undefined;
 			if (this.migration) {
 				const cutover = await startMigrationCutover(
-					this.serviceConstext.azureAccount!,
-					this.serviceConstext.subscription!,
+					this.serviceContext.azureAccount!,
+					this.serviceContext.subscription!,
 					this.migration!);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CutoverMigration,
 					{
-						...this.getTelemetryProps(this.serviceConstext, this.migration),
+						...this.getTelemetryProps(this.serviceContext, this.migration),
 						'migrationEndTime': new Date().toString(),
 					},
 					{}
@@ -65,14 +68,14 @@ export class MigrationCutoverDialogModel {
 			if (this.migration) {
 				const cutoverStartTime = new Date().toString();
 				await stopMigration(
-					this.serviceConstext.azureAccount!,
-					this.serviceConstext.subscription!,
+					this.serviceContext.azureAccount!,
+					this.serviceContext.subscription!,
 					this.migration);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CancelMigration,
 					{
-						...this.getTelemetryProps(this.serviceConstext, this.migration),
+						...this.getTelemetryProps(this.serviceContext, this.migration),
 						'migrationMode': getMigrationMode(this.migration),
 						'cutoverStartTime': cutoverStartTime,
 					},

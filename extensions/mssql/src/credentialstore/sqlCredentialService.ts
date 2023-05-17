@@ -47,10 +47,10 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 						const password = await this._secretStorage.get(credentialId);
 						return {
 							credentialId: credentialId,
-							password: password
+							password: password || ''
 						};
 					}
-					return this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
+					return this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId });
 				};
 
 				let saveCredential = async (credentialId: string, password: string): Promise<boolean> => {
@@ -70,7 +70,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 							console.log('credential does not exist in native secret store');
 						}
 					}
-					return this._client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId, password: undefined });
+					return this._client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId });
 				};
 
 				return azdata.credentials.registerProvider({
@@ -87,7 +87,11 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 
 	initialize(capabilities: ServerCapabilities): void { }
 
-	protected registerProvider(options: any): Disposable { return undefined; }
+	protected registerProvider(options: any): Disposable {
+		return {
+			dispose: () => { }
+		}
+	}
 
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
 		super(client, SqlCredentialService.messagesTypes);

@@ -11,7 +11,7 @@ import * as TreeDefaults from 'sql/base/parts/tree/browser/treeDefaults';
 import { Event, Emitter } from 'vs/base/common/event';
 import { timeout } from 'vs/base/common/async';
 
-export class FakeRenderer {
+class FakeRenderer {
 
 	public getHeight(tree: _.ITree, element: any): number {
 		return 20;

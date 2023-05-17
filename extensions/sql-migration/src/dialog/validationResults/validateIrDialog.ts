@@ -7,11 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import { validateIrDatabaseMigrationSettings, validateIrSqlDatabaseMigrationSettings } from '../../api/azure';
-import { MigrationStateModel, MigrationTargetType, NetworkShare, ValidateIrState, ValidationResult } from '../../models/stateMachine';
+import { MigrationStateModel, NetworkShare, ValidateIrState, ValidationResult } from '../../models/stateMachine';
 import { EOL } from 'os';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { getEncryptConnectionValue, getSourceConnectionProfile, getTrustServerCertificateValue } from '../../api/sqlUtils';
 import { logError, TelemetryViews } from '../../telemetry';
+import { MigrationTargetType } from '../../api/utils';
 
 const DialogName = 'ValidateIrDialog';
 

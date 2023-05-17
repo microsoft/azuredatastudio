@@ -92,4 +92,7 @@ export const outputLineHeightDescription = localize('notebook.outputLineHeight',
 export const outputFontSizeDescription = localize('notebook.outputFontSize', "Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)");
 export const outputFontFamilyDescription = localize('notebook.outputFontFamily', "The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)");
 export const experimentalCustomizationDescription = localize('notebook.editorOptions.experimentalCustomization', 'Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)');
+export const download = localize('azuredatastudio.download', 'Download');
+export const downloadTooltip = localize('azuredatastudio.downloadTooltip', "Download this extension from an external source");
+export const installTooltip = localize('azuredatastudio.installTooltip', "Install this extension");
 //#endregion

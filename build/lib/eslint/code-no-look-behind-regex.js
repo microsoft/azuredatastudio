@@ -1,8 +1,8 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -20,8 +20,7 @@ module.exports = {
         return {
             // /.../
             ['Literal[regex]']: (node) => {
-                var _a;
-                const pattern = (_a = node.regex) === null || _a === void 0 ? void 0 : _a.pattern;
+                const pattern = node.regex?.pattern;
                 if (_containsLookBehind(pattern)) {
                     context.report({
                         node,
