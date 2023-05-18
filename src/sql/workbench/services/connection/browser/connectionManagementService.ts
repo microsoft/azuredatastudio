@@ -780,6 +780,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 			}
 
+			//handle case where a profile may have been edited from recent connection (and would therefore be a new entry) (such as in notebook)
+			if (initialSearch.length === 1 && !initialSearch[0].matches(tempProfile)) {
+				// Can't use the original id, as it's matched to the unaltered profile, need to create a new ID for this instance.
+				tempProfile.id = 'edited_id_temp';
+				idToFind = tempProfile.id;
+				totalConnections.concat(tempProfile);
+			}
+
 			let newConnectionTitles = [];
 
 			this.generateEditorConnectionTitles(totalConnections);
