@@ -7,6 +7,9 @@ trigger:
 pr: none
 
 steps:
+  - checkout: self
+    persistCredentials: true
+
   - task: NodeTool@0
     inputs:
       versionSpec: "16.x"
