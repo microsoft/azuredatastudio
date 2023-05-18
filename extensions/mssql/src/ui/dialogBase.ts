@@ -78,7 +78,7 @@ export abstract class DialogBase<DialogResult> {
 		try {
 			this.onLoadingStatusChanged(true);
 			const initializeDialogPromise = new Promise<void>((async resolve => {
-				await this.dialogObject.registerContent(async view => {
+				this.dialogObject.registerContent(async view => {
 					this._modelView = view;
 					this._formContainer = this.createFormContainer([]);
 					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
@@ -236,7 +236,7 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: () => Promise<void>, removeHandler: () => void): azdata.FlexContainer {
+	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: () => Promise<void>, removeHandler: () => Promise<void>): azdata.FlexContainer {
 		let addButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
 		const updateButtons = () => {
