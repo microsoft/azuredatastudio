@@ -320,8 +320,9 @@ export class RestoreDialogController implements IRestoreDialogController {
 						newRestoreDialog.render();
 						this._restoreDialogs[this._currentProvider] = newRestoreDialog;
 					} else if (this._currentProvider !== ConnectionConstants.mssqlProviderName) {
-						// Update the title for non-MSSQL restores each time so they show the correct database name
-						(this._restoreDialogs[this._currentProvider] as RestoreDialog).title = dialogTitle;
+						// Update the title for non-MSSQL restores each time so they show the correct database name since those
+						// use just a basic OptionsDialog which doesn't get updated on every open
+						this._restoreDialogs[this._currentProvider].title = dialogTitle;
 					}
 
 					if (this._currentProvider === ConnectionConstants.mssqlProviderName) {

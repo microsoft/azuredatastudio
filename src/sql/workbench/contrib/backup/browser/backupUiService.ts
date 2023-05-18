@@ -77,8 +77,9 @@ export class BackupUiService implements IBackupUiService {
 			backupDialog.render();
 			this._backupDialogs[this._currentProvider] = backupDialog;
 		} else if (backupOptions) {
-			// Update the title for non-MSSQL backups each time so they show the correct database name
-			(backupDialog as OptionsDialog).title = backupDialogTitle;
+			// Update the title for non-MSSQL restores each time so they show the correct database name since those
+			// use just a basic OptionsDialog which doesn't get updated on every open
+			backupDialog.title = backupDialogTitle;
 		}
 
 		let uri = this._connectionManagementService.getConnectionUri(connection)
