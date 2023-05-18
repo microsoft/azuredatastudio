@@ -78,6 +78,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
 			obj = this.getServerRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.ServerProperties) {
+			obj = this.getServerPropertiesView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.User) {
 			obj = this.getUserView(isNewObject, objectUrn);
 		}
@@ -292,6 +294,64 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
+	private getServerPropertiesView(isNewObject: boolean, name: string): ObjectManagement.ServerViewInfo {
+		return isNewObject ? <ObjectManagement.ServerViewInfo>{
+			objectInfo: {
+				name: 'Server Properties',
+				language: '',
+				memory: '',
+				operatingSystem: '',
+				platform: '',
+				processors: '',
+				isClustered: 'False',
+				isHadrEnabled: '',
+				isPolyBaseInstalled: '',
+				product: '',
+				rootDirectory: '',
+				serverCollation: '',
+				version: '',
+				minServerMemory: 100,
+				maxServerMemory: 500,
+				setProcessorAffinity: true,
+				setIOAffinity: true,
+				serverAuth: 'WindowsAuth',
+				loginAuditing: 'None',
+				compressBackup: true,
+				backupChecksum: true,
+				dataLocation: '',
+				logLocation: '',
+				backupLocation: ''
+			}
+		} : <ObjectManagement.ServerViewInfo>{
+			objectInfo: {
+				name: 'Server Properties',
+				language: '',
+				memory: '',
+				operatingSystem: '',
+				platform: '',
+				processors: '',
+				isClustered: 'False',
+				isHadrEnabled: '',
+				isPolyBaseInstalled: '',
+				product: '',
+				rootDirectory: '',
+				serverCollation: '',
+				version: '',
+				minServerMemory: 100,
+				maxServerMemory: 500,
+				setProcessorAffinity: true,
+				setIOAffinity: true,
+				serverAuth: 'WindowsAuth',
+				loginAuditing: 'None',
+				compressBackup: true,
+				backupChecksum: true,
+				dataLocation: '',
+				logLocation: '',
+				backupLocation: ''
+			}
+		};
+	}
+
 	private delayAndResolve(obj?: any): Promise<any> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
@@ -300,3 +360,4 @@ export class TestObjectManagementService implements IObjectManagementService {
 		});
 	}
 }
+

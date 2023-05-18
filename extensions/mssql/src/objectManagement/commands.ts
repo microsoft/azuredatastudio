@@ -22,6 +22,7 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
+import { ServerDialog } from './ui/serverDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -106,16 +107,24 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const parentUrn = await getParentUrn(context);
+		// const parentUrn = await getParentUrn(context);
+		// const options: ObjectManagementDialogOptions = {
+		// 	connectionUri: connectionUri,
+		// 	isNewObject: false,
+		// 	database: context.connectionProfile!.databaseName!,
+		// 	objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
+		// 	objectName: context.nodeInfo.label,
+		// 	parentUrn: parentUrn,
+		// 	objectUrn: context.nodeInfo!.metadata!.urn,
+		// 	objectExplorerContext: context
+		// };
+		// const dialog = getDialog(service, options);
+		const objectType = ObjectManagement.NodeType.ServerProperties;
 		const options: ObjectManagementDialogOptions = {
+			objectType: objectType,
 			connectionUri: connectionUri,
 			isNewObject: false,
-			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
-			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
-			objectExplorerContext: context
+			parentUrn: undefined
 		};
 		const dialog = getDialog(service, options);
 		await dialog.open();
@@ -242,6 +251,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new LoginDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.ServerProperties:
+			return new ServerDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:

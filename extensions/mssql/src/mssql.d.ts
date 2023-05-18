@@ -899,9 +899,9 @@ declare module 'mssql' {
 			Column = "Column",
 			Database = "Database",
 			DatabaseRole = "DatabaseRole",
-			Server = "Server",
 			ServerLevelLogin = "ServerLevelLogin",
 			ServerLevelServerRole = "ServerLevelServerRole",
+			ServerProperties = "ServerProperties",
 			Table = "Table",
 			User = "User",
 			View = "View"
