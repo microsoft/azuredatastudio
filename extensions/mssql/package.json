@@ -433,6 +433,11 @@
           "default": false,
           "description": "%mssql.tableDesigner.preloadDatabaseModel%"
         },
+        "mssql.tableDesigner.allowDisableAndReenableDdlTriggers": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.tableDesigner.allowDisableAndReenableDdlTriggers%"
+        },
         "mssql.objectExplorer.groupBySchema": {
           "type": "boolean",
           "default": false,
