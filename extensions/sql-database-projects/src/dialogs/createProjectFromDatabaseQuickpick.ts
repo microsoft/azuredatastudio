@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
-import { exists, getVscodeMssqlApi, isValidBasenameErrorMessage, sanitizeStringForFilename } from '../common/utils';
+import { exists, getVscodeMssqlApi, isValidBasenameErrorMessage, sanitizeStringForFilename, getErrorMessage } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
 import { defaultProjectNameFromDb, defaultProjectSaveLocation } from '../tools/newProjectTool';
 import { ImportDataModel } from '../models/api/import';
@@ -40,10 +40,10 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 				connectionUri = await vscodeMssqlApi.connect(connectionProfile);
 				dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
 					.filter(db => !constants.systemDbs.includes(db)); // Filter out system dbs
-			} catch {
-				// The mssql extension handles showing the error to the user.
+			} catch (err) {
 				// Prompt the user for a new connection and then go and try getting the DBs again
 				isValidProfile = false;
+				console.error(getErrorMessage(err));
 			}
 		} else {
 			connectionProfile = await vscodeMssqlApi.promptForConnection(true);
