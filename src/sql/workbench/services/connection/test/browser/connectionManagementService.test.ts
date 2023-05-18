@@ -1053,8 +1053,8 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we check the test uris instead here.
-		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(uri1 === uri2));
+		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we return false.
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
 		profile.getOptionsKey = () => { return currentUri; };
 
 		await connect(uri, options, true, profile);

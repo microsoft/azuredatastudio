@@ -85,7 +85,7 @@ export class ConnectionStatusManager {
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
 
-	private isNonPurposeUri(uri: string): boolean {
+	private isNonEditorUri(uri: string): boolean {
 		return uri.startsWith(ConnectionUtils.uriPrefixes.connection)
 			|| uri.startsWith(ConnectionUtils.uriPrefixes.dashboard)
 			|| uri.startsWith(ConnectionUtils.uriPrefixes.insights)
@@ -95,10 +95,10 @@ export class ConnectionStatusManager {
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
 
-		// Generated Purpose URIs are used in areas where the same connection profile id is expected for callbacks,
-		// Editor URIs such as Query Editor do not have this purpose, so they can have a new ID
-		// (in order not to retrieve the base connection profile, which may be different if a user changes the database).
-		if (!this.isNonPurposeUri(id) && this.findConnectionByProfileId(connection.id) !== undefined) {
+		// Newly generated URIs are used in areas where the same connection profile id is expected for callbacks,
+		// This is used for Editor URIs such as Query Editor, which do not have uriPrefixes recognized above.
+		// (This is done to not retrieve the base connection profile, which may be different if a user changes the database).
+		if (!this.isNonEditorUri(id) && this.findConnectionByProfileId(connection.id) !== undefined) {
 			connection.id = generateUuid();
 		}
 

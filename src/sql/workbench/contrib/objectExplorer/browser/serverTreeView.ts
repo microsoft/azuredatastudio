@@ -234,8 +234,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
 				} else {
 					this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
-				} else {
-					await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
 				}
 			}
 		}));
