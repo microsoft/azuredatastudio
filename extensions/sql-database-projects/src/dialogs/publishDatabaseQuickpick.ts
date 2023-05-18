@@ -127,14 +127,13 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 	// if a publish profile was loaded and had a database name, use that instead of the project file name
 	const dbName = publishProfile?.databaseName || project.projectFileName;
 
-	// Ensure the project name or name specified in the publish profile is an option, either adding it if it
-	// doesn't already exist or moving it to the top if it does
-	const projectNameIndex = dbs.findIndex(db => db === dbName);
-	if (projectNameIndex === -1) {
+	// Ensure the project name or name specified in the publish profile is an option
+	const projectNameIndex = dbQuickpicks.findIndex(db => db.label === dbName);
+	if (projectNameIndex === -1) { // add it if it doesn't already exist...
 		dbQuickpicks.unshift({ label: dbName, description: constants.newText });
-	} else {
-		dbQuickpicks.splice(projectNameIndex, 1);
-		dbQuickpicks.unshift({ label: dbName });
+	} else { // ...or move it to the top if it does
+		const removed = dbQuickpicks.splice(projectNameIndex, 1)[0];
+		dbQuickpicks.unshift(removed);
 	}
 
 	let databaseName: string | undefined = undefined;
