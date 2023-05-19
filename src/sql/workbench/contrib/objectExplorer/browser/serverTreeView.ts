@@ -928,6 +928,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				}
 			}
 		}
+
+		// In case of error node, we need to show the error message
+		if (node instanceof TreeNode) {
+			if (node.objectType === 'error') {
+				this.showError(node.label);
+			}
+		}
 	}
 
 	public getActionContext(element: ServerTreeElement): any {

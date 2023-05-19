@@ -583,7 +583,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		};
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
-			nodePath: nodePath,
+			nodePath: '',
 			parentNodePath: '',
 			objectType: 'error',
 			label: 'Error',
