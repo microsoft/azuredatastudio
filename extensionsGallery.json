@@ -1657,14 +1657,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.9.2",
-							"lastUpdated": "11/18/2022",
+							"version": "0.9.3",
+							"lastUpdated": "05/18/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/cms/cms-0.9.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/cms/cms-0.9.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
