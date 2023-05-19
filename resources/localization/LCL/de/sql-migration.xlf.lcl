@@ -7237,6 +7237,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.vm.many" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Target server '{0}' may not be able to access storage account '{1}'. Ensure that the subnet of the target server is whitelisted on the storage account.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Zielserver "{0}" kann möglicherweise nicht auf das Speicherkonto "{1}" zugreifen. Stellen Sie sicher, dass das Subnetz des Zielservers in das Speicherkonto in der Whitelist enthalten ist.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storageAccount.warning.vm.one" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Target server '{0}' may not be able to access storage accounts '{1}'. Ensure that the subnet of the target server is whitelisted on the storage accounts.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Zielserver "{0}" kann möglicherweise nicht auf Speicherkonten "{1}" zugreifen. Stellen Sie sicher, dass das Subnetz des Zielservers in den Speicherkonten in der Whitelist enthalten ist.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>

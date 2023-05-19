@@ -625,7 +625,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ObjectExplorer, TelemetryKeys.TelemetryAction.ObjectExplorerFilter)
 						.withAdditionalProperties({
-							filterPropertyNames: JSON.stringify(filters.map(f => node.filterProperties.find(p => f.displayName === p.displayName)?.name)),
+							filterPropertyNames: JSON.stringify(filters.map(f => f.name)),
 							filterCount: filters.length,
 							objectType: node.objectType
 						}).send();
@@ -930,7 +930,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 	}
 
-	private getActionContext(element: ServerTreeElement): any {
+	public getActionContext(element: ServerTreeElement): any {
 		let actionContext: any;
 		if (element instanceof TreeNode) {
 			let context = new ObjectExplorerActionsContext();
@@ -951,5 +951,13 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			actionContext = element;
 		}
 		return actionContext;
+	}
+
+	public collapseAllConnections(): void {
+		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
+		const connections = ConnectionProfileGroup.getConnectionsInGroup(root);
+		connections.forEach(con => {
+			this._tree!.collapse(con, true);
+		});
 	}
 }

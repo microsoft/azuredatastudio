@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "devDependencies": {
-    "@actions/core": "1.2.6",
+    "@actions/core": "1.9.1",
     "@actions/github": "2.1.1",
     "@azure/cosmos": "^3.17.3",
     "@azure/identity": "^2.1.0",

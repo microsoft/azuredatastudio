@@ -88,6 +88,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectionProfileGroupEdited = new Emitter<ConnectionProfileGroup>();
 	private _onConnectionProfileGroupMoved = new Emitter<ConnectionElementMovedParams>();
 
+	private _onRecentConnectionProfileDeleted = new Emitter<ConnectionProfile>();
+
 	private _mementoContext: Memento;
 	private _mementoObj: MementoObject;
 	private _connectionStore: ConnectionStore;
@@ -244,6 +246,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public get onConnectionProfileGroupMoved(): Event<ConnectionElementMovedParams> {
 		return this._onConnectionProfileGroupMoved.event;
+	}
+
+	public get onRecentConnectionProfileDeleted(): Event<ConnectionProfile> {
+		return this._onRecentConnectionProfileDeleted.event;
 	}
 
 	public get providerNameToDisplayNameMap(): { readonly [providerDisplayName: string]: string } {
@@ -829,6 +835,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public clearRecentConnection(connectionProfile: interfaces.IConnectionProfile): void {
 		this._connectionStore.removeRecentConnection(connectionProfile);
+		this._onRecentConnectionProfileDeleted.fire(<ConnectionProfile>connectionProfile);
 	}
 
 	public getActiveConnections(providers?: string[]): ConnectionProfile[] {

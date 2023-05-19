@@ -1842,7 +1842,7 @@ declare module 'azdata' {
 		/**
 		 * The name of the filter property
 		 */
-		displayName: string;
+		name: string;
 		/**
 		 * The operator of the filter property
 		 */
@@ -1946,5 +1946,12 @@ declare module 'azdata' {
 			 */
 			isPrimary: boolean;
 		}
+	}
+
+	export interface TableComponent {
+		/**
+		 * Set active cell.
+		 */
+		setActiveCell(row: number, column: number): void;
 	}
 }

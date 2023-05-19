@@ -60,12 +60,14 @@
       {
         "command": "mssql.newTable",
         "category": "MSSQL",
-        "title": "%title.newTable%"
+        "title": "%title.newTable%",
+        "icon": "$(add)"
       },
       {
         "command": "mssql.designTable",
         "category": "MSSQL",
-        "title": "%title.designTable%"
+        "title": "%title.designTable%",
+        "icon": "$(edit)"
       },
       {
         "command": "mssql.changeNotebookConnection",
@@ -75,17 +77,20 @@
       {
         "command": "mssql.newObject",
         "category": "MSSQL",
-        "title": "%title.newObject%"
+        "title": "%title.newObject%",
+        "icon": "$(add)"
       },
       {
         "command": "mssql.objectProperties",
         "category": "MSSQL",
-        "title": "%title.objectProperties%"
+        "title": "%title.objectProperties%",
+        "icon": "$(edit)"
       },
       {
         "command": "mssql.deleteObject",
         "category": "MSSQL",
-        "title": "%title.deleteObject%"
+        "title": "%title.deleteObject%",
+        "icon": "$(trash)"
       },
       {
         "command": "mssql.renameObject",
@@ -428,6 +433,11 @@
           "default": false,
           "description": "%mssql.tableDesigner.preloadDatabaseModel%"
         },
+        "mssql.tableDesigner.allowDisableAndReenableDdlTriggers": {
+          "type": "boolean",
+          "default": true,
+          "description": "%mssql.tableDesigner.allowDisableAndReenableDdlTriggers%"
+        },
         "mssql.objectExplorer.groupBySchema": {
           "type": "boolean",
           "default": false,
@@ -525,6 +535,31 @@
         {
           "command": "mssql.disableGroupBySchema",
           "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && config.mssql.objectExplorer.groupBySchema"
+        },
+        {
+          "command": "mssql.designTable",
+          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
+          "group": "inline@2"
+        },
+        {
+          "command": "mssql.newTable",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
+          "group": "inline@0"
+        },
+        {
+          "command": "mssql.newObject",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@0"
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@2"
+        },
+        {
+          "command": "mssql.deleteObject",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
+          "group": "inline@3"
         }
       ],
       "dataExplorer/context": [

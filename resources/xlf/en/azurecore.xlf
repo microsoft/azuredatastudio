@@ -198,7 +198,7 @@ Do you wish to proceed?</source>
       <source xml:lang="en">Azure Database for MySQL Flexible server</source>
     </trans-unit>
 </body></file>
-  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
       <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
     </trans-unit>
@@ -226,6 +226,14 @@ Do you wish to proceed?</source>
   <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
       <source xml:lang="en">Azure Synapse Analytics</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/universal/universalService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azurecore.unregisteredProvider">
+      <source xml:lang="en">Unrecognized Provider resource: {0}</source>
+    </trans-unit>
+    <trans-unit id="azurecore.unregisteredProviderType">
+      <source xml:lang="en">Unrecognized Provider resource type: {0}</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext"><body>

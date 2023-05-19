@@ -21,6 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { SqlIconId } from 'sql/base/common/codicons';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { Codicon } from 'vs/base/common/codicons';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
@@ -44,7 +45,7 @@ export class RefreshAction extends Action {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@ILogService private _logService: ILogService
 	) {
-		super(id, label);
+		super(id, label, Codicon.refresh.classNames);
 	}
 	public override async run(): Promise<void> {
 		let treeNode: TreeNode | undefined = undefined;
@@ -103,8 +104,7 @@ export class EditConnectionAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label);
-		this.class = 'edit-server-action';
+		super(id, label, Codicon.edit.classNames);
 	}
 
 	public override async run(): Promise<void> {
@@ -124,7 +124,7 @@ export class DisconnectConnectionAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label);
+		super(id, label, Codicon.debugDisconnect.classNames);
 	}
 
 	override async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
@@ -223,8 +223,7 @@ export class EditServerGroupAction extends Action {
 		private _group: ConnectionProfileGroup,
 		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
-		super(id, label);
-		this.class = 'edit-server-group-action';
+		super(id, label, Codicon.edit.classNames);
 	}
 
 	public override run(): Promise<void> {
@@ -277,8 +276,7 @@ export class DeleteConnectionAction extends Action {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IDialogService private _dialogService: IDialogService
 	) {
-		super(id, label);
-		this.class = 'delete-connection-action';
+		super(id, label, Codicon.trash.classNames);
 		if (element instanceof ConnectionProfileGroup && element.id === UNSAVED_GROUP_ID) {
 			this.enabled = false;
 		}
@@ -322,12 +320,17 @@ export class FilterChildrenAction extends Action {
 		label: string,
 		private _node: TreeNode,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService) {
-		super(id, label);
+		super(id, label, getFilterActionIconClass(_node));
 	}
 
 	public override async run(): Promise<void> {
 		await this._objectExplorerService.getServerTreeView().filterElementChildren(this._node);
+		this.class = getFilterActionIconClass(this._node);
 	}
+}
+
+function getFilterActionIconClass(node: TreeNode): string {
+	return node.filters.length > 0 ? Codicon.filterFilled.classNames : Codicon.filter.classNames;
 }
 
 export class RemoveFilterAction extends Action {
@@ -343,7 +346,7 @@ export class RemoveFilterAction extends Action {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
-		super(id, label);
+		super(id, label, SqlIconId.removeFilter);
 	}
 
 	public override async run(): Promise<void> {
@@ -371,5 +374,25 @@ export class RemoveFilterAction extends Action {
 		).withAdditionalProperties({
 			objectType: node.objectType
 		}).send();
+	}
+}
+
+export class DeleteRecentConnectionsAction extends Action {
+	public static ID = 'registeredServers.clearRecentConnections';
+	public static LABEL = localize('registeredServers.clearRecentConnections', "Delete");
+
+	constructor(
+		id: string,
+		label: string,
+		private _connectionProfile: ConnectionProfile,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+	) {
+		super(id, label, Codicon.trash.classNames);
+	}
+
+	public override async run(): Promise<void> {
+		if (this._connectionProfile) {
+			this._connectionManagementService.clearRecentConnection(this._connectionProfile);
+		}
 	}
 }

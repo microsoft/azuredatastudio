@@ -202,6 +202,27 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
 	 */
 	public getOptionsKey(): string {
+		let idNames = this.getOptionKeyIdNames();
+		idNames = idNames.filter(x => x !== undefined);
+
+		//Sort to make sure using names in the same order every time otherwise the ids would be different
+		idNames.sort();
+
+		let idValues: string[] = [];
+		for (let index = 0; index < idNames.length; index++) {
+			let value = this.options[idNames[index]!];
+			value = value ? value : '';
+			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+		}
+
+		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
+			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
+	}
+
+	/**
+	 * @returns Array of option key names
+	 */
+	public getOptionKeyIdNames(): string[] {
 		let idNames = [];
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
@@ -217,21 +238,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 			// This should never happen but just incase the serverCapabilities was not ready at this time
 			idNames = ['authenticationType', 'database', 'server', 'user'];
 		}
-
-		idNames = idNames.filter(x => x !== undefined);
-
-		//Sort to make sure using names in the same order every time otherwise the ids would be different
-		idNames.sort();
-
-		let idValues: string[] = [];
-		for (let index = 0; index < idNames.length; index++) {
-			let value = this.options[idNames[index]!];
-			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
-		}
-
-		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
-			this.providerName + ProviderConnectionInfo.idSeparator + idValues.join(ProviderConnectionInfo.idSeparator);
+		return idNames;
 	}
 
 	/**
