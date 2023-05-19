@@ -110,7 +110,15 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public static matchesProfile(a: interfaces.IConnectionProfile | undefined, b: interfaces.IConnectionProfile | undefined): boolean {
-		return a && b && a.getOptionsKey() === b.getOptionsKey();
+		//handle case where connectionName is the only differing aspect as it is not recognized by SQL itself currently.
+		let initialCheck = a && b && a.getOptionsKey() === b.getOptionsKey();
+		if (!initialCheck && a && b) {
+			let oldConnectionName = b.connectionName;
+			b.connectionName = a.connectionName
+			initialCheck = a.getOptionsKey() === b.getOptionsKey();
+			b.connectionName = oldConnectionName;
+		}
+		return initialCheck;
 	}
 
 	public matches(other: interfaces.IConnectionProfile): boolean {
