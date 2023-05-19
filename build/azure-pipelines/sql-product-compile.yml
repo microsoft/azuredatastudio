@@ -1,4 +1,7 @@
 steps:
+- checkout: self
+  persistCredentials: true
+
 - task: NodeTool@0
   inputs:
     versionSpec: "16.x"
@@ -7,30 +10,17 @@ steps:
   inputs:
     versionSpec: "1.x"
 
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: Get Secrets'
-  inputs:
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
-    KeyVaultName: ado-secrets
-
 - script: |
-    set -e
-    cat << EOF > ~/.netrc
-    machine github.com
-    login azuredatastudio
-    password $(github-distro-mixin-password)
-    EOF
-
-    git config user.email "sqltools@service.microsoft.com"
-    git config user.name "AzureDataStudio"
   displayName: Prepare tooling
 
 - script: |
     set -e
-    git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+    git remote add distro "https://$(System_AccessToken)@github.com/$VSCODE_MIXIN_REPO.git"
     git fetch distro
     git merge $(node -p "require('./package.json').distro")
   displayName: Merge distro
+  env:
+    System_AccessToken: $(System.AccessToken)
 
 - script: |
     mkdir -p .build
