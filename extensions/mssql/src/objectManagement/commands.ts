@@ -22,6 +22,8 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
+import { HorizontalTabsDialog } from './ui/horizontalTabsDialog';
+import { VerticalTabsDialog } from './ui/verticalTabsDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -37,6 +39,12 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.horizontal', async () => {
+		return new HorizontalTabsDialog();
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.vertical', async () => {
+		return new VerticalTabsDialog().open();
 	}));
 }
 

@@ -98,6 +98,16 @@
         "title": "%title.renameObject%"
       },
       {
+        "command": "mssql.horizontal",
+        "title": "%title.horizontalTabs%",
+        "category": "MSSQL"
+      },
+      {
+        "command": "mssql.vertical",
+        "title": "%title.verticalTabs%",
+        "category": "MSSQL"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",

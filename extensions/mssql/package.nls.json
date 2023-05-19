@@ -186,5 +186,7 @@
 	"title.newObject": "New",
 	"title.objectProperties": "Properties (Preview)",
 	"title.deleteObject": "Delete",
-	"title.renameObject": "Rename"
+	"title.renameObject": "Rename",
+	"title.horizontalTabs": "Horizontal Tabs",
+	"title.verticalTabs": "Vertical Tabs"
 }
