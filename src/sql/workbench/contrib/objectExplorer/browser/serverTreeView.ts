@@ -23,7 +23,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService, IServerTreeView, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ERROR_NODE_TYPE, IObjectExplorerService, IServerTreeView, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
@@ -931,7 +931,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		// In case of error node, we need to show the error message
 		if (node instanceof TreeNode) {
-			if (node.objectType === 'error') {
+			if (node.objectType === ERROR_NODE_TYPE) {
 				this.showError(node.label);
 			}
 		}
