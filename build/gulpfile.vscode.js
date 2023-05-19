@@ -200,7 +200,7 @@ const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcem
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	optimizeVSCodeTask,
 	util.rimraf('out-vscode-min'),
-	common.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
+	optimize.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
 ));
 gulp.task(minifyVSCodeTask);
 
@@ -273,7 +273,15 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + out), 'out'); }))
 			.pipe(util.setExecutableBit(['**/*.sh']));
 
-		const extensions = gulp.src(['.build/extensions/**', '!.build/extensions/node_modules/**'], { base: '.build', dot: true }); // {{SQL CARBON EDIT}} - don't package the node_modules directory
+		const platformSpecificBuiltInExtensionsExclusions = product.builtInExtensions.filter(ext => {
+			if (!ext.platforms) {
+				return false;
+			}
+
+			const set = new Set(ext.platforms);
+			return !set.has(platform);
+		}).map(ext => `!.build/extensions/${ext.name}/**`);
+		const extensions = gulp.src(['.build/extensions/**', ...platformSpecificBuiltInExtensionsExclusions, '!.build/extensions/node_modules/**'], { base: '.build', dot: true }); // {{SQL CARBON EDIT}} - don't package the node_modules directory
 
 		const sources = es.merge(src, extensions)
 			.pipe(filter(['**', '!**/*.js.map'], { dot: true }));
@@ -698,25 +706,3 @@ gulp.task(task.define(
 	)
 ));
 
-function shouldSetupSettingsSearch() {
-	const branch = process.env.BUILD_SOURCEBRANCH;
-	return branch && (/\/main$/.test(branch) || branch.indexOf('/release/') >= 0);
-}
-
-function getSettingsSearchBuildId(packageJson) {
-	try {
-		const branch = process.env.BUILD_SOURCEBRANCH;
-		const branchId = branch.indexOf('/release/') >= 0 ? 0 :
-			/\/main$/.test(branch) ? 1 :
-				2; // Some unexpected branch
-
-		const out = cp.execSync(`git rev-list HEAD --count`);
-		const count = parseInt(out.toString());
-
-		// <version number><commit count><branchId (avoid unlikely conflicts)>
-		// 1.25.1, 1,234,567 commits, main = 1250112345671
-		return util.versionStringToNumber(packageJson.version) * 1e8 + count * 10 + branchId;
-	} catch (e) {
-		throw new Error('Could not determine build number: ' + e.toString());
-	}
-}

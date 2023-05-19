@@ -55,7 +55,7 @@ function createCompile(src, build, emitError, transpileOnly) {
         console.warn('* and re-run the build/watch task                                                          *');
         console.warn('********************************************************************************************');
     }
-    const compilation = tsb.create(projectPath, overrideOptions, { verbose: false, transpileOnly }, err => reporter(err));
+    const compilation = tsb.create(projectPath, overrideOptions, {
         verbose: false,
         transpileOnly: Boolean(transpileOnly),
         transpileWithSwc: typeof transpileOnly !== 'boolean' && transpileOnly.swc

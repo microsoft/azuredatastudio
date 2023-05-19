@@ -286,7 +286,7 @@ export class ApiImpl implements API {
 	}
 
 	// {{SQL CARBON EDIT}}
-	async clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string> {
+	async clone(url: string, options: any, cancellationToken?: CancellationToken): Promise<string> {
 		return this._model.git.clone(url, options, cancellationToken);
 	}
 

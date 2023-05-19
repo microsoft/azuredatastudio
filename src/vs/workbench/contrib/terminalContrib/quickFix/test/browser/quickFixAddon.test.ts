@@ -55,7 +55,7 @@ suite('QuickFixAddon', () => {
 		instantiationService.stub(ILabelService, {} as Partial<ILabelService>);
 		const capabilities = new TerminalCapabilityStore();
 		instantiationService.stub(ILogService, new NullLogService());
-		commandDetection = instantiationService.createInstance(CommandDetectionCapability, terminal);
+		commandDetection = instantiationService.createInstance(CommandDetectionCapability, <any>terminal);
 		capabilities.add(TerminalCapability.CommandDetection, commandDetection);
 		instantiationService.stub(IContextMenuService, instantiationService.createInstance(ContextMenuService));
 		instantiationService.stub(IOpenerService, {} as Partial<IOpenerService>);

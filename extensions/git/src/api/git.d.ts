@@ -312,7 +312,7 @@ export interface API {
 	 * @param cancellationToken
 	 * @returns a promise to the string location where the repository was cloned to
 	 */
-	clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string>; // {{SQL CARBON EDIT}}
+	clone(url: string, options: any, cancellationToken?: CancellationToken): Promise<string>; // {{SQL CARBON EDIT}}
 	toGitUri(uri: Uri, ref: string): Uri;
 	getRepository(uri: Uri): Repository | null;
 	init(root: Uri): Promise<Repository | null>;
@@ -391,4 +391,5 @@ export interface ICloneOptions {
 	readonly parentPath: string;
 	readonly progress: Progress<{ increment: number }>;
 	readonly recursive?: boolean;
+	readonly ref?: string;
 }

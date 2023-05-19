@@ -10,7 +10,7 @@ import { linkify } from './linkify';
 
 
 export function handleANSIOutput(text: string, trustHtml: boolean): HTMLSpanElement {
-	let workspaceFolder = undefined;
+	const workspaceFolder = undefined;
 
 	const root: HTMLSpanElement = document.createElement('span');
 	const textLength: number = text.length;

@@ -1,13 +1,5 @@
 [
 	{
-		"eventPrefix": "typescript-language-features/",
-		"sourceDirs": [
-			"../../s/extensions/typescript-language-features"
-		],
-		"excludedDirs": [],
-		"applyEndpoints": true
-	},
-	{
 		"eventPrefix": "git/",
 		"sourceDirs": [
 			"../../s/extensions/git"

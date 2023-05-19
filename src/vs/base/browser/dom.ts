@@ -1406,7 +1406,7 @@ const defaultSafeProtocols = [
 /**
  * List of safe, non-input html tags.
  */
-export function safeInnerHtml(node: HTMLElement, value: string): void {
+export const basicMarkupHtmlTags = Object.freeze([
 	'a',
 	'abbr',
 	'b',
@@ -1476,10 +1476,11 @@ export function safeInnerHtml(node: HTMLElement, value: string): void {
 ]);
 
 const defaultDomPurifyConfig = Object.freeze<dompurify.Config & { RETURN_TRUSTED_TYPE: true }>({
-		ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} Add i & img tags for welcome page support
-		ALLOWED_ATTR: ['href', 'data-href', 'data-command', 'target', 'title', 'name', 'src', 'alt', 'class', 'id', 'role', 'tabindex', 'style', 'data-code', 'width', 'height', 'align', 'x-dispatch', 'required', 'checked', 'placeholder', 'type'],
+	ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} - add i and img tags for dashboard
+	ALLOWED_ATTR: ['href', 'data-href', 'data-command', 'target', 'title', 'name', 'src', 'alt', 'class', 'id', 'role', 'tabindex', 'style', 'data-code', 'width', 'height', 'align', 'x-dispatch', 'required', 'checked', 'placeholder', 'type', 'start'],
 	RETURN_DOM: false,
 	RETURN_DOM_FRAGMENT: false,
+	RETURN_TRUSTED_TYPE: true
 });
 
 /**

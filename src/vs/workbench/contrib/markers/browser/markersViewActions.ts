@@ -109,11 +109,6 @@ export class MarkersFilters extends Disposable {
 
 }
 
-				expanded: undefined, // {{SQL CARBON EDIT}}
-				expanded: undefined, // {{SQL CARBON EDIT}}
-				expanded: undefined, // {{SQL CARBON EDIT}}
-				expanded: undefined, // {{SQL CARBON EDIT}}
-				expanded: undefined, // {{SQL CARBON EDIT}}
 export class QuickFixAction extends Action {
 
 	public static readonly ID: string = 'workbench.actions.problems.quickfix';

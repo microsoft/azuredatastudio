@@ -154,10 +154,18 @@ suite('Files - TextFileEditorTracker', () => {
 		}
 	}
 
-	test.skip('dirty untitled text file model opens as editor', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
-		const accessor = await createTracker();
+	test.skip('dirty untitled text file model opens as editor', function () {
+		return testUntitledEditor(false);
+	});
 
-		const untitledTextEditor = accessor.textEditorService.createTextEditor({ resource: undefined, forceUntitled: true }) as UntitledTextEditorInput;
+	test.skip('dirty untitled text file model opens as editor - autosave ON', function () {
+		return testUntitledEditor(true);
+	});
+
+	async function testUntitledEditor(autoSaveEnabled: boolean): Promise<void> {
+		const accessor = await createTracker(autoSaveEnabled);
+
+		const untitledTextEditor = await accessor.textEditorService.resolveTextEditor({ resource: undefined, forceUntitled: true }) as UntitledTextEditorInput;
 		const model = disposables.add(await untitledTextEditor.resolve());
 
 		assert.ok(!accessor.editorService.isOpened(untitledTextEditor));

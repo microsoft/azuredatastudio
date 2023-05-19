@@ -15,7 +15,6 @@ function generateViewMoreElement(outputId: string) {
 	const container = document.createElement('div');
 	container.classList.add('truncation-message');
 	const first = document.createElement('span');
-	second.href = `command:workbench.action.openSettings?%5B%22notebook.output.textLineLimit%22%5D`;
 	first.textContent = 'Output is truncated. View as a ';
 	container.appendChild(first);
 
@@ -67,8 +66,8 @@ function generateNestedViewAllElement(outputId: string) {
 }
 
 function truncatedArrayOfString(id: string, buffer: string[], linesLimit: number, trustHtml: boolean) {
-	const buffer = outputs.join('\n').split(/\r\n|\r|\n/g);
-	let lineCount = buffer.length;
+	const container = document.createElement('div');
+	const lineCount = buffer.length;
 
 	if (lineCount <= linesLimit) {
 		const spanElement = handleANSIOutput(buffer.join('\n'), trustHtml);

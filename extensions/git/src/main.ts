@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { env, ExtensionContext, workspace, window, Disposable, commands, Uri, version as vscodeVersion, WorkspaceFolder } from 'vscode';
-import { findGit, Git } from './git';
+import { ExtensionContext, workspace, window, Disposable, commands, LogOutputChannel, l10n, LogLevel } from 'vscode'; // {{SQL CARBON EDIT}} - remove unused
+import { findGit, Git } from './git'; // {{SQL CARBON EDIT}} - remove unused
 import { Model } from './model';
 import { CommandCenter } from './commands';
 import { GitFileSystemProvider } from './fileSystemProvider';
@@ -16,13 +16,14 @@ import { GitExtension } from './api/git';
 import { GitProtocolHandler } from './protocolHandler';
 import { GitExtensionImpl } from './api/extension';
 import * as path from 'path';
-// import * as fs from 'fs';
+// import * as fs from 'fs'; // {{SQL CARBON EDIT}} - remove unused
 import * as os from 'os';
 import { GitTimelineProvider } from './timelineProvider';
 import { registerAPICommands } from './api/api1';
 import { TerminalEnvironmentManager } from './terminal';
 import { createIPCServer, IPCServer } from './ipc/ipcServer';
 import { GitEditor } from './gitEditor';
+// import { GitPostCommitCommandsProvider } from './postCommitCommands'; // {{SQL CARBON EDIT}} - remove unused
 import { GitEditSessionIdentityProvider } from './editSessionIdentityProvider';
 
 const deactivateTasks: { (): Promise<any> }[] = [];
@@ -81,7 +82,7 @@ async function createModel(context: ExtensionContext, logger: LogOutputChannel, 
 
 	const git = new Git({
 		gitPath: info.path,
-		userAgent: `git/${info.version} (${(os as any).version?.() ?? os.type()} ${os.release()}; ${os.platform()} ${os.arch()}) azuredatudio`,
+		userAgent: `git/${info.version} (${(os as any).version?.() ?? os.type()} ${os.release()}; ${os.platform()} ${os.arch()}) azuredatudio`, // {{SQL CARBON EDIT}} - update product name
 		version: info.version,
 		env: environment,
 	});
@@ -170,7 +171,7 @@ async function warnAboutMissingGit(): Promise<void> {
 	} else if (choice === neverShowAgain) {
 		await config.update('ignoreMissingGitWarning', true, true);
 	}
-}*/
+}*/  // {{SQl CARBON EDIT}} - end comment block
 
 export async function _activate(context: ExtensionContext): Promise<GitExtensionImpl> {
 	const disposables: Disposable[] = [];
@@ -210,7 +211,7 @@ export async function _activate(context: ExtensionContext): Promise<GitExtension
 		}
 
 		// console.warn(err.message); {{SQL CARBON EDIT}} turn-off Git missing prompt
-		outputChannelLogger.logWarning(err.message);
+		// logger.warn(err.message);
 
 		/* __GDPR__
 			"git.missing" : {

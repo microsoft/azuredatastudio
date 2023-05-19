@@ -101,14 +101,13 @@ export class UntitledTextEditorWorkingCopyEditorHandler extends Disposable imple
 		return workingCopy.resource.scheme === Schemas.untitled && workingCopy.typeId === NO_TYPE_ID;
 	}
 
-	isOpen: (workingCopy, editor) => (editor instanceof UntitledTextEditorInput || editor.typeId === UNTITLED_QUERY_EDITOR_TYPEID || editor.typeId === UNTITLED_NOTEBOOK_TYPEID) && isEqual(workingCopy.resource, editor.resource), // {{SQL CARBON EDIT}} Handle our untitled inputs as well. Notebook input can't be imported due to layering currently so just use the typeID for that
-	//isOpen(workingCopy: IWorkingCopyIdentifier, editor: EditorInput): boolean {
-	//	if (!this.handles(workingCopy)) {
-	//		return false;
-	//	}
+	isOpen(workingCopy: IWorkingCopyIdentifier, editor: EditorInput): boolean {
+		if (!this.handles(workingCopy)) {
+			return false;
+		}
 
-	//	return editor instanceof UntitledTextEditorInput && isEqual(workingCopy.resource, editor.resource);
-	//}
+		return (editor instanceof UntitledTextEditorInput || editor.typeId === UNTITLED_QUERY_EDITOR_TYPEID || editor.typeId === UNTITLED_NOTEBOOK_TYPEID) && isEqual(workingCopy.resource, editor.resource); // {{SQL CARBON EDIT}} Handle our untitled inputs as well. Notebook input can't be imported due to layering currently so just use the typeID for that
+	}
 
 	createEditor(workingCopy: IWorkingCopyIdentifier): EditorInput {
 		let editorInputResource: URI;

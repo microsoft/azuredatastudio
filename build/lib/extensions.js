@@ -120,8 +120,6 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
             };
             const exportedConfig = require(webpackConfigPath);
             return (Array.isArray(exportedConfig) ? exportedConfig : [exportedConfig]).map(config => {
-                ...require(webpackConfigPath),
-            return (Array.isArray(exportedConfig) ? exportedConfig : [exportedConfig]).map(config => {
                 const webpackConfig = {
                     ...config,
                     ...{ mode: 'production' }
@@ -206,10 +204,6 @@ function fromMarketplace(_serviceUrl, { name: extensionName, version, metadata }
         .pipe(packageJsonFilter.restore);
 }
 exports.fromMarketplace = fromMarketplace;
-const ghDownloadHeaders = Object.assign(Object.assign({}, ghApiHeaders), { Accept: 'application/octet-stream' });
-    ...ghApiHeaders,
-    Accept: 'application/octet-stream',
-};
 function fromGithub({ name, version, repo, metadata }) {
     const json = require('gulp-json-editor');
     fancyLog('Downloading extension from GH:', ansiColors.yellow(`${name}@${version}`), '...');

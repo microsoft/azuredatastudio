@@ -5,10 +5,10 @@
 
 import * as vscode from 'vscode';
 
-export function isWeb(): boolean {
-	return 'navigator' in globalThis && vscode.env.uiKind === vscode.UIKind.Web;
-}
-
-export function isWebAndHasSharedArrayBuffers(): boolean {
-	return isWeb() && (globalThis as any)['crossOriginIsolated'];
+export interface IServerInstance {
+	readonly port: string;
+	readonly uri: vscode.Uri;
+	configure(): Promise<void>;
+	start(): Promise<void>;
+	stop(): Promise<void>;
 }

@@ -429,7 +429,7 @@ export class SearchWidget extends Widget {
 		this.showContextToggle = new Toggle({
 			isChecked: false,
 			title: appendKeyBindingLabel(nls.localize('showContext', "Toggle Context Lines"), this.keybindingService.lookupKeybinding(ToggleSearchEditorContextLinesCommandId)),
-			icon: searchShowContextIcon
+			icon: searchShowContextIcon,
 			...defaultToggleStyles
 		});
 		this._register(this.showContextToggle.onChange(() => this.onContextLinesChanged()));

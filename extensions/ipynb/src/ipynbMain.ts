@@ -109,7 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			const edit = new vscode.WorkspaceEdit();
-			edit.replaceNotebookMetadata(resource, {
+			edit.set(resource, [vscode.NotebookEdit.updateNotebookMetadata({
 				...document.metadata,
 				custom: {
 					...(document.metadata.custom ?? {}),
@@ -118,7 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
 						...metadata
 					},
 				}
-			});
+			})]);
 			return vscode.workspace.applyEdit(edit);
 		},
 	};

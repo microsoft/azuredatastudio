@@ -36,7 +36,6 @@ else
 				# compile-extension:vscode-colorize-tests \
 				# compile-extension:vscode-custom-editor-tests \
 				# compile-extension:markdown-language-features \
-				# compile-extension:typescript-language-features \
 				# compile-extension:emmet \
 				# compile-extension:css-language-features-server \
 				# compile-extension:html-language-features-server \

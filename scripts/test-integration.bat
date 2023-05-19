@@ -24,7 +24,6 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					:: compile-extension:vscode-api-tests^
 					:: compile-extension:vscode-colorize-tests^
 					:: compile-extension:markdown-language-features^
-					:: compile-extension:typescript-language-features^
 					:: compile-extension:vscode-custom-editor-tests^
 					:: compile-extension:emmet^
 					:: compile-extension:css-language-features-server^
@@ -60,9 +59,6 @@ set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --skip-welcome --skip
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\vscode-colorize-tests\test --extensionDevelopmentPath=%~dp0\..\extensions\vscode-colorize-tests --extensionTestsPath=%~dp0\..\extensions\vscode-colorize-tests\out %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
-:: if %errorlevel% neq 0 exit /b %errorlevel%
-
-:: call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\typescript-language-features\test-workspace --extensionDevelopmentPath=%~dp0\..\extensions\typescript-language-features --extensionTestsPath=%~dp0\..\extensions\typescript-language-features\out\test\unit %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
 :: call "%INTEGRATION_TEST_ELECTRON_PATH%" %~dp0\..\extensions\markdown-language-features\test-workspace --extensionDevelopmentPath=%~dp0\..\extensions\markdown-language-features --extensionTestsPath=%~dp0\..\extensions\markdown-language-features\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%

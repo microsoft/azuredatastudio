@@ -90,7 +90,7 @@ export class TaskService extends AbstractTaskService {
 		@IWorkspaceTrustManagementService workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@ILogService logService: ILogService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService instantiationService: IInstantiationService) {
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
 		@IAudioCueService audioCueService: IAudioCueService,
 		@ISqlTaskService sqlTaskService: ISqlTaskService // {{SQL CARBON EDIT}} add param
@@ -130,7 +130,7 @@ export class TaskService extends AbstractTaskService {
 			themeService,
 			lifecycleService,
 			remoteAgentService,
-			instantiationService
+			instantiationService,
 			sqlTaskService); // {{SQL CARBON EDIT}}
 		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown(), 'veto.tasks')));
 	}

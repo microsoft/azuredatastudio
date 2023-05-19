@@ -53,7 +53,7 @@ const dirs = [
 	'extensions/sql-assessment',
 	'extensions/sql-bindings',
 	'extensions/sql-database-projects',
-	'extensions/vscode-notebook-tests',
+	'extensions/sql-migration',
 	'extensions/vscode-test-resolver',
 	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End

@@ -907,6 +907,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 						});
 				}
 			});
+		} // {{SQL CARBON EDIT}} - close SAW check
 
 		this.registerExtensionAction({
 			id: 'workbench.extensions.action.installExtensionFromLocation',

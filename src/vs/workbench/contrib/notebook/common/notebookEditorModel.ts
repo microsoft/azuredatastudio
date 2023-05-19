@@ -23,10 +23,6 @@ import { IFileWorkingCopyManager } from 'vs/workbench/services/workingCopy/commo
 import { IStoredFileWorkingCopy, IStoredFileWorkingCopyModel, IStoredFileWorkingCopyModelContentChangedEvent, IStoredFileWorkingCopyModelFactory, IStoredFileWorkingCopySaveEvent, StoredFileWorkingCopyState } from 'vs/workbench/services/workingCopy/common/storedFileWorkingCopy';
 import { IUntitledFileWorkingCopy, IUntitledFileWorkingCopyModel, IUntitledFileWorkingCopyModelContentChangedEvent, IUntitledFileWorkingCopyModelFactory } from 'vs/workbench/services/workingCopy/common/untitledFileWorkingCopy';
 import { WorkingCopyCapabilities } from 'vs/workbench/services/workingCopy/common/workingCopy';
-		if (this.isResolved()) {
-		if (this.isResolved()) {
-		if (this._saveSequentializer.hasPending(versionId)) {
-		if (this._saveSequentializer.hasPending()) {
 
 //#region --- simple content provider
 

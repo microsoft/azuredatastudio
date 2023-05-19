@@ -43,11 +43,7 @@ import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/m
 import { defaultMenuStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 import product from 'vs/platform/product/common/product';
-import { TSGOPS_WEB_QUALITY } from 'sql/workbench/common/constants';
-
-import product from 'vs/platform/product/common/product';
 import { TSGOPS_WEB_QUALITY } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}} - add quality
-
 
 export type IOpenRecentAction = IAction & { uri: URI, remoteAuthority?: string };
 
@@ -93,7 +89,7 @@ if (product.quality !== TSGOPS_WEB_QUALITY) {	// {{SQL CARBON EDIT}}
 		},
 		order: 4
 	});
-}
+}  // {{SQL CARBON EDIT}} - close block
 
 /* {{SQL CARBON EDIT}} - Disable unused menus
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
@@ -115,6 +111,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 	},
 	order: 7
 });
+*/ // {{SQL CARBON EDIT}} - close block
 
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 	submenu: MenuId.MenubarHelpMenu,
