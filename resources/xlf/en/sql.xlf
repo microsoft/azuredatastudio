@@ -1438,6 +1438,11 @@ Default Skipped Commands:
       <source xml:lang="en">Backup</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/backup/browser/backupUiService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="backupDialogTitle">
+      <source xml:lang="en">Backup database - {0}:{1}</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="backup.asymmetricKey">
       <source xml:lang="en">Asymmetric Key</source>
@@ -1684,6 +1689,9 @@ Default Skipped Commands:
   <file original="src/sql/workbench/contrib/connection/browser/connection.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="connection.showUnsupportedServerVersionWarning">
       <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="registeredServers.collapseAll">
+      <source xml:lang="en">Collapse All Connections</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
       <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -6263,6 +6271,9 @@ Error Message: {1}</source>
     <trans-unit id="objectExplorer.removeFilter">
       <source xml:lang="en">Remove Filter</source>
     </trans-unit>
+    <trans-unit id="registeredServers.clearRecentConnections">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
     <trans-unit id="showAllConnections">
       <source xml:lang="en">Show All Connections</source>
     </trans-unit>
@@ -6718,6 +6729,11 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="targetDatabaseTooltip">
       <source xml:lang="en">Please enter target database name</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/restore/browser/restoreServiceImpl" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="restoreDialogTitle">
+      <source xml:lang="en">Restore database - {0}:{1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/restore/common/constants" source-language="en" datatype="plaintext"><body>
