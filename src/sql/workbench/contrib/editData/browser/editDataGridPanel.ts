@@ -39,6 +39,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 
 const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
+const cellWithHTMLEntries = localize('editData.enteringHTML', "Entering HTML code is currently not supported. This row has been reverted for safety. Please enter non HTML values in the row only");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -668,7 +669,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
 		let refreshGrid = false;
-		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
+		let containsHTML = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(this.currentEditCellValue);
+		if (containsHTML) {
+			self.currentEditCellValue = undefined;
+			updateCellPromise = this.revertCurrentRow().catch(onUnexpectedError).then(() => {
+				this.notificationService.error(cellWithHTMLEntries);
+				return errorHandler(new Error(cellWithHTMLEntries));
+			});
+		}
+		else if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
 			if (this.isNullRow(this.currentCell.row)) {
 				refreshGrid = true;
 				// We've entered the "new row", so we need to add a row and jump to it
