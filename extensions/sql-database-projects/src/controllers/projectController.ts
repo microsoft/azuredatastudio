@@ -28,7 +28,7 @@ import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
+import { DatabaseReferenceTreeItem, SqlProjectReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { UpdateProjectFromDatabaseDialog } from '../dialogs/updateProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -1026,6 +1026,20 @@ export class ProjectsController {
 	public async openContainingFolder(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = await this.getProjectFromContext(context);
 		await vscode.commands.executeCommand(constants.revealFileInOsCommand, vscode.Uri.file(project.projectFilePath));
+	}
+
+	public async openReferencedSqlProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = await this.getProjectFromContext(node);
+
+		if (!(node instanceof SqlProjectReferenceTreeItem)) {
+			return;
+		}
+
+		console.log(`opening referenced project ${node.entryKey}`);
+		const absolutePath = path.normalize(path.join(project.projectFolderPath, node.reference.fsUri.fsPath));
+
+		await this.openProjectInWorkspace(absolutePath);
 	}
 
 	/**

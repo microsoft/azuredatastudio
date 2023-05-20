@@ -10,6 +10,7 @@ import * as constants from '../../common/constants';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import { IconPathHelper } from '../../common/iconHelper';
 import { IDatabaseReferenceProjectEntry } from 'sqldbproj';
+import { SqlProjectReferenceProjectEntry } from '../projectEntry';
 
 /**
  * Folder for containing references nodes in the tree
@@ -35,7 +36,9 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 		}
 
 		for (const reference of databaseReferences) {
-			this.references.push(new DatabaseReferenceTreeItem(reference, this.relativeProjectUri, this.projectFileUri));
+			this.references.push(reference instanceof SqlProjectReferenceProjectEntry
+				? new SqlProjectReferenceTreeItem(reference, this.relativeProjectUri, this.projectFileUri)
+				: new DatabaseReferenceTreeItem(reference, this.relativeProjectUri, this.projectFileUri));
 		}
 	}
 
@@ -57,7 +60,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 }
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
-	constructor(private reference: IDatabaseReferenceProjectEntry, referencesNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri) {
+	constructor(public readonly reference: IDatabaseReferenceProjectEntry, referencesNodeRelativeProjectUri: vscode.Uri, sqlprojUri: vscode.Uri) {
 		super(vscode.Uri.file(path.join(referencesNodeRelativeProjectUri.fsPath, reference.referenceName)), sqlprojUri);
 		this.entryKey = this.friendlyName;
 	}
@@ -77,5 +80,11 @@ export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 		refItem.iconPath = IconPathHelper.referenceDatabase;
 
 		return refItem;
+	}
+}
+
+export class SqlProjectReferenceTreeItem extends DatabaseReferenceTreeItem {
+	public override get type(): constants.DatabaseProjectItemType {
+		return constants.DatabaseProjectItemType.sqlProjectReference;
 	}
 }
