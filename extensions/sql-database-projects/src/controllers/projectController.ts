@@ -1028,6 +1028,10 @@ export class ProjectsController {
 		await vscode.commands.executeCommand(constants.revealFileInOsCommand, vscode.Uri.file(project.projectFilePath));
 	}
 
+	/**
+	 * Open the project indicated by `context` in the workspace
+	 * @param context a SqlProjectReferenceTreeItem in the project's tree
+	 */
 	public async openReferencedSqlProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const node = context.element as BaseProjectTreeItem;
 		const project = await this.getProjectFromContext(node);
