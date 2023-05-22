@@ -1036,9 +1036,7 @@ export class ProjectsController {
 			return;
 		}
 
-		console.log(`opening referenced project ${node.entryKey}`);
 		const absolutePath = path.normalize(path.join(project.projectFolderPath, node.reference.fsUri.fsPath));
-
 		await this.openProjectInWorkspace(absolutePath);
 	}
 
