@@ -210,9 +210,9 @@
 }
 
 .monaco-list-row .async-server-group .async-server-group .async-server-group-container .icon {
-	width: 7px;
+	width: 5px;
 	height: 20px;
-	border-radius: 3px;
+	border-radius: 2.5px;
 }
 
 .monaco-list-row .async-server-group .async-server-group .async-server-group-container .name {
@@ -255,9 +255,9 @@
 }
 
 .monaco-list-row .connection-profile .connection-profile-container .server-group-color {
-	width: 7px;
+	width: 5px;
 	height: 18px;
-	border-radius: 3px;
+	border-radius: 2.5px;
 	margin-top: 2.5px;
 }
 
