@@ -114,8 +114,9 @@ describe('Update Project From Database Dialog', () => {
 		sinon.stub(azdata.connection, 'getUriForConnection').resolves('MockUri');
 		sinon.stub(azdata.connection, 'getCredentials').resolves({ ['credentials']: 'credentials' });
 
+		const projectFilePath = project.projectFilePath.toLowerCase();
 		const profile = mockConnectionProfile;
-		mockURIList.unshift(vscode.Uri.file(project.projectFilePath));
+		mockURIList.unshift(vscode.Uri.file(projectFilePath));
 		const dialog = new UpdateProjectFromDatabaseDialog(profile, undefined, mockURIList);
 		await dialog.openDialog();
 		await dialog.populatedInputsPromise;
@@ -128,7 +129,7 @@ describe('Update Project From Database Dialog', () => {
 		// verify the handleUpdateButtonClick method goes through successfully
 		let model: UpdateProjectDataModel;
 		const testProjectEndpointInfo: mssql.SchemaCompareEndpointInfo = { ...mockProjectEndpointInfo };
-		testProjectEndpointInfo.projectFilePath = project.projectFilePath;
+		testProjectEndpointInfo.projectFilePath = projectFilePath;
 		const expectedUpdateProjectDataModel: UpdateProjectDataModel = {
 			sourceEndpointInfo: mockDatabaseEndpointInfo,
 			targetEndpointInfo: testProjectEndpointInfo,
