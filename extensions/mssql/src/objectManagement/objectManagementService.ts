@@ -67,6 +67,126 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	}
 }
 
+const ServerLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
+	{
+		name: 'Server',
+		displayName: 'Server',
+		permissions: [{
+			name: 'CONNECT SQL',
+			displayName: 'CONNECT SQL'
+		}, {
+			name: 'VIEW ANY DATABASE',
+			displayName: 'VIEW ANY DATABASE'
+		}]
+	}, {
+		name: 'ServerRole',
+		displayName: 'Server Role',
+		permissions: [{
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}
+];
+
+const DatabaseLevelSecurableTypes: ObjectManagement.SecurableTypeMetadata[] = [
+	{
+		name: 'AggregateFunction',
+		displayName: 'Aggregate Function',
+		permissions: [{
+			name: 'EXECUTE',
+			displayName: 'EXECUTE'
+		}, {
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}]
+	}, {
+		name: 'Table',
+		displayName: 'Table',
+		permissions: [{
+			name: 'SELECT',
+			displayName: 'SELECT'
+		}, {
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}, {
+		name: 'View',
+		displayName: 'View',
+		permissions: [{
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}
+]
+
+const ServerLevelPermissions: ObjectManagement.SecurablePermissions[] = [
+	{
+		name: 'Server',
+		type: 'Server',
+		permissions: [
+			{
+				permission: 'CONNECT SQL',
+				grant: true,
+				grantor: 'sa',
+				withGrant: undefined
+			}, {
+				permission: 'VIEW ANY DATABASE',
+				grant: false,
+				grantor: 'sa',
+				withGrant: undefined
+			}
+		],
+		effectivePermissions: ['CONNECT SQL', 'VIEW ANY DATABASE']
+	}
+];
+
+const DatabaseLevelPermissions: ObjectManagement.SecurablePermissions[] = [
+	{
+		name: 'table1',
+		type: 'Table',
+		schema: 'dbo',
+		permissions: [
+			{
+				permission: 'SELECT',
+				grant: true,
+				grantor: '',
+				withGrant: undefined
+			}
+		],
+		effectivePermissions: ['SELECT']
+	}, {
+		name: 'view1',
+		type: 'View',
+		schema: 'Sales',
+		permissions: [
+			{
+				permission: 'ALTER',
+				grant: true,
+				grantor: '',
+				withGrant: undefined
+			}
+		],
+		effectivePermissions: ['ALTER']
+	}
+];
 export class TestObjectManagementService implements IObjectManagementService {
 	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 		let obj;
@@ -102,18 +222,18 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve();
 	}
 
-	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText: string, schema: string): Promise<ObjectManagement.SearchResultItem[]> {
+	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Promise<ObjectManagement.SearchResultItem[]> {
 		const items: ObjectManagement.SearchResultItem[] = [];
 		objectTypes.forEach(type => {
-			items.push(...this.generateSearchResult(type, 15));
+			items.push(...this.generateSearchResult(type, schema, 15));
 		});
 		return this.delayAndResolve(items);
 	}
 
-	private generateSearchResult(objectType: ObjectManagement.NodeType, count: number): ObjectManagement.SearchResultItem[] {
+	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {
 		let items: ObjectManagement.SearchResultItem[] = [];
 		for (let i = 0; i < count; i++) {
-			items.push(<ObjectManagement.SearchResultItem>{ name: `${objectType} ${i}`, type: objectType });
+			items.push(<ObjectManagement.SearchResultItem>{ name: `${objectType} ${i}`, schema: schema, type: objectType });
 		}
 		return items;
 	}
@@ -136,7 +256,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 					serverRoles: ['public', 'bulkadmin'],
 					connectPermission: true,
 					isEnabled: true,
-					isLockedOut: false
+					isLockedOut: false,
+					securablePermissions: []
 				},
 				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
 				supportAdvancedOptions: true,
@@ -144,7 +265,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 				canEditLockedOutState: false,
 				languages: languages,
 				databases: databases,
-				serverRoles: serverRoles
+				serverRoles: serverRoles,
+				supportedSecurableTypes: ServerLevelSecurableTypes
 			};
 		} else {
 			login = <ObjectManagement.LoginViewInfo>{
@@ -160,7 +282,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 					connectPermission: true,
 					isEnabled: true,
 					isLockedOut: false,
-					password: '******************'
+					password: '******************',
+					securablePermissions: ServerLevelPermissions
 				},
 				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
 				supportAdvancedOptions: true,
@@ -168,7 +291,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 				canEditLockedOutState: false,
 				languages: languages,
 				databases: databases,
-				serverRoles: serverRoles
+				serverRoles: serverRoles,
+				supportedSecurableTypes: ServerLevelSecurableTypes
 			};
 		}
 		return login;
@@ -192,7 +316,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 					loginName: 'sa',
 					ownedSchemas: [],
 					databaseRoles: [],
-					password: ''
+					password: '',
+					securablePermissions: []
 				},
 				languages: languages,
 				schemas: schemas,
@@ -203,7 +328,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 					ObjectManagement.UserType.AADAuthentication,
 					ObjectManagement.UserType.SqlAuthentication,
 					ObjectManagement.UserType.NoLoginAccess
-				]
+				],
+				supportedSecurableTypes: DatabaseLevelSecurableTypes
 			};
 		} else {
 			viewInfo = {
@@ -214,7 +340,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 					defaultLanguage: '<default>',
 					loginName: 'sa',
 					ownedSchemas: ['dbo'],
-					databaseRoles: ['dbmanager', 'bulkadmin']
+					databaseRoles: ['dbmanager', 'bulkadmin'],
+					securablePermissions: DatabaseLevelPermissions
 				},
 				languages: languages,
 				schemas: schemas,
@@ -225,7 +352,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 					ObjectManagement.UserType.AADAuthentication,
 					ObjectManagement.UserType.SqlAuthentication,
 					ObjectManagement.UserType.NoLoginAccess
-				]
+				],
+				supportedSecurableTypes: DatabaseLevelSecurableTypes
 			};
 		}
 		return viewInfo;
@@ -237,19 +365,23 @@ export class TestObjectManagementService implements IObjectManagementService {
 				name: '',
 				members: [],
 				owner: '',
-				memberships: []
+				memberships: [],
+				securablePermissions: []
 			},
 			isFixedRole: false,
 			serverRoles: ['ServerLevelServerRole 1', 'ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
+			supportedSecurableTypes: ServerLevelSecurableTypes
 		} : <ObjectManagement.ServerRoleViewInfo>{
 			objectInfo: {
 				name: 'ServerLevelServerRole 1',
 				members: ['ServerLevelLogin 1', 'ServerLevelServerRole 2'],
 				owner: 'ServerLevelLogin 2',
-				memberships: ['ServerLevelServerRole 3', 'ServerLevelServerRole 4']
+				memberships: ['ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
+				securablePermissions: ServerLevelPermissions
 			},
 			isFixedRole: false,
-			serverRoles: ['ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4']
+			serverRoles: ['ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
+			supportedSecurableTypes: ServerLevelSecurableTypes
 		};
 	}
 
@@ -259,16 +391,20 @@ export class TestObjectManagementService implements IObjectManagementService {
 				name: '',
 				defaultSchema: 'dbo',
 				ownedSchemas: [],
+				securablePermissions: []
 			},
-			schemas: ['dbo', 'sys', 'admin']
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: []
 		} : <ObjectManagement.ApplicationRoleViewInfo>{
 			objectInfo: {
 				name: 'app role1',
 				password: '******************',
 				defaultSchema: 'dbo',
 				ownedSchemas: ['dbo'],
+				securablePermissions: DatabaseLevelPermissions
 			},
-			schemas: ['dbo', 'sys', 'admin']
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: DatabaseLevelSecurableTypes
 		};
 	}
 
@@ -278,17 +414,21 @@ export class TestObjectManagementService implements IObjectManagementService {
 				name: '',
 				owner: '',
 				members: [],
-				ownedSchemas: []
+				ownedSchemas: [],
+				securablePermissions: []
 			},
-			schemas: ['dbo', 'sys', 'admin']
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: DatabaseLevelSecurableTypes
 		} : <ObjectManagement.DatabaseRoleViewInfo>{
 			objectInfo: {
 				name: 'db role1',
 				owner: '',
 				members: [],
-				ownedSchemas: ['dbo']
+				ownedSchemas: ['dbo'],
+				securablePermissions: DatabaseLevelPermissions
 			},
-			schemas: ['dbo', 'sys', 'admin']
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: DatabaseLevelSecurableTypes
 		};
 	}
 

@@ -51,7 +51,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL/Kusto query and opens in new editor tab
 	 */
-	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<UntitledQueryEditorInput> {
+	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string, initialConnectionUri?: string): Promise<UntitledQueryEditorInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
 		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });
@@ -68,7 +68,7 @@ export class QueryEditorService implements IQueryEditorService {
 		}
 
 		const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
-		let queryInput = this._instantiationService.createInstance(UntitledQueryEditorInput, options.description, fileInput, queryResultsInput);
+		let queryInput = this._instantiationService.createInstance(UntitledQueryEditorInput, options.description, fileInput, queryResultsInput, initialConnectionUri);
 		let profile: IConnectionProfile | undefined = undefined;
 		// If we're told to connect then get the connection before opening the editor since it will try to get the connection for the current
 		// active editor and so we need to get this before opening a new one.
@@ -94,7 +94,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new edit data session
 	 */
-	public async newEditDataEditor(schemaName: string, tableName: string, sqlContent: string): Promise<IConnectableInput> {
+	public async newEditDataEditor(schemaName: string, tableName: string, sqlContent: string, initialConnectionUri?: string): Promise<IConnectableInput> {
 
 		// Create file path and file URI
 		let objectName = schemaName ? schemaName + '.' + tableName : tableName;
@@ -108,7 +108,7 @@ export class QueryEditorService implements IQueryEditorService {
 		(m as UntitledTextEditorModel).setDirty(false);
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
-		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
+		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput, initialConnectionUri);
 		// Determine whether to show edit data upon opening.
 		editDataInput.queryPaneEnabled = this._configurationService.getValue('editor.showEditDataSqlPaneOnStartup');
 		if (sqlContent) {

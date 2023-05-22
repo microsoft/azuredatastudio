@@ -762,6 +762,9 @@
     <trans-unit id="publishProfileElements">
       <source xml:lang="en">Publish profile elements</source>
     </trans-unit>
+    <trans-unit id="publishProfileFriendlyName">
+      <source xml:lang="en">Publish Profile</source>
+    </trans-unit>
     <trans-unit id="publishProjectSucceed">
       <source xml:lang="en">Database project published successfully</source>
     </trans-unit>
@@ -842,6 +845,9 @@
     </trans-unit>
     <trans-unit id="save">
       <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveProfile">
+      <source xml:lang="en">Would you like to save the settings in a profile (.publish.xml)?</source>
     </trans-unit>
     <trans-unit id="saveProfileAsButtonText">
       <source xml:lang="en">Save As...</source>
@@ -1196,6 +1202,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
       <source xml:lang="en">Add Pre-Deployment Script</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newPublishProfile">
+      <source xml:lang="en">Add Publish Profile</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.newScript">
       <source xml:lang="en">Add Script</source>

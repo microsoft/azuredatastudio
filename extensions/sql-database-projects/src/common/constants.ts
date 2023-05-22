@@ -167,6 +167,7 @@ export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 export const versionMustNotBeEmpty = localize('versionMustNotBeEmpty', "Version must not be empty");
+export const saveProfile = localize('saveProfile', "Would you like to save the settings in a profile (.publish.xml)?");
 
 //#endregion
 
@@ -456,6 +457,7 @@ export const externalStreamFriendlyName = localize('externalStream', "External S
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
+export const publishProfileFriendlyName = localize('publishProfileFriendlyName', "Publish Profile");
 
 //#endregion
 
