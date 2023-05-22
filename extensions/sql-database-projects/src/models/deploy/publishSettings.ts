@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import { ISqlConnectionProperties } from 'sqldbproj';
 import { DeploymentOptions as mssqlDeploymentOptions } from 'mssql';
 import { DeploymentOptions as vscodeMssqlDeploymentOptions } from 'vscode-mssql';
@@ -18,7 +19,7 @@ export interface ISqlProjectPublishSettings {
 	connectionUri: string;
 	sqlCmdVariables?: Map<string, string>;
 	deploymentOptions?: DeploymentOptions;
-	profileUsed?: boolean;
+	publishProfileUri?: vscode.Uri;
 }
 
 /**

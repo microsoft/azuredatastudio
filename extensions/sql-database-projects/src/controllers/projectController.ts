@@ -25,7 +25,7 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -474,6 +474,7 @@ export class ProjectsController {
 
 		if (publishTarget === constants.PublishTargetType.docker) {
 			const publishToDockerSettings = await getPublishToDockerSettings(project);
+			void promptForSavingProfile(project, publishToDockerSettings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (!publishToDockerSettings) {
 				// User cancelled
 				return;
@@ -482,6 +483,7 @@ export class ProjectsController {
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			try {
 				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
+				void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 				if (settings?.deploySettings && settings?.sqlDbSetting) {
 					await this.publishToNewAzureServer(project, settings);
 				}
@@ -492,6 +494,7 @@ export class ProjectsController {
 		} else {
 			let settings: ISqlProjectPublishSettings | undefined = await getPublishDatabaseSettings(project);
 
+			void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (settings) {
 				// 5. Select action to take
 				const action = await vscode.window.showQuickPick(
@@ -537,7 +540,7 @@ export class ProjectsController {
 		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
-		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		telemetryProps.profileUsed = (settings.publishProfileUri !== undefined ? true : false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getTime();
 		const currentPublishTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;

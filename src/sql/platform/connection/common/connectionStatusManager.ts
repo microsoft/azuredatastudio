@@ -14,6 +14,8 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
+import { generateUuid } from 'vs/base/common/uuid';
+import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 
 export class ConnectionStatusManager {
 
@@ -83,8 +85,23 @@ export class ConnectionStatusManager {
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
 
+	private isNonEditorUri(uri: string): boolean {
+		return uri.startsWith(ConnectionUtils.uriPrefixes.connection)
+			|| uri.startsWith(ConnectionUtils.uriPrefixes.dashboard)
+			|| uri.startsWith(ConnectionUtils.uriPrefixes.insights)
+			|| uri.startsWith(ConnectionUtils.uriPrefixes.notebook);
+	}
+
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
+
+		// Newly generated URIs are used in areas where the same connection profile id is expected for callbacks,
+		// This is used for Editor URIs such as Query Editor, which do not have uriPrefixes recognized above.
+		// (This is done to not retrieve the base connection profile, which may be different if a user changes the database).
+		if (!this.isNonEditorUri(id) && this.findConnectionByProfileId(connection.id) !== undefined) {
+			connection.id = generateUuid();
+		}
+
 		// Always create a copy and save that in the list
 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 		let connectionInfo: ConnectionManagementInfo = {
