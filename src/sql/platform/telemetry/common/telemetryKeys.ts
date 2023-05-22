@@ -28,7 +28,8 @@ export const enum ModalDialogName {
 	AddNewDashboardTab = 'AddNewDashboardTab',
 	ProfilerFilter = 'ProfilerFilter',
 	CalloutDialog = 'CalloutDialog',
-	TableDesignerPublishDialog = 'TableDesignerPublishDialog'
+	TableDesignerPublishDialog = 'TableDesignerPublishDialog',
+	Troubleshooter = 'Troubleshooter'
 }
 
 export const enum TelemetryView {
@@ -51,6 +52,7 @@ export const enum TelemetryView {
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',
 	TableDesigner = 'TableDesigner',
+	TroubleshooterDialog = 'TroubleshooterDialog',
 	ObjectExplorer = 'ObjectExplorer'
 }
 

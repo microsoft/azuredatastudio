@@ -34,6 +34,7 @@ import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ITroubleshooterMessageService } from 'sql/platform/troubleshooter/common/troubleshooterMessageService';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -88,6 +89,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@ITroubleshooterMessageService private _troubleShooterMessageService: ITroubleshooterMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
@@ -289,7 +291,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.messageDetails);
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult);
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			}
 		} catch (err) {
@@ -477,7 +479,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		await this.showDialogWithModel();
 
 		if (connectionResult && connectionResult.errorMessage) {
-			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.messageDetails);
+			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult);
 		}
 	}
 
@@ -505,11 +507,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this.uiController.focusOnOpen();
 	}
 
-	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
+	private showErrorDialog(severity: Severity, headerTitle: string, connectionResult: IConnectionResult): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
 		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
 		// this solves the most common "hard error" that we've noticed
 		const helpLink = 'https://aka.ms/sqlopskerberos';
+		let message = connectionResult.errorMessage;
+		const messageDetails = connectionResult.messageDetails;
 		let actions: IAction[] = [];
 		// TODO: Migrate kinit to be a part of connection troubleshooter
 		if (!platform.isWindows && types.isString(message) && message.toLowerCase().indexOf('kerberos') > -1 && message.toLowerCase().indexOf('kinit') > -1) {
@@ -535,12 +539,21 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		actions.push(new Action('Diagnose', localize('diagnoseError', "Diagnose Error"), undefined, true, async () => {
 			this._connectionDialog.close();
 			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionErrorDialog, TelemetryKeys.TelemetryAction.Click, 'DiagnoseError');
+			this.showTroubleshooterDialog(headerTitle, message, messageDetails, []);
 			// TODO: Run diagnostics
-			// TODO: Show connection troubleshooting dialog
 		}));
 
 		this._logService.error(message);
 
 		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, TelemetryView.ConnectionErrorDialog, actions, undefined, undefined);
+	}
+
+	private showTroubleshooterDialog(headerTitle, message, messageDetails, actions) {
+		actions.push(new Action('View Recommendations', localize('viewRecommendations', "View Recommendations"), undefined, true, async () => {
+			this._connectionDialog.close();
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.TroubleshooterDialog, TelemetryKeys.TelemetryAction.Click, 'ViewRecommendations');
+		}));
+		this._troubleShooterMessageService.showDialog('Connection Troubleshooting', message, messageDetails, actions);
+
 	}
 }
