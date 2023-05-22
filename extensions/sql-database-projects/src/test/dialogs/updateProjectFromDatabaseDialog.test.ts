@@ -101,7 +101,7 @@ describe('Update Project From Database Dialog', () => {
 		});
 
 		should.equal((<any>dialog.serverDropdown!.value).displayName, profile.options['connectionName'], `Server dropdown should be "${profile.options['connectionName']}", but instead was "${(<any>dialog.serverDropdown!.value).displayName}".`);
-		should.equal(dialog.databaseDropdown!.value, profile.databaseName, `Database dropdown should as "${profile.databaseName}", but instead was "${dialog.databaseDropdown!.value}".`);
+		should.equal(dialog.databaseDropdown!.value, profile.databaseName, `Database dropdown should be "${profile.databaseName}", but instead was "${dialog.databaseDropdown!.value}".`);
 		should.equal(dialog.projectFileDropdown!.value, uriList[0], `Project file dropdown should be the first project listed in the workspace URI list (${uriList[0]}), but instead was "${dialog.projectFileDropdown!.value}".`);
 		should.deepEqual(dialog.projectFileDropdown!.values, uriList, `Project file dropdown list should be the workspace URI list (${mockURIList}), but instead was "${dialog.projectFileDropdown!.values}".`);
 		should.equal(dialog.dialog.okButton.enabled, true, 'Okay button should be enabled when dialog is complete.');
