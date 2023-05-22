@@ -25,9 +25,6 @@ import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/co
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ResourceLabel } from 'vs/workbench/browser/labels';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
-import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { serverGroupRowBorder } from 'sql/platform/theme/common/colorRegistry';
-import { listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 
 const DefaultConnectionIconClass = 'server-page';
 export interface ConnectionProfileGroupDisplayOptions {
@@ -36,13 +33,13 @@ export interface ConnectionProfileGroupDisplayOptions {
 
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
-	//private _icon: HTMLElement;
+	private _icon: HTMLElement;
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
 	private _actionBar: ActionBar;
 
 	constructor(
-		private container: HTMLElement,
+		container: HTMLElement,
 		private _option: ConnectionProfileGroupDisplayOptions,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
@@ -51,7 +48,7 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		container.parentElement!.classList.add('async-server-group');
 		container.classList.add('async-server-group');
 		this._root = dom.append(container, dom.$('.async-server-group-container'));
-		//this._icon = dom.append(this._root, dom.$('div.icon'));
+		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._labelContainer = dom.append(this._root, dom.$('span.name'));
 		this._label = this._instantiationService.createInstance(ResourceLabel, this._labelContainer, { supportHighlights: true });
 		const actionsContainer = dom.append(this._label.element.element, dom.$('.actions'));
@@ -63,8 +60,7 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		if (this._option.showColor) {
 			// If the color is not defined, use the default color
 			const backgroundColor = element.color ?? DefaultServerGroupColor;
-			//this._icon.style.background = backgroundColor;
-			this.container.style.borderLeftColor = backgroundColor;
+			this._icon.style.background = backgroundColor;
 		}
 		if (element.description && (element.description !== '')) {
 			this._root.title = element.description;
@@ -80,16 +76,6 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		this._actionBar.context = this._objectExplorerService.getServerTreeView().getActionContext(element);
 		this._actionBar.clear();
 		this._actionBar.pushAction(actions, { icon: true, label: false });
-		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-			const borderColor = theme.getColor(serverGroupRowBorder);
-			if (borderColor) {
-				collector.addRule(`.server-explorer-viewlet .monaco-list .monaco-tl-contents.async-server-group { border-top-color: ${borderColor}; border-bottom-color: ${borderColor}; }`);
-			}
-			const listSelectionColor = theme.getColor(listInactiveSelectionBackground);
-			if (listSelectionColor) {
-				collector.addRule(`.server-explorer-viewlet .monaco-list:focus .monaco-list-row.focused.selected { background-color: ${listSelectionColor}; }`);
-			}
-		});
 	}
 }
 
@@ -119,6 +105,7 @@ class ConnectionProfileTemplate extends Disposable {
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
 	private _actionBar: ActionBar;
+	private _serverGroupColorContainer: HTMLElement;
 
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
@@ -135,6 +122,7 @@ class ConnectionProfileTemplate extends Disposable {
 		super();
 		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-profile-container'));
+		this._serverGroupColorContainer = dom.append(this._root, dom.$('.server-group-color'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._labelContainer = dom.append(this._root, dom.$('div.label'));
@@ -145,6 +133,16 @@ class ConnectionProfileTemplate extends Disposable {
 	}
 
 	set(element: ConnectionProfile, filterData: FuzzyScore) {
+
+		const colorGroup = element.parent;
+		if (colorGroup.isRoot) {
+			this._serverGroupColorContainer.style.display = 'none';
+		} else {
+			this._serverGroupColorContainer.style.display = 'block';
+			const backgroundColor = colorGroup.color ?? DefaultServerGroupColor;
+			this._serverGroupColorContainer.style.background = backgroundColor;
+		}
+
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
 				this._connectionStatusBadge.classList.remove('disconnected');

@@ -94,6 +94,3 @@ export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { l
 
 // Query Editor
 export const queryEditorNullBackground = registerColor('queryEditor.nullBackground', { light: '#FFFFE1', dark: '#4B0082', hcDark: '#000000', hcLight: '#FFFFE1' }, nls.localize('queryEditorNullBackground', 'The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.', '#00000000'));
-
-// Server Tree
-export const serverGroupRowBorder = registerColor('serverTree.groupRowBorder', { light: '#E0E0E0', dark: '#606060', hcDark: '#606060', hcLight: '#E0E0E0' }, nls.localize('serverTree.groupRowBorder', 'The border color for server group rows in the server tree.'));

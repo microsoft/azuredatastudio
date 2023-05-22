@@ -222,6 +222,7 @@
 	text-overflow: ellipsis;
 	height: 25px;
 	line-height: 25px;
+	font-weight: 500;
 }
 
 .monaco-list-row .object-element-container {
@@ -251,6 +252,13 @@
 .monaco-list-row .connection-profile .connection-profile-container .icon {
 	flex: 0 30px;
 	position: relative;
+}
+
+.monaco-list-row .connection-profile .connection-profile-container .server-group-color {
+	width: 7px;
+	height: 18px;
+	border-radius: 3px;
+	margin-top: 2.5px;
 }
 
 .monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge {
@@ -294,23 +302,6 @@
 }
 
 .server-explorer-viewlet .monaco-list:focus .monaco-list-row.selected .async-server-group-container {
-	border-top-width: 0px;
-	border-bottom-width: 0px;
-}
-
-.server-explorer-viewlet .monaco-list .monaco-tl-contents.async-server-group {
-	border-top-width: 1px;
-	border-top-style: solid;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-left-width: 10px;
-	border-left-style: solid;
-	box-sizing: border-box;
-}
-
-.server-explorer-viewlet .monaco-list .monaco-list-row.focused .monaco-tl-contents.async-server-group,
-.server-explorer-viewlet .monaco-list .monaco-list-row:hover .monaco-tl-contents.async-server-group,
-.server-explorer-viewlet .monaco-list .monaco-list-row.focused .monaco-tl-contents.async-server-group {
 	border-top-width: 0px;
 	border-bottom-width: 0px;
 }

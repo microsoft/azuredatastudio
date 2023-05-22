@@ -17,6 +17,7 @@ import { IAsyncDataSource, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGroup, ServerTreeElement, FuzzyScore> {
 
