@@ -15,7 +15,7 @@ steps:
 
 - script: |
     set -e
-    git remote add distro "https://github.com/$VSCODE_MIXIN_REPO.git.extraheader 'AUTHORIZATION: bearer $System.AccessToken'"
+    git remote add distro "https://$System.AccessToken@github.com/$VSCODE_MIXIN_REPO.git"
     git fetch distro
     git merge $(node -p "require('./package.json').distro")
   displayName: Merge distro
