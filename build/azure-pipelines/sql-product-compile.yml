@@ -16,14 +16,17 @@ steps:
   displayName: Prepare tooling
 
 - script: |
-    dir $(Build.SourcesDirectory)
-    echo "azuredatastudio-release"
-    dir $(Build.SourcesDirectory)/azuredatastudio-release
-    echo "azuredatastudio"
-    dir $(Build.SourcesDirectory)/azuredatastudio
+    # dir $(Build.SourcesDirectory)
+    # echo "azuredatastudio-release"
+    # dir $(Build.SourcesDirectory)/azuredatastudio-release
+    # echo "azuredatastudio"
+    # dir $(Build.SourcesDirectory)/azuredatastudio
     set -e
-    cd $(Build.SourcesDirectory)/azuredatastudio-release
-    git merge $(Build.SourcesDirectory)/azuredatastudio
+    git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+    git fetch distro
+    git merge $(node -p "require('./package.json').distro")
+    # cd $(Build.SourcesDirectory)/azuredatastudio-release
+    # git merge $(Build.SourcesDirectory)/azuredatastudio
   displayName: Merge distro
 
 - script: |
