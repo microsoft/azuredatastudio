@@ -572,6 +572,7 @@ export enum DatabaseProjectItemType {
 	table = 'databaseProject.itemType.file.table',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
+	sqlProjectReference = 'databaseProject.itemType.reference.sqlProject',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
 	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
