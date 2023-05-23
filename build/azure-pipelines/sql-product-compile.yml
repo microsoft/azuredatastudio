@@ -22,7 +22,8 @@ steps:
     echo "azuredatastudio"
     dir $(Build.SourcesDirectory)/azuredatastudio
     set -e
-    git merge $(Build.SourcesDirectory)/azuredatastudio-release.git $(Build.SourcesDirectory)/azuredatastudio.git
+    cd $(Build.SourcesDirectory)/azuredatastudio-release
+    git merge $(Build.SourcesDirectory)/azuredatastudio
   displayName: Merge distro
 
 - script: |
