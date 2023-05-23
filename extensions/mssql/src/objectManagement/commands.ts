@@ -22,7 +22,7 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
-import { ServerDialog } from './ui/serverDialog';
+import { ServerDialog } from './ui/serverPropertiesDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -252,7 +252,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerProperties:
-			return new ServerDialog(service, dialogOptions);
+			//service, dialogOptions
+			return new ServerPropertiesDialog();
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
