@@ -1,6 +1,6 @@
 resources:
   repositories:
-  - repository: azuredatastudio-release # The name used to reference this repository in the checkout step
+  - repository: azuredatastudio-release
     type: github
     endpoint: CrossPlatBuildScripts
     name: microsoft/azuredatastudio-release
@@ -31,8 +31,6 @@ steps:
     set -e
     git merge $(Build.SourcesDirectory)/azuredatastudio-release $(Build.SourcesDirectory)/azuredatastudio
   displayName: Merge distro
-  env:
-    System_AccessToken: $(System.AccessToken)
 
 - script: |
     mkdir -p .build
