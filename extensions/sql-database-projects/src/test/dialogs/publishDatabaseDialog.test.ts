@@ -87,7 +87,8 @@ describe('Publish Database Dialog', () => {
 				['ProdDatabaseName', 'MyProdDatabase'],
 				['BackupDatabaseName', 'MyBackupDatabase']
 			]),
-			deploymentOptions: mockDacFxOptionsResult.deploymentOptions
+			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
+			publishProfileUri: undefined
 		};
 
 		dialog.object.publish = (_, prof) => { profile = prof; };
@@ -103,7 +104,8 @@ describe('Publish Database Dialog', () => {
 				['ProdDatabaseName', 'MyProdDatabase'],
 				['BackupDatabaseName', 'MyBackupDatabase']
 			]),
-			deploymentOptions: mockDacFxOptionsResult.deploymentOptions
+			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
+			publishProfileUri: undefined
 		};
 
 		dialog.object.generateScript = (_, prof) => { profile = prof; };
@@ -130,7 +132,8 @@ describe('Publish Database Dialog', () => {
 					['ProdDatabaseName', 'MyProdDatabase'],
 					['BackupDatabaseName', 'MyBackupDatabase']
 				]),
-				deploymentOptions: mockDacFxOptionsResult.deploymentOptions
+				deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
+				publishProfileUri: undefined
 			}
 		};
 		dialog.object.publishToExistingServer = false;
