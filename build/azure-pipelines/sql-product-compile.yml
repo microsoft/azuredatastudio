@@ -1,6 +1,20 @@
+resources:
+  repositories:
+  - repository: azuredatastudio-release # The name used to reference this repository in the checkout step
+    type: github
+    endpoint: CrossPlatBuildScripts
+    name: microsoft/azuredatastudio-release
+  - repository: azuredatastudio
+    type: github
+    endpoint: CrossPlatBuildScripts
+    name: microsoft/azuredatastudio
+
+
 steps:
 - checkout: self
   persistCredentials: true
+- checkout: azuredatastudio-release
+- checkout: azuredatastudio
 
 - task: NodeTool@0
   inputs:
@@ -15,9 +29,7 @@ steps:
 
 - script: |
     set -e
-    git remote add distro "https://$(System.AccessToken)@github.com/$(VSCODE_MIXIN_REPO).git"
-    git fetch distro
-    git merge $(node -p "require('./package.json').distro")
+    git merge $(Build.SourcesDirectory)/azuredatastudio-release $(Build.SourcesDirectory)/azuredatastudio
   displayName: Merge distro
   env:
     System_AccessToken: $(System.AccessToken)
