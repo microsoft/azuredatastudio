@@ -1,15 +1,3 @@
-resources:
-  repositories:
-  - repository: azuredatastudio-release
-    type: github
-    endpoint: CrossPlatBuildScripts
-    name: microsoft/azuredatastudio-release
-  - repository: azuredatastudio
-    type: github
-    endpoint: CrossPlatBuildScripts
-    name: microsoft/azuredatastudio
-
-
 steps:
 - checkout: self
   persistCredentials: true

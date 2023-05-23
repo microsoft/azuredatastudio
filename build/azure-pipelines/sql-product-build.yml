@@ -4,6 +4,16 @@ resources:
     image: sqltoolscontainers.azurecr.io/linux-build-agent:6
     endpoint: SqlToolsContainers
 
+  repositories:
+  - repository: azuredatastudio-release
+    type: github
+    endpoint: CrossPlatBuildScripts
+    name: microsoft/azuredatastudio-release
+  - repository: azuredatastudio
+    type: github
+    endpoint: CrossPlatBuildScripts
+    name: microsoft/azuredatastudio
+
 stages:
   - stage: Compile
     jobs:
