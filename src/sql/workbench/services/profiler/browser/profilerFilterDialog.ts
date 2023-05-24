@@ -119,24 +119,27 @@ export class ProfilerFilterDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.profiler-filter-dialog'));
 		const clauseTableContainer = DOM.append(body, DOM.$('.clause-table-container'));
+		const actionsContainer = DOM.append(body, DOM.$('.actions-container'));
 		this._clauseBuilder = DOM.append(clauseTableContainer, DOM.$('table.profiler-filter-clause-table'));
 		const headerRow = DOM.append(this._clauseBuilder, DOM.$('tr'));
-		DOM.append(headerRow, DOM.$('td')).innerText = FieldText;
-		DOM.append(headerRow, DOM.$('td')).innerText = OperatorText;
-		DOM.append(headerRow, DOM.$('td')).innerText = ValueText;
-		DOM.append(headerRow, DOM.$('td')).innerText = '';
+		DOM.append(headerRow, DOM.$('th')).innerText = FieldText;
+		DOM.append(headerRow, DOM.$('th')).innerText = OperatorText;
+		DOM.append(headerRow, DOM.$('th')).innerText = ValueText;
+		DOM.append(headerRow, DOM.$('th')).innerText = '';
 
 		this._input!.filter.clauses.forEach(clause => {
 			this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
 		});
 
-		this.createClauseTableActionLink(AddClauseText, body, () => {
+
+
+		this.createClauseTableActionLink(AddClauseText, actionsContainer, () => {
 			this.addClauseRow(false);
 			// Set keyboard focus to the newly added clause.
 			this._clauseRows[this._clauseRows.length - 1]?.field?.focus();
 			aria.status(NewClauseAddedText);
 		});
-		this.createClauseTableActionLink(ClearText, body, () => { this.handleClearButtonClick(); });
+		this.createClauseTableActionLink(ClearText, actionsContainer, () => { this.handleClearButtonClick(); });
 	}
 
 	protected layout(height?: number): void {
@@ -169,7 +172,8 @@ export class ProfilerFilterDialog extends Modal {
 	private createClauseTableActionLink(text: string, parent: HTMLElement, handler: () => void): void {
 		const actionLink = DOM.append(parent, DOM.$('.profiler-filter-clause-table-action', {
 			'tabIndex': '0',
-			'role': 'button'
+			'role': 'button',
+			'aria-label': text
 		}));
 		actionLink.innerText = text;
 		DOM.addDisposableListener(actionLink, DOM.EventType.CLICK, handler);
