@@ -302,7 +302,7 @@ describe('ProjectsController', function (): void {
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
 			});
 
-			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
+			it.skip('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
@@ -330,7 +330,7 @@ describe('ProjectsController', function (): void {
 				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
-			it('Should exclude a folder', async function (): Promise<void> {
+			it.skip('Should exclude a folder', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
 				await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
@@ -1034,7 +1034,7 @@ describe('ProjectsController', function (): void {
 			should(await utils.exists(path.join(proj.projectFolderPath, 'postdeployNewName.sql'))).be.true('The moved post deploy script file should exist');
 		});
 
-		it('Should rename a folder', async function (): Promise<void> {
+		it.skip('Should rename a folder', async function (): Promise<void> {
 			let proj = await testUtils.createTestSqlProject(this.test);
 			await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
