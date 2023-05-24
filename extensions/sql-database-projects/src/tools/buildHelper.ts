@@ -17,25 +17,6 @@ import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 
 const buildDirectory = 'BuildDirectory';
-const sdkName = 'Microsoft.Build.Sql';
-const microsoftBuildSqlDefaultVersion = '0.1.10-preview'; // default version of Microsoft.Build.Sql nuget to use for building legacy style projects, update in README when updating this
-const scriptdomNugetPkgName = 'Microsoft.SqlServer.TransactSql.ScriptDom';
-const scriptDomDll = 'Microsoft.SqlServer.TransactSql.ScriptDom.dll';
-const scriptDomNugetVersion = '161.8817.2'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
-
-const dacFxBuildFiles: string[] = [
-	'Microsoft.Data.SqlClient.dll',
-	'Microsoft.Data.Tools.Schema.Sql.dll',
-	'Microsoft.Data.Tools.Schema.Tasks.Sql.dll',
-	'Microsoft.Data.Tools.Utilities.dll',
-	'Microsoft.SqlServer.Dac.dll',
-	'Microsoft.SqlServer.Dac.Extensions.dll',
-	'Microsoft.SqlServer.Types.dll',
-	'System.ComponentModel.Composition.dll',
-	'System.IO.Packaging.dll',
-	'Microsoft.Data.Tools.Schema.SqlTasks.targets',
-	'Microsoft.SqlServer.Server.dll'
-];
 
 export class BuildHelper {
 
@@ -54,7 +35,6 @@ export class BuildHelper {
 	 * @param outputChannel
 	 */
 	public async createBuildDirFolder(outputChannel: vscode.OutputChannel): Promise<boolean> {
-
 		if (this.initialized) {
 			return true;
 		}
@@ -63,94 +43,111 @@ export class BuildHelper {
 			await fs.mkdir(this.extensionBuildDir);
 		}
 
+		const dacFxDllsExist = await this.ensureDacFxDllsPresence(outputChannel);
+		const scriptDomExists = await this.ensureScriptDomDllPresence(outputChannel);
+
+		if (!dacFxDllsExist || !scriptDomExists) {
+			return false;
+		}
+
+		this.initialized = true;
+		return true;
+	}
+
+	public async ensureDacFxDllsPresence(outputChannel: vscode.OutputChannel): Promise<boolean> {
+		const sdkName = 'Microsoft.Build.Sql';
+		const microsoftBuildSqlDefaultVersion = '0.1.10-preview'; // default version of Microsoft.Build.Sql nuget to use for building legacy style projects, update in README when updating this
+
+		const dacFxBuildFiles: string[] = [
+			'Microsoft.Data.SqlClient.dll',
+			'Microsoft.Data.Tools.Schema.Sql.dll',
+			'Microsoft.Data.Tools.Schema.Tasks.Sql.dll',
+			'Microsoft.Data.Tools.Utilities.dll',
+			'Microsoft.SqlServer.Dac.dll',
+			'Microsoft.SqlServer.Dac.Extensions.dll',
+			'Microsoft.SqlServer.Types.dll',
+			'System.ComponentModel.Composition.dll',
+			'System.IO.Packaging.dll',
+			'Microsoft.Data.Tools.Schema.SqlTasks.targets',
+			'Microsoft.SqlServer.Server.dll'
+		];
+
 		// check if the settings has a version specified for Microsoft.Build.Sql, otherwise use default
 		const microsoftBuildSqlVersionConfig = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[constants.microsoftBuildSqlVersionKey];
 		const sdkVersion = !!microsoftBuildSqlVersionConfig ? microsoftBuildSqlVersionConfig : microsoftBuildSqlDefaultVersion;
-		const fullSdkName = `${sdkName}.${sdkVersion}`;
 
-		// check if this if the nuget needs to be downloaded
-		const buildSdkNugetPath = path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`);
+		const microsoftBuildSqlDllLocation = path.join('tools', 'netstandard2.1');
+		return this.ensureNugetAndFilesPresence(sdkName, sdkVersion, dacFxBuildFiles, microsoftBuildSqlDllLocation, outputChannel);
+	}
 
-		let missingDacFxFiles = false;
-		let missingScriptDom = false;
+	public async ensureScriptDomDllPresence(outputChannel: vscode.OutputChannel): Promise<boolean> {
+		const scriptdomNugetPkgName = 'Microsoft.SqlServer.TransactSql.ScriptDom';
+		const scriptDomDll = 'Microsoft.SqlServer.TransactSql.ScriptDom.dll';
+		const scriptDomNugetVersion = '161.8817.2'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
+		const scriptDomDllLocation = path.join('lib', 'netstandard2.1');
 
-		if (await utils.exists(buildSdkNugetPath)) {
+		return this.ensureNugetAndFilesPresence(scriptdomNugetPkgName, scriptDomNugetVersion, [scriptDomDll], scriptDomDllLocation, outputChannel);
+	}
+
+	/**
+	 * Ensures a nuget package and expected files exist in the BuildDirectory
+	 * @param nugetName Name of the nuget package
+	 * @param nugetVersion versiion of the nuget files
+	 * @param expectedFiles array of expected files from the nuget in the BuildDirectory
+	 * @param nugetFolderWithExpectedfiles folder in the nuget containing the expected files
+	 * @param outputChannel
+	 * @returns true if expected files exist in the BuildDirectory
+	 */
+	public async ensureNugetAndFilesPresence(nugetName: string, nugetVersion: string, expectedFiles: string[], nugetFolderWithExpectedfiles: string, outputChannel: vscode.OutputChannel): Promise<boolean> {
+		let missingNuget = false;
+
+		const fullNugetName = `${nugetName}.${nugetVersion}`;
+		const fullNugetPath = path.join(this.extensionBuildDir, `${fullNugetName}.nupkg`);
+
+		// check if the correct nuget version has been previously downloaded before checking if the files exist.
+		// TODO: handle when multiple nugets are in the BuildDirectory and a user wants to switch back to an older one - probably should
+		// remove other versions of this nuget when a new one is downloaded
+		if (await utils.exists(fullNugetPath)) {
 			// if it does exist, make sure all the necessary files are also in the BuildDirectory
-			for (const fileName of dacFxBuildFiles) {
+			for (const fileName of expectedFiles) {
 				if (!await (utils.exists(path.join(this.extensionBuildDir, fileName)))) {
-					missingDacFxFiles = true;
+					missingNuget = true;
 					break;
 				}
 			}
 		} else {
-			// if the Microsoft.Build.Sql nuget isn't there, it needs to be downloaded and the build dlls extracted
-			missingDacFxFiles = true;
+			// if the nuget isn't there, it needs to be downloaded and the build dlls extracted
+			missingNuget = true;
 		}
 
-		// check if scriptdom exists
-		if (!await (utils.exists(path.join(this.extensionBuildDir, scriptDomDll)))) {
-			missingScriptDom = true;
-		}
-
-		// if all the files are there, no need to continue
-		if (!missingDacFxFiles && !missingScriptDom) {
+		if (!missingNuget) {
 			return true;
 		}
 
-		// TODO: check nuget cache locations first to avoid downloading if those exist
-		// download the Microsoft.Build.Sql sdk nuget
-		if (missingDacFxFiles) {
-			outputChannel.appendLine(constants.downloadingDacFxDlls);
+		outputChannel.appendLine(constants.downloadingNuget(fullNugetName));
 
-			const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/${sdkName}/${sdkVersion}`;
+		const nugetUrl = `https://www.nuget.org/api/v2/package/${nugetName}/${nugetVersion}`;
+		const extractedFolderPath = path.join(this.extensionDir, buildDirectory, nugetName);
 
-			// extract the files from the nuget
-			const extractedFolderPath = path.join(this.extensionDir, buildDirectory, sdkName);
-			outputChannel.appendLine(constants.extractingDacFxDlls(extractedFolderPath));
-
-			try {
-				await this.downloadAndExtractNuget(microsoftBuildSqlUrl, buildSdkNugetPath, extractedFolderPath, outputChannel);
-			} catch (e) {
-				void vscode.window.showErrorMessage(e);
-				return false;
-			}
-
-			// copy the dlls and targets file to the BuildDirectory folder
-			const buildfilesPath = path.join(extractedFolderPath, 'tools', 'netstandard2.1');
-
-			for (const fileName of dacFxBuildFiles) {
-				if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
-					await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
-				}
-			}
-
-			// cleanup extracted folder
-			await fs.rm(extractedFolderPath, { recursive: true });
+		try {
+			await this.downloadAndExtractNuget(nugetUrl, fullNugetPath, extractedFolderPath, outputChannel);
+		} catch (e) {
+			void vscode.window.showErrorMessage(e);
+			return false;
 		}
 
-		if (missingScriptDom) {
-			// download scriptdom
-			outputChannel.appendLine(constants.downloadingScriptDom);
+		// copy the dlls and targets file to the BuildDirectory folder
+		const buildfilesPath = path.join(extractedFolderPath, nugetFolderWithExpectedfiles);
 
-			const scriptdomNugetPath = path.join(this.extensionBuildDir, `${scriptdomNugetPkgName}.nupkg`);
-			const scriptDomNugetUrl = `https://www.nuget.org/api/v2/package/${scriptdomNugetPkgName}/${scriptDomNugetVersion}`;
-			const scriptDomExtractedFolderPath = path.join(this.extensionDir, buildDirectory, scriptdomNugetPkgName);
-
-			try {
-				await this.downloadAndExtractNuget(scriptDomNugetUrl, scriptdomNugetPath, scriptDomExtractedFolderPath, outputChannel);
-			} catch (e) {
-				void vscode.window.showErrorMessage(e);
-				return false;
+		for (const fileName of expectedFiles) {
+			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
+				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
 			}
-
-			const extractedScriptDomPath = path.join(scriptDomExtractedFolderPath, 'lib', 'netstandard2.1', 'Microsoft.SqlServer.TransactSql.ScriptDom.dll')
-			await fs.copyFile(extractedScriptDomPath, path.join(this.extensionBuildDir, 'Microsoft.SqlServer.TransactSql.ScriptDom.dll'));
-
-			// cleanup extracted folder
-			await fs.rm(scriptDomExtractedFolderPath, { recursive: true });
 		}
 
-		this.initialized = true;
+		// cleanup extracted folder
+		await fs.rm(extractedFolderPath, { recursive: true });
+
 		return true;
 	}
 
