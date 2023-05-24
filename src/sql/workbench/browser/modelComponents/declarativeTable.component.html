@@ -25,7 +25,7 @@
 							[ngClass]="{'declarative-table-cell-checkbox' : isCheckBox(c)}"
 							[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)" role="gridcell"
 							*ngIf="showColumn(columns[c])">
-							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)"
+							<checkbox *ngIf="isCheckBox(c)" label="" [aria-label]="getAriaLabel(r,c)" (onChange)="onCheckBoxChanged($event,r,c)"
 								[enabled]="isControlEnabled(r, c)" [checked]="isChecked(r,c)"
 								[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)">
 							</checkbox>
