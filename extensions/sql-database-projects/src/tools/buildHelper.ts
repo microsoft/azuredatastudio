@@ -21,7 +21,7 @@ const sdkName = 'Microsoft.Build.Sql';
 const microsoftBuildSqlDefaultVersion = '0.1.10-preview'; // default version of Microsoft.Build.Sql nuget to use for building legacy style projects, update in README when updating this
 const scriptdomNugetPkgName = 'Microsoft.SqlServer.TransactSql.ScriptDom';
 const scriptDomDll = 'Microsoft.SqlServer.TransactSql.ScriptDom.dll';
-const scriptDomNugetVersion = '161.8812.0'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
+const scriptDomNugetVersion = '161.8817.2'; // TODO: make this a configurable setting, like the Microsoft.Build.Sql version
 
 const dacFxBuildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
