@@ -17,6 +17,7 @@ import { BackupDialog } from 'sql/workbench/contrib/backup/browser/backupDialog'
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
+import { localize } from 'vs/nls';
 
 export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: undefined;
@@ -62,11 +63,12 @@ export class BackupUiService implements IBackupUiService {
 		this._connectionUri = ConnectionUtils.generateUri(connection);
 		this._currentProvider = connection.providerName;
 		let backupDialog = this._backupDialogs[this._currentProvider];
+		const backupDialogTitle = localize('backupDialogTitle', 'Backup database - {0}:{1}', connection.serverName, connection.databaseName);
+		const backupOptions = this.getOptions(this._currentProvider);
 		if (!backupDialog) {
-			let backupOptions = this.getOptions(this._currentProvider);
 			if (backupOptions) {
 				backupDialog = this._instantiationService.createInstance(
-					OptionsDialog, 'Backup database - ' + connection.serverName + ':' + connection.databaseName, 'BackupOptions', undefined);
+					OptionsDialog, backupDialogTitle, 'BackupOptions', undefined);
 				backupDialog.onOk(() => this.handleOptionDialogClosed());
 			}
 			else {
@@ -74,9 +76,12 @@ export class BackupUiService implements IBackupUiService {
 			}
 			backupDialog.render();
 			this._backupDialogs[this._currentProvider] = backupDialog;
+		} else if (backupOptions) {
+			// Update the title for non-MSSQL restores each time so they show the correct database name since those
+			// use just a basic OptionsDialog which doesn't get updated on every open
+			backupDialog.title = backupDialogTitle;
 		}
 
-		let backupOptions = this.getOptions(this._currentProvider);
 		let uri = this._connectionManagementService.getConnectionUri(connection)
 			+ ProviderConnectionInfo.idSeparator
 			+ ConnectionUtils.ConnectionUriBackupIdAttributeName

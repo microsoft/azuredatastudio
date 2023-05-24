@@ -105,6 +105,7 @@ class ConnectionProfileTemplate extends Disposable {
 	private _labelContainer: HTMLElement;
 	private _label: ResourceLabel;
 	private _actionBar: ActionBar;
+	private _serverGroupColorContainer: HTMLElement;
 
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
@@ -121,6 +122,7 @@ class ConnectionProfileTemplate extends Disposable {
 		super();
 		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-profile-container'));
+		this._serverGroupColorContainer = dom.append(this._root, dom.$('.server-group-color'));
 		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._labelContainer = dom.append(this._root, dom.$('div.label'));
@@ -131,6 +133,16 @@ class ConnectionProfileTemplate extends Disposable {
 	}
 
 	set(element: ConnectionProfile, filterData: FuzzyScore) {
+
+		const colorGroup = element.parent;
+		if (colorGroup.isRoot) {
+			this._serverGroupColorContainer.style.display = 'none';
+		} else {
+			this._serverGroupColorContainer.style.display = 'block';
+			const backgroundColor = colorGroup.color ?? DefaultServerGroupColor;
+			this._serverGroupColorContainer.style.background = backgroundColor;
+		}
+
 		if (!this._isCompact) {
 			if (this._connectionManagementService.isConnected(undefined, element)) {
 				this._connectionStatusBadge.classList.remove('disconnected');
