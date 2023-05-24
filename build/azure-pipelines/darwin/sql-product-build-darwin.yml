@@ -112,8 +112,7 @@ steps:
     displayName: Run unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-
-    - script: |
+  - script: |
         # Figure out the full absolute path of the product we just built
         # including the remote server and configure the integration tests
         # to run with these builds instead of running out of sources.
@@ -123,8 +122,8 @@ steps:
         INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
         VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
         ./scripts/test-integration.sh --build --tfs "Integration Tests"
-      displayName: Run core integration tests
-      condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    displayName: Run core integration tests
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
