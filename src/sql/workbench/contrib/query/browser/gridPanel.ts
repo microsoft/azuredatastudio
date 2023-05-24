@@ -57,7 +57,7 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -357,7 +357,12 @@ const defaultGridTableOptions: IGridTableOptions = {
 	actionOrientation: ActionsOrientation.VERTICAL
 };
 
-export abstract class GridTableBase<T> extends Disposable implements IView {
+export interface IQueryResultGrid {
+	readonly htmlElement: HTMLElement;
+	runAction(actionId: string): void;
+}
+
+export abstract class GridTableBase<T> extends Disposable implements IView, IQueryResultGrid {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -419,7 +424,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
-		@ITableService private readonly tableService: ITableService
+		@IComponentContextService private readonly componentContextService: IComponentContextService,
+		@IContextKeyService protected readonly contextKeyService: IContextKeyService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 
@@ -429,7 +436,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			return <Slick.Column<T>>{
 				id: i.toString(),
@@ -443,6 +449,47 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
+	}
+
+	public get htmlElement(): HTMLElement {
+		return this.tableContainer;
+	}
+
+	runAction(actionId: string): void {
+		let action: IAction | undefined;
+		switch (actionId) {
+			case CopyResultAction.COPYWITHHEADERS_ID:
+				action = this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true);
+				break;
+			case CopyHeadersAction.ID:
+				action = this.instantiationService.createInstance(CopyHeadersAction);
+				break;
+			case SelectAllGridAction.ID:
+				action = this.instantiationService.createInstance(SelectAllGridAction);
+				break;
+			case SaveResultAction.SAVECSV_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV);
+				break;
+			case SaveResultAction.SAVEEXCEL_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL);
+				break;
+			case SaveResultAction.SAVEJSON_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON);
+				break;
+			case SaveResultAction.SAVEMARKDOWN_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN);
+				break;
+			case SaveResultAction.SAVEXML_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML);
+				break;
+			default:
+				this.logService.error(`No handler registered for action '${actionId}'`);
+				break;
+		}
+		if (action) {
+			action.run(this.generateContext());
+			action.dispose();
+		}
 	}
 
 	abstract get gridDataProvider(): IGridDataProvider;
@@ -582,7 +629,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 
 		this.table.registerPlugin(this.filterPlugin);
-		this._register(this.tableService.registerTable(this.table));
+		const result = this.componentContextService.registerQueryResultGrid(this);
+		this._register(result);
+		this._register(this.componentContextService.registerTable(this.table, result.componentContextKeyService));
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -809,7 +858,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private rebuildActionBar() {
-		let actions = this.getCurrentActions();
+		let actions = this.getActionBarItems();
 		this.actionBar.clear();
 		if (this.options.showActionBar) {
 			this.actionBar.push(actions, { icon: true, label: false });
@@ -827,7 +876,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	protected abstract getCurrentActions(): IAction[];
+	protected getActionBarItems(): IAction[] {
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
+		];
+	}
 
 	protected abstract getContextActions(): IAction[];
 
@@ -888,11 +945,18 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					new SelectAllGridAction(),
 					new Separator()
 				];
+				actions.push(
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
+				);
 				let contributedActions: IAction[] = this.getContextActions();
 				if (contributedActions && contributedActions.length > 0) {
 					actions.push(...contributedActions);
-					actions.push(new Separator());
 				}
+				actions.push(new Separator());
 				actions.push(
 					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true),
@@ -959,7 +1023,7 @@ class GridTable<T> extends GridTableBase<T> {
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -970,14 +1034,15 @@ class GridTable<T> extends GridTableBase<T> {
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IQuickInputService quickInputService: IQuickInputService,
-		@ITableService tableService: ITableService
+		@IComponentContextService componentContextService: IComponentContextService,
+		@ILogService logService: ILogService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, tableService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}
@@ -986,7 +1051,7 @@ class GridTable<T> extends GridTableBase<T> {
 		return this._gridDataProvider;
 	}
 
-	protected getCurrentActions(): IAction[] {
+	protected override getActionBarItems(): IAction[] {
 
 		let actions = [];
 
@@ -998,14 +1063,8 @@ class GridTable<T> extends GridTableBase<T> {
 			}
 		}
 
-		actions.push(
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
-		);
+		actions.push(super.getActionBarItems());
+		actions.push(this.instantiationService.createInstance(ChartDataAction));
 
 		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
 			actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
@@ -1015,13 +1074,7 @@ class GridTable<T> extends GridTableBase<T> {
 	}
 
 	protected getContextActions(): IAction[] {
-		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-		];
+		return [];
 	}
 }
 
