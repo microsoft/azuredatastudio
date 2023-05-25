@@ -56,7 +56,7 @@ import { IModelService } from 'vs/editor/common/services/model';
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/browser/findController';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -177,7 +177,7 @@ export class ProfilerEditor extends EditorPane {
 		@IEditorGroupsService editorGroupsService: IEditorGroupsService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
-		@ITableService private readonly _tableService: ITableService
+		@IComponentContextService private readonly _componentContextService: IComponentContextService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -431,7 +431,7 @@ export class ProfilerEditor extends EditorPane {
 		});
 		this._detailTable.setSelectionModel(new CellSelectionModel());
 		this._detailTable.registerPlugin(detailTableCopyKeybind);
-		this._register(this._tableService.registerTable(this._detailTable));
+		this._register(this._componentContextService.registerTable(this._detailTable));
 
 
 		this._tabbedPanel.pushTab({

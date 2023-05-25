@@ -37,7 +37,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -113,7 +113,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		@Inject(IContextViewService) private _contextViewService: IContextViewService,
 		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
 		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
-		@Inject(ITableService) private _tableService: ITableService
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let notebookCacheObjectMap = this._jobManagementService.notebookCacheObjectMap;
@@ -201,7 +201,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			self._agentViewComponent.agentNotebookInfo = notebook;
 			self._agentViewComponent.showNotebookHistory = true;
 		});
-		this._register(this._tableService.registerTable(this._table));
+		this._register(this._componentContextService.registerTable(this._table));
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));

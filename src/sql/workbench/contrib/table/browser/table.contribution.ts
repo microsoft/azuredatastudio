@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { FilteringEnabled, InTable } from 'sql/workbench/services/table/browser/tableContext';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { TableFilteringEnabledContextKey, InTableContextKey } from 'sql/workbench/services/componentContext/browser/contextKeys';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { KeybindingWeight, KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 export const RESIZE_COLUMN_COMMAND_ID = 'table.resizeColumn';
 export const SHOW_COLUMN_MENU_COMMAND_ID = 'table.showColumnMenu';
@@ -20,7 +20,7 @@ export const SORT_COLUMN_COMMAND_ID = 'table.sortColumn';
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: RESIZE_COLUMN_COMMAND_ID,
 	weight: KeybindingWeight.WorkbenchContrib,
-	when: InTable,
+	when: InTableContextKey,
 	primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyS,
 	handler: async (accessor) => {
 		await handleTableCommand(accessor, async (table) => {
@@ -32,7 +32,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: SHOW_COLUMN_MENU_COMMAND_ID,
 	weight: KeybindingWeight.WorkbenchContrib,
-	when: ContextKeyExpr.and(InTable, FilteringEnabled),
+	when: ContextKeyExpr.and(InTableContextKey, TableFilteringEnabledContextKey),
 	primary: KeyCode.F3,
 	handler: async (accessor) => {
 		await handleTableCommand(accessor, async (table) => {
@@ -47,7 +47,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: SORT_COLUMN_COMMAND_ID,
 	weight: KeybindingWeight.WorkbenchContrib,
-	when: InTable,
+	when: InTableContextKey,
 	primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyO,
 	handler: async (accessor) => {
 		await handleTableCommand(accessor, async (table) => {
@@ -85,8 +85,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 async function handleTableCommand(accessor: ServicesAccessor, action: (table: Table<any>) => Promise<void>) {
-	const tableService = accessor.get(ITableService);
-	const table = tableService.getActiveTable();
+	const service = accessor.get(IComponentContextService);
+	const table = service.getActiveTable();
 	if (table) {
 		await action(table);
 	}
