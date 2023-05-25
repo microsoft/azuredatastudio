@@ -993,14 +993,21 @@ export class ProjectsController {
 			return;
 		}
 
-		const defaultValue = await vscode.window.showInputBox(
+		let defaultValue = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewSqlCmdVariableDefaultValue(variableName),
 				ignoreFocusOut: true
 			});
 
 		if (!defaultValue) {
-			return;
+			// prompt asking if they want to add to add a sqlcmd variable without a default value
+			const result = await vscode.window.showInformationMessage(constants.addSqlCmdVariableWithoutDefaultValue(variableName), constants.yesString, constants.noString);
+
+			if (result === constants.noString) {
+				return;
+			} else {
+				defaultValue = '';
+			}
 		}
 
 		await project.addSqlCmdVariable(variableName, defaultValue);
