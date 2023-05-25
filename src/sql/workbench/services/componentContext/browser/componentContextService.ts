@@ -95,6 +95,12 @@ export class ComponentContextService implements IComponentContextService {
 		};
 	}
 
+	/**
+	 * Get the component that has the focus.
+	 * @param type type of the component to look for.
+	 * @param elementGetter function to get the html element of the component.
+	 * @returns the component that has the focus or undefined if no component has the focus.
+	 */
 	private getActiveComponent<T>(type: ComponentType, elementGetter: (component: T) => HTMLElement): T | undefined {
 		for (const item of this._components.values()) {
 			if (item.type === type && elementGetter(item.component).contains(document.activeElement)) {
