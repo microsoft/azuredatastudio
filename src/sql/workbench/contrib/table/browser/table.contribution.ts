@@ -13,9 +13,9 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
-export const RESIZE_COLUMN_COMMAND_ID = 'table.resizeColumn';
-export const SHOW_COLUMN_MENU_COMMAND_ID = 'table.showColumnMenu';
-export const SORT_COLUMN_COMMAND_ID = 'table.sortColumn';
+export const RESIZE_COLUMN_COMMAND_ID = 'grid.resizeColumn';
+export const SHOW_COLUMN_MENU_COMMAND_ID = 'grid.showColumnMenu';
+export const SORT_COLUMN_COMMAND_ID = 'grid.sortColumn';
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: RESIZE_COLUMN_COMMAND_ID,
