@@ -798,24 +798,25 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
 			if (column.isXml || (this.gridConfig.showJsonAsLink && isJsonCell(value))) {
-				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
-				if (result.isExecutionPlan) {
-					const executionPlanGraphInfo = {
-						graphFileContent: value.displayValue,
-						graphFileType: result.queryExecutionPlanFileExtension
-					};
+				if (column.isXml && this.providerId) {
+					const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
+					if (result.isExecutionPlan) {
+						const executionPlanGraphInfo = {
+							graphFileContent: value.displayValue,
+							graphFileType: result.queryExecutionPlanFileExtension
+						};
 
-					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
-					await this.editorService.openEditor(executionPlanInput);
+						const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
+						await this.editorService.openEditor(executionPlanInput);
+						return;
+					}
 				}
-				else {
-					const content = value.displayValue;
-					const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
-					await input.resolve();
-					await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-					input.setDirty(false);
-					await this.editorService.openEditor(input);
-				}
+				const content = value.displayValue;
+				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
+				await input.resolve();
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+				input.setDirty(false);
+				await this.editorService.openEditor(input);
 			}
 		}
 	}

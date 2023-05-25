@@ -267,6 +267,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._chart.onOptionsChange(options => {
 			this.setChartOptions(options);
 		});
+		this.providerId = cellModel.notebookModel.context?.providerName;
 	}
 
 	public get gridDataProvider(): IGridDataProvider {
