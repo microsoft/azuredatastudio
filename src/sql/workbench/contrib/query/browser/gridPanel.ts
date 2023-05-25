@@ -1063,7 +1063,7 @@ class GridTable<T> extends GridTableBase<T> {
 			}
 		}
 
-		actions.push(super.getActionBarItems());
+		actions.push(...super.getActionBarItems());
 		actions.push(this.instantiationService.createInstance(ChartDataAction));
 
 		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
