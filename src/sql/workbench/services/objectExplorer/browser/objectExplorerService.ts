@@ -356,7 +356,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when session is disconnected
 	 */
 	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession): void {
-		if (this._sessions[session.sessionId!]) {
+		if (this._sessions[session.sessionId!] && session.success) {
 			let connection: ConnectionProfile = this._sessions[session.sessionId!].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
 				let uri: string = Utils.generateUri(connection);
