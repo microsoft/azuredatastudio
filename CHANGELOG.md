@@ -130,7 +130,7 @@ For a list of the current known issues, visit the [issues list on GitHub](https:
 | Connection | Include ability to change password for new or expired login. |
 | Connection | Add support for SQL Server Alias use when connecting to a server. |
 | MongoDB Atlas Extension | Provides the ability to connect to and query data on MongoDB Atlas (Preview). |
-| Notebooks | Provide option for users to convert markdown to a table or not when HMTL table tag is present. |
+| Notebooks | Provide option for users to convert markdown to a table or not when HTML table tag is present. |
 | Object Explorer | Databases are no longer brought online in serverless Azure SQL when Databases node is expanded. |
 | Object Explorer | Added support for Ledger views. |
 | Object Explorer | Fixed issue with key binding for objectExplorer.manage not working. |

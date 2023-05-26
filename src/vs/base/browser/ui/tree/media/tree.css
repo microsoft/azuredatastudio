@@ -29,7 +29,7 @@
 	display: inline-block;
 	box-sizing: border-box;
 	height: 100%;
-	/* border-left: 1px solid transparent; {{SQL CARBON EDIT}} Remove indent guide from all custom tree views */
+	border-left: 1px solid transparent;
 }
 
 .monaco-workbench:not(.reduce-motion) .monaco-tl-indent > .indent-guide {

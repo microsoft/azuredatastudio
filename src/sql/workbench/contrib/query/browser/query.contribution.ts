@@ -21,8 +21,6 @@ import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, ToggleActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, ToggleFocusBetweenQueryEditorAndResultsAction, EstimatedExecutionPlanKeyboardAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
-import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
-import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
 import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
@@ -40,13 +38,16 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ILanguageService } from 'vs/editor/common/languages/language';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { CopyHeadersAction, CopyResultAction, SaveResultAction } from 'sql/workbench/contrib/query/browser/actions';
+import { InQueryResultGridContextKey } from 'sql/workbench/services/componentContext/browser/contextKeys';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -240,117 +241,87 @@ actionRegistry.registerWorkbenchAction(
 	'Change Language Flavor'
 );
 
+const GridKeyBindingWeight = 900;
+
+function executeActionOnQueryResultGrid(accessor: ServicesAccessor, actionId: string) {
+	const componentContextService = accessor.get(IComponentContextService);
+	const activeGrid = componentContextService.getActiveQueryResultGrid();
+	if (activeGrid) {
+		activeGrid.runAction(actionId);
+	}
+}
+
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_COPY_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KeyC,
-	handler: gridCommands.copySelection
+	id: CopyResultAction.COPYWITHHEADERS_ID,
+	weight: GridKeyBindingWeight,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyC,
+	when: InQueryResultGridContextKey,
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, CopyResultAction.COPYWITHHEADERS_ID);
+	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.MESSAGES_SELECTALL_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsMessagesFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KeyA,
-	handler: gridCommands.selectAllMessages
+	id: CopyHeadersAction.ID,
+	weight: GridKeyBindingWeight,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyH,
+	when: InQueryResultGridContextKey,
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, CopyHeadersAction.ID);
+	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_SELECTALL_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KeyA,
-	handler: gridCommands.selectAll
+	id: SaveResultAction.SAVECSV_ID,
+	weight: GridKeyBindingWeight,
+	when: InQueryResultGridContextKey,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyC),
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, SaveResultAction.SAVECSV_ID);
+	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.MESSAGES_COPY_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsMessagesFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KeyC,
-	handler: gridCommands.copyMessagesSelection
+	id: SaveResultAction.SAVEJSON_ID,
+	weight: GridKeyBindingWeight,
+	when: InQueryResultGridContextKey,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyJ),
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, SaveResultAction.SAVEJSON_ID);
+	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_SAVECSV_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyC),
-	handler: gridCommands.saveAsCsv
+	id: SaveResultAction.SAVEMARKDOWN_ID,
+	weight: GridKeyBindingWeight,
+	when: InQueryResultGridContextKey,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyM),
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, SaveResultAction.SAVEMARKDOWN_ID);
+	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_SAVEJSON_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyJ),
-	handler: gridCommands.saveAsJson
+	id: SaveResultAction.SAVEEXCEL_ID,
+	weight: GridKeyBindingWeight,
+	when: InQueryResultGridContextKey,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyE),
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, SaveResultAction.SAVEEXCEL_ID);
+	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_SAVEMARKDOWN_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyM),
-	handler: gridCommands.saveAsMarkdown
+	id: SaveResultAction.SAVEXML_ID,
+	weight: GridKeyBindingWeight,
+	when: InQueryResultGridContextKey,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyX),
+	handler: (accessor) => {
+		executeActionOnQueryResultGrid(accessor, SaveResultAction.SAVEXML_ID);
+	}
 });
 
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_SAVEEXCEL_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyE),
-	handler: gridCommands.saveAsExcel
-});
 
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_SAVEXML_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyX),
-	handler: gridCommands.saveAsXml
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_VIEWASCHART_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyV),
-	handler: gridCommands.viewAsChart
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GRID_GOTONEXTGRID_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyN),
-	handler: gridCommands.goToNextGrid
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.TOGGLERESULTS_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyR,
-	handler: gridCommands.toggleResultsPane
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.TOGGLEMESSAGES_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyY,
-	handler: gridCommands.toggleMessagePane
-});
-
-KeybindingsRegistry.registerCommandAndKeybindingRule({
-	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
-	weight: KeybindingWeight.EditorContrib,
-	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyP,
-	handler: gridCommands.goToNextQueryOutputTab
-});
 
 export const queryEditorConfigurationBaseNode = Object.freeze<IConfigurationNode>({
 	id: 'queryEditor',

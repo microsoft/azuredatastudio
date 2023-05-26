@@ -226,7 +226,7 @@ import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/comm
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
-import { ITableService, TableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -271,7 +271,7 @@ registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
 registerSingleton(IExecutionPlanService, ExecutionPlanService);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
-registerSingleton(ITableService, TableService);
+registerSingleton(IComponentContextService, ComponentContextService);
 //#endregion
 
 

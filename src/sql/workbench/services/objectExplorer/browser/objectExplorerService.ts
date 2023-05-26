@@ -38,6 +38,8 @@ export const enum ServerTreeViewView {
 	active = 'active'
 }
 
+export const ERROR_NODE_TYPE = 'error';
+
 export interface IServerTreeView {
 	readonly tree: ITree | AsyncServerTree;
 	readonly onSelectionOrFocusChange: Event<void>;
@@ -583,12 +585,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		};
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
-			nodePath: nodePath,
+			nodePath: '',
 			parentNodePath: '',
 			objectType: 'error',
 			label: 'Error',
 			errorMessage: '',
-			nodeType: 'error',
+			nodeType: ERROR_NODE_TYPE,
 			isLeaf: true,
 			nodeSubType: '',
 			nodeStatus: '',

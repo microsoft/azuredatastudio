@@ -11,7 +11,7 @@
 
 .monaco-workbench.vs-dark .actions-container .action-label.add-server-action,
 .monaco-workbench.hc-black .actions-container .action-label.add-server-action,
-.monaco-list:focus .monaco-list-rows .actions-container .action-label.add-server-action {
+.monaco-list:focus .monaco-list-rows .monaco-list-row.selected .actions-container .action-label.add-server-action {
 	background-image: url('add_server_inverse.svg') !important;
 }
 
@@ -52,7 +52,7 @@
 
 .monaco-workbench.vs-dark .actions-container .action-label.remove-filter-action,
 .monaco-workbench.hc-black .actions-container .action-label.remove-filter-action,
-.monaco-list:focus .monaco-list-rows .actions-container .action-label.remove-filter-action {
+.monaco-list:focus .monaco-list-rows .monaco-list-row.selected .actions-container .action-label.remove-filter-action {
 	background-image: url('remove_filter_inverse.svg') !important;
 }
 

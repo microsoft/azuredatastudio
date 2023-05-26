@@ -69,7 +69,12 @@ However we always want it to be the width of the container it is resizing.
 	flex-direction: row;
 	padding: 5px;
 	height: auto;
-	width: 420px;
+	width: 460px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .property-name-label {
+	flex: 0 60px;
+	line-height: 26px
 }
 
 /* input bar styling in search node action view */
