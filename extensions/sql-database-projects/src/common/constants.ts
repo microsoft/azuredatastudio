@@ -158,6 +158,7 @@ export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Ch
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new default value for variable '{0}'", varName);
 export const enterNewSqlCmdVariableName = localize('enterNewSqlCmdVariableName', "Enter new SQLCMD Variable name");
 export const enterNewSqlCmdVariableDefaultValue = (varName: string) => localize('enterNewSqlCmdVariableDefaultValue', "Enter default value for SQLCMD variable '{0}'", varName);
+export const addSqlCmdVariableWithoutDefaultValue = (varName: string) => localize('addSqlCmdVariableWithoutDefaultValue', "Add SQLCMD variable '{0}' to project without default value?", varName);
 export const sqlcmdVariableAlreadyExists = localize('sqlcmdVariableAlreadyExists', "A SQLCMD Variable with the same name already exists in this project");
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
 export const createNew = localize('createNew', "Create New");

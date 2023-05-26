@@ -1116,6 +1116,40 @@ describe('ProjectsController', function (): void {
 			should(project.sqlCmdVariables.size).equal(3, 'The project should have 3 sqlcmd variable after adding a new one');
 		});
 
+		it('Should add sqlcmd variable without DefaultValue', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(project.sqlCmdVariables.size).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			const inputBoxStub = sinon.stub(vscode.window, 'showInputBox');
+			inputBoxStub.onFirstCall().resolves('newVariable');
+			inputBoxStub.onSecondCall().resolves(undefined);
+			const infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
+			infoMessageStub.onFirstCall().returns(<any>Promise.resolve(constants.noString));
+			await projController.addSqlCmdVariable(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(project.sqlCmdVariables.size).equal(2, 'The project should still have 2 sqlcmd variables if no was selected for adding sqlcmd variable without a DefaultValue');
+
+			inputBoxStub.reset();
+			inputBoxStub.onFirstCall().resolves('newVariable');
+			inputBoxStub.onSecondCall().resolves(undefined);
+			infoMessageStub.onSecondCall().returns(<any>Promise.resolve(constants.yesString));
+			await projController.addSqlCmdVariable(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(project.sqlCmdVariables.size).equal(3, 'The project should have 3 sqlcmd variable after adding a new one without a DefaultValue');
+			should(project.sqlCmdVariables.get('newVariable')).equal('', 'The default value of newVariable should be an empty string');
+		});
+
+
 		it('Should update sqlcmd variable', async function (): Promise<void> {
 			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const sqlProjectsService = await utils.getSqlProjectsService();
