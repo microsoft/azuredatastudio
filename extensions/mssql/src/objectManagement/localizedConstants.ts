@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { ObjectManagement } from 'mssql';
+import { ObjectTypeInfo } from './ui/findObjectDialog';
 const localize = nls.loadMessageBundle();
 
 // Object Types
@@ -272,4 +273,13 @@ export function getUserTypeByDisplayName(displayName: string): ObjectManagement.
 			return key;
 	}
 	throw new Error(`Unknown user type display name: ${displayName}`);
+}
+
+export function getObjectTypeInfo(typeNames: string[]): ObjectTypeInfo[] {
+	return typeNames.map(typeName => {
+		return {
+			name: typeName,
+			displayName: getNodeTypeDisplayName(typeName, true)
+		};
+	});
 }

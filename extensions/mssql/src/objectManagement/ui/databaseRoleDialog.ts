@@ -54,7 +54,11 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		}, this.objectInfo.owner, true, 'text', 210);
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
-				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+				objectTypes: localizedConstants.getObjectTypeInfo([
+					ObjectManagement.NodeType.ApplicationRole,
+					ObjectManagement.NodeType.DatabaseRole,
+					ObjectManagement.NodeType.User
+				]),
 				selectAllObjectTypes: true,
 				multiSelect: false,
 				contextId: this.contextId,
@@ -78,7 +82,10 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
-					objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+					objectTypes: localizedConstants.getObjectTypeInfo([
+						ObjectManagement.NodeType.DatabaseRole,
+						ObjectManagement.NodeType.User
+					]),
 					selectAllObjectTypes: true,
 					multiSelect: true,
 					contextId: this.contextId,
