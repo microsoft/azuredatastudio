@@ -21,7 +21,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { CATEGORIES } from 'vs/workbench/common/actions';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
-import { IDebugService, REPL_VIEW_ID } from 'vs/workbench/contrib/debug/common/debug';
+// import { IDebugService, REPL_VIEW_ID } from 'vs/workbench/contrib/debug/common/debug'; // {{SQL CARBON EDIT}} - remove unused import
 
 interface IViewQuickPickItem extends IPickerQuickAccessItem {
 	containerLabel: string;
@@ -37,7 +37,7 @@ export class ViewQuickAccessProvider extends PickerQuickAccessProvider<IViewQuic
 		@IOutputService private readonly outputService: IOutputService,
 		@ITerminalService private readonly terminalService: ITerminalService,
 		@ITerminalGroupService private readonly terminalGroupService: ITerminalGroupService,
-		@IDebugService private readonly debugService: IDebugService,
+		// @IDebugService private readonly debugService: IDebugService, // {{SQL CARBON EDIT}} - Disable debug service
 		@IPaneCompositePartService private readonly paneCompositeService: IPaneCompositePartService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
@@ -184,6 +184,7 @@ export class ViewQuickAccessProvider extends PickerQuickAccessProvider<IViewQuic
 		});
 
 		// Debug Consoles
+		/* {{SQL CARBON EDIT}} - Disable debug service
 		this.debugService.getModel().getSessions(true).filter(s => s.hasSeparateRepl()).forEach((session, _) => {
 			const label = session.name;
 			viewEntries.push({
@@ -199,6 +200,7 @@ export class ViewQuickAccessProvider extends PickerQuickAccessProvider<IViewQuic
 			});
 
 		});
+		*/	// {{SQL CARBON EDIT}} - end Disable debug service comment block
 
 		// Output Channels
 		const channels = this.outputService.getChannelDescriptors();
