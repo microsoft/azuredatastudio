@@ -84,6 +84,7 @@ export abstract class DialogBase<DialogResult> {
 					this._loadingComponent = view.modelBuilder.loadingComponent().withItem(this._formContainer).withProps({
 						loading: true,
 						loadingText: uiLoc.LoadingDialogText,
+						loadingCompletedText: uiLoc.LoadingDialogCompletedText,
 						showText: true,
 						CSSStyles: {
 							width: "100%",
@@ -338,8 +339,10 @@ export abstract class DialogBase<DialogResult> {
 		}
 	}
 
-	protected updateLoadingStatus(isLoading: boolean): void {
+	protected updateLoadingStatus(isLoading: boolean, loadingText: string = uiLoc.LoadingDialogText, loadingCompletedText: string = uiLoc.LoadingDialogCompletedText): void {
 		if (this._loadingComponent) {
+			this._loadingComponent.loadingText = loadingText;
+			this._loadingComponent.loadingCompletedText = loadingCompletedText;
 			this._loadingComponent.loading = isLoading;
 		}
 	}
