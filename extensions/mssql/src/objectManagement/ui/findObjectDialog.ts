@@ -36,6 +36,7 @@ const ObjectsTableMaxRowCount = 20;
 
 export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private objectTypesTable: azdata.TableComponent;
+	private searchTextInputBox: azdata.InputBoxComponent;
 	private findButton: azdata.ButtonComponent;
 	private objectsTable: azdata.TableComponent;
 	private objectsLoadingComponent: azdata.LoadingComponent;
@@ -54,7 +55,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 
 	protected override async initialize(): Promise<void> {
 		this.dialogObject.okButton.enabled = false;
-		this.objectTypesTable = this.createTableList<ObjectTypeInfo>(localizedConstants.ObjectTypeText,
+		this.objectTypesTable = this.createTableList<ObjectTypeInfo>(localizedConstants.ObjectTypesText,
 			[localizedConstants.ObjectTypeText],
 			this.options.objectTypes,
 			this.selectedObjectTypes,
@@ -64,11 +65,17 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			}, (item1, item2) => {
 				return item1.name === item2.name;
 			});
+		this.searchTextInputBox = this.createInputBox(localizedConstants.SearchTextLabel, async () => { });
+		const searchTextRow = this.createLabelInputContainer(localizedConstants.SearchTextLabel, this.searchTextInputBox);
 		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();
 		}, this.options.selectAllObjectTypes);
 		const buttonContainer = this.createButtonContainer([this.findButton]);
-		const objectTypeSection = this.createGroup(localizedConstants.ObjectTypeText, [this.objectTypesTable, buttonContainer]);
+		const filterSection = this.createGroup(localizedConstants.FilterSectionTitle, [
+			searchTextRow,
+			this.objectTypesTable,
+			buttonContainer
+		]);
 		const columns = [localizedConstants.NameText, localizedConstants.ObjectTypeText];
 		if (this.options.showSchemaColumn) {
 			columns.splice(1, 0, localizedConstants.SchemaText);
@@ -101,7 +108,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		}).component();
 		const objectsSection = this.createGroup(localizedConstants.ObjectsText, [this.objectsLoadingComponent]);
 
-		this.formContainer.addItems([objectTypeSection, objectsSection], this.getSectionItemLayout());
+		this.formContainer.addItems([filterSection, objectsSection], this.getSectionItemLayout());
 	}
 
 	protected override get dialogResult(): FindObjectDialogResult | undefined {
@@ -113,7 +120,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.objectsLoadingComponent.loading = true;
 		this.findButton.enabled = false;
 		try {
-			const results = await this.objectManagementService.search(this.options.contextId, this.selectedObjectTypes.map(item => item.name));
+			const results = await this.objectManagementService.search(this.options.contextId, this.selectedObjectTypes.map(item => item.name), this.searchTextInputBox.value);
 			this.allObjects.splice(0, this.allObjects.length, ...results);
 			let data;
 			if (this.options.multiSelect) {

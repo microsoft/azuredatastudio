@@ -32,7 +32,7 @@ export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, Objec
 	private membershipTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, true);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: true });
 	}
 
 	protected override get helpUrl(): string {

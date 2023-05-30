@@ -28,7 +28,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 	private memberTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, true, false);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: false });
 	}
 
 	protected override get helpUrl(): string {
