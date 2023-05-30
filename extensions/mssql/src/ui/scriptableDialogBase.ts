@@ -68,8 +68,8 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 		await this.initializeUI();
 	}
 
-	protected override updateLoadingStatus(isLoading: boolean): void {
-		super.updateLoadingStatus(isLoading);
+	protected override updateLoadingStatus(isLoading: boolean, loadingText?: string, loadingCompletedText?: string): void {
+		super.updateLoadingStatus(isLoading, loadingText, loadingCompletedText);
 		this._helpButton.enabled = !isLoading;
 		this.dialogObject.okButton.enabled = this._scriptButton.enabled = isLoading ? false : this.isDirty;
 	}
@@ -80,7 +80,7 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 	protected abstract generateScript(): Promise<string>;
 
 	private async onScriptButtonClick(): Promise<void> {
-		this.updateLoadingStatus(true);
+		this.updateLoadingStatus(true, localizedConstants.GeneratingScriptText, localizedConstants.GeneratingScriptCompletedText);
 		try {
 			const isValid = await this.runValidation();
 			if (!isValid) {
@@ -104,7 +104,7 @@ export abstract class ScriptableDialogBase<OptionsType extends ScriptableDialogO
 				level: azdata.window.MessageLevel.Error
 			};
 		} finally {
-			this.updateLoadingStatus(false);
+			this.updateLoadingStatus(false, localizedConstants.GeneratingScriptText, localizedConstants.GeneratingScriptCompletedText);
 		}
 	}
 }

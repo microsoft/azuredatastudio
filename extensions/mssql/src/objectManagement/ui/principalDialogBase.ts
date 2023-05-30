@@ -181,9 +181,9 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	}
 
 	private async searchForObjects(objectTypes: string[], schema: string = undefined): Promise<mssql.ObjectManagement.SearchResultItem[]> {
-		this.updateLoadingStatus(true);
+		this.updateLoadingStatus(true, localizedConstants.LoadingObjectsText);
 		const result = await this.objectManagementService.search(this.contextId, objectTypes, undefined, schema);
-		this.updateLoadingStatus(false);
+		this.updateLoadingStatus(false, localizedConstants.LoadingObjectsText, localizedConstants.LoadingObjectsCompletedText(result.length));
 		return result;
 	}
 
