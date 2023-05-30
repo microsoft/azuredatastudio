@@ -35,7 +35,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, false);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: false, supportEffectivePermissions: true });
 	}
 
 	protected override get helpUrl(): string {

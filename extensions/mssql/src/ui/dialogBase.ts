@@ -76,7 +76,7 @@ export abstract class DialogBase<DialogResult> {
 
 	public async open(): Promise<void> {
 		try {
-			this.onLoadingStatusChanged(true);
+			this.updateLoadingStatus(true);
 			const initializeDialogPromise = new Promise<void>((async resolve => {
 				this.dialogObject.registerContent(async view => {
 					this._modelView = view;
@@ -97,7 +97,7 @@ export abstract class DialogBase<DialogResult> {
 			azdata.window.openDialog(this.dialogObject);
 			await initializeDialogPromise;
 			await this.initialize();
-			this.onLoadingStatusChanged(false);
+			this.updateLoadingStatus(false);
 		} catch (err) {
 			azdata.window.closeDialog(this.dialogObject);
 			throw err;
@@ -121,10 +121,10 @@ export abstract class DialogBase<DialogResult> {
 		return errors.length === 0;
 	}
 
-	protected createLabelInputContainer(label: string, input: azdata.InputBoxComponent | azdata.DropDownComponent): azdata.FlexContainer {
-		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: input.required }).component();
+	protected createLabelInputContainer(label: string, component: azdata.Component, required: boolean = false): azdata.FlexContainer {
+		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required }).component();
 		const container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
-		container.addItem(input, { flex: '1 1 auto' });
+		container.addItem(component, { flex: '1 1 auto' });
 		return container;
 	}
 
@@ -236,7 +236,7 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
-	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: () => Promise<void>, removeHandler: () => Promise<void>): azdata.FlexContainer {
+	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>): azdata.FlexContainer {
 		let addButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
 		const updateButtons = () => {
@@ -244,11 +244,11 @@ export abstract class DialogBase<DialogResult> {
 			removeButton.enabled = table.selectedRows?.length === 1 && table.selectedRows[0] !== -1 && table.selectedRows[0] < table.data.length;
 		}
 		addButton = this.createButton(uiLoc.AddText, addButtonAriaLabel, async () => {
-			await addHandler();
+			await addHandler(addButton);
 			updateButtons();
 		});
 		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {
-			await removeHandler();
+			await removeHandler(removeButton);
 			if (table.selectedRows.length === 1 && table.selectedRows[0] >= table.data.length) {
 				table.selectedRows = [table.data.length - 1];
 			}
@@ -308,6 +308,20 @@ export abstract class DialogBase<DialogResult> {
 		}).withItems(items, { flex: '0 0 auto' }).component();
 	}
 
+	protected createRadioButton(label: string, groupName: string, checked: boolean, handler: (checked: boolean) => Promise<void>): azdata.RadioButtonComponent {
+		const radio = this.modelView.modelBuilder.radioButton().withProps({
+			label: label,
+			name: groupName,
+			checked: checked
+		}).component();
+		this.disposables.push(radio.onDidChangeCheckedState(async checked => {
+			await handler(checked);
+			this.onFormFieldChange();
+			await this.runValidation(false);
+		}));
+		return radio;
+	}
+
 	protected removeItem(container: azdata.DivContainer | azdata.FlexContainer, item: azdata.Component): void {
 		if (container.items.indexOf(item) !== -1) {
 			container.removeItem(item);
@@ -324,7 +338,7 @@ export abstract class DialogBase<DialogResult> {
 		}
 	}
 
-	protected onLoadingStatusChanged(isLoading: boolean): void {
+	protected updateLoadingStatus(isLoading: boolean): void {
 		if (this._loadingComponent) {
 			this._loadingComponent.loading = isLoading;
 		}
