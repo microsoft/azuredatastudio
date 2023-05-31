@@ -79,7 +79,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
 			obj = this.getServerRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerProperties) {
-			obj = this.getServerPropertiesView(isNewObject, objectUrn);
+			obj = this.getPropertiesView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.User) {
 			obj = this.getUserView(isNewObject, objectUrn);
 		}
@@ -294,60 +294,24 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getServerPropertiesView(isNewObject: boolean, name: string): ObjectManagement.ServerViewInfo {
-		return isNewObject ? <ObjectManagement.ServerViewInfo>{
+	private getPropertiesView(isNewObject: boolean, name: string): ObjectManagement.PropertiesViewInfo {
+		return isNewObject ? <ObjectManagement.PropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
 				language: '',
 				memory: '',
 				operatingSystem: '',
 				platform: '',
-				processors: '',
-				isClustered: 'False',
-				isHadrEnabled: '',
-				isPolyBaseInstalled: '',
-				product: '',
-				rootDirectory: '',
-				serverCollation: '',
-				version: '',
-				minServerMemory: 100,
-				maxServerMemory: 500,
-				setProcessorAffinity: true,
-				setIOAffinity: true,
-				serverAuth: 'WindowsAuth',
-				loginAuditing: 'None',
-				compressBackup: true,
-				backupChecksum: true,
-				dataLocation: '',
-				logLocation: '',
-				backupLocation: ''
+				processors: ''
 			}
-		} : <ObjectManagement.ServerViewInfo>{
+		} : <ObjectManagement.PropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
-				language: '',
-				memory: '',
-				operatingSystem: '',
+				language: 'English (US)',
+				memory: '256 GB',
+				operatingSystem: 'Windows',
 				platform: '',
-				processors: '',
-				isClustered: 'False',
-				isHadrEnabled: '',
-				isPolyBaseInstalled: '',
-				product: '',
-				rootDirectory: '',
-				serverCollation: '',
-				version: '',
-				minServerMemory: 100,
-				maxServerMemory: 500,
-				setProcessorAffinity: true,
-				setIOAffinity: true,
-				serverAuth: 'WindowsAuth',
-				loginAuditing: 'None',
-				compressBackup: true,
-				backupChecksum: true,
-				dataLocation: '',
-				logLocation: '',
-				backupLocation: ''
+				processors: ''
 			}
 		};
 	}

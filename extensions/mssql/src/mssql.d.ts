@@ -1318,60 +1318,17 @@ declare module 'mssql' {
 			recoveryModels: string[];
 		}
 
-		export interface ServerInfo extends SqlObject {
-			// General section readonly
+		export interface PropertiesInfo extends SqlObject {
+			// Add common properties between server and database
 			language: string;
 			memory: string;
 			operatingSystem: string;
 			platform: string;
 			processors: string;
-			isClustered: string;
-			isHadrEnabled: string;
-			isPolyBaseInstalled: string;
-			product: string;
-			rootDirectory: string;
-			serverCollation: string;
 			version: string;
-			// Memory
-			// Server Memory Options
-			minServerMemory: number;
-			maxServerMemory: number;
-			// Processors
-			setProcessorAffinity: boolean;
-			setIOAffinity: boolean;
-			// Security
-			serverAuth: 'WindowsAuth' | 'Sql Server and Windows auth';
-			loginAuditing: 'None' | 'Failed logins only' | 'Successful logins only' | 'Both failed and successful logins';
-			// Database Settings
-			compressBackup: boolean;
-			backupChecksum: boolean;
-			dataLocation: string;
-			logLocation: string;
-			backupLocation: string;
-			// Advanced tab TODO
 		}
 
-		export interface ServerViewInfo extends ObjectViewInfo<ServerInfo> {
-
-		}
-
-
-		export interface SqlServerInfo extends ServerInfo {
-			isXTPSupported: string;
-		}
-
-		export interface SqlServerViewInfo extends ObjectViewInfo<SqlServerInfo> {
-
-		}
-
-		export interface ManagedInstanceServerInfo extends ServerInfo {
-			hardwareGeneration: string
-			reservedStorageSpace: string;
-			serverTier: string;
-			storageSpaceUsage: string;
-		}
-
-		export interface ManagedInstaceServerViewInfo extends ObjectViewInfo<ManagedInstanceServerInfo> {
+		export interface PropertiesViewInfo extends ObjectViewInfo<PropertiesInfo> {
 		}
 	}
 
