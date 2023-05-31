@@ -10,18 +10,21 @@ import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 
 export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectManagement.PropertiesInfo, ObjectManagement.PropertiesViewInfo> {
 	private generalTab: azdata.window.DialogTab;
-	private testTab: azdata.window.DialogTab;
 	private generalSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
 	private languageInput: azdata.InputBoxComponent;
 	private memoryInput: azdata.InputBoxComponent;
 	private operatingSystemInput: azdata.InputBoxComponent;
 
+	private memoryTab: azdata.window.DialogTab;
+	private memorySection: azdata.GroupContainer;
+	private minServerMemoryInput: azdata.InputBoxComponent;
+	private maxServerMemoryInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.generalTab = azdata.window.createTab('General');
-		this.testTab = azdata.window.createTab('Test');
+		this.generalTab = azdata.window.createTab(localizedConstants.GeneralSectionHeader);
+		this.memoryTab = azdata.window.createTab(localizedConstants.MemoryText);
 	}
 
 	protected override get helpUrl(): string {
@@ -35,7 +38,8 @@ export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 
 	protected async initializeUI(): Promise<void> {
 		this.initializeGeneralSection();
-		this.dialogObject.content = [this.generalTab, this.testTab];
+		this.initializeMemorySection();
+		this.dialogObject.content = [this.generalTab, this.memoryTab];
 		azdata.window.openDialog(this.dialogObject);
 	}
 
@@ -45,22 +49,22 @@ export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 		}, this.objectInfo.name, this.options.isNewObject);
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.languageInput = this.createInputBox('Language', async (newValue) => {
+		this.languageInput = this.createInputBox(localizedConstants.LanguageText, async (newValue) => {
 			this.objectInfo.language = newValue;
 		}, this.objectInfo.language, this.options.isNewObject);
-		const languageContainer = this.createLabelInputContainer('Language', this.languageInput);
+		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageInput);
 
-		this.memoryInput = this.createInputBox('Memory', async (newValue) => {
+		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, async (newValue) => {
 			this.objectInfo.memory = newValue;
 		}, this.objectInfo.memory, this.options.isNewObject);
-		const memoryContainer = this.createLabelInputContainer('Memory', this.memoryInput);
+		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 
-		this.operatingSystemInput = this.createInputBox('Operating System', async (newValue) => {
+		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, async (newValue) => {
 			this.objectInfo.operatingSystem = newValue;
 		}, this.objectInfo.operatingSystem, this.options.isNewObject);
-		const operatingSystemContainer = this.createLabelInputContainer('Operating System', this.operatingSystemInput);
+		const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
 
-		this.generalSection = this.createGroup(localizedConstants.GeneralSectionHeader, [
+		this.generalSection = this.createGroup('', [
 			nameContainer,
 			languageContainer,
 			memoryContainer,
@@ -68,6 +72,24 @@ export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 		], false);
 
 		this.registerTab(this.generalTab, [this.generalSection]);
-		this.registerTab(this.testTab, [this.generalSection]);
+	}
+
+	private initializeMemorySection(): void {
+		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
+			this.objectInfo.minMemory = newValue;
+		}, this.objectInfo.minMemory, true);
+		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
+
+		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
+			this.objectInfo.maxMemory = newValue;
+		}, this.objectInfo.maxMemory, true);
+		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
+
+		this.memorySection = this.createGroup('', [
+			minMemoryContainer,
+			maxMemoryContainer
+		], false);
+
+		this.registerTab(this.memoryTab, [this.memorySection]);
 	}
 }

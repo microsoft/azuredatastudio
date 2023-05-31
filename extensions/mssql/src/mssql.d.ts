@@ -901,7 +901,7 @@ declare module 'mssql' {
 			DatabaseRole = "DatabaseRole",
 			ServerLevelLogin = "ServerLevelLogin",
 			ServerLevelServerRole = "ServerLevelServerRole",
-			ServerProperties = "ServerProperties",
+			Server = "Server",
 			Table = "Table",
 			User = "User",
 			View = "View"
@@ -1326,6 +1326,9 @@ declare module 'mssql' {
 			platform: string;
 			processors: string;
 			version: string;
+
+			minMemory: string;
+			maxMemory: string;
 		}
 
 		export interface PropertiesViewInfo extends ObjectViewInfo<PropertiesInfo> {

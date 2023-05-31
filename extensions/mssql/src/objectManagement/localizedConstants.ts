@@ -18,7 +18,7 @@ export const ColumnTypeDisplayName: string = localize('objectManagement.ColumnDi
 export const DatabaseTypeDisplayName: string = localize('objectManagement.DatabaseDisplayName', "database");
 export const ServerRoleTypeDisplayName: string = localize('objectManagement.ServerRoleTypeDisplayName', "server role");
 export const ServerRoleTypeDisplayNameInTitle: string = localize('objectManagement.ServerRoleTypeDisplayNameInTitle', "Server Role");
-export const ServerPropertiesTypeDisplayName: string = localize('objectManagement.ServerPropertiesDisplayName', "Server properties");
+export const ServerTypeDisplayName: string = localize('objectManagement.ServerDisplayName', "Server");
 export const ApplicationRoleTypeDisplayName: string = localize('objectManagement.ApplicationRoleTypeDisplayName', "application role");
 export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectManagement.ApplicationRoleTypeDisplayNameInTitle', "Application Role");
 export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
@@ -190,6 +190,15 @@ export function LoadingObjectsCompletedText(count: number): string {
 	return localize('objectManagement.loadingObjectsCompletedLabel', "Loading objects completed, {0} objects found", count);
 }
 
+// Object Properties Dialog
+export const PropertiesHeader = localize('objectManagement.properties', "Properties");
+export const LanguageText = localize('objectManagement.language', "Language");
+export const MemoryText = localize('objectManagement.memory', "Memory");
+export const OperatingSystemText = localize('objectManagement.operatingSystem', "Operating System");
+
+export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
+export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+
 // Util functions
 
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
@@ -202,8 +211,8 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return inTitle ? ServerRoleTypeDisplayNameInTitle : ServerRoleTypeDisplayName;
-		case ObjectManagement.NodeType.ServerProperties:
-			return ServerPropertiesTypeDisplayName;
+		case ObjectManagement.NodeType.Server:
+			return ServerTypeDisplayName;
 		case ObjectManagement.NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
 		case ObjectManagement.NodeType.Table:

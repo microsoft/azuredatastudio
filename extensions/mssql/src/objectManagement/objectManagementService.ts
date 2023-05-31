@@ -78,7 +78,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
 			obj = this.getServerRoleView(isNewObject, objectUrn);
-		} else if (objectType === ObjectManagement.NodeType.ServerProperties) {
+		} else if (objectType === ObjectManagement.NodeType.Server) {
 			obj = this.getPropertiesView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.User) {
 			obj = this.getUserView(isNewObject, objectUrn);
@@ -302,7 +302,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 				memory: '',
 				operatingSystem: '',
 				platform: '',
-				processors: ''
+				processors: '',
+				minMemory: '',
+				maxMemory: ''
 			}
 		} : <ObjectManagement.PropertiesViewInfo>{
 			objectInfo: {
@@ -311,7 +313,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 				memory: '256 GB',
 				operatingSystem: 'Windows',
 				platform: '',
-				processors: ''
+				processors: '',
+				minMemory: '0',
+				maxMemory: '22528'
 			}
 		};
 	}

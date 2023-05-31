@@ -107,24 +107,20 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		// const parentUrn = await getParentUrn(context);
-		// const options: ObjectManagementDialogOptions = {
-		// 	connectionUri: connectionUri,
-		// 	isNewObject: false,
-		// 	database: context.connectionProfile!.databaseName!,
-		// 	objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-		// 	objectName: context.nodeInfo.label,
-		// 	parentUrn: parentUrn,
-		// 	objectUrn: context.nodeInfo!.metadata!.urn,
-		// 	objectExplorerContext: context
-		// };
-		// const dialog = getDialog(service, options);
-		const objectType = ObjectManagement.NodeType.ServerProperties;
+		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
+		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : ObjectManagement.NodeType.Server;
+		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
+		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+
 		const options: ObjectManagementDialogOptions = {
-			objectType: objectType,
 			connectionUri: connectionUri,
 			isNewObject: false,
-			parentUrn: undefined
+			database: context.connectionProfile!.databaseName!,
+			objectType: objectType,
+			objectName: objectName,
+			parentUrn: parentUrn,
+			objectUrn: objectUrn,
+			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
 		await dialog.open();
@@ -251,7 +247,7 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new LoginDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
-		case ObjectManagement.NodeType.ServerProperties:
+		case ObjectManagement.NodeType.Server:
 			return new ObjectPropertiesDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
