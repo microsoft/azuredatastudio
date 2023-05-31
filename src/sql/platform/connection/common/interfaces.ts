@@ -10,6 +10,7 @@ export type ProfileMatcher = (a: IConnectionProfile, b: IConnectionProfile) => b
 
 export interface IConnectionProfile extends azdata.IConnectionProfile {
 	getOptionsKey(): string;
+	getOptionKeyIdNames(): string[];
 	matches(profile: azdata.IConnectionProfile): boolean;
 }
 
