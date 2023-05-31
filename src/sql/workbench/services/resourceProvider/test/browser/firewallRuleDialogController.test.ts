@@ -89,6 +89,7 @@ suite('Firewall rule dialog controller tests', () => {
 			groupFullName: 'g2/g2-2',
 			groupId: 'group id',
 			getOptionsKey: () => '',
+			getOptionKeyIdNames: undefined!,
 			matches: () => false,
 			providerName: mssqlProviderName,
 			options: {},
