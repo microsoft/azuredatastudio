@@ -1,0 +1,14 @@
+{
+	"parserOptions": {
+		"project": "./extensions/query-store/tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/no-floating-promises": [
+			"error",
+			{
+				"ignoreVoid": true
+			}
+		],
+		"@typescript-eslint/explicit-function-return-type": ["on"]
+	}
+}
