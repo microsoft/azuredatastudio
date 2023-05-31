@@ -89,7 +89,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			this.refreshLoader.loading = true;
 			await this.statusBar.clearError();
 			if (initialize) {
-				await this._clearControlsValue();
+				this._clearControlsValue();
 			}
 			await this.model.fetchStatus();
 			await this._loadData();

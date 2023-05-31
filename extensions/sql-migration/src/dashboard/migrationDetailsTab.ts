@@ -124,7 +124,7 @@ export class MigrationDetailsTab extends MigrationDetailsTabBase<MigrationDetail
 			await this.statusBar.clearError();
 
 			if (initialize) {
-				await this._clearControlsValue();
+				this._clearControlsValue();
 				await utils.updateControlDisplay(this._fileTable, false);
 				await this._fileTable.updateProperty('columns', this._getTableColumns(this.model?.migration));
 				await this._showControls(this.model?.migration);
