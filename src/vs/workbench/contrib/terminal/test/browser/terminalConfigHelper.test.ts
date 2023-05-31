@@ -18,6 +18,11 @@ class TestTerminalConfigHelper extends TerminalConfigHelper {
 suite.skip('Workbench - TerminalConfigHelper', () => { // {{SQL CARBON EDIT}} skip suite
 	let fixture: HTMLElement;
 
+	// This suite has retries setup because the font-related tests flake only on GitHub actions, not
+	// ADO. It seems Electron hangs for some reason only on GH actions, so the two options are to
+	// retry or remove the test outright (which would drop coverage).
+	//this.retries(3);
+
 	setup(() => {
 		fixture = document.body;
 	});
