@@ -345,12 +345,43 @@ export interface IErrorDialogOptions {
 }
 
 /**
+ * State of the troubleshooter item
+*/
+export enum State {
+	Invalid = 0,
+	Loading = 1,
+	Valid = 2
+}
+
+/**
+ * Troubleshooter item to display in the troubleshooter dialog
+ */
+export interface ITroubleshooterItem {
+	/**
+	 * State of fetching the troubleshooter item
+	 */
+	state: State;
+	/**
+	 * Message text
+	 */
+	message: string;
+}
+
+/**
+ * Provides dialog options to customize modal dialog content and layout
+ */
+export interface ITroubleshooterDialogOptions extends IErrorDialogOptions {
+	troubleshooterItem: ITroubleshooterItem;
+}
+
+/**
  * An action that will be rendered as a button on the dialog.
  */
 export interface IDialogAction {
 	id: string;
 	label: string;
-	isPrimary: boolean;
+	closeDialog?: boolean;
+	run?: () => void;
 }
 
 export enum MessageLevel {

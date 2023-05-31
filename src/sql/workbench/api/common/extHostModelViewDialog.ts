@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, IDialogProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, IDialogProperties, IErrorDialogOptions, ITroubleshooterDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
@@ -777,8 +777,12 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			this._proxy.$openDialog(handle);
 	}
 
-	public openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined> {
+	public openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined> {
 		return this._proxy.$openCustomErrorDialog(options);
+	}
+
+	public openTroubleshooterDialog(options: ITroubleshooterDialogOptions): Thenable<string | undefined> {
+		return this._proxy.$openTroubleshooterDialog(options);
 	}
 
 	public closeDialog(dialog: azdata.window.Dialog): void {

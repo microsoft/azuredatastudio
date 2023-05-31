@@ -46,6 +46,7 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
+	private _actionEvents = new Map<string, boolean>();
 	private _promise: Deferred<string> | undefined;
 
 	private _onOk = new Emitter<void>();
@@ -108,8 +109,10 @@ export class ErrorMessageDialog extends Modal {
 		if (this._actions && index < this._actions.length) {
 			const actionId = this._actions[index].id;
 			this._telemetryService.sendActionEvent(this._telemetryView, actionId);
-			// Call OK to close dialog.
-			this.ok(false);
+			if (this._actionEvents && this._actionEvents.has(actionId) && this._actionEvents.get(actionId)) {
+				// Call OK to close dialog.
+				this.ok(false);
+			}
 			// Run the action if possible
 			this._actions[index].run();
 			// Resolve promise after running action.
@@ -119,6 +122,13 @@ export class ErrorMessageDialog extends Modal {
 
 	protected layout(height?: number): void {
 		// Nothing to re-layout
+	}
+
+	protected hideFooterButtons(): void {
+		this._actions.forEach(button => {
+			this.removeFooterButton(button.label);
+		});
+		this.removeFooterButton(this._closeLabel);
 	}
 
 	protected updateDialogBody(): void {
@@ -234,7 +244,8 @@ export class ErrorMessageDialog extends Modal {
 		let actions: IAction[] = [];
 		this.resetActions();
 		options.actions?.forEach(action => {
-			actions.push(new Action(action.id, action.label, '', true, () => { }));
+			this._actionEvents.set(action.id, action.closeDialog);
+			actions.push(new Action(action.id, action.label, '', true, () => { action.run(); }));
 		});
 
 		this.open(options.telemetryView, this.convertToSeverity(options.severity),

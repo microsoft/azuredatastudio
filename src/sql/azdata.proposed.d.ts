@@ -1891,6 +1891,48 @@ declare module 'azdata' {
 		export function openCustomErrorDialog(options: IErrorDialogOptions): Thenable<string | undefined>;
 
 		/**
+		 * Opens the troubleshooter dialog with customization options provided.
+		 * @param options Dialog options to customize troubleshooter dialog.
+		 * @returns Id of action button clicked by user, e.g. ok, cancel
+		 */
+		export function openTroubleshooterDialog(options: ITroubleshooterDialogOptions): Thenable<string | undefined>;
+
+
+		/**
+		 * State of the troubleshooter item
+		 */
+		export enum State {
+			Invalid = 0,
+			Loading = 1,
+			Valid = 2
+		}
+
+		/**
+		 * Troubleshooter item to display in the troubleshooter dialog
+		 */
+		export interface ITroubleshooterItem {
+			/**
+			 * State of fetching the troubleshooter item
+			 */
+			state: State;
+			/**
+			 * Message text
+			 */
+			message: string;
+			/**
+			 * Recommendation based on the error message
+			 */
+			recommendation?: string;
+		}
+
+		export interface ITroubleshooterDialogOptions extends IErrorDialogOptions {
+			/**
+			 * Troubleshooter item to display in the troubleshooter dialog
+			 */
+			troubleshooterItem: ITroubleshooterItem;
+		}
+
+		/**
 		 * Provides dialog options to customize modal dialog content and layout
 		 */
 		export interface IErrorDialogOptions {
@@ -1945,6 +1987,10 @@ declare module 'azdata' {
 			 * Defines if button styling and focus should be based on primary action.
 			 */
 			isPrimary: boolean;
+			/**
+			 * Should close dialog
+			 */
+			closeDialog?: boolean;
 		}
 	}
 

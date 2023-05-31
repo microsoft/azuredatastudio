@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAction } from 'vs/base/common/actions';
 
@@ -23,11 +24,11 @@ export class TroubleshooterMessageService implements ITroubleshooterMessageServi
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
-	public showDialog(headerTitle: string, message: string, telemetryView: TelemetryView = TelemetryView.ErrorMessageDialog, actions?: IAction[]): void {
+	public showDialog(headerTitle: string, message: azdata.window.ITroubleshooterItem, telemetryView: TelemetryView = TelemetryView.ErrorMessageDialog, actions?: IAction[]): void {
 		this.doShowDialog(telemetryView, headerTitle, message, actions);
 	}
 
-	private doShowDialog(telemetryView: TelemetryView, headerTitle: string, message: string, actions?: IAction[],): void {
+	private doShowDialog(telemetryView: TelemetryView, headerTitle: string, message: azdata.window.ITroubleshooterItem, actions?: IAction[],): void {
 		if (!this._troubleshooterDialog) {
 			this._troubleshooterDialog = this._instantiationService.createInstance(TroubleshooterMessageDialog);
 			this._troubleshooterDialog.onOk(() => this.handleOnOk());

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import 'vs/css!./media/troubleshooterMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
@@ -13,7 +14,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { IAction } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -24,6 +25,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { Deferred } from 'sql/base/common/promise';
+import { ITroubleshooterDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const maxActions = 1;
 
@@ -39,6 +41,7 @@ export class TroubleshooterMessageDialog extends Modal {
 	private _closeLabel: string;
 	private _readMoreLabel: string;
 	private _promise: Deferred<string> | undefined;
+	private _actionEvents = new Map<string, boolean>();
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -141,7 +144,7 @@ export class TroubleshooterMessageDialog extends Modal {
 		}
 	}
 
-	public open(telemetryView: TelemetryKeys.TelemetryView | string, headerTitle: string, message: string,
+	public open(telemetryView: TelemetryKeys.TelemetryView | string, headerTitle: string, message: azdata.window.ITroubleshooterItem,
 		actions?: IAction[], resetActions: boolean = true): void {
 		this._telemetryView = telemetryView;
 		this._message = 'Diagnostics Report results here';
@@ -176,7 +179,24 @@ export class TroubleshooterMessageDialog extends Modal {
 		}
 	}
 
+	public openCustomAsync(options: ITroubleshooterDialogOptions): Promise<string | undefined> {
+		if (!options) {
+			return undefined;
+		}
 
+		let actions: IAction[] = [];
+		this.resetActions();
+		options.actions?.forEach(action => {
+			this._actionEvents.set(action.id, action.closeDialog);
+			actions.push(new Action(action.id, action.label, '', true, () => { action.run(); }));
+		});
+
+		this.open(options.telemetryView, options.headerTitle, options.troubleshooterItem, actions);
+
+		const deferred = new Deferred<string | undefined>();
+		this._promise = deferred;
+		return this._promise.promise;
+	}
 
 	private resetActions(): void {
 		this._actions = [];

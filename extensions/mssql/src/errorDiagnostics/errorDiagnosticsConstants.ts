@@ -10,8 +10,15 @@ const localize = nls.loadMessageBundle();
 export const MssqlPasswordResetErrorCode: number[] = [18488, 18487];
 
 export const MssqlCertValidationFailedErrorCode: number = -2146893019;
+export const MssqlLoginFailedForUserErrorCode: number = 18456;
+
+export const AzureDiagnostics18456 = 'SqlAzure18456ErrorCode';
+
+export const AzureSQLSuffixGlobal = '.database.windows.net';
+export const AzureSQLSuffixUSNational = '.database.usgovcloudapi.net';
 
 export const MssqlConnectionTelemetryView = 'MssqlConnectionErrorDialog';
+export const MssqlConnectionTSGTelemetryView = 'MssqlConnectionTSGErrorDialog';
 export const ConnectionErrorDialogTitle = localize('connectionError', "Connection error");
 
 // Trust Server certificate custom dialog constants.

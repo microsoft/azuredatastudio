@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IAction } from 'vs/base/common/actions';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
@@ -17,5 +18,5 @@ export interface ITroubleshooterMessageService {
 	 * @param telemetryView Telemetry View to be used for dispatching telemetry events.
 	 * @param actions Custom actions to display on the error message dialog
 	 */
-	showDialog(headerTitle: string, message: string, telemetryView?: TelemetryView, actions?: IAction[]): void;
+	showDialog(headerTitle: string, message: azdata.window.ITroubleshooterItem, telemetryView?: TelemetryView, actions?: IAction[]): void;
 }
