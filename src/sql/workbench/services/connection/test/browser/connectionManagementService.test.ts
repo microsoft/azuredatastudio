@@ -68,6 +68,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		getOptionsKey: () => { return 'connectionId'; },
+		getOptionKeyIdNames: undefined!,
 		matches: undefined,
 		providerName: 'MSSQL',
 		options: {},
@@ -990,7 +991,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('Edit Connection - Changing connection profile name for same URI should persist after edit', async () => {
 		let profile = Object.assign({}, connectionProfile);
-		let uri1 = 'test_uri1';
+		let uri1 = 'connection:test_uri1';
 		let newname = 'connection renamed';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -1017,18 +1018,19 @@ suite('SQL ConnectionManagementService tests', () => {
 			//In a real scenario this would be false as it would match the first instance and not find a duplicate.
 			return Promise.resolve(false);
 		});
-
+		profile.getOptionsKey = () => { return 'test_uri1'; };
 		await connect(uri1, options, true, profile);
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
+		newProfile.getOptionsKey = () => { return 'test_uri1'; };
 		options.params.isEditConnection = true;
 		await connect(uri1, options, true, newProfile);
 		assert.strictEqual(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
 	});
 
-	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', async () => {
-		let uri1 = 'test_uri1';
-		let uri2 = 'test_uri2';
+	test('Edit Connection - Connecting a different non editor URI with same profile via edit should not change profile ID.', async () => {
+		let currentUri = 'test_uri1';
+		let uri = 'connection:' + currentUri;
 		let profile = Object.assign({}, connectionProfile);
 		profile.id = '0451';
 		let options: IConnectionCompletionOptions = {
@@ -1040,7 +1042,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectStart: undefined,
 					onDisconnect: undefined,
 					onConnectCanceled: undefined,
-					uri: uri1
+					uri: uri
 				},
 				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
@@ -1052,14 +1054,17 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we check the test uris instead here.
-		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(uri1 === uri2));
+		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we return false.
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
+		profile.getOptionsKey = () => { return currentUri; };
 
-		await connect(uri1, options, true, profile);
+		await connect(uri, options, true, profile);
+		let uri1info = connectionManagementService.getConnectionInfo(uri);
 		options.params.isEditConnection = true;
-		await connect(uri2, options, true, profile);
-		let uri1info = connectionManagementService.getConnectionInfo(uri1);
-		let uri2info = connectionManagementService.getConnectionInfo(uri2);
+		currentUri = 'test_uri2';
+		uri = 'connection:' + currentUri;
+		await connect(uri, options, true, profile);
+		let uri2info = connectionManagementService.getConnectionInfo(uri);
 		assert.strictEqual(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
 	});
 

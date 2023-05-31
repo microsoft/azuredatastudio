@@ -101,7 +101,7 @@ export class SaveResultAction extends Action {
 }
 
 export class CopyResultAction extends Action {
-	public static COPY_ID = 'grid.copySelection';
+	public static COPY_ID = 'editor.action.clipboardCopyAction';
 	public static COPY_LABEL = localize('copySelection', "Copy");
 
 	public static COPYWITHHEADERS_ID = 'grid.copyWithHeaders';
@@ -124,7 +124,7 @@ export class CopyResultAction extends Action {
 }
 
 export class CopyHeadersAction extends Action {
-	private static ID = 'grid.copyHeaders';
+	public static ID = 'grid.copyHeaders';
 	private static LABEL = localize('copyHeaders', 'Copy Headers');
 
 	constructor(

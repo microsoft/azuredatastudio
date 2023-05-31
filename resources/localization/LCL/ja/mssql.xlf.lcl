@@ -303,11 +303,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.addMemberText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.addMembersText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Add a member]]></Val>
+          <Val><![CDATA[Add members]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[メンバーの追加]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.addSecurablesText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add securables]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[セキュリティ保護可能なリソースの追加]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -456,11 +465,56 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.denyColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Deny]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[拒否]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.effectivePermissionsTableLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Effective permissions for selected securable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択したセキュリティ保護可能なリソースに対する有効なアクセス許可]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.effectivePermissionsTableLabelSelected" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Effective permissions for: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[有効なアクセス許可: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.enabledLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[有効]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.explicitPermissionsTableLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Explicit permissions for selected securable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択したセキュリティ保護可能なリソースに対する明示的なアクセス許可]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.explicitPermissionsTableLabelSelected" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Explicit permissions for: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[明示的なアクセス許可: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -488,6 +542,24 @@
           <Val><![CDATA[General]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[全般]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.grantColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Grant]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[許可]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.grantorColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Grantor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[権限の許可者]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -816,6 +888,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.permissionColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Permission]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[アクセス許可]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.recoveryModelLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Recovery Model]]></Val>
@@ -839,6 +920,15 @@
           <Val><![CDATA[Remove selected member]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[選択したメンバーを削除する]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.removeSecurablesText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Remove selected securable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択したセキュリティ保護可能なリソースの削除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -875,6 +965,24 @@
           <Val><![CDATA[Schema]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[スキーマ]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.securablesText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Securables]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[セキュリティ保護可能なリソース]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.selectSecurablesDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Securables]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[セキュリティ保護可能なリソースの選択]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -992,6 +1100,15 @@
           <Val><![CDATA[Mapped to a Windows user/group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Windows ユーザー/グループにマップ済み]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.withGrantColumnHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[With Grant]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[許可の有無]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1200,6 +1317,9 @@
       <Item ItemId=";extensions/mssql/dist/ui/localizedConstants.mssql.ui.scriptError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while generating the script. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[スクリプトの生成中にエラーが発生しました。{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1248,11 +1368,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/mssql/dist/ui/localizedConstants.objectManagement.selectedLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/mssql/dist/ui/localizedConstants.objectManagement.selectLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Selected]]></Val>
+          <Val><![CDATA[Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選択済み]]></Val>
+            <Val><![CDATA[選択]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2777,6 +2897,15 @@
           <Val><![CDATA[Enable SET XACT_ABORT ON option]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[SET XACT_ABORT ON オプションを有効にする]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.tableDesigner.allowDisableAndReenableDdlTriggers" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to allow table designer to disable and re-enable DDL triggers during publish]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パブリッシュ中にテーブル デザイナーが DDL トリガーを無効化および再有効化を許可するかどうか]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -53,11 +53,20 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		@IThemeService public readonly themeService: IThemeService
 	) {
 		super(DOM.$('.search-node-widget'), 'searchWidget');
+		const labelId = 'search-node-widget-label';
+		const dialogLabel = localize('executionPlanFindNodeLabel', 'Find nodes');
+		this.container.setAttribute('role', 'dialog');
+		this.container.setAttribute('aria-labelledby', labelId);
+
+		const label = DOM.$('label.property-name-label');
+		label.innerText = dialogLabel;
+		label.id = labelId;
+		this.container.appendChild(label);
 
 		// property name dropdown
 		this._propertyNameSelectBoxContainer = DOM.$('.search-widget-property-name-select-box .dropdown-container');
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
-		this._propertyNameSelectBoxContainer.style.width = '150px';
+		this._propertyNameSelectBoxContainer.style.width = '120px';
 
 		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
 		this._propertyNameSelectBox = this._register(new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer));
@@ -148,7 +157,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	// Initial focus is set to the search text input box
 	public focus() {
-		this._searchTextInputBox.focus();
+		this._propertyNameSelectBox.focus();
 	}
 
 	public searchNodes(): void {

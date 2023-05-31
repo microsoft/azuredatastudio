@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { ObjectManagement } from 'mssql';
+import { ObjectTypeInfo } from './ui/findObjectDialog';
 const localize = nls.loadMessageBundle();
 
 // Object Types
@@ -31,9 +32,22 @@ export const RenameObjectDialogTitle: string = localize('objectManagement.rename
 export const OwnerText: string = localize('objectManagement.ownerText', "Owner");
 export const BrowseText = localize('objectManagement.browseText', "Browse…");
 export const BrowseOwnerButtonAriaLabel = localize('objectManagement.browseForOwnerText', "Browse for an owner");
-export const AddMemberAriaLabel = localize('objectManagement.addMemberText', "Add a member");
+export const AddMemberAriaLabel = localize('objectManagement.addMembersText', "Add members");
 export const RemoveMemberAriaLabel = localize('objectManagement.removeMemberText', "Remove selected member");
+export const AddSecurableAriaLabel = localize('objectManagement.addSecurablesText', "Add securables");
+export const RemoveSecurableAriaLabel = localize('objectManagement.removeSecurablesText', "Remove selected securable");
+export const SecurablesText = localize('objectManagement.securablesText', "Securables");
+export const ExplicitPermissionsTableLabel = localize('objectManagement.explicitPermissionsTableLabel', "Explicit permissions for selected securable");
+export const EffectivePermissionsTableLabel = localize('objectManagement.effectivePermissionsTableLabel', "Effective permissions for selected securable");
+export const PermissionColumnHeader = localize('objectManagement.permissionColumnHeader', "Permission");
+export const GrantorColumnHeader = localize('objectManagement.grantorColumnHeader', "Grantor");
+export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', "Grant");
+export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
+export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
+export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
 
+export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
+export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
 
 export function RefreshObjectExplorerError(error: string): string {
 	return localize({
@@ -134,11 +148,14 @@ export const LoginNotSelectedError = localize('objectManagement.loginNotSelected
 export const MembershipSectionHeader = localize('objectManagement.membershipLabel', "Membership");
 export const MemberSectionHeader = localize('objectManagement.membersLabel', "Members");
 export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
+
+// Database
 export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
 export const CollationText = localize('objectManagement.collationLabel', "Collation");
 export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
 export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");
 export const ContainmentTypeText = localize('objectManagement.containmentTypeLabel', "Containment Type");
+
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -180,8 +197,10 @@ export const SelectServerRoleMemberDialogTitle = localize('objectManagement.serv
 export const SelectServerRoleOwnerDialogTitle = localize('objectManagement.serverRole.SelectOwnerDialogTitle', "Select Server Role Owner");
 
 // Find Object Dialog
+export const ObjectTypesText = localize('objectManagement.objectTypesLabel', "Object Types");
+export const FilterSectionTitle = localize('objectManagement.filterSectionTitle', "Filters");
 export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Object Type");
-export const FilterText = localize('objectManagement.filterText', "Filter");
+export const SearchTextLabel = localize('objectManagement.SearchTextLabel', "Search Text");
 export const FindText = localize('objectManagement.findText', "Find");
 export const SelectText = localize('objectManagement.selectText', "Select");
 export const ObjectsText = localize('objectManagement.objectsLabel', "Objects");
@@ -189,6 +208,14 @@ export const LoadingObjectsText = localize('objectManagement.loadingObjectsLabel
 export function LoadingObjectsCompletedText(count: number): string {
 	return localize('objectManagement.loadingObjectsCompletedLabel', "Loading objects completed, {0} objects found", count);
 }
+
+// ObjectSelectionMethodDialog
+export const ObjectSelectionMethodDialogTitle = localize('objectManagement.objectSelectionMethodDialogTitle', "Add Objects");
+export const ObjectSelectionMethodDialog_TypeLabel = localize('objectManagement.ObjectSelectionMethodDialog_TypeLabel', "How do you want to add objects?");
+export const ObjectSelectionMethodDialog_SpecificObjects = localize('objectManagement.ObjectSelectionMethodDialog_SpecificObjects', "Specific objects…");
+export const ObjectSelectionMethodDialog_AllObjectsOfTypes = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes', "All objects of certain types");
+export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema', "All objects belonging to a schema");
+export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
 // Object Properties Dialog
 export const PropertiesHeader = localize('objectManagement.properties', "Properties");
@@ -200,7 +227,6 @@ export const minServerMemoryText = localize('objectManagement.minServerMemoryTex
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
 
 // Util functions
-
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
 		case ObjectManagement.NodeType.ApplicationRole:
@@ -268,4 +294,13 @@ export function getUserTypeByDisplayName(displayName: string): ObjectManagement.
 			return key;
 	}
 	throw new Error(`Unknown user type display name: ${displayName}`);
+}
+
+export function getObjectTypeInfo(typeNames: string[]): ObjectTypeInfo[] {
+	return typeNames.map(typeName => {
+		return {
+			name: typeName,
+			displayName: getNodeTypeDisplayName(typeName, true)
+		};
+	});
 }

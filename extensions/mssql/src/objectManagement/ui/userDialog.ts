@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
 
-export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
+export class UserDialog extends PrincipalDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemaSection: azdata.GroupContainer;
 	private membershipSection: azdata.GroupContainer;
@@ -31,7 +32,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	private membershipTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: true });
 	}
 
 	protected override get helpUrl(): string {
@@ -61,12 +62,13 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		return errors;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemaSection();
 		this.initializeMembershipSection();
 		this.initializeAdvancedSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.advancedSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.securableSection, this.advancedSection], this.getSectionItemLayout());
 		setTimeout(() => {
 			this.setViewByUserType();
 		}, 100);
@@ -94,7 +96,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		this.loginDropdown = this.createDropdown(localizedConstants.LoginText, async (newValue) => {
 			this.objectInfo.loginName = newValue;
-		}, this.viewInfo.logins, this.objectInfo.loginName, this.options.isNewObject);
+		}, this.options.isNewObject ? this.viewInfo.logins : [this.objectInfo.loginName], this.objectInfo.loginName, this.options.isNewObject);
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
 
 		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, async (newValue) => {
@@ -119,7 +121,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;
@@ -156,6 +158,11 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 				this.addItem(this.generalSection, this.passwordContainer);
 				this.addItem(this.generalSection, this.confirmPasswordContainer);
 				this.addItem(this.formContainer, this.advancedSection);
+				break;
+			case ObjectManagement.UserType.WindowsUser:
+				if (this.objectInfo.loginName) {
+					this.addItem(this.generalSection, this.loginContainer);
+				}
 				break;
 			default:
 				break;

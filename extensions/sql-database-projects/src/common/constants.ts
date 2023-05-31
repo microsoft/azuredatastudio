@@ -158,6 +158,7 @@ export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Ch
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new default value for variable '{0}'", varName);
 export const enterNewSqlCmdVariableName = localize('enterNewSqlCmdVariableName', "Enter new SQLCMD Variable name");
 export const enterNewSqlCmdVariableDefaultValue = (varName: string) => localize('enterNewSqlCmdVariableDefaultValue', "Enter default value for SQLCMD variable '{0}'", varName);
+export const addSqlCmdVariableWithoutDefaultValue = (varName: string) => localize('addSqlCmdVariableWithoutDefaultValue', "Add SQLCMD variable '{0}' to project without default value?", varName);
 export const sqlcmdVariableAlreadyExists = localize('sqlcmdVariableAlreadyExists', "A SQLCMD Variable with the same name already exists in this project");
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
 export const createNew = localize('createNew', "Create New");
@@ -167,6 +168,7 @@ export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 export const versionMustNotBeEmpty = localize('versionMustNotBeEmpty', "Version must not be empty");
+export const saveProfile = localize('saveProfile', "Would you like to save the settings in a profile (.publish.xml)?");
 
 //#endregion
 
@@ -456,6 +458,7 @@ export const externalStreamFriendlyName = localize('externalStream', "External S
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
+export const publishProfileFriendlyName = localize('publishProfileFriendlyName', "Publish Profile");
 
 //#endregion
 
@@ -570,6 +573,7 @@ export enum DatabaseProjectItemType {
 	table = 'databaseProject.itemType.file.table',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
+	sqlProjectReference = 'databaseProject.itemType.reference.sqlProject',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
 	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
@@ -670,7 +674,7 @@ export const downloading = localize('downloading', "Downloading");
 //#endregion
 
 //#region buildHelper
-export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
+export function downloadingNuget(nuget: string) { return localize('downloadingNuget', "Downloading {0} nuget to get build DLLs ", nuget); }
 export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
 export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }

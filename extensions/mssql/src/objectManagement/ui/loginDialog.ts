@@ -4,15 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as objectManagementLoc from '../localizedConstants';
 import * as uiLoc from '../../ui/localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from '../../ui/dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
 
-export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
+export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
@@ -34,7 +35,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 	private lockedOutCheckbox: azdata.CheckBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: false, supportEffectivePermissions: true });
 	}
 
 	protected override get helpUrl(): string {
@@ -82,7 +83,8 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 		this.objectInfo.password = this.objectInfo.password ?? '';
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		const sections: azdata.Component[] = [];
 		this.initializeGeneralSection();
 		sections.push(this.generalSection);
@@ -94,12 +96,13 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 		this.initializeServerRolesSection();
 		sections.push(this.serverRoleSection);
+		sections.push(this.securableSection);
 
 		if (this.viewInfo.supportAdvancedOptions) {
 			this.initializeAdvancedSection();
 			sections.push(this.advancedSection);
 		}
-		this.formContainer.addItems(sections);
+		this.formContainer.addItems(sections, this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {
@@ -203,7 +206,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 			items.push(defaultDatabaseContainer, defaultLanguageContainer, this.connectPermissionCheckbox);
 		}
 
-		this.advancedSection = this.createGroup(objectManagementLoc.AdvancedSectionHeader, items);
+		this.advancedSection = this.createGroup(objectManagementLoc.AdvancedSectionHeader, items, true, true);
 	}
 
 	private initializeServerRolesSection(): void {
@@ -211,7 +214,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 			[objectManagementLoc.ServerRoleTypeDisplayNameInTitle],
 			this.viewInfo.serverRoles,
 			this.objectInfo.serverRoles,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				return item !== PublicServerRoleName
 			});
@@ -220,7 +223,7 @@ export class LoginDialog extends ObjectManagementDialogBase<ObjectManagement.Log
 
 	private setViewByAuthenticationType(): void {
 		if (this.authTypeDropdown.value === objectManagementLoc.SQLAuthenticationTypeDisplayText) {
-			this.addItem(this.formContainer, this.sqlAuthSection, 1);
+			this.addItem(this.formContainer, this.sqlAuthSection, this.getSectionItemLayout(), 1);
 		} else if (this.authTypeDropdown.value !== objectManagementLoc.SQLAuthenticationTypeDisplayText) {
 			this.removeItem(this.formContainer, this.sqlAuthSection);
 		}

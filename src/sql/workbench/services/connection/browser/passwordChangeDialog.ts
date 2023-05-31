@@ -57,7 +57,7 @@ export class PasswordChangeDialog extends Modal {
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
-		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left' });
+		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, spinnerTitle: passwordChangeLoadText, dialogStyle: 'normal', width: dialogWidth, dialogPosition: 'left', height: 350 });
 	}
 
 	public open(profile: IConnectionProfile): Promise<string> {
