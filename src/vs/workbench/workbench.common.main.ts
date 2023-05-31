@@ -223,8 +223,6 @@ import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/commo
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 import { ITableService, TableService } from 'sql/workbench/services/table/browser/tableService';
-import { ITroubleshooterMessageService } from 'sql/platform/troubleshooter/common/troubleshooterMessageService';
-import { TroubleshooterMessageService } from 'sql/workbench/services/troubleshooter/browser/troubleshooterMessageService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -270,7 +268,6 @@ registerSingleton(ITableDesignerService, TableDesignerService);
 registerSingleton(IExecutionPlanService, ExecutionPlanService);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
 registerSingleton(ITableService, TableService);
-registerSingleton(ITroubleshooterMessageService, TroubleshooterMessageService);
 //#endregion
 
 

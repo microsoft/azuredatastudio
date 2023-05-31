@@ -46,6 +46,7 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
+	private _copyLabel: string;
 	private _actionEvents = new Map<string, boolean>();
 	private _promise: Deferred<string> | undefined;
 
@@ -67,6 +68,7 @@ export class ErrorMessageDialog extends Modal {
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
 		this._readMoreLabel = localize('errorMessageDialog.readMore', "Read More");
+		this._copyLabel = localize('errorMessageDialog.copyDetails', "Copy details");
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -86,8 +88,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createCopyButton() {
-		let copyButtonLabel = localize('copyDetails', "Copy details");
-		this._copyButton = this.addFooterButton(copyButtonLabel, () => {
+		this._copyButton = this.addFooterButton(this._copyLabel, () => {
 			if (this._messageDetails) {
 				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
 			}
@@ -95,7 +96,7 @@ export class ErrorMessageDialog extends Modal {
 		this._copyButton!.icon = {
 			id: 'codicon scriptToClipboard'
 		};
-		this._copyButton!.element.title = copyButtonLabel;
+		this._copyButton!.element.title = this._copyLabel;
 		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
@@ -149,6 +150,10 @@ export class ErrorMessageDialog extends Modal {
 
 	protected getBody(): HTMLElement {
 		return this._body;
+	}
+
+	protected getCopyLabel(): string {
+		return this._copyLabel;
 	}
 
 	private updateIconTitle(): void {

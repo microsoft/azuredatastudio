@@ -542,13 +542,4 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._logService.error(message);
 
 	}
-
-	// private showTroubleshooterDialog(headerTitle, message, messageDetails, actions) {
-	// 	actions.push(new Action('View Recommendations', localize('viewRecommendations', "View Recommendations"), undefined, true, async () => {
-	// 		this._connectionDialog.close();
-	// 		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.TroubleshooterDialog, TelemetryKeys.TelemetryAction.Click, 'ViewRecommendations');
-	// 	}));
-	// 	this._troubleShooterMessageService.showDialog('Connection Troubleshooting', message, messageDetails, actions);
-
-	// }
 }

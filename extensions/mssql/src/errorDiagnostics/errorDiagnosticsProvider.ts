@@ -89,6 +89,7 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						label: 'Diagnose Error',
 						isPrimary: true,
 						closeDialog: true
+						//TODO: need to add run action to Diagnose Error button, which will trigger fetching diagnostics
 					};
 
 					actions.push(diagnoseErrorAction);

@@ -54,7 +54,6 @@ import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/ser
 import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { Emitter } from 'vs/base/common/event';
-import { TestTroubleshooterMessageService } from 'sql/platform/troubleshooter/test/common/testTroubleshooterMessageService';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -91,7 +90,6 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(IInstantiationService, mockInstantationService.object);
 		testInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
 		let errorMessageService = getMockErrorMessageService();
-		let troubleshooterMessageService = getMockTroubleshooterMessageService();
 		let capabilitiesService = new TestCapabilitiesService();
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
 			undefined, // connection dialog service
@@ -113,7 +111,7 @@ suite('ConnectionDialogService tests', () => {
 		let logService: ILogService = new NullLogService();
 
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
-			troubleshooterMessageService.object, new TestConfigurationService(), new BrowserClipboardService(layoutService, logService),
+			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService),
 			NullCommandService, logService, new NullAdsTelemetryService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
@@ -249,12 +247,6 @@ suite('ConnectionDialogService tests', () => {
 	function getMockErrorMessageService(): TypeMoq.Mock<TestErrorMessageService> {
 		let mockMessageService = TypeMoq.Mock.ofType(TestErrorMessageService);
 		mockMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
-		return mockMessageService;
-	}
-
-	function getMockTroubleshooterMessageService(): TypeMoq.Mock<TestTroubleshooterMessageService> {
-		let mockMessageService = TypeMoq.Mock.ofType(TestTroubleshooterMessageService);
-		mockMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		return mockMessageService;
 	}
 
