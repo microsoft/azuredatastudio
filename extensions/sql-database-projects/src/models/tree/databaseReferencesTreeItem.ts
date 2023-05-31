@@ -23,7 +23,6 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	 * @param projectNodeName Name of the project node. Used for creating the relative path of the Database References node to the project
 	 * @param sqlprojUri Full URI to the .sqlproj
 	 * @param databaseReferences Array of database references in the project
-	 * @param project
 	 */
 	constructor(projectNodeName: string, sqlprojUri: vscode.Uri, databaseReferences: IDatabaseReferenceProjectEntry[]) {
 		super(vscode.Uri.file(path.join(projectNodeName, constants.databaseReferencesNodeName)), sqlprojUri);

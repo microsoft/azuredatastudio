@@ -1468,7 +1468,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async getSubscriptionValues(): Promise<void> {
 		this._networkShareContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
-		this._networkShareContainerLocation.value = await this.migrationStateModel._location.displayName;
+		this._networkShareContainerLocation.value = this.migrationStateModel._location.displayName;
 
 		this._blobContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
 		this._blobContainerLocation.value = this.migrationStateModel._location.displayName;
