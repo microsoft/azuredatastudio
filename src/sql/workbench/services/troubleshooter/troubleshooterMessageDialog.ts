@@ -4,18 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/troubleshooterMessageDialog';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
-import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IDialogAction, ITroubleshooterDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ErrorMessageDialog } from 'sql/workbench/services/errorMessage/browser/errorMessageDialog';

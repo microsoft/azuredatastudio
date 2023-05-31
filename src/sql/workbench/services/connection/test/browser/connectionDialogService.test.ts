@@ -5,7 +5,6 @@
 
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
@@ -54,6 +53,7 @@ import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/ser
 import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { Emitter } from 'vs/base/common/event';
+import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -89,7 +89,6 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(IConfigurationService, new TestConfigurationService());
 		testInstantiationService.stub(IInstantiationService, mockInstantationService.object);
 		testInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
-		let errorMessageService = getMockErrorMessageService();
 		let capabilitiesService = new TestCapabilitiesService();
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
 			undefined, // connection dialog service
@@ -110,9 +109,9 @@ suite('ConnectionDialogService tests', () => {
 
 		let logService: ILogService = new NullLogService();
 
-		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService),
-			NullCommandService, logService, new NullAdsTelemetryService());
+		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService,
+			new ErrorDiagnosticsService(logService), new TestConfigurationService(), new BrowserClipboardService(layoutService, logService),
+			NullCommandService, logService);
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
@@ -243,12 +242,6 @@ suite('ConnectionDialogService tests', () => {
 	teardown(() => {
 		ViewsRegistry.deregisterViews(ViewsRegistry.getViews(container), container);
 	});
-
-	function getMockErrorMessageService(): TypeMoq.Mock<TestErrorMessageService> {
-		let mockMessageService = TypeMoq.Mock.ofType(TestErrorMessageService);
-		mockMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()));
-		return mockMessageService;
-	}
 
 	function testHandleDefaultOnConnectUri(isEditor: boolean): Thenable<void> {
 		let testUri = 'test_uri';

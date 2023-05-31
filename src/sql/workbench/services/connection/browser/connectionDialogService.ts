@@ -15,7 +15,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { Deferred } from 'sql/base/common/promise';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as platform from 'vs/base/common/platform';
@@ -31,7 +30,6 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 
 export interface IConnectionValidateResult {
@@ -86,13 +84,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IErrorDiagnosticsService private _errorDiagnosticsService: IErrorDiagnosticsService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService,
 		@ILogService private _logService: ILogService,
-		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
 		this.initializeConnectionProviders();
 	}
