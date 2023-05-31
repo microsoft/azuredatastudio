@@ -23,7 +23,8 @@
   },
   "activationEvents": [
     "onCommand:adminToolExtWin.launchSsmsMinPropertiesDialog",
-    "onCommand:adminToolExtWin.launchSsmsMinGswDialog"
+    "onCommand:adminToolExtWin.launchSsmsMinGswDialog",
+    "onCommand:adminToolExtWin.launchDatabaseProperties"
   ],
   "main": "./out/main",
   "repository": {
@@ -44,6 +45,11 @@
         "command": "adminToolExtWin.launchSsmsMinGswDialog",
         "title": "%adminToolExtWin.launchGswMenuItem%",
         "category": "AdminToolExtWin"
+      },
+      {
+        "command": "adminToolExtWin.launchDatabaseProperties",
+        "title": "%adminToolExtWin.propertiesMenuItem%",
+        "category": "AdminToolExtWin"
       }
     ],
     "menus": {
@@ -54,6 +60,10 @@
         },
         {
           "command": "adminToolExtWin.launchSsmsMinGswDialog",
+          "when": "false"
+        },
+        {
+          "command": "adminToolExtWin.launchDatabaseProperties",
           "when": "false"
         }
       ],
@@ -70,12 +80,17 @@
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-          "when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|ServerLevelLinkedServer)$/",
+          "when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Table|Column|Index|Statistic|View|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|ServerLevelLinkedServer)$/",
           "group": "z-AdminToolExt@2"
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
           "when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && mssql:engineedition != 11 && nodeType =~ /^(ServerLevelLogin|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy)$/",
+          "group": "z-AdminToolExt@2"
+        },
+        {
+          "command": "adminToolExtWin.launchDatabaseProperties",
+          "when": "connectionProvider == MSSQL && !isCloud && nodeType =~ /^(Database)$/",
           "group": "z-AdminToolExt@2"
         }
       ],
@@ -92,12 +107,17 @@
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-          "when": "isWindows && connectionProvider == MSSQL && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|ServerLevelLinkedServer)$/",
+          "when": "isWindows && connectionProvider == MSSQL && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Table|Column|Index|Statistic|View|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|ServerLevelLinkedServer)$/",
           "group": "z-AdminToolExt@2"
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
           "when": "isWindows && connectionProvider == MSSQL && !isCloud && nodeType && mssql:engineedition != 11 && nodeType =~ /^(ServerLevelLogin|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy)$/",
+          "group": "z-AdminToolExt@2"
+        },
+        {
+          "command": "adminToolExtWin.launchDatabaseProperties",
+          "when": "connectionProvider == MSSQL && !isCloud && nodeType =~ /^(Database)$/",
           "group": "z-AdminToolExt@2"
         }
       ]
