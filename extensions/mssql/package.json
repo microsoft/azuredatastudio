@@ -132,15 +132,6 @@
           "dark": "resources/dark/groupBySchemaDisabled_inverse.svg",
           "light": "resources/light/groupBySchemaDisabled.svg"
         }
-      },
-      {
-        "command": "mssql.serverProperties",
-        "category": "MSSQL",
-        "title": "Server Properties",
-        "icon": {
-          "dark": "resources/dark/groupBySchemaEnabled_inverse.svg",
-          "light": "resources/light/groupBySchemaEnabled.svg"
-        }
       }
     ],
     "outputChannels": [
@@ -492,9 +483,6 @@
         {
           "command": "mssql.renameObject",
           "when": "false"
-        },
-        {
-          "command": "mssql.serverProperties"
         }
       ],
       "objectExplorer/item/context": [
