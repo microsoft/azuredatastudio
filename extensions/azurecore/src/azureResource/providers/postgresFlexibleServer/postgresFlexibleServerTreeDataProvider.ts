@@ -14,9 +14,9 @@ import { GraphData, DbServerGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
-	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL servers");
+export class PostgresFlexibleServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
+	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel', "Azure Database for PostgreSQL flexible servers");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -27,8 +27,8 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.postgresServer}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
-			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
+			id: `${AzureResourcePrefixes.postgresFlexibleServer}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresFlexibleServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
@@ -64,8 +64,8 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 
 	public async getRootChildren(): Promise<TreeItem[]> {
 		return [{
-			id: PostgresServerTreeDataProvider.containerId,
-			label: PostgresServerTreeDataProvider.containerLabel,
+			id: PostgresFlexibleServerTreeDataProvider.containerId,
+			label: PostgresFlexibleServerTreeDataProvider.containerLabel,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
