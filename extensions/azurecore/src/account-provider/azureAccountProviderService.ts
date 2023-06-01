@@ -9,7 +9,6 @@ import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { promises as fsPromises } from 'fs';
-import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, CacheEncryptionKeys } from 'azurecore';
@@ -157,19 +156,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
-		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
-		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 		const tokenCacheKeyMsal = Constants.MSALCacheName;
 		await this.clearOldCacheIfExists();
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
-			}
-
-			// ADAL Token Cache
-			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
-			if (this._authLibrary === Constants.AuthLibrary.ADAL) {
-				await simpleTokenCache.init();
 			}
 
 			// MSAL Cache Plugin
@@ -198,7 +189,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			this.clientApplication = new PublicClientApplication(msalConfiguration);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
-				simpleTokenCache, this._context, this.clientApplication, this._cachePluginProvider,
+				this._context, this.clientApplication, this._cachePluginProvider,
 				this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

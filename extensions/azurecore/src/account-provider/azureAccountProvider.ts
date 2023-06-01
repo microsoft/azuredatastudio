@@ -14,7 +14,6 @@ import {
 } from 'azurecore';
 import { Deferred } from './interfaces';
 import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node';
-import { SimpleTokenCache } from './utils/simpleTokenCache';
 import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
@@ -35,7 +34,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
-		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		clientApplication: PublicClientApplication,
 		private readonly msalCacheProvider: MsalCachePluginProvider,
@@ -48,11 +46,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impactProvider = changeEvent.affectsConfiguration(Constants.AccountsAzureAuthSection);
 			if (impactProvider === true) {
-				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
+				this.handleAuthMapping(metadata, context, uriEventHandler);
 			}
 		});
 
-		this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
+		this.handleAuthMapping(metadata, context, uriEventHandler);
 	}
 
 	dispose() {
@@ -60,13 +58,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	clearTokenCache(): Thenable<void> {
-		return this.authLibrary === Constants.AuthLibrary.MSAL
-			? this.getAuthMethod().deleteAllCacheMsal()
-			// fallback to ADAL as default
-			: this.getAuthMethod().deleteAllCacheAdal();
+		return this.getAuthMethod().deleteAllCacheMsal();
 	}
 
-	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
+	private handleAuthMapping(metadata: AzureAccountProviderMetadata, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
 		this.authMappings.forEach(m => m.dispose());
 		this.authMappings.clear();
 
@@ -75,10 +70,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const deviceCodeMethod: boolean = configuration.get<boolean>(Constants.AuthType.DeviceCode, false);
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
 		}
 		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
 		}
 		if (codeGrantMethod === false && deviceCodeMethod === false && !this.forceDeviceCode) {
 			console.error('No authentication methods selected');
@@ -118,17 +113,13 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				accounts.push(account);
 			} else {
 				account.isStale = false;
-				if (this.authLibrary === Constants.AuthLibrary.MSAL) {
-					// Check MSAL Cache before adding account, to mark it as stale if it is not present in cache
-					const accountInCache = await azureAuth.getAccountFromMsalCache(account.key.accountId);
-					if (!accountInCache) {
-						account.isStale = true;
-					}
-					accounts.push(account);
-
-				} else { // fallback to ADAL as default
-					accounts.push(await azureAuth.refreshAccessAdal(account));
+				// Check MSAL Cache before adding account, to mark it as stale if it is not present in cache
+				const accountInCache = await azureAuth.getAccountFromMsalCache(account.key.accountId);
+				if (!accountInCache) {
+					account.isStale = true;
 				}
+				accounts.push(account);
+
 			}
 		}
 		this.initComplete.resolve();
@@ -148,51 +139,47 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const azureAuth = this.getAuthMethod(account);
 		if (azureAuth) {
 			Logger.piiSanitized(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
-			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
-				try {
-					// Fetch cached token from local cache if token is available and valid.
-					let accessToken = await this.msalCacheProvider.getTokenFromLocalCache(account.key.accountId, tenantId, resource);
-					if (this.isValidToken(accessToken)) {
-						return accessToken;
-					} // else fallback to fetching a new token.
-				} catch (e) {
-					// Log any error and move on to fetching fresh access token.
-					Logger.info(`Could not fetch access token from cache: ${e}, fetching new access token instead.`);
-				}
-				tenantId = tenantId || account.properties.owningTenant.id;
-				if (getTenantIgnoreList().includes(tenantId)) {
-					// Tenant found in ignore list, don't fetch access token.
-					Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted. Please remove tenant from setting: '${Constants.AzureTenantConfigFilterSetting}' if you want to re-enable tenant for authentication.`);
-					throw new TenantIgnoredError(localize('tenantIgnoredError', 'Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.', tenantId, Constants.AzureTenantConfigFilterSetting));
+			try {
+				// Fetch cached token from local cache if token is available and valid.
+				let accessToken = await this.msalCacheProvider.getTokenFromLocalCache(account.key.accountId, tenantId, resource);
+				if (this.isValidToken(accessToken)) {
+					return accessToken;
+				} // else fallback to fetching a new token.
+			} catch (e) {
+				// Log any error and move on to fetching fresh access token.
+				Logger.info(`Could not fetch access token from cache: ${e}, fetching new access token instead.`);
+			}
+			tenantId = tenantId || account.properties.owningTenant.id;
+			if (getTenantIgnoreList().includes(tenantId)) {
+				// Tenant found in ignore list, don't fetch access token.
+				Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted. Please remove tenant from setting: '${Constants.AzureTenantConfigFilterSetting}' if you want to re-enable tenant for authentication.`);
+				throw new TenantIgnoredError(localize('tenantIgnoredError', 'Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.', tenantId, Constants.AzureTenantConfigFilterSetting));
+			} else {
+				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
+				if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
+					const token: Token = {
+						key: authResult.account.homeAccountId,
+						token: authResult.accessToken,
+						tokenType: authResult.tokenType,
+						expiresOn: authResult.account.idTokenClaims.exp!,
+						tenantId: tenantId,
+						resource: resource
+					};
+					try {
+						await this.msalCacheProvider.writeTokenToLocalCache(token);
+					} catch (e) {
+						Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
+					}
+					return token;
 				} else {
-					let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
-					if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
-						const token: Token = {
-							key: authResult.account.homeAccountId,
-							token: authResult.accessToken,
-							tokenType: authResult.tokenType,
-							expiresOn: authResult.account.idTokenClaims.exp!,
-							tenantId: tenantId,
-							resource: resource
-						};
-						try {
-							await this.msalCacheProvider.writeTokenToLocalCache(token);
-						} catch (e) {
-							Logger.error(`Could not save access token to local cache: ${e}, this might cause throttling of AAD requests.`);
-						}
-						return token;
+					Logger.error(`MSAL: getToken call failed: ${authResult}`);
+					// Throw error with MSAL-specific code/message, else throw generic error message
+					if (this.isProviderError(authResult)) {
+						throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
 					} else {
-						Logger.error(`MSAL: getToken call failed: ${authResult}`);
-						// Throw error with MSAL-specific code/message, else throw generic error message
-						if (this.isProviderError(authResult)) {
-							throw new Error(localize('msalTokenError', `{0} occurred when acquiring token. \n{1}`, authResult.errorCode, authResult.errorMessage));
-						} else {
-							throw new Error(localize('genericTokenError', 'Failed to get token'));
-						}
+						throw new Error(localize('genericTokenError', 'Failed to get token'));
 					}
 				}
-			} else { // fallback to ADAL as default
-				return azureAuth.getAccountSecurityTokenAdal(account, tenantId, resource);
 			}
 		} else {
 			account.isStale = true;
