@@ -173,10 +173,17 @@ export class MsalCachePluginProvider {
 	}
 
 	/**
-	 * Clears local access token cache.
+	 * Deletes Msal access token cache file
 	 */
-	public async clearLocalCache(): Promise<void> {
-		await this.writeCache(JSON.stringify({ tokens: [] }), this._localCacheConfiguration);
+	public async unlinkMsalCache(): Promise<void> {
+		await fsPromises.unlink(this._msalCacheConfiguration.cacheFilePath);
+	}
+
+	/**
+	 * Deletes local access token cache file.
+	 */
+	public async unlinkLocalCache(): Promise<void> {
+		await fsPromises.unlink(this._localCacheConfiguration.cacheFilePath);
 	}
 
 	//#region Private helper methods
