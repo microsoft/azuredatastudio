@@ -21,9 +21,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 	}
 
 	protected async initializeUI(): Promise<void> {
-		let generalSection = this.initializeGeneralSection();
-		let optionsSection = this.initializeOptionsSection();
-		this.formContainer.addItems([generalSection, optionsSection]);
+		let components = [];
+		components.push(this.initializeGeneralSection());
+		components.push(this.initializeOptionsSection());
+		if (this.viewInfo.isAzure) {
+			components.push(this.initializeConfigureSLOSection());
+		}
+		this.formContainer.addItems(components);
 	}
 
 	private initializeGeneralSection(): azdata.GroupContainer {
@@ -78,5 +82,41 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		}
 
 		return this.createGroup(localizedConstants.OptionsSectionHeader, containers, true, true);
+	}
+
+	private initializeConfigureSLOSection(): azdata.GroupContainer {
+		let containers: azdata.Component[] = [];
+		if (this.viewInfo.azureBackupRedundancyLevels?.length > 0) {
+			let backupDropbox = this.createDropdown(localizedConstants.BackupRedundancyText, async () => {
+				this.objectInfo.azureBackupRedundancyLevel = backupDropbox.value as string;
+			}, this.viewInfo.azureBackupRedundancyLevels, this.viewInfo.azureBackupRedundancyLevels[0]);
+			containers.push(this.createLabelInputContainer(localizedConstants.BackupRedundancyText, backupDropbox));
+		}
+
+		if (this.viewInfo.azureServiceLevelObjectives?.length > 0) {
+			this.objectInfo.azureServiceLevelObjective = this.viewInfo.azureServiceLevelObjectives[0];
+			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
+				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
+			}, this.viewInfo.azureServiceLevelObjectives, this.viewInfo.azureServiceLevelObjectives[0]);
+			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
+		}
+
+		if (this.viewInfo.azureEditions?.length > 0) {
+			this.objectInfo.azureEdition = this.viewInfo.azureEditions[0];
+			let editionDropbox = this.createDropdown(localizedConstants.EditionText, async () => {
+				this.objectInfo.azureEdition = editionDropbox.value as string;
+			}, this.viewInfo.azureEditions, this.viewInfo.azureEditions[0]);
+			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
+		}
+
+		if (this.viewInfo.azureMaxSizes?.length > 0) {
+			this.objectInfo.azureMaxSize = this.viewInfo.azureMaxSizes[0];
+			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
+				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
+			}, this.viewInfo.azureMaxSizes, this.viewInfo.azureMaxSizes[0]);
+			containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeText, sizeDropbox));
+		}
+
+		return this.createGroup(localizedConstants.ConfigureSLOSectionHeader, containers, true, true);
 	}
 }

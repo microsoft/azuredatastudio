@@ -1370,6 +1370,11 @@ declare module 'mssql' {
 			recoveryModel?: string;
 			compatibilityLevel?: string;
 			containmentType?: string;
+
+			azureBackupRedundancyLevel?: string;
+			azureServiceLevelObjective?: string;
+			azureEdition?: string;
+			azureMaxSize?: string;
 		}
 
 		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
@@ -1378,6 +1383,12 @@ declare module 'mssql' {
 			compatibilityLevels: string[];
 			containmentTypes: string[];
 			recoveryModels: string[];
+
+			isAzure: boolean;
+			azureBackupRedundancyLevels: string[];
+			azureServiceLevelObjectives: string[];
+			azureEditions: string[];
+			azureMaxSizes: string[];
 		}
 	}
 
