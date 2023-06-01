@@ -65,7 +65,7 @@ export class MsalCachePluginProvider {
 	public getCachePlugin(): ICachePlugin {
 		const beforeCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
 			try {
-				const decryptedData = await this.readCache(this._msalCacheConfiguration);
+				const decryptedData = await this.readCache(this._msalCacheConfiguration, this._localCacheConfiguration);
 				cacheContext.tokenCache.deserialize(decryptedData);
 			} catch (e) {
 				// Handle deserialization error in cache file in case file gets corrupted.
@@ -101,7 +101,7 @@ export class MsalCachePluginProvider {
 	 * @returns Access Token.
 	 */
 	public async getTokenFromLocalCache(accountId: string, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
-		let cache = JSON.parse(await this.readCache(this._localCacheConfiguration)) as LocalAccountCache;
+		let cache = JSON.parse(await this.readCache(this._localCacheConfiguration, this._msalCacheConfiguration)) as LocalAccountCache;
 		let token = cache?.tokens?.find(token => (
 			token.key === accountId &&
 			token.tenantId === tenantId &&
@@ -118,7 +118,7 @@ export class MsalCachePluginProvider {
 		let updateCount = 0;
 		let indexToUpdate = -1;
 		let cache: LocalAccountCache;
-		cache = JSON.parse(await this.readCache(this._localCacheConfiguration)) as LocalAccountCache;
+		cache = JSON.parse(await this.readCache(this._localCacheConfiguration, this._msalCacheConfiguration)) as LocalAccountCache;
 		if (cache?.tokens) {
 			cache.tokens.forEach((t, i) => {
 				if (t.key === token.key && t.tenantId === token.tenantId && t.resource === token.resource
@@ -157,7 +157,7 @@ export class MsalCachePluginProvider {
 	 * @param accountId Account ID
 	 */
 	public async clearAccountFromLocalCache(accountId: string): Promise<void> {
-		let cache = JSON.parse(await this.readCache(this._localCacheConfiguration)) as LocalAccountCache;
+		let cache = JSON.parse(await this.readCache(this._localCacheConfiguration, this._msalCacheConfiguration)) as LocalAccountCache;
 		let tokenIndices: number[] = [];
 		if (cache?.tokens) {
 			cache.tokens.forEach((t, i) => {
@@ -194,26 +194,42 @@ export class MsalCachePluginProvider {
 		}
 	}
 
-	private async readCache(config: CacheConfiguration): Promise<string> {
-		config.lockTaken = await this.waitAndLock(config.lockFilePath, config.lockTaken);
+	/**
+	 * Reads from an encrypted cache file based on currentConfig provided.
+	 * @param currentConfig Currently used cache configuration.
+	 * @param alternateConfig Alternate cache configuration for resetting needs.
+	 * @returns Decrypted data.
+	 */
+	private async readCache(currentConfig: CacheConfiguration, alternateConfig: CacheConfiguration): Promise<string> {
+		currentConfig.lockTaken = await this.waitAndLock(currentConfig.lockFilePath, currentConfig.lockTaken);
 		try {
-			const cache = await fsPromises.readFile(config.cacheFilePath, { encoding: 'utf8' });
+			const cache = await fsPromises.readFile(currentConfig.cacheFilePath, { encoding: 'utf8' });
 			const decryptedData = await this._fileEncryptionHelper.fileOpener(cache!, true);
 			return decryptedData;
 		} catch (e) {
 			if (e.code === 'ENOENT') {
 				// File doesn't exist, log and continue
-				Logger.verbose(`MsalCachePlugin: Cache file for '${config.name}' cache not found on disk: ${e.code}`);
+				Logger.verbose(`MsalCachePlugin: Cache file for '${currentConfig.name}' cache not found on disk: ${e.code}`);
 			}
 			else {
 				Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
-				Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file will be deleted: ${e.message}`);
-				await fsPromises.unlink(config.cacheFilePath);
+				Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file ${currentConfig.name}, file will be deleted: ${e.message}`);
+				await fsPromises.unlink(currentConfig.cacheFilePath);
+
+				// Ensure both configurations are not same.
+				if (currentConfig.name !== alternateConfig.name) {
+					// Delete alternate cache file as well.
+					alternateConfig.lockTaken = await this.waitAndLock(alternateConfig.lockFilePath, alternateConfig.lockTaken);
+					await fsPromises.unlink(alternateConfig.cacheFilePath);
+					lockFile.unlockSync(alternateConfig.lockFilePath);
+					alternateConfig.lockTaken = false;
+					Logger.verbose(`MsalCachePlugin: Cache file for ${alternateConfig.name} cache also deleted.`);
+				}
 			}
 			return '{}'; // Return empty json string if cache not read.
 		} finally {
-			lockFile.unlockSync(config.lockFilePath);
-			config.lockTaken = false;
+			lockFile.unlockSync(currentConfig.lockFilePath);
+			currentConfig.lockTaken = false;
 		}
 	}
 
