@@ -43,8 +43,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>;
 
 	constructor(private _context: vscode.ExtensionContext,
-		private _userStoragePath: string,
-		private _authLibrary: string) {
+		private _userStoragePath: string) {
 		this._onEncryptionKeysUpdated = new vscode.EventEmitter<CacheEncryptionKeys>();
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
@@ -165,10 +164,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// MSAL Cache Plugin
 			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
-			if (this._authLibrary === Constants.AuthLibrary.MSAL) {
-				// Initialize cache provider and encryption keys
-				await this._cachePluginProvider.init();
-			}
+			// Initialize cache provider and encryption keys
+			await this._cachePluginProvider.init();
 
 			const msalConfiguration: Configuration = {
 				auth: {
@@ -190,7 +187,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			this.clientApplication = new PublicClientApplication(msalConfiguration);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
 				this._context, this.clientApplication, this._cachePluginProvider,
-				this._uriEventHandler, this._authLibrary, isSaw);
+				this._uriEventHandler, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {

@@ -18,7 +18,6 @@ import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
-import { filterAccounts } from '../azureResource/utils';
 import * as Constants from '../constants';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import { getTenantIgnoreList } from '../utils';
@@ -38,7 +37,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		clientApplication: PublicClientApplication,
 		private readonly msalCacheProvider: MsalCachePluginProvider,
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
-		private readonly authLibrary: string,
 		private readonly forceDeviceCode: boolean = false
 	) {
 		this.clientApplication = clientApplication;
@@ -70,10 +68,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const deviceCodeMethod: boolean = configuration.get<boolean>(Constants.AuthType.DeviceCode, false);
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, this.msalCacheProvider, context, uriEventHandler, this.clientApplication));
 		}
 		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, this.msalCacheProvider, context, uriEventHandler, this.clientApplication, this.authLibrary));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, this.msalCacheProvider, context, uriEventHandler, this.clientApplication));
 		}
 		if (codeGrantMethod === false && deviceCodeMethod === false && !this.forceDeviceCode) {
 			console.error('No authentication methods selected');
@@ -105,8 +103,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
 		Logger.verbose(`Initializing stored accounts ${JSON.stringify(accounts)}`);
-		const updatedAccounts = filterAccounts(storedAccounts, this.authLibrary);
-		for (let account of updatedAccounts) {
+		for (let account of storedAccounts) {
 			const azureAuth = this.getAuthMethod(account);
 			if (!azureAuth) {
 				account.isStale = true;

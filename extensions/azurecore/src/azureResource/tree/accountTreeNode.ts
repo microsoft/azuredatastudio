@@ -20,7 +20,6 @@ import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
 import { AzureAccount, azureResource } from 'azurecore';
-import { TenantIgnoredError } from '../../utils/TenantIgnoredError';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -67,29 +66,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			if (subscriptions.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
-				const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				if (authLibrary === 'ADAL') {
-					// Filter out everything that we can't authenticate to.
-					const hasTokenResults = await Promise.all(subscriptions.map(async s => {
-						let token: azdata.accounts.AccountSecurityToken | undefined = undefined;
-						let errMsg = '';
-						try {
-							token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant!, azdata.AzureResource.ResourceManagement);
-						} catch (err) {
-							if (!(err instanceof TenantIgnoredError)) {
-								errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
-							}
-						}
-						if (!token) {
-							if (errMsg !== '') {
-								void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
-							}
-							return false;
-						}
-						return true;
-					}));
-					subscriptions = subscriptions.filter((_s, i) => hasTokenResults[i]);
-				}
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant!, this.appContext, this.treeChangeHandler, this);
 				}));

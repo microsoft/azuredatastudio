@@ -26,42 +26,10 @@ let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 
 // Mock test data
-const mockAccountAdal1: AzureAccount = {
-	key: {
-		accountId: 'mock_account_1',
-		providerId: 'mock_provider',
-		authLibrary: 'ADAL'
-	},
-	displayInfo: {
-		displayName: 'mock_account_1@test.com',
-		accountType: 'Microsoft',
-		contextualDisplayName: 'test',
-		userId: 'test@email.com'
-	},
-	properties: TypeMoq.Mock.ofType<AzureAccountProperties>().object,
-	isStale: false
-};
-const mockAccountAdal2: AzureAccount = {
-	key: {
-		accountId: 'mock_account_2',
-		providerId: 'mock_provider'
-	},
-	displayInfo: {
-		displayName: 'mock_account_2@test.com',
-		accountType: 'Microsoft',
-		contextualDisplayName: 'test',
-		userId: 'test@email.com'
-	},
-	properties: TypeMoq.Mock.ofType<AzureAccountProperties>().object,
-	isStale: false
-};
-const mockAccountsADAL = [mockAccountAdal1, mockAccountAdal2];
-
 const mockAccountMsal1: AzureAccount = {
 	key: {
 		accountId: 'mock_account_1',
-		providerId: 'mock_provider',
-		authLibrary: 'MSAL'
+		providerId: 'mock_provider'
 	},
 	displayInfo: {
 		displayName: 'mock_account_1@test.com',
@@ -75,8 +43,7 @@ const mockAccountMsal1: AzureAccount = {
 const mockAccountMsal2: AzureAccount = {
 	key: {
 		accountId: 'mock_account_2',
-		providerId: 'mock_provider',
-		authLibrary: 'MSAL'
+		providerId: 'mock_provider'
 	},
 	displayInfo: {
 		displayName: 'mock_account_2@test.com',
@@ -103,27 +70,6 @@ describe('AzureResourceTreeProvider.getChildren', function (): void {
 
 	afterEach(function (): void {
 		sinon.restore();
-	});
-
-	it('Should load accounts for ADAL', async function (): Promise<void> {
-		const getAllAccountsStub = sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(mockAccountsADAL));
-
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext, 'ADAL');
-
-		await treeProvider.getChildren(undefined); // Load account promise
-		const children = await treeProvider.getChildren(undefined); // Actual accounts
-
-		should(getAllAccountsStub.calledOnce).be.true('getAllAccounts should have been called exactly once');
-		should(children).Array();
-		should(children.length).equal(mockAccountsADAL.length);
-
-		for (let ix = 0; ix < mockAccountsADAL.length; ix++) {
-			const child = children[ix];
-			const account = mockAccountsADAL[ix];
-
-			should(child).instanceof(AzureResourceAccountTreeNode);
-			should(child.nodePathValue).equal(`account_${account.key.accountId}`);
-		}
 	});
 
 	it('Should load accounts for MSAL', async function (): Promise<void> {

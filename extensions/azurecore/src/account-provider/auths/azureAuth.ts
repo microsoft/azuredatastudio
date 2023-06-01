@@ -42,7 +42,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
 	protected readonly httpClient: HttpClient;
-	private _authLibrary: string | undefined;
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
@@ -51,10 +50,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected clientApplication: PublicClientApplication,
 		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		protected readonly authType: AzureAuthType,
-		public readonly userFriendlyName: string,
-		public readonly authLibrary: string
+		public readonly userFriendlyName: string
 	) {
-		this._authLibrary = authLibrary;
 
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
@@ -442,8 +439,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			key: {
 				providerId: this.metadata.id,
 				accountId: key,
-				accountVersion: Constants.AccountVersion,
-				authLibrary: this._authLibrary
+				accountVersion: Constants.AccountVersion
 			},
 			name: displayName,
 			displayInfo: {
@@ -509,8 +505,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
 		try {
-			// remove account based on authLibrary field, accounts added before this field was present will default to
-			// ADAL method of account removal
 			return await this.deleteAccountCacheMsal(account);
 		} catch (ex) {
 			// We need not prompt user for error if token could not be removed from cache.

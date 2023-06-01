@@ -74,8 +74,6 @@ export const AzureTokenFolderName = 'Azure Accounts';
 
 export const MSALCacheName = 'accessTokenCache';
 
-export const DefaultAuthLibrary = 'MSAL';
-
 export const LocalCacheSuffix = '.local';
 
 export const LockFileSuffix = '.lockfile';
@@ -95,14 +93,6 @@ export const AADSTS50173 = 'AADSTS50173';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
-}
-
-/**
- * AAD Auth library as selected.
- */
-export enum AuthLibrary {
-	MSAL = 'MSAL',
-	ADAL = 'ADAL'
 }
 
 /**

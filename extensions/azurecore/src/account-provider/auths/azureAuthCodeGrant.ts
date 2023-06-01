@@ -37,10 +37,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		msalCacheProvider: MsalCachePluginProvider,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
-		clientApplication: PublicClientApplication,
-		authLibrary: string
+		clientApplication: PublicClientApplication
 	) {
-		super(metadata, msalCacheProvider, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME, authLibrary);
+		super(metadata, msalCacheProvider, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 		this.cryptoProvider = new CryptoProvider();
 		this.pkceCodes = {
 			nonce: '',
