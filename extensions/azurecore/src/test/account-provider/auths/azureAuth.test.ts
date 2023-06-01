@@ -12,6 +12,7 @@ import { Tenant, AzureAccount } from 'azurecore';
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
+import { AuthenticationResult } from '@azure/msal-common';
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 // let azureDeviceCode: TypeMoq.IMock<AzureDeviceCode>;
@@ -80,7 +81,7 @@ describe('Azure Authentication', function () {
 
 	it('accountHydration should yield a valid account', async function () {
 
-		azureAuthCodeGrant.setup(x => x.getTenantsAdal(mockToken)).returns((): Promise<Tenant[]> => {
+		azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns((): Promise<Tenant[]> => {
 			return Promise.resolve([
 				mockTenant
 			]);
@@ -95,60 +96,49 @@ describe('Azure Authentication', function () {
 	describe('getAccountSecurityToken', function () {
 		it('should be undefined on stale account', async function () {
 			mockAccount.isStale = true;
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, TypeMoq.It.isAny(), TypeMoq.It.isAny());
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, TypeMoq.It.isAny(), TypeMoq.It.isAny());
 			should(securityToken).be.undefined();
 		});
 		it('dont find correct resources', async function () {
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, TypeMoq.It.isAny(), -1);
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, -1, TypeMoq.It.isAny());
 			should(securityToken).be.undefined();
 		});
 		it('incorrect tenant', async function () {
-			await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, 'invalid_tenant', AzureResource.MicrosoftResourceManagement).should.be.rejected();
+			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, 'invalid_tenant').should.be.rejected();
 		});
 
 		it('token recieved for ossRdbmns resource', async function () {
-			azureAuthCodeGrant.setup(x => x.getTenantsAdal(mockToken)).returns(() => {
+			azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns(() => {
 				return Promise.resolve([
 					mockTenant
 				]);
 			});
-			azureAuthCodeGrant.setup(x => x.getTokenHelperAdal(mockTenant, provider.settings.ossRdbmsResource!, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-				return Promise.resolve({
-					accessToken: mockAccessToken
-				} as OAuthTokenResponse);
-			});
 
-			azureAuthCodeGrant.setup(x => x.refreshTokenAdal(mockTenant, provider.settings.ossRdbmsResource!, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
-				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken)) as AccessToken;
-				delete (mockToken as any).invalidData;
-				return Promise.resolve({
-					accessToken: mockToken
-				} as OAuthTokenResponse);
-			});
-
-			azureAuthCodeGrant.setup(x => x.getSavedTokenAdal(mockTenant, provider.settings.ossRdbmsResource!, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
-				return Promise.resolve({
-					accessToken: mockAccessToken,
-					refreshToken: mockRefreshToken,
-					expiresOn: `${(new Date().getTime() / 1000) + (10 * 60)}`
-				});
-			});
-
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, mockTenant.id, AzureResource.OssRdbms);
-			should(securityToken?.token).be.equal(mockAccessToken.token, 'Token are not similar');
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.OssRdbms, mockTenant.id) as AuthenticationResult;
+			should(securityToken?.accessToken).be.equal(mockAccessToken.token, 'Token are not similar');
 
 		});
 
 		it('saved token exists and can be reused', async function () {
 			delete (mockAccessToken as any).tokenType;
-			azureAuthCodeGrant.setup(x => x.getSavedTokenAdal(mockTenant, provider.settings.microsoftResource!, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
+			azureAuthCodeGrant.setup(x => x.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id)).returns((): Promise<AuthenticationResult> => {
 				return Promise.resolve({
-					accessToken: mockAccessToken,
-					refreshToken: mockRefreshToken,
+					authority: 'test',
+					uniqueId: 'test',
+					tenantId: 'test',
+					scopes: ['test'],
+					account: null,
+					idToken: 'test',
+					idTokenClaims: null,
+					fromCache: false,
+					tokenType: 'Bearer',
+					correlationId: 'test',
+					accessToken: mockAccessToken.token,
+					refreshToken: mockRefreshToken.token,
 					expiresOn: `${(new Date().getTime() / 1000) + (10 * 60)}`
 				});
 			});
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id);
 
 			should(securityToken?.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
 		});
@@ -171,7 +161,7 @@ describe('Azure Authentication', function () {
 					accessToken: mockToken
 				} as OAuthTokenResponse);
 			});
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id);
 
 			should((securityToken as any).invalidData).be.undefined(); // Ensure its a new one
 			should(securityToken?.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
@@ -189,7 +179,7 @@ describe('Azure Authentication', function () {
 					return Promise.resolve(undefined);
 				});
 
-				await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement).should.be.rejected();
+				await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id).should.be.rejected();
 			});
 
 			it('base token exists', async function () {
@@ -212,7 +202,7 @@ describe('Azure Authentication', function () {
 					} as OAuthTokenResponse);
 				});
 
-				const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
+				const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id,);
 				should(securityToken?.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
 			});
 		});
@@ -237,7 +227,7 @@ describe('Azure Authentication', function () {
 			});
 
 
-			const result = await azureAuthCodeGrant.object.getTokenAdal(mockTenant, provider.settings.microsoftResource!, {} as TokenPostData);
+			// const result = await azureAuthCodeGrant.object.getTokenAdal(mockTenant, provider.settings.microsoftResource!, {} as TokenPostData);
 
 			azureAuthCodeGrant.verify(x => x.handleInteractionRequiredAdal(mockTenant, provider.settings.microsoftResource!), TypeMoq.Times.once());
 
@@ -274,7 +264,7 @@ describe('Azure Authentication', function () {
 			});
 
 
-			const result = await azureAuthCodeGrant.object.getTokenAdal(mockTenant, provider.settings.microsoftResource!, {} as TokenPostData);
+			// const result = await azureAuthCodeGrant.object.getTokenAdal(mockTenant, provider.settings.microsoftResource!, {} as TokenPostData);
 
 			azureAuthCodeGrant.verify(x => x.getTokenHelperAdal(mockTenant, provider.settings.microsoftResource!, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 

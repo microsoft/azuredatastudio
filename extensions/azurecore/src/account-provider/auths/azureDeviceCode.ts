@@ -36,7 +36,7 @@ export class AzureDeviceCode extends AzureAuth {
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 	}
 
-	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
+	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 

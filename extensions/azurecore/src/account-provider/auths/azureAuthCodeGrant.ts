@@ -49,13 +49,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 	}
 
-	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
+	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 		let authCodeRequest: AuthorizationCodeRequest;
 
 		if (vscode.env.uiKind === vscode.UIKind.Web) {
-			authCodeRequest = await this.loginWebMsal(tenant, resource);
+			authCodeRequest = await this.loginWeb(tenant, resource);
 		} else {
 			authCodeRequest = await this.loginDesktopMsal(tenant, resource, authCompletePromise);
 		}
@@ -73,7 +73,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 	}
 
-	private async loginWebMsal(tenant: Tenant, resource: Resource): Promise<AuthorizationCodeRequest> {
+	private async loginWeb(tenant: Tenant, resource: Resource): Promise<AuthorizationCodeRequest> {
 		const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://microsoft.azurecore`));
 		await this.createCryptoValuesMsal();
 		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);

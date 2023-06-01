@@ -56,7 +56,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 	clearTokenCache(): Thenable<void> {
-		return this.getAuthMethod().deleteAllCacheMsal();
+		return this.getAuthMethod().deleteAllCache();
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
@@ -152,7 +152,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				Logger.info(`Tenant ${tenantId} found in the ignore list, authentication will not be attempted. Please remove tenant from setting: '${Constants.AzureTenantConfigFilterSetting}' if you want to re-enable tenant for authentication.`);
 				throw new TenantIgnoredError(localize('tenantIgnoredError', 'Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.', tenantId, Constants.AzureTenantConfigFilterSetting));
 			} else {
-				let authResult = await azureAuth.getTokenMsal(account.key.accountId, resource, tenantId);
+				let authResult = await azureAuth.getToken(account.key.accountId, resource, tenantId);
 				if (this.isAuthenticationResult(authResult) && authResult.account && authResult.account.idTokenClaims) {
 					const token: Token = {
 						key: authResult.account.homeAccountId,

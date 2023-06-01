@@ -105,7 +105,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (!this.metadata.settings.microsoftResource) {
 				throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
 			}
-			const result = await this.loginMsal(this.organizationTenant, this.metadata.settings.microsoftResource);
+			const result = await this.login(this.organizationTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
 			if (!result?.response || !result.response?.account) {
 				Logger.error(`Authentication failed: ${loginComplete}`);
@@ -144,12 +144,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
-		const tenants = await this.getTenantsMsal(token.token);
+		const tenants = await this.getTenants(token.token);
 		account = this.createAccount(tokenClaims, token.key, tenants);
 		return account;
 	}
 
-	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }>;
+	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Gets the access token for the correct account and scope from the token cache, if the correct token doesn't exist in the token cache
@@ -159,7 +159,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The authentication result, including the access token.
 	 * This function returns 'null' instead of 'undefined' by design as the same is returned by MSAL APIs in the flow (e.g. acquireTokenSilent).
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | azdata.PromptFailedResult | null> {
+	public async getToken(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | azdata.PromptFailedResult | null> {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 
 		if (!resource) {
@@ -202,7 +202,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					id: tenantId,
 					displayName: ''
 				};
-				return this.handleInteractionRequiredMsal(tenant, resource);
+				return this.handleInteractionRequired(tenant, resource);
 			} else {
 				if (e.name === 'ClientAuthError') {
 					Logger.verbose('[ClientAuthError] Failed to silently acquire token');
@@ -231,7 +231,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region tenant calls
 
-	public async getTenantsMsal(token: string): Promise<Tenant[]> {
+	public async getTenants(token: string): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
@@ -282,10 +282,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region interaction handling
-	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | null> {
+	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | null> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
-			const result = await this.loginMsal(tenant, resource);
+			const result = await this.login(tenant, resource);
 			result?.authComplete?.resolve();
 			return result?.response;
 		}
@@ -498,21 +498,21 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected toBase64UrlEncoding(base64string: string): string {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
-	public async deleteAllCacheMsal(): Promise<void> {
+	public async deleteAllCache(): Promise<void> {
 		this.clientApplication.clearCache();
 		await this.msalCacheProvider.clearLocalCache();
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
 		try {
-			return await this.deleteAccountCacheMsal(account);
+			return await this.deleteAccountCache(account);
 		} catch (ex) {
 			// We need not prompt user for error if token could not be removed from cache.
 			Logger.error('Error when removing token from cache: ', ex);
 		}
 	}
 
-	private async deleteAccountCacheMsal(accountKey: azdata.AccountKey): Promise<void> {
+	private async deleteAccountCache(accountKey: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
 		let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(accountKey.accountId);
 		if (!msalAccount) {
