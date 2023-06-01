@@ -247,7 +247,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 					await this.statusBar.clearError();
 					if (canRetryMigration(this.model.migration)) {
 						const errorMessage = getMigrationErrors(this.model.migration);
-						await openRetryMigrationDialog(
+						openRetryMigrationDialog(
 							errorMessage,
 							async () => {
 								try {

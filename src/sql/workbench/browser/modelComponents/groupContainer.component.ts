@@ -98,7 +98,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 	}
 
 	public get header(): string {
-		return this._containerLayout?.header;
+		return this._containerLayout?.header ?? '';
 	}
 
 	private hasHeader(): boolean {
