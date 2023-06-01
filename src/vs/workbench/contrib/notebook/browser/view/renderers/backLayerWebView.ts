@@ -901,7 +901,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Themable {
 					fromWorkspace: true,
 					editorOptions: editorOptions
 				});
-				return;
+				return undefined;
 			}
 		}
 

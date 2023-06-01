@@ -15,7 +15,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { AbstractTelemetryOptOut } from 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IJSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditing';
-import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
+import { INativeHostService } from 'vs/platform/native/common/native';
 
 export class NativeTelemetryOptOut extends AbstractTelemetryOptOut {
 

@@ -39,7 +39,7 @@ export function gitSimilar(): ITerminalQuickFixInternalOptions {
 		getQuickFixes: (matchResult: ITerminalCommandMatchResult) => {
 			const regexMatch = matchResult.outputMatch?.regexMatch[0];
 			if (!regexMatch || !matchResult.outputMatch) {
-				return;
+				return undefined;
 			}
 			const actions: TerminalQuickFixActionInternal[] = [];
 			const startIndex = matchResult.outputMatch.outputLines.findIndex(l => l.includes(regexMatch)) + 1;
@@ -76,7 +76,7 @@ export function gitTwoDashes(): ITerminalQuickFixInternalOptions {
 		getQuickFixes: (matchResult: ITerminalCommandMatchResult) => {
 			const problemArg = matchResult?.outputMatch?.regexMatch?.[1];
 			if (!problemArg) {
-				return;
+				return undefined;
 			}
 			return {
 				type: TerminalQuickFixType.Command,
@@ -103,7 +103,7 @@ export function freePort(terminalInstance?: Partial<ITerminalInstance>): ITermin
 		getQuickFixes: (matchResult: ITerminalCommandMatchResult) => {
 			const port = matchResult?.outputMatch?.regexMatch?.groups?.portNumber;
 			if (!port) {
-				return;
+				return undefined;
 			}
 			const label = localize("terminal.freePort", "Free port {0}", port);
 			return {
@@ -138,11 +138,11 @@ export function gitPushSetUpstream(): ITerminalQuickFixInternalOptions {
 			const matches = matchResult.outputMatch;
 			const commandToRun = 'git push --set-upstream origin ${group:branchName}';
 			if (!matches) {
-				return;
+				return undefined;
 			}
 			const groups = matches.regexMatch.groups;
 			if (!groups) {
-				return;
+				return undefined;
 			}
 			const actions: TerminalQuickFixActionInternal[] = [];
 			let fixedCommand = commandToRun;
@@ -163,7 +163,7 @@ export function gitPushSetUpstream(): ITerminalQuickFixInternalOptions {
 				});
 				return actions;
 			}
-			return;
+			return undefined;
 		}
 	};
 }
@@ -198,7 +198,7 @@ export function gitCreatePr(): ITerminalQuickFixInternalOptions {
 		getQuickFixes: (matchResult: ITerminalCommandMatchResult) => {
 			const link = matchResult?.outputMatch?.regexMatch?.groups?.link;
 			if (!link) {
-				return;
+				return undefined;
 			}
 			const label = localize("terminal.createPR", "Create PR {0}", link);
 			return {
@@ -228,7 +228,7 @@ export function pwshGeneralError(): ITerminalQuickFixInternalOptions {
 		getQuickFixes: (matchResult: ITerminalCommandMatchResult) => {
 			const lines = matchResult.outputMatch?.regexMatch.input?.split('\n');
 			if (!lines) {
-				return;
+				return undefined;
 			}
 
 			// Find the start
@@ -241,12 +241,12 @@ export function pwshGeneralError(): ITerminalQuickFixInternalOptions {
 				}
 			}
 			if (!inFeedbackProvider) {
-				return;
+				return undefined;
 			}
 
 			const suggestions = lines[i + 1].match(/The most similar commands are: (?<values>.+)./)?.groups?.values?.split(', ');
 			if (!suggestions) {
-				return;
+				return undefined;
 			}
 			const result: ITerminalQuickFixCommandAction[] = [];
 			for (const suggestion of suggestions) {
@@ -277,7 +277,7 @@ export function pwshUnixCommandNotFoundError(): ITerminalQuickFixInternalOptions
 		getQuickFixes: (matchResult: ITerminalCommandMatchResult) => {
 			const lines = matchResult.outputMatch?.regexMatch.input?.split('\n');
 			if (!lines) {
-				return;
+				return undefined;
 			}
 
 			// Find the start
@@ -290,7 +290,7 @@ export function pwshUnixCommandNotFoundError(): ITerminalQuickFixInternalOptions
 				}
 			}
 			if (!inFeedbackProvider) {
-				return;
+				return undefined;
 			}
 
 			// Always remove the first element as it's the "Suggestion [cmd-not-found]"" line
