@@ -35,6 +35,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
 		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
