@@ -37,11 +37,9 @@ import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName, mssqlCmsProviderName } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
-import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
@@ -724,11 +722,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
-		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
-		if (authLibrary) {
-			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
-		}
+		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
 
 		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
 			return {

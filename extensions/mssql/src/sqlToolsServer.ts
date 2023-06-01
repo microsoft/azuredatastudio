@@ -163,8 +163,7 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 		launchArgs.push('--parallel-message-processing');
 	}
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
-	const azureAuthLibrary = getAzureAuthenticationLibraryConfig();
-	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider === true) {
+	if (enableSqlAuthenticationProvider === true) {
 		launchArgs.push('--enable-sql-authentication-provider');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };

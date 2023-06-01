@@ -145,6 +145,5 @@ export const enum NbTelemetryAction {
 export const enum TelemetryPropertyName {
 	ChartMaxRowCountExceeded = 'chartMaxRowCountExceeded',
 	ConnectionSource = 'connectionSource',
-	AuthLibrary = 'AuthLibrary'
 }
 

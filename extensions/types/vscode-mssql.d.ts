@@ -800,11 +800,6 @@ declare module 'vscode-mssql' {
 		accountVersion?: any;
 	}
 
-	export enum AuthLibrary {
-		ADAL = 'ADAL',
-		MSAL = 'MSAL'
-	}
-
 	export enum AzureAuthType {
 		AuthCodeGrant = 0,
 		DeviceCode = 1
