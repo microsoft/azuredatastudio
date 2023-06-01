@@ -361,7 +361,7 @@ export async function getQuickFixesForCommand(
 							case TerminalQuickFixType.Opener: {
 								const fix = quickFix as ITerminalQuickFixOpenerAction;
 								if (!fix.uri) {
-									return;
+									return undefined;
 								}
 								if (openQuickFixSet.has(fix.uri.toString())) {
 									continue;

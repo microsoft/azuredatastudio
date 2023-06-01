@@ -18,7 +18,7 @@ import {
 	IExtensionsControlManifest, InstallVSIXOptions, IExtensionInfo, IExtensionQueryOptions, IDeprecationInfo, ExtensionManagementError, ExtensionManagementErrorCode // {{SQL CARBON EDIT}} Added ExtensionManagementError and ExtensionManagementErrorCode
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService, DefaultIconPath } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, groupByExtension, ExtensionKey, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, groupByExtension, ExtensionKey } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
@@ -34,7 +34,7 @@ import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, TargetPlatform, ExtensionIdentifier, IExtensionIdentifier, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, TargetPlatform, ExtensionIdentifier, IExtensionIdentifier, ExtensionsPolicyKey, ExtensionsPolicy, IExtensionDescription } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { ILanguageService } from 'vs/editor/common/languages/language';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { FileAccess } from 'vs/base/common/network';
@@ -794,7 +794,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@ILocaleService private readonly localeService: ILocaleService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
-		@IFileService private readonly fileService: IFileService,
 	) {
 		super();
 		const preferPreReleasesValue = configurationService.getValue('_extensions.preferPreReleases');
@@ -1536,6 +1535,42 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	}
 	// {{SQL CARBON EDIT}} - End
 
+
+	async installInServer(extension: IExtension, server: IExtensionManagementServer): Promise<void> {
+		return undefined;
+		// {{SQL CARBON EDIT}} - disable install in server
+		/*
+		await this.doInstall(extension, async () => {
+			if (!extension.gallery) {
+				extension = (await this.getExtensions([extension.identifier], CancellationToken.None))[0] ?? extension;
+			}
+			if (extension.gallery) {
+				return server.extensionManagementService.installFromGallery(extension.gallery);
+			}
+
+			if (!extension.local) {
+				throw new Error('Extension not found');
+			}
+
+			const targetPlatform = await server.extensionManagementService.getTargetPlatform();
+			if (!isTargetPlatformCompatible(extension.local.targetPlatform, [extension.local.targetPlatform], targetPlatform)) {
+				throw new Error(nls.localize('incompatible', "Can't install '{0}' extension because it is not compatible.", extension.identifier.id));
+			}
+
+			const vsix = await this.extensionManagementService.zip(extension.local);
+			try {
+				return await server.extensionManagementService.install(vsix);
+			} finally {
+				try {
+					await this.fileService.del(vsix);
+				} catch (error) {
+					this.logService.error(error);
+				}
+			}
+		});
+		*/ // {{SQL CARBON EDIT}} - end comment block
+	}
+
 	canSetLanguage(extension: IExtension): boolean {
 		if (!isWeb) {
 			return false;
@@ -1602,9 +1637,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return this.installWithProgress(async () => {
 			installOptions.installGivenVersion = true;
 			const installed = await this.installFromGallery(extension, gallery, installOptions);
-			if (extension.latestVersion !== version) {
-				this.ignoreAutoUpdate(new ExtensionKey(gallery.identifier, version));
-			}
+			// if (extension.latestVersion !== version) {
+			// 	this.ignoreAutoUpdate(new ExtensionKey(gallery.identifier, version));
+			// }
 			return installed;
 		}, gallery.displayName);
 	}
@@ -1670,12 +1705,12 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 	private async installFromVSIX(vsix: URI, installOptions?: InstallVSIXOptions): Promise<IExtension> {
 		const manifest = await this.extensionManagementService.getManifest(vsix);
-		const existingExtension = this.local.find(local => areSameExtensions(local.identifier, { id: getGalleryExtensionId(manifest.publisher, manifest.name) }));
+		// const existingExtension = this.local.find(local => areSameExtensions(local.identifier, { id: getGalleryExtensionId(manifest.publisher, manifest.name) }));
 		const { identifier } = await this.extensionManagementService.installVSIX(vsix, manifest, installOptions);
 
-		if (existingExtension && existingExtension.latestVersion !== manifest.version) {
-			this.ignoreAutoUpdate(new ExtensionKey(identifier, manifest.version));
-		}
+		// if (existingExtension && existingExtension.latestVersion !== manifest.version) {
+		// 	this.ignoreAutoUpdate(new ExtensionKey(identifier, manifest.version));
+		// }
 
 		return this.waitAndGetInstalledExtension(identifier);
 	}
@@ -1922,5 +1957,4 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			}
 		}).then(undefined, error => this.onError(error));
 	}
-
 }

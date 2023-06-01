@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAction, SubmenuAction } from 'vs/base/common/actions';
+import { Action, IAction, SubmenuAction } from 'vs/base/common/actions';
 import { ThemeIcon } from 'vs/base/common/themables';
 import { Event, MicrotaskEmitter } from 'vs/base/common/event';
 import { DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';

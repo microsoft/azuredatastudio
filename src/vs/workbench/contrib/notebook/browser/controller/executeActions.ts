@@ -750,13 +750,13 @@ registerAction2(class FixCellErrorction extends NotebookCellAction<ICellRange> {
 
 	protected override getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange, ...additionalArgs: any[]): INotebookCellActionContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return;
+			return undefined;
 		}
 
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.hasModel() || context.start >= activeEditorContext.notebookEditor.getLength()) {
-			return;
+			return undefined;
 		}
 
 		return {

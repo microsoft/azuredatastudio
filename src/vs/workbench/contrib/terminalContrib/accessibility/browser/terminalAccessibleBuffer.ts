@@ -93,11 +93,11 @@ export class AccessibleBufferWidget extends TerminalAccessibleWidget {
 	private _getEditorLineForCommand(command: ITerminalCommand): number | undefined {
 		let line = command.marker?.line;
 		if (line === undefined || !command.command.length || line < 0) {
-			return;
+			return undefined;
 		}
 		line = this._bufferTracker.bufferToEditorLineMapping.get(line);
 		if (!line) {
-			return;
+			return undefined;
 		}
 		return line + 1;
 	}
@@ -105,7 +105,7 @@ export class AccessibleBufferWidget extends TerminalAccessibleWidget {
 	private _getCommandsWithEditorLine(): ICommandWithEditorLine[] | undefined {
 		const commands = this._instance.capabilities.get(TerminalCapability.CommandDetection)?.commands;
 		if (!commands?.length) {
-			return;
+			return undefined;
 		}
 		const result: ICommandWithEditorLine[] = [];
 		for (const command of commands) {
@@ -122,7 +122,7 @@ export class AccessibleBufferWidget extends TerminalAccessibleWidget {
 		this._cursorPosition = withNullAsUndefined(this.editorWidget.getPosition());
 		const commands = this._getCommandsWithEditorLine();
 		if (!commands) {
-			return;
+			return undefined;
 		}
 		const quickPickItems: IAccessibleBufferQuickPickItem[] = [];
 		for (const { command, lineNumber } of commands) {

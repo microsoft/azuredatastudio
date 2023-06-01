@@ -326,7 +326,7 @@ export class FilesRenderer implements ICompressibleTreeRenderer<ExplorerItem, Fu
 
 			const indentGuideElement = tlRow?.querySelector('.monaco-tl-indent') as HTMLElement | undefined;
 			if (!indentGuideElement) {
-				return;
+				return undefined;
 			}
 
 			return overflowed ? this.hoverService.showHover({

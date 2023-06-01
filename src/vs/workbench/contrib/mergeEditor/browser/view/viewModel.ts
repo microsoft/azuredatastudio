@@ -164,7 +164,7 @@ export class MergeEditorViewModel extends Disposable {
 			}
 
 			if (!focusedEditor.view) {
-				return;
+				return undefined;
 			}
 			const cursorLineNumber = focusedEditor.view.cursorLineNumber.read(reader);
 			if (!cursorLineNumber) {

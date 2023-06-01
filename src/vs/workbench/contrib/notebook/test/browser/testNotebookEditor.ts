@@ -441,14 +441,14 @@ class TestNotebookExecutionStateService implements INotebookExecutionStateServic
 	}
 
 	getCellExecutionsByHandleForNotebook(notebook: URI): Map<number, INotebookCellExecution> | undefined {
-		return;
+		return undefined;
 	}
 
 	getLastFailedCellForNotebook(notebook: URI): number | undefined {
-		return;
+		return undefined;
 	}
 	getExecution(notebook: URI): INotebookExecution | undefined {
-		return;
+		return undefined;
 	}
 	createExecution(notebook: URI): INotebookExecution {
 		throw new Error('Method not implemented.');

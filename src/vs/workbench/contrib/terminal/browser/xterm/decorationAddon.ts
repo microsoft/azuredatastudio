@@ -19,7 +19,6 @@ import { CommandInvalidationReason, ICommandDetectionCapability, IMarkProperties
 import { TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ThemeIcon } from 'vs/base/common/themables';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { terminalDecorationError, terminalDecorationIncomplete, terminalDecorationMark, terminalDecorationSuccess } from 'vs/workbench/contrib/terminal/browser/terminalIcons';
 import { DecorationSelector, TerminalDecorationHoverManager, updateLayout } from 'vs/workbench/contrib/terminal/browser/xterm/decorationStyles';
 import { ITerminalCommand } from 'vs/workbench/contrib/terminal/common/terminal';
@@ -301,7 +300,7 @@ export class DecorationAddon extends Disposable implements ITerminalAddon {
 		if (command?.exitCode === undefined && !command?.markProperties) {
 			return [];
 		} else if (command?.markProperties || markProperties) {
-			return [this._terminalDecorationHoverService.createHover(element, command || markProperties, markProperties?.hoverMessage)];
+			return [this._terminalDecorationHoverService.createHover(element, <any>(command || markProperties), markProperties?.hoverMessage)];
 		}
 		return [this._createContextMenu(element, command), this._terminalDecorationHoverService.createHover(element, command)];
 	}
