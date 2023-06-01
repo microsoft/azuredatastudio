@@ -1,8 +1,8 @@
-# Query Store for Azure Data Studio
+# Query Store Extension for Azure Data Studio
 
 ## Overview
 
-Query Store for Azure Data Studio simplies assists users with troubleshooting query performance in SQL Server and Azure SQL and understanding issues caused by plan changes.
+Query Store extension for Azure Data Studio simplifies assists users with troubleshooting query performance in SQL Server and Azure SQL and understanding issues caused by plan changes.
 
 ## Privacy Statement
 
