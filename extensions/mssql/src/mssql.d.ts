@@ -348,9 +348,10 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param systemDatabase Type of system database
 		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param referenceType Type of reference - ArtifactReference or PackageReference
 		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 		 */
-		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, referenceType: SystemDbReferenceStyle, databaseLiteral?: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a nuget package database reference to a project
@@ -764,6 +765,11 @@ declare module 'mssql' {
 	export const enum SystemDatabase {
 		Master = 0,
 		MSDB = 1
+	}
+
+	export const enum SystemDbReferenceStyle {
+		ArtifactReference = 0,
+		PackageReference = 1
 	}
 
 	export interface SqlCmdVariable {

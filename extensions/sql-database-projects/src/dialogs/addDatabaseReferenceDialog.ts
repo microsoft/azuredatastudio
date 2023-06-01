@@ -16,7 +16,7 @@ import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectRef
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
-import { ProjectType } from 'mssql';
+import { ProjectType, SystemDbReferenceStyle } from 'mssql';
 
 export enum ReferenceType {
 	project,
@@ -161,7 +161,8 @@ export class AddDatabaseReferenceDialog {
 			const systemDbRef: ISystemDatabaseReferenceSettings = {
 				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: utils.getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked,
+				systemDbReferenceStyle: SystemDbReferenceStyle.ArtifactReference
 			};
 
 			referenceSettings = systemDbRef;

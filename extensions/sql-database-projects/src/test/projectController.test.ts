@@ -686,7 +686,7 @@ describe('ProjectsController', function (): void {
 			addDbReferenceDialog.callBase = true;
 			addDbReferenceDialog.setup(x => x.addReferenceClick()).returns(() => {
 				return projController.object.addDatabaseReferenceCallback(proj,
-					{ systemDb: SystemDatabase.Master, databaseName: 'master', suppressMissingDependenciesErrors: false },
+					{ systemDb: SystemDatabase.Master, databaseName: 'master', suppressMissingDependenciesErrors: false, systemDbReferenceStyle: mssql.SystemDbReferenceStyle.ArtifactReference },
 					{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			});
 			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => Promise.resolve());

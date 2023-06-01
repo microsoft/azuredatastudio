@@ -830,13 +830,12 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		let systemDb;
-		let result;
-		let sqlProjService;
+		let systemDb, referenceType, result, sqlProjService;
 		if (utils.getAzdataApi()) {
 			systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+			referenceType = settings.systemDbReferenceStyle as mssql.SystemDbReferenceStyle;
 			sqlProjService = this.sqlProjService as mssql.ISqlProjectsService;
-			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseVariableLiteralValue);
+			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, referenceType, settings.databaseVariableLiteralValue);
 		} else {
 			systemDb = <unknown>settings.systemDb as vscodeMssql.SystemDatabase;
 			sqlProjService = this.sqlProjService as vscodeMssql.ISqlProjectsService;
