@@ -101,7 +101,7 @@ const _dateFormatter = new Intl.DateTimeFormat(
 	second: '2-digit'
 });
 
-const _numberFormatter = new Intl.NumberFormat(
+const _numberFormatterOneMinIntegers = new Intl.NumberFormat(
 	undefined, {
 	style: 'decimal',
 	useGrouping: true,
@@ -110,18 +110,27 @@ const _numberFormatter = new Intl.NumberFormat(
 	maximumFractionDigits: 0,
 });
 
+const _numberFormatterTwoMinIntegers = new Intl.NumberFormat(
+	undefined, {
+	style: 'decimal',
+	useGrouping: true,
+	minimumIntegerDigits: 2,
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0,
+});
+
 export function formatSecondsIntoReadableTime(seconds: number) {
 	const hours = seconds / (60 * 60);
 	const absoluteHours = Math.floor(hours);
-	const h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
+	const h = _numberFormatterTwoMinIntegers.format(absoluteHours);
 
 	const minutesRemaining = (hours - absoluteHours) * 60;
 	const absoluteMinutes = Math.floor(minutesRemaining);
-	const m = absoluteMinutes > 9 ? absoluteMinutes : '0' + absoluteMinutes;
+	const m = _numberFormatterTwoMinIntegers.format(absoluteMinutes);
 
 	const secondsRemaining = (minutesRemaining - absoluteMinutes) * 60;
 	const absoluteSeconds = Math.floor(secondsRemaining);
-	const s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
+	const s = _numberFormatterTwoMinIntegers.format(absoluteSeconds);
 
 	return h + ':' + m + ':' + s;
 }
@@ -145,7 +154,7 @@ export function formatTime(miliseconds: number): string {
 
 export function formatNumber(value: number): string {
 	return value >= 0
-		? _numberFormatter.format(value)
+		? _numberFormatterOneMinIntegers.format(value)
 		: '';
 }
 
