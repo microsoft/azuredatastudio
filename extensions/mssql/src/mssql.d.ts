@@ -1384,7 +1384,7 @@ declare module 'mssql' {
 			containmentTypes: string[];
 			recoveryModels: string[];
 
-			isAzure: boolean;
+			isAzureDB: boolean;
 			azureBackupRedundancyLevels: string[];
 			azureServiceLevelObjectives: string[];
 			azureEditions: string[];

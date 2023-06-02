@@ -24,7 +24,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		let components = [];
 		components.push(this.initializeGeneralSection());
 		components.push(this.initializeOptionsSection());
-		if (this.viewInfo.isAzure) {
+		if (this.viewInfo.isAzureDB) {
 			components.push(this.initializeConfigureSLOSection());
 		}
 		this.formContainer.addItems(components);
