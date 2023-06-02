@@ -13,8 +13,8 @@ import * as nls from 'vscode-nls';
 import { AzureResourcePrefixes, ResourceCategory, analyticsKind, mongoDbKind } from '../../constants';
 import {
 	COSMOSDB_MONGO_PROVIDER_ID, DATABASE_PROVIDER_ID, DATABASE_SERVER_PROVIDER_ID, KUSTO_PROVIDER_ID, AZURE_MONITOR_PROVIDER_ID,
-	MYSQL_FLEXIBLE_SERVER_PROVIDER_ID, POSTGRES_SERVER_PROVIDER_ID, POSTGRES_ARC_SERVER_PROVIDER_ID, SQLINSTANCE_PROVIDER_ID,
-	SQLINSTANCE_ARC_PROVIDER_ID, SYNAPSE_SQL_POOL_PROVIDER_ID, SYNAPSE_WORKSPACE_PROVIDER_ID
+	MYSQL_FLEXIBLE_SERVER_PROVIDER_ID, POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID, POSTGRES_SERVER_PROVIDER_ID, POSTGRES_ARC_SERVER_PROVIDER_ID,
+	SQLINSTANCE_PROVIDER_ID, SQLINSTANCE_ARC_PROVIDER_ID, SYNAPSE_SQL_POOL_PROVIDER_ID, SYNAPSE_WORKSPACE_PROVIDER_ID
 } from '../../../constants';
 import { Logger } from '../../../utils/Logger';
 
@@ -91,6 +91,8 @@ export class AzureResourceUniversalService implements azureResource.IAzureResour
 			return [this.getRegisteredTreeDataProviderInstance(AZURE_MONITOR_PROVIDER_ID), ResourceCategory.Server];
 		} else if (type === azureResource.AzureResourceType.mysqlFlexibleServer) {
 			return [this.getRegisteredTreeDataProviderInstance(MYSQL_FLEXIBLE_SERVER_PROVIDER_ID), ResourceCategory.Server];
+		} else if (type === azureResource.AzureResourceType.postgresFlexibleServer) {
+			return [this.getRegisteredTreeDataProviderInstance(POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID), ResourceCategory.Server];
 		} else if (type === azureResource.AzureResourceType.postgresServer) {
 			return [this.getRegisteredTreeDataProviderInstance(POSTGRES_SERVER_PROVIDER_ID), ResourceCategory.Server];
 		} else if (type === azureResource.AzureResourceType.azureArcPostgresServer) {
@@ -121,6 +123,8 @@ export class AzureResourceUniversalService implements azureResource.IAzureResour
 			return this.getRegisteredTreeDataProviderInstance(AZURE_MONITOR_PROVIDER_ID);
 		} else if (id.startsWith(AzureResourcePrefixes.mySqlFlexibleServer)) {
 			return this.getRegisteredTreeDataProviderInstance(MYSQL_FLEXIBLE_SERVER_PROVIDER_ID);
+		} else if (id.startsWith(AzureResourcePrefixes.postgresFlexibleServer)) {
+			return this.getRegisteredTreeDataProviderInstance(POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID);
 		} else if (id.startsWith(AzureResourcePrefixes.postgresServer)) {
 			return this.getRegisteredTreeDataProviderInstance(POSTGRES_SERVER_PROVIDER_ID);
 		} else if (id.startsWith(AzureResourcePrefixes.postgresServerArc)) {
