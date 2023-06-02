@@ -279,7 +279,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._domElement = domElement;
 		options = options || {};
 
-		let diffOptions: any = {
+		this._options = validateDiffEditorOptions(options, {
 			enableSplitViewResizing: true,
 			splitViewDefaultRatio: 0.5,
 			renderSideBySide: true,
@@ -297,6 +297,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			experimental: {
 				collapseUnchangedRegions: false,
 			},
+			reverse: false // {{SQL CARBON EDIT}} - add reverse option
 		});
 
 		this.isEmbeddedDiffEditorKey = EditorContextKeys.isEmbeddedDiffEditor.bindTo(this._contextKeyService);
