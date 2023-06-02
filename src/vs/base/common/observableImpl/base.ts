@@ -7,6 +7,11 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import type { derived } from 'vs/base/common/observableImpl/derived';
 import { getLogger } from 'vs/base/common/observableImpl/logging';
 
+/**
+ * Represents an observable value.
+ * @template T The type of the value.
+ * @template TChange The type of delta information (usually `void` and only used in advanced scenarios).
+ */
 export interface IObservable<T, TChange = unknown> {
 	/**
 	 * Returns the current value.
@@ -171,7 +176,6 @@ export abstract class ConvenientObservable<T, TChange> implements IObservable<T,
 export abstract class BaseObservable<T, TChange = void> extends ConvenientObservable<T, TChange> {
 	protected readonly observers = new Set<IObserver>();
 
-	/** @sealed */
 	public addObserver(observer: IObserver): void {
 		const len = this.observers.size;
 		this.observers.add(observer);
@@ -180,7 +184,6 @@ export abstract class BaseObservable<T, TChange = void> extends ConvenientObserv
 		}
 	}
 
-	/** @sealed */
 	public removeObserver(observer: IObserver): void {
 		const deleted = this.observers.delete(observer);
 		if (deleted && this.observers.size === 0) {
@@ -200,6 +203,14 @@ export function transaction(fn: (tx: ITransaction) => void, getDebugName?: () =>
 	} finally {
 		tx.finish();
 		getLogger()?.handleEndTransaction();
+	}
+}
+
+export function subtransaction(tx: ITransaction | undefined, fn: (tx: ITransaction) => void, getDebugName?: () => string): void {
+	if (!tx) {
+		transaction(fn, getDebugName);
+	} else {
+		fn(tx);
 	}
 }
 
@@ -242,6 +253,10 @@ export function getFunctionName(fn: Function): string | undefined {
 export interface ISettableObservable<T, TChange = void> extends IObservable<T, TChange>, ISettable<T, TChange> {
 }
 
+/**
+ * Creates an observable value.
+ * Observers get informed when the value changes.
+ */
 export function observableValue<T, TChange = void>(name: string, initialValue: T): ISettableObservable<T, TChange> {
 	return new ObservableValue(name, initialValue);
 }
@@ -312,4 +327,19 @@ export class DisposableObservableValue<T extends IDisposable | undefined, TChang
 	public dispose(): void {
 		this._value?.dispose();
 	}
+}
+
+export interface IChangeContext {
+	readonly changedObservable: IObservable<any, any>;
+	readonly change: unknown;
+
+	didChange<T, TChange>(observable: IObservable<T, TChange>): this is { change: TChange };
+}
+
+export interface IChangeTracker {
+	/**
+	 * Returns if this change should cause an invalidation.
+	 * Can record the changes to just process deltas.
+	*/
+	handleChange(context: IChangeContext): boolean;
 }

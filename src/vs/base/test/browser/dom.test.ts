@@ -18,6 +18,8 @@ suite('dom', () => {
 		assert(!element.classList.contains('bar'));
 		assert(!element.classList.contains('foo'));
 		assert(!element.classList.contains(''));
+
+
 	});
 
 	test.skip('removeClass', () => { // {{SQL CARBON EDIT}} skip test

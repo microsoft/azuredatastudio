@@ -367,10 +367,6 @@ export class LiveTestResult implements ITestResult {
 			parent = this.addTestToRun(controllerId, chain[i], parent.item.extId);
 		}
 
-		for (let i = 0; i < this.tasks.length; i++) {
-			this.fireUpdateAndRefresh(parent, i, TestResultState.Queued);
-		}
-
 		return undefined;
 	}
 
@@ -451,6 +447,18 @@ export class LiveTestResult implements ITestResult {
 
 		this._completedAt = Date.now();
 		this.completeEmitter.fire();
+	}
+
+	/**
+	 * Marks the test and all of its children in the run as retired.
+	 */
+	public markRetired(testId: string) {
+		for (const [id, test] of this.testById) {
+			if (!test.retired && id === testId || TestId.isChild(testId, id)) {
+				test.retired = true;
+				this.changeEmitter.fire({ reason: TestResultItemChangeReason.ComputedStateChange, item: test, result: this });
+			}
+		}
 	}
 
 	/**

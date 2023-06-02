@@ -653,6 +653,8 @@ export interface ITreeView extends IDisposable {
 
 	canSelectMany: boolean;
 
+	manuallyManageCheckboxes: boolean;
+
 	message?: string;
 
 	title: string;
@@ -758,6 +760,7 @@ export type TreeCommand = Command & { originalId?: string };
 export interface ITreeItemCheckboxState {
 	isChecked: boolean;
 	tooltip?: string;
+	accessibilityInformation?: IAccessibilityInformation;
 }
 
 export interface ITreeItem {
@@ -787,6 +790,8 @@ export interface ITreeItem {
 	command?: TreeCommand;
 
 	children?: ITreeItem[];
+
+	parent?: ITreeItem;
 
 	accessibilityInformation?: IAccessibilityInformation;
 

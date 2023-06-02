@@ -325,7 +325,7 @@ export class NotebookOutputRendererInfoStore {
 	private readonly contributedRenderers = new Map</* rendererId */ string, NotebookOutputRendererInfo>();
 	private readonly preferredMimetypeMemento: Memento;
 	private readonly preferredMimetype = new Lazy<{ [notebookType: string]: { [mimeType: string]: /* rendererId */ string } }>(
-		() => this.preferredMimetypeMemento.getMemento(StorageScope.WORKSPACE, StorageTarget.USER));
+		() => this.preferredMimetypeMemento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE));
 
 	constructor(
 		@IStorageService storageService: IStorageService,
@@ -541,6 +541,7 @@ export class NotebookService extends Disposable implements INotebookService {
 						type,
 						extension: extension.description,
 						entrypoint: notebookContribution.entrypoint,
+						localResourceRoots: notebookContribution.localResourceRoots ?? [],
 					}));
 				}
 			}

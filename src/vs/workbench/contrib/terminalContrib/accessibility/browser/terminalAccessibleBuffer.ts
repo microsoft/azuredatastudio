@@ -96,7 +96,7 @@ export class AccessibleBufferWidget extends TerminalAccessibleWidget {
 			return undefined;
 		}
 		line = this._bufferTracker.bufferToEditorLineMapping.get(line);
-		if (!line) {
+		if (line === undefined) {
 			return undefined;
 		}
 		return line + 1;

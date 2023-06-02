@@ -1993,6 +1993,7 @@
 		"scmp": "scmp_dark",
 		"vala": "_vala",
 		"vue": "_vue",
+		"jsonl": "_json",
 		"postcss": "_css",
 		"django-html": "_html_3",
 		"blade": "_php"
@@ -2313,6 +2314,7 @@
 			"notebook": "notebook",
 			"scmp": "scmp",
 			"vue": "_vue_light",
+			"jsonl": "_json_light",
 			"postcss": "_css_light",
 			"django-html": "_html_3_light",
 			"blade": "_php_light"

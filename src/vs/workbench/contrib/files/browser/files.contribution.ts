@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope, IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IFileEditorInput, IEditorFactoryRegistry, EditorExtensions } from 'vs/workbench/common/editor';
-import { AutoSaveConfiguration, HotExitConfiguration, FILES_EXCLUDE_CONFIG, FILES_ASSOCIATIONS_CONFIG } from 'vs/platform/files/common/files';
+import { AutoSaveConfiguration, HotExitConfiguration, FILES_EXCLUDE_CONFIG, FILES_ASSOCIATIONS_CONFIG, FILES_READONLY_INCLUDE_CONFIG, FILES_READONLY_EXCLUDE_CONFIG, FILES_READONLY_FROM_PERMISSIONS_CONFIG } from 'vs/platform/files/common/files';
 import { SortOrder, LexicographicOptions, FILE_EDITOR_INPUT_ID, BINARY_TEXT_FILE_MODE, UndoConfirmLevel, IFilesConfiguration } from 'vs/workbench/contrib/files/common/files';
 import { TextFileEditorTracker } from 'vs/workbench/contrib/files/browser/editors/textFileEditorTracker';
 import { TextFileSaveErrorHandler } from 'vs/workbench/contrib/files/browser/editors/textFileSaveErrorHandler';
@@ -261,6 +261,9 @@ configurationRegistry.registerConfiguration({
 		},
 		'files.watcherExclude': {
 			'type': 'object',
+			'patternProperties': {
+				'.*': { 'type': 'boolean' }
+			},
 			'default': { '**/.git/objects/**': true, '**/.git/subtree-cache/**': true, '**/node_modules/*/**': true, '**/.hg/store/**': true },
 			'markdownDescription': locConstants.watcherExclude, // {{SQL CARBON EDIT}} Product name to ADS
 			'scope': ConfigurationScope.RESOURCE
@@ -278,6 +281,29 @@ configurationRegistry.registerConfiguration({
 		'files.defaultLanguage': {
 			'type': 'string',
 			'markdownDescription': nls.localize('defaultLanguage', "The default language identifier that is assigned to new files. If configured to `${activeEditorLanguage}`, will use the language identifier of the currently active text editor if any.")
+		},
+		[FILES_READONLY_INCLUDE_CONFIG]: {
+			'type': 'object',
+			'patternProperties': {
+				'.*': { 'type': 'boolean' }
+			},
+			'default': {},
+			'markdownDescription': nls.localize('filesReadonlyInclude', "Configure paths or [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) to mark as read-only. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. You can exclude matching paths via the `#files.readonlyExclude#` setting. Files from readonly file system providers will always be read-only independent of this setting."),
+			'scope': ConfigurationScope.RESOURCE
+		},
+		[FILES_READONLY_EXCLUDE_CONFIG]: {
+			'type': 'object',
+			'patternProperties': {
+				'.*': { 'type': 'boolean' }
+			},
+			'default': {},
+			'markdownDescription': nls.localize('filesReadonlyExclude', "Configure paths or [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) to exclude from being marked as read-only if they match as a result of the `#files.readonlyInclude#` setting. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. Files from readonly file system providers will always be read-only independent of this setting."),
+			'scope': ConfigurationScope.RESOURCE
+		},
+		[FILES_READONLY_FROM_PERMISSIONS_CONFIG]: {
+			'type': 'boolean',
+			'markdownDescription': nls.localize('filesReadonlyFromPermissions', "Marks files as readonly when their file permissions indicate as such. This can be overridden via `#files.readonlyInclude#` and `#files.readonlyExclude#` settings."),
+			'default': false
 		},
 		'files.restoreUndoStack': {
 			'type': 'boolean',
@@ -300,7 +326,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'files.simpleDialog.enable': {
 			'type': 'boolean',
-			'description': nls.localize('files.simpleDialog.enable', "Enables the simple file dialog. The simple file dialog replaces the system file dialog when enabled."),
+			'description': nls.localize('files.simpleDialog.enable', "Enables the simple file dialog for opening and saving files and folders. The simple file dialog replaces the system file dialog when enabled."),
 			'default': false
 		},
 		'files.participants.timeout': {
@@ -346,13 +372,13 @@ configurationRegistry.registerConfiguration({
 	'properties': {
 		'explorer.openEditors.visible': {
 			'type': 'number',
-			'description': nls.localize({ key: 'openEditorsVisible', comment: ['Open is an adjective'] }, "The maximum number of editors shown in the Open Editors pane. Setting this to 0 hides the Open Editors pane."),
+			'description': nls.localize({ key: 'openEditorsVisible', comment: ['Open is an adjective'] }, "The initial maximum number of editors shown in the Open Editors pane. Exceeding this limit will show a scroll bar and allow resizing the pane to display more items."),
 			'default': 9,
-			'minimum': 0
+			'minimum': 1
 		},
 		'explorer.openEditors.minVisible': {
 			'type': 'number',
-			'description': nls.localize({ key: 'openEditorsVisibleMin', comment: ['Open is an adjective'] }, "The minimum number of editor slots shown in the Open Editors pane. If set to 0 the Open Editors pane will dynamically resize based on the number of editors."),
+			'description': nls.localize({ key: 'openEditorsVisibleMin', comment: ['Open is an adjective'] }, "The minimum number of editor slots pre-allocated in the Open Editors pane. If set to 0 the Open Editors pane will dynamically resize based on the number of editors."),
 			'default': 0,
 			'minimum': 0
 		},
@@ -380,7 +406,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'explorer.autoRevealExclude': {
 			'type': 'object',
-			'markdownDescription': nls.localize('autoRevealExclude', "Configure glob patterns for excluding files and folders from being revealed and selected in the Explorer when they are opened. Read more about glob patterns [here](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)."),
+			'markdownDescription': nls.localize('autoRevealExclude', "Configure paths or [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) for excluding files and folders from being revealed and selected in the Explorer when they are opened. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths."),
 			'default': { '**/node_modules': true, '**/bower_components': true },
 			'additionalProperties': {
 				'anyOf': [

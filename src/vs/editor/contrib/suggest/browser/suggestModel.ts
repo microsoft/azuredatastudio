@@ -30,6 +30,7 @@ import { ILanguageFeaturesService } from 'vs/editor/common/services/languageFeat
 import { FuzzyScoreOptions } from 'vs/base/common/filters';
 import { assertType } from 'vs/base/common/types';
 import { InlineCompletionContextKeys } from 'vs/editor/contrib/inlineCompletions/browser/inlineCompletionContextKeys';
+import { SnippetController2 } from 'vs/editor/contrib/snippet/browser/snippetController2';
 
 export interface ICancelEvent {
 	readonly retrigger: boolean;
@@ -72,7 +73,8 @@ export class LineContext {
 		if (!word) {
 			return false;
 		}
-		if (word.endColumn !== pos.column) {
+		if (word.endColumn !== pos.column &&
+			word.startColumn + 1 !== pos.column /* after typing a single character before a word */) {
 			return false;
 		}
 		if (!isNaN(Number(word.word))) {
@@ -369,6 +371,11 @@ export class SuggestModel implements IDisposable {
 
 		if (QuickSuggestionsOptions.isAllOff(this._editor.getOption(EditorOption.quickSuggestions))) {
 			// not enabled
+			return;
+		}
+
+		if (this._editor.getOption(EditorOption.suggest).snippetsPreventQuickSuggestions && SnippetController2.get(this._editor)?.isInSnippet()) {
+			// no quick suggestion when in snippet mode
 			return;
 		}
 

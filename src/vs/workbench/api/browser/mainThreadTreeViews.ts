@@ -17,7 +17,7 @@ import { IConnectionTreeService } from 'sql/workbench/services/connection/common
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { createStringDataTransferItem, VSDataTransfer } from 'vs/base/common/dataTransfer';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { DataTransferCache } from 'vs/workbench/api/common/shared/dataTransferCache';
+import { DataTransferFileCache } from 'vs/workbench/api/common/shared/dataTransferCache';
 import * as typeConvert from 'vs/workbench/api/common/extHostTypeConverters';
 
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)
@@ -39,7 +39,7 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostTreeViews);
 	}
 
-	async $registerTreeViewDataProvider(treeViewId: string, options: { showCollapseAll: boolean; canSelectMany: boolean; dropMimeTypes: string[]; dragMimeTypes: string[]; hasHandleDrag: boolean; hasHandleDrop: boolean }): Promise<void> {
+	async $registerTreeViewDataProvider(treeViewId: string, options: { showCollapseAll: boolean; canSelectMany: boolean; dropMimeTypes: string[]; dragMimeTypes: string[]; hasHandleDrag: boolean; hasHandleDrop: boolean; manuallyManageCheckboxes: boolean }): Promise<void> {
 		this.logService.trace('MainThreadTreeViews#$registerTreeViewDataProvider', treeViewId, options);
 
 		this.extensionService.whenInstalledExtensionsRegistered().then(() => {
@@ -51,8 +51,9 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 			if (viewer) {
 				// Order is important here. The internal tree isn't created until the dataProvider is set.
 				// Set all other properties first!
-				viewer.showCollapseAllAction = !!options.showCollapseAll;
-				viewer.canSelectMany = !!options.canSelectMany;
+				viewer.showCollapseAllAction = options.showCollapseAll;
+				viewer.canSelectMany = options.canSelectMany;
+				viewer.manuallyManageCheckboxes = options.manuallyManageCheckboxes;
 				viewer.dragAndDropController = dndController;
 				if (dndController) {
 					this._dndControllers.set(treeViewId, dndController);
@@ -220,7 +221,7 @@ export type TreeItemHandle = string;
 
 class TreeViewDragAndDropController implements ITreeViewDragAndDropController {
 
-	private readonly dataTransfersCache = new DataTransferCache();
+	private readonly dataTransfersCache = new DataTransferFileCache();
 
 	constructor(private readonly treeViewId: string,
 		readonly dropMimeTypes: string[],
@@ -232,7 +233,11 @@ class TreeViewDragAndDropController implements ITreeViewDragAndDropController {
 		operationUuid?: string, sourceTreeId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
 		const request = this.dataTransfersCache.add(dataTransfer);
 		try {
-			return await this._proxy.$handleDrop(this.treeViewId, request.id, await typeConvert.DataTransfer.toDataTransferDTO(dataTransfer), targetTreeItem?.handle, token, operationUuid, sourceTreeId, sourceTreeItemHandles);
+			const dataTransferDto = await typeConvert.DataTransfer.from(dataTransfer);
+			if (token.isCancellationRequested) {
+				return;
+			}
+			return await this._proxy.$handleDrop(this.treeViewId, request.id, dataTransferDto, targetTreeItem?.handle, token, operationUuid, sourceTreeId, sourceTreeItemHandles);
 		} finally {
 			request.dispose();
 		}

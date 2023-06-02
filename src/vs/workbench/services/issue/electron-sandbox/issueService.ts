@@ -21,7 +21,7 @@ import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/w
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} Add preview features flag
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}} Add preview features flag
 import { IIntegrityService } from 'vs/workbench/services/integrity/common/integrity';
-import { ipcRenderer, process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
+import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { URI } from 'vs/base/common/uri';
@@ -115,8 +115,7 @@ export class NativeIssueService implements IWorkbenchIssueService {
 			restrictedMode: !this.workspaceTrustManagementService.isWorkspaceTrusted(),
 			previewFeaturesEnabled: this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES), // {{SQL CARBON EDIT}} Add preview features flag
 			isUnsupported,
-			githubAccessToken,
-			isSandboxed: process.sandboxed
+			githubAccessToken
 		}, dataOverrides);
 		return this.issueMainService.openReporter(issueReporterData);
 	}

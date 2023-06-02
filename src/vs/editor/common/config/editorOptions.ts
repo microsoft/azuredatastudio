@@ -708,6 +708,11 @@ export interface IEditorOptions {
 	dropIntoEditor?: IDropIntoEditorOptions;
 
 	/**
+	 * Controls support for changing how content is pasted into the editor.
+	 */
+	pasteAs?: IPasteAsOptions;
+
+	/**
 	 * Controls whether the editor receives tabs or defers them to the workbench for navigation.
 	 */
 	tabFocusMode?: boolean;
@@ -794,12 +799,24 @@ export interface IDiffEditorBaseOptions {
 	 * Whether the diff editor aria label should be verbose.
 	 */
 	accessibilityVerbose?: boolean;
+
+	experimental?: {
+		/**
+		 * Defaults to false.
+		 */
+		collapseUnchangedRegions?: boolean;
+	};
 }
 
 /**
  * Configuration options for the diff editor.
  */
 export interface IDiffEditorOptions extends IEditorOptions, IDiffEditorBaseOptions {
+	/**
+	 * Is the diff editor inside another editor
+	 * Defaults to false
+	 */
+	isInEmbeddedEditor?: boolean;
 }
 
 /**
@@ -4287,7 +4304,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, ISuggestOptio
 		const defaults: InternalSuggestOptions = {
 			insertMode: 'insert',
 			filterGraceful: true,
-			snippetsPreventQuickSuggestions: true,
+			snippetsPreventQuickSuggestions: false,
 			localityBonus: false,
 			shareSuggestSelections: false,
 			selectionMode: 'always',
@@ -4810,6 +4827,73 @@ class EditorDropIntoEditor extends BaseEditorOption<EditorOption.dropIntoEditor,
 
 //#endregion
 
+//#region pasteAs
+
+/**
+ * Configuration options for editor pasting as into behavior
+ */
+export interface IPasteAsOptions {
+	/**
+	 * Enable paste as functionality in editors.
+	 * Defaults to true.
+	 */
+	enabled?: boolean;
+
+	/**
+	 * Controls if a widget is shown after a drop.
+	 * Defaults to 'afterPaste'.
+	 */
+	showPasteSelector?: 'afterPaste' | 'never';
+}
+
+/**
+ * @internal
+ */
+export type EditorPasteAsOptions = Readonly<Required<IPasteAsOptions>>;
+
+class EditorPasteAs extends BaseEditorOption<EditorOption.pasteAs, IPasteAsOptions, EditorPasteAsOptions> {
+
+	constructor() {
+		const defaults: EditorPasteAsOptions = { enabled: true, showPasteSelector: 'afterPaste' };
+		super(
+			EditorOption.pasteAs, 'pasteAs', defaults,
+			{
+				'editor.pasteAs.enabled': {
+					type: 'boolean',
+					default: defaults.enabled,
+					markdownDescription: nls.localize('pasteAs.enabled', "Controls whether you can paste content in different ways."),
+				},
+				'editor.pasteAs.showPasteSelector': {
+					type: 'string',
+					markdownDescription: nls.localize('pasteAs.showPasteSelector', "Controls if a widget is shown when pasting content in to the editor. This widget lets you control how the file is pasted."),
+					enum: [
+						'afterPaste',
+						'never'
+					],
+					enumDescriptions: [
+						nls.localize('pasteAs.showPasteSelector.afterPaste', "Show the paste selector widget after content is pasted into the editor."),
+						nls.localize('pasteAs.showPasteSelector.never', "Never show the paste selector widget. Instead the default pasting behavior is always used."),
+					],
+					default: 'afterPaste',
+				},
+			}
+		);
+	}
+
+	public validate(_input: any): EditorPasteAsOptions {
+		if (!_input || typeof _input !== 'object') {
+			return this.defaultValue;
+		}
+		const input = _input as IPasteAsOptions;
+		return {
+			enabled: boolean(input.enabled, this.defaultValue.enabled),
+			showPasteSelector: stringSet(input.showPasteSelector, this.defaultValue.showPasteSelector, ['afterPaste', 'never']),
+		};
+	}
+}
+
+//#endregion
+
 const DEFAULT_WINDOWS_FONT_FAMILY = 'Consolas, \'Courier New\', monospace';
 const DEFAULT_MAC_FONT_FAMILY = 'Menlo, Monaco, \'Courier New\', monospace';
 const DEFAULT_LINUX_FONT_FAMILY = '\'Droid Sans Mono\', \'monospace\', monospace';
@@ -4924,6 +5008,7 @@ export const enum EditorOption {
 	overviewRulerBorder,
 	overviewRulerLanes,
 	padding,
+	pasteAs,
 	parameterHints,
 	peekWidgetDefaultFocus,
 	definitionLinkOpensInPeek,
@@ -5015,9 +5100,9 @@ export const EditorOptions = {
 		EditorOption.ariaLabel, 'ariaLabel', nls.localize('editorViewAccessibleLabel', "Editor content")
 	)),
 	screenReaderAnnounceInlineSuggestion: register(new EditorBooleanOption(
-		EditorOption.screenReaderAnnounceInlineSuggestion, 'screenReaderAnnounceInlineSuggestion', false,
+		EditorOption.screenReaderAnnounceInlineSuggestion, 'screenReaderAnnounceInlineSuggestion', true,
 		{
-			description: nls.localize('screenReaderAnnounceInlineSuggestion', "Control whether inline suggestions are announced by a screen reader. Note that this does not work on macOS with VoiceOver."),
+			description: nls.localize('screenReaderAnnounceInlineSuggestion', "Control whether inline suggestions are announced by a screen reader."),
 			tags: ['accessibility']
 		}
 	)),
@@ -5400,6 +5485,7 @@ export const EditorOptions = {
 		3, 0, 3
 	)),
 	padding: register(new EditorPadding()),
+	pasteAs: register(new EditorPasteAs()),
 	parameterHints: register(new EditorParameterHints()),
 	peekWidgetDefaultFocus: register(new EditorStringEnumOption(
 		EditorOption.peekWidgetDefaultFocus, 'peekWidgetDefaultFocus',

@@ -18,7 +18,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
 import { BufferedEmitter } from 'vs/base/parts/ipc/common/ipc.net';
 import { acquirePort } from 'vs/base/parts/ipc/electron-sandbox/ipc.mp';
-import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 import * as nls from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IExtensionHostDebugService } from 'vs/platform/debug/common/extensionHostDebug';
@@ -421,8 +420,8 @@ export class NativeLocalProcessExtensionHost implements IExtensionHost {
 			commit: this._productService.commit,
 			version: this._productService.version,
 			vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
-			quality: this._productService.quality, // {{SQL CARBON EDIT}} Add quality
-			parentPid: process.sandboxed ? 0 : process.pid,
+			quality: this._productService.quality,
+			parentPid: 0,
 			environment: {
 				isExtensionDevelopmentDebug: this._isExtensionDevDebug,
 				appRoot: this._environmentService.appRoot ? URI.file(this._environmentService.appRoot) : undefined,

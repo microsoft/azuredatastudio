@@ -65,7 +65,6 @@ export interface IssueReporterData extends WindowData {
 	restrictedMode: boolean;
 	previewFeaturesEnabled: boolean; // {{SQL CARBON EDIT}} Add preview features flag
 	isUnsupported: boolean;
-	isSandboxed: boolean; // TODO@bpasero remove me once sandbox is final
 	githubAccessToken: string;
 	readonly issueTitle?: string;
 	readonly issueBody?: string;

@@ -5,10 +5,16 @@
 
 import * as vscode from 'vscode';
 
-export class ExtensionContextHelper {
-	public static extensionContext: vscode.ExtensionContext;
-
-	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
-		ExtensionContextHelper.extensionContext = extensionContext;
+export async function exists(resource: vscode.Uri): Promise<boolean> {
+	try {
+		const stat = await vscode.workspace.fs.stat(resource);
+		// stat.type is an enum flag
+		return !!(stat.type & vscode.FileType.File);
+	} catch {
+		return false;
 	}
+}
+
+export function looksLikeAbsoluteWindowsPath(path: string): boolean {
+	return /^[a-zA-Z]:[\/\\]/.test(path);
 }

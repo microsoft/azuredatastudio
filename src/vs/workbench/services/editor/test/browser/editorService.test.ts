@@ -2232,6 +2232,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 			size: 0,
 			isSymbolicLink: false,
 			readonly: false,
+			locked: false,
 			children: undefined
 		}));
 		await activeEditorChangePromise;

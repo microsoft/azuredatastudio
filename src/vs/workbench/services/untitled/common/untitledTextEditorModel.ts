@@ -250,9 +250,11 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		return this.dirty;
 	}
 
-	// {{SQL CARBON EDIT}}
-	// make property public
-	public setDirty(dirty: boolean): void {
+	isModified(): boolean {
+		return this.isDirty();
+	}
+	
+	public setDirty(dirty: boolean): void {   // {{SQL CARBON EDIT}} - make method public
 		if (this.dirty === dirty) {
 			return;
 		}
@@ -277,6 +279,8 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	}
 
 	async revert(): Promise<void> {
+
+		// No longer dirty
 		this.setDirty(false);
 
 		// Emit as event
