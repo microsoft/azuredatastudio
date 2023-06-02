@@ -342,7 +342,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private insertSystemDatabaseReferenceStyleComponent(): void {
-		// add the radio buttons to choose AritfactReference or PackageReference if it's an SDK-syle project
+		// add the radio buttons to choose ArtifactReference or PackageReference if it's an SDK-syle project
 		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
 			this.formBuilder!.insertFormItem(this.systemDbRefRadioButtonsComponent!, 3);
 			this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;

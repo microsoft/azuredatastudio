@@ -569,7 +569,7 @@ describe('Project: database references', function (): void {
 		(projFileText).should.containEql('<ArtifactReference Include="$(SystemDacpacsLocation)');
 	});
 
-	it.only('Should add system database package reference correctly', async function (): Promise<void> {
+	it('Should add system database package reference correctly', async function (): Promise<void> {
 		let project = await testUtils.createTestSqlProject(this.test);
 
 		const msdbRefSettings: ISystemDatabaseReferenceSettings = {
