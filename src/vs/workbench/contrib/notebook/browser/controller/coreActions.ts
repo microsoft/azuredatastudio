@@ -167,7 +167,7 @@ export abstract class NotebookAction extends Action2 {
 
 // todo@rebornix, replace NotebookAction with this
 export abstract class NotebookMultiCellAction extends Action2 {
-	constructor(desc: IAction2Options) {
+	constructor(desc: any) {
 		if (desc.f1 !== false) {
 			desc.f1 = false;
 			const f1Menu = {

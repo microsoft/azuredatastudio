@@ -1027,7 +1027,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			provideCompletionItems(doc, pos, ctx) {
 				requestCounts[1] += 1;
 				if (ctx.triggerKind !== CompletionTriggerKind.TriggerCharacter) {
-					return;
+					return undefined;
 				}
 				return {
 					suggestions: [{
