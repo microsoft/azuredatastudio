@@ -123,16 +123,28 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 
 
 			private async showTroubleshooterDialog(errorCode: Number, errorMessage: string, messageDetails: string) {
-				const troubleshooterItem = {
+				//TODO: remove this dummy data later
+				const troubleshooterItemInvalid: azdata.window.ITroubleshooterItem = {
 					state: 0,
-					message: 'test troubleshooter item'
+					message: 'test invalid troubleshooter item'
 				}
+				const troubleshooterItemLoading: azdata.window.ITroubleshooterItem = {
+					state: 1,
+					message: 'test loading troubleshooter item'
+				}
+				const troubleshooterItemValid: azdata.window.ITroubleshooterItem = {
+					state: 2,
+					message: 'test valid troubleshooter item'
+				}
+
+				const troubleshooterArray = [troubleshooterItemInvalid, troubleshooterItemLoading, troubleshooterItemValid]
+
 				await azdata.window.openTroubleshooterDialog(
 					{
 						severity: azdata.window.MessageLevel.Error,
 						headerTitle: 'Connection Troubleshooting',
 						message: 'Diagnostic Results here',
-						troubleshooterItem: troubleshooterItem,
+						troubleshooterItems: troubleshooterArray,
 						messageDetails: messageDetails,
 						telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTSGTelemetryView,
 						// diagnosticsSolutionId: ErrorDiagnosticsConstants.AzureDiagnostics18456

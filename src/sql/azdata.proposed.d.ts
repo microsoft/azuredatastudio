@@ -1929,7 +1929,7 @@ declare module 'azdata' {
 			/**
 			 * Troubleshooter item to display in the troubleshooter dialog
 			 */
-			troubleshooterItem: ITroubleshooterItem;
+			troubleshooterItems: ITroubleshooterItem[];
 		}
 
 		/**

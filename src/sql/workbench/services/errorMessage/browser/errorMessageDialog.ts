@@ -152,8 +152,16 @@ export class ErrorMessageDialog extends Modal {
 		return this._body;
 	}
 
+	protected setBody(body: HTMLElement): void {
+		this._body = body;
+	}
+
 	protected getCopyLabel(): string {
 		return this._copyLabel;
+	}
+
+	protected getOpenerService(): IOpenerService {
+		return this._openerService;
 	}
 
 	private updateIconTitle(): void {

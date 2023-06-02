@@ -371,7 +371,7 @@ export interface ITroubleshooterItem {
  * Provides dialog options to customize modal dialog content and layout
  */
 export interface ITroubleshooterDialogOptions extends IErrorDialogOptions {
-	troubleshooterItem: ITroubleshooterItem;
+	troubleshooterItems: ITroubleshooterItem[];
 }
 
 /**
