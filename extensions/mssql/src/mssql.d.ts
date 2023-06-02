@@ -976,6 +976,16 @@ declare module 'mssql' {
 		}
 
 		/**
+		 * Base interface for database level security principal object's view information.
+		 */
+		export interface DatabaseLevelPrincipalViewInfo<T extends SecurityPrincipalObject> extends SecurityPrincipalViewInfo<T> {
+			/**
+			 * The schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
 		 * Server level login.
 		 */
 		export interface Login extends SecurityPrincipalObject {
@@ -1237,7 +1247,7 @@ declare module 'mssql' {
 		/**
 		 * The information required to render the user view.
 		 */
-		export interface UserViewInfo extends SecurityPrincipalViewInfo<User> {
+		export interface UserViewInfo extends DatabaseLevelPrincipalViewInfo<User> {
 			/**
 			 * All user types supported by the database.
 			 */
@@ -1246,10 +1256,6 @@ declare module 'mssql' {
 			 * All languages supported by the database.
 			 */
 			languages: string[];
-			/**
-			 * All schemas in the database.
-			 */
-			schemas: string[];
 			/**
 			 * Name of all the logins in the server.
 			 */
@@ -1313,11 +1319,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the information required to render the application role view.
 		 */
-		export interface ApplicationRoleViewInfo extends SecurityPrincipalViewInfo<ApplicationRoleInfo> {
-			/**
-			 * List of all the schemas in the database.
-			 */
-			schemas: string[];
+		export interface ApplicationRoleViewInfo extends DatabaseLevelPrincipalViewInfo<ApplicationRoleInfo> {
 		}
 
 		/**
@@ -1341,11 +1343,7 @@ declare module 'mssql' {
 		/**
 		 * Interface representing the information required to render the database role view.
 		 */
-		export interface DatabaseRoleViewInfo extends SecurityPrincipalViewInfo<DatabaseRoleInfo> {
-			/**
-			 * List of all the schemas in the database.
-			 */
-			schemas: string[];
+		export interface DatabaseRoleViewInfo extends DatabaseLevelPrincipalViewInfo<DatabaseRoleInfo> {
 		}
 
 		/**

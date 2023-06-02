@@ -70,6 +70,15 @@ const TemplateIds = {
 	ERROR: 'error'
 };
 
+function getTimestampDisplayString(message: IResultMessageIntern): string | undefined {
+	if (message.time) {
+		const time = isString(message.time) ? new Date(message.time!) : message.time;
+		return time.toLocaleTimeString();
+	} else {
+		return undefined;
+	}
+}
+
 export class AccessibilityProvider implements IListAccessibilityProvider<IResultMessageIntern> {
 
 	getWidgetAriaLabel(): string {
@@ -77,7 +86,11 @@ export class AccessibilityProvider implements IListAccessibilityProvider<IResult
 	}
 
 	getAriaLabel(element: IResultMessageIntern): string {
-		return element.message;
+		if (element.time && element.range) {
+			return localize('messagePanel.message', "Timestamp: {0}, Message: {1}", getTimestampDisplayString(element), element.message);
+		} else {
+			return element.message;
+		}
 	}
 }
 
@@ -321,10 +334,7 @@ class BatchMessageRenderer implements ITreeRenderer<IResultMessageIntern, void, 
 	}
 
 	renderElement(node: ITreeNode<IResultMessageIntern, void>, index: number, templateData: IBatchTemplate): void {
-		if (isString(node.element.time)) {
-			node.element.time = new Date(node.element.time!);
-		}
-		templateData.timeStamp.innerText = (node.element.time as Date).toLocaleTimeString();
+		templateData.timeStamp.innerText = getTimestampDisplayString(node.element);
 		templateData.message.innerText = node.element.message;
 		if (node.element.range) {
 			templateData.disposable.add(addStandardDisposableGenericMouseDownListener(templateData.message, () => {

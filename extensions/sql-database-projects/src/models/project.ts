@@ -1038,7 +1038,6 @@ export class Project implements ISqlProject {
 	/**
 	 * Moves a file to a different location
 	 * @param node Node being moved
-	 * @param projectFilePath Full file path to .sqlproj
 	 * @param destinationRelativePath path of the destination, relative to .sqlproj
 	 */
 	public async move(node: BaseProjectTreeItem, destinationRelativePath: string): Promise<azdataType.ResultStatus> {
