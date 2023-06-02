@@ -154,10 +154,7 @@ export class AddDatabaseReferenceDialog {
 			} else {
 				await this.systemDatabaseRadioButton?.focus();
 
-				if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
-					this.formBuilder.insertFormItem(this.systemDbRefRadioButtonsComponent, 3);
-					this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;
-				}
+				this.insertSystemDatabaseReferenceStyleComponent();
 			}
 
 			this.initDialogComplete.resolve();
@@ -344,10 +341,19 @@ export class AddDatabaseReferenceDialog {
 		};
 	}
 
+	private insertSystemDatabaseReferenceStyleComponent(): void {
+		// add the radio buttons to choose AritfactReference or PackageReference if it's an SDK-syle project
+		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
+			this.formBuilder!.insertFormItem(this.systemDbRefRadioButtonsComponent!, 3);
+			this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;
+		}
+	}
+
 	public projectRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDbRefRadioButtonsComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.projectFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
@@ -363,6 +369,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent, 2);
+		this.insertSystemDatabaseReferenceStyleComponent();
 
 		// update dropdown values because only different database, same server is a valid location for system db references
 		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
@@ -378,6 +385,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDbRefRadioButtonsComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.dacpacFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
@@ -392,6 +400,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDbRefRadioButtonsComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
