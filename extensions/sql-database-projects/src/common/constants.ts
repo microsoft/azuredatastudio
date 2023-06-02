@@ -323,6 +323,9 @@ export const referenceType = localize('referenceType', "Reference type");
 export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "Excluding folders is not yet supported");
 export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
 export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
+export const artifactReference = localize('artifactReference', "ArtifactReference");
+export const packageReference = localize('packageReference', "PackageReference");
+export const referenceStyleRadioButtonsGroupTitle = localize('referenceStyleRadioButtonsGroupTitle', "Reference Style");
 
 //#endregion
 

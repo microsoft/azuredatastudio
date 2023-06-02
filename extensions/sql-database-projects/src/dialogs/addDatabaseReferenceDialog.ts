@@ -50,6 +50,7 @@ export class AddDatabaseReferenceDialog {
 	private systemDatabaseRadioButton: azdataType.RadioButtonComponent | undefined;
 	private systemDatabaseArtifactRefRadioButton: azdataType.RadioButtonComponent | undefined;
 	private systemDatabasePackageRefRadioButton: azdataType.RadioButtonComponent | undefined;
+	private systemDbRefRadioButtonsComponent: azdataType.FormComponent | undefined;
 	private systemDbRefStyle: SystemDbReferenceStyle = SystemDbReferenceStyle.ArtifactReference;
 	public currentReferenceType: ReferenceType | undefined;
 
@@ -115,6 +116,8 @@ export class AddDatabaseReferenceDialog {
 			this.nupkgFormComponent = this.createNupkgFormComponentGroup();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
+			this.systemDbRefRadioButtonsComponent = this.createSystemDbReferenceStyleRadioButtons();
+
 			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProps({
 				label: constants.suppressMissingDependenciesErrors
 			}).component();
@@ -152,7 +155,8 @@ export class AddDatabaseReferenceDialog {
 				await this.systemDatabaseRadioButton?.focus();
 
 				if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
-
+					this.formBuilder.insertFormItem(this.systemDbRefRadioButtonsComponent, 3);
+					this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;
 				}
 			}
 
@@ -168,7 +172,7 @@ export class AddDatabaseReferenceDialog {
 				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: utils.getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked,
-				systemDbReferenceStyle: SystemDbReferenceStyle.ArtifactReference
+				systemDbReferenceStyle: this.systemDbRefStyle
 			};
 
 			referenceSettings = systemDbRef;
@@ -299,15 +303,15 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createSystemDbReferenceStyleRadioButtons(): azdataType.FormComponent {
-		this.systemDatabaseArtifactRefRadioButton = this.view!.modelBuilder.radioButton()
+		this.systemDatabasePackageRefRadioButton = this.view!.modelBuilder.radioButton()
 			.withProps({
 				name: 'systemDbRefStyle',
 				label: constants.packageReference
 			}).component();
 
-		this.systemDatabaseArtifactRefRadioButton.onDidChangeCheckedState((checked) => {
+		this.systemDatabasePackageRefRadioButton.onDidChangeCheckedState((checked) => {
 			if (checked) {
-				this.systemDbRadioButtonClick();
+				this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;
 			}
 		});
 
@@ -319,7 +323,7 @@ export class AddDatabaseReferenceDialog {
 
 		this.systemDatabaseArtifactRefRadioButton.onDidChangeCheckedState((checked) => {
 			if (checked) {
-				this.projectRadioButtonClick();
+				this.systemDbRefStyle = SystemDbReferenceStyle.ArtifactReference;
 			}
 		});
 
@@ -330,6 +334,9 @@ export class AddDatabaseReferenceDialog {
 			.withItems(radioButtons)
 			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceStyleRadioButtonsGroupTitle })
 			.component();
+
+		// default to PackageReference for SDK-style projects
+		this.systemDatabasePackageRefRadioButton!.checked = true;
 
 		return {
 			component: flexRadioButtonsModel,
