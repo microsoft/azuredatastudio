@@ -175,6 +175,11 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "azure.resource.selecttenants",
+        "title": "%azure.resource.selecttenants.title%",
+        "icon": "$(filter)"
+      },
+      {
         "command": "azure.resource.selectsubscriptions",
         "title": "%azure.resource.selectsubscriptions.title%",
         "icon": "$(filter)"
@@ -238,6 +243,10 @@
           "when": "false"
         },
         {
+          "command": "azure.resource.selecttenants",
+          "when": "false"
+        },
+        {
           "command": "azure.resource.azureview.refresh",
           "when": "false"
         },
@@ -268,23 +277,33 @@
       ],
       "view/item/context": [
         {
-          "command": "azure.resource.selectsubscriptions",
+          "command": "azure.resource.selecttenants",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "inline"
         },
         {
-          "command": "azure.resource.selectsubscriptions",
+          "command": "azure.resource.selecttenants",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
         },
         {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.tenant",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.tenant",
+          "group": "azurecore"
+        },
+        {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|tenant|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "inline"
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|tenant|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "azurecore"
         },
         {
@@ -321,6 +340,11 @@
       "connectionDialog/browseTree": [
         {
           "command": "azure.resource.selectsubscriptions",
+          "when": "contextValue == azure.resource.itemType.tenant",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.selecttenants",
           "when": "contextValue == azure.resource.itemType.account",
           "group": "navigation"
         },

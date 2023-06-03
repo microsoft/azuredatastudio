@@ -11,17 +11,13 @@ const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
-import { AzureSubscriptionError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
-import { AzureAccount, azureResource } from 'azurecore';
-import { AzureResourceService } from '../resourceService';
-import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
-import { AzureResourceErrorMessageUtil } from '../utils';
-import { Logger } from '../../utils/Logger';
+import { IAzureResourceTenantFilterService } from '../interfaces';
+import { AzureAccount, Tenant } from 'azurecore';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
+import { FlatTenantTreeNode } from './flatTenantTreeNode';
 
 export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -31,36 +27,35 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	) {
 		super(appContext, treeChangeHandler, undefined);
 
-		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
-		this._resourceService = this.appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
+		this._tenantFilterService = this.appContext.getService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService);
 
 		this._id = `account_${this.account.key.accountId}`;
 		this.setCacheKey(`${this._id}.dataresources`);
 		this._label = account.displayInfo.displayName;
-		this._loader = new FlatAccountTreeNodeLoader(appContext, this._resourceService, this._subscriptionService, this._subscriptionFilterService, this.account, this);
+		this._loader = new FlatAccountTreeNodeLoader(appContext, this.account, this, this.treeChangeHandler);
 		this._loader.onNewResourcesAvailable(() => {
 			this.treeChangeHandler.notifyNodeChanged(this);
 		});
 
-		this._loader.onLoadingStatusChanged(() => {
+		this._loader.onLoadingStatusChanged(async () => {
+			await this.updateLabel();
 			this.treeChangeHandler.notifyNodeChanged(this);
 		});
 	}
 
 	public async updateLabel(): Promise<void> {
-		const subscriptionInfo = await getSubscriptionInfo(this.account, this._subscriptionService, this._subscriptionFilterService);
+		const tenantInfo = await getTenantInfo(this.account, this._tenantFilterService);
 		if (this._loader.isLoading) {
 			this._label = localize('azure.resource.tree.accountTreeNode.titleLoading', "{0} - Loading...", this.account.displayInfo.displayName);
-		} else if (subscriptionInfo.total !== 0) {
+		} else if (tenantInfo.total !== 0) {
 			this._label = localize({
 				key: 'azure.resource.tree.accountTreeNode.title',
 				comment: [
 					'{0} is the display name of the azure account',
-					'{1} is the number of selected subscriptions in this account',
-					'{2} is the number of total subscriptions in this account'
+					'{1} is the number of selected tenants in this account',
+					'{2} is the number of total tenants in this account'
 				]
-			}, "{0} ({1}/{2} subscriptions)", this.account.displayInfo.displayName, subscriptionInfo.selected, subscriptionInfo.total);
+			}, "{0} ({1}/{2} tenants)", this.account.displayInfo.displayName, tenantInfo.selected, tenantInfo.total);
 		} else {
 			this._label = this.account.displayInfo.displayName;
 		}
@@ -68,7 +63,6 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 
 	public async getChildren(): Promise<TreeNode[]> {
 		if (this._isClearingCache) {
-			await this.updateLabel();
 			this._loader.start().catch(err => console.error('Error loading Azure FlatAccountTreeNodes ', err));
 			this._isClearingCache = false;
 			return [];
@@ -107,31 +101,29 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 		return this._id;
 	}
 
-	private _subscriptionService: IAzureResourceSubscriptionService;
-	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService;
-	private _resourceService: AzureResourceService;
+	private _tenantFilterService: IAzureResourceTenantFilterService;
 	private _loader: FlatAccountTreeNodeLoader;
 	private _id: string;
 	private _label: string;
 }
 
-async function getSubscriptionInfo(account: AzureAccount, subscriptionService: IAzureResourceSubscriptionService, subscriptionFilterService: IAzureResourceSubscriptionFilterService): Promise<{
-	subscriptions: azureResource.AzureResourceSubscription[],
+async function getTenantInfo(account: AzureAccount, tenantFilterService: IAzureResourceTenantFilterService,): Promise<{
+	tenants: Tenant[],
 	total: number,
 	selected: number
 }> {
-	let subscriptions = await subscriptionService.getSubscriptions(account);
-	const total = subscriptions.length;
+	let tenants = account.properties.tenants;
+	const total = tenants.length;
 	let selected = total;
 
-	const selectedSubscriptions = await subscriptionFilterService.getSelectedSubscriptions(account);
-	const selectedSubscriptionIds = (selectedSubscriptions || <azureResource.AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
-	if (selectedSubscriptionIds.length > 0) {
-		subscriptions = subscriptions.filter((subscription) => selectedSubscriptionIds.indexOf(subscription.id) !== -1);
-		selected = selectedSubscriptionIds.length;
+	const selectedTenants = await tenantFilterService.getSelectedTenants(account);
+	const selectedTenantIds = (selectedTenants || <Tenant[]>[]).map((tenant) => tenant.id);
+	if (selectedTenantIds.length > 0) {
+		tenants = tenants.filter((tenant) => selectedTenantIds.indexOf(tenant.id) !== -1);
+		selected = selectedTenantIds.length;
 	}
 	return {
-		subscriptions,
+		tenants,
 		total,
 		selected
 	};
@@ -146,11 +138,9 @@ class FlatAccountTreeNodeLoader {
 	public readonly onLoadingStatusChanged = this._onLoadingStatusChanged.event;
 
 	constructor(private readonly appContext: AppContext,
-		private readonly _resourceService: AzureResourceService,
-		private readonly _subscriptionService: IAzureResourceSubscriptionService,
-		private readonly _subscriptionFilterService: IAzureResourceSubscriptionFilterService,
 		private readonly _account: AzureAccount,
-		private readonly _accountNode: TreeNode) {
+		private readonly _tenantNode: TreeNode,
+		private readonly treeChangeHandler: IAzureResourceTreeChangeHandler) {
 	}
 
 	public get isLoading(): boolean {
@@ -168,66 +158,19 @@ class FlatAccountTreeNodeLoader {
 		this._isLoading = true;
 		this._nodes = [];
 		this._onLoadingStatusChanged.fire();
-		let newNodesAvailable = false;
 
-		// Throttle the refresh events to at most once per 500ms
-		const refreshHandle = setInterval(() => {
-			if (newNodesAvailable) {
-				this._onNewResourcesAvailable.fire();
-				newNodesAvailable = false;
-			}
-			if (!this.isLoading) {
-				clearInterval(refreshHandle);
-			}
-		}, 500);
-		try {
+		let tenants = this._account.properties.tenants;
 
-			// Authenticate to tenants to filter out subscriptions that are not accessible.
-			let tenants = this._account.properties.tenants;
-			// Filter out tenants that we can't authenticate to.
-			tenants = tenants.filter(async tenant => {
-				try {
-					const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
-					return token !== undefined;
-				} catch (e) {
-					return false;
-				}
+		if (tenants?.length > 0) {
+			this._nodes.push(...tenants.map(tenant => new FlatTenantTreeNode(this._account, tenant, this.appContext, this.treeChangeHandler)));
+			this._nodes = this.nodes.sort((a, b) => {
+				return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
 			});
+		}
 
-			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
-
-			if (subscriptions.length !== 0) {
-				// Filter out subscriptions that don't belong to the tenants we filtered above.
-				subscriptions = subscriptions.filter(async s => {
-					const tenant = tenants.find(t => t.id === s.tenant);
-					if (!tenant) {
-						Logger.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
-						return false;
-					}
-					return true;
-				});
-			}
-
-			const resources = await this._resourceService.getAllChildren(this._account, subscriptions, true);
-			if (resources?.length > 0) {
-				this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._accountNode, this.appContext)));
-				this._nodes = this.nodes.sort((a, b) => {
-					return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
-				});
-				newNodesAvailable = true;
-			}
-			// Create "No Resources Found" message node if no resources found under azure account.
-			if (this._nodes.length === 0) {
-				this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatAccountTreeNode.noResourcesLabel', "No Resources found."), this._accountNode))
-			}
-		} catch (error) {
-			if (error instanceof AzureSubscriptionError) {
-				void vscode.commands.executeCommand('azure.resource.signin');
-			}
-			// http status code 429 means "too many requests"
-			// use a custom error message for azure resource graph api throttling error to make it more actionable for users.
-			const errorMessage = error?.statusCode === 429 ? localize('azure.resource.throttleerror', "Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.") : AzureResourceErrorMessageUtil.getErrorMessage(error);
-			void vscode.window.showErrorMessage(localize('azure.resource.tree.loadresourceerror', "An error occurred while loading Azure resources: {0}", errorMessage));
+		// Create "No Resources Found" message node if no resources found under azure account.
+		if (this._nodes.length === 0) {
+			this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatAccountTreeNode.noTenantsLabel', "No Tenants found."), this._tenantNode))
 		}
 
 		this._isLoading = false;

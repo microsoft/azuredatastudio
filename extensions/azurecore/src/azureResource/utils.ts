@@ -14,7 +14,7 @@ import { EOL } from 'os';
 import { AppContext } from '../appContext';
 import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../localizedConstants';
 import { AzureResourceServiceNames } from './constants';
-import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
+import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService, IAzureResourceTenantFilterService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
@@ -418,8 +418,12 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	}
 
 	const subscriptionFilterService = appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
+	const tenantFilterService = appContext.getService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService);
 	try {
-		result.subscriptions.push(...await subscriptionFilterService.getSelectedSubscriptions(account));
+		const tenants = await tenantFilterService.getSelectedTenants(account);
+		for (const tenant of tenants) {
+			result.subscriptions.push(...await subscriptionFilterService.getSelectedSubscriptions(account, tenant));
+		}
 	} catch (err) {
 		const error = new Error(localize('azure.accounts.getSelectedSubscriptions.queryError', "Error fetching subscriptions for account {0} : {1}",
 			account.displayInfo.displayName,

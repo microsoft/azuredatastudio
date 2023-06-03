@@ -15,6 +15,7 @@ import {
 	IAzureResourceCacheService,
 	IAzureResourceSubscriptionService,
 	IAzureResourceSubscriptionFilterService,
+	IAzureResourceTenantFilterService,
 } from '../../../azureResource/interfaces';
 import { IAzureResourceTreeChangeHandler } from '../../../azureResource/tree/treeChangeHandler';
 import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accountTreeNode';
@@ -31,6 +32,7 @@ let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockSubscriptionServiceADAL: TypeMoq.IMock<IAzureResourceSubscriptionService>;
 let mockSubscriptionServiceMSAL: TypeMoq.IMock<IAzureResourceSubscriptionService>;
 let mockSubscriptionFilterService: TypeMoq.IMock<IAzureResourceSubscriptionFilterService>;
+let mockTenantFilterService: TypeMoq.IMock<IAzureResourceTenantFilterService>;
 let mockAppContextADAL: AppContext;
 let mockAppContextMSAL: AppContext;
 let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
@@ -102,6 +104,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockSubscriptionServiceMSAL = TypeMoq.Mock.ofType<IAzureResourceSubscriptionService>();
 		mockSubscriptionServiceMSAL.setup((o) => o.getSubscriptions(mockAccount)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionFilterService>();
+		mockTenantFilterService = TypeMoq.Mock.ofType<IAzureResourceTenantFilterService>();
 
 		mockTreeChangeHandler = TypeMoq.Mock.ofType<IAzureResourceTreeChangeHandler>();
 
@@ -111,11 +114,13 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockAppContextADAL.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContextADAL.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionServiceADAL.object);
 		mockAppContextADAL.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
+		mockAppContextADAL.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, mockTenantFilterService.object);
 
 		mockAppContextMSAL = new AppContext(mockExtensionContext.object);
 		mockAppContextMSAL.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContextMSAL.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionServiceMSAL.object);
 		mockAppContextMSAL.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
+		mockAppContextMSAL.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, mockTenantFilterService.object);
 
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
@@ -308,11 +313,13 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		mockAppContextADAL.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContextADAL.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionServiceADAL.object);
 		mockAppContextADAL.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
+		mockAppContextADAL.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, mockTenantFilterService.object);
 
 		mockAppContextMSAL = new AppContext(mockExtensionContext.object);
 		mockAppContextMSAL.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContextMSAL.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionServiceMSAL.object);
 		mockAppContextMSAL.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
+		mockAppContextMSAL.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, mockTenantFilterService.object);
 
 		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());

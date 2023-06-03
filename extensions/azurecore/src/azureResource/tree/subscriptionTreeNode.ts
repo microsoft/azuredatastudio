@@ -18,20 +18,20 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
-import { AzureAccount, azureResource } from 'azurecore';
+import { AzureAccount, Tenant, azureResource } from 'azurecore';
 
 export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
 		public readonly account: AzureAccount,
 		public readonly subscription: azureResource.AzureResourceSubscription,
-		public readonly tenantId: string,
+		public readonly tenant: Tenant,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super(appContext, treeChangeHandler, parent);
 
-		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}.tenant_${this.tenantId}`;
+		this._id = `account_${this.account.key.accountId}.tenant_${this.tenant.id}.subscription_${this.subscription.id}`;
 		this.setCacheKey(`${this._id}.resources`);
 	}
 

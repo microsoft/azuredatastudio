@@ -11,16 +11,13 @@ const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
-import { AzureSubscriptionError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
-import { AzureResourceSubscriptionTreeNode } from './subscriptionTreeNode';
-import { AzureResourceMessageTreeNode } from '../messageTreeNode';
-import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
-import { AzureAccount, azureResource } from 'azurecore';
-import { TenantIgnoredError } from '../../utils/TenantIgnoredError';
+import { AzureAccount, Tenant } from 'azurecore';
+import { AzureResourceTenantTreeNode } from './tenantTreeNode';
+import { AzureResourceMessageTreeNode } from '../messageTreeNode';
+import { IAzureResourceTenantFilterService } from '../interfaces';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -29,82 +26,37 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		treeChangeHandler: IAzureResourceTreeChangeHandler
 	) {
 		super(appContext, treeChangeHandler, undefined);
-
-		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
+		this._tenantFilterService = this.appContext.getService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService);
 
 		this._id = `account_${this.account.key.accountId}`;
-		this.setCacheKey(`${this._id}.subscriptions`);
+		this.setCacheKey(`${this._id}.tenants`);
 		this._label = this.generateLabel();
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
-		try {
-			let subscriptions: azureResource.AzureResourceSubscription[] = [];
+		let tenants = this.account.properties.tenants;
 
-			if (this._isClearingCache) {
-				subscriptions = await this._subscriptionService.getSubscriptions(this.account);
-				await this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
-				this._isClearingCache = false;
-			} else {
-				subscriptions = await this.getCachedSubscriptions();
-			}
+		const selectedTenants = await this._tenantFilterService.getSelectedTenants(this.account);
+		const selectedTenantIds = (selectedTenants || <Tenant[]>[]).map((Tenant) => Tenant.id);
 
-			this._totalSubscriptionCount = subscriptions.length;
-
-			const selectedSubscriptions = await this._subscriptionFilterService.getSelectedSubscriptions(this.account);
-			const selectedSubscriptionIds = (selectedSubscriptions || <azureResource.AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
-			if (selectedSubscriptionIds.length > 0) {
-				subscriptions = subscriptions.filter((subscription) => selectedSubscriptionIds.indexOf(subscription.id) !== -1);
-				this._selectedSubscriptionCount = selectedSubscriptionIds.length;
-			} else {
-				// ALL subscriptions are listed by default
-				this._selectedSubscriptionCount = this._totalSubscriptionCount;
-			}
-
-			this.refreshLabel();
-
-			if (subscriptions.length === 0) {
-				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
-			} else {
-				const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				if (authLibrary === 'ADAL') {
-					// Filter out everything that we can't authenticate to.
-					const hasTokenResults = await Promise.all(subscriptions.map(async s => {
-						let token: azdata.accounts.AccountSecurityToken | undefined = undefined;
-						let errMsg = '';
-						try {
-							token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant!, azdata.AzureResource.ResourceManagement);
-						} catch (err) {
-							if (!(err instanceof TenantIgnoredError)) {
-								errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
-							}
-						}
-						if (!token) {
-							if (errMsg !== '') {
-								void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
-							}
-							return false;
-						}
-						return true;
-					}));
-					subscriptions = subscriptions.filter((_s, i) => hasTokenResults[i]);
-				}
-				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant!, this.appContext, this.treeChangeHandler, this);
-				}));
-				return subTreeNodes.sort((a, b) => a.subscription.name.localeCompare(b.subscription.name));
-			}
-		} catch (error) {
-			if (error instanceof AzureSubscriptionError) {
-				void vscode.commands.executeCommand('azure.resource.signin');
-			}
-			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
+		if (selectedTenantIds.length > 0) {
+			tenants = tenants.filter((tenant) => selectedTenantIds.indexOf(tenant.id) !== -1);
+			this._selectedTenantsCount = selectedTenantIds.length;
+		} else {
+			// ALL Tenants are listed by default
+			this._selectedTenantsCount = this._totalTenantsCount;
 		}
-	}
 
-	public async getCachedSubscriptions(): Promise<azureResource.AzureResourceSubscription[]> {
-		return this.getCache<azureResource.AzureResourceSubscription[]>() ?? [];
+		this.refreshLabel();
+
+		if (tenants.length === 0) {
+			return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noTenantsLabel, this)];
+		} else {
+			let subTreeNodes = await Promise.all(tenants.map(async (tenant) => {
+				return new AzureResourceTenantTreeNode(this.account, tenant, this.appContext, this.treeChangeHandler);
+			}));
+			return subTreeNodes.sort((a, b) => a.tenant.displayName.localeCompare(b.tenant.displayName));
+		}
 	}
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
@@ -137,12 +89,12 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return this._id;
 	}
 
-	public get totalSubscriptionCount(): number {
-		return this._totalSubscriptionCount;
+	public get totalTenantsCount(): number {
+		return this._totalTenantsCount;
 	}
 
-	public get selectedSubscriptionCount(): number {
-		return this._selectedSubscriptionCount;
+	public get selectedTenantCount(): number {
+		return this._selectedTenantsCount;
 	}
 
 	protected refreshLabel(): void {
@@ -156,25 +108,20 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	private generateLabel(): string {
 		let label = this.account.displayInfo.displayName;
 
-		if (this._totalSubscriptionCount !== 0) {
-			label += ` (${this._selectedSubscriptionCount} / ${this._totalSubscriptionCount} subscriptions)`;
+		if (this._totalTenantsCount !== 0) {
+			label += ` (${this._selectedTenantsCount} / ${this._totalTenantsCount} tenants)`;
 		}
 
 		return label;
 	}
 
-	private _subscriptionService: IAzureResourceSubscriptionService;
-	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService;
+	private _tenantFilterService: IAzureResourceTenantFilterService;
 
 	private _id: string;
 	private _label: string;
-	private _totalSubscriptionCount = 0;
-	private _selectedSubscriptionCount = 0;
+	private _totalTenantsCount = 0;
+	private _selectedTenantsCount = 0;
 
-	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', "No Subscriptions found.");
-
-	sleep(ms: number) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	}
+	private static readonly noTenantsLabel = localize('azure.resource.tree.accountTreeNode.noTenantsLabel', "No Tenants found.");
 
 }
