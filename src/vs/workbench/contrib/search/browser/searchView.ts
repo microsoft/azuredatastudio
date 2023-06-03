@@ -32,7 +32,7 @@ import { CommonFindController } from 'vs/editor/contrib/find/browser/findControl
 import { MultiCursorSelectionController } from 'vs/editor/contrib/multicursor/browser/multicursor';
 import * as nls from 'vs/nls';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
-import { MenuId } from 'vs/platform/actions/common/actions';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationChangeEvent, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -2109,7 +2109,7 @@ export class SearchView extends ViewPane {
 }
 
 
-class SearchLinkButton extends Disposable {
+export class SearchLinkButton extends Disposable { // {{SQL CARBON EDIT}} - export class
 	public readonly element: HTMLElement;
 
 	constructor(label: string, handler: (e: dom.EventLike) => unknown, tooltip?: string) {

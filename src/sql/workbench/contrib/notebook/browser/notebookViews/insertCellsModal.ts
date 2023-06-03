@@ -24,7 +24,6 @@ import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/boots
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { InsertCellsModule } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal.module';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { truncate } from 'vs/base/common/strings';
 import { toJpeg } from 'html-to-image';
 import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
@@ -211,9 +210,6 @@ export class InsertCellsModal extends Modal {
 
 		this._submitButton = this.addFooterButton(localize('insertCellsModal.Insert', "Insert"), () => this.onSubmitHandler());
 		this._cancelButton = this.addFooterButton(localize('insertCellsModal.Cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
-
-		this._register(attachButtonStyler(this._submitButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 
 		attachModalDialogStyler(this, this._themeService);
 		this.validate();

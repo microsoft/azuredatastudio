@@ -13,7 +13,7 @@ import * as fs from 'fs';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import { TestFileService, TestPathService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEnvironmentService, TestFileService, TestPathService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -21,18 +21,8 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 import { IFileService } from 'vs/platform/files/common/files';
 import * as pfs from 'vs/base/node/pfs';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
-import { IProcessEnvironment } from 'vs/base/common/platform';
-import { NativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { isEqual } from 'vs/base/common/resources';
 import { BaseConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/baseConfigurationResolverService';
-import { TestNativeWindowConfiguration } from 'vs/workbench/test/electron-browser/workbenchTestServices';
-
-class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
-
-	constructor(public userEnv: IProcessEnvironment) {
-		super({ ...TestNativeWindowConfiguration, userEnv }, undefined);
-	}
-}
 
 class TestConfigurationResolverService extends BaseConfigurationResolverService {
 
@@ -193,7 +183,7 @@ suite('Insights Utils tests', function () {
 			new Workspace('TestWorkspace',
 				undefined, undefined, undefined, undefined));
 
-		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
+		const environmentService = TestEnvironmentService;
 
 		// Create mock window service with env variable containing test folder for resolution
 		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, Promise.resolve(environmentService.userEnv),
@@ -225,7 +215,7 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))], undefined, undefined, undefined));
 
-		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
+		const environmentService = TestEnvironmentService;
 
 		// Create mock window service with env variable containing test folder for resolution
 		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, Promise.resolve(environmentService.userEnv),

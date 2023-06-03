@@ -23,8 +23,7 @@ import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension 
 import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ILifecycleService, StartupKind } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { splitName } from 'vs/base/common/labels';
-import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -57,6 +56,7 @@ import { IWindowOpenable } from 'vs/platform/window/common/window';
 import { ICommandAction } from 'vs/platform/action/common/action';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+import { splitRecentLabel } from 'vs/base/common/labels';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -480,7 +480,7 @@ class WelcomePage extends Disposable {
 
 	private async createListEntries(container: HTMLElement, fullPath: string, windowOpenable: IWindowOpenable): Promise<HTMLElement[]> {
 		let result: HTMLElement[] = [];
-		const { name, parentPath } = splitName(fullPath);
+		const { name, parentPath } = splitRecentLabel(fullPath);
 		const li = document.createElement('li');
 		const icon = document.createElement('i');
 		const a = document.createElement('a');

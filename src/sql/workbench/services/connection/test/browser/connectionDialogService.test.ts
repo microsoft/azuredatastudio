@@ -30,7 +30,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { BrowserClipboardService } from 'vs/platform/clipboard/browser/clipboardService';
-import { NullCommandService } from 'vs/platform/commands/common/commands';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -54,6 +53,7 @@ import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/ser
 import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { Emitter } from 'vs/base/common/event';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';

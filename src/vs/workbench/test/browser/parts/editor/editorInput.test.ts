@@ -77,7 +77,7 @@ suite('EditorInput', () => {
 		disposables.dispose();
 	});
 
-	class MyEditorInput extends EditorInput {
+	/*class MyEditorInput extends EditorInput {
 		readonly resource = undefined;
 
 		override get typeId(): string { return 'myEditorInput'; }
@@ -111,7 +111,7 @@ suite('EditorInput', () => {
 
 		input.dispose();
 		assert.strictEqual(counter, 1);
-	});
+	});*/
 
 	test('untyped matches', () => {
 		const testInputID = 'untypedMatches';

@@ -93,8 +93,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			})
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
-
-
 		this._table = new ExplorerTable(this._tableContainer.nativeElement,
 			this._activeRoute,
 			this._router,

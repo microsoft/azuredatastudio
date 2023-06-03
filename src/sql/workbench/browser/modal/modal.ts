@@ -17,7 +17,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { mixin } from 'vs/base/common/objects';
-import { IThemable } from 'vs/base/common/styler';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -26,10 +25,10 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Emitter } from 'vs/base/common/event';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export enum MessageLevel {
 	Error = 0,
@@ -108,7 +107,7 @@ const defaultOptions: IModalOptions = {
 
 export type HideReason = 'close' | 'cancel' | 'ok';
 
-export abstract class Modal extends Disposable implements IThemable {
+export abstract class Modal extends Disposable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	private _styleElement: HTMLStyleElement;
 	protected _messageElement?: HTMLElement;
@@ -311,10 +310,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			};
 			this._closeMessageButton.label = CLOSE_TEXT;
 			this._register(this._closeMessageButton.onDidClick(() => this.setError(undefined)));
-
-			this._register(attachButtonStyler(this._toggleMessageDetailButton, this._themeService));
-			this._register(attachButtonStyler(this._copyMessageButton, this._themeService));
-			this._register(attachButtonStyler(this._closeMessageButton, this._themeService));
 
 			this._messageBody = DOM.append(this._messageElement, DOM.$('.dialog-message-body'));
 			this._messageSummary = DOM.append(this._messageBody, DOM.$('.dialog-message-summary'));
@@ -538,7 +533,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, position: 'left' | 'right' = 'right', isSecondary: boolean = false, index?: number): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = this._register(new Button(footerButton, { secondary: isSecondary }));
+		let button = this._register(new Button(footerButton, { secondary: isSecondary, ...defaultButtonStyles }));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		const container = position === 'left' ? this._leftFooter! : this._rightFooter!;
@@ -549,7 +544,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		} else {
 			DOM.append(container, footerButton);
 		}
-		attachButtonStyler(button, this._themeService);
 		this._footerButtons.push(button);
 		return button;
 	}

@@ -37,7 +37,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
+import { ConsoleLogger } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -45,6 +45,7 @@ import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogSer
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { workbenchTreeDataPreamble } from 'vs/platform/list/browser/listService';
+import { LogService } from 'vs/platform/log/common/logService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -92,8 +93,8 @@ suite('SQL Connection Tree Action tests', () => {
 	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
 		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
 		dialogService.callBase = true;
-		dialogService.setup(x => x.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			return Promise.resolve({
+		dialogService.setup(x => x.prompt(TypeMoq.It.isAny())).returns(() => {
+			return <any>Promise.resolve({
 				choice: choiceIndex
 			})
 		});

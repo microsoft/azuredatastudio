@@ -17,7 +17,6 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ISelectBoxStyles, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -82,7 +81,7 @@ interface DesignerTableCellContext {
 const ScriptTabId = 'scripts';
 const IssuesTabId = 'issues';
 
-export class Designer extends Disposable implements IThemable {
+export class Designer extends Disposable {
 	private _loadingSpinner: LoadingSpinner;
 	private _horizontalSplitViewContainer: HTMLElement;
 	private _verticalSplitViewContainer: HTMLElement;

@@ -447,17 +447,17 @@ function getContextFromEditor(editor: ICodeEditor, accessor: ServicesAccessor): 
 	const chatWidgetService = accessor.get(IChatWidgetService);
 	const model = editor.getModel();
 	if (!model) {
-		return;
+		return undefined;
 	}
 
 	const widget = chatWidgetService.lastFocusedWidget;
 	if (!widget) {
-		return;
+		return undefined;
 	}
 
 	const codeBlockInfo = widget.getCodeBlockInfoForEditor(model.uri);
 	if (!codeBlockInfo) {
-		return;
+		return undefined;
 	}
 
 	return {

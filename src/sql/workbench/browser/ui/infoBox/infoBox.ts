@@ -7,7 +7,6 @@ import 'vs/css!./media/infoBox';
 import * as azdata from 'azdata';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
-import { IThemable } from 'vs/base/common/styler';
 import { Color } from 'vs/base/common/color';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -35,7 +34,7 @@ export interface InfoBoxOptions {
 	clickableButtonAriaLabel?: string;
 }
 
-export class InfoBox extends Disposable implements IThemable {
+export class InfoBox extends Disposable {
 	private _imageElement: HTMLDivElement;
 	private _textElement: HTMLDivElement;
 	private _infoBoxElement: HTMLDivElement;

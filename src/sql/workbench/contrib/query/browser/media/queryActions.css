@@ -3,10 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-<<<<<<<< HEAD:src/sql/workbench/contrib/query/browser/media/queryActions.css
 .databaseListDropdown {
 	min-width: 150px;
 }
-========
-export const fetching = fetch;
->>>>>>>> 5b6af0748264d83dc7a95f5f4b1c39196eaae8d9:extensions/microsoft-authentication/src/browser/fetch.ts

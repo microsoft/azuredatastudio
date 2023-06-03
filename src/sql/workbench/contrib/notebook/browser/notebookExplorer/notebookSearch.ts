@@ -12,9 +12,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/common/searchModel';
+import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
+import { IReplaceService } from 'vs/workbench/contrib/search/browser/replace';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -47,6 +47,8 @@ import { SearchUIState } from 'vs/workbench/contrib/search/common/search';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const $ = dom.$;
 
@@ -87,10 +89,17 @@ export class NotebookSearchView extends SearchView {
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@ICommandService commandService: ICommandService,
+		@INotebookService notebookService: INotebookService,
+		@ILogService logService: ILogService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
-		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, commandService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
+		super(options, fileService, editorService, codeEditorService, progressService,
+			notificationService, dialogService, commandService, contextViewService, instantiationService,
+			viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService,
+			replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService,
+			menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService,
+			notebookService, logService);
 
 		this.memento = new Memento(this.id, storageService);
 		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
@@ -148,13 +157,13 @@ export class NotebookSearchView extends SearchView {
 		e.browserEvent.stopPropagation();
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
+		createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => actions,
 			getActionsContext: () => e.element,
-			onHide: () => dispose(actionsDisposable)
+			onHide: () => { }
 		});
 	}
 
