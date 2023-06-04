@@ -253,6 +253,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			serverName: this.serverName,
 			databaseName: this.databaseName,
 			authenticationType: this.authenticationType,
+			serverCapabilities: this.serverCapabilities,
 			getOptionsKey: this.getOptionsKey,
 			getOptionKeyIdNames: this.getOptionKeyIdNames,
 			matches: this.matches,

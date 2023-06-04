@@ -88,6 +88,7 @@ suite('Firewall rule dialog controller tests', () => {
 			savePassword: true,
 			groupFullName: 'g2/g2-2',
 			groupId: 'group id',
+			serverCapabilities: undefined,
 			getOptionsKey: () => '',
 			getOptionKeyIdNames: undefined!,
 			matches: () => false,

@@ -870,10 +870,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected toBase64UrlEncoding(base64string: string): string {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
+
 	public async deleteAllCacheMsal(): Promise<void> {
 		this.clientApplication.clearCache();
-		await this.msalCacheProvider.clearLocalCache();
+
+		// unlink both cache files
+		await this.msalCacheProvider.unlinkMsalCache();
+		await this.msalCacheProvider.unlinkLocalCache();
 	}
+
 	public async deleteAllCacheAdal(): Promise<void> {
 		const results = await this.tokenCache.findCredentials('');
 

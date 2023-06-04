@@ -1,5 +1,79 @@
 # Change Log
 
+## May 2023 (hotfix)
+
+Azure Data Studio 1.44.1 is the latest general availability (GA) release.
+
+- Release number: 1.44.1
+- Release date: June 5, 2023
+
+### Bug fixes in 1.44.1
+
+| New Item | Details |
+| --- | --- |
+| Backup & Restore | Fixed an issue in Object Explorer where the Restore dialog failed to open. https://github.com/microsoft/azuredatastudio/issues/23257 |
+| Connection | Resolved issue that caused a login failure in Azure SQL for hyphenated user accounts. https://github.com/microsoft/azuredatastudio/issues/23210 |
+| Object Explorer | Addressed inability to open a view using CTRL/CMD + Q or the Open View menu. https://github.com/microsoft/azuredatastudio/issues/23236 |
+| Query Editor | Introduced a performance improvement in the Query Editor language service by enabling connection pooling. https://github.com/microsoft/azuredatastudio/issues/22970 |
+
+## Version 1.44.0
+
+Azure Data Studio 1.44.0 is the latest general availability (GA) release.
+
+- Release number: 1.44.0
+- Release date: May 24, 2023
+
+### What's new in 1.44.0
+
+| New Item | Details |
+| --- | --- |
+| Connection | Enabled Sql Authentication Provider by default for Azure SQL connections and the MSAL Authentication Library.  Learn more at [Connect with Azure Data Studio](https://aka.ms/azuredatastudio-connection) |
+| Connection | Introduced support for passing in advanced connection options in command line arguments |
+| Connection | Added ability to provide an Application Name in the connection string parameter |
+| General | Added support for customizing table keyboard shortcuts |
+| General | Added warning notification on startup if Azure PII logging is enabled |
+| GitHub Copilot | GitHub Copilot extension for autocomplete-style suggestions added to extension gallery. Learn more at https://aka.ms/ads-copilot |
+| Notebooks | Fixed issue where deleted text listed using the Find feature |
+| Object Explorer | Introduced filtering capability for Object Explorer (preview) |
+| Query Editor | Shorted text for Change Connection and Export as Notebook button |
+| Query Results | Increased the default max column width |
+| SQL Database Projects Extension | Released version 1.1.1 |
+| SQL Database Projects Extension | Improved performance of loading one or more large projects |
+| SQL Database Projects Extension | Introduced ability to save publish settings to a new or existing  publish profile |
+| User Management | Added support for creating database and server roles (preview) |
+| User Management | Improved authentication options when creating database users (preview) |
+
+### Bug fixes in 1.44.0
+
+| New Item | Details |
+| --- | --- |
+| Accessibility | Added labels to radio groups in SQL Database Projects dialog |
+| Accessibility | Fixed issue with narrator reading character twice in network share path for Azure SQL migration extension |
+| Accessibility | Addressed problem where keyboard focus did not shift to error message when creating a new database |
+| Accessibility | Fixed issue with voiceover not announcing label names correctly when updating a database project |
+| Connection | Improved token refresh behavior |
+| Connection | Enabled support to login with blank passwords when creating MSSQL connection |
+| Connection | Added change password dialog display after password expiration occurs for a SQL login |
+| Connection | Addressed scenario where Intellisense stopped working after a connection token expired |
+| Connection | Fixed behavior where PostgreSQL username was incorrectly replaced |
+| Connection | Implemented support for connections against the same server but with different properties |
+| Connection | Resolved issue where connection status changed to red (disconnected) after moving an active connection to a server group |
+| Connection | Updated Azure node in Connection dialog to include notation when no subscriptions are found |
+| Connection | Updated firewall dialog to pre-select the account and tenant in the connection dialog |
+| Extension | Fixed an issue with over-encoded URLs in diagnostic error messages |
+| Intellisense | Resolved issue with SORT_IN_TEMPDB not recognized as valid T-SQL syntax when creating an object |
+| Notebooks | Updated Notebook connection to support MySQL and PostgreSQL when connecting to an existing Notebook |
+| Query Results | Fixed overlapping action display when multiple result sets are returned |
+| Schema Compare | Update scmp files to be backwards compatible |
+| SQL Database Projects Extension | Fixed multiple issues related to SQLCMD variables and projects |
+| SQL Database Projects Extension | Addressed a failure that was occurring when using schema compare with Azure Synapse dedicated pools |
+| SQL Database Projects Extension | Resolved problem where a database project would not build after a reference to a system database was added from SSDT |
+| SQL Database Projects Extension | Fixed issue where projects were listed twice when using multi root workspaces |
+| SQL Database Projects Extension | Fixed an issue where file structure information was not stored in the scmp file after a schema compare |
+| SQL Database Projects (VS Code) | Updated default folder location when creating a new project from database workflow |
+
+For a full list of bug fixes addressed for the May 2023 release, visit the [May 2023 Release on GitHub](https://github.com/microsoft/azuredatastudio/milestone/98?closed=1).
+
 ## Version 1.43.0
 * Release number: 1.43.0
 * Release date: April 12, 2023
