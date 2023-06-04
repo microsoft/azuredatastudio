@@ -194,6 +194,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 			obj = this.getApplicationRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
 			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.DatabaseProperties) {
+			obj = this.getDatabasePropertiesView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
@@ -456,6 +458,40 @@ export class TestObjectManagementService implements IObjectManagementService {
 				processors: '',
 				minMemory: '0',
 				maxMemory: '22528'
+			}
+		};
+	}
+
+	private getDatabasePropertiesView(isNewObject: boolean, name: string): ObjectManagement.DatabasePropertiesViewInfo {
+		return isNewObject ? <ObjectManagement.DatabasePropertiesViewInfo>{
+			objectInfo: {
+				name: '',
+				collationName: '',
+				dateCreated: '',
+				lastDatabaseBackup: '',
+				lastDatabaseLogBackup: '',
+				memoryAllocatedToMemoryOptimizedObjects: '',
+				memoryUsedByMemoryOptimizedObjects: '',
+				numberOfUsers: '',
+				owner: '',
+				size: '',
+				spaceAvailable: '',
+				status: ''
+			}
+		} : <ObjectManagement.DatabasePropertiesViewInfo>{
+			objectInfo: {
+				name: 'Database Properties1',
+				collationName: 'Latin1_General_100_CI_AS_KS_WS',
+				dateCreated: '5/31/2023 8:05:55 AM',
+				lastDatabaseBackup: 'None',
+				lastDatabaseLogBackup: 'None',
+				memoryAllocatedToMemoryOptimizedObjects: '0.00 MB',
+				memoryUsedByMemoryOptimizedObjects: '0.00 MB',
+				numberOfUsers: '5',
+				owner: 'databaseProperties 1',
+				size: '16.00 MB',
+				spaceAvailable: '1.15 MB',
+				status: 'Normal'
 			}
 		};
 	}

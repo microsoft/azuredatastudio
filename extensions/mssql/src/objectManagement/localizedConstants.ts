@@ -137,6 +137,7 @@ export const NameText = localize('objectManagement.nameLabel', "Name");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
 export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");
+export const FilesHeaderText = localize('objectManagement.filesHeaderText', "Files");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
@@ -226,6 +227,24 @@ export const OperatingSystemText = localize('objectManagement.operatingSystem', 
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
 
+//Database properties Dialog
+export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
+export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
+export const BackupSectionHeader = localize('objectManagement.databaseProperties.backupSectionHeader', "Backup");
+export const DatabaseSectionHeader = localize('objectManagement.databaseProperties.databaseSectionHeader', "Database");
+export const MaintenanceSectionHeader = localize('objectManagement.databaseProperties.maintenanceSectionHeader', "Maintenance");
+export const NamePropertyText = localize('objectManagement.databaseProperties.name', "Name");
+export const StatusText = localize('objectManagement.databaseProperties.status', "Status");
+export const OwnerPropertyText = localize('objectManagement.databaseProperties.owner', "Owner");
+export const DateCreatedText = localize('objectManagement.databaseProperties.dateCreated', "Date Created");
+export const SizeText = localize('objectManagement.databaseProperties.size', "Size");
+export const SpaceAvailableText = localize('objectManagement.databaseProperties.spaceAvailable', "Space Available");
+export const NumberOfUsersText = localize('objectManagement.databaseProperties.numberOfUsers', "Number of Users");
+export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
+export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
+
+
+
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
@@ -248,6 +267,8 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 		case ObjectManagement.NodeType.Column:
 			return ColumnTypeDisplayName;
 		case ObjectManagement.NodeType.Database:
+			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
+		case ObjectManagement.NodeType.DatabaseProperties:
 			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unknown node type: ${type}`);
