@@ -170,12 +170,12 @@ export abstract class DialogBase<DialogResult> {
 			let formModel = this.modelView.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(items).component(),
+						component: this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).withItems(items).component(),
 						title: ''
 					}
 				],
 				{
-					horizontal: false
+					horizontal: true
 				}
 			).component();
 			await view.initializeModel(formModel);
