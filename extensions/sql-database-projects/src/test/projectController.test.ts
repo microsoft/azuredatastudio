@@ -597,8 +597,7 @@ describe('ProjectsController', function (): void {
 			should(opened).equal(true);
 		});
 
-		it.skip/**/('Callbacks are hooked up and called from create project from database dialog', async function (): Promise<void> {
-			this.timeout(99_999);
+		it.skip('Callbacks are hooked up and called from create project from database dialog', async function (): Promise<void> {
 			const createProjectFromDbHoller = 'hello from callback for createProjectFromDatabase()';
 
 			let holler = 'nothing';
