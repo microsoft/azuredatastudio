@@ -94,13 +94,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			}, this.viewInfo.azureEditions, defaultEdition);
 			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
 
-			let serviceLevels = this.viewInfo.azureServiceLevelObjectives[defaultEdition] ?? [''];
+			let sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === defaultEdition);
+			let serviceLevels = sloDetails?.details ?? [''];
 			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
 				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
 			}, serviceLevels, serviceLevels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
 
-			let maxSizes = this.viewInfo.azureMaxSizes[defaultEdition] ?? [''];
+			let sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === defaultEdition);
+			let maxSizes = sizeDetails?.details ?? [''];
 			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
 				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
 			}, maxSizes, maxSizes[0]);
@@ -109,12 +111,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			this.disposables.push(editionDropbox.onValueChanged(async () => {
 				let edition = editionDropbox.value as string;
 
-				serviceLevels = this.viewInfo.azureServiceLevelObjectives[edition] ?? [''];
+				sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === edition);
+				serviceLevels = sloDetails?.details ?? [''];
 				serviceLevelDropbox.loading = true;
 				await serviceLevelDropbox.updateProperties({ value: serviceLevels[0], values: serviceLevels });
 				serviceLevelDropbox.loading = false;
 
-				maxSizes = this.viewInfo.azureMaxSizes[edition] ?? [''];
+				sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === edition);
+				maxSizes = sizeDetails?.details ?? [''];
 				sizeDropbox.loading = true;
 				await sizeDropbox.updateProperties({ value: maxSizes[0], values: maxSizes });
 				sizeDropbox.loading = false;
