@@ -22,10 +22,11 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
+import { DatabasePropertiesDialog } from './ui/databasePropertiesDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
-	const service = getObjectManagementService(appContext, false);
+	const service = getObjectManagementService(appContext, true);
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
@@ -106,15 +107,19 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const parentUrn = await getParentUrn(context);
+		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
+		const objectType = context.nodeInfo && context.nodeInfo.nodeType === 'Database' ? ObjectManagement.NodeType.DatabaseProperties : context.nodeInfo.nodeType as ObjectManagement.NodeType;
+		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
+		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
+			objectType: objectType,
+			objectName: objectName,
 			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectUrn: objectUrn,
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
@@ -246,6 +251,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
 			return new DatabaseDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.DatabaseProperties:
+			return new DatabasePropertiesDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}

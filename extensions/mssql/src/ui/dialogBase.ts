@@ -165,6 +165,23 @@ export abstract class DialogBase<DialogResult> {
 		}).withItems(items).component();
 	}
 
+	protected registerTab(tab: azdata.window.DialogTab, items: azdata.Component[]): void {
+		tab.registerContent(async view => {
+			let formModel = this.modelView.modelBuilder.formContainer().withFormItems(
+				[
+					{
+						component: this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(items).component(),
+						title: ''
+					}
+				],
+				{
+					horizontal: false
+				}
+			).component();
+			await view.initializeModel(formModel);
+		});
+	}
+
 	protected createTableList<T>(ariaLabel: string,
 		columnNames: string[],
 		allItems: T[],

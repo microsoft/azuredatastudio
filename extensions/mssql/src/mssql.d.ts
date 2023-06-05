@@ -899,6 +899,7 @@ declare module 'mssql' {
 			Column = "Column",
 			Database = "Database",
 			DatabaseRole = "DatabaseRole",
+			DatabaseProperties = "DatabaseProperties",
 			ServerLevelLogin = "ServerLevelLogin",
 			ServerLevelServerRole = "ServerLevelServerRole",
 			Table = "Table",
@@ -1378,6 +1379,23 @@ declare module 'mssql' {
 			compatibilityLevels: string[];
 			containmentTypes: string[];
 			recoveryModels: string[];
+		}
+
+		export interface DatabasePropertiesInfo extends SqlObject {
+			collationName: string;
+			dateCreated: string;
+			lastDatabaseBackup: string;
+			lastDatabaseLogBackup: string;
+			memoryAllocatedToMemoryOptimizedObjects: string;
+			memoryUsedByMemoryOptimizedObjects: string;
+			numberOfUsers: string;
+			owner: string;
+			size: string;
+			spaceAvailable: string;
+			status: string;
+		}
+
+		export interface DatabasePropertiesViewInfo extends ObjectViewInfo<DatabasePropertiesInfo> {
 		}
 	}
 
