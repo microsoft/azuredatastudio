@@ -15,8 +15,8 @@
 	background-image: url('add_server_inverse.svg') !important;
 }
 
-.monaco-workbench .dataExplorer-viewlet .actions-container .action-label.add-server-group-action,
-.monaco-workbench.hc-light .dataExplorer-viewlet .actions-container .action-label.add-server-group-action {
+.monaco-workbench .actions-container .action-label.add-server-group-action,
+.monaco-workbench.hc-light .actions-container .action-label.add-server-group-action {
 	background-image: url('new_servergroup.svg') !important;
 }
 
