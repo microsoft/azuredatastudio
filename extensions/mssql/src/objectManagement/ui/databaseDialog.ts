@@ -86,35 +86,46 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 
 	private initializeConfigureSLOSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
+		if (this.viewInfo.azureEditions?.length > 0) {
+			let defaultEdition = this.viewInfo.azureEditions[0];
+			this.objectInfo.azureEdition = defaultEdition;
+			let editionDropbox = this.createDropdown(localizedConstants.EditionText, async () => {
+				this.objectInfo.azureEdition = editionDropbox.value as string;
+			}, this.viewInfo.azureEditions, defaultEdition);
+			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
+
+			let serviceLevels = this.viewInfo.azureServiceLevelObjectives[defaultEdition] ?? [''];
+			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
+				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
+			}, serviceLevels, serviceLevels[0]);
+			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
+
+			let maxSizes = this.viewInfo.azureMaxSizes[defaultEdition] ?? [''];
+			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
+				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
+			}, maxSizes, maxSizes[0]);
+			containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeText, sizeDropbox));
+
+			this.disposables.push(editionDropbox.onValueChanged(async () => {
+				let edition = editionDropbox.value as string;
+
+				serviceLevels = this.viewInfo.azureServiceLevelObjectives[edition] ?? [''];
+				serviceLevelDropbox.loading = true;
+				await serviceLevelDropbox.updateProperties({ value: serviceLevels[0], values: serviceLevels });
+				serviceLevelDropbox.loading = false;
+
+				maxSizes = this.viewInfo.azureMaxSizes[edition] ?? [''];
+				sizeDropbox.loading = true;
+				await sizeDropbox.updateProperties({ value: maxSizes[0], values: maxSizes });
+				sizeDropbox.loading = false;
+			}));
+		}
+
 		if (this.viewInfo.azureBackupRedundancyLevels?.length > 0) {
 			let backupDropbox = this.createDropdown(localizedConstants.BackupRedundancyText, async () => {
 				this.objectInfo.azureBackupRedundancyLevel = backupDropbox.value as string;
 			}, this.viewInfo.azureBackupRedundancyLevels, this.viewInfo.azureBackupRedundancyLevels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.BackupRedundancyText, backupDropbox));
-		}
-
-		if (this.viewInfo.azureServiceLevelObjectives?.length > 0) {
-			this.objectInfo.azureServiceLevelObjective = this.viewInfo.azureServiceLevelObjectives[0];
-			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
-				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
-			}, this.viewInfo.azureServiceLevelObjectives, this.viewInfo.azureServiceLevelObjectives[0]);
-			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
-		}
-
-		if (this.viewInfo.azureEditions?.length > 0) {
-			this.objectInfo.azureEdition = this.viewInfo.azureEditions[0];
-			let editionDropbox = this.createDropdown(localizedConstants.EditionText, async () => {
-				this.objectInfo.azureEdition = editionDropbox.value as string;
-			}, this.viewInfo.azureEditions, this.viewInfo.azureEditions[0]);
-			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
-		}
-
-		if (this.viewInfo.azureMaxSizes?.length > 0) {
-			this.objectInfo.azureMaxSize = this.viewInfo.azureMaxSizes[0];
-			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
-				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
-			}, this.viewInfo.azureMaxSizes, this.viewInfo.azureMaxSizes[0]);
-			containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeText, sizeDropbox));
 		}
 
 		return this.createGroup(localizedConstants.ConfigureSLOSectionHeader, containers, true, true);

@@ -1386,9 +1386,9 @@ declare module 'mssql' {
 
 			isAzureDB: boolean;
 			azureBackupRedundancyLevels: string[];
-			azureServiceLevelObjectives: string[];
+			azureServiceLevelObjectives: { [edition: string]: string[] };
 			azureEditions: string[];
-			azureMaxSizes: string[];
+			azureMaxSizes: { [edition: string]: string[] };
 		}
 	}
 
