@@ -1,5 +1,21 @@
 # Change Log
 
+## May 2023 (hotfix)
+
+Azure Data Studio 1.44.1 is the latest general availability (GA) release.
+
+- Release number: 1.44.1
+- Release date: June 5, 2023
+
+### Bug fixes in 1.44.1
+
+| New Item | Details |
+| --- | --- |
+| Backup & Restore | Fixed an issue in Object Explorer where the Restore dialog failed to open. https://github.com/microsoft/azuredatastudio/issues/23257 |
+| Connection | Resolved issue that caused a login failure in Azure SQL for hyphenated user accounts. https://github.com/microsoft/azuredatastudio/issues/23210 |
+| Object Explorer | Addressed inability to open a view using CTRL/CMD + Q or the Open View menu. https://github.com/microsoft/azuredatastudio/issues/23236 |
+| Query Editor | Introduced a performance improvement in the Query Editor language service by enabling connection pooling. https://github.com/microsoft/azuredatastudio/issues/22970 |
+
 ## Version 1.44.0
 
 Azure Data Studio 1.44.0 is the latest general availability (GA) release.
