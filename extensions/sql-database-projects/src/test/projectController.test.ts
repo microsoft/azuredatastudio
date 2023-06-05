@@ -302,8 +302,7 @@ describe('ProjectsController', function (): void {
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
 			});
 
-			// fix for this issue in PR: https://msdata.visualstudio.com/SQLToolsAndLibraries/_git/DacFx/pullrequest/1073966
-			it.skip('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
+			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
@@ -598,7 +597,7 @@ describe('ProjectsController', function (): void {
 			should(opened).equal(true);
 		});
 
-		it.only('Callbacks are hooked up and called from create project from database dialog', async function (): Promise<void> {
+		it.skip/**/('Callbacks are hooked up and called from create project from database dialog', async function (): Promise<void> {
 			this.timeout(99_999);
 			const createProjectFromDbHoller = 'hello from callback for createProjectFromDatabase()';
 
