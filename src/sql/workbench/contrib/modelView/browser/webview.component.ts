@@ -74,7 +74,8 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 
 	private _createWebview(): void {
 		this._webview = this.webviewService.createWebviewElement({
-			id: this.id,
+			providedViewType: this.id,
+			title: this.id,
 			contentOptions: {
 				allowScripts: true,
 			},

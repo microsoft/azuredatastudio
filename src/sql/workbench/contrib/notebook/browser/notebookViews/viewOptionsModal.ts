@@ -25,7 +25,6 @@ import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class ViewOptionsModal extends Modal {
 	private _submitButton: Button;
-	private _cancelButton: Button;
 	private _optionsMap: { [name: string]: InputBox | Checkbox } = {};
 	private _viewNameInput: InputBox;
 
@@ -98,7 +97,7 @@ export class ViewOptionsModal extends Modal {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('save', "Save"), () => this.onSubmitHandler());
-		this._cancelButton = this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
+		this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
 
 		this._register(attachInputBoxStyler(this._viewNameInput!, this._themeService));
 

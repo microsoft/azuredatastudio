@@ -21,6 +21,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 const SELECT_EXPENSE_METRIC_TITLE = localize('executionPlanSelectExpenseMetricTitle', 'Select expense metric');
 
@@ -326,7 +327,7 @@ export class CancelHIghlightExpensiveOperationAction extends Action {
 	public static LABEL = localize('cancelExpensiveOperationAction', 'Close');
 
 	constructor() {
-		super(CancelHIghlightExpensiveOperationAction.ID, CancelHIghlightExpensiveOperationAction.LABEL, Codicon.chromeClose.classNames);
+		super(CancelHIghlightExpensiveOperationAction.ID, CancelHIghlightExpensiveOperationAction.LABEL, ThemeIcon.asClassName(Codicon.chromeClose));
 	}
 
 	public override async run(context: HighlightExpensiveOperationWidget): Promise<void> {

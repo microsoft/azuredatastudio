@@ -183,10 +183,8 @@ suite('Insights Utils tests', function () {
 			new Workspace('TestWorkspace',
 				undefined, undefined, undefined, undefined));
 
-		const environmentService = TestEnvironmentService;
-
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, Promise.resolve(environmentService.userEnv),
+		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, undefined,
 			undefined,
 			undefined,
 			undefined,
@@ -215,10 +213,8 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))], undefined, undefined, undefined));
 
-		const environmentService = TestEnvironmentService;
-
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, Promise.resolve(environmentService.userEnv),
+		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, undefined,
 			undefined,
 			undefined,
 			undefined,

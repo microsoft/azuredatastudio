@@ -35,8 +35,9 @@ import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ILanguageService } from 'vs/editor/common/languages/language';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{

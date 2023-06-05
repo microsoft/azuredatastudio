@@ -2340,7 +2340,7 @@ function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorat
 	return ModelDecorationOptions.createDynamic(options);
 }
 
-class DidChangeDecorationsEmitter extends Disposable {
+export class DidChangeDecorationsEmitter extends Disposable { // {{SQL CARBON EDIT}} - export class
 
 	private readonly _actual: Emitter<IModelDecorationsChangedEvent> = this._register(new Emitter<IModelDecorationsChangedEvent>());
 	public readonly event: Event<IModelDecorationsChangedEvent> = this._actual.event;

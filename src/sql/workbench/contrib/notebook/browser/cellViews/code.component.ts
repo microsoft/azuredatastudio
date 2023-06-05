@@ -407,7 +407,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
 			let modeValue = this._languageService.createById(this.cellModel.language);
-			this._modelService.setMode(this._editorModel, modeValue);
+			// {{SQL CARBON TODO}} - do we still need this
+			// this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
 

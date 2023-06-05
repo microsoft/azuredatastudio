@@ -30,7 +30,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as dom from 'vs/base/browser/dom';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { ISearchComplete, SearchCompletionExitCode, ITextQuery, SearchSortOrder, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';

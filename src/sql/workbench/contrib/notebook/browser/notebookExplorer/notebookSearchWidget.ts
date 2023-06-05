@@ -11,7 +11,6 @@ import { IFocusTracker, append, $, trackFocus } from 'vs/base/browser/dom';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -86,7 +85,6 @@ export class NotebookSearchWidget extends Widget {
 		container: HTMLElement,
 		options: INotebookExplorerSearchOptions,
 		@IContextViewService private readonly contextViewService: IContextViewService,
-		@IThemeService private readonly themeService: IThemeService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IKeybindingService private readonly keyBindingService: IKeybindingService,
 		@IClipboardService private readonly clipboardServce: IClipboardService,

@@ -189,7 +189,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IStorageService private readonly _storageService: IStorageService,
 		@IThemeService private readonly _themeService: IThemeService,
-		@ITelemetryService private readonly _telemetryService: ITelemetryService
+		//@ITelemetryService private readonly _telemetryService: ITelemetryService
 	) {
 		super();
 		const font = this._configHelper.getFont(undefined, true);

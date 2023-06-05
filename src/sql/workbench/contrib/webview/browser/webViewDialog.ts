@@ -88,7 +88,8 @@ export class WebViewDialog extends Modal {
 		this._body = DOM.append(container, DOM.$('div.webview-dialog'));
 
 		this._webview = this.webviewService.createWebviewElement({
-			id: this.id,
+			providedViewType: this.id,
+			title: this.id,
 			contentOptions: {
 				allowScripts: true,
 			},

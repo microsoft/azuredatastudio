@@ -22,6 +22,7 @@ import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { escapeLabel, escapeUrl, unquoteText } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -116,7 +117,8 @@ export class LinkCalloutDialog extends Modal {
 			this._contextViewService,
 			{
 				placeholder: constants.linkTextPlaceholder,
-				ariaLabel: constants.linkTextLabel
+				ariaLabel: constants.linkTextLabel,
+				inputBoxStyles: defaultInputBoxStyles
 			});
 		this._linkTextInputBox.value = this._defaultLabel;
 		DOM.append(linkTextRow, linkTextInputContainer);
@@ -133,7 +135,8 @@ export class LinkCalloutDialog extends Modal {
 			this._contextViewService,
 			{
 				placeholder: constants.linkAddressPlaceholder,
-				ariaLabel: constants.linkAddressLabel
+				ariaLabel: constants.linkAddressLabel,
+				inputBoxStyles: defaultInputBoxStyles
 			});
 		this._linkUrlInputBox.value = this._defaultLinkUrl;
 		DOM.append(linkAddressRow, linkAddressInputContainer);
