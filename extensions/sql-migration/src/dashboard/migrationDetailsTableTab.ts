@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getMigrationStatusImage, getPipelineStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemetry';
-import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRestartMigrationWizard, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canDeleteMigration, canRestartMigrationWizard, canRetryMigration, formatDateTimeString, formatNumber, formatSecondsIntoReadableTime, formatSizeBytes, formatSizeKb, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
 import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
@@ -355,7 +355,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 				formatNumber(d.rowsRead),
 				formatNumber(d.rowsCopied),
 				formatSizeKb(d.copyThroughput),
-				formatTime((d.copyDuration ?? 0) * 1000),
+				formatSecondsIntoReadableTime((d.copyDuration ?? 0)),
 				loc.ParallelCopyType[d.parallelCopyType] ?? d.parallelCopyType,
 				d.usedParallelCopies,
 				formatDateTimeString(d.copyStart),

@@ -17,7 +17,7 @@ import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAc
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { DBCellValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { DBCellValue, getCellDisplayValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -925,9 +925,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
+					const displayValue = r[i - 1].displayValue ?? '';
+					const ariaLabel = getCellDisplayValue(displayValue);
 					dataWithSchema[this.columns[i].field] = {
-						displayValue: r[i - 1].displayValue,
-						ariaLabel: escape(r[i - 1].displayValue),
+						displayValue: displayValue,
+						ariaLabel: ariaLabel,
 						isNull: r[i - 1].isNull,
 						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue
 					};

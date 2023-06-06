@@ -452,7 +452,7 @@
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem =~ /^databaseProject.itemType.reference/ || viewItem == databaseProject.itemType.sqlcmdVariable",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.reference.sqlProject || viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@2"
         },
         {
