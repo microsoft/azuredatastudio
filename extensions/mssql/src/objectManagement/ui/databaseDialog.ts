@@ -39,6 +39,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this._nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
+			this.objectInfo.owner = this.viewInfo.loginNames[0];
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value as string;
 			}, this.viewInfo.loginNames, this.viewInfo.loginNames[0]);
@@ -51,6 +52,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 	private initializeOptionsSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 		if (this.viewInfo.collationNames?.length > 0) {
+			this.objectInfo.collationName = this.viewInfo.collationNames[0];
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
 			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
@@ -95,14 +97,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
 
 			let sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === defaultEdition);
-			let serviceLevels = sloDetails?.details ?? [''];
+			let serviceLevels = sloDetails?.details ?? [];
 			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
 				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
 			}, serviceLevels, serviceLevels[0]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
 
 			let sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === defaultEdition);
-			let maxSizes = sizeDetails?.details ?? [''];
+			let maxSizes = sizeDetails?.details ?? [];
 			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
 				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
 			}, maxSizes, maxSizes[0]);
@@ -112,13 +114,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 				let edition = editionDropbox.value as string;
 
 				sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === edition);
-				serviceLevels = sloDetails?.details ?? [''];
+				serviceLevels = sloDetails?.details ?? [];
 				serviceLevelDropbox.loading = true;
 				await serviceLevelDropbox.updateProperties({ value: serviceLevels[0], values: serviceLevels });
 				serviceLevelDropbox.loading = false;
 
 				sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === edition);
-				maxSizes = sizeDetails?.details ?? [''];
+				maxSizes = sizeDetails?.details ?? [];
 				sizeDropbox.loading = true;
 				await sizeDropbox.updateProperties({ value: maxSizes[0], values: maxSizes });
 				sizeDropbox.loading = false;
