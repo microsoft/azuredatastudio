@@ -222,7 +222,7 @@ export class ChatWidget extends Disposable implements IChatWidget {
 
 	async getSlashCommands(): Promise<ISlashCommand[] | undefined> {
 		if (!this.viewModel) {
-			return;
+			return undefined;
 		}
 
 		if (!this.slashCommandsPromise) {

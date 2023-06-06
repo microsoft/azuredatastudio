@@ -970,12 +970,12 @@ class MainThreadPasteEditProvider implements languages.DocumentPasteEditProvider
 				try {
 					const dataTransferDto = await typeConvert.DataTransfer.from(dataTransfer);
 					if (token.isCancellationRequested) {
-						return;
+						return undefined;
 					}
 
 					const result = await this._proxy.$providePasteEdits(this.handle, request.id, model.uri, selections, dataTransferDto, token);
 					if (!result) {
-						return;
+						return undefined;
 					}
 
 					return {
@@ -1014,12 +1014,12 @@ class MainThreadDocumentOnDropEditProvider implements languages.DocumentOnDropEd
 		try {
 			const dataTransferDto = await typeConvert.DataTransfer.from(dataTransfer);
 			if (token.isCancellationRequested) {
-				return;
+				return undefined;
 			}
 
 			const edit = await this._proxy.$provideDocumentOnDropEdits(this.handle, request.id, model.uri, position, dataTransferDto, token);
 			if (!edit) {
-				return;
+				return undefined;
 			}
 
 			return {

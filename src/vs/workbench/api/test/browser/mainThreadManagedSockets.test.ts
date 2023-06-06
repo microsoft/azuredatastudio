@@ -41,7 +41,7 @@ suite('MainThreadManagedSockets', () => {
 
 			expectEvent(test: (evt: any) => void, message: string) {
 				if (this.events.some(test)) {
-					return;
+					return undefined;
 				}
 
 				const d = new DisposableStore();

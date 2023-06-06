@@ -597,12 +597,3 @@ export const Codicon = {
 	quickInputBack: register('quick-input-back', 'arrow-left')
 
 } as const;
-
-
-		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
-		let sqlCarbonIcons: string[] = [SqlIconId.activeConnectionsAction, SqlIconId.addServerAction, SqlIconId.addServerGroupAction, SqlIconId.serverPage];
-		if (sqlCarbonIcons.includes(id)) {
-			return ['codicon', id];
-			// {{SQL CARBON EDIT}} End of edit
-		} else {
-		}

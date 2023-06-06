@@ -318,7 +318,7 @@ export class ChatService extends Disposable implements IChatService {
 		this.trace('sendRequest', `sessionId: ${sessionId}, message: ${messageText.substring(0, 20)}${messageText.length > 20 ? '[...]' : ''}}`);
 		if (!messageText.trim()) {
 			this.trace('sendRequest', 'Rejected empty message');
-			return;
+			return undefined;
 		}
 
 		const model = this._sessionModels.get(sessionId);
@@ -334,7 +334,7 @@ export class ChatService extends Disposable implements IChatService {
 
 		if (this._pendingRequests.has(sessionId)) {
 			this.trace('sendRequest', `Session ${sessionId} already has a pending request`);
-			return;
+			return undefined;
 		}
 
 		// This method is only returning whether the request was accepted - don't block on the actual request
@@ -458,7 +458,7 @@ export class ChatService extends Disposable implements IChatService {
 		}
 
 		if (!provider.provideSlashCommands) {
-			return;
+			return undefined;
 		}
 
 		const mainProviderRequest = provider.provideSlashCommands(model.session!, token);

@@ -6,7 +6,7 @@
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { NotebookEditorPriority, NotebookRendererEntrypoint, RendererMessagingSpec } from 'vs/workbench/contrib/notebook/common/notebookCommon';  // {{SQL CARBON EDIT}} - Remove unused import
+import { ContributedNotebookRendererEntrypoint, NotebookEditorPriority, NotebookRendererEntrypoint, RendererMessagingSpec } from 'vs/workbench/contrib/notebook/common/notebookCommon';  // {{SQL CARBON EDIT}} - Remove unused import
 
 const NotebookEditorContribution = Object.freeze({
 	type: 'type',
@@ -61,7 +61,7 @@ export interface INotebookRendererContribution {
 	readonly id?: string;
 	readonly displayName: string;
 	readonly mimeTypes?: readonly string[];
-	readonly entrypoint: NotebookRendererEntrypoint;
+	readonly entrypoint: ContributedNotebookRendererEntrypoint;
 	readonly hardDependencies: readonly string[];
 	readonly optionalDependencies: readonly string[];
 	readonly requiresMessaging: RendererMessagingSpec;

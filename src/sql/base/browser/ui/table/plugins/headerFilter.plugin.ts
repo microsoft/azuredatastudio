@@ -70,8 +70,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private okButton?: Button;
 	private clearButton?: Button;
 	private cancelButton?: Button;
-	private sortAscButton?: Button;
-	private sortDescButton?: Button;
+	// {{SQL CARBON TODO}} - disable
+	// private sortAscButton?: Button;
+	// private sortDescButton?: Button;
 	private selectAllCheckBox?: Checkbox;
 	private searchInputBox?: InputBox;
 	private countBadge?: CountBadge;
@@ -407,8 +408,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		// Make sure the menu can fit in the screen.
 		this.menu.style.height = `${Math.min(DefaultMenuHeight, window.innerHeight - MenuBarHeight) - MenuVerticalPadding}px`;
 
-		this.sortAscButton = this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
-		this.sortDescButton = this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		// {{SQL CARBON TODO}} - style buttons
+		// this.sortAscButton = this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		// this.sortDescButton = this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+
 		this.createSearchInputRow();
 		await this.createFilterList();
 

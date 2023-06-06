@@ -434,7 +434,7 @@ class DebugHoverComputer {
 	async evaluate(session: IDebugSession): Promise<IExpression | undefined> {
 		if (!this._currentExpression) {
 			this.logService.error('No expression to evaluate');
-			return;
+			return undefined;
 		}
 
 		if (session.capabilities.supportsEvaluateForHovers) {

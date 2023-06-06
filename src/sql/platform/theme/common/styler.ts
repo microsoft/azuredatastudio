@@ -8,9 +8,8 @@ import * as colors from './colors';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { attachStyler, computeStyles, defaultButtonStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
+import { IThemable, attachStyler, computeStyles, defaultButtonStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'sql/platform/theme/common/vsstyler';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IThemable } from 'vs/base/common/styler';
 
 export interface IDropdownStyleOverrides extends IStyleOverrides {
 	foregroundColor?: cr.ColorIdentifier;

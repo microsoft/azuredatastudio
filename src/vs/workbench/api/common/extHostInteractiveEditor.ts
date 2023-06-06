@@ -131,7 +131,7 @@ export class ExtHostInteractiveEditor implements ExtHostInteractiveEditorShape {
 		}
 		const sessionData = this._inputSessions.get(item.id);
 		if (!sessionData) {
-			return;
+			return undefined;
 		}
 
 		const res = await entry.provider.provideInteractiveEditorResponse({

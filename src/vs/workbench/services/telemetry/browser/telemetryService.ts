@@ -18,6 +18,7 @@ import { getTelemetryLevel, isInternalTelemetry, ITelemetryAppender, NullTelemet
 import { IBrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { resolveWorkbenchCommonProperties } from 'vs/workbench/services/telemetry/browser/workbenchCommonProperties';
+
 export class TelemetryService extends Disposable implements ITelemetryService {
 
 	declare readonly _serviceBrand: undefined;
@@ -109,5 +110,5 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 	}
 }
 
-registerSingleton(ITelemetryService, TelemetryService);
+registerSingleton(ITelemetryService, TelemetryService, InstantiationType.Delayed);
 

@@ -269,7 +269,7 @@ export class EditSessionsWorkbenchService extends Disposable implements IEditSes
 		// If we aren't supposed to prompt the user because
 		// we're in a silent flow, just return here
 		if (silent) {
-			return;
+			return undefined;
 		}
 
 		// Ask the user to pick a preferred account

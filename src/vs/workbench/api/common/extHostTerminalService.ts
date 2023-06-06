@@ -683,11 +683,11 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 	public async $provideTerminalQuickFixes(id: string, matchResult: vscode.TerminalCommandMatchResult): Promise<(vscode.TerminalQuickFixOpener | vscode.TerminalQuickFixCommand)[] | vscode.TerminalQuickFixOpener | vscode.TerminalQuickFixCommand | undefined> {
 		const token = new CancellationTokenSource().token;
 		if (token.isCancellationRequested) {
-			return;
+			return undefined;
 		}
 		const provider = this._quickFixProviders.get(id);
 		if (!provider) {
-			return;
+			return undefined;
 		}
 		const quickFixes = await provider.provideTerminalQuickFixes(matchResult, token);
 		if (quickFixes === null) {

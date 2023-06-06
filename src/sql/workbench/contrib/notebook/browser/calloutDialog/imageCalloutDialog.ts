@@ -195,8 +195,9 @@ export class ImageCalloutDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
-		this._register(styler.attachToggleStyler(this._imageEmbedCheckbox, this._themeService));
+		// {{SQL CARBON TODO}} - attach styles?
+		// this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
+		// this._register(styler.attachToggleStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
 	public insert(): void {

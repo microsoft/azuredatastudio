@@ -257,7 +257,7 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 			{
 				provideTerminalQuickFixes: async (terminalCommand: ITerminalCommand, lines: string[], option: ITerminalQuickFixOptions, token: CancellationToken) => {
 					if (token.isCancellationRequested) {
-						return;
+						return undefined;
 					}
 					if (option.outputMatcher?.length && option.outputMatcher.length > 40) {
 						option.outputMatcher.length = 40;
@@ -265,7 +265,7 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 					}
 					const commandLineMatch = terminalCommand.command.match(option.commandLineMatcher);
 					if (!commandLineMatch) {
-						return;
+						return undefined;
 					}
 					const outputMatcher = option.outputMatcher;
 					let outputMatch;
@@ -273,7 +273,7 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 						outputMatch = getOutputMatchForLines(lines, outputMatcher);
 					}
 					if (!outputMatch) {
-						return;
+						return undefined;
 					}
 					const matchResult = { commandLineMatch, outputMatch, commandLine: terminalCommand.command };
 
@@ -282,10 +282,10 @@ export class MainThreadTerminalService implements MainThreadTerminalServiceShape
 						if (result && Array.isArray(result)) {
 							return result.map(r => parseQuickFix(id, extensionId, r));
 						} else if (result) {
-							return parseQuickFix(id, extensionId, result);
+							return parseQuickFix(id, extensionId, <any>result);
 						}
 					}
-					return;
+					return undefined;
 				}
 			})
 		);

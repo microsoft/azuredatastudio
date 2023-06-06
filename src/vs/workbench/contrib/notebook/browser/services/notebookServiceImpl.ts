@@ -507,44 +507,44 @@ export class NotebookService extends Disposable implements INotebookService {
 							entrypoint: notebookContribution.entrypoint,
 							displayName: notebookContribution.displayName,
 							mimeTypes: notebookContribution.mimeTypes || [],
-							dependencies: notebookContribution.hardDependencies,
+							dependencies: notebookContribution.hardDependencies, // {{SQL CARBON TODO}} - why was this dependencies before?
 							optionalDependencies: notebookContribution.optionalDependencies,
 							requiresMessaging: notebookContribution.requiresMessaging,
 						}));
 					}
 				}
 
-			this._onDidChangeOutputRenderers.fire();
-		});
+				this._onDidChangeOutputRenderers.fire();
+			});
 
-		notebookPreloadExtensionPoint.setHandler(extensions => {
-			this._notebookStaticPreloadInfoStore.clear();
+			notebookPreloadExtensionPoint.setHandler(extensions => {
+				this._notebookStaticPreloadInfoStore.clear();
 
-			for (const extension of extensions) {
-				if (!isProposedApiEnabled(extension.description, 'contribNotebookStaticPreloads')) {
-					continue;
-				}
-
-				for (const notebookContribution of extension.value) {
-					if (!notebookContribution.entrypoint) { // avoid crashing
-						extension.collector.error(`Notebook preload does not specify entry point`);
+				for (const extension of extensions) {
+					if (!isProposedApiEnabled(extension.description, 'contribNotebookStaticPreloads')) {
 						continue;
 					}
 
-					const type = notebookContribution.type;
-					if (!type) {
-						extension.collector.error(`Notebook preload does not specify type-property`);
-						continue;
-					}
+					for (const notebookContribution of extension.value) {
+						if (!notebookContribution.entrypoint) { // avoid crashing
+							extension.collector.error(`Notebook preload does not specify entry point`);
+							continue;
+						}
 
-					this._notebookStaticPreloadInfoStore.add(new NotebookStaticPreloadInfo({
-						type,
-						extension: extension.description,
-						entrypoint: notebookContribution.entrypoint,
-						localResourceRoots: notebookContribution.localResourceRoots ?? [],
-					}));
+						const type = notebookContribution.type;
+						if (!type) {
+							extension.collector.error(`Notebook preload does not specify type-property`);
+							continue;
+						}
+
+						this._notebookStaticPreloadInfoStore.add(new NotebookStaticPreloadInfo({
+							type,
+							extension: extension.description,
+							entrypoint: notebookContribution.entrypoint,
+							localResourceRoots: notebookContribution.localResourceRoots ?? [],
+						}));
+					}
 				}
-			}
 			});
 		}
 

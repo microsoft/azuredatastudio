@@ -49,13 +49,13 @@ class DefaultTextProvider extends SimplePasteAndDropProvider {
 	protected async getEdit(dataTransfer: IReadonlyVSDataTransfer, _token: CancellationToken) {
 		const textEntry = dataTransfer.get(Mimes.text);
 		if (!textEntry) {
-			return;
+			return undefined;
 		}
 
 		// Suppress if there's also a uriList entry.
 		// Typically the uri-list contains the same text as the text entry so showing both is confusing.
 		if (dataTransfer.has(Mimes.uriList)) {
-			return;
+			return undefined;
 		}
 
 		const insertText = await textEntry.asString();
@@ -78,7 +78,7 @@ class PathProvider extends SimplePasteAndDropProvider {
 	protected async getEdit(dataTransfer: IReadonlyVSDataTransfer, token: CancellationToken) {
 		const entries = await extractUriList(dataTransfer);
 		if (!entries.length || token.isCancellationRequested) {
-			return;
+			return undefined;
 		}
 
 		let uriCount = 0;
@@ -131,7 +131,7 @@ class RelativePathProvider extends SimplePasteAndDropProvider {
 	protected async getEdit(dataTransfer: IReadonlyVSDataTransfer, token: CancellationToken) {
 		const entries = await extractUriList(dataTransfer);
 		if (!entries.length || token.isCancellationRequested) {
-			return;
+			return undefined;
 		}
 
 		const relativeUris = coalesce(entries.map(({ uri }) => {
@@ -140,7 +140,7 @@ class RelativePathProvider extends SimplePasteAndDropProvider {
 		}));
 
 		if (!relativeUris.length) {
-			return;
+			return undefined;
 		}
 
 		return {

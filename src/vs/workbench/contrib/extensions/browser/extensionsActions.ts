@@ -620,7 +620,7 @@ export class InstallAndSyncAction extends AbstractInstallAction {
 		@ILabelService labelService: ILabelService,
 		@IDialogService dialogService: IDialogService,
 		@IPreferencesService preferencesService: IPreferencesService,
-		@IProductService productService: IProductService,
+		@IProductService private productService: IProductService, // {{SQL CARBON EDIT}} - make private field
 		@IUserDataSyncEnablementService private readonly userDataSyncEnablementService: IUserDataSyncEnablementService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@INotificationService readonly localNotificationService: INotificationService // {{SQL CARBON EDIT}}
@@ -924,7 +924,7 @@ abstract class AbstractUpdateAction extends ExtensionAction {
 	constructor(
 		id: string, label: string | undefined,
 		protected readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@INotificationService private notificationService: INotificationService // {{SQL CARBON EDIT]]
+		@INotificationService protected notificationService: INotificationService // {{SQL CARBON EDIT]]
 	) {
 		super(id, label, AbstractUpdateAction.DisabledClass, false);
 		this.update();
@@ -960,8 +960,9 @@ export class UpdateAction extends AbstractUpdateAction {
 		private readonly verbose: boolean,
 		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@INotificationService notificationService: INotificationService // {{SQL CARBON EDIT}} - add notification service
 	) {
-		super(`extensions.update`, localize('update', "Update"), extensionsWorkbenchService);
+		super(`extensions.update`, localize('update', "Update"), extensionsWorkbenchService, notificationService);
 	}
 
 	override update(): void {
@@ -1005,9 +1006,10 @@ export class UpdateAction extends AbstractUpdateAction {
 export class SkipUpdateAction extends AbstractUpdateAction {
 
 	constructor(
-		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService
+		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@INotificationService notificationService: INotificationService // {{SQL CARBON EDIT}} - add notification service
 	) {
-		super(`extensions.ignoreUpdates`, localize('ignoreUpdates', "Ignore Updates"), extensionsWorkbenchService);
+		super(`extensions.ignoreUpdates`, localize('ignoreUpdates', "Ignore Updates"), extensionsWorkbenchService, notificationService);
 	}
 
 	override update() {

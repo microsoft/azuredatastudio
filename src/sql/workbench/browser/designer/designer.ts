@@ -55,6 +55,8 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -227,7 +229,8 @@ export class Designer extends Disposable {
 			this.removeTableSelectionStyles();
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Button) {
-			component.style(this._styles.buttonStyles);
+			// {{SQL CARBON TODO}} - styles
+			//component.style(this._styles.buttonStyles);
 		} else if (component instanceof Dropdown) {
 			component.style(this._styles.dropdownStyles);
 		} else {
@@ -764,7 +767,8 @@ export class Designer extends Disposable {
 				const input = new InputBox(inputContainer, this._contextViewProvider, {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
-					ariaDescription: componentDefinition.description
+					ariaDescription: componentDefinition.description,
+					inputBoxStyles: defaultInputBoxStyles
 				});
 				input.onLoseFocus((args) => {
 					if (args.hasChanged) {
@@ -875,7 +879,7 @@ export class Designer extends Disposable {
 					const moveRowsPlugin = new RowMoveManager({
 						cancelEditOnDrag: true,
 						id: 'moveRow',
-						iconCssClass: Codicon.grabber.classNames,
+						iconCssClass: ThemeIcon.asClassName(Codicon.grabber),
 						name: localize('designer.moveRowText', 'Move'),
 						width: 50,
 						resizable: true,
@@ -945,7 +949,7 @@ export class Designer extends Disposable {
 					const removeText = localize('designer.removeRowText', "Remove");
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
-						iconCssClass: Codicon.trash.classNames,
+						iconCssClass: ThemeIcon.asClassName(Codicon.trash),
 						name: removeText,
 						title: removeText,
 						width: 60,
@@ -977,7 +981,7 @@ export class Designer extends Disposable {
 					const moreActionsText = localize('designer.actions', "More Actions");
 					const actionsColumn = new ButtonColumn({
 						id: 'actions',
-						iconCssClass: Codicon.ellipsis.classNames,
+						iconCssClass: ThemeIcon.asClassName(Codicon.ellipsis),
 						name: moreActionsText,
 						title: moreActionsText,
 						width: 100,

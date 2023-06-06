@@ -510,7 +510,7 @@ class DocumentPasteEditProvider {
 
 	async prepareDocumentPaste(resource: URI, ranges: IRange[], dataTransferDto: extHostProtocol.DataTransferDTO, token: CancellationToken): Promise<extHostProtocol.DataTransferDTO | undefined> {
 		if (!this._provider.prepareDocumentPaste) {
-			return;
+			return undefined;
 		}
 
 		const doc = this._documents.getDocument(resource);
@@ -521,7 +521,7 @@ class DocumentPasteEditProvider {
 		});
 		await this._provider.prepareDocumentPaste(doc, vscodeRanges, dataTransfer, token);
 		if (token.isCancellationRequested) {
-			return;
+			return undefined;
 		}
 
 		// Only send back values that have been added to the data transfer
@@ -531,7 +531,7 @@ class DocumentPasteEditProvider {
 
 	async providePasteEdits(requestId: number, resource: URI, ranges: IRange[], dataTransferDto: extHostProtocol.DataTransferDTO, token: CancellationToken): Promise<undefined | extHostProtocol.IPasteEditDto> {
 		if (!this._provider.provideDocumentPasteEdits) {
-			return;
+			return undefined;
 		}
 
 		const doc = this._documents.getDocument(resource);

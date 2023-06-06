@@ -127,7 +127,7 @@ export class SearchView extends ViewPane {
 
 	protected contextMenu: IMenu | null = null; // {{SQL CARBON EDIT}}
 
-	protected tree!: WorkbenchObjectTree<RenderableMatch>; // {{SQL CARBON EDIT}} Increase visibility
+	protected tree!: WorkbenchCompressibleObjectTree<RenderableMatch>; // {{SQL CARBON EDIT}} Increase visibility
 	protected treeLabels!: ResourceLabels; // {{SQL CARBON EDIT}}
 	protected viewletState: MementoObject; // {{SQL CARBON EDIT}}
 	protected messagesElement!: HTMLElement; // {{SQL CARBON EDIT}}

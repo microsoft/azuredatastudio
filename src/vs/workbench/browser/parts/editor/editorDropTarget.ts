@@ -18,9 +18,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IThemeService, Themable } from 'vs/platform/theme/common/themeService';
 import { isTemporaryWorkspace, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { CodeDataTransfers, containsDragType, Extensions as DragAndDropExtensions, IDragAndDropContributionRegistry } from 'vs/platform/dnd/browser/dnd';
+import { CodeDataTransfers, containsDragType, Extensions as DragAndDropExtensions, extractEditorsDropData, IDragAndDropContributionRegistry, LocalSelectionTransfer } from 'vs/platform/dnd/browser/dnd'; // {{SQL CARBON EDIT}} - add extractEditorsDropData
 import { DraggedEditorGroupIdentifier, DraggedEditorIdentifier, extractTreeDropData, ResourcesDropHandler } from 'vs/workbench/browser/dnd';
-import { Extensions as DragAndDropExtensions, CodeDataTransfers, containsDragType, extractEditorsDropData, IDragAndDropContributionRegistry } from 'vs/platform/dnd/browser/dnd'; // {{SQL CARBON EDIT}}
 import { fillActiveEditorViewState, IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
 import { EditorInputCapabilities, IEditorIdentifier, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { EDITOR_DRAG_AND_DROP_BACKGROUND, EDITOR_DROP_INTO_PROMPT_BACKGROUND, EDITOR_DROP_INTO_PROMPT_BORDER, EDITOR_DROP_INTO_PROMPT_FOREGROUND } from 'vs/workbench/common/theme';

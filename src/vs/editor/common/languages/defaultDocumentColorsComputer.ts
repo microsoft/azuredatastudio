@@ -37,7 +37,7 @@ function _findRange(model: IDocumentColorComputerTarget, match: RegExpMatchArray
 	const index = match.index;
 	const length = match[0].length;
 	if (!index) {
-		return;
+		return undefined;
 	}
 	const startPosition = model.positionAt(index);
 	const range: IRange = {
@@ -51,11 +51,11 @@ function _findRange(model: IDocumentColorComputerTarget, match: RegExpMatchArray
 
 function _findHexColorInformation(range: IRange | undefined, hexValue: string) {
 	if (!range) {
-		return;
+		return undefined;
 	}
 	const parsedHexColor = Color.Format.CSS.parseHex(hexValue);
 	if (!parsedHexColor) {
-		return;
+		return undefined;
 	}
 	return {
 		range: range,
@@ -65,7 +65,7 @@ function _findHexColorInformation(range: IRange | undefined, hexValue: string) {
 
 function _findRGBColorInformation(range: IRange | undefined, matches: RegExpMatchArray[], isAlpha: boolean) {
 	if (!range || matches.length !== 1) {
-		return;
+		return undefined;
 	}
 	const match = matches[0]!;
 	const captureGroups = match.values();
@@ -78,7 +78,7 @@ function _findRGBColorInformation(range: IRange | undefined, matches: RegExpMatc
 
 function _findHSLColorInformation(range: IRange | undefined, matches: RegExpMatchArray[], isAlpha: boolean) {
 	if (!range || matches.length !== 1) {
-		return;
+		return undefined;
 	}
 	const match = matches[0]!;
 	const captureGroups = match.values();

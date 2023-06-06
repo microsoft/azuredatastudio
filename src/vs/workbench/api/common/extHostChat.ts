@@ -147,7 +147,7 @@ export class ExtHostChat implements ExtHostChatShape {
 
 		const realSession = this._chatSessions.get(sessionId);
 		if (!realSession) {
-			return;
+			return undefined;
 		}
 
 		if (!entry.provider.provideFollowups) {
@@ -184,7 +184,7 @@ export class ExtHostChat implements ExtHostChatShape {
 
 		const realSession = this._chatSessions.get(sessionId);
 		if (!realSession) {
-			return;
+			return undefined;
 		}
 
 		const requestObj: vscode.InteractiveRequest = {

@@ -1273,7 +1273,7 @@ export class TerminalTaskSystem extends Disposable implements ITaskSystem {
 
 	private async _reconnectToTerminal(task: Task): Promise<ITerminalInstance | undefined> {
 		if (!this._reconnectedTerminals) {
-			return;
+			return undefined;
 		}
 		for (let i = 0; i < this._reconnectedTerminals.length; i++) {
 			const terminal = this._reconnectedTerminals[i];

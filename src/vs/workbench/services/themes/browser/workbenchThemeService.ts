@@ -44,8 +44,9 @@ import { ILanguageService } from 'vs/editor/common/languages/language';
 
 // implementation
 
-const DEFAULT_COLOR_THEME_ID = 'vs sql-theme-carbon-themes-light_carbon-json'; // {{SQL CARBON EDIT}}
-const DEFAULT_LIGHT_COLOR_THEME_ID = 'vs vscode-theme-defaults-themes-light_plus-json';
+// {{SQL CARBON TODO}} - default theme?
+// const DEFAULT_COLOR_THEME_ID = 'vs sql-theme-carbon-themes-light_carbon-json'; // {{SQL CARBON EDIT}}
+// const DEFAULT_LIGHT_COLOR_THEME_ID = 'vs vscode-theme-defaults-themes-light_plus-json';
 
 const PERSISTED_OS_COLOR_SCHEME = 'osColorScheme';
 const PERSISTED_OS_COLOR_SCHEME_SCOPE = StorageScope.APPLICATION; // the OS scheme depends on settings in the OS

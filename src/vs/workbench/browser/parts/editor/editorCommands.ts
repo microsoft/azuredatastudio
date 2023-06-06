@@ -1366,7 +1366,7 @@ function registerOtherEditorCommands(): void {
 			const activeEditor = editorService.activeEditor;
 			const activeTextEditorControl = editorService.activeTextEditorControl;
 			if (!isDiffEditor(activeTextEditorControl) || !(activeEditor instanceof DiffEditorInput)) {
-				return;
+				return undefined;
 			}
 
 			let editor: EditorInput | undefined;
