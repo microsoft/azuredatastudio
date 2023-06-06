@@ -913,7 +913,7 @@ export class TerminalService implements ITerminalService {
 		}
 
 		const config = options?.config || this._terminalProfileService.availableProfiles?.find(p => p.profileName === this._terminalProfileService.getDefaultProfileName());
-		const shellLaunchConfig = config && 'extensionIdentifier' in config ? {} : this._terminalInstanceService.convertProfileToShellLaunchConfig(config || {});
+		const shellLaunchConfig = config && 'extensionIdentifier' in config ? {} : this._terminalInstanceService.convertProfileToShellLaunchConfig(<any>config || {});
 
 		// Get the contributed profile if it was provided
 		let contributedProfile = config && 'extensionIdentifier' in config ? config : undefined;

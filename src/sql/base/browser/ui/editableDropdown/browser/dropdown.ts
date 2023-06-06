@@ -20,6 +20,7 @@ import { clamp } from 'vs/base/common/numbers';
 import { mixin } from 'vs/base/common/objects';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import * as nls from 'vs/nls';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 
 export interface IDropdownOptions extends IDropdownStyles {
@@ -124,7 +125,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			},
 			placeholder: this._options.placeholder,
 			ariaLabel: this._options.ariaLabel,
-			ariaDescription: this._options.ariaDescription
+			ariaDescription: this._options.ariaDescription,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Clear title from input box element (defaults to placeholder value) since we don't want a tooltip for the selected value

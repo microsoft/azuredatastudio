@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { Categories } from 'vs/platform/action/common/actionCommonCategories';
 import { MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
-import { ProductContribution, UpdateContribution, CONTEXT_UPDATE_STATE, SwitchProductQualityContribution, RELEASE_NOTES_URL, showReleaseNotesInEditor, DOWNLOAD_URL } from 'vs/workbench/contrib/update/browser/update';
+import { ProductContribution, UpdateContribution, CONTEXT_UPDATE_STATE, SwitchProductQualityContribution, RELEASE_NOTES_URL, DOWNLOAD_URL } from 'vs/workbench/contrib/update/browser/update'; // {{SQL CARBON EDIT}} - remove unused import
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import product from 'vs/platform/product/common/product';
 import { IUpdateService, StateType } from 'vs/platform/update/common/update';
@@ -60,7 +60,8 @@ export class ShowCurrentReleaseNotesAction extends Action2 {
 		const openerService = accessor.get(IOpenerService);
 
 		try {
-			await showReleaseNotesInEditor(instantiationService, productService.version);
+			//await showReleaseNotesInEditor(instantiationService, productService.version);
+			await instantiationService.invokeFunction(openLatestReleaseNotesInBrowser); // {{SQL CARBON EDIT}} - open notes in browser
 		} catch (err) {
 			if (productService.releaseNotesUrl) {
 				await openerService.open(URI.parse(productService.releaseNotesUrl));
@@ -210,3 +211,7 @@ if (isWindows) {
 
 	registerAction2(DeveloperApplyUpdateAction);
 }
+function openLatestReleaseNotesInBrowser(accessor: ServicesAccessor): unknown {
+	throw new Error('Function not implemented.');
+}
+

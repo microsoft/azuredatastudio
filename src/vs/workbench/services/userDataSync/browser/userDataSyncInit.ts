@@ -70,22 +70,22 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 				try {
 					if (!isWeb) {
 						this.logService.trace(`Skipping initializing user data in desktop`);
-						return;
+						return undefined;
 					}
 
 					if (!this.storageService.isNew(StorageScope.APPLICATION)) {
 						this.logService.trace(`Skipping initializing user data as application was opened before`);
-						return;
+						return undefined;
 					}
 
 					if (!this.storageService.isNew(StorageScope.WORKSPACE)) {
 						this.logService.trace(`Skipping initializing user data as workspace was opened before`);
-						return;
+						return undefined;
 					}
 
 					if (this.environmentService.options?.settingsSyncOptions?.authenticationProvider && !this.environmentService.options.settingsSyncOptions.enabled) {
 						this.logService.trace(`Skipping initializing user data as settings sync is disabled`);
-						return;
+						return undefined;
 					}
 
 					let authenticationSession;
@@ -96,7 +96,7 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 					}
 					if (!authenticationSession) {
 						this.logService.trace(`Skipping initializing user data as authentication session is not set`);
-						return;
+						return undefined;
 					}
 
 					await this.initializeUserDataSyncStore(authenticationSession);
@@ -104,7 +104,7 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 					const userDataSyncStore = this.userDataSyncStoreManagementService.userDataSyncStore;
 					if (!userDataSyncStore) {
 						this.logService.trace(`Skipping initializing user data as sync service is not provided`);
-						return;
+						return undefined;
 					}
 
 					const userDataSyncStoreClient = new UserDataSyncStoreClient(userDataSyncStore.url, this.productService, this.requestService, this.logService, this.environmentService, this.fileService, this.storageService);
@@ -114,7 +114,7 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 					if (manifest === null) {
 						userDataSyncStoreClient.dispose();
 						this.logService.trace(`Skipping initializing user data as there is no data`);
-						return;
+						return undefined;
 					}
 
 					this.logService.info(`Using settings sync service ${userDataSyncStore.url.toString()} for initialization`);
@@ -122,7 +122,7 @@ export class UserDataSyncInitializer implements IUserDataInitializer {
 
 				} catch (error) {
 					this.logService.error(error);
-					return;
+					return undefined;
 				}
 			})();
 		}

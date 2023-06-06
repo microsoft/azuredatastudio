@@ -1003,7 +1003,7 @@ export class TunnelPanel extends ViewPane {
 		event.browserEvent.preventDefault();
 		event.browserEvent.stopPropagation();
 
-		const node: TunnelItem | undefined = event.element;
+		const node: TunnelItem | undefined = <any>event.element;
 
 		if (node) {
 			this.table.setFocus([this.table.indexOf(node)]);

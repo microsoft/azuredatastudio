@@ -1441,7 +1441,7 @@ export class TerminalTaskSystem extends Disposable implements ITaskSystem {
 		}
 
 		this._terminalCreationQueue = this._terminalCreationQueue.then(() => this._doCreateTerminal(task, group, launchConfigs!));
-		const terminal: ITerminalInstance = (await this._terminalCreationQueue)!;
+		const terminal: ITerminalInstance = <any>(await this._terminalCreationQueue)!;
 		if (task.configurationProperties.isBackground) {
 			terminal.shellLaunchConfig.reconnectionProperties = { ownerId: ReconnectionType, data: { lastTask: task.getCommonTaskId(), group, label: task._label, id: task._id } };
 		}

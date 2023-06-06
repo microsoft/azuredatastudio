@@ -19,12 +19,14 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { ILogService } from 'vs/platform/log/common/log';
 import { RemoteAuthorityResolverErrorCode, getRemoteAuthorityPrefix } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { ExtHostCustomersRegistry, IInternalExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { ExtensionHostKind, extensionHostKindToString } from 'vs/workbench/services/extensions/common/extensionHostKind';
 import { IExtensionDescriptionDelta } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
 import { IExtensionHostProxy, IResolveAuthorityResult } from 'vs/workbench/services/extensions/common/extensionHostProxy';
+import { ExtensionRunningLocation } from 'vs/workbench/services/extensions/common/extensionRunningLocation';
 import { ActivationKind, ExtensionActivationReason, ExtensionHostExtensions, ExtensionHostStartup, IExtensionHost, IInternalExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { Proxied, ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { IRPCProtocolLogger, RPCProtocol, RequestInitiator, ResponsiveState } from 'vs/workbench/services/extensions/common/rpcProtocol';
@@ -274,7 +276,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 		this._rpcProtocol = new RPCProtocol(protocol, logger);
 		this._register(this._rpcProtocol.onDidChangeResponsiveState((responsiveState: ResponsiveState) => this._onDidChangeResponsiveState.fire(responsiveState)));
 		let extensionHostProxy: IExtensionHostProxy | null = null as IExtensionHostProxy | null;
-		//let mainProxyIdentifiers: ProxyIdentifier<any>[] = [];
+		//let mainProxyIdentifiers: ProxyIdentifier<any>[] = []; // {{SQL CARBON EDIT}}
 		const extHostContext: IInternalExtHostContext = {
 			remoteAuthority: this._extensionHost.remoteAuthority,
 			extensionHostKind: this.kind,
@@ -290,7 +292,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 				extensionHostProxy = value;
 			},
 			_setAllMainProxyIdentifiers: (value: ProxyIdentifier<any>[]): void => {
-				//mainProxyIdentifiers = value;
+				//mainProxyIdentifiers = value; // {{SQL CARBON EDIT}}
 			},
 			//#endregion
 		};

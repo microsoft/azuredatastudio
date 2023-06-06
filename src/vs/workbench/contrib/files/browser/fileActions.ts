@@ -318,7 +318,7 @@ export async function findValidPasteFileTarget(
 	if (incrementalNaming === 'disabled') {
 		const canOverwrite = await askForOverwrite(fileService, dialogService, candidate);
 		if (!canOverwrite) {
-			return;
+			return undefined;
 		}
 	}
 

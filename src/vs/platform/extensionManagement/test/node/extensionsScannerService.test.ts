@@ -351,7 +351,7 @@ suite.skip('NativeExtensionsScanerService Test', () => { // {{SQL CARBON EDIT}} 
 suite('ExtensionScannerInput', () => {
 
 	test('compare inputs - location', () => {
-		const anInput = (location: URI, mtime: number | undefined) => new ExtensionScannerInput(location, mtime, undefined, undefined, false, undefined, ExtensionType.User, true, true, '1.1.1', undefined, undefined, true, undefined, {});
+		const anInput = (location: URI, mtime: number | undefined) => new ExtensionScannerInput(location, mtime, undefined, undefined, false, undefined, ExtensionType.User, true, true, '1.1.1', '1.1.1', undefined, undefined, true, undefined, {}); // {{SQL CARBON EDIT}} - add ads version
 
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(ROOT, undefined), anInput(ROOT, undefined)), true);
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(ROOT, 100), anInput(ROOT, 100)), true);
@@ -361,7 +361,7 @@ suite('ExtensionScannerInput', () => {
 	});
 
 	test('compare inputs - application location', () => {
-		const anInput = (location: URI, mtime: number | undefined) => new ExtensionScannerInput(ROOT, undefined, location, mtime, false, undefined, ExtensionType.User, true, true, '1.1.1', undefined, undefined, true, undefined, {});
+		const anInput = (location: URI, mtime: number | undefined) => new ExtensionScannerInput(ROOT, undefined, location, mtime, false, undefined, ExtensionType.User, true, true, '1.1.1', '1.1.1', undefined, undefined, true, undefined, {}); // {{SQL CARBON EDIT}} - add ads version
 
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(ROOT, undefined), anInput(ROOT, undefined)), true);
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(ROOT, 100), anInput(ROOT, 100)), true);
@@ -371,7 +371,7 @@ suite('ExtensionScannerInput', () => {
 	});
 
 	test('compare inputs - profile', () => {
-		const anInput = (profile: boolean, profileScanOptions: IProfileExtensionsScanOptions | undefined) => new ExtensionScannerInput(ROOT, undefined, undefined, undefined, profile, profileScanOptions, ExtensionType.User, true, true, '1.1.1', undefined, undefined, true, undefined, {});
+		const anInput = (profile: boolean, profileScanOptions: IProfileExtensionsScanOptions | undefined) => new ExtensionScannerInput(ROOT, undefined, undefined, undefined, profile, profileScanOptions, ExtensionType.User, true, true, '1.1.1', '1.1.1', undefined, undefined, true, undefined, {}); // {{SQL CARBON EDIT}} - add ads version
 
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(true, { bailOutWhenFileNotFound: true }), anInput(true, { bailOutWhenFileNotFound: true })), true);
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(false, { bailOutWhenFileNotFound: true }), anInput(false, { bailOutWhenFileNotFound: true })), true);
@@ -384,7 +384,7 @@ suite('ExtensionScannerInput', () => {
 	});
 
 	test('compare inputs - extension type', () => {
-		const anInput = (type: ExtensionType) => new ExtensionScannerInput(ROOT, undefined, undefined, undefined, false, undefined, type, true, true, '1.1.1', undefined, undefined, true, undefined, {});
+		const anInput = (type: ExtensionType) => new ExtensionScannerInput(ROOT, undefined, undefined, undefined, false, undefined, type, true, true, '1.1.1', '1.1.1', undefined, undefined, true, undefined, {}); // {{SQL CARBON EDIT}} - add ads version
 
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(ExtensionType.System), anInput(ExtensionType.System)), true);
 		assert.strictEqual(ExtensionScannerInput.equals(anInput(ExtensionType.User), anInput(ExtensionType.User)), true);

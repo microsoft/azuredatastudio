@@ -96,7 +96,6 @@ export class InsertCellsModal extends Modal {
 	public viewModel: CellOptionsModel;
 
 	private _submitButton: Button;
-	private _cancelButton: Button;
 	private _maxTitleLength: number = 20;
 	private _moduleRef?: NgModuleRef<typeof InsertCellsModule>;
 
@@ -209,7 +208,7 @@ export class InsertCellsModal extends Modal {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('insertCellsModal.Insert', "Insert"), () => this.onSubmitHandler());
-		this._cancelButton = this.addFooterButton(localize('insertCellsModal.Cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
+		this.addFooterButton(localize('insertCellsModal.Cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
 
 		attachModalDialogStyler(this, this._themeService);
 		this.validate();

@@ -21,7 +21,6 @@ import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { ILocaleService } from 'vs/workbench/services/localization/common/locale';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { BaseLocalizationWorkbenchContribution } from 'vs/workbench/contrib/localization/common/localization.contribution';
-import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 class NativeLocalizationWorkbenchContribution extends BaseLocalizationWorkbenchContribution {
 	private static LANGUAGEPACK_SUGGESTION_IGNORE_STORAGE_KEY = 'extensionsAssistant/languagePackSuggestionIgnore';

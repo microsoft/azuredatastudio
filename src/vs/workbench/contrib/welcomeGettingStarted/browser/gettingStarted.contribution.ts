@@ -31,7 +31,7 @@ import { IExtensionManagementServerService } from 'vs/workbench/services/extensi
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { StartupPageContribution, } from 'vs/workbench/contrib/welcomeGettingStarted/browser/startupPage';
 // import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput'; {{SQL CARBON EDIT}} Remove unused
-import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+// import { Categories } from 'vs/platform/action/common/actionCommonCategories'; {{SQL CARBON EDIT}} Remove unused
 import { RemoteStartEntry } from 'vs/workbench/contrib/remote/browser/remoteStartEntry';
 
 export * as icons from 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedIcons';

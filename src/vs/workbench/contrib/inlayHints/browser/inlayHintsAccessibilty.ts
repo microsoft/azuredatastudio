@@ -213,5 +213,4 @@ registerAction2(class StopReadHints extends EditorAction2 {
 	}
 });
 
-// {{SQL CARBON EDIT}} - disable until audio hints enabled
-registerEditorContribution(InlayHintsAccessibility.ID, InlayHintsAccessibility);
+registerEditorContribution(InlayHintsAccessibility.ID, InlayHintsAccessibility, EditorContributionInstantiation.Lazy);

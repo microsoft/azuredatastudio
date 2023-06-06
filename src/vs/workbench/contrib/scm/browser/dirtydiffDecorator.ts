@@ -1288,7 +1288,7 @@ export class DirtyDiffModel extends Disposable {
 
 	public getDiffEditorModel(originalUri: string): IDiffEditorModel | undefined {
 		if (!this._originalModels.has(originalUri)) {
-			return;
+			return undefined;
 		}
 		const original = this._originalModels.get(originalUri)!;
 

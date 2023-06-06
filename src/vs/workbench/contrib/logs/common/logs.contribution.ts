@@ -91,7 +91,7 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 			}
 		}));
 		this.registerShowWindowLogAction();
-		this.registerLogChannel(Constants.userDataSyncLogChannelId, nls.localize('userDataSyncLog', "Settings Sync"), this.environmentService.userDataSyncLogResource);
+		this._register(Event.filter(contextKeyService.onDidChangeContext, e => e.affectsSome(this.contextKeys))(() => this.onDidChangeContext()));
 	}
 
 	private onDidAddLoggers(loggers: Iterable<ILoggerResource>): void {

@@ -1710,7 +1710,7 @@ async function pickTerminalCwd(accessor: ServicesAccessor, cancel?: Cancellation
 
 	const folders = contextService.getWorkspace().folders;
 	if (!folders.length) {
-		return;
+		return undefined;
 	}
 
 	const folderCwdPairs = await Promise.all(folders.map(x => resolveWorkspaceFolderCwd(x, configurationService, configurationResolverService)));

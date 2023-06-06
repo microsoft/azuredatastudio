@@ -57,8 +57,8 @@ export class ExtensionsProposedApi {
 	private doUpdateEnabledApiProposals(_extension: IExtensionDescription): void {
 
 		// this is a trick to make the extension description writeable...
-		type Writeable<T> = { -readonly [P in keyof T]: Writeable<T[P]> };
-		const extension = <Writeable<IExtensionDescription>>_extension;
+		//type Writeable<T> = { -readonly [P in keyof T]: Writeable<T[P]> }; // {{SQL CARBON EDIT}} - fix compile error casting to this type
+		const extension = <any>_extension;
 		const key = ExtensionIdentifier.toKey(_extension.identifier);
 
 		// warn about invalid proposal and remove them from the list
@@ -83,7 +83,7 @@ export class ExtensionsProposedApi {
 			// check for difference between product.json-declaration and package.json-declaration
 			const productSet = new Set(productEnabledProposals);
 			const extensionSet = new Set(extension.enabledApiProposals);
-			const diff = new Set([...extensionSet].filter(a => !productSet.has(a)));
+			const diff: any = new Set([...extensionSet].filter(a => !productSet.has(<any>a)));
 			if (diff.size > 0) {
 				this._logService.error(`Extension '${key}' appears in product.json but enables LESS API proposals than the extension wants.\npackage.json (LOSES): ${[...extensionSet].join(', ')}\nproduct.json (WINS): ${[...productSet].join(', ')}`);
 

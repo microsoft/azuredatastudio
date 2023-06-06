@@ -761,7 +761,7 @@ export abstract class AbstractIncrementalTestCollection<T extends IncrementalTes
 			this.items.set(item.item.extId, created);
 		} else {
 			console.error(`Test with unknown parent ID: ${JSON.stringify(item)}`);
-			return;
+			return undefined;
 		}
 
 		changes.add?.(created);
@@ -776,7 +776,7 @@ export abstract class AbstractIncrementalTestCollection<T extends IncrementalTes
 	) {
 		const existing = this.items.get(patch.extId);
 		if (!existing) {
-			return;
+			return undefined;
 		}
 
 		if (patch.expand !== undefined) {

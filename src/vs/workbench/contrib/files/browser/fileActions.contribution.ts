@@ -213,8 +213,8 @@ appendToCommandPalette(SAVE_FILE_AS_COMMAND_ID, { value: SAVE_FILE_AS_LABEL, ori
 appendToCommandPalette(NEW_FILE_COMMAND_ID, { value: NEW_FILE_LABEL, original: 'New File' }, Categories.File, WorkspaceFolderCountContext.notEqualsTo('0'));
 appendToCommandPalette(NEW_FOLDER_COMMAND_ID, { value: NEW_FOLDER_LABEL, original: 'New Folder' }, Categories.File, WorkspaceFolderCountContext.notEqualsTo('0'));
 appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New Untitled Text File' }, Categories.File);
-appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: locConstants.fileActionsContributionNewQuery, original: 'New Query' }, category); // {{SQL CARBON EDIT}} New Query label for normal untitled file
-appendToCommandPalette(NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New File' }, category); // {{SQL CARBON EDIT}} New File label for untitled plain file
+appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: locConstants.fileActionsContributionNewQuery, original: 'New Query' }, Categories.File); // {{SQL CARBON EDIT}} New Query label for normal untitled file
+appendToCommandPalette(NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New File' }, Categories.File); // {{SQL CARBON EDIT}} New File label for untitled plain file
 
 // Menu registration - open editors
 
@@ -592,7 +592,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 });
 
 // Empty Editor Group / Editor Tabs Container Context Menu
-for (const menuId of [MenuId.EmptyEditorGroupContext, MenuId.EditorTabsBarContext]) {	
+for (const menuId of [MenuId.EmptyEditorGroupContext, MenuId.EditorTabsBarContext]) {
 	// {{SQL CARBON EDIT}} - Use "New Query" instead of "New File"
 	MenuRegistry.appendMenuItem(menuId, { command: { id: NEW_UNTITLED_FILE_COMMAND_ID, title: locConstants.fileActionsContributionNewQuery }, group: '1_file', order: 10 });
 	MenuRegistry.appendMenuItem(menuId, { command: { id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, title: nls.localize('newFile', "New File") }, group: '1_file', order: 10 });

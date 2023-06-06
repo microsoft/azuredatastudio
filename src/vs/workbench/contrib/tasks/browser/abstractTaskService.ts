@@ -295,7 +295,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration((e) => {
 			if (!e.affectsConfiguration('tasks') || (!this._taskSystem && !this._workspaceTasksPromise)) {
-				return;
+				return undefined;
 			}
 
 			if (!this._taskSystem || this._taskSystem instanceof TerminalTaskSystem) {
@@ -1324,7 +1324,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			}
 		}
 		if (entries.length === 0) {
-			return;
+			return undefined;
 		}
 		entries = entries.sort((a, b) => {
 			if (a.label && b.label) {
@@ -1868,7 +1868,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		this.lastRunTasksViewTask = taskInfo;
 		const executeResult = runSource === TaskRunSource.Reconnect ? this._getTaskSystem().reconnect(taskToRun, resolver) : this._getTaskSystem().run(taskToRun, resolver);
 		if (executeResult) {
-			return this._handleExecuteResult(executeResult, runSource);
+			// {{SQL CARBON EDIT}}
+			return this.handleExecuteResult(executeResult, runSource, taskNodeId);
 		}
 		return { exitCode: 0 };
 	}

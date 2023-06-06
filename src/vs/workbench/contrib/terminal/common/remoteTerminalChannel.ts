@@ -19,7 +19,7 @@ import { Schemas } from 'vs/base/common/network';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IEnvironmentVariableService } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 import { IProcessDataEvent, IRequestResolveVariablesEvent, IShellLaunchConfigDto, ITerminalLaunchError, ITerminalProfile, ITerminalsLayoutInfo, ITerminalsLayoutInfoById, TerminalIcon, IProcessProperty, ProcessPropertyType, IProcessPropertyMap, TitleEventSource, ISerializedTerminalState, IPtyHostController, ITerminalProcessOptions } from 'vs/platform/terminal/common/terminal';
-import { IGetTerminalLayoutInfoArgs, IProcessDetails, IPtyHostProcessReplayEvent, ISetTerminalLayoutInfoArgs } from 'vs/platform/terminal/common/terminalProcess';
+import { IGetTerminalLayoutInfoArgs, IProcessDetails, ISetTerminalLayoutInfoArgs } from 'vs/platform/terminal/common/terminalProcess';
 import { IProcessEnvironment, OperatingSystem } from 'vs/base/common/platform';
 import { ICompleteTerminalConfiguration } from 'vs/workbench/contrib/terminal/common/terminal';
 import { IPtyHostProcessReplayEvent } from 'vs/platform/terminal/common/capabilities/capabilities';
@@ -291,16 +291,11 @@ export class RemoteTerminalChannelClient implements IPtyHostController {
 	}
 
 	getTerminalLayoutInfo(): Promise<ITerminalsLayoutInfo | undefined> {
-		// {{SQL CARBON EDIT}} - temp disable this code since it refers to non-implemented method
-		//                     - currently remote code is ahead of OSS code and they need to catch-up (karlb 5/13/2021)
-		return Promise.resolve(undefined);
-		/*
 		const workspace = this._workspaceContextService.getWorkspace();
 		const args: IGetTerminalLayoutInfoArgs = {
 			workspaceId: workspace.id,
 		};
 		return this._channel.call<ITerminalsLayoutInfo>('$getTerminalLayoutInfo', args);
-		*/
 	}
 
 	reviveTerminalProcesses(state: ISerializedTerminalState[], dateTimeFormatLocate: string): Promise<void> {

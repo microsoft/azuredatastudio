@@ -67,7 +67,7 @@ class TestParsedArgs implements NativeParsedArgs, SqlArgs {
 	'install-source'?: string;
 	'list-extensions'?: boolean;
 	locale?: string;
-	log?: string;
+	log?: string[];
 	logExtensionHostCommunication?: boolean;
 	'max-memory'?: string;
 	'new-window'?: boolean;

@@ -141,7 +141,7 @@ export const expandAndGetTestById = async (collection: IMainThreadTestCollection
  */
 const waitForTestToBeIdle = (testService: ITestService, test: IncrementalTestCollectionItem) => {
 	if (!test.item.busy) {
-		return;
+		return undefined;
 	}
 
 	return new Promise<void>(resolve => {

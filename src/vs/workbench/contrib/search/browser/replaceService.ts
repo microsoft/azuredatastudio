@@ -124,7 +124,7 @@ export class ReplaceService implements IReplaceService {
 						ref?.dispose();
 					}
 				}
-				return;
+				return undefined;
 			} else {
 				return this.textFileService.files.get(e.resource)?.save({ source: ReplaceService.REPLACE_SAVE_SOURCE });
 			}

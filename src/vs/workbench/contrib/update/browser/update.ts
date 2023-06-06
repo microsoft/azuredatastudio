@@ -62,11 +62,11 @@ async function showReleaseNotes(accessor: ServicesAccessor, version: string) {
 	//try {
 	//	await showReleaseNotesInEditor(instantiationService, version);
 	//} catch (err) {
-		try {
-			await instantiationService.invokeFunction(openLatestReleaseNotesInBrowser);
-		} catch (err2) {
-			throw new Error(`${err.message} and ${err2.message}`);
-		}
+	try {
+		await instantiationService.invokeFunction(openLatestReleaseNotesInBrowser);
+	} catch (err2) {
+		throw new Error(`${err2.message}`);
+	}
 	//}
 }
 
@@ -136,19 +136,19 @@ export class ProductContribution implements IWorkbenchContribution {
 			if (shouldShowReleaseNotes && !environmentService.skipReleaseNotes && releaseNotesUrl && lastVersion && currentVersion && isMajorMinorUpdate(lastVersion, currentVersion)) {
 				/*showReleaseNotesInEditor(instantiationService, productService.version)
 					.then(undefined, () => { */
-						notificationService.prompt(
-							severity.Info,
-							nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
-							[{
-								label: nls.localize('releaseNotes', "Release Notes"),
-								run: () => {
-									const uri = URI.parse(releaseNotesUrl);
-									openerService.open(uri);
-								}
-							}],
-							{ sticky: true }
-						);
-					/* }); */
+				notificationService.prompt(
+					severity.Info,
+					nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
+					[{
+						label: nls.localize('releaseNotes', "Release Notes"),
+						run: () => {
+							const uri = URI.parse(releaseNotesUrl);
+							openerService.open(uri);
+						}
+					}],
+					{ sticky: true }
+				);
+				/* }); */
 			}
 
 			storageService.store(ProductContribution.KEY, productService.version, StorageScope.APPLICATION, StorageTarget.MACHINE);
@@ -339,9 +339,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 			actions.push({
 				label: nls.localize('releaseNotes', "Release Notes"),
 				run: () => {
-					const action = this.instantiationService.createInstance(OpenLatestReleaseNotesInBrowserAction); // {{SQL CARBON EDIT}} change action
-					action.run();
-					action.dispose();
+					this.instantiationService.invokeFunction(openLatestReleaseNotesInBrowser);
 				}
 			});
 		}

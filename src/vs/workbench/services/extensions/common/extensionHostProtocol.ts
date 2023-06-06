@@ -46,7 +46,6 @@ export interface IExtensionHostInitData {
 	uiKind: UIKind;
 	messagePorts?: ReadonlyMap<string, MessagePortLike>;
 	vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
-	quality?: string; // {{SQL CARBON EDIT}} add quality
 }
 
 export interface IEnvironment {

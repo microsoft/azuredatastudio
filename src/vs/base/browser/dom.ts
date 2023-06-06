@@ -1475,21 +1475,32 @@ export const basicMarkupHtmlTags = Object.freeze([
 	'wbr',
 ]);
 
-const defaultDomPurifyConfig = Object.freeze<dompurify.Config & { RETURN_TRUSTED_TYPE: true }>({
-	ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} - add i and img tags for dashboard
-	ALLOWED_ATTR: ['href', 'data-href', 'data-command', 'target', 'title', 'name', 'src', 'alt', 'class', 'id', 'role', 'tabindex', 'style', 'data-code', 'width', 'height', 'align', 'x-dispatch', 'required', 'checked', 'placeholder', 'type', 'start'],
-	RETURN_DOM: false,
-	RETURN_DOM_FRAGMENT: false,
-	RETURN_TRUSTED_TYPE: true
-});
+// {{SQL CARBON EDIT}} - not needed since local copy made in safeInnerHTML function
+// const defaultDomPurifyConfig = Object.freeze<dompurify.Config & { RETURN_TRUSTED_TYPE: true }>({
+// 	ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} - add i and img tags for dashboard
+// 	ALLOWED_ATTR: ['href', 'data-href', 'data-command', 'target', 'title', 'name', 'src', 'alt', 'class', 'id', 'role', 'tabindex', 'style', 'data-code', 'width', 'height', 'align', 'x-dispatch', 'required', 'checked', 'placeholder', 'type', 'start'],
+// 	RETURN_DOM: false,
+// 	RETURN_DOM_FRAGMENT: false,
+// 	RETURN_TRUSTED_TYPE: true
+// });
 
 /**
  * Sanitizes the given `value` and reset the given `node` with it.
  */
-export function safeInnerHtml(node: HTMLElement, value: string): void {
+export function safeInnerHtml(node: HTMLElement, value: string, allowUnknownProtocols: boolean = false): void { // {{SQL CARBON EDIT}} - add allow unknown schemas parameter
 	const hook = hookDomPurifyHrefAndSrcSanitizer(defaultSafeProtocols);
 	try {
-		const html = dompurify.sanitize(value, defaultDomPurifyConfig);
+		// {{SQL CARBON EDIT}} - set ALLOW_UNKNOWN_PROTOCOLS
+		const options = Object.freeze<dompurify.Config & { RETURN_TRUSTED_TYPE: true }>({
+			ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} - add i and img tags for dashboard
+			ALLOWED_ATTR: ['href', 'data-href', 'data-command', 'target', 'title', 'name', 'src', 'alt', 'class', 'id', 'role', 'tabindex', 'style', 'data-code', 'width', 'height', 'align', 'x-dispatch', 'required', 'checked', 'placeholder', 'type', 'start'],
+			RETURN_DOM: false,
+			RETURN_DOM_FRAGMENT: false,
+			RETURN_TRUSTED_TYPE: true,
+			ALLOW_UNKNOWN_PROTOCOLS: allowUnknownProtocols
+		});
+
+		const html = dompurify.sanitize(value, options);
 		node.innerHTML = html as unknown as string;
 	} finally {
 		hook.dispose();

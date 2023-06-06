@@ -19,7 +19,8 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Emitter } from 'vs/base/common/event';
-import { CountBadge, ICountBadgetyles } from 'vs/base/browser/ui/countBadge/countBadge';
+import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
+import { defaultCountBadgeStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 
@@ -45,7 +46,7 @@ const DefaultTableFilterOptions: ITableFilterOptions = {
 	refreshColumns: true
 };
 
-export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
+export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles {
 }
 
 interface NotificationProvider {
@@ -205,20 +206,21 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 
 		this.searchInputBox = new InputBox(append(searchRow, $('.search-input')), this.contextViewProvider, {
-			placeholder: localize('table.searchPlaceHolder', "Search")
+			placeholder: localize('table.searchPlaceHolder', "Search"),
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		const visibleCountContainer = append(searchRow, $('.visible-count'));
 		visibleCountContainer.setAttribute('aria-live', 'polite');
 		visibleCountContainer.setAttribute('aria-atomic', 'true');
 		this.visibleCountBadge = new CountBadge(visibleCountContainer, {
 			countFormat: localize({ key: 'tableFilter.visibleCount', comment: ['This tells the user how many items are shown in the list. Currently not visible, but read by screen readers.'] }, "{0} Results")
-		});
+		}, defaultCountBadgeStyles);
 
 		const selectedCountBadgeContainer = append(searchRow, $('.selected-count'));
 		selectedCountBadgeContainer.setAttribute('aria-live', 'polite');
 		this.countBadge = new CountBadge(selectedCountBadgeContainer, {
 			countFormat: localize({ key: 'tableFilter.selectedCount', comment: ['This tells the user how many items are selected in the list'] }, "{0} Selected")
-		});
+		}, defaultCountBadgeStyles);
 
 		this.searchInputBox.onDidChange(async (newString) => {
 			this.filteredListData = this.listData.filter(element => element.value?.toUpperCase().indexOf(newString.toUpperCase()) !== -1);
@@ -441,15 +443,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private applyStyles() {
 		if (this.filterStyles) {
-			this.okButton?.style(this.filterStyles);
-			this.cancelButton?.style(this.filterStyles);
-			this.clearButton?.style(this.filterStyles);
-			this.sortAscButton?.style(this.filterStyles);
-			this.sortDescButton?.style(this.filterStyles);
-			this.searchInputBox?.style(this.filterStyles);
-			this.countBadge?.style(this.filterStyles);
-			this.visibleCountBadge?.style(this.filterStyles);
-			this.list?.style(this.filterStyles);
+			// {{SQL CARBON TODO}} - apply styles
+			// this.okButton?.style(this.filterStyles);
+			// this.cancelButton?.style(this.filterStyles);
+			// this.clearButton?.style(this.filterStyles);
+			// this.sortAscButton?.style(this.filterStyles);
+			// this.sortDescButton?.style(this.filterStyles);
+			// this.searchInputBox?.style(this.filterStyles);
+			// this.countBadge?.style(this.filterStyles);
+			// this.visibleCountBadge?.style(this.filterStyles);
+			// this.list?.style(this.filterStyles);
 		}
 	}
 

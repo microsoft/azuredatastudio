@@ -1,7 +1,7 @@
-	/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the Source EULA. See License.txt in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
 import { Disposable, DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
@@ -37,7 +37,7 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IAction, Action, Separator, ActionRunner } from 'vs/base/common/actions';
-import { ExtensionIdentifier, ExtensionUntrustedWorkspaceSupportType, ExtensionVirtualWorkspaceSupportType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
+import { ExtensionIdentifier, ExtensionIdentifierMap, ExtensionType, ExtensionUntrustedWorkspaceSupportType, ExtensionVirtualWorkspaceSupportType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { CancelablePromise, createCancelablePromise, ThrottledDelayer } from 'vs/base/common/async';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/browser/severityIcon';
@@ -873,7 +873,7 @@ export class ExtensionsListView extends ViewPane {
 						...options,
 						text: value, source: 'searchText'
 					};
-					return this.extensionsWorkbenchService.queryGallery(options, token).then((pager) => {
+					return this.extensionsWorkbenchService.queryGallery(<any>options, token).then((pager) => {
 						// filter out installed extensions
 						pager.firstPage = pager.firstPage.filter((p) => {
 							return installedExtensions.indexOf(`${p.publisher}.${p.name}`) === -1;

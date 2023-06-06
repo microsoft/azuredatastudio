@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
-import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Modal, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/browser/modal/modal';
@@ -143,8 +142,9 @@ export class LinkCalloutDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
+		// {{SQL CARBON TODO}} - apply styles
+		// this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
+		// this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 	}
 
 	protected override onAccept(e?: StandardKeyboardEvent) {

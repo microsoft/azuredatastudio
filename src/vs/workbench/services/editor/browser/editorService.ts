@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IResourceEditorInput, IEditorOptions, EditorActivation, IResourceEditorInputIdentifier, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
+import { IResourceEditorInput, IEditorOptions, EditorActivation, IResourceEditorInputIdentifier, ITextResourceEditorInput, EditorResolution } from 'vs/platform/editor/common/editor';
 import { SideBySideEditor, IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, EditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup, IFileEditorInput, EditorExtensions, IEditorFactoryRegistry, IFindEditorOptions, isResourceMergeEditorInput } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
@@ -1143,7 +1143,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 			// {{SQL CARBON EDIT}} - disable editor resolution when replacing editors to maintain previous state
 			if (result instanceof FileQueryEditorInput) {
-				editorOptions.override = EditorResolution.DISABLED;
+				editorOptions.override = EditorResolution.EXCLUSIVE_ONLY; // {{SQL CARBON TODO}} - follow-up that this works same as disable previously did
 			}
 
 			// Replace editor preserving viewstate (either across all groups or
