@@ -20,6 +20,7 @@ function getDialogName(type: ObjectManagement.NodeType, isNewObject: boolean): s
 }
 
 export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
+	command?: string;
 	connectionUri: string;
 	database?: string;
 	objectType: ObjectManagement.NodeType;

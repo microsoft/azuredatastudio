@@ -217,8 +217,8 @@ export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectMa
 export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
 // Object Properties Dialog
-export const PropertiesHeader = localize('objectManagement.properties', "Properties");
 export const FilesHeaderText = localize('objectManagement.filesHeaderText', "Files");
+export const PropertiesCommandText = localize('objectManagement.propertiesCommandText', "Properties");
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
@@ -256,8 +256,6 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 		case ObjectManagement.NodeType.Column:
 			return ColumnTypeDisplayName;
 		case ObjectManagement.NodeType.Database:
-			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
-		case ObjectManagement.NodeType.DatabaseProperties:
 			return inTitle ? DatabaseTypeDisplayNameInTitle : DatabaseTypeDisplayName;
 		default:
 			throw new Error(`Unknown node type: ${type}`);

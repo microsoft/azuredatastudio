@@ -194,7 +194,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 			obj = this.getApplicationRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
 			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
-		} else if (objectType === ObjectManagement.NodeType.DatabaseProperties) {
+		} else if (objectType === ObjectManagement.NodeType.Database) {
 			obj = this.getDatabasePropertiesView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			obj = this.getLoginView(isNewObject, objectUrn);
@@ -435,22 +435,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	private getDatabasePropertiesView(isNewObject: boolean, name: string): ObjectManagement.DatabasePropertiesViewInfo {
-		return isNewObject ? <ObjectManagement.DatabasePropertiesViewInfo>{
-			objectInfo: {
-				name: '',
-				collationName: '',
-				dateCreated: '',
-				lastDatabaseBackup: '',
-				lastDatabaseLogBackup: '',
-				memoryAllocatedToMemoryOptimizedObjects: '',
-				memoryUsedByMemoryOptimizedObjects: '',
-				numberOfUsers: '',
-				owner: '',
-				size: '',
-				spaceAvailable: '',
-				status: ''
-			}
-		} : <ObjectManagement.DatabasePropertiesViewInfo>{
+		return <ObjectManagement.DatabasePropertiesViewInfo>{
 			objectInfo: {
 				name: 'Database Properties1',
 				collationName: 'Latin1_General_100_CI_AS_KS_WS',
