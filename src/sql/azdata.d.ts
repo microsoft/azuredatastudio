@@ -1580,7 +1580,7 @@ declare module 'azdata' {
 	}
 
 	export enum FrequencyTypes {
-		Unknown,
+		Unknown = 0,
 		OneTime = 1 << 1,
 		Daily = 1 << 2,
 		Weekly = 1 << 3,

@@ -178,8 +178,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this._dialogOptions = options;
 	}
 
-	public override style(styles: ISelectBoxStyles): void {
-		super.style(styles);
+	public style(styles: ISelectBoxStyles): void {
 		this.enabledSelectBackground = this.selectBackground;
 		this.enabledSelectForeground = this.selectForeground;
 		this.enabledSelectBorder = this.selectBorder;
@@ -194,7 +193,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
 		this.inputValidationErrorForeground = styles.inputValidationErrorForeground;
-		this.applyStyles();
+		//this.applyStyles();
 	}
 
 	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true, forceSelectionEvent: boolean = false): void {
@@ -247,7 +246,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this.selectBackground = this.enabledSelectBackground;
 		this.selectForeground = this.enabledSelectForeground;
 		this.selectBorder = this.enabledSelectBorder;
-		this.applyStyles();
+		//this.applyStyles();
 	}
 
 	public disable(): void {
@@ -255,7 +254,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this.selectBackground = this.disabledSelectBackground;
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
-		this.applyStyles();
+		//this.applyStyles();
 	}
 
 	public getAriaLabel(): string {
@@ -343,7 +342,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		}
 
 		this._hideMessage();
-		this.applyStyles();
+		//this.applyStyles();
 
 		this.message = undefined;
 	}

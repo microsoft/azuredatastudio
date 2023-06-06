@@ -19,12 +19,12 @@ export interface ILabelRenderer {
 	(container: HTMLElement): IDisposable | null;
 }
 
-interface IBaseDropdownOptions {
+export interface IBaseDropdownOptions { // {{SQL CARBON EDIT}} - export interface
 	label?: string;
 	labelRenderer?: ILabelRenderer;
 }
 
-class BaseDropdown extends ActionRunner {
+export class BaseDropdown extends ActionRunner { // {{SQL CARBON EDIT}} - export class
 	private _element: HTMLElement;
 	private boxContainer?: HTMLElement;
 	private _label?: HTMLElement;

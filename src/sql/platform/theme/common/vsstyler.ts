@@ -9,7 +9,8 @@ import { activeContrastBorder, badgeBackground, badgeForeground, breadcrumbsActi
 import { isHighContrast } from 'vs/platform/theme/common/theme';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 
-export type styleFn = (colors: { [name: string]: Color | undefined }) => void;
+//export type styleFn = (colors: { [name: string]: Color | undefined }) => void;
+export type styleFn = (colors: any) => void;
 
 export interface IThemable {
 	style: styleFn;

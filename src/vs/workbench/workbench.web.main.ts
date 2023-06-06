@@ -115,7 +115,7 @@ registerSingleton(ILanguagePackService, WebLanguagePacksService, InstantiationTy
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { BrowserClipboardService as sqlClipboardService } from 'sql/platform/clipboard/browser/clipboardService';
 
-registerSingleton(sqlIClipboardService, sqlClipboardService);
+registerSingleton(sqlIClipboardService, sqlClipboardService, InstantiationType.Delayed);
 
 //#endregion
 

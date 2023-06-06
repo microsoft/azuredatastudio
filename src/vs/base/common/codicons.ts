@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ThemeIcon } from 'vs/base/common/themables';
-import { SqlIconId } from 'sql/base/common/codicons'; // {{SQL CARBON EDIT}}
 import { isString } from 'vs/base/common/types';
 
 const _codiconFontCharacters: { [id: string]: number } = Object.create(null);

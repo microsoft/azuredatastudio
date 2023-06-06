@@ -89,7 +89,7 @@ import 'vs/workbench/services/userDataSync/browser/userDataSyncEnablementService
 import 'vs/workbench/services/extensions/electron-sandbox/nativeExtensionService';
 import 'vs/platform/userDataProfile/electron-sandbox/userDataProfileStorageService';
 
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IUserDataInitializationService, UserDataInitializationService } from 'vs/workbench/services/userData/browser/userDataInit';
 import { IExtensionsProfileScannerService } from 'vs/platform/extensionManagement/common/extensionsProfileScannerService';
 import { ExtensionsProfileScannerService } from 'vs/platform/extensionManagement/electron-sandbox/extensionsProfileScannerService';
@@ -170,7 +170,6 @@ import 'vs/workbench/contrib/remoteTunnel/electron-sandbox/remoteTunnel.contribu
 
 //#endregion
 // {{SQL CARBON EDIT}} - SQL-specific services
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -180,10 +179,10 @@ import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azure
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 
-registerSingleton(ISqlOAuthService, SqlOAuthService);
-registerSingleton(sqlIClipboardService, sqlClipboardService);
-registerSingleton(IAzureBlobService, AzureBlobService);
-registerSingleton(IAzureAccountService, AzureAccountService);
+registerSingleton(ISqlOAuthService, SqlOAuthService, InstantiationType.Delayed);
+registerSingleton(sqlIClipboardService, sqlClipboardService, InstantiationType.Delayed);
+registerSingleton(IAzureBlobService, AzureBlobService, InstantiationType.Delayed);
+registerSingleton(IAzureAccountService, AzureAccountService, InstantiationType.Delayed);
 // {{SQL CARBON EDIT}} - End
 
 // {{SQL CARBON EDIT}}

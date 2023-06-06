@@ -27,6 +27,7 @@ import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -69,7 +70,8 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 					}
 				}
 			},
-			useDefaultValidation: true
+			useDefaultValidation: true,
+			inputBoxStyles: defaultInputBoxStyles
 		};
 		if (this._inputContainer) {
 			inputOptions.requireForceValidations = true; // Non-text area input boxes handle our own validations when the text changes so don't run the base ones
