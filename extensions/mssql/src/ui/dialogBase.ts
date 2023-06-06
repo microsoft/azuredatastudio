@@ -167,17 +167,7 @@ export abstract class DialogBase<DialogResult> {
 
 	protected registerTab(tab: azdata.window.DialogTab, items: azdata.Component[]): void {
 		tab.registerContent(async view => {
-			let formModel = this.modelView.modelBuilder.formContainer().withFormItems(
-				[
-					{
-						component: this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(items).component(),
-						title: ''
-					}
-				],
-				{
-					horizontal: false
-				}
-			).component();
+			let formModel = this.createFormContainer(items);
 			await view.initializeModel(formModel);
 		});
 	}

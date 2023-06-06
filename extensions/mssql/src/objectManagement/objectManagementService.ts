@@ -434,28 +434,28 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getPropertiesView(isNewObject: boolean, name: string): ObjectManagement.PropertiesViewInfo {
-		return isNewObject ? <ObjectManagement.PropertiesViewInfo>{
+	private getPropertiesView(isNewObject: boolean, name: string): ObjectManagement.ServerPropertiesViewInfo {
+		return isNewObject ? <ObjectManagement.ServerPropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
-				language: '',
-				memory: '',
+				language: [],
+				memory: 0,
 				operatingSystem: '',
 				platform: '',
 				processors: '',
-				minMemory: '',
-				maxMemory: ''
+				minMemory: 0,
+				maxMemory: 0
 			}
-		} : <ObjectManagement.PropertiesViewInfo>{
+		} : <ObjectManagement.ServerPropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
-				language: 'English (US)',
-				memory: '256 GB',
+				language: ['English (US)'],
+				memory: 256,
 				operatingSystem: 'Windows',
 				platform: '',
 				processors: '',
-				minMemory: '0',
-				maxMemory: '22528'
+				minMemory: 0,
+				maxMemory: 22528
 			}
 		};
 	}

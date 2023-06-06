@@ -1381,20 +1381,18 @@ declare module 'mssql' {
 			recoveryModels: string[];
 		}
 
-		export interface PropertiesInfo extends SqlObject {
-			// Add common properties between server and database
-			language: string;
-			memory: string;
+		export interface ServerPropertiesInfo extends SqlObject {
+			language: string[];
+			memory: number;
 			operatingSystem: string;
 			platform: string;
 			processors: string;
 			version: string;
-
-			minMemory: string;
-			maxMemory: string;
+			minMemory: number;
+			maxMemory: number;
 		}
 
-		export interface PropertiesViewInfo extends ObjectViewInfo<PropertiesInfo> {
+		export interface ServerPropertiesViewInfo extends ObjectViewInfo<ServerPropertiesInfo> {
 		}
 	}
 

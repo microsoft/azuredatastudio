@@ -65,11 +65,6 @@
         },
         {
           "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-          "when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType == Server && mssql:engineedition != 11",
-          "group": "z-AdminToolExt@2"
-        },
-        {
-          "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
           "when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && mssql:engineedition != 11 && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|ServerLevelLinkedServer)$/",
           "group": "z-AdminToolExt@2"
         },

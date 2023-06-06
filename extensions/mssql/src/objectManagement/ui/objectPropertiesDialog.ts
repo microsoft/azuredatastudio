@@ -8,11 +8,11 @@ import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 
-export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectManagement.PropertiesInfo, ObjectManagement.PropertiesViewInfo> {
+export class ServerPropertiesDialog extends ObjectManagementDialogBase<ObjectManagement.ServerPropertiesInfo, ObjectManagement.ServerPropertiesViewInfo> {
 	private generalTab: azdata.window.DialogTab;
 	private generalSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
-	private languageInput: azdata.InputBoxComponent;
+	private languageDropdown: azdata.DropDownComponent;
 	private memoryInput: azdata.InputBoxComponent;
 	private operatingSystemInput: azdata.InputBoxComponent;
 
@@ -20,6 +20,8 @@ export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 	private memorySection: azdata.GroupContainer;
 	private minServerMemoryInput: azdata.InputBoxComponent;
 	private maxServerMemoryInput: azdata.InputBoxComponent;
+
+	private numberInputType: azdata.InputBoxInputType = 'number';
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -49,19 +51,13 @@ export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 		}, this.objectInfo.name, this.options.isNewObject);
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.languageInput = this.createInputBox(localizedConstants.LanguageText, async (newValue) => {
-			this.objectInfo.language = newValue;
-		}, this.objectInfo.language, this.options.isNewObject);
-		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageInput);
+		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, undefined, this.objectInfo.language, this.objectInfo.language[0], this.options.isNewObject);
+		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
 
-		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, async (newValue) => {
-			this.objectInfo.memory = newValue;
-		}, this.objectInfo.memory, this.options.isNewObject);
+		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memory.toString(), this.options.isNewObject, this.numberInputType);
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 
-		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, async (newValue) => {
-			this.objectInfo.operatingSystem = newValue;
-		}, this.objectInfo.operatingSystem, this.options.isNewObject);
+		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, undefined, this.objectInfo.operatingSystem, this.options.isNewObject);
 		const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
 
 		this.generalSection = this.createGroup('', [
@@ -76,13 +72,13 @@ export class ObjectPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 
 	private initializeMemorySection(): void {
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
-			this.objectInfo.minMemory = newValue;
-		}, this.objectInfo.minMemory, true);
+			this.objectInfo.minMemory = +newValue;
+		}, this.objectInfo.minMemory.toString(), true, this.numberInputType);
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
-			this.objectInfo.maxMemory = newValue;
-		}, this.objectInfo.maxMemory, true);
+			this.objectInfo.maxMemory = +newValue;
+		}, this.objectInfo.maxMemory.toString(), true, this.numberInputType);
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [
