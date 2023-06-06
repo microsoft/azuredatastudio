@@ -7,15 +7,7 @@
  * A list of command line arguments we support natively.
  */
 export interface NativeParsedArgs {
-	/**
-	 * {{ SQL CARBON EDIT}} Start
-	 * Optional for Azure Data Studio to support URI conversion.
-	 * Used to determine file paths to be opened with SQL Editor.
-	 * If provided, we connect the given profile to to it.
-	 * More than one files can be passed to connect to provided profile.
-	 */
-	_?: string[];
-	/**  {{ SQL CARBON EDIT}} End */
+	_: string[];
 	'folder-uri'?: string[]; // undefined or array of 1 or more
 	'file-uri'?: string[]; // undefined or array of 1 or more
 	_urls?: string[];
@@ -113,7 +105,7 @@ export interface NativeParsedArgs {
 	 * Provide authenticationType to be used.
 	 * accepted values: AzureMFA, SqlLogin, Integrated, etc.
 	 */
-	authenticationType?: string
+	authenticationType?: string;
 	/**
 	 * Operation to perform:
 	 * accepted values: connect, openConnectionDialog

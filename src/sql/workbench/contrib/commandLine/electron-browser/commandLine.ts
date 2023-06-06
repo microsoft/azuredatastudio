@@ -254,7 +254,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	}
 
 	private parseProtocolArgs(uri: URI): NativeParsedArgs {
-		let args: NativeParsedArgs = querystring.parse(uri.query);
+		let args: NativeParsedArgs = Object.assign({ "_": undefined }, querystring.parse(uri.query));
+
 		// Clear out command, not supporting arbitrary command via this path
 		args.command = undefined;
 		return args;

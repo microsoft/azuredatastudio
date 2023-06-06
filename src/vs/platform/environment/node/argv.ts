@@ -133,7 +133,7 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 	// {{SQL CARBON EDIT}} Start
 	'aad': { type: 'boolean', cat: 'o', description: localize('aadParameter', 'Use Azure Active Directory authentication, this option is depcrecated - use \'authenticationType\' instead.') },
 	'applicationName': { type: 'string', alias: 'A', cat: 'o', description: localize('applicationNameParameter', 'Supports providing applicationName that will be used for connection profile app name.') },
-	'authenticationType': { type: 'string', alias: 'T', cat: 'o', deprecates: ['aad', 'integrated'], description: localize('authenticationTypeParameter', 'Provide authentication mode to be used. Accepted values: AzureMFA, SqlLogin, Integrated, etc.') },
+	'authenticationType': { type: 'string', alias: 'T', cat: 'o', allowEmptyValue: true, deprecates: ['aad', 'integrated'], description: localize('authenticationTypeParameter', 'Provide authentication mode to be used. Accepted values: AzureMFA, SqlLogin, Integrated, etc.') },
 	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run, accepted values: connect, openConnectionDialog') },
 	'connectionProperties': { type: 'string', alias: 'Z', cat: 'o', description: localize('connectionPropertiesParameter', 'Supports providing advanced connection properties that providers support. Value must be a json object containing key-value pairs in format: {"key1":"value1","key2":"value2",...}') },
 	'database': { type: 'string', alias: 'D', cat: 'o', args: 'database', description: localize('databaseParameter', 'Name of database') },
