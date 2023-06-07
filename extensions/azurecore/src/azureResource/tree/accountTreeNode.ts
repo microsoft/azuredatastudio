@@ -35,6 +35,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 	public async getChildren(): Promise<TreeNode[]> {
 		let tenants = this.account.properties.tenants;
+		this._totalTenantsCount = tenants.length;
 
 		const selectedTenants = await this._tenantFilterService.getSelectedTenants(this.account);
 		const selectedTenantIds = (selectedTenants || <Tenant[]>[]).map((Tenant) => Tenant.id);

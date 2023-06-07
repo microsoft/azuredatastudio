@@ -105,7 +105,7 @@ describe('AzureResourceSubscriptionTreeNode.info', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		const subscriptionTreeNode = new AzureResourceSubscriptionTreeNode(mockAccount, mockSubscription, mockTenant, appContext, mockTreeChangeHandler.object, TypeMoq.Mock.ofType<TreeNode>().object);
 
-		should(subscriptionTreeNode.nodePathValue).equal(`account_${mockAccount.key.accountId}.subscription_${mockSubscription.id}.tenant_${mockTenantId}`);
+		should(subscriptionTreeNode.nodePathValue).equal(`account_${mockAccount.key.accountId}.tenant_${mockTenantId}.subscription_${mockSubscription.id}`);
 
 		const treeItem = await subscriptionTreeNode.getTreeItem();
 		should(treeItem.label).equal(mockSubscription.name);

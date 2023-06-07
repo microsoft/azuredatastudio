@@ -44,7 +44,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			return element.getChildren();
 		}
 
 		if (!this.isSystemInitialized) {

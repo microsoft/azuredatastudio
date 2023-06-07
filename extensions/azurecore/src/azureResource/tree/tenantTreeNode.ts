@@ -33,7 +33,7 @@ export class AzureResourceTenantTreeNode extends AzureResourceContainerTreeNodeB
 		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
 
-		this._id = `account_${this.account.key.accountId}_${tenant.id}`;
+		this._id = `account_${this.account.key.accountId}.tenant_${tenant.id}`;
 		this.setCacheKey(`${this._id}.subscriptions`);
 		this._label = this.generateLabel();
 	}

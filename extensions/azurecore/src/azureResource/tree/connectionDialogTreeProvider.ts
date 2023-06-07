@@ -45,7 +45,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			return element.getChildren();
 		}
 
 		if (!this.isSystemInitialized) {
