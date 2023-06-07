@@ -5,8 +5,12 @@
 
 import * as types from 'vs/base/common/types';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
-import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import * as nls from 'vs/nls';
+import { toAction } from 'vs/base/common/actions';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface IGridDataProvider {
 
@@ -45,94 +49,144 @@ export interface IGridDataProvider {
 	readonly canSerialize: boolean;
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void>;
-
 }
 
-export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<string> {
-	let headers: Map<number, string> = new Map(); // Maps a column index -> header
-	let rows: Map<number, Map<number, string>> = new Map(); // Maps row index -> column index -> actual row value
+interface Range {
+	start: number;
+	end: number;
+}
+
+/**
+ * Merge the ranges and get the sorted ranges.
+ */
+function mergeRanges(ranges: Range[]): Range[] {
+	const mergedRanges: Range[] = [];
+	const orderedRanges = ranges.sort((s1, s2) => { return s1.start - s2.start; });
+	orderedRanges.forEach(range => {
+		let merged = false;
+		for (let i = 0; i < mergedRanges.length; i++) {
+			const mergedRange = mergedRanges[i];
+			if (range.start <= mergedRange.end) {
+				mergedRange.end = Math.max(range.end, mergedRange.end);
+				merged = true;
+				break;
+			}
+		}
+		if (!merged) {
+			mergedRanges.push(range);
+		}
+	});
+	return mergedRanges;
+}
+
+export async function copySelectionToClipboard(clipboardService: IClipboardService, notificationService: INotificationService, provider: IGridDataProvider, selections: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+	const batchSize = 100;
 	const eol = provider.getEolString();
+	const valueSeparator = '\t';
+	const shouldRemoveNewLines = provider.shouldRemoveNewLines();
 
-	// create a mapping of the ranges to get promises
-	let tasks: (() => Promise<void>)[] = selection.map((range) => {
-		return async (): Promise<void> => {
-			let startCol = range.fromCell;
-			let startRow = range.fromRow;
-			let result;
-			if (tableView && tableView.isDataInMemory) {
-				// If the data is sorted/filtered in memory, we need to get the data that is currently being displayed
-				const tableData = await tableView.getRangeAsync(range.fromRow, range.toRow - range.fromRow + 1);
-				result = tableData.map(item => Object.keys(item).map(key => item[key]));
-			} else {
-				result = (await provider.getRowData(range.fromRow, range.toRow - range.fromRow + 1)).rows;
-			}
-			// If there was a previous selection separate it with a line break. Currently
-			// when there are multiple selections they are never on the same line
-			let columnHeaders = provider.getColumnHeaders(range);
-			if (columnHeaders !== undefined) {
-				let idx = 0;
-				for (let header of columnHeaders) {
-					headers.set(startCol + idx, header);
-					idx++;
-				}
-			}
-			// Iterate over the rows to paste into the copy string
-			for (let rowIndex: number = 0; rowIndex < result.length; rowIndex++) {
-				let row = result[rowIndex];
-				let cellObjects = row.slice(range.fromCell, (range.toCell + 1));
-				// Remove newlines if requested
-				let cells = provider.shouldRemoveNewLines()
-					? cellObjects.map(x => removeNewLines(x.displayValue))
-					: cellObjects.map(x => x.displayValue);
+	// Merge the selections to get the columns and rows.
+	const columnRanges: Range[] = mergeRanges(selections.map(selection => { return { start: selection.fromCell, end: selection.toCell }; }));
+	const rowRanges: Range[] = mergeRanges(selections.map(selection => { return { start: selection.fromRow, end: selection.toRow }; }));
 
-				let idx = 0;
-				for (let cell of cells) {
-					let map = rows.get(rowIndex + startRow);
-					if (!map) {
-						map = new Map();
-						rows.set(rowIndex + startRow, map);
+	const totalRows = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
+
+	let processedRows = 0;
+	const getMessageText = (): string => {
+		return nls.localize('gridDataProvider.loadingRowsInProgress', "Loading the rows to be copied({0}/{1})...", processedRows, totalRows);
+	};
+
+	let isCanceled = false;
+
+	const notificationHandle = notificationService.notify({
+		message: getMessageText(),
+		severity: Severity.Info,
+		progress: {
+			infinite: true
+		},
+		actions: {
+			primary: [
+				toAction({
+					id: 'cancelCopyResults',
+					label: nls.localize('gridDataProvider.cancelCopyResults', "Cancel"),
+					run: () => {
+						isCanceled = true;
+						notificationHandle.close();
 					}
-
-					map.set(startCol + idx, cell);
-					idx++;
-				}
-			}
-		};
+				})]
+		}
 	});
 
-	// Set the tasks gathered above to execute
-	let actionedTasks: Promise<void>[] = tasks.map(t => { return t(); });
-
-	// Make sure all these tasks have executed
-	await Promise.all(actionedTasks);
-
-	headers = sortMapEntriesByColumnOrder(headers);
-	rows = sortMapEntriesByColumnOrder(rows);
-
-	let copyString = '';
+	let resultString = '';
 	if (includeHeaders) {
-		copyString = Array.from(headers.values()).join('\t').concat(eol);
+		const headers: string[] = [];
+		columnRanges.forEach(range => {
+			headers.push(...provider.getColumnHeaders(<Slick.Range>{
+				fromCell: range.start,
+				toCell: range.end
+			}));
+		});
+		resultString = Array.from(headers.values()).join(valueSeparator).concat(eol);
 	}
 
-	const rowKeys = [...headers.keys()];
-	for (let rowEntry of rows) {
-		let rowMap = rowEntry[1];
-		for (let rowIdx of rowKeys) {
-
-			let value = rowMap.get(rowIdx);
-			if (value) {
-				copyString = copyString.concat(value);
-			}
-			copyString = copyString.concat('\t');
+	const batchResult: string[] = [];
+	for (const range of rowRanges) {
+		if (tableView && tableView.isDataInMemory) {
+			const rangeLength = range.end - range.start + 1;
+			// If the data is sorted/filtered in memory, we need to get the data that is currently being displayed
+			const tableData = await tableView.getRangeAsync(range.start, rangeLength);
+			const rowSet = tableData.map(item => Object.keys(item).map(key => item[key]));
+			batchResult.push(getStringValueForRowSet(rowSet, columnRanges, selections, range.start, eol, valueSeparator, shouldRemoveNewLines));
+			processedRows += rangeLength;
+			notificationHandle.updateMessage(getMessageText());
+		} else {
+			let start = range.start;
+			do {
+				const end = Math.min(start + batchSize - 1, range.end);
+				const batchLength = end - start + 1
+				const rowSet = (await provider.getRowData(start, batchLength)).rows;
+				batchResult.push(getStringValueForRowSet(rowSet, columnRanges, selections, range.start, eol, valueSeparator, shouldRemoveNewLines));
+				start = end + 1;
+				processedRows = processedRows + batchLength;
+				if (!isCanceled) {
+					notificationHandle.updateMessage(getMessageText());
+				}
+			} while (start < range.end && !isCanceled)
 		}
-		// Removes the tab seperator from the end of a row
-		copyString = copyString.slice(0, -1 * '\t'.length);
-		copyString = copyString.concat(eol);
 	}
-	// Removes EoL from the end of the result
-	copyString = copyString.slice(0, -1 * eol.length);
+	if (!isCanceled) {
+		resultString += batchResult.join(eol);
+		notificationHandle.progress.done();
+		notificationHandle.updateActions({
+			primary: [
+				toAction({
+					id: 'closeCopyResultsNotification',
+					label: nls.localize('gridDataProvider.closeNotification', "Close"),
+					run: () => { notificationHandle.close(); }
+				})]
+		});
+		await clipboardService.writeText(resultString);
+		notificationHandle.updateMessage(nls.localize('gridDataProvider.copyResultsCompleted', "Selected data has been copied to the clipboard. Row count: {0}.", totalRows));
+	}
+}
 
-	return copyString;
+function getStringValueForRowSet(rows: ICellValue[][], columnRanges: Range[], selections: Slick.Range[], rowSetStartIndex: number, eol: string, valueSeparator: string, shouldRemoveNewLines: boolean): string {
+	let rowStrings: string[] = [];
+	rows.forEach((values, index) => {
+		const rowIndex = index + rowSetStartIndex;
+		const rowValues = [];
+		columnRanges.forEach(cr => {
+			for (let i = cr.start; i <= cr.end; i++) {
+				if (selections.some(selection => selection.contains(rowIndex, i))) {
+					rowValues.push(shouldRemoveNewLines ? removeNewLines(values[i].displayValue) : values[i].displayValue);
+				} else {
+					rowValues.push('');
+				}
+			}
+		});
+		rowStrings.push(rowValues.join(valueSeparator));
+	});
+	return rowStrings.join(eol);
 }
 
 export function getTableHeaderString(provider: IGridDataProvider, selection: Slick.Range[]): string {
