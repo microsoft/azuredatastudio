@@ -53,7 +53,7 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 		case constants.nupkgText:
 			return addNupkgReference();
 		default:
-			console.log(`Unknown reference database type ${referencedDatabaseType}`);
+			console.log(`Unknown referenced database type ${referencedDatabaseType}`);
 			return undefined;
 	}
 }
