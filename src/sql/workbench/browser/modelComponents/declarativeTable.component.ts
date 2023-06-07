@@ -93,7 +93,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	public isCheckBox(colIdx: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return column?.valueType === DeclarativeDataType.boolean;
+		return column.valueType === DeclarativeDataType.boolean;
 	}
 
 	public isContextMenuColumn(colIdx: number): boolean {
@@ -483,7 +483,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 	}
 
-	public showColumn(column: azdata.DeclarativeTableColumn, idx: number): boolean {
-		return column?.hidden === undefined || !column.hidden;
+	public showColumn(column: azdata.DeclarativeTableColumn): boolean {
+		return column.hidden === undefined || !column.hidden;
 	}
 }
