@@ -98,6 +98,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 
 			let sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === defaultEdition);
 			let serviceLevels = sloDetails?.details ?? [];
+			this.objectInfo.azureServiceLevelObjective = serviceLevels[0];
 			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
 				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
 			}, serviceLevels, serviceLevels[0]);
@@ -105,6 +106,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 
 			let sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === defaultEdition);
 			let maxSizes = sizeDetails?.details ?? [];
+			this.objectInfo.azureMaxSize = maxSizes[0];
 			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
 				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
 			}, maxSizes, maxSizes[0]);
