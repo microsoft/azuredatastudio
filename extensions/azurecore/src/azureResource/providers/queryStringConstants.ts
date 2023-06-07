@@ -71,7 +71,7 @@ export const kustoClusterQuery = `type == "${azureResource.AzureResourceType.kus
 /**
  * Lists all Cosmos DB for MongoDB accounts
  */
-export const cosmosMongoDbQuery = `type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.mongoDbKind}"`;
+export const cosmosMongoDbQuery = `(type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.mongoDbKind}") or type == "${azureResource.AzureResourceType.cosmosDbCluster}"`;
 
 /**
  * Lists all Log Analytics workspaces
