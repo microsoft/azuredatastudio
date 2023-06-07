@@ -127,6 +127,8 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.sqlManagedInstance;
 		case azureResource.AzureResourceType.postgresServer:
 			return loc.postgresServer;
+		case azureResource.AzureResourceType.postgresFlexibleServer:
+			return loc.postgresFlexibleServer;
 		case azureResource.AzureResourceType.azureArcSqlManagedInstance:
 			return loc.azureArcsqlManagedInstance;
 		case azureResource.AzureResourceType.azureArcService:

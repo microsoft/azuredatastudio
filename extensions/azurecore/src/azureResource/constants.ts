@@ -42,6 +42,7 @@ export enum AzureResourcePrefixes {
 	kusto = 'Kusto_',
 	mySqlFlexibleServer = 'mySqlFlexibleServer_',
 	postgresServerArc = 'postgresServerArc_',
+	postgresFlexibleServer = 'postgresFlexibleServer_',
 	postgresServer = 'postgresServer_',
 	sqlInstance = 'sqlInstance_',
 	sqlInstanceArc = 'sqlInstanceArc_',

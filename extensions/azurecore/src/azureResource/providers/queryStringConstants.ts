@@ -49,6 +49,11 @@ export const resourceGroupQuery = `ResourceContainers | where type=="${azureReso
 export const postgresServerQuery = `type == "${azureResource.AzureResourceType.postgresServer}"`;
 
 /**
+ * Lists all postgreSQL flexible servers
+ */
+export const postgresFlexibleServerQuery = `type == "${azureResource.AzureResourceType.postgresFlexibleServer}"`;
+
+/**
  * Lists all Azure Arc PostgreSQL servers
  */
 export const postgresArcServerQuery = `type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
