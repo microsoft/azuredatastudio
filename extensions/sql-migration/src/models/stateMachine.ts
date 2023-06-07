@@ -1142,7 +1142,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						TelemetryAction.StartMigration,
 						{
 							'sessionId': this._sessionId,
-							'tenantId': this._azureAccount.properties.tenants[0].id,
+							'tenantId': this._azureTenant?.id,
 							'subscriptionId': this._sqlMigrationServiceSubscription?.id,
 							'resourceGroup': this._sqlMigrationServiceResourceGroup?.name,
 							'location': this._location.name,

@@ -50,7 +50,7 @@ export class RestartMigrationDialog {
 
 			// TargetSelection
 			azureAccount: serviceContext.azureAccount!,
-			azureTenant: serviceContext.azureAccount!.properties.tenants[0]!,
+			azureTenant: serviceContext.tenant!,
 			subscription: serviceContext.subscription!,
 			location: location,
 			resourceGroup: {
