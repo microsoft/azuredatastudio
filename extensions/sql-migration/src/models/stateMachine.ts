@@ -773,7 +773,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		}
 		catch (error) {
-			logError(TelemetryViews.DataCollectionWizard, 'RefreshDataCollectionFailed', error);
+			console.log(error);		// use console.log() instead of logError() to avoid spamming telemetry with this error, which can be frequent
 		}
 
 		return true;
