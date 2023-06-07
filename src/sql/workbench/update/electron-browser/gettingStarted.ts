@@ -4,27 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 
 import nls = require('vs/nls');
-import { Action } from 'vs/base/common/actions';
 import product from 'vs/platform/product/common/product';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 
-export class ShowGettingStartedAction extends Action {
+export class ShowGettingStartedAction extends Action2 {
 	static ID = 'update.showGettingStarted';
-	static LABEL = nls.localize('showReleaseNotes', "Show Getting Started");
+	static LABEL_ORG = 'Show Getting Started';
+	static LABEL = nls.localize('showReleaseNotes', ShowGettingStartedAction.LABEL_ORG);
 
-	constructor(
-		id = ShowGettingStartedAction.ID,
-		label = ShowGettingStartedAction.LABEL,
-		@IOpenerService private openerService: IOpenerService
-	) {
-		super(id, label, undefined, true);
+	constructor() {
+		super({
+			id: ShowGettingStartedAction.ID,
+			title: {
+				value: ShowGettingStartedAction.LABEL,
+				original: ShowGettingStartedAction.LABEL_ORG
+			}
+		});
 	}
 
-	override run(): Promise<any> {
+	override run(accessor: ServicesAccessor): Promise<any> {
+		const openerService = accessor.get(IOpenerService);
 		const uri = URI.parse(product.gettingStartedUrl);
-		return this.openerService.open(uri);
+		return openerService.open(uri);
 	}
 }
 

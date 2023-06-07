@@ -92,7 +92,7 @@ export class ClearRecentConnectionsAction extends Action {
 		let confirm: IConfirmation = {
 			message: nls.localize('clearRecentConnectionMessage', "Are you sure you want to delete all the connections from the list?"),
 			primaryButton: nls.localize('connectionDialog.yes', "Yes"),
-			secondaryButton: nls.localize('connectionDialog.no', "No"),
+			cancelButton: nls.localize('connectionDialog.no', "No"),
 			type: 'question'
 		};
 

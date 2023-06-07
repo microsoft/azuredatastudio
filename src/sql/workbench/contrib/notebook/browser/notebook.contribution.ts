@@ -190,7 +190,7 @@ const toggleTabFocusAction = new ToggleTabFocusModeAction();
 CommandsRegistry.registerCommand({
 	id: TOGGLE_TAB_FOCUS_COMMAND_ID,
 	handler: (accessor) => {
-		toggleTabFocusAction.run(accessor, undefined);
+		toggleTabFocusAction.run(accessor);
 	}
 });
 
@@ -290,7 +290,7 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
-		title: toggleTabFocusAction.label,
+		title: ToggleTabFocusModeAction.LABEL,
 	},
 	when: ContextKeyExpr.and(ActiveEditorContext.isEqualTo(NotebookEditor.ID))
 });

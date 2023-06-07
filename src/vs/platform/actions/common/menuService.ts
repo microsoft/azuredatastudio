@@ -237,9 +237,11 @@ class MenuInfo {
 		for (const group of this._menuGroups) {
 			const [id, items] = group;
 
+			// {{SQL CARBON EDIT}} - update to support default item
 			const activeActions: Array<MenuItemAction | SubmenuItemAction> = [];
 			for (const item of items) {
 				if (this._contextKeyService.contextMatchesRules(item.when)) {
+					let action: MenuItemAction | SubmenuItemAction | undefined = undefined;
 					const isMenuItem = isIMenuItem(item);
 					if (isMenuItem) {
 						this._hiddenStates.setDefaultState(this._id, item.command.id, !!item.isHiddenByDefault);
@@ -248,25 +250,29 @@ class MenuInfo {
 					const menuHide = createMenuHide(this._id, isMenuItem ? item.command : item, this._hiddenStates);
 					if (isMenuItem) {
 						// MenuItemAction
-						activeActions.push(new MenuItemAction(item.command, item.alt, options, menuHide, this._contextKeyService, this._commandService));
+						//activeActions.push(new MenuItemAction(item.command, item.alt, options, menuHide, this._contextKeyService, this._commandService)); // {{SQL CARBON EDIT}} - update to support default item
+						action = new MenuItemAction(item.command, item.alt, options, menuHide, this._contextKeyService, this._commandService);
 
 					} else {
 						// SubmenuItemAction
 						const groups = new MenuInfo(item.submenu, this._hiddenStates, this._collectContextKeysForSubmenus, this._commandService, this._contextKeyService).createActionGroups(options);
 						const submenuActions = Separator.join(...groups.map(g => g[1]));
 						if (submenuActions.length > 0) {
-							activeActions.push(new SubmenuItemAction(item, menuHide, submenuActions));
+							//activeActions.push(new SubmenuItemAction(item, menuHide, submenuActions)); // {{SQL CARBON EDIT}} - update to support default item
+							action = new SubmenuItemAction(item, menuHide, submenuActions);
 						}
 					}
-					
+
 					if (action) {
 						// {{SQL CARBON EDIT}} - Set isDefault property
 						if (isIMenuItem(item)) {
 							(<MenuItemAction>action).isDefault = item.isDefault;
 						}
 						// {{SQL CARBON EDIT}} - End
+						activeActions.push(action);
 					}
 				}
+				// {{SQL CARBON EDIT}} - end update to support default item
 			}
 			if (activeActions.length > 0) {
 				result.push([id, activeActions]);

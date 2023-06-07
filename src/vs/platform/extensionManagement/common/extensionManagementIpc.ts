@@ -273,7 +273,7 @@ export class ExtensionManagementChannelClient extends Disposable implements IExt
 	}
 
 	getExtensionsControlManifest(): Promise<IExtensionsControlManifest> {
-		return Promise.resolve(this.channel.call('getExtensionsControlManifest'));
+		return Promise.resolve(this.channel.call<IExtensionsControlManifest>('getExtensionsControlManifest'));
 	}
 
 	async download(extension: IGalleryExtension, operation: InstallOperation, donotVerifySignature: boolean): Promise<URI> {

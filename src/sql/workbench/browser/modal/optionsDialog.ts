@@ -138,7 +138,8 @@ export class OptionsDialog extends Modal {
 	private registerStyling(): void {
 		// Theme styler
 		for (let optionName in this._optionElements) {
-			let widget: Widget = this._optionElements[optionName].optionWidget;
+			// {{SQL CARBON TODO}} - styling
+			//let widget: Widget = this._optionElements[optionName].optionWidget;
 			let option = this._optionElements[optionName].option;
 			switch (option.valueType) {
 				case ServiceOptionType.category:

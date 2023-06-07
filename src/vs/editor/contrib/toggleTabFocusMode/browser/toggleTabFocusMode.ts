@@ -16,10 +16,12 @@ export class ToggleTabFocusModeAction extends Action2 {
 
 	public static readonly ID = 'editor.action.toggleTabFocusMode';
 
+	public static readonly LABEL = nls.localize({ key: 'toggle.tabMovesFocus', comment: ['Turn on/off use of tab key for moving focus around VS Code'] }, 'Toggle Tab Key Moves Focus'); // {{SQL CARBON EDIT}} - add label property
+
 	constructor() {
 		super({
 			id: ToggleTabFocusModeAction.ID,
-			title: { value: nls.localize({ key: 'toggle.tabMovesFocus', comment: ['Turn on/off use of tab key for moving focus around VS Code'] }, 'Toggle Tab Key Moves Focus'), original: 'Toggle Tab Key Moves Focus' },
+			title: { value: ToggleTabFocusModeAction.LABEL, original: 'Toggle Tab Key Moves Focus' }, // {{SQL CARBON EDIT}} - add label property
 			precondition: undefined,
 			keybinding: {
 				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyM), // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding

@@ -207,7 +207,7 @@ export function createExtHostComments(mainContext: IMainContext, commands: ExtHo
 						fileComments: rangesResult.fileComments || false
 					};
 				} else {
-					ranges = withNullAsUndefined(rangesResult);
+					ranges = <any>withNullAsUndefined(rangesResult);
 				}
 				return ranges;
 			}).then(ranges => {

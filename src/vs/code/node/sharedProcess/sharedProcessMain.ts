@@ -78,7 +78,6 @@ import { ISharedTunnelsService } from 'vs/platform/tunnel/common/tunnel';
 import { SharedTunnelsService } from 'vs/platform/tunnel/node/tunnelService';
 import { ipcSharedProcessTunnelChannelName, ISharedProcessTunnelService } from 'vs/platform/remote/common/sharedProcessTunnelService';
 import { SharedProcessTunnelService } from 'vs/platform/tunnel/node/sharedProcessTunnelService';
-// import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender'; // {{SQL CARBON EDIT}} - Unused import
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 import { UriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentityService';
 import { isLinux } from 'vs/base/common/platform';
@@ -280,7 +279,7 @@ class SharedProcessMain extends Disposable {
 			const logAppender = new TelemetryLogAppender(logService, loggerService, environmentService, productService);
 			appenders.push(logAppender);
 			if (productService.aiConfig?.ariaKey) {
-				const collectorAppender = new OneDataSystemWebAppender(internalTelemetry, 'monacoworkbench', null, productService.aiConfig.ariaKey);
+				const collectorAppender = new OneDataSystemAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey); // {{SQL CARBON EDIT}} - use adsworkbench
 				this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
 				appenders.push(collectorAppender);
 			}

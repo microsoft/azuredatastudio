@@ -142,12 +142,13 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		return this.extensionsScanner.scanUserExtensionAtLocation(location);
 	}
 
-	async install(vsix: URI, options: ServerInstallVSIXOptions = {}): Promise<ILocalExtension> {
+	async install(vsix: URI, options: InstallVSIXOptions = {}): Promise<ILocalExtension> {
 		this.logService.trace('ExtensionManagementService#install', vsix.toString());
-		const { downloadLocation, cleanup } = await this.downloadVsix(vsix);
+
+		const { location, cleanup } = await this.downloadVsix(vsix);
 
 		try {
-			const manifest = await getManifest(path.resolve(downloadLocation.fsPath));
+			const manifest = await getManifest(path.resolve(location.fsPath));
 			// {{SQL CARBON EDIT}} Do our own engine checks
 			const id = getGalleryExtensionId(manifest.publisher, manifest.name);
 			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, this.productService.vscodeVersion, this.productService.date)) {
@@ -162,7 +163,7 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 			}
 			*/
 
-			return this.installExtension(manifest, downloadLocation, options);
+			return await this.installExtension(manifest, location, options);
 		} finally {
 			await cleanup();
 		}
