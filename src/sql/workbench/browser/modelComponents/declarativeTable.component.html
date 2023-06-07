@@ -21,7 +21,7 @@
 					[ngStyle]="getRowStyle(r)" role="row" [attr.tabindex]="enableRowSelection ? 0 : null"
 					(click)="onRowSelected(r)" (keydown)="onKey($event,r)">
 					<ng-container *ngFor="let cellData of row;let c = index;trackBy:trackByFnCols">
-						<ng-container *ngIf="c<columns.length">
+						<ng-container *ngIf="c<columns?.length">
 							<td class="declarative-table-cell" [style.width]="getColumnWidth(c)"
 								[attr.aria-label]="getAriaLabel(r, c)"
 								[ngClass]="{'declarative-table-cell-checkbox' : isCheckBox(c)}"
