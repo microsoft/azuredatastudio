@@ -132,16 +132,16 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 
 	// {{SQL CARBON EDIT}} Start
 	'aad': { type: 'boolean', cat: 'o', description: localize('aadParameter', 'Use Azure Active Directory authentication, this option is depcrecated - use \'authenticationType\' instead.') },
-	'applicationName': { type: 'string', alias: 'A', cat: 'o', description: localize('applicationNameParameter', 'Supports providing applicationName that will be used for connection profile app name.') },
-	'authenticationType': { type: 'string', alias: 'T', cat: 'o', deprecates: ['aad', 'integrated'], description: localize('authenticationTypeParameter', 'Provide authentication mode to be used. Accepted values: AzureMFA, SqlLogin, Integrated, etc.') },
-	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run, accepted values: connect, openConnectionDialog') },
-	'connectionProperties': { type: 'string', alias: 'Z', cat: 'o', description: localize('connectionPropertiesParameter', 'Supports providing advanced connection properties that providers support. Value must be a json object containing key-value pairs in format: {"key1":"value1","key2":"value2",...}') },
-	'database': { type: 'string', alias: 'D', cat: 'o', args: 'database', description: localize('databaseParameter', 'Name of database') },
+	'applicationName': { type: 'string', alias: 'A', cat: 'o', allowEmptyValue: true, description: localize('applicationNameParameter', 'Supports providing applicationName that will be used for connection profile app name.') },
+	'authenticationType': { type: 'string', alias: 'T', cat: 'o', allowEmptyValue: true, deprecates: ['aad', 'integrated'], description: localize('authenticationTypeParameter', 'Provide authentication mode to be used. Accepted values: AzureMFA, SqlLogin, Integrated, etc.') },
+	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', allowEmptyValue: true, description: localize('commandParameter', 'Name of command to run, accepted values: connect, openConnectionDialog') },
+	'connectionProperties': { type: 'string', alias: 'Z', cat: 'o', allowEmptyValue: true, description: localize('connectionPropsParameter', `Supports providing advanced connection properties that providers support. Value must be a json object containing key-value pairs in format: '{"key1":"value1"}'`) },
+	'database': { type: 'string', alias: 'D', cat: 'o', args: 'database', allowEmptyValue: true, description: localize('databaseParameter', 'Name of database') },
 	'integrated': { type: 'boolean', alias: 'E', cat: 'o', description: localize('integratedAuthParameter', 'Use Integrated authentication, this option is depcrecated - use \'authenticationType\' instead.') },
-	'provider': { type: 'string', alias: 'P', cat: 'o', description: localize('providerParameter', 'Connection provider to use, e.g. MSSQL, PGSQL, etc. ') },
-	'server': { type: 'string', alias: 'S', cat: 'o', args: 'server', description: localize('serverParameter', 'Name of target server or host name.') },
+	'provider': { type: 'string', alias: 'P', cat: 'o', allowEmptyValue: true, description: localize('providerParameter', 'Connection provider to use, e.g. MSSQL, PGSQL, etc. ') },
+	'server': { type: 'string', alias: 'S', cat: 'o', args: 'server', allowEmptyValue: true, description: localize('serverParameter', 'Name of target server or host name.') },
 	'showDashboard': { type: 'boolean', cat: 'o', description: localize('showDashboardParameter', 'Whether or not to show dashboard on connection, false by default.') },
-	'user': { type: 'string', alias: 'U', cat: 'o', args: 'user-name', description: localize('userParameter', 'User name/email address') },
+	'user': { type: 'string', alias: 'U', cat: 'o', args: 'user-name', allowEmptyValue: true, description: localize('userParameter', 'User name/email address') },
 	// {{SQL CARBON EDIT}} - End
 
 	// chromium flags
