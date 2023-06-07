@@ -26,24 +26,24 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 
 	// 1. Prompt for reference type
 	// Only show project option if we have at least one other project in the workspace
-	const referenceTypes = otherProjectsInWorkspace.length > 0 ?
+	const referencedDatabaseTypes = otherProjectsInWorkspace.length > 0 ?
 		[constants.projectLabel, constants.systemDatabase, constants.dacpacText] :
 		[constants.systemDatabase, constants.dacpacText];
 
 	// only add nupkg database reference option if project is SDK-style
 	if (project.sqlProjStyle === ProjectType.SdkStyle) {
-		referenceTypes.push(constants.nupkgText);
+		referencedDatabaseTypes.push(constants.nupkgText);
 	}
 
-	const referenceType = await vscode.window.showQuickPick(
-		referenceTypes,
-		{ title: constants.referenceType, ignoreFocusOut: true });
-	if (!referenceType) {
+	const referencedDatabaseType = await vscode.window.showQuickPick(
+		referencedDatabaseTypes,
+		{ title: constants.referencedDatabaseType, ignoreFocusOut: true });
+	if (!referencedDatabaseType) {
 		// User cancelled
 		return undefined;
 	}
 
-	switch (referenceType) {
+	switch (referencedDatabaseType) {
 		case constants.projectLabel:
 			return addProjectReference(otherProjectsInWorkspace);
 		case constants.systemDatabase:
@@ -53,7 +53,7 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 		case constants.nupkgText:
 			return addNupkgReference();
 		default:
-			console.log(`Unknown reference type ${referenceType}`);
+			console.log(`Unknown reference database type ${referencedDatabaseType}`);
 			return undefined;
 	}
 }
@@ -106,7 +106,7 @@ async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Prom
 	referenceSettings.suppressMissingDependenciesErrors = suppressErrors;
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
-		.withAdditionalProperties({ referenceType: constants.projectLabel })
+		.withAdditionalProperties({ referencedDatabaseType: constants.projectLabel })
 		.send();
 
 	return referenceSettings;
@@ -131,7 +131,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
-		.withAdditionalProperties({ referenceType: constants.systemDatabase })
+		.withAdditionalProperties({ referencedDatabaseType: constants.systemDatabase })
 		.send();
 
 	return {
@@ -202,7 +202,7 @@ async function addDacpacReference(project: Project): Promise<IDacpacReferenceSet
 	populateResultWithVars(referenceSettings, dbServerValues);
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
-		.withAdditionalProperties({ referenceType: constants.dacpacText })
+		.withAdditionalProperties({ referencedDatabaseType: constants.dacpacText })
 		.send();
 
 	return referenceSettings;
@@ -271,7 +271,7 @@ async function addNupkgReference(): Promise<INugetPackageReferenceSettings | und
 	populateResultWithVars(referenceSettings, dbServerValues);
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
-		.withAdditionalProperties({ referenceType: constants.nupkgText })
+		.withAdditionalProperties({ referencedDatabaseType: constants.nupkgText })
 		.send();
 
 	return referenceSettings;
