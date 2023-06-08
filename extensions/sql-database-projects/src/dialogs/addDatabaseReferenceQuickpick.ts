@@ -116,16 +116,31 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 
 	const selectedSystemDb = await vscode.window.showQuickPick(
 		getSystemDbOptions(project),
-		{ title: constants.systemDatabase, ignoreFocusOut: true, });
+		{ title: constants.systemDatabase, ignoreFocusOut: true });
 	if (!selectedSystemDb) {
 		// User cancelled
 		return undefined;
 	}
 
-	// 3. Prompt DB name
+	// 3 Prompt for Reference Type if it's an SDK-style project
+	let referenceType = SystemDbReferenceType.ArtifactReference;
+	if (project.sqlProjStyle === ProjectType.SdkStyle) {
+		const referenceTypeString = await vscode.window.showQuickPick(
+			[constants.packageReference, constants.artifactReference],
+			{ title: constants.referenceTypeRadioButtonsGroupTitle, ignoreFocusOut: true }
+		);
+
+		if (referenceType === undefined) { // need to check for specifically undefined here because the enum SystemDbReferenceType.ArtifactReference evaluates to 0
+			return undefined;
+		}
+
+		referenceType = referenceTypeString === constants.packageReference ? SystemDbReferenceType.PackageReference : SystemDbReferenceType.ArtifactReference;
+	}
+
+	// 4. Prompt DB name
 	const dbName = await promptDbName(selectedSystemDb);
 
-	// 4. Prompt suppress unresolved ref errors
+	// 5. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
@@ -136,7 +151,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
 		suppressMissingDependenciesErrors: suppressErrors,
-		systemDbReferenceType: SystemDbReferenceType.ArtifactReference
+		systemDbReferenceType: referenceType
 	};
 }
 
