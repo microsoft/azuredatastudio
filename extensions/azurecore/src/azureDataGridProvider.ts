@@ -21,6 +21,7 @@ const typesClause = [
 	azureResource.AzureResourceType.sqlSynapseSqlPool,
 	azureResource.AzureResourceType.sqlManagedInstance,
 	azureResource.AzureResourceType.postgresServer,
+	azureResource.AzureResourceType.postgresFlexibleServer,
 	azureResource.AzureResourceType.azureArcService,
 	azureResource.AzureResourceType.azureArcSqlManagedInstance,
 	azureResource.AzureResourceType.azureArcPostgresServer

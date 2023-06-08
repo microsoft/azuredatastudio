@@ -20,7 +20,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { deepClone } from 'vs/base/common/objects';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -68,9 +68,9 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		@IContextViewService contextViewService: IContextViewService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IQuickInputService quickInputService: IQuickInputService,
-		@ITableService tableService: ITableService
+		@IComponentContextService componentContextService: IComponentContextService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService, tableService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService, componentContextService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');

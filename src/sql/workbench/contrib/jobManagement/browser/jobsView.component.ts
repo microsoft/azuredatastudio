@@ -36,7 +36,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -114,7 +114,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IContextViewService) private _contextViewService: IContextViewService,
 		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
 		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
-		@Inject(ITableService) private _tableService: ITableService
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
@@ -202,7 +202,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			self._agentViewComponent.agentJobInfo = job;
 			self._agentViewComponent.showHistory = true;
 		});
-		this._register(this._tableService.registerTable(this._table));
+		this._register(this._componentContextService.registerTable(this._table));
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));

@@ -30,64 +30,6 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
-export interface SqlArgs {
-	/**
-	 * Used to determine file paths to be opened with SQL Editor.
-	 * If provided, we connect the given profile to to it.
-	 * More than one files can be passed to connect to provided profile.
-	 */
-	_?: string[];
-	/**
-	 * Provide authenticationType to be used.
-	 * accepted values: AzureMFA, SqlLogin, Integrated, etc.
-	 */
-	authenticationType?: string
-	/**
-	 * Name of database
-	 */
-	database?: string;
-	/**
-	 * Name of server
-	 */
-	server?: string;
-	/**
-	 * User name/email address
-	 */
-	user?: string;
-	/**
-	 * Operation to perform:
-	 * accepted values: connect, openConnectionDialog
-	 */
-	command?: string;
-	/**
-	 * Name of connection provider,
-	 * accepted values: mssql (by default), pgsql, etc.
-	 */
-	provider?: string;
-	/**
-	 * Deprecated - used by SSMS - authenticationType should be used instead
-	 */
-	aad?: boolean;
-	/**
-	 * Deprecated - used by SSMS - authenticationType should be used instead.
-	 */
-	integrated?: boolean;
-	/**
-	 * Whether or not to show dashboard
-	 * accepted values: true, false (by default).
-	 */
-	showDashboard?: boolean;
-	/**
-	 * Supports providing applicationName that will be used for connection profile app name.
-	 */
-	applicationName?: string;
-	/**
-	 *  Supports providing advanced connection properties that providers support.
-	 *  Value must be a json object containing key-value pairs in format: '{"key1":"value1","key2":"value2",...}'
-	 */
-	connectionProperties?: string;
-}
-
 //#region decorators
 
 type PathHandler = (uri: URI) => Promise<boolean>;
@@ -153,7 +95,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
 	// (serverName, null) => Connect object explorer and open a new query editor if no file names are passed. If file names are passed, connect their editors to the server.
 	// (null, null) => Prompt for a connection unless there are registered servers
-	public async processCommandLine(args: SqlArgs): Promise<void> {
+	public async processCommandLine(args: NativeParsedArgs): Promise<void> {
 		let profile: IConnectionProfile = undefined;
 		let commandName = undefined;
 		if (args) {
@@ -296,7 +238,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		return true;
 	}
 
-	private async confirmConnect(args: SqlArgs): Promise<boolean> {
+	private async confirmConnect(args: NativeParsedArgs): Promise<boolean> {
 		let detail = args && args.server ? localize('connectServerDetail', "This will connect to server {0}", args.server) : '';
 		const result = await this.dialogService.confirm({
 			message: localize('confirmConnect', "Are you sure you want to connect?"),
@@ -311,8 +253,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		return false;
 	}
 
-	private parseProtocolArgs(uri: URI): SqlArgs {
-		let args: SqlArgs = querystring.parse(uri.query);
+	private parseProtocolArgs(uri: URI): NativeParsedArgs {
+		let args: NativeParsedArgs = querystring.parse(uri.query);
 		// Clear out command, not supporting arbitrary command via this path
 		args.command = undefined;
 		return args;
@@ -336,7 +278,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 	}
 
-	private readProfileFromArgs(args: SqlArgs) {
+	private readProfileFromArgs(args: NativeParsedArgs) {
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;

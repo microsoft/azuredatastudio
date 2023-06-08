@@ -1,0 +1,9 @@
+{
+	"parserOptions": {
+		"project": "./extensions/datavirtualization/tsconfig.json",
+		"createDefaultProgram": true
+	},
+	"rules": {
+		"@typescript-eslint/explicit-function-return-type": ["off"]
+	}
+}

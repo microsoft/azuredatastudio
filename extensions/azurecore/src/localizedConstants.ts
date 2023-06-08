@@ -74,7 +74,8 @@ export const dismiss = localize('azurecore.dismiss', 'Dismiss');
 // Azure Resource Types
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");
 export const sqlDatabase = localize('azurecore.sqlDatabase', "SQL database");
-export const postgresServer = localize('azurecore.postgresServer', "Azure Database for PostgreSQL server");
+export const postgresServer = localize('azurecore.postgresServer', "Azure Database for PostgreSQL servers");
+export const postgresFlexibleServer = localize('azurecore.postgresFlexibleServer', "Azure Database for PostgreSQL flexible servers");
 export const sqlManagedInstance = localize('azurecore.sqlManagedInstance', "SQL managed instance");
 export const azureArcsqlManagedInstance = localize('azurecore.azureArcsqlManagedInstance', "SQL managed instance - Azure Arc");
 export const azureArcService = localize('azurecore.azureArcService', "Data Service - Azure Arc");

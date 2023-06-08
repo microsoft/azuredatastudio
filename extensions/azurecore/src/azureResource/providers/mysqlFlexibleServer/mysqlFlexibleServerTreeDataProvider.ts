@@ -16,7 +16,7 @@ import { Account, ExtensionNodeType, TreeItem, connection } from 'azdata';
 
 export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainer';
-	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel', "Azure Database for MySQL Flexible server");
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel', "Azure Database for MySQL flexible servers");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
