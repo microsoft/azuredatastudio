@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
+import { ViewServerPropertiesDocUrl } from '../constants';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<ObjectManagement.ServerPropertiesInfo, ObjectManagement.ServerPropertiesViewInfo> {
 	private generalTab: azdata.window.DialogTab;
@@ -30,12 +30,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 	}
 
 	protected override get helpUrl(): string {
-		return this.options.isNewObject ? CreateUserDocUrl : AlterUserDocUrl;
-	}
-
-	protected override async validateInput(): Promise<string[]> {
-		const errors = await super.validateInput();
-		return errors;
+		return ViewServerPropertiesDocUrl;
 	}
 
 	protected async initializeUI(): Promise<void> {

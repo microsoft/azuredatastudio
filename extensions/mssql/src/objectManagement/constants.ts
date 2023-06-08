@@ -28,6 +28,7 @@ export const AlterApplicationRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql
 export const CreateDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-role-transact-sql';
 export const AlterDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-role-transact-sql';
 export const CreateDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-database-transact-sql';
+export const ViewServerPropertiesDocUrl = 'https://learn.microsoft.com/en-us/sql/t-sql/functions/serverproperty-transact-sql?view=sql-server-ver16';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
