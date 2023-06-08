@@ -164,6 +164,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.openReferencedSqlProject",
+        "title": "%sqlDatabaseProjects.openReferencedSqlProject%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.validateExternalStreamingJob",
         "title": "%sqlDatabaseProjects.validateExternalStreamingJob%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -301,6 +306,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.openReferencedSqlProject",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.validateExternalStreamingJob",
           "when": "false"
         },
@@ -432,13 +441,18 @@
           "group": "6_dbProjects_openInDesigner"
         },
         {
+          "command": "sqlDatabaseProjects.openReferencedSqlProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.reference.sqlProject",
+          "group": "8_dbProjects_openReferencedSqlProject"
+        },
+        {
           "command": "sqlDatabaseProjects.exclude",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.sqlcmdVariable",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.reference.sqlProject || viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@2"
         },
         {

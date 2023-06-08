@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 .filter-dialog-body {
-	height: 400px;
 	padding: 10px;
 	display: flex;
 	flex-direction: column;
+	height: calc(100% - 20px);
+	overflow: hidden;
 }
 
 .filter-table-container .filter-table {

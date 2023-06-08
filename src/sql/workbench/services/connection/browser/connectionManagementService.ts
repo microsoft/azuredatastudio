@@ -605,42 +605,44 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
 				if (!connectionMgmtInfo) {
 					this._logService.info(`Could not find connection management info for ${uri} after connection`);
-				}
-				// Currently this could potentially throw an error because it expects there to always be
-				// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
-				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
-
-				if (callbacks.onConnectSuccess) {
-					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
-				}
-				if (options.saveTheConnection || isEdit) {
-
-					await this.saveToSettings(uri, connection, matcher).then(value => {
-						this._onAddConnectionProfile.fire(connection);
-						if (isEdit) {
-							this._onConnectionProfileEdited.fire({
-								oldProfileId: options.params.oldProfileId,
-								profile: <ConnectionProfile>connection
-							});
-						} else {
-							if (options.params === undefined) {
-								this._onConnectionProfileConnected.fire(<ConnectionProfile>connection);
-							} else {
-								this._onConnectionProfileCreated.fire(<ConnectionProfile>connection);
-							}
-						}
-						this.doActionsAfterConnectionComplete(value, options);
-					});
-				} else {
-					connection.saveProfile = false;
-					this.doActionsAfterConnectionComplete(uri, options);
-				}
-				if (connection.savePassword) {
-					return this._connectionStore.savePassword(connection).then(() => {
-						return connectionResult;
-					});
-				} else {
 					return connectionResult;
+				} else {
+					// Currently this could potentially throw an error because it expects there to always be
+					// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
+					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
+
+					if (callbacks.onConnectSuccess) {
+						callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
+					}
+					if (options.saveTheConnection || isEdit) {
+
+						await this.saveToSettings(uri, connection, matcher).then(value => {
+							this._onAddConnectionProfile.fire(connection);
+							if (isEdit) {
+								this._onConnectionProfileEdited.fire({
+									oldProfileId: options.params.oldProfileId,
+									profile: <ConnectionProfile>connection
+								});
+							} else {
+								if (options.params === undefined) {
+									this._onConnectionProfileConnected.fire(<ConnectionProfile>connection);
+								} else {
+									this._onConnectionProfileCreated.fire(<ConnectionProfile>connection);
+								}
+							}
+							this.doActionsAfterConnectionComplete(value, options);
+						});
+					} else {
+						connection.saveProfile = false;
+						this.doActionsAfterConnectionComplete(uri, options);
+					}
+					if (connection.savePassword) {
+						return this._connectionStore.savePassword(connection).then(() => {
+							return connectionResult;
+						});
+					} else {
+						return connectionResult;
+					}
 				}
 			} else if (connectionResult && connectionResult.errorMessage) {
 				return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
@@ -903,36 +905,37 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			// Currently this could potentially throw an error because it expects there to always be
 			// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
 			this._logService.info(`Could not find connection management info for ${uri} after connection complete`);
-		}
-		if (options.showDashboard) {
-			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
-		}
-
-		let connectionProfile = connectionManagementInfo.connectionProfile;
-		this._onConnect.fire(<IConnectionParams>{
-			connectionUri: uri,
-			connectionProfile: connectionProfile
-		});
-
-		let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
-		if (iconProvider) {
-			const serverInfo: azdata.ServerInfo | undefined = this.getServerInfo(connectionProfile.id);
-			if (!serverInfo) {
-				this._logService.warn(`Could not find ServerInfo for connection ${connectionProfile.id} when updating icon`);
-				return;
+		} else {
+			if (options.showDashboard) {
+				this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
 			}
-			const profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
-			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
-				if (iconId && this._mementoObj && this._mementoContext) {
-					if (!this._mementoObj.CONNECTION_ICON_ID) {
-						this._mementoObj.CONNECTION_ICON_ID = <any>{};
-					}
-					if (this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] !== iconId) {
-						this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] = iconId;
-						this._mementoContext.saveMemento();
-					}
-				}
+
+			let connectionProfile = connectionManagementInfo.connectionProfile;
+			this._onConnect.fire(<IConnectionParams>{
+				connectionUri: uri,
+				connectionProfile: connectionProfile
 			});
+
+			let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
+			if (iconProvider) {
+				const serverInfo: azdata.ServerInfo | undefined = this.getServerInfo(connectionProfile.id);
+				if (!serverInfo) {
+					this._logService.warn(`Could not find ServerInfo for connection ${connectionProfile.id} when updating icon`);
+					return;
+				}
+				const profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
+				iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
+					if (iconId && this._mementoObj && this._mementoContext) {
+						if (!this._mementoObj.CONNECTION_ICON_ID) {
+							this._mementoObj.CONNECTION_ICON_ID = <any>{};
+						}
+						if (this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] !== iconId) {
+							this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] = iconId;
+							this._mementoContext.saveMemento();
+						}
+					}
+				});
+			}
 		}
 	}
 

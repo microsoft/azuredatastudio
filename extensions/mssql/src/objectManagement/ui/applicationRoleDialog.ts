@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterApplicationRoleDocUrl, CreateApplicationRoleDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { ApplicationRoleInfo, ApplicationRoleViewInfo } from '../interfaces';
 
-export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.ApplicationRoleInfo, ObjectManagement.ApplicationRoleViewInfo> {
+export class ApplicationRoleDialog extends PrincipalDialogBase<ApplicationRoleInfo, ApplicationRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemasSection: azdata.GroupContainer;
@@ -26,7 +27,7 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ObjectManagement.
 	private ownedSchemaTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, true, false);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: false });
 	}
 
 	protected override postInitializeData(): void {

@@ -10,8 +10,9 @@ import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants'
 import { FindObjectDialog } from './findObjectDialog';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { DatabaseRoleInfo, DatabaseRoleViewInfo } from '../interfaces';
 
-export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
+export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, DatabaseRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemasSection: azdata.GroupContainer;
@@ -28,7 +29,7 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 	private memberTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, true, false);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: false });
 	}
 
 	protected override get helpUrl(): string {
@@ -54,7 +55,11 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		}, this.objectInfo.owner, true, 'text', 210);
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
-				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+				objectTypes: localizedConstants.getObjectTypeInfo([
+					ObjectManagement.NodeType.ApplicationRole,
+					ObjectManagement.NodeType.DatabaseRole,
+					ObjectManagement.NodeType.User
+				]),
 				selectAllObjectTypes: true,
 				multiSelect: false,
 				contextId: this.contextId,
@@ -78,7 +83,10 @@ export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.Dat
 		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
-					objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+					objectTypes: localizedConstants.getObjectTypeInfo([
+						ObjectManagement.NodeType.DatabaseRole,
+						ObjectManagement.NodeType.User
+					]),
 					selectAllObjectTypes: true,
 					multiSelect: true,
 					contextId: this.contextId,

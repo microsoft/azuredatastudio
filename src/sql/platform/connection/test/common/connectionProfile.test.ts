@@ -25,7 +25,9 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
+		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
 		providerName: mssqlProviderName,
 		options: {},
@@ -281,5 +283,11 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('an empty connection profile does not cause issues', () => {
 		assert.doesNotThrow(() => new ConnectionProfile(capabilitiesService, {} as IConnectionProfile));
+	});
+
+	test('getOptionsKey should produce the same optionsKey after converting to IConnectionProfile', () => {
+		let conn = new ConnectionProfile(capabilitiesService, iConnectionProfile);
+		const myIConnectionProfile = conn.toIConnectionProfile();
+		assert.equal(conn.getOptionsKey(), myIConnectionProfile.getOptionsKey());
 	});
 });

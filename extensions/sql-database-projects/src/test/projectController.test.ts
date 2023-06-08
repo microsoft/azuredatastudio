@@ -332,12 +332,12 @@ describe('ProjectsController', function (): void {
 
 			it('Should exclude a folder', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
-				await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
+				await proj.addScriptItem('SomeFolder/MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
 				const projController = new ProjectsController(testContext.outputChannel);
 				const projTreeRoot = new ProjectRootTreeItem(proj);
 
-				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder/MyTable.sql'))).be.true('File should exist in original location');
 				(proj.sqlObjectScripts.length).should.equal(1, 'Starting number of scripts');
 				(proj.folders.length).should.equal(1, 'Starting number of folders');
 
@@ -348,7 +348,7 @@ describe('ProjectsController', function (): void {
 				// reload project and verify files were renamed
 				proj = await Project.openProject(proj.projectFilePath);
 
-				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should still exist on disk');
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder', 'MyTable.sql'))).be.true('File should still exist on disk');
 				(proj.sqlObjectScripts.length).should.equal(0, 'Number of scripts should not have changed');
 				(proj.folders.length).should.equal(0, 'Number of folders should not have changed');
 			});
@@ -879,6 +879,28 @@ describe('ProjectsController', function (): void {
 			should(await utils.exists(path.join(proj.projectFolderPath, 'UpperFolder', 'script1.sql'))).be.true('The moved file should exist');
 		});
 
+		it('Should move a folder to another folder', async function (): Promise<void> {
+			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
+
+			let proj = await testUtils.createTestProject(this.test, baselines.newSdkStyleProjectSdkNodeBaseline);
+
+			const projTreeRoot = await setupMoveTest(proj);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+
+			// try to move a child folder to go under the root folder
+			const folderNode = projTreeRoot.children.find(x => x.friendlyName === 'folder1');
+			const folderWorkspaceTreeItem = createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!);
+			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), folderNode, folderWorkspaceTreeItem);
+
+			should(spy.notCalled).be.true('showErrorMessage should not have been called');
+
+			// reload project and verify file was moved
+			proj = await Project.openProject(proj.projectFilePath);
+			should(proj.folders.find(f => f.relativePath === 'UpperFolder\\folder1') !== undefined).be.true('The folder path should have been updated');
+		});
+
 		it('Should not allow moving a file to Database References or SQLCMD folder', async function (): Promise<void> {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.move));
@@ -903,7 +925,7 @@ describe('ProjectsController', function (): void {
 			}
 		});
 
-		it('Should only allow moving files', async function (): Promise<void> {
+		it('Should only allow moving files and folders', async function (): Promise<void> {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 			let proj = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
 			const projTreeRoot = await setupMoveTest(proj);
@@ -923,14 +945,6 @@ describe('ProjectsController', function (): void {
 			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), dbRefNode, projectRootWorkspaceTreeItem);
 
 			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a database reference');
-			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
-			spy.restore();
-
-			// try moving a folder
-			const folderNode = projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder');
-			await projController.moveFile(vscode.Uri.file(proj.projectFilePath), folderNode, projectRootWorkspaceTreeItem);
-
-			should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once when trying to move a folder');
 			should(spy.calledWith(constants.onlyMoveFilesFoldersSupported)).be.true(`showErrorMessage not called with expected message '${constants.onlyMoveFilesFoldersSupported}' Actual '${spy.getCall(0).args[0]}'`);
 			spy.restore();
 		});
@@ -1022,13 +1036,13 @@ describe('ProjectsController', function (): void {
 
 		it('Should rename a folder', async function (): Promise<void> {
 			let proj = await testUtils.createTestSqlProject(this.test);
-			await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
+			await proj.addScriptItem('SomeFolder/MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			const projTreeRoot = new ProjectRootTreeItem(proj);
 
 			sinon.stub(vscode.window, 'showInputBox').resolves('RenamedFolder');
-			should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder', 'MyTable.sql'))).be.true('File should exist in original location');
 			(proj.sqlObjectScripts.length).should.equal(1, 'Starting number of scripts');
 			(proj.folders.length).should.equal(1, 'Starting number of folders');
 
@@ -1039,7 +1053,7 @@ describe('ProjectsController', function (): void {
 			// reload project and verify files were renamed
 			proj = await Project.openProject(proj.projectFilePath);
 
-			should(await utils.exists(path.join(proj.projectFolderPath, 'RenamedFolder\\MyTable.sql'))).be.true('File should exist in new location');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'RenamedFolder', 'MyTable.sql'))).be.true('File should exist in new location');
 			(proj.sqlObjectScripts.length).should.equal(1, 'Number of scripts should not have changed');
 			(proj.folders.length).should.equal(1, 'Number of folders should not have changed');
 			should(proj.folders.find(f => f.relativePath === 'RenamedFolder') !== undefined).be.true('The folder path should have been updated');
@@ -1101,6 +1115,40 @@ describe('ProjectsController', function (): void {
 			project = await Project.openProject(project.projectFilePath);
 			should(project.sqlCmdVariables.size).equal(3, 'The project should have 3 sqlcmd variable after adding a new one');
 		});
+
+		it('Should add sqlcmd variable without DefaultValue', async function (): Promise<void> {
+			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
+			const sqlProjectsService = await utils.getSqlProjectsService();
+			await sqlProjectsService.openProject(project.projectFilePath);
+
+			const projController = new ProjectsController(testContext.outputChannel);
+			const projRoot = new ProjectRootTreeItem(project);
+
+			should(project.sqlCmdVariables.size).equal(2, 'The project should start with 2 sqlcmd variables');
+
+			const inputBoxStub = sinon.stub(vscode.window, 'showInputBox');
+			inputBoxStub.onFirstCall().resolves('newVariable');
+			inputBoxStub.onSecondCall().resolves(undefined);
+			const infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
+			infoMessageStub.onFirstCall().returns(<any>Promise.resolve(constants.noString));
+			await projController.addSqlCmdVariable(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(project.sqlCmdVariables.size).equal(2, 'The project should still have 2 sqlcmd variables if no was selected for adding sqlcmd variable without a DefaultValue');
+
+			inputBoxStub.reset();
+			inputBoxStub.onFirstCall().resolves('newVariable');
+			inputBoxStub.onSecondCall().resolves(undefined);
+			infoMessageStub.onSecondCall().returns(<any>Promise.resolve(constants.yesString));
+			await projController.addSqlCmdVariable(createWorkspaceTreeItem(projRoot.children.find(x => x.friendlyName === constants.sqlcmdVariablesNodeName)!));
+
+			// reload project
+			project = await Project.openProject(project.projectFilePath);
+			should(project.sqlCmdVariables.size).equal(3, 'The project should have 3 sqlcmd variable after adding a new one without a DefaultValue');
+			should(project.sqlCmdVariables.get('newVariable')).equal('', 'The default value of newVariable should be an empty string');
+		});
+
 
 		it('Should update sqlcmd variable', async function (): Promise<void> {
 			let project = await testUtils.createTestProject(this.test, baselines.openSdkStyleSqlProjectBaseline);
@@ -1164,6 +1212,7 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 async function setupMoveTest(proj: Project): Promise<ProjectRootTreeItem> {
 	await proj.addFolder('UpperFolder');
 	await proj.addFolder('UpperFolder/LowerFolder');
+	await proj.addFolder('folder1');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
 	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');

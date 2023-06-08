@@ -8,28 +8,35 @@ import * as mssql from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { FindObjectDialog } from './findObjectDialog';
+import { FindObjectDialog, FindObjectDialogResult } from './findObjectDialog';
 import { deepClone } from '../../util/objects';
 import { DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
+import { ObjectSelectionMethod, ObjectSelectionMethodDialog } from './objectSelectionMethodDialog';
+import { DatabaseLevelPrincipalViewInfo, SecurablePermissionItem, SecurablePermissions, SecurityPrincipalObject, SecurityPrincipalViewInfo } from '../interfaces';
 
 const GrantColumnIndex = 2;
 const WithGrantColumnIndex = 3;
 const DenyColumnIndex = 4;
 
+export interface PrincipalDialogOptions extends ObjectManagementDialogOptions {
+	isDatabaseLevelPrincipal: boolean;
+	supportEffectivePermissions: boolean;
+}
+
 /**
  * Base class for security principal dialogs such as user, role, etc.
  */
-export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectManagement.SecurityPrincipalObject, ViewInfoType extends mssql.ObjectManagement.SecurityPrincipalViewInfo<ObjectInfoType>> extends ObjectManagementDialogBase<ObjectInfoType, ViewInfoType> {
+export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincipalObject, ViewInfoType extends SecurityPrincipalViewInfo<ObjectInfoType>> extends ObjectManagementDialogBase<ObjectInfoType, ViewInfoType> {
 	protected securableTable: azdata.TableComponent;
 	protected permissionTable: azdata.TableComponent;
 	protected effectivePermissionTable: azdata.TableComponent;
 	protected securableSection: azdata.GroupContainer;
 	protected explicitPermissionTableLabel: azdata.TextComponent;
 	protected effectivePermissionTableLabel: azdata.TextComponent;
-	private securablePermissions: mssql.ObjectManagement.SecurablePermissions[] = [];
+	private securablePermissions: SecurablePermissions[] = [];
 
-	constructor(objectManagementService: mssql.IObjectManagementService, options: ObjectManagementDialogOptions, private readonly showSchemaColumn: boolean, private readonly supportEffectivePermissions: boolean = true) {
-		super(objectManagementService, options);
+	constructor(objectManagementService: mssql.IObjectManagementService, private readonly dialogOptions: PrincipalDialogOptions) {
+		super(objectManagementService, dialogOptions);
 	}
 
 	protected override async initializeUI(): Promise<void> {
@@ -40,12 +47,12 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	private initializeSecurableSection(): void {
 		const items: azdata.Component[] = [];
 		const securableTableColumns = [localizedConstants.NameText, localizedConstants.ObjectTypeText];
-		if (this.showSchemaColumn) {
+		if (this.dialogOptions.isDatabaseLevelPrincipal) {
 			securableTableColumns.splice(1, 0, localizedConstants.SchemaText);
 		}
 		this.securableTable = this.createTable(localizedConstants.SecurablesText, securableTableColumns, this.getSecurableTableData());
 		const buttonContainer = this.addButtonsForTable(this.securableTable, localizedConstants.AddSecurableAriaLabel, localizedConstants.RemoveSecurableAriaLabel,
-			() => this.onAddSecurableButtonClicked(), () => this.onRemoveSecurableButtonClicked());
+			(button) => this.onAddSecurableButtonClicked(button), () => this.onRemoveSecurableButtonClicked());
 		this.disposables.push(this.securableTable.onRowSelected(async () => {
 			await this.updatePermissionsTable();
 		}));
@@ -76,7 +83,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		this.disposables.push(this.permissionTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 			const permissionName = this.permissionTable.data[arg.row][0];
 			const securable = this.securablePermissions[this.securableTable.selectedRows[0]];
-			let permission: mssql.ObjectManagement.SecurablePermissionItem = securable.permissions.find(securablePermission => securablePermission.permission === permissionName);
+			let permission: SecurablePermissionItem = securable.permissions.find(securablePermission => securablePermission.permission === permissionName);
 			if (!permission) {
 				permission = {
 					permission: permissionName,
@@ -115,19 +122,40 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		this.securableSection = this.createGroup(localizedConstants.SecurablesText, items, true, true);
 	}
 
-	private async onAddSecurableButtonClicked(): Promise<void> {
-		const dialog = new FindObjectDialog(this.objectManagementService, {
-			objectTypes: this.viewInfo.supportedSecurableTypes,
-			selectAllObjectTypes: false,
-			multiSelect: true,
-			contextId: this.contextId,
-			title: localizedConstants.SelectSecurablesDialogTitle,
-			showSchemaColumn: this.showSchemaColumn
-		});
-		await dialog.open();
-		const result = await dialog.waitForClose();
-		if (result && result.selectedObjects.length > 0) {
-			result.selectedObjects.forEach(obj => {
+	private async onAddSecurableButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+		const selectedObjects: mssql.ObjectManagement.SearchResultItem[] = [];
+		if (this.dialogOptions.isDatabaseLevelPrincipal) {
+			const methodDialog = new ObjectSelectionMethodDialog({
+				objectTypes: this.viewInfo.supportedSecurableTypes,
+				schemas: (<DatabaseLevelPrincipalViewInfo<SecurityPrincipalObject>><unknown>this.viewInfo).schemas,
+			});
+			await methodDialog.open();
+			const methodResult = await methodDialog.waitForClose();
+			if (methodResult) {
+				switch (methodResult.method) {
+					case ObjectSelectionMethod.AllObjectsOfTypes:
+						selectedObjects.push(... await this.searchForObjects(methodResult.objectTypes.map(item => item.name)));
+						break;
+					case ObjectSelectionMethod.AllObjectsOfSchema:
+						selectedObjects.push(... await this.searchForObjects(this.viewInfo.supportedSecurableTypes.map(item => item.name), methodResult.schema));
+						break;
+					default:
+						const objectsResult = await this.openFindObjectsDialog();
+						if (objectsResult) {
+							selectedObjects.push(...objectsResult.selectedObjects);
+						}
+						break;
+				}
+			}
+		} else {
+			const result = await this.openFindObjectsDialog();
+			if (result) {
+				selectedObjects.push(...result.selectedObjects);
+			}
+		}
+
+		if (selectedObjects.length > 0) {
+			selectedObjects.forEach(obj => {
 				if (this.securablePermissions.find(securable => securable.type === obj.type && securable.name === obj.name && securable.schema === obj.schema)) {
 					return;
 				}
@@ -150,6 +178,27 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 			const data = this.getSecurableTableData();
 			await this.setTableData(this.securableTable, data);
 		}
+		await button.focus();
+	}
+
+	private async searchForObjects(objectTypes: string[], schema: string = undefined): Promise<mssql.ObjectManagement.SearchResultItem[]> {
+		this.updateLoadingStatus(true, localizedConstants.LoadingObjectsText);
+		const result = await this.objectManagementService.search(this.contextId, objectTypes, undefined, schema);
+		this.updateLoadingStatus(false, localizedConstants.LoadingObjectsText, localizedConstants.LoadingObjectsCompletedText(result.length));
+		return result;
+	}
+
+	private async openFindObjectsDialog(): Promise<FindObjectDialogResult> {
+		const dialog = new FindObjectDialog(this.objectManagementService, {
+			objectTypes: this.viewInfo.supportedSecurableTypes,
+			selectAllObjectTypes: false,
+			multiSelect: true,
+			contextId: this.contextId,
+			title: localizedConstants.SelectSecurablesDialogTitle,
+			showSchemaColumn: this.dialogOptions.isDatabaseLevelPrincipal
+		});
+		await dialog.open();
+		return await dialog.waitForClose();
 	}
 
 	private async onRemoveSecurableButtonClicked(): Promise<void> {
@@ -164,7 +213,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	private getSecurableTableData(): string[][] {
 		return this.securablePermissions.map(securable => {
 			const row = [securable.name, this.getSecurableTypeDisplayName(securable.type)];
-			if (this.showSchemaColumn) {
+			if (this.dialogOptions.isDatabaseLevelPrincipal) {
 				row.splice(1, 0, securable.schema);
 			}
 			return row;
@@ -223,6 +272,6 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 	}
 
 	private get showEffectivePermissions(): boolean {
-		return !this.options.isNewObject && this.supportEffectivePermissions;
+		return !this.dialogOptions.isNewObject && this.dialogOptions.supportEffectivePermissions;
 	}
 }

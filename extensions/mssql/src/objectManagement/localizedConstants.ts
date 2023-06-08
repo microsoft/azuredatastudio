@@ -5,6 +5,8 @@
 
 import * as nls from 'vscode-nls';
 import { ObjectManagement } from 'mssql';
+import { ObjectTypeInfo } from './ui/findObjectDialog';
+import { AuthenticationType, UserType } from './interfaces';
 const localize = nls.loadMessageBundle();
 
 // Object Types
@@ -195,8 +197,10 @@ export const SelectServerRoleMemberDialogTitle = localize('objectManagement.serv
 export const SelectServerRoleOwnerDialogTitle = localize('objectManagement.serverRole.SelectOwnerDialogTitle', "Select Server Role Owner");
 
 // Find Object Dialog
+export const ObjectTypesText = localize('objectManagement.objectTypesLabel', "Object Types");
+export const FilterSectionTitle = localize('objectManagement.filterSectionTitle', "Filters");
 export const ObjectTypeText = localize('objectManagement.objectTypeLabel', "Object Type");
-export const FilterText = localize('objectManagement.filterText', "Filter");
+export const SearchTextLabel = localize('objectManagement.SearchTextLabel', "Search Text");
 export const FindText = localize('objectManagement.findText', "Find");
 export const SelectText = localize('objectManagement.selectText', "Select");
 export const ObjectsText = localize('objectManagement.objectsLabel', "Objects");
@@ -205,8 +209,15 @@ export function LoadingObjectsCompletedText(count: number): string {
 	return localize('objectManagement.loadingObjectsCompletedLabel', "Loading objects completed, {0} objects found", count);
 }
 
-// Util functions
+// ObjectSelectionMethodDialog
+export const ObjectSelectionMethodDialogTitle = localize('objectManagement.objectSelectionMethodDialogTitle', "Add Objects");
+export const ObjectSelectionMethodDialog_TypeLabel = localize('objectManagement.ObjectSelectionMethodDialog_TypeLabel', "How do you want to add objects?");
+export const ObjectSelectionMethodDialog_SpecificObjects = localize('objectManagement.ObjectSelectionMethodDialog_SpecificObjects', "Specific objects…");
+export const ObjectSelectionMethodDialog_AllObjectsOfTypes = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes', "All objects of certain types");
+export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema', "All objects belonging to a schema");
+export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
+// Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {
 		case ObjectManagement.NodeType.ApplicationRole:
@@ -232,19 +243,19 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 	}
 }
 
-const AuthencationTypeDisplayNameMap = new Map<ObjectManagement.AuthenticationType, string>();
-AuthencationTypeDisplayNameMap.set(ObjectManagement.AuthenticationType.Windows, WindowsAuthenticationTypeDisplayText);
-AuthencationTypeDisplayNameMap.set(ObjectManagement.AuthenticationType.Sql, SQLAuthenticationTypeDisplayText);
-AuthencationTypeDisplayNameMap.set(ObjectManagement.AuthenticationType.AzureActiveDirectory, AADAuthenticationTypeDisplayText);
+const AuthencationTypeDisplayNameMap = new Map<AuthenticationType, string>();
+AuthencationTypeDisplayNameMap.set(AuthenticationType.Windows, WindowsAuthenticationTypeDisplayText);
+AuthencationTypeDisplayNameMap.set(AuthenticationType.Sql, SQLAuthenticationTypeDisplayText);
+AuthencationTypeDisplayNameMap.set(AuthenticationType.AzureActiveDirectory, AADAuthenticationTypeDisplayText);
 
-export function getAuthenticationTypeDisplayName(authType: ObjectManagement.AuthenticationType): string {
+export function getAuthenticationTypeDisplayName(authType: AuthenticationType): string {
 	if (AuthencationTypeDisplayNameMap.has(authType)) {
 		return AuthencationTypeDisplayNameMap.get(authType);
 	}
 	throw new Error(`Unknown authentication type: ${authType}`);
 }
 
-export function getAuthenticationTypeByDisplayName(displayName: string): ObjectManagement.AuthenticationType {
+export function getAuthenticationTypeByDisplayName(displayName: string): AuthenticationType {
 	for (let [key, value] of AuthencationTypeDisplayNameMap.entries()) {
 		if (value === displayName)
 			return key;
@@ -252,24 +263,33 @@ export function getAuthenticationTypeByDisplayName(displayName: string): ObjectM
 	throw new Error(`Unknown authentication type display name: ${displayName}`);
 }
 
-const UserTypeDisplayNameMap = new Map<ObjectManagement.UserType, string>();
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.LoginMapped, UserType_LoginMapped);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.WindowsUser, UserType_WindowsUser);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.SqlAuthentication, UserType_SqlAuthentication);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.AADAuthentication, UserType_AADAuthentication);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.NoLoginAccess, UserType_NoLoginAccess);
+const UserTypeDisplayNameMap = new Map<UserType, string>();
+UserTypeDisplayNameMap.set(UserType.LoginMapped, UserType_LoginMapped);
+UserTypeDisplayNameMap.set(UserType.WindowsUser, UserType_WindowsUser);
+UserTypeDisplayNameMap.set(UserType.SqlAuthentication, UserType_SqlAuthentication);
+UserTypeDisplayNameMap.set(UserType.AADAuthentication, UserType_AADAuthentication);
+UserTypeDisplayNameMap.set(UserType.NoLoginAccess, UserType_NoLoginAccess);
 
-export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
+export function getUserTypeDisplayName(userType: UserType): string {
 	if (UserTypeDisplayNameMap.has(userType)) {
 		return UserTypeDisplayNameMap.get(userType);
 	}
 	throw new Error(`Unknown user type: ${userType}`);
 }
 
-export function getUserTypeByDisplayName(displayName: string): ObjectManagement.UserType {
+export function getUserTypeByDisplayName(displayName: string): UserType {
 	for (let [key, value] of UserTypeDisplayNameMap.entries()) {
 		if (value === displayName)
 			return key;
 	}
 	throw new Error(`Unknown user type display name: ${displayName}`);
+}
+
+export function getObjectTypeInfo(typeNames: string[]): ObjectTypeInfo[] {
+	return typeNames.map(typeName => {
+		return {
+			name: typeName,
+			displayName: getNodeTypeDisplayName(typeName, true)
+		};
+	});
 }

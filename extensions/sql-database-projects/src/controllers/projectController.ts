@@ -28,7 +28,7 @@ import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
+import { DatabaseReferenceTreeItem, SqlProjectReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { UpdateProjectFromDatabaseDialog } from '../dialogs/updateProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -993,14 +993,21 @@ export class ProjectsController {
 			return;
 		}
 
-		const defaultValue = await vscode.window.showInputBox(
+		let defaultValue = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewSqlCmdVariableDefaultValue(variableName),
 				ignoreFocusOut: true
 			});
 
 		if (!defaultValue) {
-			return;
+			// prompt asking if they want to add to add a sqlcmd variable without a default value
+			const result = await vscode.window.showInformationMessage(constants.addSqlCmdVariableWithoutDefaultValue(variableName), constants.yesString, constants.noString);
+
+			if (result === constants.noString) {
+				return;
+			} else {
+				defaultValue = '';
+			}
 		}
 
 		await project.addSqlCmdVariable(variableName, defaultValue);
@@ -1026,6 +1033,22 @@ export class ProjectsController {
 	public async openContainingFolder(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = await this.getProjectFromContext(context);
 		await vscode.commands.executeCommand(constants.revealFileInOsCommand, vscode.Uri.file(project.projectFilePath));
+	}
+
+	/**
+	 * Open the project indicated by `context` in the workspace
+	 * @param context a SqlProjectReferenceTreeItem in the project's tree
+	 */
+	public async openReferencedSqlProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = await this.getProjectFromContext(node);
+
+		if (!(node instanceof SqlProjectReferenceTreeItem)) {
+			return;
+		}
+
+		const absolutePath = path.normalize(path.join(project.projectFolderPath, node.reference.fsUri.fsPath));
+		await this.openProjectInWorkspace(absolutePath);
 	}
 
 	/**
