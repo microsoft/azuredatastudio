@@ -873,11 +873,11 @@ declare module 'azdata' {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
 		 */
-		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+		connectionUriChanged?(newUri: string, oldUri: string): Thenable<void>;
 		/**
 		 * Copy the selected data to the clipboard.
 		 */
-		copyResults(requestParams: CopyResultsRequestParams): Thenable<CopyResultsRequestResult>;
+		copyResults?(requestParams: CopyResultsRequestParams): Thenable<CopyResultsRequestResult>;
 	}
 
 	export enum DataProviderType {
