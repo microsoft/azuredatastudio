@@ -547,7 +547,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connectionGroupName = (connection.groupFullName !== undefined && connection.groupFullName !== '' && connection.groupFullName !== '/') ?
 			(groupNameBase + connection.groupFullName) : (groupNameBase + '<default>');
 		this._logService.error(`Profile edit for '${connection.id}' matches an existing profile with data: '${connectionOptionsKey}' or is identical to a profile with a different name`);
-		throw new Error(nls.localize('connection.duplicateEditErrorMessage', 'Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: \n\n {0}{1}', connectionOptionsKey, connectionGroupName));
+		throw new Error(nls.localize('connection.duplicateEditErrorMessage', 'Cannot save profile, the selected connection matches an existing profile with the same server info (ignoring connection name) in the same group: \n\n {0}{1}', connectionOptionsKey, connectionGroupName));
 	}
 
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
