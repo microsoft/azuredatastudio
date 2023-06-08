@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { CommandLineWorkbenchContribution, SqlArgs } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
+import { CommandLineWorkbenchContribution } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
@@ -35,11 +35,24 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQu
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
-class TestParsedArgs implements NativeParsedArgs, SqlArgs {
+class TestParsedArgs implements NativeParsedArgs {
 	[arg: string]: any;
 	_: string[];
-	database?: string;
+
+	// Start: SQL Args
+	aad?: boolean;
+	applicationName?: string;
+	authenticationType?: string;
 	command?: string;
+	connectionProperties?: string;
+	database?: string;
+	integrated?: boolean;
+	provider?: string;
+	server?: string;
+	showDashboard?: boolean;
+	user?: string;
+	// End: SQL Args
+
 	debugBrkPluginHost?: string;
 	debugBrkSearch?: string;
 	debugId?: string;
@@ -77,7 +90,6 @@ class TestParsedArgs implements NativeParsedArgs, SqlArgs {
 	'prof-startup'?: boolean;
 	'prof-startup-prefix'?: string;
 	'reuse-window'?: boolean;
-	server?: string;
 	'show-versions'?: boolean;
 	'skip-add-to-recently-opened'?: boolean;
 	'skip-getting-started'?: boolean;
@@ -87,16 +99,12 @@ class TestParsedArgs implements NativeParsedArgs, SqlArgs {
 	'uninstall-extension'?: string[];
 	'unity-launch'?: boolean; // Always open a new window, except if opening the first window or opening a file or folder as part of the launch.
 	'upload-logs'?: string;
-	user?: string;
 	'user-data-dir'?: string;
 	_urls?: string[];
 	verbose?: boolean;
 	version?: boolean;
 	wait?: boolean;
 	waitMarkerFilePath?: string;
-	authenticationType?: string;
-	applicationName?: string;
-	connectionProperties?: string;
 }
 suite('commandLineService tests', () => {
 
@@ -220,6 +228,30 @@ suite('commandLineService tests', () => {
 		connectionManagementService.verifyAll();
 	});
 
+	test('processCommandLine shows dashboard when requested', async () => {
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+
+		const args: TestParsedArgs = new TestParsedArgs();
+		args.server = 'myserver';
+		args.database = 'mydatabase';
+		args.user = 'myuser';
+		args.showDashboard = true;
+		args.authenticationType = Constants.AuthenticationType.SqlLogin;
+
+		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+		connectionManagementService.setup(c => c.showDashboard(TypeMoq.It.isAny())).verifiable(TypeMoq.Times.atMostOnce());
+		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
+		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
+		let originalProfile: IConnectionProfile = undefined;
+		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
+		const configurationService = getConfigurationServiceMock(true);
+		const logService = new NullLogService();
+		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
+		await contribution.processCommandLine(args);
+		connectionManagementService.verifyAll();
+	});
+
 	test('processCommandLine loads advanced options in args', async () => {
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
@@ -284,7 +316,6 @@ suite('commandLineService tests', () => {
 
 
 	test('processCommandLine invokes a command with a profile parameter when a server is passed', async () => {
-
 		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
 			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 

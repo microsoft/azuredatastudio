@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBProvider } from '../../../constants';
+import { AzureResourceMongoDatabaseServer } from './cosmosDbMongoService';
 import { generateGuid } from '../../../utils';
 import { DbServerGraphData, GraphData } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
@@ -25,7 +26,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 		super(databaseServerService);
 	}
 
-	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
+	public getTreeItemForResource(databaseServer: AzureResourceMongoDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
 			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: `${databaseServer.name} (CosmosDB Mongo API)`,
@@ -38,16 +39,18 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 			payload: {
 				id: generateGuid(),
 				connectionName: databaseServer.name,
-				serverName: databaseServer.name,
+				serverName: databaseServer.fullName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: azdata.connection.AuthenticationType.AzureMFA,
+				authenticationType: databaseServer.isServer ? azdata.connection.AuthenticationType.SqlLogin : azdata.connection.AuthenticationType.AzureMFA,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
 				providerName: cosmosDBProvider,
 				saveProfile: false,
-				options: {},
+				options: {
+					isServer: databaseServer.isServer,
+				},
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
 				azureResourceId: databaseServer.id,
