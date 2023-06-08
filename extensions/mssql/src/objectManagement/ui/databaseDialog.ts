@@ -54,7 +54,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeDatabaseSection();
 			this.initializeMaintenanceSection();
 
-			this.registerTab(this.generalTab, [this.backupSection, this.databaseSection, this.maintenanceSection]);
+			this.registerTabContent(this.generalTab, [this.backupSection, this.databaseSection, this.maintenanceSection]);
 
 			this.dialogObject.content = [this.generalTab, this.filesTab];
 
