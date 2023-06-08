@@ -500,7 +500,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 	public async deleteAllCache(): Promise<void> {
 		this.clientApplication.clearCache();
-		await this.msalCacheProvider.clearLocalCache();
+
+		// unlink both cache files
+		await this.msalCacheProvider.unlinkMsalCache();
+		await this.msalCacheProvider.unlinkLocalCache();
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {

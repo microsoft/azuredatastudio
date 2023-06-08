@@ -48,6 +48,8 @@ import { AzureResourceSynapseService } from './providers/synapseSqlPool/synapseS
 import { AzureResourceSynapseSqlPoolTreeDataProvider } from './providers/synapseSqlPool/synapseSqlPoolTreeDataProvider';
 import { AzureResourceSynapseWorkspaceService } from './providers/synapseWorkspace/synapseWorkspaceService';
 import { AzureResourceSynapseWorkspaceTreeDataProvider } from './providers/synapseWorkspace/synapseWorkspaceTreeDataProvider';
+import { PostgresFlexibleServerTreeDataProvider } from './providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider';
+import { PostgresFlexibleServerService } from './providers/postgresFlexibleServer/postgresFlexibleServerService';
 
 const localize = nls.loadMessageBundle();
 
@@ -268,6 +270,7 @@ export function getAllResourceProviders(extensionContext: vscode.ExtensionContex
 		new ResourceProvider(Constants.DATABASE_SERVER_PROVIDER_ID, new AzureResourceDatabaseServerTreeDataProvider(new AzureResourceDatabaseServerService(), extensionContext)),
 		new ResourceProvider(Constants.KUSTO_PROVIDER_ID, new KustoTreeDataProvider(new KustoResourceService(), extensionContext)),
 		new ResourceProvider(Constants.MYSQL_FLEXIBLE_SERVER_PROVIDER_ID, new MysqlFlexibleServerTreeDataProvider(new MysqlFlexibleServerService(), extensionContext)),
+		new ResourceProvider(Constants.POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID, new PostgresFlexibleServerTreeDataProvider(new PostgresFlexibleServerService(), extensionContext)),
 		new ResourceProvider(Constants.POSTGRES_SERVER_PROVIDER_ID, new PostgresServerTreeDataProvider(new PostgresServerService(), extensionContext)),
 		new ResourceProvider(Constants.SQLINSTANCE_PROVIDER_ID, new SqlInstanceTreeDataProvider(new SqlInstanceResourceService(), extensionContext)),
 		new ResourceProvider(Constants.SYNAPSE_SQL_POOL_PROVIDER_ID, new AzureResourceSynapseSqlPoolTreeDataProvider(new AzureResourceSynapseService(), extensionContext)),

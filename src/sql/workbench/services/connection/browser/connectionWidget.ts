@@ -968,9 +968,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				});
 			}
 
-			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser || connectionInfo.azureAccount !== null) {
 				this.fillInAzureAccountOptions().then(async () => {
-					let accountName = (this.authType === AuthenticationType.AzureMFA)
+					let accountName = ((this.authType === AuthenticationType.AzureMFA) || connectionInfo.azureAccount !== null)
 						? connectionInfo.azureAccount : connectionInfo.userName;
 					let account: azdata.Account;
 					if (accountName) {
@@ -1256,7 +1256,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				model.userName = this.userName;
 				model.password = this.password;
 				model.authenticationType = this.authenticationType;
-				model.azureAccount = this.authToken;
+				const azureAccount = this.authToken;
+				if (azureAccount) {
+					// set the azureAccount only if one has been selected, otherwise preserve the initial model value
+					model.azureAccount = azureAccount;
+				}
 				model.savePassword = this._rememberPasswordCheckBox.checked;
 				model.databaseName = this.databaseName;
 				if (this._customOptionWidgets) {

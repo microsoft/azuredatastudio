@@ -133,6 +133,7 @@ export const DATABASE_SERVER_PROVIDER_ID = 'azure.resource.providers.databaseSer
 export const KUSTO_PROVIDER_ID = 'azure.resource.providers.azureDataExplorer';
 export const MYSQL_FLEXIBLE_SERVER_PROVIDER_ID = 'azure.resource.providers.mysqlFlexibleServer';
 export const POSTGRES_ARC_SERVER_PROVIDER_ID = 'azure.resource.providers.postgresArcServer';
+export const POSTGRES_FLEXIBLE_SERVER_PROVIDER_ID = 'azure.resource.providers.postgresFlexibleServer';
 export const POSTGRES_SERVER_PROVIDER_ID = 'azure.resource.providers.postgresServer';
 export const SQLINSTANCE_PROVIDER_ID = 'azure.resource.providers.sqlInstance';
 export const SQLINSTANCE_ARC_PROVIDER_ID = 'azure.resource.providers.sqlInstanceArc';
