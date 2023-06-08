@@ -7,7 +7,15 @@
  * A list of command line arguments we support natively.
  */
 export interface NativeParsedArgs {
-	_: string[];
+	/**
+	 * {{ SQL CARBON EDIT}} Start
+	 * Optional for Azure Data Studio to support URI conversion.
+	 * Used to determine file paths to be opened with SQL Editor.
+	 * If provided, we connect the given profile to to it.
+	 * More than one files can be passed to connect to provided profile.
+	 */
+	_?: string[];
+	/**  {{ SQL CARBON EDIT}} End */
 	'folder-uri'?: string[]; // undefined or array of 1 or more
 	'file-uri'?: string[]; // undefined or array of 1 or more
 	_urls?: string[];
@@ -93,12 +101,55 @@ export interface NativeParsedArgs {
 	'locate-shell-integration-path'?: string;
 
 	// {{SQL CARBON EDIT}} Start
+	/**
+	 * Deprecated - used by SSMS - authenticationType should be used instead
+	 */
 	aad?: boolean;
-	database?: string;
-	integrated?: boolean;
-	server?: string;
-	user?: string;
+	/**
+	 * Supports providing applicationName that will be used for connection profile app name.
+	 */
+	applicationName?: string;
+	/**
+	 * Provide authenticationType to be used.
+	 * accepted values: AzureMFA, SqlLogin, Integrated, etc.
+	 */
+	authenticationType?: string
+	/**
+	 * Operation to perform:
+	 * accepted values: connect, openConnectionDialog
+	 */
 	command?: string;
+	/**
+	 *  Supports providing advanced connection properties that providers support.
+	 *  Value must be a json object containing key-value pairs in format: '{"key1":"value1","key2":"value2",...}'
+	 */
+	connectionProperties?: string;
+	/**
+	 * Name of database
+	 */
+	database?: string;
+	/**
+	 * Deprecated - used by SSMS - authenticationType should be used instead.
+	 */
+	integrated?: boolean;
+	/**
+	 * Name of connection provider,
+	 * accepted values: mssql (by default), pgsql, etc.
+	 */
+	provider?: string;
+	/**
+	 * Name of server
+	 */
+	server?: string;
+	/**
+	 * Whether or not to show dashboard
+	 * accepted values: true, false (by default).
+	 */
+	showDashboard?: boolean;
+	/**
+	 * User name/email address
+	 */
+	user?: string;
 	// {{SQL CARBON EDIT}} End
 
 	// chromium command line args: https://electronjs.org/docs/all#supported-chrome-command-line-switches

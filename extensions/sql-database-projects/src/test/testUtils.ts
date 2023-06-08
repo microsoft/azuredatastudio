@@ -100,8 +100,10 @@ export async function createTestFile(test: Mocha.Runnable | undefined, contents:
  * 			-file5.sql
  * 		- file2.txt
  *
+ * @param test
  * @param createList Boolean specifying to create a list of the files and folders been created
  * @param list List of files and folders that are been created
+ * @param testFolderPath
  */
 export async function createDummyFileStructure(test: Mocha.Runnable | undefined, createList?: boolean, list?: Uri[], testFolderPath?: string): Promise<string> {
 	testFolderPath = testFolderPath ?? await generateTestFolderPath(test);
@@ -159,8 +161,10 @@ export async function createDummyFileStructure(test: Mocha.Runnable | undefined,
  * 		- Script.PreDeployment2.sql
  * 		- Script.PostDeployment1.sql
  *
+ * @param test
  * @param createList Boolean specifying to create a list of the files and folders been created
  * @param list List of files and folders that are been created
+ * @param testFolderPath
  */
 export async function createDummyFileStructureWithPrePostDeployScripts(test: Mocha.Runnable | undefined, createList?: boolean, list?: Uri[], testFolderPath?: string): Promise<string> {
 	testFolderPath = await createDummyFileStructure(test, createList, list, testFolderPath);

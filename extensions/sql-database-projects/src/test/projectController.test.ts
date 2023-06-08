@@ -302,7 +302,7 @@ describe('ProjectsController', function (): void {
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
 			});
 
-			it.skip('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
+			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
@@ -330,14 +330,14 @@ describe('ProjectsController', function (): void {
 				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
-			it.skip('Should exclude a folder', async function (): Promise<void> {
+			it('Should exclude a folder', async function (): Promise<void> {
 				let proj = await testUtils.createTestSqlProject(this.test);
-				await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
+				await proj.addScriptItem('SomeFolder/MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
 				const projController = new ProjectsController(testContext.outputChannel);
 				const projTreeRoot = new ProjectRootTreeItem(proj);
 
-				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder/MyTable.sql'))).be.true('File should exist in original location');
 				(proj.sqlObjectScripts.length).should.equal(1, 'Starting number of scripts');
 				(proj.folders.length).should.equal(1, 'Starting number of folders');
 
@@ -348,7 +348,7 @@ describe('ProjectsController', function (): void {
 				// reload project and verify files were renamed
 				proj = await Project.openProject(proj.projectFilePath);
 
-				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should still exist on disk');
+				should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder', 'MyTable.sql'))).be.true('File should still exist on disk');
 				(proj.sqlObjectScripts.length).should.equal(0, 'Number of scripts should not have changed');
 				(proj.folders.length).should.equal(0, 'Number of folders should not have changed');
 			});
@@ -1034,15 +1034,15 @@ describe('ProjectsController', function (): void {
 			should(await utils.exists(path.join(proj.projectFolderPath, 'postdeployNewName.sql'))).be.true('The moved post deploy script file should exist');
 		});
 
-		it.skip('Should rename a folder', async function (): Promise<void> {
+		it('Should rename a folder', async function (): Promise<void> {
 			let proj = await testUtils.createTestSqlProject(this.test);
-			await proj.addScriptItem('SomeFolder\\MyTable.sql', 'CREATE TABLE [NotARealTable]');
+			await proj.addScriptItem('SomeFolder/MyTable.sql', 'CREATE TABLE [NotARealTable]');
 
 			const projController = new ProjectsController(testContext.outputChannel);
 			const projTreeRoot = new ProjectRootTreeItem(proj);
 
 			sinon.stub(vscode.window, 'showInputBox').resolves('RenamedFolder');
-			should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder\\MyTable.sql'))).be.true('File should exist in original location');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'SomeFolder', 'MyTable.sql'))).be.true('File should exist in original location');
 			(proj.sqlObjectScripts.length).should.equal(1, 'Starting number of scripts');
 			(proj.folders.length).should.equal(1, 'Starting number of folders');
 
@@ -1053,7 +1053,7 @@ describe('ProjectsController', function (): void {
 			// reload project and verify files were renamed
 			proj = await Project.openProject(proj.projectFilePath);
 
-			should(await utils.exists(path.join(proj.projectFolderPath, 'RenamedFolder\\MyTable.sql'))).be.true('File should exist in new location');
+			should(await utils.exists(path.join(proj.projectFolderPath, 'RenamedFolder', 'MyTable.sql'))).be.true('File should exist in new location');
 			(proj.sqlObjectScripts.length).should.equal(1, 'Number of scripts should not have changed');
 			(proj.folders.length).should.equal(1, 'Number of folders should not have changed');
 			should(proj.folders.find(f => f.relativePath === 'RenamedFolder') !== undefined).be.true('The folder path should have been updated');

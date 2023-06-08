@@ -327,6 +327,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				} else {
 					this.migrationStateModel._sqlMigrationServiceSubscription = undefined!;
 				}
+
+				utils.clearDropDown(this._resourceGroupDropdown);
 				await this.loadResourceGroupDropdown();
 			}));
 
@@ -370,6 +372,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					else {
 						this.migrationStateModel._sqlMigrationServiceResourceGroup = undefined!;
 					}
+					utils.clearDropDown(this._dmsDropdown);
 					this.loadDmsDropdown();
 				}));
 
@@ -523,7 +526,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		try {
 			this._subscriptionDropdown.loading = true;
 			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(
-				this.migrationStateModel._azureAccount);
+				this.migrationStateModel._azureAccount,
+				this.migrationStateModel._azureTenant?.id);
 
 			const sub = this.migrationStateModel._sqlMigrationServiceSubscription
 				?? this.migrationStateModel._targetSubscription;

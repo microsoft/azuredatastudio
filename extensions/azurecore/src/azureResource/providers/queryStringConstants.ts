@@ -49,6 +49,11 @@ export const resourceGroupQuery = `ResourceContainers | where type=="${azureReso
 export const postgresServerQuery = `type == "${azureResource.AzureResourceType.postgresServer}"`;
 
 /**
+ * Lists all postgreSQL flexible servers
+ */
+export const postgresFlexibleServerQuery = `type == "${azureResource.AzureResourceType.postgresFlexibleServer}"`;
+
+/**
  * Lists all Azure Arc PostgreSQL servers
  */
 export const postgresArcServerQuery = `type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
@@ -66,7 +71,7 @@ export const kustoClusterQuery = `type == "${azureResource.AzureResourceType.kus
 /**
  * Lists all Cosmos DB for MongoDB accounts
  */
-export const cosmosMongoDbQuery = `type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.mongoDbKind}"`;
+export const cosmosMongoDbQuery = `(type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.mongoDbKind}") or type == "${azureResource.AzureResourceType.cosmosDbCluster}"`;
 
 /**
  * Lists all Log Analytics workspaces

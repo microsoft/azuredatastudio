@@ -67,6 +67,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: () => { return 'connectionId'; },
 		getOptionKeyIdNames: undefined!,
 		matches: undefined,

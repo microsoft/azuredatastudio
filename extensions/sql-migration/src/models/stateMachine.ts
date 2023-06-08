@@ -659,7 +659,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 				void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_START_POPUP);
 
-				await this.startSkuTimers(page, this.refreshPerfDataCollectionFrequency);
+				await this.startSkuTimers(page);
 			}
 		}
 		catch (error) {
@@ -688,7 +688,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 	}
 
-	public async startSkuTimers(page: SKURecommendationPage, refreshIntervalInMs: number): Promise<void> {
+	public async startSkuTimers(page: SKURecommendationPage): Promise<void> {
 		const classVariable = this;
 
 		if (!this._autoRefreshPerfDataCollectionHandle) {
@@ -701,7 +701,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							await page.refreshSkuRecommendationComponents();	// update timer
 						}
 					},
-					refreshIntervalInMs);
+					this.refreshPerfDataCollectionFrequency);
 			}
 		}
 
@@ -773,7 +773,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		}
 		catch (error) {
-			logError(TelemetryViews.DataCollectionWizard, 'RefreshDataCollectionFailed', error);
+			console.log(error);		// use console.log() instead of logError() to avoid spamming telemetry with this error, which can be frequent
 		}
 
 		return true;
@@ -1142,7 +1142,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						TelemetryAction.StartMigration,
 						{
 							'sessionId': this._sessionId,
-							'tenantId': this._azureAccount.properties.tenants[0].id,
+							'tenantId': this._azureTenant?.id,
 							'subscriptionId': this._sqlMigrationServiceSubscription?.id,
 							'resourceGroup': this._sqlMigrationServiceResourceGroup?.name,
 							'location': this._location.name,

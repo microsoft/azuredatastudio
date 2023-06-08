@@ -5,11 +5,12 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl } from '../constants';
+import { Database, DatabaseViewInfo } from '../interfaces';
 
-export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.Database, ObjectManagement.DatabaseViewInfo> {
+export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _nameInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -35,6 +36,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this._nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
+			this.objectInfo.owner = this.viewInfo.loginNames[0];
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value as string;
 			}, this.viewInfo.loginNames, this.viewInfo.loginNames[0]);
@@ -47,6 +49,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<ObjectManagement.
 	private initializeOptionsSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 		if (this.viewInfo.collationNames?.length > 0) {
+			this.objectInfo.collationName = this.viewInfo.collationNames[0];
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
 			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
