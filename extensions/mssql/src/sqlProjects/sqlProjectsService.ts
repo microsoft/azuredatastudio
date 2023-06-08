@@ -288,7 +288,6 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
 	 * @param defaultValue Default value of the SQLCMD variable
-	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
 	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
@@ -310,7 +309,6 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
 	 * @param defaultValue Default value of the SQLCMD variable
-	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
 	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };

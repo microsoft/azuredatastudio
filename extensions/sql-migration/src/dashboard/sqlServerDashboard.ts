@@ -361,7 +361,7 @@ export class DashboardWidget {
 					const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
 					if (service && migration && canRetryMigration(migration)) {
 						const errorMessage = getMigrationErrors(migration);
-						await openRetryMigrationDialog(
+						openRetryMigrationDialog(
 							errorMessage,
 							async () => {
 								try {

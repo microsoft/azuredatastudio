@@ -78,6 +78,9 @@ export class TestQueryProvider implements azdata.QueryProvider {
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
 		throw new Error('Method not implemented.');
 	}
+	copyResults(requestParams: azdata.CopyResultsRequestParams): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}

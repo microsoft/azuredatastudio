@@ -6,7 +6,7 @@
 import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, forwardRef } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, copySelectionToClipboard, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -28,7 +28,7 @@ import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
-import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
+import { IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
@@ -50,7 +50,9 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -245,12 +247,14 @@ class DataResourceTable extends GridTableBase<any> {
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IQuickInputService quickInputService: IQuickInputService,
-		@ITableService tableService: ITableService
+		@IComponentContextService componentContextService: IComponentContextService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@ILogService logService: ILogService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, tableService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -263,6 +267,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._chart.onOptionsChange(options => {
 			this.setChartOptions(options);
 		});
+		this.providerId = cellModel.notebookModel.context?.providerName;
 	}
 
 	public get gridDataProvider(): IGridDataProvider {
@@ -273,17 +278,14 @@ class DataResourceTable extends GridTableBase<any> {
 		return this.cellOutput.metadata.azdata_chartOptions !== undefined;
 	}
 
-	protected getCurrentActions(): IAction[] {
-		return this.getContextActions();
+	protected override getActionBarItems(): IAction[] {
+		const items = super.getActionBarItems();
+		items.push(this.instantiationService.createInstance(NotebookChartAction, this));
+		return items;
 	}
 
 	protected getContextActions(): IAction[] {
 		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
 	}
@@ -416,10 +418,18 @@ export class DataResourceDataProvider implements IGridDataProvider {
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			let results = await getResultsString(this, selection, includeHeaders, tableView);
-			this._clipboardService.writeText(results);
+			await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selection, includeHeaders, tableView);
 		} catch (error) {
-			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
+		}
+	}
+
+	async copyHeaders(selection: Slick.Range[]): Promise<void> {
+		try {
+			const results = getTableHeaderString(this, selection);
+			await this._clipboardService.writeText(results);
+		} catch (error) {
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 

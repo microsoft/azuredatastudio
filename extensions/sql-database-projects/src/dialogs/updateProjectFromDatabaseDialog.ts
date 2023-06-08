@@ -536,6 +536,9 @@ export class UpdateProjectFromDatabaseDialog {
 			connection.password = connection.options.password = credentials.password;
 		}
 
+		const projectFilePath = this.projectFileDropdown!.value! as string;
+		this.project = await Project.openProject(projectFilePath);
+
 		const connectionDetails: azdata.IConnectionProfile = {
 			id: connection.connectionId,
 			userName: connection.userName,
@@ -569,10 +572,10 @@ export class UpdateProjectFromDatabaseDialog {
 
 		const targetEndpointInfo: mssql.SchemaCompareEndpointInfo = {
 			endpointType: mssql.SchemaCompareEndpointType.Project,
-			projectFilePath: this.projectFileDropdown!.value! as string,
+			projectFilePath: projectFilePath,
 			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
 			targetScripts: [],
-			dataSchemaProvider: this.project!.getProjectTargetVersion(),
+			dataSchemaProvider: this.project.getProjectTargetVersion(),
 			connectionDetails: connectionDetails,
 			databaseName: '',
 			serverDisplayName: '',

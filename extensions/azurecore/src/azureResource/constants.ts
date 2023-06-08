@@ -20,7 +20,8 @@ export enum AzureResourceItemType {
 	message = 'azure.resource.itemType.message',
 	azureMonitor = 'azure.resource.itemType.azureMonitor',
 	azureMonitorContainer = 'azure.resource.itemType.azureMonitorContainer',
-	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount'
+	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount',
+	cosmosDBMongoCluster = 'azure.resource.itemType.cosmosDBMongoCluster'
 }
 
 export enum AzureResourceServiceNames {
@@ -42,6 +43,7 @@ export enum AzureResourcePrefixes {
 	kusto = 'Kusto_',
 	mySqlFlexibleServer = 'mySqlFlexibleServer_',
 	postgresServerArc = 'postgresServerArc_',
+	postgresFlexibleServer = 'postgresFlexibleServer_',
 	postgresServer = 'postgresServer_',
 	sqlInstance = 'sqlInstance_',
 	sqlInstanceArc = 'sqlInstanceArc_',

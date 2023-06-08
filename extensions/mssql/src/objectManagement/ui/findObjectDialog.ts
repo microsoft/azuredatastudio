@@ -9,10 +9,13 @@ import { DefaultTableListItemEnabledStateGetter, DefaultMaxTableRowCount, Dialog
 import * as localizedConstants from '../localizedConstants';
 import { getErrorMessage } from '../../utils';
 
-type ObjectType = string | { name: string, displayName: string };
+export interface ObjectTypeInfo {
+	name: string;
+	displayName: string;
+}
 
 export interface FindObjectDialogOptions {
-	objectTypes: ObjectType[];
+	objectTypes: ObjectTypeInfo[];
 	selectAllObjectTypes: boolean;
 	multiSelect: boolean;
 	contextId: string;
@@ -33,11 +36,12 @@ const ObjectsTableMaxRowCount = 20;
 
 export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	private objectTypesTable: azdata.TableComponent;
+	private searchTextInputBox: azdata.InputBoxComponent;
 	private findButton: azdata.ButtonComponent;
 	private objectsTable: azdata.TableComponent;
 	private objectsLoadingComponent: azdata.LoadingComponent;
 	private result: FindObjectDialogResult;
-	private selectedObjectTypes: ObjectType[] = [];
+	private selectedObjectTypes: ObjectTypeInfo[] = [];
 	private allObjects: mssql.ObjectManagement.SearchResultItem[] = [];
 
 	constructor(private readonly objectManagementService: mssql.IObjectManagementService, private readonly options: FindObjectDialogOptions) {
@@ -49,31 +53,29 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.selectedObjectTypes = options.selectAllObjectTypes ? [...options.objectTypes] : [];
 	}
 
-	private getObjectTypeName(objectType: ObjectType): string {
-		return typeof objectType === 'string' ? objectType : objectType.name;
-	}
-
-	private getObjectTypeDisplayName(objectType: ObjectType): string {
-		return typeof objectType === 'string' ? localizedConstants.getNodeTypeDisplayName(objectType, true) : objectType.displayName;
-	}
-
 	protected override async initialize(): Promise<void> {
 		this.dialogObject.okButton.enabled = false;
-		this.objectTypesTable = this.createTableList<ObjectType>(localizedConstants.ObjectTypeText,
+		this.objectTypesTable = this.createTableList<ObjectTypeInfo>(localizedConstants.ObjectTypesText,
 			[localizedConstants.ObjectTypeText],
 			this.options.objectTypes,
 			this.selectedObjectTypes,
 			DefaultMaxTableRowCount,
 			DefaultTableListItemEnabledStateGetter, (item) => {
-				return [this.getObjectTypeDisplayName(item)];
+				return [item.displayName];
 			}, (item1, item2) => {
-				return this.getObjectTypeName(item1) === this.getObjectTypeName(item2);
+				return item1.name === item2.name;
 			});
+		this.searchTextInputBox = this.createInputBox(localizedConstants.SearchTextLabel, async () => { });
+		const searchTextRow = this.createLabelInputContainer(localizedConstants.SearchTextLabel, this.searchTextInputBox);
 		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();
 		}, this.options.selectAllObjectTypes);
 		const buttonContainer = this.createButtonContainer([this.findButton]);
-		const objectTypeSection = this.createGroup(localizedConstants.ObjectTypeText, [this.objectTypesTable, buttonContainer]);
+		const filterSection = this.createGroup(localizedConstants.FilterSectionTitle, [
+			searchTextRow,
+			this.objectTypesTable,
+			buttonContainer
+		]);
 		const columns = [localizedConstants.NameText, localizedConstants.ObjectTypeText];
 		if (this.options.showSchemaColumn) {
 			columns.splice(1, 0, localizedConstants.SchemaText);
@@ -106,7 +108,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		}).component();
 		const objectsSection = this.createGroup(localizedConstants.ObjectsText, [this.objectsLoadingComponent]);
 
-		this.formContainer.addItems([objectTypeSection, objectsSection], this.getSectionItemLayout());
+		this.formContainer.addItems([filterSection, objectsSection], this.getSectionItemLayout());
 	}
 
 	protected override get dialogResult(): FindObjectDialogResult | undefined {
@@ -118,7 +120,7 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 		this.objectsLoadingComponent.loading = true;
 		this.findButton.enabled = false;
 		try {
-			const results = await this.objectManagementService.search(this.options.contextId, this.selectedObjectTypes.map(item => this.getObjectTypeName(item)));
+			const results = await this.objectManagementService.search(this.options.contextId, this.selectedObjectTypes.map(item => item.name), this.searchTextInputBox.value);
 			this.allObjects.splice(0, this.allObjects.length, ...results);
 			let data;
 			if (this.options.multiSelect) {
@@ -147,7 +149,8 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 	}
 
 	private getObjectRowValue(item: mssql.ObjectManagement.SearchResultItem): string[] {
-		const row = [item.name, this.getObjectTypeName(item.type)];
+		const objectType = this.options.objectTypes.find(type => type.name === item.type);
+		const row = [item.name, objectType?.displayName];
 		if (this.options.showSchemaColumn) {
 			row.splice(1, 0, item.schema);
 		}

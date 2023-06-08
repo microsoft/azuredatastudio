@@ -39,7 +39,7 @@ import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { deepClone, equals } from 'vs/base/common/objects';
 
 export enum ColumnSizingMode {
@@ -95,7 +95,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IAccessibilityService) private accessibilityService: IAccessibilityService,
 		@Inject(IQuickInputService) private quickInputService: IQuickInputService,
-		@Inject(ITableService) private tableService: ITableService
+		@Inject(IComponentContextService) private componentContextService: IComponentContextService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -298,7 +298,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					args: e
 				});
 			}));
-			this._register(this.tableService.registerTable(this._table));
+			this._register(this.componentContextService.registerTable(this._table));
 		}
 		this.baseInit();
 	}

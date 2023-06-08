@@ -9,6 +9,13 @@
 	box-sizing: border-box;
 }
 
+.modelview-group-fieldset {
+	border: none;
+	margin-inline: 0px;
+	padding-inline: 0px;
+	padding-block: 0px;
+}
+
 .modelview-group-row {
 	display: table-row;
 }
