@@ -79,7 +79,7 @@ export class AzureResourceUniversalService implements azureResource.IAzureResour
 
 	public getProviderFromResourceType(type: string, kind?: string):
 		[provider: azureResource.IAzureResourceTreeDataProvider, category: ResourceCategory] {
-		if (type === azureResource.AzureResourceType.cosmosDbAccount && kind === mongoDbKind) {
+		if ((type === azureResource.AzureResourceType.cosmosDbAccount && kind === mongoDbKind) || type === azureResource.AzureResourceType.cosmosDbCluster) {
 			return [this.getRegisteredTreeDataProviderInstance(COSMOSDB_MONGO_PROVIDER_ID), ResourceCategory.Server];
 		} else if (type === azureResource.AzureResourceType.sqlDatabase || type === azureResource.AzureResourceType.sqlSynapseSqlDatabase) {
 			return [this.getRegisteredTreeDataProviderInstance(DATABASE_PROVIDER_ID), ResourceCategory.Database];
