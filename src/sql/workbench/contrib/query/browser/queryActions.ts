@@ -860,7 +860,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		}
 		try {
 			const result = await this.connectionManagementService.listDatabases(uri);
-			return result.databaseNames;
+			return result?.databaseNames ?? [];
 		} catch (err) {
 			this.logService.error(`Error loading database names for query editor `, err);
 		}
