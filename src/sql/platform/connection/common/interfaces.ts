@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 // Used to allow various methods of matching profiles
 export type ProfileMatcher = (a: IConnectionProfile, b: IConnectionProfile) => boolean;
