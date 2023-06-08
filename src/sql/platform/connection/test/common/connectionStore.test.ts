@@ -31,7 +31,6 @@ suite('ConnectionStore', () => {
 		savePassword: true,
 		groupId: '',
 		groupFullName: '',
-		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
 		getOptionKeyIdNames: undefined!,
 		matches: () => false,
