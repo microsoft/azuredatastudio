@@ -93,7 +93,7 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 
 	let processedRows = 0;
 	const getMessageText = (): string => {
-		return nls.localize('gridDataProvider.loadingRowsInProgress', "Loading the rows to be copied({0}/{1})...", processedRows, totalRows);
+		return nls.localize('gridDataProvider.loadingRowsInProgress', "Loading the rows to be copied ({0}/{1})...", processedRows, totalRows);
 	};
 
 	let isCanceled = false;

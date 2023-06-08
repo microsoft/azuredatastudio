@@ -24,6 +24,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { Codicon } from 'vs/base/common/codicons';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { status } from 'vs/base/browser/ui/aria/aria';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -300,12 +301,14 @@ export class DeleteConnectionAction extends Action {
 				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
 			if (modalResult.choice === 0) {
 				await this._connectionManagementService.deleteConnection(this.element);
+				status(localize('connectionDeleted', "Connection {0} deleted", name));
 			}
 		} else if (this.element instanceof ConnectionProfileGroup) {
 			const modalResult = await this._dialogService.show(Severity.Warning, localize('deleteConnectionGroupConfirmation', "Are you sure you want to delete connection group '{0}'?", this.element.name),
 				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
 			if (modalResult.choice === 0) {
 				await this._connectionManagementService.deleteConnectionGroup(this.element);
+				status(localize('connectionGroupDeleted', "Connection group {0} deleted", this.element.name));
 			}
 		}
 	}
