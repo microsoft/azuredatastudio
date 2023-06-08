@@ -20,9 +20,9 @@ function getDialogName(type: ObjectManagement.NodeType, isNewObject: boolean): s
 }
 
 export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
-	command?: string;
 	connectionUri: string;
 	database?: string;
+	dialogType?: string;
 	objectType: ObjectManagement.NodeType;
 	isNewObject: boolean;
 	parentUrn: string;
@@ -126,7 +126,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	protected override async initializeData(): Promise<void> {
-		const viewInfo = await this.objectManagementService.initializeView(this._contextId, this.options.objectType, this.options.connectionUri, this.options.database, this.options.isNewObject, this.options.parentUrn, this.options.objectUrn);
+		const viewInfo = await this.objectManagementService.initializeView(this._contextId, this.options.objectType, this.options.connectionUri, this.options.database, this.options.isNewObject, this.options.parentUrn, this.options.objectUrn, this.options.dialogType);
 		this._viewInfo = viewInfo as ViewInfoType;
 		this.postInitializeData();
 		this._originalObjectInfo = deepClone(this.objectInfo);

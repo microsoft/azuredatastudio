@@ -41,6 +41,12 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 }
 
+export enum DialogType {
+	New = 'New',
+	Edit = 'Edit',
+	Properties = 'Properties'
+}
+
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
 	if (useTestService) {
 		return new TestObjectManagementService();
@@ -84,6 +90,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			connectionUri: connectionUri,
 			isNewObject: true,
 			database: context.connectionProfile!.databaseName!,
+			dialogType: DialogType.New,
 			objectType: objectType,
 			objectName: '',
 			parentUrn: parentUrn,
@@ -109,10 +116,10 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	try {
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
 		const options: ObjectManagementDialogOptions = {
-			command: objectManagementLoc.PropertiesCommandText,
 			connectionUri: connectionUri,
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
+			dialogType: DialogType.Properties,
 			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
 			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
@@ -247,7 +254,7 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
-			return dialogOptions.command === objectManagementLoc.PropertiesCommandText ?
+			return dialogOptions.dialogType === DialogType.Properties ?
 				new DatabasePropertiesDialog(service, dialogOptions) : new DatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);

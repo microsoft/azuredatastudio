@@ -1554,6 +1554,7 @@ export namespace ExecutionPlanComparisonRequest {
 export interface InitializeViewRequestParams {
 	connectionUri: string;
 	database: string;
+	dialogType?: string;
 	contextId: string;
 	isNewObject: boolean;
 	objectType: string;

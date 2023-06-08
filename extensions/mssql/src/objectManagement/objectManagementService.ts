@@ -28,8 +28,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		};
 	}
 
-	async initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Promise<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
-		const params: contracts.InitializeViewRequestParams = { connectionUri, contextId, isNewObject, objectType, database, parentUrn, objectUrn };
+	async initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string, dialogType?: string): Promise<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
+		const params: contracts.InitializeViewRequestParams = { connectionUri, contextId, isNewObject, objectType, database, parentUrn, objectUrn, dialogType };
 		return this.runWithErrorHandling(contracts.InitializeViewRequest.type, params);
 	}
 
@@ -195,7 +195,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
 			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.Database) {
-			obj = this.getDatabasePropertiesView(isNewObject, objectUrn);
+			obj = this.getDatabasePropertiesView(objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
@@ -434,7 +434,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getDatabasePropertiesView(isNewObject: boolean, name: string): ObjectManagement.DatabasePropertiesViewInfo {
+	private getDatabasePropertiesView(name: string): ObjectManagement.DatabasePropertiesViewInfo {
 		return <ObjectManagement.DatabasePropertiesViewInfo>{
 			objectInfo: {
 				name: 'Database Properties1',

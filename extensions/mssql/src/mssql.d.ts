@@ -1381,17 +1381,17 @@ declare module 'mssql' {
 		}
 
 		export interface DatabasePropertiesInfo extends SqlObject {
-			collationName: string;
-			dateCreated: string;
-			lastDatabaseBackup: string;
-			lastDatabaseLogBackup: string;
-			memoryAllocatedToMemoryOptimizedObjects: string;
-			memoryUsedByMemoryOptimizedObjects: string;
-			numberOfUsers: string;
-			owner: string;
-			size: string;
-			spaceAvailable: string;
-			status: string;
+			collationName?: string;
+			dateCreated?: string;
+			lastDatabaseBackup?: string;
+			lastDatabaseLogBackup?: string;
+			memoryAllocatedToMemoryOptimizedObjectsInMb?: string;
+			memoryUsedByMemoryOptimizedObjectsInMb?: string;
+			numberOfUsers?: string;
+			owner?: string;
+			sizeInMb?: string;
+			spaceAvailableInMb?: string;
+			status?: string;
 		}
 
 		export interface DatabasePropertiesViewInfo extends ObjectViewInfo<DatabasePropertiesInfo> {
@@ -1409,7 +1409,7 @@ declare module 'mssql' {
 		 * @param parentUrn The parent object's URN.
 		 * @param objectUrn The object's URN.
 		 */
-		initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>>;
+		initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string, dialogType?: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>>;
 		/**
 		 * Save an object.
 		 * @param contextId The object view's context id.
