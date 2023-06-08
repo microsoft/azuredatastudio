@@ -54,7 +54,8 @@ const diffEditorDefaultOptions: ValidDiffEditorBaseOptions = {
 	accessibilityVerbose: false,
 	experimental: {
 		collapseUnchangedRegions: false,
-	}
+	},
+	reverse: false // {{SQL CARBON EDIT}} - add reverse option
 };
 
 export class DiffEditorWidget2 extends DelegatingEditor implements IDiffEditor {
@@ -495,5 +496,6 @@ function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaul
 		experimental: {
 			collapseUnchangedRegions: validateBooleanOption(options.experimental?.collapseUnchangedRegions, defaults.experimental.collapseUnchangedRegions!),
 		},
+		reverse: validateBooleanOption(options.reverse, defaults.reverse), // {{SQL CARBON EDIT}} - validate reverse option
 	};
 }

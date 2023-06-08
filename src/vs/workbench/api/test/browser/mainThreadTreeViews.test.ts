@@ -74,7 +74,7 @@ suite('MainThreadHostTreeView', function () {
 					return extHostTreeViewsShape;
 				}
 				drain(): any { return null; }
-			}, new TestViewsService(), new TestNotificationService(), testExtensionService, new NullLogService());
+			}, new TestViewsService(), new TestNotificationService(), testExtensionService, new NullLogService(), undefined); // {{SQL CARBON EDIT}} - add undefined connectiontreeservice param
 		mainThreadTreeViews.$registerTreeViewDataProvider(testTreeViewId, { showCollapseAll: false, canSelectMany: false, dropMimeTypes: [], dragMimeTypes: [], hasHandleDrag: false, hasHandleDrop: false, manuallyManageCheckboxes: false });
 		await testExtensionService.whenInstalledExtensionsRegistered();
 	});

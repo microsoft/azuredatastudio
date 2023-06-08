@@ -12,8 +12,8 @@ import { ResourceEdit } from 'vs/editor/browser/services/bulkEditService';
 import { WorkspaceEditMetadata } from 'vs/editor/common/languages';
 import { IProgress } from 'vs/platform/progress/common/progress';
 import { UndoRedoGroup, UndoRedoSource } from 'vs/platform/undoRedo/common/undoRedo';
-import { getNotebookEditorFromEditorPane } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import { CellUri, ICellPartialMetadataEdit, ICellReplaceEdit, IDocumentMetadataEdit, ISelectionState, IWorkspaceNotebookCellEdit, SelectionStateType } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+// import { getNotebookEditorFromEditorPane } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellUri, ICellPartialMetadataEdit, ICellReplaceEdit, IDocumentMetadataEdit, IWorkspaceNotebookCellEdit } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
@@ -53,10 +53,10 @@ export class BulkCellEdits {
 		_progress: IProgress<void>,
 		_token: CancellationToken,
 		_edits: ResourceNotebookCellEdit[],
-		@IEditorService private readonly _editorService: IEditorService,
+		@IEditorService readonly _editorService: IEditorService,
 		@INotebookEditorModelResolverService _notebookModelService: INotebookEditorModelResolverService,
 	) {
-		this._edits = this._edits.map(e => {
+		_edits = _edits.map(e => {
 			if (e.resource.scheme === CellUri.scheme) {
 				const uri = CellUri.parse(e.resource)?.notebook;
 				if (!uri) {
@@ -90,14 +90,14 @@ export class BulkCellEdits {
 
 		// 	// apply edits
 		// 	const edits = group.map(entry => entry.cellEdit);
-			const computeUndo = !ref.object.isReadonly();
-			const editor = getNotebookEditorFromEditorPane(this._editorService.activeEditorPane);
-			const initialSelectionState: ISelectionState | undefined = editor?.textModel?.uri.toString() === ref.object.notebook.uri.toString() ? {
-				kind: SelectionStateType.Index,
-				focus: editor.getFocus(),
-				selections: editor.getSelections()
-			} : undefined;
-			ref.object.notebook.applyEdits(edits, true, undefined, () => undefined, this._undoRedoGroup, true);
+		//	const computeUndo = !ref.object.isReadonly();
+		//	const editor = getNotebookEditorFromEditorPane(this._editorService.activeEditorPane);
+		//	const initialSelectionState: ISelectionState | undefined = editor?.textModel?.uri.toString() === ref.object.notebook.uri.toString() ? {
+		//		kind: SelectionStateType.Index,
+		//		focus: editor.getFocus(),
+		//		selections: editor.getSelections()
+		//	} : undefined;
+		//	ref.object.notebook.applyEdits(edits, true, undefined, () => undefined, this._undoRedoGroup, true);
 		// 	ref.dispose();
 
 		// 	this._progress.report(undefined);

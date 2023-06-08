@@ -624,7 +624,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 	declare readonly _serviceBrand: undefined;
 
 	private readonly extensionsGalleryUrl: string | undefined;
-	private readonly extensionsGallerySearchUrl: string | undefined;
+	// private readonly extensionsGallerySearchUrl: string | undefined; // {{SQL CARBON EDIT}} - Remove unused
 	private readonly extensionsControlUrl: string | undefined;
 
 	private readonly commonHeadersPromise: Promise<IStringDictionary<string>>;
@@ -642,7 +642,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const config = productService.extensionsGallery;
 		const isPPEEnabled = config?.servicePPEUrl && configurationService.getValue('_extensionsGallery.enablePPE');
 		this.extensionsGalleryUrl = isPPEEnabled ? config.servicePPEUrl : config?.serviceUrl;
-		this.extensionsGallerySearchUrl = isPPEEnabled ? undefined : config?.searchUrl;
+		// this.extensionsGallerySearchUrl = isPPEEnabled ? undefined : config?.searchUrl; // {{SQL CARBON EDIT}} - Remove unused
 		this.extensionsControlUrl = config?.controlUrl;
 		this.commonHeadersPromise = resolveMarketplaceHeaders(
 			productService.version,

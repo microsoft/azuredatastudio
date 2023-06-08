@@ -9,7 +9,7 @@ import { IBulkEditService, ResourceFileEdit, ResourceTextEdit } from 'vs/editor/
 import { WorkspaceEdit } from 'vs/editor/common/languages';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
-import { IWorkspaceEditDto, IWorkspaceFileEditDto, MainContext, MainThreadBulkEditsShape } from 'vs/workbench/api/common/extHost.protocol';
+import { IWorkspaceEditDto, MainContext, MainThreadBulkEditsShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ResourceNotebookCellEdit } from 'vs/workbench/contrib/bulkEdit/browser/bulkCellEdits';
 import { IExtHostContext, extHostNamedCustomer } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
@@ -48,7 +48,7 @@ export function reviveWorkspaceEditDto(data: IWorkspaceEditDto | undefined, uriI
 		}
 		if (ResourceFileEdit.is(edit)) {
 			if (edit.options) {
-				const inContents = (edit as IWorkspaceFileEditDto).options?.contents;
+				const inContents = (edit as any).options?.contents;
 				if (inContents) {
 					if (inContents.type === 'base64') {
 						edit.options.contents = Promise.resolve(decodeBase64(inContents.value));

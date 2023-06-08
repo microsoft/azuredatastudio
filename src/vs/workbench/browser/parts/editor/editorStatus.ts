@@ -1168,7 +1168,7 @@ export class ChangeLanguageAction extends Action2 {
 				// Change language
 				if (typeof languageSelection !== 'undefined') {
 					//languageSupport.setLanguageId(languageSelection.languageId);
-					this.instantiationService.invokeFunction(setLanguageId, languageSupport, activeEditor, languageSelection.languageId); // {{SQL CARBON EDIT}} use custom setLanguageId
+					instantiationService.invokeFunction(setLanguageId, languageSupport, activeEditor, languageSelection.languageId); // {{SQL CARBON EDIT}} use custom setLanguageId
 
 					if (resource?.scheme === Schemas.untitled) {
 						type SetUntitledDocumentLanguageEvent = { to: string; from: string; modelPreference: string };

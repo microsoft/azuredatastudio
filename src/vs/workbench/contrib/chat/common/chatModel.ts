@@ -355,7 +355,7 @@ export class ChatModel extends Disposable implements IChatModel {
 	) {
 		super();
 
-		this._isImported = (!!initialData && !isSerializableSessionData(initialData)) || (initialData?.isImported ?? false);
+		this._isImported = (!!initialData && !isSerializableSessionData(initialData)) || ((<any>initialData)?.isImported ?? false);
 		this._sessionId = (isSerializableSessionData(initialData) && initialData.sessionId) || generateUuid();
 		this._requests = initialData ? this._deserialize(initialData) : [];
 		this._providerState = initialData ? initialData.providerState : undefined;
