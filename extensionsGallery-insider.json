@@ -4073,7 +4073,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.41.0"
+									"value": ">=1.44.1"
 								}
 							]
 						}
