@@ -116,7 +116,7 @@ export class AddDatabaseReferenceDialog {
 			this.nupkgFormComponent = this.createNupkgFormComponentGroup();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
-			this.systemDbRefRadioButtonsComponent = this.createSystemDbReferenceStyleRadioButtons();
+			this.systemDbRefRadioButtonsComponent = this.createSystemDbReferenceTypeRadioButtons();
 
 			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProps({
 				label: constants.suppressMissingDependenciesErrors
@@ -154,7 +154,7 @@ export class AddDatabaseReferenceDialog {
 			} else {
 				await this.systemDatabaseRadioButton?.focus();
 
-				this.insertSystemDatabaseReferenceStyleComponent();
+				this.insertSystemDatabaseReferenceTypeComponent();
 			}
 
 			this.initDialogComplete.resolve();
@@ -169,7 +169,7 @@ export class AddDatabaseReferenceDialog {
 				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: utils.getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked,
-				systemDbReferenceStyle: this.systemDbRefType
+				systemDbReferenceType: this.systemDbRefType
 			};
 
 			referenceSettings = systemDbRef;
@@ -299,10 +299,10 @@ export class AddDatabaseReferenceDialog {
 		};
 	}
 
-	private createSystemDbReferenceStyleRadioButtons(): azdataType.FormComponent {
+	private createSystemDbReferenceTypeRadioButtons(): azdataType.FormComponent {
 		this.systemDatabasePackageRefRadioButton = this.view!.modelBuilder.radioButton()
 			.withProps({
-				name: 'systemDbRefStyle',
+				name: 'systemDbRefType',
 				label: constants.packageReference
 			}).component();
 
@@ -314,7 +314,7 @@ export class AddDatabaseReferenceDialog {
 
 		this.systemDatabaseArtifactRefRadioButton = this.view!.modelBuilder.radioButton()
 			.withProps({
-				name: 'systemDbRefStyle',
+				name: 'systemDbRefType',
 				label: constants.artifactReference
 			}).component();
 
@@ -329,7 +329,7 @@ export class AddDatabaseReferenceDialog {
 		const flexRadioButtonsModel: azdataType.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems(radioButtons)
-			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceStyleRadioButtonsGroupTitle })
+			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceTypeRadioButtonsGroupTitle })
 			.component();
 
 		// default to PackageReference for SDK-style projects
@@ -337,11 +337,11 @@ export class AddDatabaseReferenceDialog {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: constants.referenceStyleRadioButtonsGroupTitle
+			title: constants.referenceTypeRadioButtonsGroupTitle
 		};
 	}
 
-	private insertSystemDatabaseReferenceStyleComponent(): void {
+	private insertSystemDatabaseReferenceTypeComponent(): void {
 		// add the radio buttons to choose ArtifactReference or PackageReference if it's an SDK-syle project
 		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
 			this.formBuilder!.insertFormItem(this.systemDbRefRadioButtonsComponent!, 3);
@@ -369,7 +369,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent, 2);
-		this.insertSystemDatabaseReferenceStyleComponent();
+		this.insertSystemDatabaseReferenceTypeComponent();
 
 		// update dropdown values because only different database, same server is a valid location for system db references
 		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;

@@ -138,7 +138,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
 		suppressMissingDependenciesErrors: suppressErrors,
-		systemDbReferenceStyle: SystemDbReferenceType.ArtifactReference
+		systemDbReferenceType: SystemDbReferenceType.ArtifactReference
 	};
 }
 

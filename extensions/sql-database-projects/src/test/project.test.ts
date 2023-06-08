@@ -558,7 +558,7 @@ describe('Project: database references', function (): void {
 			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB),
 			systemDb: SystemDatabase.MSDB,
 			suppressMissingDependenciesErrors: true,
-			systemDbReferenceStyle: SystemDbReferenceType.ArtifactReference
+			systemDbReferenceType: SystemDbReferenceType.ArtifactReference
 		};
 		await project.addSystemDatabaseReference(msdbRefSettings);
 
@@ -576,7 +576,7 @@ describe('Project: database references', function (): void {
 			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB),
 			systemDb: SystemDatabase.MSDB,
 			suppressMissingDependenciesErrors: true,
-			systemDbReferenceStyle: SystemDbReferenceType.PackageReference
+			systemDbReferenceType: SystemDbReferenceType.PackageReference
 		};
 		await project.addSystemDatabaseReference(msdbRefSettings);
 
@@ -812,7 +812,7 @@ describe('Project: database references', function (): void {
 			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.Master),
 			systemDb: SystemDatabase.Master,
 			suppressMissingDependenciesErrors: false,
-			systemDbReferenceStyle: SystemDbReferenceType.ArtifactReference
+			systemDbReferenceType: SystemDbReferenceType.ArtifactReference
 		};
 		await project.addSystemDatabaseReference(systemDbReference);
 		project = await Project.openProject(projFilePath);

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Uri } from 'vscode';
-import { SystemDatabase, SystemDbReferenceStyle } from '../common/typeHelper';
+import { SystemDatabase, SystemDbReferenceType } from '../common/typeHelper';
 
 export interface IDatabaseReferenceSettings {
 	databaseVariableLiteralValue?: string;
@@ -13,7 +13,7 @@ export interface IDatabaseReferenceSettings {
 
 export interface ISystemDatabaseReferenceSettings extends IDatabaseReferenceSettings {
 	systemDb: SystemDatabase;
-	systemDbReferenceStyle: SystemDbReferenceStyle;
+	systemDbReferenceType: SystemDbReferenceType;
 }
 
 export interface IUserDatabaseReferenceSettings extends IDatabaseReferenceSettings {
