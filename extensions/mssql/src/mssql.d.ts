@@ -1382,14 +1382,14 @@ declare module 'mssql' {
 		}
 
 		export interface ServerPropertiesInfo extends SqlObject {
-			language: string[];
-			memory: number;
+			language: string;
+			memoryInMb: number;
 			operatingSystem: string;
 			platform: string;
 			processors: string;
 			version: string;
-			minMemory: number;
-			maxMemory: number;
+			minMemoryInMb: number;
+			maxMemoryInMb: number;
 		}
 
 		export interface ServerPropertiesViewInfo extends ObjectViewInfo<ServerPropertiesInfo> {

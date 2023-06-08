@@ -22,7 +22,7 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
-import { ServerPropertiesDialog } from './ui/objectPropertiesDialog';
+import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -108,7 +108,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	}
 	try {
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
-		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : ObjectManagement.NodeType.Server;
+		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
 		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
 		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
 

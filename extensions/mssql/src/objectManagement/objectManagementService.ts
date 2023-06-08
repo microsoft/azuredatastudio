@@ -199,7 +199,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
 			obj = this.getServerRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.Server) {
-			obj = this.getPropertiesView(isNewObject, objectUrn);
+			obj = this.getServerPropertiesView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.User) {
 			obj = this.getUserView(isNewObject, objectUrn);
 		}
@@ -434,28 +434,28 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getPropertiesView(isNewObject: boolean, name: string): ObjectManagement.ServerPropertiesViewInfo {
+	private getServerPropertiesView(isNewObject: boolean, name: string): ObjectManagement.ServerPropertiesViewInfo {
 		return isNewObject ? <ObjectManagement.ServerPropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
-				language: [],
-				memory: 0,
+				language: '',
+				memoryInMb: 0,
 				operatingSystem: '',
 				platform: '',
 				processors: '',
-				minMemory: 0,
-				maxMemory: 0
+				minMemoryInMb: 0,
+				maxMemoryInMb: 0
 			}
 		} : <ObjectManagement.ServerPropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
-				language: ['English (US)'],
-				memory: 256,
+				language: 'English (US)',
+				memoryInMb: 256,
 				operatingSystem: 'Windows',
 				platform: '',
 				processors: '',
-				minMemory: 0,
-				maxMemory: 22528
+				minMemoryInMb: 0,
+				maxMemoryInMb: 22528
 			}
 		};
 	}

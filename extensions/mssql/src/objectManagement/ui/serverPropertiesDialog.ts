@@ -51,10 +51,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 		}, this.objectInfo.name, this.options.isNewObject);
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, undefined, this.objectInfo.language, this.objectInfo.language[0], this.options.isNewObject);
+		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, undefined, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
 		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
 
-		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memory.toString(), this.options.isNewObject, this.numberInputType);
+		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memoryInMb.toString(), this.options.isNewObject, this.numberInputType);
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 
 		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, undefined, this.objectInfo.operatingSystem, this.options.isNewObject);
@@ -72,13 +72,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ObjectMan
 
 	private initializeMemorySection(): void {
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
-			this.objectInfo.minMemory = +newValue;
-		}, this.objectInfo.minMemory.toString(), true, this.numberInputType);
+			this.objectInfo.minMemoryInMb = +newValue;
+		}, this.objectInfo.minMemoryInMb.toString(), true, this.numberInputType);
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
-			this.objectInfo.maxMemory = +newValue;
-		}, this.objectInfo.maxMemory.toString(), true, this.numberInputType);
+			this.objectInfo.maxMemoryInMb = +newValue;
+		}, this.objectInfo.maxMemoryInMb.toString(), true, this.numberInputType);
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [
