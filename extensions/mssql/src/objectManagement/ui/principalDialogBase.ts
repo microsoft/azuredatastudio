@@ -12,6 +12,7 @@ import { FindObjectDialog, FindObjectDialogResult } from './findObjectDialog';
 import { deepClone } from '../../util/objects';
 import { DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 import { ObjectSelectionMethod, ObjectSelectionMethodDialog } from './objectSelectionMethodDialog';
+import { DatabaseLevelPrincipalViewInfo, SecurablePermissionItem, SecurablePermissions, SecurityPrincipalObject, SecurityPrincipalViewInfo } from '../interfaces';
 
 const GrantColumnIndex = 2;
 const WithGrantColumnIndex = 3;
@@ -25,14 +26,14 @@ export interface PrincipalDialogOptions extends ObjectManagementDialogOptions {
 /**
  * Base class for security principal dialogs such as user, role, etc.
  */
-export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectManagement.SecurityPrincipalObject, ViewInfoType extends mssql.ObjectManagement.SecurityPrincipalViewInfo<ObjectInfoType>> extends ObjectManagementDialogBase<ObjectInfoType, ViewInfoType> {
+export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincipalObject, ViewInfoType extends SecurityPrincipalViewInfo<ObjectInfoType>> extends ObjectManagementDialogBase<ObjectInfoType, ViewInfoType> {
 	protected securableTable: azdata.TableComponent;
 	protected permissionTable: azdata.TableComponent;
 	protected effectivePermissionTable: azdata.TableComponent;
 	protected securableSection: azdata.GroupContainer;
 	protected explicitPermissionTableLabel: azdata.TextComponent;
 	protected effectivePermissionTableLabel: azdata.TextComponent;
-	private securablePermissions: mssql.ObjectManagement.SecurablePermissions[] = [];
+	private securablePermissions: SecurablePermissions[] = [];
 
 	constructor(objectManagementService: mssql.IObjectManagementService, private readonly dialogOptions: PrincipalDialogOptions) {
 		super(objectManagementService, dialogOptions);
@@ -82,7 +83,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		this.disposables.push(this.permissionTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
 			const permissionName = this.permissionTable.data[arg.row][0];
 			const securable = this.securablePermissions[this.securableTable.selectedRows[0]];
-			let permission: mssql.ObjectManagement.SecurablePermissionItem = securable.permissions.find(securablePermission => securablePermission.permission === permissionName);
+			let permission: SecurablePermissionItem = securable.permissions.find(securablePermission => securablePermission.permission === permissionName);
 			if (!permission) {
 				permission = {
 					permission: permissionName,
@@ -126,7 +127,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends mssql.ObjectMan
 		if (this.dialogOptions.isDatabaseLevelPrincipal) {
 			const methodDialog = new ObjectSelectionMethodDialog({
 				objectTypes: this.viewInfo.supportedSecurableTypes,
-				schemas: (<mssql.ObjectManagement.DatabaseLevelPrincipalViewInfo<mssql.ObjectManagement.SecurityPrincipalObject>><unknown>this.viewInfo).schemas,
+				schemas: (<DatabaseLevelPrincipalViewInfo<SecurityPrincipalObject>><unknown>this.viewInfo).schemas,
 			});
 			await methodDialog.open();
 			const methodResult = await methodDialog.waitForClose();

@@ -9,8 +9,9 @@ import * as localizedConstants from '../localizedConstants';
 import { AlterServerRoleDocUrl, CreateServerRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { ServerRoleInfo, ServerRoleViewInfo } from '../interfaces';
 
-export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.ServerRoleInfo, ObjectManagement.ServerRoleViewInfo> {
+export class ServerRoleDialog extends PrincipalDialogBase<ServerRoleInfo, ServerRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private membershipSection: azdata.GroupContainer;
