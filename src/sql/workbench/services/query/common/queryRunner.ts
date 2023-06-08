@@ -21,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { URI } from 'vs/base/common/uri';
 import * as perf from 'vs/base/common/performance';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { IGridDataProvider, copySelectionToClipboard, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, copySelectionToClipboard, executeCopyWithNotification, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -567,19 +567,25 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		return this.copyResultsAsync(selection, includeHeaders, tableView);
 	}
 
-	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+	private async copyResultsAsync(selections: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
 			const providerId = this.queryRunner.getProviderId();
 			const providerSupportCopyResults = this._capabilitiesService.getCapabilities(providerId).connection.supportCopyResultsToClipboard;
 			const handleCopyByProviders = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.handleCopyByProviders;
 			if (handleCopyByProviders && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
-				await this.queryRunner.copyResults(selection, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), includeHeaders);
+				await this.handleCopyRequestByProvider(selections, includeHeaders);
 			} else {
-				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selection, includeHeaders, tableView);
+				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
 			}
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
+	}
+
+	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		executeCopyWithNotification(this._notificationService, selections, false, async () => {
+			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldIncludeHeaders(includeHeaders));
+		});
 	}
 
 	async copyHeaders(selection: Slick.Range[]): Promise<void> {
@@ -594,7 +600,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	getEolString(): string {
 		return getEolString(this._textResourcePropertiesService, this.queryRunner.uri);
 	}
-	shouldIncludeHeaders(includeHeaders: boolean): boolean {
+	shouldIncludeHeaders(includeHeaders: boolean | undefined): boolean {
 		return shouldIncludeHeaders(includeHeaders, this._configurationService);
 	}
 	shouldRemoveNewLines(): boolean {
@@ -618,7 +624,7 @@ export function getEolString(textResourcePropertiesService: ITextResourcePropert
 	return textResourcePropertiesService.getEOL(URI.parse(uri), 'sql');
 }
 
-export function shouldIncludeHeaders(includeHeaders: boolean, configurationService: IConfigurationService): boolean {
+export function shouldIncludeHeaders(includeHeaders: boolean | undefined, configurationService: IConfigurationService): boolean {
 	if (includeHeaders !== undefined) {
 		// Respect the value explicity passed into the method
 		return includeHeaders;
