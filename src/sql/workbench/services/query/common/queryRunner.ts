@@ -29,6 +29,7 @@ import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -463,13 +464,19 @@ export default class QueryRunner extends Disposable {
 	 * @param selection The selection range to copy
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
+	 * @param removeNewLines Whether to remove line breaks from values.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
-		let provider = this.getGridDataProvider(batchId, resultId);
-		return provider.copyResults(selection, includeHeaders);
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, includeHeaders?: boolean): Promise<void> {
+		await this.queryManagementService.copyResults({
+			ownerUri: this.uri,
+			batchIndex: batchId,
+			resultSetIndex: resultId,
+			removeNewLines: removeNewLines,
+			includeHeaders: includeHeaders,
+			selections: selections
+		});
 	}
-
 
 	public getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] | undefined {
 		let headers: string[] | undefined = undefined;
@@ -547,7 +554,8 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 	}
 
@@ -561,7 +569,14 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selection, includeHeaders, tableView);
+			const providerId = this.queryRunner.getProviderId();
+			const providerSupportCopyResults = this._capabilitiesService.getCapabilities(providerId).connection.supportCopyResultsToClipboard;
+			const handleCopyByProviders = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.handleCopyByProviders;
+			if (handleCopyByProviders && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
+				await this.queryRunner.copyResults(selection, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), includeHeaders);
+			} else {
+				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selection, includeHeaders, tableView);
+			}
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}

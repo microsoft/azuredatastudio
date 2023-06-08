@@ -31,6 +31,7 @@ export interface IQueryEditorConfiguration {
 		readonly inMemoryDataProcessingThreshold: number;
 		readonly openAfterSave: boolean;
 		readonly showActionBar: boolean;
+		readonly handleCopyByProviders: boolean;
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean;

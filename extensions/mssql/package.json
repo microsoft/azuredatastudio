@@ -806,6 +806,7 @@
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
       "isExecutionPlanProvider": true,
+      "supportCopyResultsToClipboard": true,
       "azureResource": "Sql",
       "supportedExecutionPlanFileExtensions": [
         "sqlplan"

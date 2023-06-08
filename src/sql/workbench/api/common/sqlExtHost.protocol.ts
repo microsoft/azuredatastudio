@@ -252,6 +252,11 @@ export abstract class ExtHostDataProtocolShape {
 	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
 
 	/**
+	 * Copies the selected data to clipboard.
+	 */
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<azdata.CopyResultsRequestResult> { throw ni(); }
+
+	/**
 	 * Commits all pending edits in an edit session
 	 */
 	$commitEdit(handle: number, ownerUri: string): Thenable<void> { throw ni(); }

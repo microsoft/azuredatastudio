@@ -404,6 +404,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
+		'queryEditor.results.handleCopyByProviders': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.handleCopyByProviders', "Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false in case the provider's copy request handler doesn't work on certain platforms."),
+			'default': true
+		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
