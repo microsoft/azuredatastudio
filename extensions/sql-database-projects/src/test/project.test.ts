@@ -17,7 +17,7 @@ import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
-import { ProjectType, SystemDatabase, SystemDbReferenceStyle } from 'mssql';
+import { ProjectType, SystemDatabase, SystemDbReferenceType } from 'mssql';
 
 describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
@@ -558,7 +558,7 @@ describe('Project: database references', function (): void {
 			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB),
 			systemDb: SystemDatabase.MSDB,
 			suppressMissingDependenciesErrors: true,
-			systemDbReferenceStyle: SystemDbReferenceStyle.ArtifactReference
+			systemDbReferenceStyle: SystemDbReferenceType.ArtifactReference
 		};
 		await project.addSystemDatabaseReference(msdbRefSettings);
 
@@ -576,7 +576,7 @@ describe('Project: database references', function (): void {
 			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB),
 			systemDb: SystemDatabase.MSDB,
 			suppressMissingDependenciesErrors: true,
-			systemDbReferenceStyle: SystemDbReferenceStyle.PackageReference
+			systemDbReferenceStyle: SystemDbReferenceType.PackageReference
 		};
 		await project.addSystemDatabaseReference(msdbRefSettings);
 
@@ -812,7 +812,7 @@ describe('Project: database references', function (): void {
 			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.Master),
 			systemDb: SystemDatabase.Master,
 			suppressMissingDependenciesErrors: false,
-			systemDbReferenceStyle: SystemDbReferenceStyle.ArtifactReference
+			systemDbReferenceStyle: SystemDbReferenceType.ArtifactReference
 		};
 		await project.addSystemDatabaseReference(systemDbReference);
 		project = await Project.openProject(projFilePath);

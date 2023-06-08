@@ -351,7 +351,7 @@ declare module 'mssql' {
 		 * @param referenceType Type of reference - ArtifactReference or PackageReference
 		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 		 */
-		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, referenceType: SystemDbReferenceStyle, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, referenceType: SystemDbReferenceType, databaseLiteral?: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a nuget package database reference to a project
@@ -767,7 +767,7 @@ declare module 'mssql' {
 		MSDB = 1
 	}
 
-	export const enum SystemDbReferenceStyle {
+	export const enum SystemDbReferenceType {
 		ArtifactReference = 0,
 		PackageReference = 1
 	}

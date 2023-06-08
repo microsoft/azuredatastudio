@@ -833,7 +833,7 @@ export class Project implements ISqlProject {
 		let systemDb, referenceType, result, sqlProjService;
 		if (utils.getAzdataApi()) {
 			systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
-			referenceType = settings.systemDbReferenceStyle as mssql.SystemDbReferenceStyle;
+			referenceType = settings.systemDbReferenceStyle as mssql.SystemDbReferenceType;
 			sqlProjService = this.sqlProjService as mssql.ISqlProjectsService;
 			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, referenceType, settings.databaseVariableLiteralValue);
 		} else {

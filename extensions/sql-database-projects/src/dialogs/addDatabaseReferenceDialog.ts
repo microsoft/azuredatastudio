@@ -16,7 +16,7 @@ import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectRef
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
-import { ProjectType, SystemDbReferenceStyle } from 'mssql';
+import { ProjectType, SystemDbReferenceType } from 'mssql';
 
 export enum ReferencedDatabaseType {
 	project,
@@ -51,7 +51,7 @@ export class AddDatabaseReferenceDialog {
 	private systemDatabaseArtifactRefRadioButton: azdataType.RadioButtonComponent | undefined;
 	private systemDatabasePackageRefRadioButton: azdataType.RadioButtonComponent | undefined;
 	private systemDbRefRadioButtonsComponent: azdataType.FormComponent | undefined;
-	private systemDbRefStyle: SystemDbReferenceStyle = SystemDbReferenceStyle.ArtifactReference;
+	private systemDbRefType: SystemDbReferenceType = SystemDbReferenceType.ArtifactReference;
 	public currentReferencedDatabaseType: ReferencedDatabaseType | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
@@ -169,7 +169,7 @@ export class AddDatabaseReferenceDialog {
 				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: utils.getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked,
-				systemDbReferenceStyle: this.systemDbRefStyle
+				systemDbReferenceStyle: this.systemDbRefType
 			};
 
 			referenceSettings = systemDbRef;
@@ -308,7 +308,7 @@ export class AddDatabaseReferenceDialog {
 
 		this.systemDatabasePackageRefRadioButton.onDidChangeCheckedState((checked) => {
 			if (checked) {
-				this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;
+				this.systemDbRefType = SystemDbReferenceType.PackageReference;
 			}
 		});
 
@@ -320,7 +320,7 @@ export class AddDatabaseReferenceDialog {
 
 		this.systemDatabaseArtifactRefRadioButton.onDidChangeCheckedState((checked) => {
 			if (checked) {
-				this.systemDbRefStyle = SystemDbReferenceStyle.ArtifactReference;
+				this.systemDbRefType = SystemDbReferenceType.ArtifactReference;
 			}
 		});
 
@@ -345,7 +345,7 @@ export class AddDatabaseReferenceDialog {
 		// add the radio buttons to choose ArtifactReference or PackageReference if it's an SDK-syle project
 		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
 			this.formBuilder!.insertFormItem(this.systemDbRefRadioButtonsComponent!, 3);
-			this.systemDbRefStyle = SystemDbReferenceStyle.PackageReference;
+			this.systemDbRefType = SystemDbReferenceType.PackageReference;
 		}
 	}
 

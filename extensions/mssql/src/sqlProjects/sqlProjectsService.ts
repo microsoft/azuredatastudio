@@ -73,7 +73,7 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param SystemDbReferenceStyle Type of reference - ArtifactReference or PackageReference
 	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 	 */
-	public async addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, SystemDbReferenceStyle: mssql.SystemDbReferenceStyle, databaseLiteral?: string): Promise<azdata.ResultStatus> {
+	public async addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, SystemDbReferenceStyle: mssql.SystemDbReferenceType, databaseLiteral?: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSystemDatabaseReferenceParams = { projectUri: projectUri, systemDatabase: systemDatabase, suppressMissingDependencies: suppressMissingDependencies, referenceType: SystemDbReferenceStyle, databaseLiteral: databaseLiteral };
 		return await this.runWithErrorHandling(contracts.AddSystemDatabaseReferenceRequest.type, params);
 	}

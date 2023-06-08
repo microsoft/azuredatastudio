@@ -13,7 +13,7 @@ import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectRefer
 import { Project } from '../models/project';
 import { getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { ProjectType, SystemDbReferenceStyle } from 'vscode-mssql';
+import { ProjectType, SystemDbReferenceType } from 'vscode-mssql';
 
 
 
@@ -138,7 +138,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
 		suppressMissingDependenciesErrors: suppressErrors,
-		systemDbReferenceStyle: SystemDbReferenceStyle.ArtifactReference
+		systemDbReferenceStyle: SystemDbReferenceType.ArtifactReference
 	};
 }
 
