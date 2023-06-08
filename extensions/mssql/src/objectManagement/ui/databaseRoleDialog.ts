@@ -10,8 +10,9 @@ import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants'
 import { FindObjectDialog } from './findObjectDialog';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { DatabaseRoleInfo, DatabaseRoleViewInfo } from '../interfaces';
 
-export class DatabaseRoleDialog extends PrincipalDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
+export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, DatabaseRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemasSection: azdata.GroupContainer;
