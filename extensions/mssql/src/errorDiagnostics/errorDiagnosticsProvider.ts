@@ -62,15 +62,9 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
 						return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.messageDetails);
 					}
-					else if (errorInfo.errorCode === ErrorDiagnosticsConstants.MssqlLoginFailedForUserErrorCode
-						&& (connection.serverName.endsWith(ErrorDiagnosticsConstants.AzureSQLSuffixGlobal) || connection.serverName.endsWith(ErrorDiagnosticsConstants.AzureSQLSuffixUSNational))) {
-						return await this.showDiagnoseErrorDialog(restoredProfile, errorInfo.errorCode, errorInfo.errorMessage, errorInfo.messageDetails);
-					}
 					else {
 						return await this.showDiagnoseErrorDialog(restoredProfile, errorInfo.errorCode, errorInfo.errorMessage, errorInfo.messageDetails);
 					}
-					logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorInfo.errorCode}.`);
-					return { handled: false };
 				}
 
 				return azdata.diagnostics.registerDiagnosticsProvider({

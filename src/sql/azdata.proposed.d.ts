@@ -1927,7 +1927,7 @@ declare module 'azdata' {
 
 		export interface ITroubleshooterDialogOptions extends IErrorDialogOptions {
 			/**
-			 * Troubleshooter item to display in the troubleshooter dialog
+			 * Troubleshoot items to display in the troubleshooter dialog
 			 */
 			troubleshooterItems: ITroubleshooterItem[];
 		}
