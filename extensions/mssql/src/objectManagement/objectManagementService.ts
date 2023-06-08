@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
+import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, DatabaseViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
@@ -28,8 +28,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		};
 	}
 
-	async initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string, dialogType?: string): Promise<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
-		const params: contracts.InitializeViewRequestParams = { connectionUri, contextId, isNewObject, objectType, database, parentUrn, objectUrn, dialogType };
+	async initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Promise<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
+		const params: contracts.InitializeViewRequestParams = { connectionUri, contextId, isNewObject, objectType, database, parentUrn, objectUrn };
 		return this.runWithErrorHandling(contracts.InitializeViewRequest.type, params);
 	}
 
@@ -195,7 +195,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
 			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.Database) {
-			obj = this.getDatabasePropertiesView(objectUrn);
+			obj = this.getDatabaseView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
@@ -434,20 +434,22 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getDatabasePropertiesView(name: string): ObjectManagement.DatabasePropertiesViewInfo {
-		return <ObjectManagement.DatabasePropertiesViewInfo>{
+	private getDatabaseView(isNewObject: boolean, name: string): DatabaseViewInfo {
+		return isNewObject ? <DatabaseViewInfo>{
+
+		} : <DatabaseViewInfo>{
 			objectInfo: {
 				name: 'Database Properties1',
 				collationName: 'Latin1_General_100_CI_AS_KS_WS',
 				dateCreated: '5/31/2023 8:05:55 AM',
 				lastDatabaseBackup: 'None',
 				lastDatabaseLogBackup: 'None',
-				memoryAllocatedToMemoryOptimizedObjects: '0.00 MB',
-				memoryUsedByMemoryOptimizedObjects: '0.00 MB',
+				memoryAllocatedToMemoryOptimizedObjectsInMb: '0.00 MB',
+				memoryUsedByMemoryOptimizedObjectsInMb: '0.00 MB',
 				numberOfUsers: '5',
 				owner: 'databaseProperties 1',
-				size: '16.00 MB',
-				spaceAvailable: '1.15 MB',
+				sizeInMb: '16.00 MB',
+				spaceAvailableInMb: '1.15 MB',
 				status: 'Normal'
 			}
 		};

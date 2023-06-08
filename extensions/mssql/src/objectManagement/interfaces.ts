@@ -430,6 +430,15 @@ export interface Database extends ObjectManagement.SqlObject {
 	recoveryModel?: string;
 	compatibilityLevel?: string;
 	containmentType?: string;
+	dateCreated?: string;
+	lastDatabaseBackup?: string;
+	lastDatabaseLogBackup?: string;
+	memoryAllocatedToMemoryOptimizedObjectsInMb?: string;
+	memoryUsedByMemoryOptimizedObjectsInMb?: string;
+	numberOfUsers?: string;
+	sizeInMb?: string;
+	spaceAvailableInMb?: string;
+	status?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {

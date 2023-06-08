@@ -22,7 +22,6 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
-import { DatabasePropertiesDialog } from './ui/databasePropertiesDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -39,12 +38,6 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
 	}));
-}
-
-export enum DialogType {
-	New = 'New',
-	Edit = 'Edit',
-	Properties = 'Properties'
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
@@ -90,7 +83,6 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			connectionUri: connectionUri,
 			isNewObject: true,
 			database: context.connectionProfile!.databaseName!,
-			dialogType: DialogType.New,
 			objectType: objectType,
 			objectName: '',
 			parentUrn: parentUrn,
@@ -119,7 +111,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			connectionUri: connectionUri,
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
-			dialogType: DialogType.Properties,
 			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
 			objectName: context.nodeInfo.label,
 			parentUrn: parentUrn,
@@ -254,8 +245,7 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
-			return dialogOptions.dialogType === DialogType.Properties ?
-				new DatabasePropertiesDialog(service, dialogOptions) : new DatabaseDialog(service, dialogOptions);
+			return new DatabaseDialog(service, dialogOptions);
 		default:
 			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}
