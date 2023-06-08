@@ -529,6 +529,19 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	/**
+	 * Adds a text string to the footer of the modal
+	 * @param value Text to add
+	 * @param position The position of the text. Optional values: 'left', 'right'. Default value is 'left'
+	 */
+	protected addFooterText(value: string, position: 'left' | 'right' = 'left'): HTMLElement {
+		let footerText = DOM.$('.footer-text');
+		footerText.innerText = value;
+		const container = position === 'left' ? this._leftFooter! : this._rightFooter!;
+		DOM.append(container, footerText);
+		return footerText;
+	}
+
+	/**
 	 * Adds a button to the footer of the modal
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected

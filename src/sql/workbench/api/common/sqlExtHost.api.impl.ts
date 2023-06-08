@@ -480,7 +480,12 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				MessageLevel: sqlExtHostTypes.MessageLevel,
 				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
 					return extHostModelViewDialog.openCustomErrorDialog(options);
-				}
+				},
+				State: sqlExtHostTypes.State,
+				openTroubleshooterDialog(options: sqlExtHostTypes.ITroubleshooterDialogOptions): Thenable<string | undefined> {
+					return extHostModelViewDialog.openTroubleshooterDialog(options);
+				},
+
 			};
 
 			const tasks: typeof azdata.tasks = {

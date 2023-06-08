@@ -9,7 +9,8 @@ import { Dialog, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes
 import { IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ErrorMessageDialog } from 'sql/workbench/services/errorMessage/browser/errorMessageDialog';
-import { IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IErrorDialogOptions, ITroubleshooterDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TroubleshooterMessageDialog } from 'sql/workbench/services/troubleshooter/troubleshooterMessageDialog';
 
 export const DefaultDialogOptions: IModalOptions = { hasBackButton: false, width: 'narrow', hasErrors: true, hasSpinner: true };
 export const DefaultWizardOptions: IModalOptions = { hasBackButton: false, width: 'wide', hasErrors: true, hasSpinner: true };
@@ -61,7 +62,17 @@ export class CustomDialogService {
 	public async openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
 		let dialog = this._instantiationService.createInstance(ErrorMessageDialog);
 		dialog.render();
+		// Use own troubleshooter dialog here?
 		let result = await dialog.openCustomAsync(options);
 		return result;
 	}
+
+	public async openTroubleshooterDialog(options: ITroubleshooterDialogOptions): Promise<string | undefined> {
+		let dialog = this._instantiationService.createInstance(TroubleshooterMessageDialog);
+		dialog.render();
+		let result = dialog.openCustomAsync(options);
+		return result;
+	}
+
+
 }

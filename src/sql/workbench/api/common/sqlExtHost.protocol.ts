@@ -19,7 +19,8 @@ import {
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
 	ISerializationManagerDetails,
-	IErrorDialogOptions
+	IErrorDialogOptions,
+	ITroubleshooterDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -880,6 +881,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$closeEditor(handle: number): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined>;
+	$openTroubleshooterDialog(options: ITroubleshooterDialogOptions): Promise<string | undefined>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;

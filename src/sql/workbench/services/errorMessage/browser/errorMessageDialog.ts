@@ -46,6 +46,8 @@ export class ErrorMessageDialog extends Modal {
 	private _okLabel: string;
 	private _closeLabel: string;
 	private _readMoreLabel: string;
+	private _copyLabel: string;
+	private _actionEvents = new Map<string, boolean>();
 	private _promise: Deferred<string> | undefined;
 
 	private _onOk = new Emitter<void>();
@@ -66,6 +68,7 @@ export class ErrorMessageDialog extends Modal {
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
 		this._readMoreLabel = localize('errorMessageDialog.readMore', "Read More");
+		this._copyLabel = localize('errorMessageDialog.copyDetails', "Copy details");
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -85,8 +88,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createCopyButton() {
-		let copyButtonLabel = localize('copyDetails', "Copy details");
-		this._copyButton = this.addFooterButton(copyButtonLabel, () => {
+		this._copyButton = this.addFooterButton(this._copyLabel, () => {
 			if (this._messageDetails) {
 				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
 			}
@@ -94,7 +96,7 @@ export class ErrorMessageDialog extends Modal {
 		this._copyButton!.icon = {
 			id: 'codicon scriptToClipboard'
 		};
-		this._copyButton!.element.title = copyButtonLabel;
+		this._copyButton!.element.title = this._copyLabel;
 		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
@@ -108,8 +110,10 @@ export class ErrorMessageDialog extends Modal {
 		if (this._actions && index < this._actions.length) {
 			const actionId = this._actions[index].id;
 			this._telemetryService.sendActionEvent(this._telemetryView, actionId);
-			// Call OK to close dialog.
-			this.ok(false);
+			if (this._actionEvents && this._actionEvents.has(actionId) && this._actionEvents.get(actionId)) {
+				// Call OK to close dialog.
+				this.ok(false);
+			}
 			// Run the action if possible
 			this._actions[index].run();
 			// Resolve promise after running action.
@@ -119,6 +123,13 @@ export class ErrorMessageDialog extends Modal {
 
 	protected layout(height?: number): void {
 		// Nothing to re-layout
+	}
+
+	protected hideFooterButtons(): void {
+		this._actions.forEach(button => {
+			this.removeFooterButton(button.label);
+		});
+		this.removeFooterButton(this._closeLabel);
 	}
 
 	protected updateDialogBody(): void {
@@ -139,6 +150,18 @@ export class ErrorMessageDialog extends Modal {
 
 	protected getBody(): HTMLElement {
 		return this._body;
+	}
+
+	protected setBody(body: HTMLElement): void {
+		this._body = body;
+	}
+
+	protected getCopyLabel(): string {
+		return this._copyLabel;
+	}
+
+	protected getOpenerService(): IOpenerService {
+		return this._openerService;
 	}
 
 	private updateIconTitle(): void {
@@ -234,7 +257,8 @@ export class ErrorMessageDialog extends Modal {
 		let actions: IAction[] = [];
 		this.resetActions();
 		options.actions?.forEach(action => {
-			actions.push(new Action(action.id, action.label, '', true, () => { }));
+			this._actionEvents.set(action.id, action.closeDialog);
+			actions.push(new Action(action.id, action.label, '', true, () => { action.run(); }));
 		});
 
 		this.open(options.telemetryView, this.convertToSeverity(options.severity),

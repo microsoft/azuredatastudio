@@ -62,8 +62,9 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						logDebug(`ErrorDiagnosticsProvider: Error Code ${errorInfo.errorCode} indicates certificate validation has failed, launching error dialog with instructionText.`);
 						return await this.showCertValidationDialog(restoredProfile, errorInfo.errorMessage, errorInfo.messageDetails);
 					}
-					logDebug(`ErrorDiagnosticsProvider: No error handler found for errorCode ${errorInfo.errorCode}.`);
-					return { handled: false };
+					else {
+						return await this.showDiagnoseErrorDialog(restoredProfile, errorInfo.errorCode, errorInfo.errorMessage, errorInfo.messageDetails);
+					}
 				}
 
 				return azdata.diagnostics.registerDiagnosticsProvider({
@@ -72,6 +73,81 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					handleConnectionError
 				});
 			}
+
+			private async showDiagnoseErrorDialog(connection: azdata.IConnectionProfile, errorCode: Number, errorMessage: string, messageDetails: string): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
+				try {
+					let actions: azdata.window.IDialogAction[] = [];
+					//TODO: put in constants file
+					let diagnoseErrorAction: azdata.window.IDialogAction = {
+						id: 'diagnoseError',
+						label: 'Diagnose Error',
+						isPrimary: true,
+						closeDialog: true
+						//TODO: need to add run action to Diagnose Error button, which will trigger fetching diagnostics
+					};
+
+					actions.push(diagnoseErrorAction);
+
+					const result = await azdata.window.openCustomErrorDialog(
+						{
+							severity: azdata.window.MessageLevel.Error,
+							headerTitle: ErrorDiagnosticsConstants.ConnectionErrorDialogTitle,
+							message: errorMessage,
+							messageDetails: messageDetails,
+							telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTelemetryView,
+							// instructionText: ErrorDiagnosticsConstants.TSC_InstructionText,
+							// readMoreLink: ErrorDiagnosticsConstants.TSC_ReadMoreLink,
+							actions: actions
+						}
+					);
+					// Result represents id of action taken by user.
+					if (result === 'diagnoseError') {
+						await this.showTroubleshooterDialog(errorCode, errorMessage, messageDetails);
+						//TODO: show troubleshooting dialog
+					} else {
+
+					}
+				}
+				catch (e) {
+					console.error(`Unexpected exception occurred when showing certificate validation custom dialog: ${e}`);
+				}
+				return { handled: false };
+			}
+
+
+
+			private async showTroubleshooterDialog(errorCode: Number, errorMessage: string, messageDetails: string) {
+				//TODO: remove this dummy data later
+				const troubleshooterItemInvalid: azdata.window.ITroubleshooterItem = {
+					state: 0,
+					message: 'test invalid troubleshooter item'
+				}
+				const troubleshooterItemLoading: azdata.window.ITroubleshooterItem = {
+					state: 1,
+					message: 'test loading troubleshooter item'
+				}
+				const troubleshooterItemValid: azdata.window.ITroubleshooterItem = {
+					state: 2,
+					message: 'test valid troubleshooter item'
+				}
+
+				const troubleshooterArray = [troubleshooterItemInvalid, troubleshooterItemLoading, troubleshooterItemValid]
+
+				await azdata.window.openTroubleshooterDialog(
+					{
+						severity: azdata.window.MessageLevel.Error,
+						headerTitle: 'Connection Troubleshooting',
+						message: 'Diagnostic Results here',
+						troubleshooterItems: troubleshooterArray,
+						messageDetails: messageDetails,
+						telemetryView: ErrorDiagnosticsConstants.MssqlConnectionTSGTelemetryView,
+						// diagnosticsSolutionId: ErrorDiagnosticsConstants.AzureDiagnostics18456
+					}
+				);
+				return { handled: true, reconnect: false };
+			}
+
+
 
 			private async showCertValidationDialog(connection: azdata.IConnectionProfile, errorMessage: string, callStack: string): Promise<azdata.diagnostics.ConnectionDiagnosticsResult> {
 				try {
