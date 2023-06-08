@@ -823,11 +823,61 @@ declare module 'azdata' {
 		parentTypeName?: string;
 	}
 
+	/**
+	 * Represents a selected range in the result grid.
+	 */
+	export interface SelectionRange {
+		fromRow: number;
+		toRow: number;
+		fromCell: number;
+		toCell: number;
+	}
+
+	/**
+	 * Parameters for the copy results request.
+	 */
+	export interface CopyResultsRequestParams {
+		/**
+		 * ownerUri of the editor
+		 */
+		ownerUri: string;
+		/**
+		 * Index of the batch.
+		 */
+		batchIndex: number;
+		/**
+		 * Index of the result set.
+		 */
+		resultSetIndex: number;
+		/**
+		 * Whether to include the column headers.
+		 */
+		includeHeaders: boolean
+		/**
+		 * Whether to remove line breaks from the cell value.
+		 */
+		removeNewLines: boolean;
+		/**
+		 * The selected ranges to be copied.
+		 */
+		selections: SelectionRange[];
+	}
+
+	/**
+	 * The result of copy results request.
+	 */
+	export interface CopyResultsRequestResult {
+	}
+
 	export interface QueryProvider {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
 		 */
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+		/**
+		 * Copy the selected data to the clipboard.
+		 */
+		copyResults(requestParams: CopyResultsRequestParams): Thenable<CopyResultsRequestResult>;
 	}
 
 	export enum DataProviderType {
