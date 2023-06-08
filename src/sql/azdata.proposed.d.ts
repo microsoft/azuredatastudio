@@ -838,7 +838,7 @@ declare module 'azdata' {
 	 */
 	export interface CopyResultsRequestParams {
 		/**
-		 * ownerUri of the editor
+		 * URI of the editor.
 		 */
 		ownerUri: string;
 		/**
