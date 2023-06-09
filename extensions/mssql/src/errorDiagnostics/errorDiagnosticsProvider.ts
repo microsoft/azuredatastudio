@@ -103,7 +103,8 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					// Result represents id of action taken by user.
 					if (result === 'diagnoseError') {
 						await this.showTroubleshooterDialog(errorCode, errorMessage, messageDetails);
-						//TODO: show troubleshooting dialog
+
+						// TODO: Fetch self-service results here from STS
 					} else {
 
 					}

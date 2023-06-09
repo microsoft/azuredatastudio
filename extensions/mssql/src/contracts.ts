@@ -1625,6 +1625,27 @@ export namespace SearchObjectRequest {
 
 // ------------------------------- < Object Management > ------------------------------------
 
+
+// ------------------------------- < Connection Diagnostics > ------------------------------------
+
+export interface GetDiagnosticsParams {
+
+
+}
+
+export interface GetDiagnosticsRequest {
+
+}
+
+export namespace GetDiagnosticsRequest {
+	export const type = new RequestType<GetDiagnosticsParams, azdata.diagnostics.GetDiagnosticsResult, void, void>('queryExecutionPlan/getExecutionPlan');
+}
+
+
+
+// ------------------------------- < Connection Diagnostics > ------------------------------------
+
+
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
 /**
  * Parameters for the MSAL cache encryption key notification

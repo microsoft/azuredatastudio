@@ -459,6 +459,11 @@ declare module 'azdata' {
 			options?: { [name: string]: any };
 		}
 
+		export interface GetDiagnosticsResult {
+			errorCode: number,
+			recommendation: string
+		}
+
 		/**
 		 * Provides error information
 		 */
@@ -497,7 +502,9 @@ declare module 'azdata' {
 		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
 		 * @returns  A disposable that when disposed will unregister the provider
 		 */
-		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
+		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: GetDiagnosticsResult): vscode.Disposable;
+
+
 	}
 
 	export namespace connection {
@@ -1923,6 +1930,10 @@ declare module 'azdata' {
 			 * Recommendation based on the error message
 			 */
 			recommendation?: string;
+			/**
+			 * Error code corresponding to the connection error
+			 */
+			errorCode?: string;
 		}
 
 		export interface ITroubleshooterDialogOptions extends IErrorDialogOptions {
