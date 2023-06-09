@@ -39,7 +39,8 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 
 const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
-const cellWithHTMLEntries = localize('editData.enteringHTML', "Entering HTML code is currently not supported. This row has been reverted for safety. Please enter non HTML values in the row only");
+const cellWithHTMLEntries = localize('editData.enteringHTML', "Entering HTML code is currently not supported. Please enter non HTML values in the row only");
+//const cellWithHTMLEntries = localize('editData.enteringHTML', "Entering HTML code is currently not supported. Your text has been cleaned for safety. Please enter non HTML values in the row only");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -669,17 +670,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
 		let refreshGrid = false;
-		let containsHTML = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(this.currentEditCellValue);
-		let safeHTMLCell = document.createTextNode(this.currentEditCellValue);
-		let safeHTMLText = safeHTMLCell.wholeText;
-		if (containsHTML) {
-			self.currentEditCellValue = undefined;
-			updateCellPromise = this.revertCurrentRow().catch(onUnexpectedError).then(() => {
-				this.notificationService.error(cellWithHTMLEntries);
-				return errorHandler(new Error(cellWithHTMLEntries));
-			});
-		}
-		else if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
+
+		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
 			if (this.isNullRow(this.currentCell.row)) {
 				refreshGrid = true;
 				// We've entered the "new row", so we need to add a row and jump to it
@@ -1012,14 +1004,20 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			applyValue(item, state): void {
 				let activeRow = self.currentCell.row;
-				let currentRow = self.dataSet.dataRows.at(activeRow);
-				let colIndex = self.getColumnIndex(this._args.column.name);
 				let dataLength: number = self.dataSet.dataRows.getLength();
 
 				// If this is not the "new row" at the very bottom
 				if (activeRow !== dataLength) {
-					currentRow[colIndex] = state;
-					this._textEditor.applyValue(item, state);
+					// Prevent applying if the cell contains HTML as it will execute automatically due to slickgrid's design:
+					// the slickgrid text editor's value affects what's in the grid's data, so that means entering HTML will result in execution upon immediate rerender.
+					let containsHTML = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(state);
+					if (containsHTML) {
+						self.notificationService.warn(cellWithHTMLEntries);
+						//this._textEditor.applyValue(item, escape(state));
+					}
+					else {
+						this._textEditor.applyValue(item, state);
+					}
 				}
 			}
 
