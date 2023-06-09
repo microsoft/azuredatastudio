@@ -62,7 +62,7 @@ export class TestQueryManagementService implements IQueryManagementService {
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
 		throw new Error('Method not implemented.');
 	}
-	copyResults(params: azdata.CopyResultsRequestParams): Promise<azdata.CopyResultsRequestResult> {
+	copyResults(params: azdata.CopyResultsRequestParams): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	setQueryExecutionOptions(uri: string, options: azdata.QueryExecutionOptions): Promise<void> {

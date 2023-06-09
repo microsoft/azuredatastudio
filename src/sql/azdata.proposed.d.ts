@@ -829,8 +829,8 @@ declare module 'azdata' {
 	export interface SelectionRange {
 		fromRow: number;
 		toRow: number;
-		fromCell: number;
-		toCell: number;
+		fromColumn: number;
+		toColumn: number;
 	}
 
 	/**
@@ -838,7 +838,7 @@ declare module 'azdata' {
 	 */
 	export interface CopyResultsRequestParams {
 		/**
-		 * ownerUri of the editor
+		 * URI of the editor.
 		 */
 		ownerUri: string;
 		/**
@@ -863,21 +863,18 @@ declare module 'azdata' {
 		selections: SelectionRange[];
 	}
 
-	/**
-	 * The result of copy results request.
-	 */
-	export interface CopyResultsRequestResult {
-	}
-
 	export interface QueryProvider {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
 		 */
-		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+		connectionUriChanged?(newUri: string, oldUri: string): Thenable<void>;
 		/**
 		 * Copy the selected data to the clipboard.
+		 * This is introduced to address the performance issue of large amount of data to ADS side.
+		 * ADS will use this if 'supportCopyResultsToClipboard' property is set to true in the provider contribution point in extension's package.json.
+		 * Otherwise, The default handler will load all the selected data to ADS and perform the copy operation.
 		 */
-		copyResults(requestParams: CopyResultsRequestParams): Thenable<CopyResultsRequestResult>;
+		copyResults?(requestParams: CopyResultsRequestParams): Thenable<void>;
 	}
 
 	export enum DataProviderType {

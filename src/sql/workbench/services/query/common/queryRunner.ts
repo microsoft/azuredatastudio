@@ -474,7 +474,14 @@ export default class QueryRunner extends Disposable {
 			resultSetIndex: resultId,
 			removeNewLines: removeNewLines,
 			includeHeaders: includeHeaders,
-			selections: selections
+			selections: selections.map(selection => {
+				return {
+					fromRow: selection.fromRow,
+					toRow: selection.toRow,
+					fromColumn: selection.fromCell,
+					toColumn: selection.toCell
+				};
+			})
 		});
 	}
 
@@ -571,8 +578,8 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		try {
 			const providerId = this.queryRunner.getProviderId();
 			const providerSupportCopyResults = this._capabilitiesService.getCapabilities(providerId).connection.supportCopyResultsToClipboard;
-			const handleCopyByProviders = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.handleCopyByProviders;
-			if (handleCopyByProviders && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
+			const preferProvidersCopyHandler = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.preferProvidersCopyHandler;
+			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
 				await this.handleCopyRequestByProvider(selections, includeHeaders);
 			} else {
 				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
@@ -600,7 +607,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	getEolString(): string {
 		return getEolString(this._textResourcePropertiesService, this.queryRunner.uri);
 	}
-	shouldIncludeHeaders(includeHeaders: boolean | undefined): boolean {
+	shouldIncludeHeaders(includeHeaders: boolean): boolean {
 		return shouldIncludeHeaders(includeHeaders, this._configurationService);
 	}
 	shouldRemoveNewLines(): boolean {
@@ -624,7 +631,7 @@ export function getEolString(textResourcePropertiesService: ITextResourcePropert
 	return textResourcePropertiesService.getEOL(URI.parse(uri), 'sql');
 }
 
-export function shouldIncludeHeaders(includeHeaders: boolean | undefined, configurationService: IConfigurationService): boolean {
+export function shouldIncludeHeaders(includeHeaders: boolean, configurationService: IConfigurationService): boolean {
 	if (includeHeaders !== undefined) {
 		// Respect the value explicity passed into the method
 		return includeHeaders;
