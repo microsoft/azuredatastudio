@@ -55,6 +55,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	constructor(private readonly _provider: TableDesignerProvider,
 		public tableInfo: azdata.designers.TableInfo,
 		private _telemetryInfo: ITelemetryEventProperties,
+		private _objectExplorerContext: azdata.ObjectExplorerContext,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
@@ -138,6 +139,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			sticky: true
 		});
 		const startTime = new Date().getTime();
+		let isPublishSuccessful = false;
 		try {
 			this.updateState(this.valid, this.dirty, 'publish');
 			const result = await this._provider.publishChanges(this.tableInfo);
@@ -152,12 +154,47 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).withAdditionalProperties(metadataTelemetryInfo).send();
+			isPublishSuccessful = true;
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error), error?.data);
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo).send();
 		}
+
+		if (isPublishSuccessful) {
+			if (this.tableInfo.isNewTable) {
+				// refresh
+				this.refreshNode(this._objectExplorerContext);
+			} else {
+				// refresh parent
+				this.refreshParentNode(this._objectExplorerContext);
+			}
+		}
 	}
+
+	async refreshParentNode(objectExplorerContext: azdata.ObjectExplorerContext): Promise<void> {
+		if (objectExplorerContext) {
+			try {
+				const node = await azdata.objectexplorer.getNode(objectExplorerContext.connectionProfile!.id, objectExplorerContext.nodeInfo!.nodePath);
+				const parentNode = await node?.getParent();
+				await parentNode?.refresh();
+			}
+			catch (err) {
+			}
+		}
+	}
+
+	async refreshNode(objectExplorerContext: azdata.ObjectExplorerContext): Promise<void> {
+		if (objectExplorerContext) {
+			try {
+				const node = await azdata.objectexplorer.getNode(objectExplorerContext.connectionProfile!.id, objectExplorerContext.nodeInfo!.nodePath);
+				await node?.refresh();
+			}
+			catch (err) {
+			}
+		}
+	}
+
 
 	async save(): Promise<void> {
 		this._onSubmitPendingEditRequested.fire();

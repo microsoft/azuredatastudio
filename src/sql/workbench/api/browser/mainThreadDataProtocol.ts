@@ -665,8 +665,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Table Designer
-	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void {
-		this._tableDesignerService.openTableDesigner(providerId, tableInfo, telemetryInfo);
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo, telemetryInfo, objectExplorerContext);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {
