@@ -5,15 +5,16 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { IObjectManagementService } from 'mssql';
 import * as objectManagementLoc from '../localizedConstants';
 import * as uiLoc from '../../ui/localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { AuthenticationType, Login, LoginViewInfo } from '../interfaces';
 
-export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
+export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
@@ -46,7 +47,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 		// Empty password is only allowed when advanced password options are supported and the password policy check is off.
 		// To match the SSMS behavior, a warning is shown to the user.
 		if (this.viewInfo.supportAdvancedPasswordOptions
-			&& this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql
+			&& this.objectInfo.authenticationType === AuthenticationType.Sql
 			&& !this.objectInfo.password
 			&& !this.objectInfo.enforcePasswordPolicy) {
 			const result = await vscode.window.showWarningMessage(objectManagementLoc.BlankPasswordConfirmationText, { modal: true }, uiLoc.YesText);
@@ -57,14 +58,14 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		if (this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
+		if (this.objectInfo.authenticationType === AuthenticationType.Sql) {
 			if (!this.objectInfo.password && !(this.viewInfo.supportAdvancedPasswordOptions && !this.objectInfo.enforcePasswordPolicy)) {
 				errors.push(objectManagementLoc.PasswordCannotBeEmptyError);
 			}
 
 			if (this.objectInfo.password && (this.objectInfo.enforcePasswordPolicy || !this.viewInfo.supportAdvancedPasswordOptions)
 				&& !isValidSQLPassword(this.objectInfo.password, this.objectInfo.name)
-				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
+				&& (this.options.isNewObject || this.isPasswordChanged())) {
 				errors.push(objectManagementLoc.InvalidPasswordError);
 			}
 
@@ -132,6 +133,11 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 		const items: azdata.Component[] = [];
 		this.passwordInput = this.createPasswordInputBox(objectManagementLoc.PasswordText, async (newValue) => {
 			this.objectInfo.password = newValue;
+			this.mustChangePasswordCheckbox.enabled = this.objectInfo.enforcePasswordPolicy && this.isPasswordChanged();
+			// this handles the case where the mustChangePasswordCheckbox is disabled when a user changes the password input and reverts the change. In that case we want to reset the check state of this checkbox to its original value instead of using the potentially dirty state set during password input changes.
+			if (!this.mustChangePasswordCheckbox.enabled) {
+				this.mustChangePasswordCheckbox.checked = this.objectInfo.mustChangePassword;
+			}
 		}, this.objectInfo.password ?? '');
 		const passwordRow = this.createLabelInputContainer(objectManagementLoc.PasswordText, this.passwordInput);
 		this.confirmPasswordInput = this.createPasswordInputBox(objectManagementLoc.ConfirmPasswordText, async () => { }, this.objectInfo.password ?? '');
@@ -158,21 +164,26 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 				const enforcePolicy = checked;
 				this.objectInfo.enforcePasswordPolicy = enforcePolicy;
 				this.enforcePasswordExpirationCheckbox.enabled = enforcePolicy;
-				this.mustChangePasswordCheckbox.enabled = enforcePolicy;
 				this.enforcePasswordExpirationCheckbox.checked = enforcePolicy;
-				this.mustChangePasswordCheckbox.checked = enforcePolicy;
+				if (this.options.isNewObject || this.isPasswordChanged()) {
+					this.mustChangePasswordCheckbox.enabled = enforcePolicy;
+					this.mustChangePasswordCheckbox.checked = enforcePolicy;
+				}
+				this.mustChangePasswordCheckbox.checked = enforcePolicy && (this.options.isNewObject || this.isPasswordChanged());
 			}, this.objectInfo.enforcePasswordPolicy);
 
 			this.enforcePasswordExpirationCheckbox = this.createCheckbox(objectManagementLoc.EnforcePasswordExpirationText, async (checked) => {
 				const enforceExpiration = checked;
 				this.objectInfo.enforcePasswordExpiration = enforceExpiration;
-				this.mustChangePasswordCheckbox.enabled = enforceExpiration;
-				this.mustChangePasswordCheckbox.checked = enforceExpiration;
+				if (this.options.isNewObject || this.isPasswordChanged()) {
+					this.mustChangePasswordCheckbox.enabled = enforceExpiration;
+					this.mustChangePasswordCheckbox.checked = enforceExpiration;
+				}
 			}, this.objectInfo.enforcePasswordPolicy);
 
 			this.mustChangePasswordCheckbox = this.createCheckbox(objectManagementLoc.MustChangePasswordText, async (checked) => {
 				this.objectInfo.mustChangePassword = checked;
-			}, this.objectInfo.mustChangePassword);
+			}, this.objectInfo.mustChangePassword, this.options.isNewObject);
 
 			items.push(this.enforcePasswordPolicyCheckbox, this.enforcePasswordExpirationCheckbox, this.mustChangePasswordCheckbox);
 
@@ -185,6 +196,10 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 		}
 
 		this.sqlAuthSection = this.createGroup(objectManagementLoc.SQLAuthenticationSectionHeader, items);
+	}
+
+	private isPasswordChanged(): boolean {
+		return this.objectInfo.password !== this.originalObjectInfo.password
 	}
 
 	private initializeAdvancedSection(): void {

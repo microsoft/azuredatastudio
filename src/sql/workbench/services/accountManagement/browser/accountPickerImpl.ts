@@ -255,9 +255,12 @@ export class AccountPicker extends Disposable {
 
 	private onAccountSelectionChange(account: azdata.Account | undefined) {
 		this.viewModel.selectedAccount = account;
-		if (account && account.isStale) {
+		if (!account) {
+			DOM.hide(this._tenantContainer!);
+		} else if (account && account.isStale) {
 			this._refreshAccountAction!.account = account;
 			DOM.show(this._refreshContainer!);
+			DOM.hide(this._tenantContainer!);
 		} else if (account) {
 			DOM.hide(this._refreshContainer!);
 
