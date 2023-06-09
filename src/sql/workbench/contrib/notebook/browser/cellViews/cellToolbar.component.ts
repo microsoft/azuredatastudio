@@ -11,7 +11,7 @@ import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction, SplitCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
-import { AddCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCodeCellAction, AddTextCellAction, ToggleAddCellDropdownAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -79,29 +79,29 @@ export class CellToolbarComponent {
 	private setupActions(): void {
 		this._disposableActions.clear();
 
-		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
-		this._disposableActions.add(addCellsButton);
+		let toggleAddCellDropdown = this.instantiationService.createInstance(ToggleAddCellDropdownAction);
+		this._disposableActions.add(toggleAddCellDropdown);
 
-		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
-		addCodeCellButton.cellType = CellTypes.Code;
-		this._disposableActions.add(addCodeCellButton);
+		let addCodeCellAction = this.instantiationService.createInstance(AddCodeCellAction);
+		addCodeCellAction.cellType = CellTypes.Code;
+		this._disposableActions.add(addCodeCellAction);
 
-		let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
-		addTextCellButton.cellType = CellTypes.Markdown;
-		this._disposableActions.add(addTextCellButton);
+		let addTextCellAction = this.instantiationService.createInstance(AddTextCellAction);
+		addTextCellAction.cellType = CellTypes.Markdown;
+		this._disposableActions.add(addTextCellAction);
 
-		let moveCellDownButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellDown', 'masked-icon move-down', this.buttonMoveDown);
-		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
-		this._disposableActions.add(moveCellDownButton);
-		this._disposableActions.add(moveCellUpButton);
+		let moveCellDownAction = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellDown', 'masked-icon move-down', this.buttonMoveDown);
+		let moveCellUpAction = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
+		this._disposableActions.add(moveCellDownAction);
+		this._disposableActions.add(moveCellUpAction);
 
-		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
-		splitCellButton.setListener(this._cellContext);
-		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
-		this._disposableActions.add(splitCellButton);
+		let splitCellAction = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
+		splitCellAction.setListener(this._cellContext);
+		splitCellAction.enabled = this.cellModel.cellType !== 'markdown';
+		this._disposableActions.add(splitCellAction);
 
-		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
-		this._disposableActions.add(deleteButton);
+		let deleteAction = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
+		this._disposableActions.add(deleteAction);
 
 		let moreActionsContainer = DOM.$('li.action-item');
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
@@ -114,8 +114,8 @@ export class CellToolbarComponent {
 		let addCellDropdownContainer = DOM.$('li.action-item');
 		addCellDropdownContainer.setAttribute('role', 'presentation');
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-			addCellsButton,
-			[addCodeCellButton, addTextCellButton],
+			toggleAddCellDropdown,
+			[addCodeCellAction, addTextCellAction],
 			this.contextMenuService,
 			undefined,
 			this._actionBar.actionRunner,
@@ -135,10 +135,10 @@ export class CellToolbarComponent {
 		}
 		taskbarContent.push(
 			{ element: addCellDropdownContainer },
-			{ action: moveCellDownButton },
-			{ action: moveCellUpButton },
-			{ action: splitCellButton },
-			{ action: deleteButton },
+			{ action: moveCellDownAction },
+			{ action: moveCellUpAction },
+			{ action: splitCellAction },
+			{ action: deleteAction },
 			{ element: moreActionsContainer });
 
 		this._actionBar.setContent(taskbarContent);
