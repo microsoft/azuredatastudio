@@ -125,7 +125,7 @@ export async function executeCopyWithNotification(notificationService: INotifica
 
 export async function copySelectionToClipboard(clipboardService: IClipboardService, notificationService: INotificationService, provider: IGridDataProvider, selections: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 	let isCanceled = false;
-	executeCopyWithNotification(notificationService, selections, true, async (notificationHandle, rowCount) => {
+	await executeCopyWithNotification(notificationService, selections, true, async (notificationHandle, rowCount) => {
 		const batchSize = 100;
 		const eol = provider.getEolString();
 		const valueSeparator = '\t';
