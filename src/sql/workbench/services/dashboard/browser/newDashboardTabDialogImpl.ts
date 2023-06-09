@@ -10,7 +10,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';

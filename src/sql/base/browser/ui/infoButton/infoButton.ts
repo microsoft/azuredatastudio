@@ -5,7 +5,7 @@
 
 import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
-import { IButtonOptions, IButtonStyles } from 'vs/base/browser/ui/button/button';
+import { IButtonOptions } from 'vs/base/browser/ui/button/button';
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,

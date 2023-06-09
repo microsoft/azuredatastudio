@@ -29,7 +29,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';

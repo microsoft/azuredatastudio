@@ -19,7 +19,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { localize } from 'vs/nls';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import * as styler from 'vs/platform/theme/common/styler';
+import * as styler from 'sql/platform/theme/common/vsstyler';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -37,7 +37,7 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICancelableEvent } from 'sql/base/parts/tree/browser/treeDefaults';
 import { RecentConnectionActionsProvider, RecentConnectionTreeController } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
-import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
+import { ClearRecentConnectionsAction1 } from 'sql/workbench/services/connection/browser/connectionActions';
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -342,7 +342,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._recentConnectionActionBarContainer = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
 		const actionsContainer = DOM.append(this._recentConnectionActionBarContainer, DOM.$('.connection-history-actions'));
 		this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
-		const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+		const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction1, ClearRecentConnectionsAction1.ID, ClearRecentConnectionsAction1.LABEL);
 		clearAction.useConfirmationMessage = true;
 		clearAction.onRecentConnectionsRemoved(() => this.open(false));
 		this._actionbar.push(clearAction, { icon: true, label: true });

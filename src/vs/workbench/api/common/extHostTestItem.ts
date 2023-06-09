@@ -5,7 +5,7 @@
 import * as editorRange from 'vs/editor/common/core/range';
 import { createPrivateApiFor, getPrivateApiFor, IExtHostTestItemApi } from 'vs/workbench/api/common/extHostTestingPrivateApi';
 import { TestId, TestIdPathParts } from 'vs/workbench/contrib/testing/common/testId';
-import { createTestItemChildren, ExtHostTestItemEvent, ITestChildrenLike, ITestItemApi, ITestItemChildren, TestItemCollection, TestItemEventOp } from 'vs/workbench/contrib/testing/common/testItemCollection';
+import { createTestItemChildren, ExtHostTestItemEvent, ITestItemApi, ITestItemChildren, TestItemCollection, TestItemEventOp } from 'vs/workbench/contrib/testing/common/testItemCollection';
 import { denamespaceTestTag, ITestItem, ITestItemContext } from 'vs/workbench/contrib/testing/common/testTypes';
 import type * as vscode from 'vscode';
 import * as Convert from 'vs/workbench/api/common/extHostTypeConverters';

@@ -297,14 +297,14 @@ export class MainThreadDocumentsAndEditors {
 		@IClipboardService private readonly _clipboardService: IClipboardService,
 		@IPathService pathService: IPathService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@INotebookService private readonly _notebookService: INotebookService // {{SQL CARBON EDIT}}
+		@INotebookService readonly _notebookService: INotebookService // {{SQL CARBON EDIT}}
 	) {
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostDocumentsAndEditors);
 
 		this._mainThreadDocuments = this._toDispose.add(new MainThreadDocuments(extHostContext, this._modelService, this._textFileService, fileService, textModelResolverService, environmentService, uriIdentityService, workingCopyFileService, pathService));
 		extHostContext.set(MainContext.MainThreadDocuments, this._mainThreadDocuments);
 
-		this._mainThreadEditors = this._toDispose.add(new MainThreadTextEditors(this, extHostContext, codeEditorService, this._editorService, this._editorGroupService, configurationService));
+		this._mainThreadEditors = this._toDispose.add(new MainThreadTextEditors(this, extHostContext, codeEditorService, this._editorService, this._editorGroupService, configurationService, _notebookService)); // {{SQL CARBON EDIT}} - add notebook service
 		extHostContext.set(MainContext.MainThreadTextEditors, this._mainThreadEditors);
 
 		// It is expected that the ctor of the state computer calls our `_onDelta`.

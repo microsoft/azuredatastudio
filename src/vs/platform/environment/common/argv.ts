@@ -7,6 +7,18 @@
  * A list of command line arguments we support natively.
  */
 export interface NativeParsedArgs {
+	// subcommands
+	tunnel?: {
+		'cli-data-dir'?: string;
+		'disable-telemetry'?: boolean;
+		'telemetry-level'?: string;
+		user: {
+			login: {
+				'access-token'?: string;
+				'provider'?: string;
+			};
+		};
+	};
 	/**
 	 * {{ SQL CARBON EDIT}} Start
 	 * Optional for Azure Data Studio to support URI conversion.

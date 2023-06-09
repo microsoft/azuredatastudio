@@ -22,7 +22,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -51,6 +51,8 @@ export class ErrorMessageDialog extends Modal {
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
 
+	protected _telemetryView: TelemetryKeys.TelemetryView | string = TelemetryKeys.TelemetryView.ErrorMessageDialog;
+
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -60,12 +62,12 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		protected _telemetryView: TelemetryKeys.TelemetryView | string = TelemetryKeys.TelemetryView.ErrorMessageDialog,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true, height: 340 });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
 		this._readMoreLabel = localize('errorMessageDialog.readMore', "Read More");
+
 	}
 
 	protected renderBody(container: HTMLElement) {

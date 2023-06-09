@@ -20,7 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
@@ -32,6 +32,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
@@ -93,7 +94,8 @@ export class FileBrowserDialog extends Modal {
 		let pathLabel = localize('filebrowser.filepath', "Selected path");
 		let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
 		this._filePathInputBox = new InputBox(pathBuilder, this._contextViewService, {
-			ariaLabel: pathLabel
+			ariaLabel: pathLabel,
+			inputBoxStyles: defaultInputBoxStyles,
 		});
 
 		let filterLabel = localize('fileFilter', "Files of type");

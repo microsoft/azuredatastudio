@@ -219,8 +219,8 @@ suite('ConnectionDialogService tests', () => {
 		mockWidget.setup(x => x.databaseDropdownExpanded).returns(() => false);
 		mockWidget.setup(x => x.databaseDropdownExpanded = false);
 
-		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ClearRecentConnectionsAction), TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => {
-			return testInstantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
+		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ClearRecentConnectionsAction))).returns(() => {
+			return testInstantiationService.createInstance(ClearRecentConnectionsAction);
 		});
 		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(RecentConnectionActionsProvider))).returns(() => {
 			return testInstantiationService.createInstance(RecentConnectionActionsProvider);

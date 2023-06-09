@@ -48,7 +48,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';

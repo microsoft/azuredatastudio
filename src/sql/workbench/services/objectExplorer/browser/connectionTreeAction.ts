@@ -26,6 +26,9 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { Action2 } from 'vs/platform/actions/common/actions';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { FileAccess } from 'vs/base/common/network';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -149,10 +152,12 @@ export class DisconnectConnectionAction extends Action {
 	}
 }
 
+
 /**
  * Actions to add a server to the group
  */
-export class AddServerAction extends Action {
+// {{SQL CARBON TODO}} - remove old action used in IAction array
+export class AddServerAction1 extends Action {
 	public static ID = 'registeredServers.addConnection';
 	public static LABEL = localize('connectionTree.addConnection', "New Connection");
 
@@ -192,23 +197,80 @@ export class AddServerAction extends Action {
 	}
 }
 
+
+/**
+ * Actions to add a server to the group
+ */
+export class AddServerAction extends Action2 {
+	public static ID = 'registeredServers.addConnection';
+	public static LABEL_ORG = 'New Connection';
+	public static LABEL = localize('connectionTree.addConnection', AddServerAction.LABEL_ORG);
+
+	constructor() {
+		super({
+			id: AddServerAction.ID,
+			icon: {
+				light: FileAccess.asBrowserUri(`sql/workbench/services/connection/browser/media/add_server.svg`),
+				dark: FileAccess.asBrowserUri(`sql/workbench/services/connection/browser/media/add_server_inverse.svg`)
+			},
+			title: { value: AddServerAction.LABEL, original: AddServerAction.LABEL_ORG },
+			f1: true
+		});
+	}
+
+	public override async run(accessor: ServicesAccessor, element: ConnectionProfileGroup): Promise<void> {
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+		// {{SQL CARBON TODO}} - how to get action context for profile group?
+		// Not sure how to fix this....
+		let connection: Partial<IConnectionProfile> | undefined = element === undefined ? undefined : {
+			connectionName: undefined,
+			serverName: undefined,
+			databaseName: undefined,
+			userName: undefined,
+			password: undefined,
+			authenticationType: undefined,
+			groupId: undefined,
+			groupFullName: element.fullName,
+			savePassword: undefined,
+			getOptionsKey: undefined,
+			matches: undefined,
+			providerName: '',
+			options: {},
+			saveProfile: true,
+			id: element.id!
+		} as Partial<IConnectionProfile>;
+		await connectionManagementService.showConnectionDialog(undefined, {
+			showDashboard: true,
+			saveTheConnection: true,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		}, connection);
+	}
+}
+
 /**
  * Action to open up the dialog to create a new server group
  */
-export class AddServerGroupAction extends Action {
+export class AddServerGroupAction extends Action2 {
 	public static ID = 'registeredServers.addServerGroup';
-	public static LABEL = localize('connectionTree.addServerGroup', "New Server Group");
+	public static LABEL_ORG = 'New Server Group';
+	public static LABEL = localize('connectionTree.addServerGroup', AddServerGroupAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IServerGroupController private readonly serverGroupController: IServerGroupController
-	) {
-		super(id, label, SqlIconId.addServerGroupAction);
+	constructor() {
+		super({
+			id: AddServerGroupAction.ID,
+			icon: {
+				light: FileAccess.asBrowserUri(`sql/workbench/contrib/objectExplorer/browser/media/new_servergroup.svg`),
+				dark: FileAccess.asBrowserUri(`sql/workbench/contrib/objectExplorer/browser/media/new_servergroup_inverse.svg`)
+			},
+			title: { value: AddServerGroupAction.LABEL, original: AddServerGroupAction.LABEL_ORG },
+			f1: true
+		});
 	}
 
-	public override async run(): Promise<void> {
-		return this.serverGroupController.showCreateGroupDialog();
+	override async run(accessor: ServicesAccessor): Promise<void> {
+		const serverGroupController = accessor.get(IServerGroupController);
+		return serverGroupController.showCreateGroupDialog();
 	}
 }
 
@@ -237,22 +299,29 @@ export class EditServerGroupAction extends Action {
  * Action to toggle filtering the server connections tree to only show
  * active connections or not.
  */
-export class ActiveConnectionsFilterAction extends Action {
+export class ActiveConnectionsFilterAction extends Action2 {
 	public static ID = 'registeredServers.recentConnections';
-	public static SHOW_ACTIVE_CONNECTIONS_LABEL = localize('activeConnections', "Show Active Connections");
-	public static SHOW_ALL_CONNECTIONS_LABEL = localize('showAllConnections', "Show All Connections");
+	public static SHOW_ACTIVE_CONNECTIONS_LABEL_ORG = 'Show Active Connections';
+	public static SHOW_ACTIVE_CONNECTIONS_LABEL = localize('activeConnections', ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL_ORG);
+	public static SHOW_ALL_CONNECTIONS_LABEL_ORG = 'Show All Connections';
+	public static SHOW_ALL_CONNECTIONS_LABEL = localize('showAllConnections', ActiveConnectionsFilterAction.SHOW_ALL_CONNECTIONS_LABEL_ORG);
 	public static readonly ACTIVE = 'active';
 
-	constructor(
-		id: string,
-		label: string,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
-	) {
-		super(id, label, SqlIconId.activeConnectionsAction);
+	constructor() {
+		super({
+			id: ActiveConnectionsFilterAction.ID,
+			icon: {
+				light: FileAccess.asBrowserUri(`sql/workbench/contrib/objectExplorer/browser/media/connected_active_server.svg`),
+				dark: FileAccess.asBrowserUri(`sql/workbench/contrib/objectExplorer/browser/media/connected_active_server_inverse.svg`)
+			},
+			title: { value: ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL_ORG, original: ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL_ORG },
+			f1: true
+		});
 	}
 
-	public override async run(): Promise<void> {
-		const serverTreeView = this._objectExplorerService.getServerTreeView();
+	override async run(accessor: ServicesAccessor): Promise<void> {
+		const objectExplorerService = accessor.get(IObjectExplorerService);
+		const serverTreeView = objectExplorerService.getServerTreeView();
 		if (serverTreeView.view !== ServerTreeViewView.active) {
 			// show active connections in the tree
 			serverTreeView.showFilteredTree(ServerTreeViewView.active);

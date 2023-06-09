@@ -233,6 +233,9 @@ export class InputBox extends Widget {
 		this.applyStyles();
 	}
 
+	public style(styles: IInputBoxStyles): void { // {{SQL CARBON TODO}} - remove this method
+	}
+
 	protected onBlur(): void {
 		this._hideMessage();
 		if (this.options.showPlaceholderOnFocus) {

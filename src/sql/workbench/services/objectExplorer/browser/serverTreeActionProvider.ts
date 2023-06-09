@@ -10,7 +10,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
 	DisconnectConnectionAction, EditConnectionAction,
-	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildrenAction, RemoveFilterAction, DeleteRecentConnectionsAction
+	DeleteConnectionAction, RefreshAction, EditServerGroupAction, FilterChildrenAction, RemoveFilterAction, DeleteRecentConnectionsAction, AddServerAction1
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -225,7 +225,7 @@ export class ServerTreeActionProvider {
 	private getConnectionProfileGroupActions(element: ConnectionProfileGroup): IAction[] {
 		// TODO: Should look into using the MenuRegistry for this
 		return [
-			this._instantiationService.createInstance(AddServerAction, AddServerAction.ID, AddServerAction.LABEL),
+			this._instantiationService.createInstance(AddServerAction1, AddServerAction1.ID, AddServerAction1.LABEL),
 			this._instantiationService.createInstance(EditServerGroupAction, EditServerGroupAction.ID, EditServerGroupAction.LABEL, element),
 			this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_GROUP_LABEL, element)
 		];

@@ -82,7 +82,7 @@ export class InputBox extends vsInputBox implements AdsWidget {
 		}
 	}
 
-	public style(styles: IInputBoxStyles): void {
+	public override style(styles: IInputBoxStyles): void {
 		// 	super.style(styles);
 		// 	this.enabledInputBackground = this.inputBackground;
 		// 	this.enabledInputForeground = this.inputForeground;

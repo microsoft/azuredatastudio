@@ -40,7 +40,7 @@ interface IItem<T> {
 	checkedDisposable: IDisposable;
 }
 
-const StaticDND = {
+export const StaticDND = {
 	CurrentDragAndDropData: undefined as IDragAndDropData | undefined
 };
 

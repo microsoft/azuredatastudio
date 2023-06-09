@@ -37,7 +37,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			user, container, delegate,
 			renderers, dataSource, options,
 			instantiationService, contextKeyService, listService,
-			themeService, configurationService);
+			configurationService);
 
 		// Adding support for expand/collapse on enter/space
 		this.onKeyDown(e => {

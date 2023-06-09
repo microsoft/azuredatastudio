@@ -148,7 +148,7 @@ export class DeleteCellAction extends CellActionBase {
 }
 
 export class CellToggleMoreActions {
-	private _actions: (Action | CellActionBase)[] = [];
+	private _actions: (IAction | CellActionBase)[] = [];
 	private _moreActions: ActionBar;
 	private _moreActionsElement: HTMLElement;
 	constructor(
@@ -190,7 +190,7 @@ export class CellToggleMoreActions {
 	}
 }
 
-export function removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
+export function removeDuplicatedAndStartingSeparators(actions: (IAction | CellActionBase)[]): void {
 	let indexesToRemove: number[] = [];
 	for (let i = 0; i < actions.length; i++) {
 		// Handle multiple separators in a row

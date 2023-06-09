@@ -16,13 +16,13 @@ import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/t
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
-import { ObjectExplorerService, ObjectExplorerNodeEventArgs, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ObjectExplorerService, ObjectExplorerNodeEventArgs, ServerTreeViewView, IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
-import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionResult, IConnectionParams, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { UNSAVED_GROUP_ID, mssqlProviderName, AuthenticationType } from 'sql/platform/connection/common/constants';
@@ -46,6 +46,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { workbenchTreeDataPreamble } from 'vs/platform/list/browser/listService';
 import { LogService } from 'vs/platform/log/common/logService';
+import { StaticServiceAccessor } from 'vs/editor/contrib/wordPartOperations/test/browser/utils';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -288,9 +289,11 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 		connectionManagementService.setup(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(
 			() => new Promise<void>((resolve, reject) => resolve()));
-		let connectionTreeAction: AddServerAction = new AddServerAction(AddServerAction.ID, AddServerAction.LABEL, connectionManagementService.object);
+		let connectionTreeAction: AddServerAction = new AddServerAction();
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
-		await connectionTreeAction.run(conProfGroup);
+
+		const serviceAccessor = new StaticServiceAccessor().withService(IConnectionManagementService, connectionManagementService.object);
+		await connectionTreeAction.run(serviceAccessor, conProfGroup);
 		connectionManagementService.verify(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -306,8 +309,10 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.view).returns(() => ServerTreeViewView.all);
 		const mockObjectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService);
 		mockObjectExplorerService.setup(x => x.getServerTreeView()).returns(() => serverTreeView.object);
-		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL, mockObjectExplorerService.object);
-		return connectionTreeAction.run().then((value) => {
+		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction();
+
+		const serviceAccessor = new StaticServiceAccessor().withService(IObjectExplorerService, mockObjectExplorerService.object);
+		return connectionTreeAction.run(serviceAccessor).then((value) => {
 			serverTreeView.verify(x => x.showFilteredTree(ServerTreeViewView.active), TypeMoq.Times.once());
 		});
 	});
@@ -324,8 +329,10 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.view).returns(() => ServerTreeViewView.active);
 		const mockObjectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService);
 		mockObjectExplorerService.setup(x => x.getServerTreeView()).returns(() => serverTreeView.object);
-		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL, mockObjectExplorerService.object);
-		return connectionTreeAction.run().then((value) => {
+
+		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction();
+		const serviceAccessor = new StaticServiceAccessor().withService(IObjectExplorerService, mockObjectExplorerService.object);
+		return connectionTreeAction.run(serviceAccessor).then((value) => {
 			serverTreeView.verify(x => x.refreshTree(), TypeMoq.Times.once());
 		});
 	});
