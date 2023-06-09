@@ -24,6 +24,12 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { Action2 } from 'vs/platform/actions/common/actions';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { KeyChord, KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { ParseSyntaxCommandId } from 'sql/workbench/contrib/query/browser/queryActions';
+import { QueryEditorVisibleCondition } from 'sql/workbench/contrib/query/browser/query.contribution';
 
 const singleQuote = '\'';
 
@@ -60,97 +66,100 @@ function escapeSqlString(input: string, escapeChar: string) {
 /**
  * Locates the active editor and call focus() on the editor if it is a QueryEditor.
  */
-export class FocusOnCurrentQueryKeyboardAction extends Action {
+export class FocusOnCurrentQueryKeyboardAction extends Action2 {
 
 	public static ID = 'focusOnCurrentQueryKeyboardAction';
-	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', "Focus on Current Query");
+	public static LABEL_ORG = 'Focus on Current Query';
+	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', FocusOnCurrentQueryKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: FocusOnCurrentQueryKeyboardAction.ID,
+			title: { value: FocusOnCurrentQueryKeyboardAction.LABEL, original: FocusOnCurrentQueryKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyO }
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.focus();
 		}
-		return Promise.resolve(null);
 	}
 }
 
 /**
  * Locates the active editor and calls runQuery() on the editor if it is a QueryEditor.
  */
-export class RunQueryKeyboardAction extends Action {
+export class RunQueryKeyboardAction extends Action2 {
 
 	public static ID = 'runQueryKeyboardAction';
-	public static LABEL = nls.localize('runQueryKeyboardAction', "Run Query");
+	public static LABEL_ORG = 'Run Query';
+	public static LABEL = nls.localize('runQueryKeyboardAction', RunQueryKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: RunQueryKeyboardAction.ID,
+			title: { value: RunQueryKeyboardAction.LABEL, original: RunQueryKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyCode.F5 },
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
 			editor.runQuery();
 		}
-		return Promise.resolve(null);
 	}
 }
 
 /**
  * Locates the active editor and calls runCurrentQuery() on the editor if it is a QueryEditor.
  */
-export class RunCurrentQueryKeyboardAction extends Action {
+export class RunCurrentQueryKeyboardAction extends Action2 {
 	public static ID = 'runCurrentQueryKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', "Run Current Query");
+	public static LABEL_ORG = 'Run Current Query';
+	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', RunCurrentQueryKeyboardAction.LABEL_ORG);
 
 	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
 	) {
-		super(id, label);
-		this.enabled = true;
+		super({
+			id: RunCurrentQueryKeyboardAction.ID,
+			title: { value: RunCurrentQueryKeyboardAction.LABEL, original: RunCurrentQueryKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.CtrlCmd | KeyCode.F5 },
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQuery();
 		}
-		return Promise.resolve(null);
 	}
 }
 
-export class CopyQueryWithResultsKeyboardAction extends Action {
+export class CopyQueryWithResultsKeyboardAction extends Action2 {
 	public static ID = 'copyQueryWithResultsKeyboardAction';
-	public static LABEL = nls.localize('copyQueryWithResultsKeyboardAction', "Copy Query With Results");
+	public static LABEL_ORG = 'Copy Query With Results';
+	public static LABEL = nls.localize('copyQueryWithResultsKeyboardAction', CopyQueryWithResultsKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService,
-		@IClipboardService private _clipboardService: IClipboardService,
-		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@INotificationService private readonly notificationService: INotificationService
-	) {
-		super(id, label);
+	constructor() {
+		super({
+			id: CopyQueryWithResultsKeyboardAction.ID,
+			title: { value: CopyQueryWithResultsKeyboardAction.LABEL, original: CopyQueryWithResultsKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyV) }
+		});
 	}
 
-	public async getFormattedResults(editor): Promise<ClipboardData> {
-		let queryRunner = this.queryModelService.getQueryRunner(editor.input.uri);
+	public async getFormattedResults(editor, queryModelService: IQueryModelService): Promise<ClipboardData> {
+		let queryRunner = queryModelService.getQueryRunner(editor.input.uri);
 		let allResults = '';
 		let allHtmlResults = '';
 
@@ -186,10 +195,15 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 		return { text: allResults, html: allHtmlResults };
 	}
 
-	public override async run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	override async run(accessor: ServicesAccessor): Promise<void> {
+		const editorService = accessor.get(IEditorService);
+		const clipboardService = accessor.get(IClipboardService);
+		const queryModelService = accessor.get(IQueryModelService);
+		const notificationService = accessor.get(INotificationService);
+
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
-			let allResults = await this.getFormattedResults(editor);
+			let allResults = await this.getFormattedResults(editor, queryModelService);
 			let queryText = editor.getAllText();
 
 			let data = {
@@ -197,9 +211,9 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 				html: `<div style="font-family: Consolas, 'Courier New', monospace;font-weight: normal;font-size: 10pt;">${escape(queryText).replace(/\r\n|\n|\r/gm, '<br/>')}</div>${allResults.html}`
 			};
 
-			await this._clipboardService.write(data);
+			await clipboardService.write(data);
 
-			this.notificationService.notify({
+			notificationService.notify({
 				severity: Severity.Info,
 				message: nls.localize('queryActions.queryResultsCopySuccess', "Successfully copied query and results.")
 			});
@@ -207,21 +221,23 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 	}
 }
 
-export class EstimatedExecutionPlanKeyboardAction extends Action {
+export class EstimatedExecutionPlanKeyboardAction extends Action2 {
 	public static ID = 'estimatedExecutionPlanKeyboardAction';
-	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', "Display Estimated Execution Plan");
+	public static LABEL_ORG = 'Display Estimated Execution Plan';
+	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', EstimatedExecutionPlanKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: EstimatedExecutionPlanKeyboardAction.ID,
+			title: { value: EstimatedExecutionPlanKeyboardAction.LABEL, original: EstimatedExecutionPlanKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.CtrlCmd | KeyCode.KeyL }
+		});
 	}
 
-	public override async run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			let queryEditor = <QueryEditor>editor;
 			editor.input.runQuery(queryEditor.getSelection(), { displayEstimatedQueryPlan: true });
@@ -229,131 +245,139 @@ export class EstimatedExecutionPlanKeyboardAction extends Action {
 	}
 }
 
-export class ToggleActualPlanKeyboardAction extends Action {
+export class ToggleActualPlanKeyboardAction extends Action2 {
 	public static ID = 'ToggleActualPlanKeyboardAction';
-	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', "Enable/Disable Actual Execution Plan");
+	public static LABEL_ORG = 'Enable/Disable Actual Execution Plan';
+	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', ToggleActualPlanKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: ToggleActualPlanKeyboardAction.ID,
+			title: { value: ToggleActualPlanKeyboardAction.LABEL, original: ToggleActualPlanKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.CtrlCmd | KeyCode.KeyM }
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 
 		if (editor instanceof QueryEditor) {
 			let toActualPlanState = !editor.input.state.isActualExecutionPlanMode;
 			editor.input.state.isActualExecutionPlanMode = toActualPlanState;
 		}
-
-		return Promise.resolve(null);
 	}
 }
 
 /**
  * Locates the active editor and calls cancelQuery() on the editor if it is a QueryEditor.
  */
-export class CancelQueryKeyboardAction extends Action {
-
+export class CancelQueryKeyboardAction extends Action2 {
 	public static ID = 'cancelQueryKeyboardAction';
-	public static LABEL = nls.localize('cancelQueryKeyboardAction', "Cancel Query");
+	public static LABEL_ORG = 'Cancel Query';
+	public static LABEL = nls.localize('cancelQueryKeyboardAction', CancelQueryKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: CancelQueryKeyboardAction.ID,
+			title: { value: CancelQueryKeyboardAction.LABEL, original: CancelQueryKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.Alt | KeyCode.PauseBreak }
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
 			editor.cancelQuery();
 		}
-		return Promise.resolve(null);
 	}
 }
 
 /**
  * Refresh the IntelliSense cache
  */
-export class RefreshIntellisenseKeyboardAction extends Action {
+export class RefreshIntellisenseKeyboardAction extends Action2 {
 	public static ID = 'refreshIntellisenseKeyboardAction';
+	public static LABEL_ORG = 'Refresh IntelliSense Cache';
 	public static LABEL = nls.localize('refreshIntellisenseKeyboardAction', "Refresh IntelliSense Cache");
 
-	constructor(
-		id: string,
-		label: string,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IEditorService private editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: RefreshIntellisenseKeyboardAction.ID,
+			title: { value: RefreshIntellisenseKeyboardAction.LABEL, original: RefreshIntellisenseKeyboardAction.LABEL_ORG },
+			f1: true
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this.editorService.activeEditor;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+		const editor = editorService.activeEditor;
 		if (editor instanceof QueryEditorInput) {
-			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
+			connectionManagementService.rebuildIntelliSenseCache(editor.uri);
 		} else if (editor instanceof NotebookInput && editor.notebookModel?.activeCell) {
-			this.connectionManagementService.rebuildIntelliSenseCache(editor.notebookModel.activeCell.cellUri.toString(true));
+			connectionManagementService.rebuildIntelliSenseCache(editor.notebookModel.activeCell.cellUri.toString(true));
 		}
-		return Promise.resolve(null);
 	}
 }
-
 
 /**
  * Hide the query results
  */
-export class ToggleQueryResultsKeyboardAction extends Action {
+export class ToggleQueryResultsKeyboardAction extends Action2 {
 	public static ID = 'toggleQueryResultsKeyboardAction';
-	public static LABEL = nls.localize('toggleQueryResultsKeyboardAction', "Toggle Query Results");
+	public static LABEL_ORG = 'Toggle Query Results';
+	public static LABEL = nls.localize('toggleQueryResultsKeyboardAction', ToggleQueryResultsKeyboardAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: ToggleQueryResultsKeyboardAction.ID,
+			title: { value: ToggleQueryResultsKeyboardAction.LABEL, original: ToggleQueryResultsKeyboardAction.LABEL_ORG },
+			f1: true,
+			keybinding: {
+				weight: KeybindingWeight.WorkbenchContrib,
+				primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyR
+			},
+			precondition: QueryEditorVisibleCondition
+		});
 	}
 
-	public override run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.toggleResultsEditorVisibility();
 		}
-		return Promise.resolve(null);
 	}
 }
-
-
 
 /**
  * Toggle the focus between query editor and results pane
  */
-export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
+export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action2 {
 	public static ID = 'ToggleFocusBetweenQueryEditorAndResultsAction';
-	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', "Toggle Focus Between Query And Results");
+	public static LABEL_ORG = 'Toggle Focus Between Query And Results';
+	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', ToggleFocusBetweenQueryEditorAndResultsAction.LABEL_ORG);
 
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: ToggleFocusBetweenQueryEditorAndResultsAction.ID,
+			title: { value: ToggleFocusBetweenQueryEditorAndResultsAction.LABEL, original: ToggleFocusBetweenQueryEditorAndResultsAction.LABEL_ORG },
+			f1: true,
+			keybinding: {
+				weight: KeybindingWeight.WorkbenchContrib,
+				primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyF
+			},
+			precondition: QueryEditorVisibleCondition
+		});
 	}
 
-	public override async run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
+	run(accessor: ServicesAccessor): void {
+		const editorService = accessor.get(IEditorService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.toggleFocusBetweenQueryEditorAndResults();
 		}
@@ -363,7 +387,7 @@ export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
 /**
  * Action class that runs a query in the active SQL text document.
  */
-export class RunQueryShortcutAction extends Action {
+export class RunQueryShortcutAction extends Action2 {
 	public static ID = 'runQueryShortcutAction';
 
 	constructor(
@@ -520,43 +544,45 @@ export class RunQueryShortcutAction extends Action {
 /**
  * Action class that parses the query string in the current SQL text document.
  */
-export class ParseSyntaxAction extends Action {
+export class ParseSyntaxAction extends Action2 {
+	public static LABEL_ORG = 'Parse Query';
 	public static LABEL = nls.localize('parseSyntaxLabel', "Parse Query");
 
-	constructor(
-		id: string,
-		label: string,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IQueryManagementService private readonly queryManagementService: IQueryManagementService,
-		@IEditorService private readonly editorService: IEditorService,
-		@INotificationService private readonly notificationService: INotificationService
-	) {
-		super(id, label);
-		this.enabled = true;
+	constructor() {
+		super({
+			id: ParseSyntaxCommandId,
+			title: { value: ParseSyntaxAction.LABEL, original: ParseSyntaxAction.LABEL_ORG },
+			f1: true,
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyP }
+		});
 	}
 
-	public override async run(): Promise<void> {
-		const editor = this.editorService.activeEditorPane;
+	override async run(accessor: ServicesAccessor): Promise<void> {
+		const editorService = accessor.get(IEditorService);
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+		const queryManagementService = accessor.get(IQueryManagementService);
+		const notificationService = accessor.get(INotificationService);
+		const editor = editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			if (!editor.isSelectionEmpty()) {
-				if (this.isConnected(editor)) {
+				if (this.isConnected(editor, connectionManagementService)) {
 					let text = editor.getSelectionText();
 					if (text === '') {
 						text = editor.getAllText();
 					}
-					const result = await this.queryManagementService.parseSyntax(editor.input.uri, text);
+					const result = await queryManagementService.parseSyntax(editor.input.uri, text);
 					if (result && result.parseable) {
-						this.notificationService.notify({
+						notificationService.notify({
 							severity: Severity.Info,
 							message: nls.localize('queryActions.parseSyntaxSuccess', "Successfully parsed the query.")
 						});
 					} else if (result && result.errors.length > 0) {
-						this.notificationService.error(
+						notificationService.error(
 							nls.localize('queryActions.parseSyntaxFailure', "Failed to parse the query: {0}",
 								result.errors.map((err, idx) => `${idx + 1}. ${err} `).join(' ')));
 					}
 				} else {
-					this.notificationService.notify({
+					notificationService.notify({
 						severity: Severity.Error,
 						message: nls.localize('queryActions.notConnected', "Please connect to a server before running this action.")
 					});
@@ -569,10 +595,10 @@ export class ParseSyntaxAction extends Action {
 	 * Returns the URI of the given editor if it is not undefined and is connected.
 	 * Public for testing only.
 	 */
-	private isConnected(editor: QueryEditor): boolean {
+	private isConnected(editor: QueryEditor, connectionManagementService: IConnectionManagementService): boolean {
 		if (!editor || !editor.input) {
 			return false;
 		}
-		return this.connectionManagementService.isConnected(editor.input.uri);
+		return connectionManagementService.isConnected(editor.input.uri);
 	}
 }

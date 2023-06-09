@@ -23,7 +23,7 @@ import { ResourceLabels, IResourceLabel } from 'vs/workbench/browser/labels';
 import { ActionBar, IActionViewItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 import { URI } from 'vs/base/common/uri';
 import { dirname, basename } from 'vs/base/common/resources';
-import { FileThemeIcon, FolderThemeIcon, registerThemingParticipant, ThemeIcon, IThemeService } from 'vs/platform/theme/common/themeService';
+import { FileThemeIcon, FolderThemeIcon, registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { FileKind } from 'vs/platform/files/common/files';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { localize } from 'vs/nls';
@@ -43,6 +43,7 @@ import { IOEShimService } from 'sql/workbench/services/objectExplorer/browser/ob
 import { NodeContextKey } from 'sql/workbench/contrib/views/browser/nodeContext';
 import { ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 class Root implements ITreeItem {
 	label = { label: 'root' };
@@ -77,6 +78,7 @@ export class TreeView extends Disposable implements ITreeView {
 	private treeLabels: ResourceLabels | undefined;
 	readonly badge: IViewBadge | undefined = undefined;
 	readonly container: any | undefined = undefined;
+	private _manuallyManageCheckboxes: boolean = false;
 
 	public readonly root: ITreeItem;
 	private elementsToRefresh: ITreeItem[] = [];
@@ -104,6 +106,12 @@ export class TreeView extends Disposable implements ITreeView {
 
 	private readonly _onDidChangeDescription: Emitter<string | undefined> = this._register(new Emitter<string | undefined>());
 	readonly onDidChangeDescription: Event<string | undefined> = this._onDidChangeDescription.event;
+
+	private readonly _onDidChangeCheckboxState: Emitter<readonly ITreeItem[]> = this._register(new Emitter<readonly ITreeItem[]>());
+	readonly onDidChangeCheckboxState: Event<readonly ITreeItem[]> = this._onDidChangeCheckboxState.event;
+
+	private _onDidChangeFocus: Emitter<ITreeItem> = this._register(new Emitter<ITreeItem>());
+	readonly onDidChangeFocus: Event<ITreeItem> = this._onDidChangeFocus.event;
 
 	private readonly _onDidCompleteRefresh: Emitter<void> = this._register(new Emitter<void>());
 
@@ -282,6 +290,14 @@ export class TreeView extends Disposable implements ITreeView {
 		this.refreshContext.set(showRefreshAction);
 	}
 
+	get manuallyManageCheckboxes(): boolean {
+		return this._manuallyManageCheckboxes;
+	}
+
+	set manuallyManageCheckboxes(manuallyManageCheckboxes: boolean) {
+		this._manuallyManageCheckboxes = manuallyManageCheckboxes;
+	}
+
 	private registerActions() {
 		const that = this;
 		this._register(registerAction2(class extends Action2 {
@@ -436,7 +452,7 @@ export class TreeView extends Disposable implements ITreeView {
 
 		this.tree.contextKeyService.createKey<boolean>(this.id, true);
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(treeMenus, e, actionRunner)));
-		this._register(this.tree.onDidChangeSelection(e => this._onDidChangeSelection.fire(e.elements)));
+		this._register(this.tree.onDidChangeSelection(e => this._onDidChangeSelection.fire(<any>e.elements)));
 		this._register(this.tree.onDidChangeCollapseState(e => {
 			if (!e.node.element) {
 				return;
@@ -560,6 +576,10 @@ export class TreeView extends Disposable implements ITreeView {
 		return 0;
 	}
 
+	isCollapsed(item: ITreeItem): boolean {
+		return !!this.tree?.isCollapsed(item);
+	}
+
 	async refresh(elements?: ITreeItem[]): Promise<void> {
 		if (this.dataProvider && this.tree) {
 			if (this.refreshing) {
@@ -606,6 +626,10 @@ export class TreeView extends Disposable implements ITreeView {
 		if (this.tree) {
 			this.tree.setSelection(items);
 		}
+	}
+
+	getSelection(): ITreeItem[] {
+		return this.tree?.getSelection() ?? [];
 	}
 
 	setFocus(item: ITreeItem): void {
@@ -1007,7 +1031,6 @@ class TreeMenus extends Disposable implements IDisposable {
 		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, 'inline');
 
 		menu.dispose();
-		contextKeyService.dispose();
 
 		return result;
 	}

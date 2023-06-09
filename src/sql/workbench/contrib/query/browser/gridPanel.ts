@@ -488,7 +488,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		}
 		if (action) {
 			action.run(this.generateContext());
-			action.dispose();
 		}
 	}
 

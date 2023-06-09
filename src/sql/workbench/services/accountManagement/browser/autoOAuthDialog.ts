@@ -6,12 +6,11 @@
 import 'vs/css!./media/autoOAuthDialog';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { $, append } from 'vs/base/browser/dom';
 
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -24,6 +23,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class AutoOAuthDialog extends Modal {
 	private _copyAndOpenButton?: Button;
@@ -75,7 +75,7 @@ export class AutoOAuthDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		this.backButton!.onDidClick(() => this.cancel());
-		this._register(attachButtonStyler(this.backButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
+		this._register(this.backButton);
 
 		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', "Copy & Open"), () => this.addAccount());
 		this._closeButton = this.addFooterButton(localize('oauthDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
@@ -103,14 +103,15 @@ export class AutoOAuthDialog extends Modal {
 		const inputCellContainer = append(inputContainer, $('.dialog-input'));
 
 		return new InputBox(inputCellContainer, this._contextViewService, {
-			ariaLabel: label
+			ariaLabel: label,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 	}
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._copyAndOpenButton!, this._themeService));
-		this._register(attachButtonStyler(this._closeButton!, this._themeService));
+		this._register(this._copyAndOpenButton!);
+		this._register(this._closeButton!);
 		this._register(attachInputBoxStyler(this._userCodeInputBox!, this._themeService));
 		this._register(attachInputBoxStyler(this._websiteInputBox!, this._themeService));
 

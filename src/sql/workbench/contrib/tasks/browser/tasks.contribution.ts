@@ -5,8 +5,6 @@
 
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
-import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
@@ -20,6 +18,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { TASKS_CONTAINER_ID, TASKS_VIEW_ID } from 'sql/workbench/contrib/tasks/common/tasks';
 import { TaskHistoryView } from 'sql/workbench/contrib/tasks/browser/tasksView';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 
 export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -61,16 +60,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 	}
 }
 
-const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ToggleTasksAction,
-		ToggleTasksAction.ID,
-		ToggleTasksAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KeyT }),
-	'View: Toggle Tasks',
-	localize('viewCategory', "View")
-);
+registerAction2(ToggleTasksAction);
 
 // markers view container
 const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({

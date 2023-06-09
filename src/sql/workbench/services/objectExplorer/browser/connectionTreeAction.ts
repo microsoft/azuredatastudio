@@ -25,6 +25,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { status } from 'vs/base/browser/ui/aria/aria';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -46,7 +47,7 @@ export class RefreshAction extends Action {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@ILogService private _logService: ILogService
 	) {
-		super(id, label, Codicon.refresh.classNames);
+		super(id, label, ThemeIcon.asClassName(Codicon.refresh));
 	}
 	public override async run(): Promise<void> {
 		let treeNode: TreeNode | undefined = undefined;
@@ -105,7 +106,7 @@ export class EditConnectionAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label, Codicon.edit.classNames);
+		super(id, label, ThemeIcon.asClassName(Codicon.edit));
 	}
 
 	public override async run(): Promise<void> {
@@ -125,7 +126,7 @@ export class DisconnectConnectionAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label, Codicon.debugDisconnect.classNames);
+		super(id, label, ThemeIcon.asClassName(Codicon.debugDisconnect));
 	}
 
 	override async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
@@ -224,7 +225,7 @@ export class EditServerGroupAction extends Action {
 		private _group: ConnectionProfileGroup,
 		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
-		super(id, label, Codicon.edit.classNames);
+		super(id, label, ThemeIcon.asClassName(Codicon.edit));
 	}
 
 	public override run(): Promise<void> {
@@ -277,7 +278,7 @@ export class DeleteConnectionAction extends Action {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IDialogService private _dialogService: IDialogService
 	) {
-		super(id, label, Codicon.trash.classNames);
+		super(id, label, ThemeIcon.asClassName(Codicon.trash));
 		if (element instanceof ConnectionProfileGroup && element.id === UNSAVED_GROUP_ID) {
 			this.enabled = false;
 		}
@@ -291,22 +292,26 @@ export class DeleteConnectionAction extends Action {
 	}
 
 	public override async run(): Promise<void> {
-
-		const deleteConnectionConfirmationYes = localize('deleteConnectionConfirmationYes', "Yes");
-		const deleteConnectionConfirmationNo = localize('deleteConnectionConfirmationNo', "No");
-
 		if (this.element instanceof ConnectionProfile) {
 			const name = this.element.connectionName || this.element.serverName;
-			const modalResult = await this._dialogService.show(Severity.Warning, localize('deleteConnectionConfirmation', "Are you sure you want to delete connection '{0}'?", name),
-				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
-			if (modalResult.choice === 0) {
+
+			// {{SQL CARBON TODO}} - check that the confirm dialog is same as before
+			const result = await this._dialogService.confirm({
+				type: Severity.Warning,
+				message: localize('deleteConnectionConfirmation', "Are you sure you want to delete connection '{0}'?", name)
+			});
+
+			if (result.confirmed) {
 				await this._connectionManagementService.deleteConnection(this.element);
 				status(localize('connectionDeleted', "Connection {0} deleted", name));
 			}
 		} else if (this.element instanceof ConnectionProfileGroup) {
-			const modalResult = await this._dialogService.show(Severity.Warning, localize('deleteConnectionGroupConfirmation', "Are you sure you want to delete connection group '{0}'?", this.element.name),
-				[deleteConnectionConfirmationYes, deleteConnectionConfirmationNo]);
-			if (modalResult.choice === 0) {
+			const result = await this._dialogService.confirm({
+				type: Severity.Warning,
+				message: localize('deleteConnectionGroupConfirmation', "Are you sure you want to delete connection group '{0}'?", this.element.name)
+			});
+
+			if (result.confirmed) {
 				await this._connectionManagementService.deleteConnectionGroup(this.element);
 				status(localize('connectionGroupDeleted', "Connection group {0} deleted", this.element.name));
 			}
@@ -333,7 +338,7 @@ export class FilterChildrenAction extends Action {
 }
 
 function getFilterActionIconClass(node: TreeNode): string {
-	return node.filters.length > 0 ? Codicon.filterFilled.classNames : Codicon.filter.classNames;
+	return node.filters.length > 0 ? ThemeIcon.asClassName(Codicon.filterFilled) : ThemeIcon.asClassName(Codicon.filter);
 }
 
 export class RemoveFilterAction extends Action {
@@ -390,7 +395,7 @@ export class DeleteRecentConnectionsAction extends Action {
 		private _connectionProfile: ConnectionProfile,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label, Codicon.trash.classNames);
+		super(id, label, ThemeIcon.asClassName(Codicon.trash));
 	}
 
 	public override async run(): Promise<void> {

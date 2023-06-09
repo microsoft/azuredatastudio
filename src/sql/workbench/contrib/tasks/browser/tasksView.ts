@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'sql/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';

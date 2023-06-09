@@ -202,8 +202,9 @@ export class QueryEditor extends EditorPane {
 		}));
 
 		// Create Actions for the toolbar
-		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction, this);
+
 		this._cancelQueryAction = this.instantiationService.createInstance(actions.CancelQueryAction, this);
+		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction, this);
 		this._toggleConnectDatabaseAction = this.instantiationService.createInstance(actions.ToggleConnectDatabaseAction, this, false);
 		this._changeConnectionAction = this.instantiationService.createInstance(actions.ConnectDatabaseAction, this, true);
 		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);

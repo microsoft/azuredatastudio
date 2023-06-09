@@ -80,9 +80,6 @@ export interface ISelectData {
 
 export class SelectBox extends Widget implements ISelectBoxDelegate {
 	protected selectElement: HTMLSelectElement; // {{SQL CARBON EDIT}}
-	protected selectBackground?: Color;
-	protected selectForeground?: Color;
-	protected selectBorder?: Color;
 	protected selectBoxDelegate: ISelectBoxDelegate; // {{SQL CARBON EDIT}} Make protected so we can hook into keyboard events
 
 	constructor(options: ISelectOptionItem[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles, selectBoxOptions?: ISelectBoxOptions) {

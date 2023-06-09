@@ -35,7 +35,7 @@ export interface IInputOptions {
 	readonly flexibleWidth?: boolean;
 	readonly flexibleMaxHeight?: number;
 	readonly actions?: ReadonlyArray<IAction>;
-		readonly inputBoxStyles: IInputBoxStyles;
+	readonly inputBoxStyles: IInputBoxStyles;
 
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
@@ -121,9 +121,6 @@ export class InputBox extends Widget {
 
 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
 	protected showValidationMessage?: boolean;
-	protected inputBackground?: Color;
-	protected inputForeground?: Color;
-	protected inputBorder?: Color;
 	// {{SQL CARBON EDIT}} - End
 	private _onDidChange = this._register(new Emitter<string>());
 	public readonly onDidChange: Event<string> = this._onDidChange.event;

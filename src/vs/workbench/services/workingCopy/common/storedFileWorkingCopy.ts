@@ -406,7 +406,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 
 	private lastResolvedFileStat: IFileStatWithMetadata | undefined;
 
-	isResolved(): this is IResolvedStoredFileWorkingCopy<M> {
+	isResolved(): any { // {{SQL CARBON EDIT}} - remove "this is IResolvedStoredFileWorkingCopy<M>" due to build error
 		return !!this.model;
 	}
 
@@ -632,7 +632,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 		});
 
 		// Update existing model if we had been resolved
-		if ((this as StoredFileWorkingCopy<M>).isResolved()) { // {{SQL CARBON EDIT}} cast to avoid compile errors with type guard assert
+		if (this.isResolved()) {
 			await this.doUpdateModel(content.value);
 		}
 

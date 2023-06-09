@@ -19,7 +19,6 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export class WebViewDialog extends Modal {
 
@@ -113,7 +112,7 @@ export class WebViewDialog extends Modal {
 		this._register(attachModalDialogStyler(this, this._themeService));
 
 		this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
-		this._register(attachButtonStyler(this._okButton, this._themeService));
+		this._register(this._okButton);
 	}
 
 	protected layout(height?: number): void {
@@ -122,7 +121,7 @@ export class WebViewDialog extends Modal {
 
 	private updateDialogBody(): void {
 		if (this.html) {
-			this._webview!.html = this.html;
+			this._webview!.setHtml(this.html);
 		}
 	}
 

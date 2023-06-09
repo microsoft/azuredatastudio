@@ -1159,7 +1159,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		this.logService.trace(`[text file model] ${msg}`, this.resource.toString());
 	}
 
-	override isResolved(): this is IResolvedTextFileEditorModel {
+	override isResolved(): any { //{{SQL CARBON EDIT}} - remove "this is IResolvedTextFileEditorModel" due to build error
 		return !!this.textEditorModel;
 	}
 
