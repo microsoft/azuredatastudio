@@ -461,7 +461,7 @@ export default class QueryRunner extends Disposable {
 
 	/**
 	 * Sends a copy request
-	 * @param selection The selection range to copy
+	 * @param selections The selection range to copy
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
 	 * @param removeNewLines Whether to remove line breaks from values.
