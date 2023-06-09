@@ -13,7 +13,7 @@ import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
 import { AuthenticationResult } from '@azure/msal-common';
-import { AccountInfo, PublicClientApplication } from '@azure/msal-node';
+import { AccountInfo, Configuration, PublicClientApplication } from '@azure/msal-node';
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 let clientApplication: TypeMoq.IMock<PublicClientApplication>;
@@ -46,11 +46,17 @@ let mockAccountInfo: AccountInfo;
 let mockAzureAccount: AzureAccount;
 
 const provider = providerSettings[0].metadata;
+const msalConfiguration: Configuration = {
+	auth: {
+		clientId: provider.settings.clientId,
+		authority: 'https://login.windows.net/common'
+	}
+};
 
 describe('Azure Authentication', function () {
 	beforeEach(function () {
 		azureAuthCodeGrant = TypeMoq.Mock.ofType<AzureAuthCodeGrant>(AzureAuthCodeGrant, TypeMoq.MockBehavior.Loose, true, provider);
-		clientApplication = TypeMoq.Mock.ofType<PublicClientApplication>(PublicClientApplication, TypeMoq.MockBehavior.Loose, true, provider);
+		clientApplication = TypeMoq.Mock.ofType<PublicClientApplication>(PublicClientApplication, TypeMoq.MockBehavior.Loose, true, msalConfiguration);
 
 		azureAuthCodeGrant.callBase = true;
 		clientApplication.callBase = true;
