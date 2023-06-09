@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty, DesignerUIState } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
@@ -191,10 +190,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			await this._objectExplorerService.refreshNodeInView(connectionId, refreshNodePath);
 
 		} catch (error) {
-			await vscode.window.showErrorMessage(localize({
+			const errorMessage = localize({
 				key: 'tableDesigner.refreshOEError',
 				comment: ['{0}: error message.']
-			}, "An error occurred while while refreshing the object explorer. {0}", error));
+			}, "An error occurred while refreshing the object explorer. {0}", error);
+			this._notificationService.error(errorMessage);
 		}
 	}
 

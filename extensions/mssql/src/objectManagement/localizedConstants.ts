@@ -52,7 +52,7 @@ export function RefreshObjectExplorerError(error: string): string {
 	return localize({
 		key: 'objectManagement.refreshOEError',
 		comment: ['{0}: error message.']
-	}, "An error occurred while while refreshing the object explorer. {0}", error);
+	}, "An error occurred while refreshing the object explorer. {0}", error);
 }
 
 export function DeleteObjectConfirmationText(objectType: string, objectName: string): string {
