@@ -6,6 +6,7 @@ import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, Logi
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
+import { ServerPropertiesViewInfo } from './interfaces';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ObjectManagement, IObjectManagementService } from 'mssql';
@@ -434,8 +435,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getServerPropertiesView(isNewObject: boolean, name: string): ObjectManagement.ServerPropertiesViewInfo {
-		return isNewObject ? <ObjectManagement.ServerPropertiesViewInfo>{
+	private getServerPropertiesView(isNewObject: boolean, name: string): ServerPropertiesViewInfo {
+		return isNewObject ? <ServerPropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
 				language: '',
@@ -446,7 +447,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 				minMemoryInMb: 0,
 				maxMemoryInMb: 0
 			}
-		} : <ObjectManagement.ServerPropertiesViewInfo>{
+		} : <ServerPropertiesViewInfo>{
 			objectInfo: {
 				name: 'Server Properties',
 				language: 'English (US)',

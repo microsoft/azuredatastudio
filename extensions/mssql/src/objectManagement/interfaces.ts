@@ -439,3 +439,17 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	containmentTypes: string[];
 	recoveryModels: string[];
 }
+
+export interface ServerPropertiesInfo extends ObjectManagement.SqlObject {
+	language: string;
+	memoryInMb: number;
+	operatingSystem: string;
+	platform: string;
+	processors: string;
+	version: string;
+	minMemoryInMb: number;
+	maxMemoryInMb: number;
+}
+
+export interface ServerPropertiesViewInfo extends ObjectManagement.ObjectViewInfo<ServerPropertiesInfo> {
+}

@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewServerPropertiesDocUrl } from '../constants';
+import { ServerPropertiesInfo, ServerPropertiesViewInfo } from '../interfaces';
 
-export class ServerPropertiesDialog extends ObjectManagementDialogBase<ObjectManagement.ServerPropertiesInfo, ObjectManagement.ServerPropertiesViewInfo> {
+export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPropertiesInfo, ServerPropertiesViewInfo> {
 	private generalTab: azdata.window.DialogTab;
 	private generalSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;

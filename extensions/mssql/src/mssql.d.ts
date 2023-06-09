@@ -944,36 +944,6 @@ declare module 'mssql' {
 			 */
 			schema: string | undefined;
 		}
-
-		export interface Database extends SqlObject {
-			owner?: string;
-			collationName?: string;
-			recoveryModel?: string;
-			compatibilityLevel?: string;
-			containmentType?: string;
-		}
-
-		export interface DatabaseViewInfo extends ObjectViewInfo<Database> {
-			loginNames: string[];
-			collationNames: string[];
-			compatibilityLevels: string[];
-			containmentTypes: string[];
-			recoveryModels: string[];
-		}
-
-		export interface ServerPropertiesInfo extends SqlObject {
-			language: string;
-			memoryInMb: number;
-			operatingSystem: string;
-			platform: string;
-			processors: string;
-			version: string;
-			minMemoryInMb: number;
-			maxMemoryInMb: number;
-		}
-
-		export interface ServerPropertiesViewInfo extends ObjectViewInfo<ServerPropertiesInfo> {
-		}
 	}
 
 	export interface IObjectManagementService {
