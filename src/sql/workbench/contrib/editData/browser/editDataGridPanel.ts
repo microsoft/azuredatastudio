@@ -670,6 +670,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		let updateCellPromise: Promise<void> = Promise.resolve();
 		let refreshGrid = false;
 		let containsHTML = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/.test(this.currentEditCellValue);
+		let safeHTMLCell = document.createTextNode(this.currentEditCellValue);
+		let safeHTMLText = safeHTMLCell.wholeText;
 		if (containsHTML) {
 			self.currentEditCellValue = undefined;
 			updateCellPromise = this.revertCurrentRow().catch(onUnexpectedError).then(() => {
