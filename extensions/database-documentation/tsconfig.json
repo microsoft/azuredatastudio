@@ -1,0 +1,28 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "out",
+		"lib": [
+			"es6",
+			"es2015.promise",
+			"dom"
+		],
+		"sourceMap": true,
+		"rootDir": "src",
+		"strict": false,
+		"noImplicitAny": false,
+		"noImplicitReturns": false,
+		"noUnusedLocals": false,
+		"strictNullChecks": false,
+		"moduleResolution": "node"
+	},
+	"exclude": [
+		"node_modules",
+		".ads-test"
+	],
+	"include": [
+		"src/**/*"
+	]
+}
