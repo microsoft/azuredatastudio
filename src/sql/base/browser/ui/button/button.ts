@@ -31,4 +31,7 @@ export class Button extends vsButton {
 	public setWidth(value: string) {
 		this.element.style.width = value;
 	}
+
+	public style(styles: IButtonStyles): void {
+	}
 }

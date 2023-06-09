@@ -15,6 +15,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export interface IInfoBoxStyles {
 	informationBackground?: Color;
@@ -71,7 +72,7 @@ export class InfoBox extends Disposable {
 		this._infoBoxElement.appendChild(this._imageElement);
 		this._infoBoxElement.appendChild(this._textElement);
 		this._clickableIndicator = DOM.$('a');
-		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...Codicon.arrowRight.classNamesArray);
+		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...ThemeIcon.asClassNameArray(Codicon.arrowRight));
 		this._infoBoxElement.appendChild(this._clickableIndicator);
 
 		if (options) {

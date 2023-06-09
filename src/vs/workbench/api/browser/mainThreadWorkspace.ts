@@ -283,7 +283,7 @@ export class MainThreadWorkspace implements MainThreadWorkspaceShape {
 				if (result) {
 					return URI.revive(result);
 				}
-				return result;
+				return <any>result;
 			}
 		});
 

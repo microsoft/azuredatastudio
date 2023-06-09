@@ -448,8 +448,8 @@ export class ActionViewItem extends BaseActionViewItem {
 	// {{SQL CARBON EDIT}} - BEGIN
 	override updateExpanded(): void {
 		if (this.label) {
-			if (this.getAction().expanded !== undefined) {
-				this.label.setAttribute('aria-expanded', `${this.getAction().expanded}`);
+			if (this.action.expanded !== undefined) {
+				this.label.setAttribute('aria-expanded', `${this.action.expanded}`);
 			} else {
 				this.label.removeAttribute('aria-expanded');
 			}

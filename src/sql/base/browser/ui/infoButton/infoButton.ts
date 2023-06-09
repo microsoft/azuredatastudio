@@ -34,7 +34,7 @@ export class InfoButton extends sqlButton {
 	private _iconWidth?: number;
 	private _title?: string;
 
-	private _styles: IButtonStyles;
+	//private _styles: IButtonStyles;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -152,18 +152,19 @@ export class InfoButton extends sqlButton {
 		this.title = options.title;
 	}
 
-	override style(styles: IButtonStyles): void {
-		this._styles = styles;
-		this.applyStyles();
-	}
+	// {{SQL CARBON TODO}} - apply styles
+	// override style(styles: IButtonStyles): void {
+	// 	this._styles = styles;
+	// 	this.applyStyles();
+	// }
 
-	override applyStyles(): void {
-		this.element.style.backgroundColor = this._styles?.buttonBackground?.toString();
-		this.element.style.color = this._styles?.buttonForeground?.toString();
-		this.element.style.borderColor = this._styles?.buttonBorder?.toString();
-	}
+	// override applyStyles(): void {
+	// 	this.element.style.backgroundColor = this._styles?.buttonBackground?.toString();
+	// 	this.element.style.color = this._styles?.buttonForeground?.toString();
+	// 	this.element.style.borderColor = this._styles?.buttonBorder?.toString();
+	// }
 
-	override setHoverBackground(): void {
-		this.element.style.backgroundColor = this._styles?.buttonHoverBackground?.toString();
-	}
+	// override setHoverBackground(): void {
+	// 	this.element.style.backgroundColor = this._styles?.buttonHoverBackground?.toString();
+	// }
 }

@@ -387,7 +387,7 @@ export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action2 {
 /**
  * Action class that runs a query in the active SQL text document.
  */
-export class RunQueryShortcutAction extends Action2 {
+export class RunQueryShortcutAction extends Action {
 	public static ID = 'runQueryShortcutAction';
 
 	constructor(

@@ -358,7 +358,8 @@ export class ExtHostTreeView<T> extends Disposable {
 
 		if (this.proxy) {
 			this.proxy.$registerTreeViewDataProvider(viewId, {
-				showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, dropMimeTypes, dragMimeTypes, hasHandleDrag, hasHandleDrop
+				showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, dropMimeTypes, dragMimeTypes, hasHandleDrag, hasHandleDrop,
+				manuallyManageCheckboxes: options.manuallyManageCheckboxSelection
 			});
 		}
 		this.dndController = options.dragAndDropController;

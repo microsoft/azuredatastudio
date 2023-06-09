@@ -18,7 +18,7 @@ import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as DOM from 'vs/base/browser/dom';
 import { IDataSource, ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -27,6 +27,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 class EventItem {
 
@@ -319,7 +320,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$(''));
-		this._selectBox = new SelectBox(this._options, 0, this._contextViewService);
+		this._selectBox = new SelectBox(this._options, 0, this._contextViewService, defaultSelectBoxStyles);
 		this._selectBox.render(body);
 		this._register(this._selectBox.onDidSelect(e => {
 			this._element!.changeSort(e.index === 0 ? 'event' : 'column');

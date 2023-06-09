@@ -11,7 +11,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler, attachToggleStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachInputBoxStyler, attachToggleStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -31,6 +31,7 @@ import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 interface IRenderedServerGroupDialog {
 	groupNameInputBox: InputBox;
@@ -104,7 +105,8 @@ export class ServerGroupDialog extends Modal {
 				validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: localize('MissingGroupNameError', "Group name is required.") }) : null
 			},
 			ariaLabel: serverGroupNameLabel,
-			required: true
+			required: true,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Connection Group Description
@@ -112,7 +114,8 @@ export class ServerGroupDialog extends Modal {
 		DOM.append(body, DOM.$('.dialog-label')).innerText = groupDescriptionLabel;
 
 		this._groupDescriptionInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
-			ariaLabel: groupDescriptionLabel
+			ariaLabel: groupDescriptionLabel,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Connection Group Color
@@ -176,8 +179,8 @@ export class ServerGroupDialog extends Modal {
 		// Theme styler
 		this._register(attachInputBoxStyler(renderedDialog.groupNameInputBox, this._themeService));
 		this._register(attachInputBoxStyler(renderedDialog.groupDescriptionInputBox, this._themeService));
-		this._register(attachButtonStyler(renderedDialog.addServerButton, this._themeService));
-		this._register(attachButtonStyler(renderedDialog.closeButton, this._themeService));
+		this._register(renderedDialog.addServerButton);
+		this._register(renderedDialog.closeButton);
 
 		// handler for name change events
 		this._register(renderedDialog.groupNameInputBox.onDidChange(groupName => {
