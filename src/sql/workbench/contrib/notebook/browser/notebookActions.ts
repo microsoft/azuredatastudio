@@ -100,6 +100,9 @@ export abstract class AddCellAction extends Action {
 	}
 }
 
+/**
+ * Action to add a new Text cell to a Notebook
+ */
 export class AddTextCellAction extends AddCellAction {
 	public override cellType: CellType = 'markdown';
 
@@ -108,6 +111,9 @@ export class AddTextCellAction extends AddCellAction {
 	}
 }
 
+/**
+ * Action to add a new Code cell to a Notebook
+ */
 export class AddCodeCellAction extends AddCellAction {
 	public override cellType: CellType = 'code';
 
