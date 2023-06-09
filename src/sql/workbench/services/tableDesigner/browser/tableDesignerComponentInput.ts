@@ -188,7 +188,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 
 			await this._objectExplorerService.refreshNodeInView(connectionId, refreshNodePath);
-
 		} catch (error) {
 			const errorMessage = localize({
 				key: 'tableDesigner.refreshOEError',
