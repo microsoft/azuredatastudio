@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty, DesignerUIState } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
@@ -19,6 +20,7 @@ import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/te
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { TableDesignerMetadata } from 'sql/workbench/services/tableDesigner/browser/tableDesignerMetadata';
 import { Queue, timeout } from 'vs/base/common/async';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Table Designer Error");
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -60,7 +62,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService) {
+		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService,
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService) {
 	}
 
 	public designerUIState?: DesignerUIState = undefined;
@@ -140,6 +143,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		});
 		const startTime = new Date().getTime();
 		let isPublishSuccessful = false;
+		const isNewTable = this.tableInfo.isNewTable;
 		try {
 			this.updateState(this.valid, this.dirty, 'publish');
 			const result = await this._provider.publishChanges(this.tableInfo);
@@ -162,39 +166,37 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 
 		if (isPublishSuccessful) {
-			if (this.tableInfo.isNewTable) {
-				// refresh
-				this.refreshNode(this._objectExplorerContext);
+			await this.refreshNodeInOE(isNewTable);
+		}
+	}
+
+	private async refreshNodeInOE(isNewTable: boolean) {
+		try {
+			const connectionId = this._objectExplorerContext.connectionProfile?.id;
+			const nodeInfo = this._objectExplorerContext.nodeInfo;
+			const node = await this._objectExplorerService.getTreeNode(connectionId, nodeInfo?.nodePath);
+			let refreshNodePath: string;
+
+			if (isNewTable) {
+				refreshNodePath = nodeInfo?.nodePath;
 			} else {
-				// refresh parent
-				this.refreshParentNode(this._objectExplorerContext);
+				// This handle the case where a user publishes a table then edit the same table within the same designer then publish again. In that case node path in OE context is already correct.
+				if (node?.objectType === 'Tables') {
+					refreshNodePath = nodeInfo?.nodePath
+				} else {
+					refreshNodePath = nodeInfo?.parentNodePath;
+				}
 			}
+
+			await this._objectExplorerService.refreshNodeInView(connectionId, refreshNodePath);
+
+		} catch (error) {
+			await vscode.window.showErrorMessage(localize({
+				key: 'tableDesigner.refreshOEError',
+				comment: ['{0}: error message.']
+			}, "An error occurred while while refreshing the object explorer. {0}", error));
 		}
 	}
-
-	async refreshParentNode(objectExplorerContext: azdata.ObjectExplorerContext): Promise<void> {
-		if (objectExplorerContext) {
-			try {
-				const node = await azdata.objectexplorer.getNode(objectExplorerContext.connectionProfile!.id, objectExplorerContext.nodeInfo!.nodePath);
-				const parentNode = await node?.getParent();
-				await parentNode?.refresh();
-			}
-			catch (err) {
-			}
-		}
-	}
-
-	async refreshNode(objectExplorerContext: azdata.ObjectExplorerContext): Promise<void> {
-		if (objectExplorerContext) {
-			try {
-				const node = await azdata.objectexplorer.getNode(objectExplorerContext.connectionProfile!.id, objectExplorerContext.nodeInfo!.nodePath);
-				await node?.refresh();
-			}
-			catch (err) {
-			}
-		}
-	}
-
 
 	async save(): Promise<void> {
 		this._onSubmitPendingEditRequested.fire();
