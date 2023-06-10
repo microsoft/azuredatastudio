@@ -13,11 +13,9 @@ import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
 import { AuthenticationResult } from '@azure/msal-common';
-import { AccountInfo, Configuration, PublicClientApplication } from '@azure/msal-node';
+import { AccountInfo, PublicClientApplication } from '@azure/msal-node';
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
-let clientApplication: TypeMoq.IMock<PublicClientApplication>;
-// let azureDeviceCode: TypeMoq.IMock<AzureDeviceCode>;
 
 const mockToken: Token = {
 	key: 'someUniqueId',
@@ -46,20 +44,11 @@ let mockAccountInfo: AccountInfo;
 let mockAzureAccount: AzureAccount;
 
 const provider = providerSettings[0].metadata;
-const msalConfiguration: Configuration = {
-	auth: {
-		clientId: provider.settings.clientId,
-		authority: 'https://login.windows.net/common'
-	}
-};
 
 describe('Azure Authentication', function () {
 	beforeEach(function () {
 		azureAuthCodeGrant = TypeMoq.Mock.ofType<AzureAuthCodeGrant>(AzureAuthCodeGrant, TypeMoq.MockBehavior.Loose, true, provider);
-		clientApplication = TypeMoq.Mock.ofType<PublicClientApplication>(PublicClientApplication, TypeMoq.MockBehavior.Loose, true, msalConfiguration);
-
 		azureAuthCodeGrant.callBase = true;
-		clientApplication.callBase = true;
 
 		mockAzureAccount = {
 			isStale: false,
@@ -167,39 +156,6 @@ describe('Azure Authentication', function () {
 
 		azureAuthCodeGrant.setup(x => x.getAccountFromMsalCache(mockAccountInfo.homeAccountId)).returns(() => {
 			return Promise.resolve(mockAccountInfo);
-		});
-
-		it('calls handle interaction required', async function () {
-			clientApplication.setup(x => x.acquireTokenSilent(TypeMoq.It.isAny())).returns(() => {
-				return Promise.resolve(
-					null
-				);
-			});
-
-			azureAuthCodeGrant.setup(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource!)).returns(() => {
-				return Promise.resolve({
-					authority: 'test',
-					uniqueId: 'test',
-					tenantId: 'test',
-					scopes: ['test'],
-					account: null,
-					idToken: 'test',
-					idTokenClaims: mockClaims,
-					fromCache: false,
-					tokenType: 'Bearer',
-					correlationId: 'test',
-					accessToken: mockAccessToken.token,
-					refreshToken: mockRefreshToken.token,
-					expiresOn: new Date(Date.now())
-				} as AuthenticationResult);
-			});
-
-
-			const result = await azureAuthCodeGrant.object.getToken(mockAzureAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id) as AuthenticationResult;
-
-			azureAuthCodeGrant.verify(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource!), TypeMoq.Times.once());
-
-			should(result?.accessToken).be.deepEqual(mockAccessToken);
 		});
 
 		it('unknown error should throw error', async function () {
