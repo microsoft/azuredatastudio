@@ -170,6 +170,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	private async refreshNodeInOE(isNewTable: boolean) {
+		if (!this._objectExplorerContext) {
+			return;
+		}
+
 		try {
 			const connectionId = this._objectExplorerContext.connectionProfile?.id;
 			const nodeInfo = this._objectExplorerContext.nodeInfo;
