@@ -114,6 +114,13 @@ export interface ConnectionProviderProperties {
 	 * Connection string options for the connection provider
 	 */
 	connectionStringOptions?: ConnectionStringOptions;
+
+	/**
+	 * Indicates whether the provider support copy results to clipboard. Default value is false.
+	 * If true, the copy results to clipboard will be delegated to the provider to avoid passing large amount of data using the RPC channel.
+	 * Otherwise ADS will handle the copy request on the UI side.
+	 */
+	supportCopyResultsToClipboard?: boolean;
 }
 
 export interface ProviderFeatures {

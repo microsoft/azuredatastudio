@@ -832,11 +832,58 @@ declare module 'azdata' {
 		parentTypeName?: string;
 	}
 
+	/**
+	 * Represents a selected range in the result grid.
+	 */
+	export interface SelectionRange {
+		fromRow: number;
+		toRow: number;
+		fromColumn: number;
+		toColumn: number;
+	}
+
+	/**
+	 * Parameters for the copy results request.
+	 */
+	export interface CopyResultsRequestParams {
+		/**
+		 * URI of the editor.
+		 */
+		ownerUri: string;
+		/**
+		 * Index of the batch.
+		 */
+		batchIndex: number;
+		/**
+		 * Index of the result set.
+		 */
+		resultSetIndex: number;
+		/**
+		 * Whether to include the column headers.
+		 */
+		includeHeaders: boolean
+		/**
+		 * Whether to remove line breaks from the cell value.
+		 */
+		removeNewLines: boolean;
+		/**
+		 * The selected ranges to be copied.
+		 */
+		selections: SelectionRange[];
+	}
+
 	export interface QueryProvider {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
 		 */
-		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+		connectionUriChanged?(newUri: string, oldUri: string): Thenable<void>;
+		/**
+		 * Copy the selected data to the clipboard.
+		 * This is introduced to address the performance issue of large amount of data to ADS side.
+		 * ADS will use this if 'supportCopyResultsToClipboard' property is set to true in the provider contribution point in extension's package.json.
+		 * Otherwise, The default handler will load all the selected data to ADS and perform the copy operation.
+		 */
+		copyResults?(requestParams: CopyResultsRequestParams): Thenable<void>;
 	}
 
 	export enum DataProviderType {
@@ -855,8 +902,9 @@ declare module 'azdata' {
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
 		 * @param telemetryInfo Optional Key-value pair containing any extra information that needs to be sent via telemetry
+		 * @param objectExplorerContext Optional The context used to refresh Object Explorer after the table is created or edited
 		 */
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }): Thenable<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }, objectExplorerContext?: ObjectExplorerContext): Thenable<void>;
 
 		/**
 		 * Definition for the table designer provider.

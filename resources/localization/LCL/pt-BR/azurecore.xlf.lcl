@@ -88,10 +88,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) esource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Database for MySQL Flexible server]]></Val>
+            <Val><![CDATA[Azure Database for MySQL flexible servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Banco de dados do Azure para o servidor MySQL Flexível]]></Val>
+              <Val><![CDATA[Servidores flexíveis do Banco de Dados do Azure para MySQL]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Azure Database for MySQL Flexible server]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -108,16 +111,28 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider.a" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) zure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure Database for PostgreSQL flexible servers]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Servidores flexíveis do Banco de Dados do Azure para PostgreSQL]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider.azure.resource.pr" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+            <Val><![CDATA[Azure Database for PostgreSQL servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Servidor do Banco de Dados do Azure para PostgreSQL]]></Val>
+              <Val><![CDATA[Servidores do Banco de Dados do Azure para PostgreSQL]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Database for PostgreSQL Servers]]></Val>
+              <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -1308,12 +1323,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresFlexibleServer" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Database for PostgreSQL flexible servers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servidores flexíveis do Banco de Dados do Azure para PostgreSQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          <Val><![CDATA[Azure Database for PostgreSQL servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Servidor do Banco de Dados do Azure para PostgreSQL]]></Val>
+            <Val><![CDATA[Servidores do Banco de Dados do Azure para PostgreSQL]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

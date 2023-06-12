@@ -439,7 +439,7 @@ Default Skipped Commands:
       <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
     </trans-unit>
     <trans-unit id="refreshAccount">
-      <source xml:lang="en">Reenter your credentials</source>
+      <source xml:lang="en">Refresh your credentials</source>
     </trans-unit>
     <trans-unit id="removeAccount">
       <source xml:lang="en">Remove account</source>
@@ -2924,6 +2924,9 @@ Default Skipped Commands:
     <trans-unit id="executionPlanEnterValueTitle">
       <source xml:lang="en">Enter search value</source>
     </trans-unit>
+    <trans-unit id="executionPlanFindNodeLabel">
+      <source xml:lang="en">Find nodes</source>
+    </trans-unit>
     <trans-unit id="executionPlanSearchTypeContains">
       <source xml:lang="en">Contains</source>
     </trans-unit>
@@ -3450,12 +3453,6 @@ Error: {1}</source>
     <trans-unit id="buttonMoveUp">
       <source xml:lang="en">Move cell up</source>
     </trans-unit>
-    <trans-unit id="codeCellsPreview">
-      <source xml:lang="en">Add cell</source>
-    </trans-unit>
-    <trans-unit id="codePreview">
-      <source xml:lang="en">Code cell</source>
-    </trans-unit>
     <trans-unit id="optionCodeCell">
       <source xml:lang="en">Code cell</source>
     </trans-unit>
@@ -3464,9 +3461,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="splitCell">
       <source xml:lang="en">Split cell</source>
-    </trans-unit>
-    <trans-unit id="textPreview">
-      <source xml:lang="en">Text cell</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/code.component" source-language="en" datatype="plaintext"><body>
@@ -3658,12 +3652,6 @@ Error: {1}</source>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
     </trans-unit>
-    <trans-unit id="codeCellsPreview">
-      <source xml:lang="en">Add cell</source>
-    </trans-unit>
-    <trans-unit id="codePreview">
-      <source xml:lang="en">Code cell</source>
-    </trans-unit>
     <trans-unit id="createFile">
       <source xml:lang="en">Create File</source>
     </trans-unit>
@@ -3681,9 +3669,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="runAllPreview">
       <source xml:lang="en">Run all</source>
-    </trans-unit>
-    <trans-unit id="textPreview">
-      <source xml:lang="en">Text cell</source>
     </trans-unit>
     <trans-unit id="views">
       <source xml:lang="en">Views</source>
@@ -3902,6 +3887,12 @@ Error: {1}</source>
     <trans-unit id="clearResults">
       <source xml:lang="en">Clear Results</source>
     </trans-unit>
+    <trans-unit id="codeCellsPreview">
+      <source xml:lang="en">Add cell</source>
+    </trans-unit>
+    <trans-unit id="codePreview">
+      <source xml:lang="en">Code cell</source>
+    </trans-unit>
     <trans-unit id="collapseAllCells">
       <source xml:lang="en">Collapse Cells</source>
     </trans-unit>
@@ -3955,6 +3946,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="selectConnection">
       <source xml:lang="en">Select Connection</source>
+    </trans-unit>
+    <trans-unit id="textPreview">
+      <source xml:lang="en">Text cell</source>
     </trans-unit>
     <trans-unit id="trustLabel">
       <source xml:lang="en">Trusted</source>
@@ -4164,7 +4158,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
+      <source xml:lang="en">Copy failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="notebook.showChart">
       <source xml:lang="en">Show chart</source>
@@ -4403,11 +4397,17 @@ Error: {1}</source>
     <trans-unit id="copyWithHeaders">
       <source xml:lang="en">Copy With Headers</source>
     </trans-unit>
+    <trans-unit id="excelLimitExceededError">
+      <source xml:lang="en">The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.</source>
+    </trans-unit>
     <trans-unit id="jsonEncoding">
       <source xml:lang="en">Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created.</source>
     </trans-unit>
     <trans-unit id="maximize">
       <source xml:lang="en">Maximize</source>
+    </trans-unit>
+    <trans-unit id="openExcelSpecs">
+      <source xml:lang="en">View Excel specifications</source>
     </trans-unit>
     <trans-unit id="restore">
       <source xml:lang="en">Restore</source>
@@ -4540,6 +4540,9 @@ Error: {1}</source>
     <trans-unit id="messagePanel">
       <source xml:lang="en">Message Panel</source>
     </trans-unit>
+    <trans-unit id="messagePanel.message">
+      <source xml:lang="en">Timestamp: {0}, Message: {1}</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/query.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="newQuery">
@@ -4568,6 +4571,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.openAfterSave">
       <source xml:lang="en">Whether to open the file in Azure Data Studio after the result is saved.</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.preferProvidersCopyHandler">
+      <source xml:lang="en">Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsCsv.delimiter">
       <source xml:lang="en">The custom delimiter to use between values when saving as CSV</source>
@@ -6232,6 +6238,12 @@ Error Message: {1}</source>
     <trans-unit id="activeConnections">
       <source xml:lang="en">Show Active Connections</source>
     </trans-unit>
+    <trans-unit id="connectionDeleted">
+      <source xml:lang="en">Connection {0} deleted</source>
+    </trans-unit>
+    <trans-unit id="connectionGroupDeleted">
+      <source xml:lang="en">Connection group {0} deleted</source>
+    </trans-unit>
     <trans-unit id="connectionTree.addConnection">
       <source xml:lang="en">New Connection</source>
     </trans-unit>
@@ -6489,6 +6501,23 @@ Error Message: {1}</source>
       <source xml:lang="en">Value</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="gridDataProvider.cancelCopyResults">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.closeNotification">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.copyResultsCompleted">
+      <source xml:lang="en">Selected data has been copied to the clipboard. Row count: {0}.</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.copying">
+      <source xml:lang="en">Copying...</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.loadingRowsInProgress">
+      <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
     <trans-unit id="queryManagement.noQueryRunnerForUri">
       <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
@@ -6522,7 +6551,7 @@ Error Message: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
+      <source xml:lang="en">Copy failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="elapsedBatchTime">
       <source xml:lang="en">Batch execution time: {0}</source>

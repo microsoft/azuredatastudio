@@ -404,6 +404,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
+		'queryEditor.results.preferProvidersCopyHandler': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.preferProvidersCopyHandler', "Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio."),
+			'default': true
+		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
