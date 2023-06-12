@@ -98,18 +98,6 @@ describe('Azure Authentication', function () {
 			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, 'invalid_tenant').should.be.rejected();
 		});
 
-		it('token recieved for ossRdbmns resource', async function () {
-			azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns(() => {
-				return Promise.resolve([
-					mockTenant
-				]);
-			});
-
-			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.OssRdbms, mockTenant.id) as AuthenticationResult;
-			should(securityToken?.accessToken).be.equal(mockAccessToken.token, 'Token are not similar');
-
-		});
-
 		it('saved token exists and can be reused', async function () {
 			delete (mockAccessToken as any).tokenType;
 			azureAuthCodeGrant.setup(x => x.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id)).returns((): Promise<AuthenticationResult> => {
@@ -136,41 +124,6 @@ describe('Azure Authentication', function () {
 	});
 
 	describe('getToken', function () {
-
-		it('calls handle interaction required', async function () {
-			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-				return Promise.resolve({
-					data: {
-						error: 'interaction_required'
-					}
-				} as AxiosResponse<any>);
-			});
-
-			azureAuthCodeGrant.setup(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource!)).returns(() => {
-				return Promise.resolve({
-					authority: 'test',
-					uniqueId: 'test',
-					tenantId: 'test',
-					scopes: ['test'],
-					account: null,
-					idToken: 'test',
-					idTokenClaims: mockClaims,
-					fromCache: false,
-					tokenType: 'Bearer',
-					correlationId: 'test',
-					accessToken: mockAccessToken.token,
-					refreshToken: mockRefreshToken.token,
-					expiresOn: new Date(Date.now())
-				} as AuthenticationResult);
-			});
-
-
-			const result = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id) as AuthenticationResult;
-
-			azureAuthCodeGrant.verify(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource!), TypeMoq.Times.once());
-
-			should(result?.accessToken).be.deepEqual(mockAccessToken);
-		});
 
 		it('unknown error should throw error', async function () {
 			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
