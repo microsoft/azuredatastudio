@@ -56,7 +56,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	constructor(private readonly _provider: TableDesignerProvider,
 		public tableInfo: azdata.designers.TableInfo,
 		private _telemetryInfo: ITelemetryEventProperties,
-		private _objectExplorerContext: azdata.ObjectExplorerContext,
+		private _objectExplorerContext: azdata.ObjectExplorerContext | undefined,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
