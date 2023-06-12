@@ -1001,8 +1001,10 @@ declare module 'mssql' {
 		 * Detach a database.
 		 * @param connectionUri The URI of the server connection.
 		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param dropConnections Whether to drop active connections to this database.
+		 * @param updateStatistics Whether to update the optimization statistics related to this database.
 		 */
-		detachDatabase(connectionUri: string, objectUrn: string): Thenable<void>;
+		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Thenable<void>;
 	}
 	// Object Management - End.
 }
