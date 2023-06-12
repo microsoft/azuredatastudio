@@ -29,6 +29,20 @@ export interface IGridRange {
 }
 
 /**
+ * An one dimensional range
+ */
+export interface OneDimensionalRange {
+	/**
+	 * Start position
+	 */
+	start: number;
+	/**
+	 * End position
+	 */
+	end: number;
+}
+
+/**
  * A range in a grid. (startRow,startColumn) is <= (endRow,endColumn)
  */
 export class GridRange {
@@ -357,5 +371,70 @@ export class GridRange {
 	 */
 	public static spansMultipleLines(range: IGridRange): boolean {
 		return range.endRow > range.startRow;
+	}
+
+	/**
+	 * Create an instance of IGridRange from Slick.Range.
+	 */
+	public static fromSlickRange(range: Slick.Range): IGridRange {
+		return {
+			startRow: range.fromRow,
+			endRow: range.toRow,
+			startColumn: range.fromCell,
+			endColumn: range.toCell
+		};
+	}
+
+	/**
+	 * Create a list IGridRange from a list of Slick.Range.
+	 */
+	public static fromSlickRanges(ranges: Slick.Range[]): IGridRange[] {
+		return ranges.map(r => GridRange.fromSlickRange(r));
+	}
+
+	/**
+	 * Merge the ranges by row or column and return merged ranges
+	 * @param ranges the ranges to be merged
+	 * @param mergeRows whether to merge the rows or columns.
+	 */
+	private static mergeRanges(ranges: IGridRange[], mergeRows: boolean): OneDimensionalRange[] {
+		let sourceRanges: OneDimensionalRange[] = ranges.map(r => {
+			if (mergeRows) {
+				return { start: r.startRow, end: r.endRow };
+			} else {
+				return { start: r.startColumn, end: r.endColumn };
+			}
+		});
+		const mergedRanges: OneDimensionalRange[] = [];
+		sourceRanges = sourceRanges.sort((s1, s2) => { return s1.start - s2.start; });
+		sourceRanges.forEach(range => {
+			let merged = false;
+			for (let i = 0; i < mergedRanges.length; i++) {
+				const mergedRange = mergedRanges[i];
+				if (range.start <= mergedRange.end) {
+					mergedRange.end = Math.max(range.end, mergedRange.end);
+					merged = true;
+					break;
+				}
+			}
+			if (!merged) {
+				mergedRanges.push(range);
+			}
+		});
+		return mergedRanges;
+	}
+
+	/**
+	 * Gets the unique row ranges.
+	 */
+	public static getUniqueRows(ranges: IGridRange[]): OneDimensionalRange[] {
+		return GridRange.mergeRanges(ranges, true);
+	}
+
+	/**
+	 * Gets the unique column ranges.
+	 */
+	public static getUniqueColumns(ranges: IGridRange[]): OneDimensionalRange[] {
+		return GridRange.mergeRanges(ranges, false);
 	}
 }

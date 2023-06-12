@@ -18,6 +18,7 @@ import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { isUndefined } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as nls from 'vs/nls';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -50,7 +51,7 @@ export interface IQueryManagementService {
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset>;
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset>;
 	disposeQuery(ownerUri: string): Promise<void>;
 	changeConnectionUri(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
@@ -271,9 +272,38 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public async getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
-		return this._runAction(rowData.ownerUri, (runner) => {
-			return runner.getQueryRows(rowData).then(r => r.resultSubset);
+	public async getQueryRows(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		const pageSize = 500;
+		return this._runAction(rowData.ownerUri, async (runner): Promise<ResultSetSubset> => {
+			const result = [];
+			let start = rowData.rowsStartIndex;
+			this._logService.trace(`Getting ${rowData.rowsCount} rows starting from index: ${rowData.rowsStartIndex}.`);
+			do {
+				const rowCount = Math.min(pageSize, rowData.rowsStartIndex + rowData.rowsCount - start);
+				this._logService.trace(`Paged Fetch - Getting ${rowCount} rows starting from index: ${start}.`);
+				const rowSet = await runner.getQueryRows({
+					ownerUri: rowData.ownerUri,
+					batchIndex: rowData.batchIndex,
+					resultSetIndex: rowData.resultSetIndex,
+					rowsCount: rowCount,
+					rowsStartIndex: start
+				});
+				this._logService.trace(`Paged Fetch - Received ${rowSet.resultSubset.rows} rows starting from index: ${start}.`);
+				result.push(...rowSet.resultSubset.rows);
+				start += rowCount;
+				if (onProgressCallback) {
+					onProgressCallback(start - rowData.rowsStartIndex);
+				}
+			} while (start < rowData.rowsStartIndex + rowData.rowsCount && (!!cancellationToken || !cancellationToken.isCancellationRequested));
+			if (cancellationToken?.isCancellationRequested) {
+				this._logService.trace(`Stop getting more rows since cancellation has been requested.`);
+			} else {
+				this._logService.trace(`Successfully fetched ${result.length} rows. Expected Rows: ${rowData.rowsCount}.`);
+			}
+			return {
+				rows: result,
+				rowCount: result.length
+			};
 		});
 	}
 

@@ -37,7 +37,7 @@ import { IAction, Separator } from 'vs/base/common/actions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { CancellationToken } from 'vs/base/common/cancellation';
+import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
@@ -58,6 +58,8 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { GridRange } from 'sql/base/common/gridRange';
+import { debounce } from 'vs/base/common/decorators';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -373,6 +375,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 	private filterPlugin: HeaderFilter<T>;
 	private isDisposed: boolean = false;
 	private gridConfig: IResultGridConfiguration;
+	private selectionChangeHandlerToken: CancellationTokenSource | undefined;
 
 	private columns: Slick.Column<T>[];
 
@@ -664,7 +667,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
 			}
-			await this.notifyTableSelectionChanged();
+			await this.handleTableSelectionChange();
 		});
 
 		this.table.grid.onScroll.subscribe((e, data) => {
@@ -763,7 +766,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		this._state = val;
 	}
 
-	private async getRowData(start: number, length: number): Promise<ICellValue[][]> {
+	private async getRowData(start: number, length: number, cancellationToken?: CancellationToken): Promise<ICellValue[][]> {
 		let subset;
 		if (this.dataProvider.isDataInMemory) {
 			// handle the scenario when the data is sorted/filtered,
@@ -771,22 +774,46 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			const data = await this.dataProvider.getRangeAsync(start, length);
 			subset = data.map(item => Object.keys(item).map(key => item[key]));
 		} else {
-			subset = (await this.gridDataProvider.getRowData(start, length)).rows;
+			subset = (await this.gridDataProvider.getRowData(start, length, cancellationToken)).rows;
 		}
 		return subset;
 	}
 
-	private async notifyTableSelectionChanged() {
+	@debounce(100)
+	private async handleTableSelectionChange(): Promise<void> {
+		if (this.selectionChangeHandlerToken) {
+			this.selectionChangeHandlerToken.cancel();
+		}
+		this.selectionChangeHandlerToken = new CancellationTokenSource();
+		await this.notifyTableSelectionChanged(this.selectionChangeHandlerToken);
+	}
+
+	private async notifyTableSelectionChanged(cancellationToken: CancellationTokenSource): Promise<void> {
 		const selectedCells = [];
+		const gridRanges = GridRange.fromSlickRanges(this.state.selection ?? []);
+		const rowRanges = GridRange.getUniqueRows(gridRanges);
+		const columnRanges = GridRange.getUniqueColumns(gridRanges);
+		const rowCount = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
+		if (rowCount > 1000) {
+			// TODO confirm and provide cancel
+		}
+		// todo test the restore page scenario
+
+		// if canceled, dispose token and return empty
 		for (const range of this.state.selection) {
-			const subset = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
-			subset.forEach(row => {
-				// start with range.fromCell -1 because we have row number column which is not available in the actual data
-				for (let i = range.fromCell - 1; i < range.toCell; i++) {
-					selectedCells.push(row[i]);
-				}
+			const rows = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1, cancellationToken.token);
+			rows.forEach((row, rowIndex) => {
+				columnRanges.forEach(cr => {
+					for (let i = cr.start; i <= cr.end; i++) {
+						if (this.state.selection.some(selection => selection.contains(rowIndex + range.fromRow, i))) {
+							// need to reduce the column index by 1 because we have row number column which is not available in the actual data
+							selectedCells.push(row[i - 1]);
+						}
+					}
+				});
 			});
 		}
+		cancellationToken.dispose();
 		this.queryModelService.notifyCellSelectionChanged(selectedCells);
 	}
 
