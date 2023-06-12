@@ -997,6 +997,12 @@ declare module 'mssql' {
 		 * @param schema Schema to search in.
 		 */
 		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
+		/**
+		 * Detach a database.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 */
+		detachDatabase(connectionUri: string, objectUrn: string): Thenable<void>;
 	}
 	// Object Management - End.
 }

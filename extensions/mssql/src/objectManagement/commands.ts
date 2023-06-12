@@ -38,6 +38,12 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.attachDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleAttachDatabase(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.detachDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleDetachDatabase(context, service);
+	}));
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
@@ -222,6 +228,50 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.RenameObjectError(nodeTypeDisplayName, originalName, newName, getErrorMessage(err)));
 				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.RenameObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
+				}).send();
+				console.error(err);
+				return;
+			}
+			operation.updateStatus(azdata.TaskStatus.Succeeded);
+			await refreshParentNode(context);
+		}
+	});
+}
+
+async function handleAttachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	throw new Error('Not implemented.');
+}
+
+async function handleDetachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+
+	let confirmMessage = objectManagementLoc.DetachDatabaseConfirmationText(context.nodeInfo!.label);
+
+	const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, uiLoc.YesText);
+	if (confirmResult !== uiLoc.YesText) {
+		return;
+	}
+	azdata.tasks.startBackgroundOperation({
+		displayName: objectManagementLoc.DetachDatabaseOperationDisplayName(context.nodeInfo!.label),
+		description: '',
+		isCancelable: false,
+		operation: async (operation) => {
+			try {
+				const startTime = Date.now();
+				await service.detachDatabase(connectionUri, context.nodeInfo!.metadata!.urn);
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DetachDatabase, {
+					objectType: 'Database'
+				}, {
+					elapsedTimeMs: Date.now() - startTime
+				});
+			}
+			catch (err) {
+				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DetachDatabaseError(context.nodeInfo!.label, getErrorMessage(err)));
+				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DetachDatabase, err).withAdditionalProperties({
+					objectType: 'Database'
 				}).send();
 				console.error(err);
 				return;
