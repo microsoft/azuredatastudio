@@ -67,7 +67,7 @@ export function DetachDatabaseConfirmationText(objectName: string): string {
 	return localize({
 		key: 'objectManagement.detachDatabaseConfirmation',
 		comment: ['{0}: object name.']
-	}, "Are you sure you want to delete the database: {0}?", objectName);
+	}, "Are you sure you want to detach the database: {0}?", objectName);
 }
 
 export function CreateObjectOperationDisplayName(objectType: string): string {

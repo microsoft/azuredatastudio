@@ -249,7 +249,6 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 	}
 
 	let confirmMessage = objectManagementLoc.DetachDatabaseConfirmationText(context.nodeInfo!.label);
-
 	const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, uiLoc.YesText);
 	if (confirmResult !== uiLoc.YesText) {
 		return;
