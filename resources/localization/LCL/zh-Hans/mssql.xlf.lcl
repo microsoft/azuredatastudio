@@ -20,12 +20,18 @@
         <Item ItemId=";(...) OfSchema" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[All objects belonging to a schema]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[属于架构的所有对象]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) OfTypes" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[All objects of certain types]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[特定类型的所有对象]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -47,6 +53,9 @@
         <Item ItemId=";(...) jects" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Specific objects…]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[特定对象...]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -288,6 +297,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.ObjectSelectionMethodDialog_TypeLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[How do you want to add objects?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[你希望如何添加对象?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1368,6 +1380,9 @@
       <Item ItemId=";extensions/mssql/dist/ui/localizedConstants.mssql.ui.generatingScriptCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script generated]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[生成的脚本]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

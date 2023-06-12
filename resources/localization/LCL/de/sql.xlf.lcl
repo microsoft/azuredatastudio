@@ -3252,8 +3252,8 @@
       <Item ItemId=";src/sql/platform/accounts/common/accountActions.refreshAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh your credentials]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Anmeldeinformationen erneut eingeben]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktualisieren Sie Ihre Anmeldeinformationen]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Reenter your credentials]]></Val>
@@ -12933,6 +12933,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.excelLimitExceededError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Anzahl der Zeilen oder Spalten in der Tabelle hat die Excel-Grenzwerte überschritten. Versuchen Sie es stattdessen mit einem anderen Format.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12957,6 +12960,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.openExcelSpecs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View Excel specifications]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Excel-Spezifikationen anzeigen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13347,6 +13353,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/messagePanel.messagePanel.message" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Timestamp: {0}, Message: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zeitstempel: {0}, Meldung: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13437,6 +13446,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.preferProvidersCopyHandler" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob die Kopierergebnisanforderung vom Abfrageanbieter verarbeitet werden soll, wenn sie unterstützt wird. Der Standardwert ist TRUE. Legen Sie diesen Wert auf FALSE fest, um zu erzwingen, dass alle Kopiervorgänge von Azure Data Studio ausgeführt werden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17715,12 +17727,18 @@
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.connectionDeleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection {0} deleted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Verbindung {0} gelöscht]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.connectionGroupDeleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection group {0} deleted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Verbindungsgruppe {0} gelöscht]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18438,6 +18456,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/gridDataProvider.gridDataProvider.copyResultsCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Selected data has been copied to the clipboard. Row count: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die ausgewählten Daten wurden in die Zwischenablage kopiert. Zeilenanzahl: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18453,6 +18474,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/gridDataProvider.gridDataProvider.loadingRowsInProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading the rows to be copied ({0}/{1})...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die zu kopierenden Zeilen werden geladen ({0}/{1})...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

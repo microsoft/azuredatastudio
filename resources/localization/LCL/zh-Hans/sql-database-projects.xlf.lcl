@@ -193,6 +193,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.addSqlCmdVariableWithoutDefaultValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add SQLCMD variable '{0}' to project without default value?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[是否将 SQLCMD 变量 "{0}" 添加到没有默认值的项目?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1075,6 +1078,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadingNuget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0} nuget to get build DLLs ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[下载 {0} nuget 以获取生成 DLL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2524,6 +2530,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.referencedDatabaseType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Referenced Database type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[引用的数据库类型]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

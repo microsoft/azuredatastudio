@@ -3252,8 +3252,8 @@
       <Item ItemId=";src/sql/platform/accounts/common/accountActions.refreshAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh your credentials]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Immetti di nuovo le credenziali]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aggiornare le credenziali]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Reenter your credentials]]></Val>
@@ -12933,6 +12933,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.excelLimitExceededError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il numero di righe o colonne nella tabella ha superato i limiti di Excel. Provare con un formato diverso.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12957,6 +12960,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.openExcelSpecs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View Excel specifications]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Visualizza specifiche di Excel]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13347,6 +13353,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/messagePanel.messagePanel.message" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Timestamp: {0}, Message: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Timestamp: {0}, messaggio: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13437,6 +13446,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.preferProvidersCopyHandler" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica se la richiesta di risultato della copia deve essere gestita dal provider di query quando è supportata. Il valore predefinito è true; impostarlo su false per forzare l'esecuzione di tutte le operazioni di gestione delle copie da parte di Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -17715,12 +17727,18 @@
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.connectionDeleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection {0} deleted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Connessione {0} eliminata]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.connectionGroupDeleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection group {0} deleted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gruppo di connessione {0} eliminato]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18438,6 +18456,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/gridDataProvider.gridDataProvider.copyResultsCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Selected data has been copied to the clipboard. Row count: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[I dati selezionati sono stati copiati negli Appunti. Conteggio righe: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18453,6 +18474,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/gridDataProvider.gridDataProvider.loadingRowsInProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading the rows to be copied ({0}/{1})...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Caricamento delle righe da copiare ({0}/{1})...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

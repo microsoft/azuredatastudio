@@ -193,6 +193,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.addSqlCmdVariableWithoutDefaultValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add SQLCMD variable '{0}' to project without default value?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aggiungere la variabile SQLCMD '{0}' al progetto senza il valore predefinito?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1075,6 +1078,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadingNuget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0} nuget to get build DLLs ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Download di {0} nuget per ottenere DLL di compilazione ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2521,6 +2527,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.referencedDatabaseType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Referenced Database type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipo di database di riferimento]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

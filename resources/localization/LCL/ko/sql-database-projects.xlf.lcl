@@ -193,6 +193,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.addSqlCmdVariableWithoutDefaultValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add SQLCMD variable '{0}' to project without default value?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQLCMD 변수 '{0}'을(를) 기본값 없이 프로젝트에 추가하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1075,6 +1078,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadingNuget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0} nuget to get build DLLs ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[빌드 DLL을 가져오기 위해 {0} nuget 다운로드 ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2524,6 +2530,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.referencedDatabaseType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Referenced Database type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[참조된 데이터베이스 유형]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
