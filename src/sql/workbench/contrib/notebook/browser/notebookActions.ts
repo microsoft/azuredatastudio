@@ -59,12 +59,6 @@ export const noParameterCell: string = localize('noParametersCell', "This notebo
 export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const untitledNotSupported: string = localize('untitledNotSupported', "Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
-export class ToggleAddCellDropdownAction extends Action {
-	constructor() {
-		super('notebook.toggleAddCell', localize('codeCellsPreview', "Add cell"))
-	}
-}
-
 export abstract class AddCellAction extends Action {
 	public cellType: CellType;
 
