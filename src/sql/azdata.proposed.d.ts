@@ -846,7 +846,7 @@ declare module 'azdata' {
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
 		 * @param telemetryInfo Optional Key-value pair containing any extra information that needs to be sent via telemetry
-		 * @param objectExplorerContext The object explorer context.
+		 * @param objectExplorerContext Optional The context used to refresh Object Explorer after the table is created or edited
 		 */
 		export function openTableDesigner(providerId: string, tableInfo: TableInfo, telemetryInfo?: { [key: string]: string }, objectExplorerContext?: ObjectExplorerContext): Thenable<void>;
 
