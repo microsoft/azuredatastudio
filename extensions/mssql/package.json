@@ -540,12 +540,12 @@
         },
         {
           "command": "mssql.attachDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
           "group": "0_query@4"
         },
         {
           "command": "mssql.detachDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Database && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && config.workbench.enablePreviewFeatures",
           "group": "0_query@4"
         },
         {
