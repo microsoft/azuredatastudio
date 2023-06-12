@@ -39,7 +39,7 @@ export class TableDesignerInput extends EditorInput {
 		private _provider: TableDesignerProvider,
 		tableInfo: azdata.designers.TableInfo,
 		telemetryInfo: { [key: string]: string },
-		objectExplorerContext: azdata.ObjectExplorerContext,
+		objectExplorerContext: azdata.ObjectExplorerContext | undefined,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
