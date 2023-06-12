@@ -946,8 +946,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).disposeTableDesigner(table);
 	}
 
-	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
-		this._proxy.$openTableDesigner(providerId, tableInfo, telemetryInfo);
+	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): Promise<void> {
+		this._proxy.$openTableDesigner(providerId, tableInfo, telemetryInfo, objectExplorerContext);
 		return Promise.resolve();
 	}
 
