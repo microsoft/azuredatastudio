@@ -19,6 +19,7 @@ import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/te
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { TableDesignerMetadata } from 'sql/workbench/services/tableDesigner/browser/tableDesignerMetadata';
 import { Queue, timeout } from 'vs/base/common/async';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Table Designer Error");
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -55,11 +56,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	constructor(private readonly _provider: TableDesignerProvider,
 		public tableInfo: azdata.designers.TableInfo,
 		private _telemetryInfo: ITelemetryEventProperties,
+		private _objectExplorerContext: azdata.ObjectExplorerContext,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService) {
+		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService,
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService) {
 	}
 
 	public designerUIState?: DesignerUIState = undefined;
@@ -138,6 +141,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			sticky: true
 		});
 		const startTime = new Date().getTime();
+		let isPublishSuccessful = false;
+		const isNewTable = this.tableInfo.isNewTable;
 		try {
 			this.updateState(this.valid, this.dirty, 'publish');
 			const result = await this._provider.publishChanges(this.tableInfo);
@@ -152,10 +157,47 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			publishEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).withAdditionalProperties(metadataTelemetryInfo).send();
+			isPublishSuccessful = true;
 		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error), error?.data);
 			this.updateState(this.valid, this.dirty);
 			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges).withAdditionalProperties(telemetryInfo).send();
+		}
+
+		if (isPublishSuccessful) {
+			await this.refreshNodeInOE(isNewTable);
+		}
+	}
+
+	private async refreshNodeInOE(isNewTable: boolean) {
+		if (!this._objectExplorerContext) {
+			return;
+		}
+
+		try {
+			const connectionId = this._objectExplorerContext.connectionProfile?.id;
+			const nodeInfo = this._objectExplorerContext.nodeInfo;
+			const node = await this._objectExplorerService.getTreeNode(connectionId, nodeInfo?.nodePath);
+			let refreshNodePath: string;
+
+			if (isNewTable) {
+				refreshNodePath = nodeInfo?.nodePath;
+			} else {
+				// This handle the case where a user publishes a table then edit the same table within the same designer then publish again. In that case node path in OE context is already correct.
+				if (node?.objectType === 'Tables') {
+					refreshNodePath = nodeInfo?.nodePath
+				} else {
+					refreshNodePath = nodeInfo?.parentNodePath;
+				}
+			}
+
+			await this._objectExplorerService.refreshNodeInView(connectionId, refreshNodePath);
+		} catch (error) {
+			const errorMessage = localize({
+				key: 'tableDesigner.refreshOEError',
+				comment: ['{0}: error message.']
+			}, "An error occurred while refreshing the object explorer. {0}", error);
+			this._notificationService.error(errorMessage);
 		}
 	}
 
