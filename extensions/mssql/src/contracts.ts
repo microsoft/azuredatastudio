@@ -1624,7 +1624,8 @@ export namespace SearchObjectRequest {
 }
 
 export interface DetachDatabaseRequestParams {
-
+	connectionUri: string;
+	objectUrn: string;
 }
 
 export namespace DetachDatabaseRequest {

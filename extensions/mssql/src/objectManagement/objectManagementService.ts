@@ -67,7 +67,7 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	}
 
 	async detachDatabase(connectionUri: string, objectUrn: string): Promise<void> {
-		const params: contracts.DetachDatabaseRequestParams = {};
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 }
