@@ -77,7 +77,7 @@ describe('Azure Authentication', function () {
 			tenantId: 'test',
 			username: 'test',
 			localAccountId: 'test'
-		}
+		} as AccountInfo;
 
 
 		mockAccessToken = {
