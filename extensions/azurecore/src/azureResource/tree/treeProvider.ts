@@ -66,6 +66,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	private async loadAccounts(): Promise<void> {
 		try {
+			this.accounts = await azdata.accounts.getAllAccounts();
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);
