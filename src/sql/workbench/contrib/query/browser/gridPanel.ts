@@ -33,7 +33,7 @@ import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/acti
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IAction, Separator } from 'vs/base/common/actions';
+import { IAction, Separator, toAction } from 'vs/base/common/actions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
@@ -48,7 +48,7 @@ import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationHandle, INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
@@ -59,7 +59,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { GridRange } from 'sql/base/common/gridRange';
-import { debounce } from 'vs/base/common/decorators';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -375,7 +375,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 	private filterPlugin: HeaderFilter<T>;
 	private isDisposed: boolean = false;
 	private gridConfig: IResultGridConfiguration;
-	private selectionChangeHandlerToken: CancellationTokenSource | undefined;
+	private selectionChangeHandlerTokenSource: CancellationTokenSource | undefined;
 
 	private columns: Slick.Column<T>[];
 
@@ -766,7 +766,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		this._state = val;
 	}
 
-	private async getRowData(start: number, length: number, cancellationToken?: CancellationToken): Promise<ICellValue[][]> {
+	private async getRowData(start: number, length: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ICellValue[][]> {
 		let subset;
 		if (this.dataProvider.isDataInMemory) {
 			// handle the scenario when the data is sorted/filtered,
@@ -774,47 +774,103 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			const data = await this.dataProvider.getRangeAsync(start, length);
 			subset = data.map(item => Object.keys(item).map(key => item[key]));
 		} else {
-			subset = (await this.gridDataProvider.getRowData(start, length, cancellationToken)).rows;
+			subset = (await this.gridDataProvider.getRowData(start, length, cancellationToken, onProgressCallback)).rows;
 		}
 		return subset;
 	}
 
-	@debounce(100)
 	private async handleTableSelectionChange(): Promise<void> {
-		if (this.selectionChangeHandlerToken) {
-			this.selectionChangeHandlerToken.cancel();
+		if (this.selectionChangeHandlerTokenSource) {
+			this.selectionChangeHandlerTokenSource.cancel();
 		}
-		this.selectionChangeHandlerToken = new CancellationTokenSource();
-		await this.notifyTableSelectionChanged(this.selectionChangeHandlerToken);
+		this.selectionChangeHandlerTokenSource = new CancellationTokenSource();
+		await this.notifyTableSelectionChanged(this.selectionChangeHandlerTokenSource);
 	}
 
-	private async notifyTableSelectionChanged(cancellationToken: CancellationTokenSource): Promise<void> {
-		const selectedCells = [];
+	private async notifyTableSelectionChanged(cancellationTokenSource: CancellationTokenSource): Promise<void> {
 		const gridRanges = GridRange.fromSlickRanges(this.state.selection ?? []);
 		const rowRanges = GridRange.getUniqueRows(gridRanges);
 		const columnRanges = GridRange.getUniqueColumns(gridRanges);
 		const rowCount = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
-		if (rowCount > 1000) {
-			// TODO confirm and provide cancel
+		const runAction = async (proceed: boolean) => {
+			const selectedCells = [];
+			if (proceed && !cancellationTokenSource.token.isCancellationRequested) {
+				let notificationHandle: INotificationHandle = undefined;
+				const timeout = setTimeout(() => {
+					notificationHandle = this.notificationService.notify({
+						message: localize('resultsGrid.loadingData', "Loading selected rows for calculation..."),
+						severity: Severity.Info,
+						progress: {
+							infinite: true
+						},
+						actions: {
+							primary: [
+								toAction({
+									id: 'cancelLoadingCells',
+									label: localize('resultsGrid.cancel', "Cancel"),
+									run: () => {
+										cancellationTokenSource.cancel();
+										notificationHandle.close();
+									}
+								})]
+						}
+					});
+				}, 1000);
+				this.queryModelService.notifyCellSelectionChanged([]);
+				let rowsInProcessedRanges = 0;
+				for (const range of rowRanges) {
+					if (cancellationTokenSource.token.isCancellationRequested) {
+						break;
+					}
+					const rows = await this.getRowData(range.start, range.end - range.start + 1, cancellationTokenSource.token, (availableRows: number) => {
+						notificationHandle?.updateMessage(localize('resultsGrid.loadingDataWithProgress', "Loading selected rows for calculation ({0}/{1})...", rowsInProcessedRanges + availableRows, rowCount));
+					});
+					rows.forEach((row, rowIndex) => {
+						columnRanges.forEach(cr => {
+							for (let i = cr.start; i <= cr.end; i++) {
+								if (this.state.selection.some(selection => selection.contains(rowIndex + range.start, i))) {
+									// need to reduce the column index by 1 because we have row number column which is not available in the actual data
+									selectedCells.push(row[i - 1]);
+								}
+							}
+						});
+					});
+					rowsInProcessedRanges += range.end - range.start + 1;
+				}
+				clearTimeout(timeout);
+				notificationHandle?.close();
+			}
+			cancellationTokenSource.dispose();
+			if (!cancellationTokenSource.token.isCancellationRequested) {
+				this.queryModelService.notifyCellSelectionChanged(selectedCells);
+			}
+		};
+		const showPromptConfigValue = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.promptForLargeRowSelection;
+		if (this.options.inMemoryDataCountThreshold && rowCount > this.options.inMemoryDataCountThreshold && showPromptConfigValue) {
+			this.notificationService.prompt(Severity.Warning, localize('resultsGrid.largeRowSelectionPrompt.', 'You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?', rowCount), [
+				{
+					label: localize('resultsGrid.confirmLargeRowSelection', "Yes"),
+					run: async () => {
+						await runAction(true);
+					}
+				}, {
+					label: localize('resultsGrid.cancelLargeRowSelection', "Cancel"),
+					run: async () => {
+						await runAction(false);
+					}
+				}, {
+					label: localize('resultsGrid.donotShowLargeRowSelectionPromptAgain', "Don't show again"),
+					run: async () => {
+						this.configurationService.updateValue('queryEditor.results.promptForLargeRowSelection', false).catch(e => onUnexpectedError(e));
+						await runAction(true);
+					},
+					isSecondary: true
+				}
+			]);
+		} else {
+			runAction(true);
 		}
 		// todo test the restore page scenario
-
-		// if canceled, dispose token and return empty
-		for (const range of this.state.selection) {
-			const rows = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1, cancellationToken.token);
-			rows.forEach((row, rowIndex) => {
-				columnRanges.forEach(cr => {
-					for (let i = cr.start; i <= cr.end; i++) {
-						if (this.state.selection.some(selection => selection.contains(rowIndex + range.fromRow, i))) {
-							// need to reduce the column index by 1 because we have row number column which is not available in the actual data
-							selectedCells.push(row[i - 1]);
-						}
-					}
-				});
-			});
-		}
-		cancellationToken.dispose();
-		this.queryModelService.notifyCellSelectionChanged(selectedCells);
 	}
 
 	private async onTableClick(event: ITableMouseEvent) {

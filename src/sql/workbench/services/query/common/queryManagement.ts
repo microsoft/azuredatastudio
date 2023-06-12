@@ -294,7 +294,7 @@ export class QueryManagementService implements IQueryManagementService {
 				if (onProgressCallback) {
 					onProgressCallback(start - rowData.rowsStartIndex);
 				}
-			} while (start < rowData.rowsStartIndex + rowData.rowsCount && (!!cancellationToken || !cancellationToken.isCancellationRequested));
+			} while (start < rowData.rowsStartIndex + rowData.rowsCount && (cancellationToken === undefined || !cancellationToken.isCancellationRequested));
 			if (cancellationToken?.isCancellationRequested) {
 				this._logService.trace(`Stop getting more rows since cancellation has been requested.`);
 			} else {

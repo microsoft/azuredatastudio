@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IGridPosition, GridPosition } from 'sql/base/common/gridPosition';
+import { IRange } from 'vs/base/common/range';
 import { isNumber } from 'vs/base/common/types';
 
 /**
@@ -26,20 +27,6 @@ export interface IGridRange {
 	 * Column on which the range ends in line `endRow`.
 	 */
 	readonly endColumn: number;
-}
-
-/**
- * An one dimensional range
- */
-export interface OneDimensionalRange {
-	/**
-	 * Start position
-	 */
-	start: number;
-	/**
-	 * End position
-	 */
-	end: number;
 }
 
 /**
@@ -397,15 +384,15 @@ export class GridRange {
 	 * @param ranges the ranges to be merged
 	 * @param mergeRows whether to merge the rows or columns.
 	 */
-	private static mergeRanges(ranges: IGridRange[], mergeRows: boolean): OneDimensionalRange[] {
-		let sourceRanges: OneDimensionalRange[] = ranges.map(r => {
+	private static mergeRanges(ranges: IGridRange[], mergeRows: boolean): IRange[] {
+		let sourceRanges: IRange[] = ranges.map(r => {
 			if (mergeRows) {
 				return { start: r.startRow, end: r.endRow };
 			} else {
 				return { start: r.startColumn, end: r.endColumn };
 			}
 		});
-		const mergedRanges: OneDimensionalRange[] = [];
+		const mergedRanges: IRange[] = [];
 		sourceRanges = sourceRanges.sort((s1, s2) => { return s1.start - s2.start; });
 		sourceRanges.forEach(range => {
 			let merged = false;
@@ -427,14 +414,14 @@ export class GridRange {
 	/**
 	 * Gets the unique row ranges.
 	 */
-	public static getUniqueRows(ranges: IGridRange[]): OneDimensionalRange[] {
+	public static getUniqueRows(ranges: IGridRange[]): IRange[] {
 		return GridRange.mergeRanges(ranges, true);
 	}
 
 	/**
 	 * Gets the unique column ranges.
 	 */
-	public static getUniqueColumns(ranges: IGridRange[]): OneDimensionalRange[] {
+	public static getUniqueColumns(ranges: IGridRange[]): IRange[] {
 		return GridRange.mergeRanges(ranges, false);
 	}
 }
