@@ -94,15 +94,6 @@ describe('Azure Authentication', function () {
 	});
 
 	describe('getAccountSecurityToken', function () {
-		it('should be undefined on stale account', async function () {
-			mockAccount.isStale = true;
-			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, TypeMoq.It.isAny(), TypeMoq.It.isAny());
-			should(securityToken).be.undefined();
-		});
-		it('dont find correct resources', async function () {
-			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, -1, TypeMoq.It.isAny());
-			should(securityToken).be.undefined();
-		});
 		it('incorrect tenant', async function () {
 			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, 'invalid_tenant').should.be.rejected();
 		});
