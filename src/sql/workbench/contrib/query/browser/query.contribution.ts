@@ -427,7 +427,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		'queryEditor.results.promptForLargeRowSelection': {
 			'type': 'boolean',
 			'default': true,
-			'description': localize('queryEditor.results.promptForLargeRowSelection', "Whether to show the a confirmation when user has selected rows that are more than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.")
+			'description': localize('queryEditor.results.promptForLargeRowSelection', "When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.")
 		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
