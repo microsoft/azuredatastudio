@@ -261,7 +261,7 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
-				await service.detachDatabase(connectionUri, context.nodeInfo!.metadata!.urn);
+				await service.detachDatabase(connectionUri, context.nodeInfo!.metadata!.urn, false, false);
 				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DetachDatabase, {
 					objectType: 'Database'
 				}, {
