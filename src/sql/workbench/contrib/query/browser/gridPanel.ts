@@ -870,7 +870,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		} else {
 			runAction(true);
 		}
-		// todo test the restore page scenario
 	}
 
 	private async onTableClick(event: ITableMouseEvent) {
