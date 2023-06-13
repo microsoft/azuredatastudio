@@ -279,29 +279,9 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}
-	if (e.affectsConfiguration('azure.authenticationLibrary')) {
-		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
-			void vscode.window.showInformationMessage(loc.deprecatedOption);
-		}
-		await displayReloadAds();
-	}
 }
 
 function updatePiiLoggingLevel(): void {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
-}
-
-// Display notification with button to reload
-// return true if button clicked
-// return false if button not clicked
-async function displayReloadAds(): Promise<boolean> {
-	const result = await vscode.window.showInformationMessage(loc.reloadPrompt, loc.reloadChoice);
-	if (result === loc.reloadChoice) {
-		await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		return true;
-	} else {
-		return false;
-	}
-
 }

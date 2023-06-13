@@ -9,8 +9,6 @@ export const AccountsSection = 'accounts';
 
 export const AuthSection = 'auth';
 
-export const AuthenticationLibrarySection = 'authenticationLibrary';
-
 export const AzureSection = 'azure';
 
 export const AzureAccountProviderCredentials = 'azureAccountProviderCredentials';
@@ -26,8 +24,6 @@ export const AccountsClearTokenCacheCommand = AccountsSection + '.' + ClearToken
 export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '.' + AuthSection;
 
 export const AccountsAzureCloudSection = AccountsSection + '.' + AzureSection + '.' + CloudSection;
-
-export const AzureAuthenticationLibrarySection = AzureSection + '.' + AuthenticationLibrarySection;
 
 export const EnableArcFeaturesSection = 'enableArcFeatures';
 

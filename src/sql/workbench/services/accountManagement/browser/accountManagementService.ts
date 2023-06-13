@@ -574,10 +574,6 @@ export class AccountManagementService implements IAccountManagementService {
 			if (accountToFind.key.accountId.includes('.')) {
 				return account.key.accountId === accountToFind!.key.accountId.split('.')[0];
 			}
-			// ADAL account added
-			if (account.key.accountId.includes('.')) {
-				return account.key.accountId.split('.')[0] === accountToFind!.key.accountId;
-			}
 			return account.key.accountId === accountToFind!.key.accountId;
 		});
 		return indexToRemove;

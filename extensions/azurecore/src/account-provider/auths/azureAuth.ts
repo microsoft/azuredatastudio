@@ -19,9 +19,7 @@ import { Deferred } from '../interfaces';
 import * as url from 'url';
 import * as Constants from '../../constants';
 import { MemoryDatabase } from '../utils/memoryDatabase';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
-import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
 import { AccountInfo, AuthError, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 import { HttpClient } from './httpClient';
@@ -466,22 +464,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region network functions
-	public async makePostRequest(url: string, postData: AuthorizationCodePostData | TokenPostData | DeviceCodeStartPostData | DeviceCodeCheckPostData): Promise<AxiosResponse<any>> {
-		const config: AxiosRequestConfig = {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			},
-			validateStatus: () => true // Never throw
-		};
-
-		// Intercept response and print out the response for future debugging
-		const response = await axios.post(url, qs.stringify(postData), config);
-		// ADAL is being deprecated so just ignoring these for now
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		Logger.piiSanitized('POST request ', [{ name: 'data', objOrArray: postData }, { name: 'response', objOrArray: response.data }], [], url);
-		return response;
-	}
-
 
 	//#endregion
 

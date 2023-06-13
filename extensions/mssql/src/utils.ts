@@ -22,8 +22,6 @@ const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
-const azureExtensionConfigName = 'azure';
-const azureAuthenticationLibraryConfig = 'authenticationLibrary';
 /**
  *
  * @returns Whether the current OS is linux or not
@@ -65,16 +63,6 @@ export function removeOldLogFiles(logPath: string, prefix: string): JSON {
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(config);
-}
-/**
- * We need Azure core extension configuration for fetching Authentication Library setting in use.
- * This is required for 'enableSqlAuthenticationProvider' to be enabled (as it applies to MSAL only).
- * This can be removed in future when ADAL support is dropped.
- * @param config Azure core extension configuration section name
- * @returns Azure core extension config section
- */
-export function getAzureCoreExtConfiguration(config: string = azureExtensionConfigName): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(config);
 }
 
@@ -150,16 +138,6 @@ export function getParallelMessageProcessingConfig(): boolean {
 	}
 	const setting = config.inspect(parallelMessageProcessingConfig);
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
-}
-
-export function getAzureAuthenticationLibraryConfig(): string {
-	const config = getAzureCoreExtConfiguration();
-	if (config) {
-		return config.get<string>(azureAuthenticationLibraryConfig, 'MSAL'); // default Auth library
-	}
-	else {
-		return 'MSAL';
-	}
 }
 
 export function getEnableSqlAuthenticationProviderConfig(): boolean {

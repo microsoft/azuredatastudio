@@ -26,8 +26,6 @@ export const passwordChars = '***************';
 
 export const enableSqlAuthenticationProviderConfig = 'mssql.enableSqlAuthenticationProvider';
 
-/** Configuration for Azure Authentication Library */
-export const azureAuthenticationLibraryConfig = 'azure.authenticationLibrary';
 
 /* default authentication type setting name*/
 export const defaultAuthenticationType = 'defaultAuthenticationType';

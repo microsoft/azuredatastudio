@@ -11,7 +11,6 @@ import { Token, TokenClaims, AccessToken, RefreshToken } from '../../../account-
 import { Tenant, AzureAccount } from 'azurecore';
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
-import { AxiosResponse } from 'axios';
 import { AuthenticationResult } from '@azure/msal-common';
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
@@ -121,22 +120,6 @@ describe('Azure Authentication', function () {
 
 			should(securityToken?.tokenType).be.equal('Bearer', 'tokenType should be bearer on a successful getSecurityToken from cache');
 		});
-	});
-
-	describe('getToken', function () {
-
-		it('unknown error should throw error', async function () {
-			azureAuthCodeGrant.setup(x => x.makePostRequest(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-				return Promise.resolve({
-					data: {
-						error: 'unknown error'
-					}
-				} as AxiosResponse<any>);
-			});
-
-			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id).should.be.rejected();
-		});
-
 	});
 
 });
