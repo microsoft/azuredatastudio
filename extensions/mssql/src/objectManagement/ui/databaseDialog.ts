@@ -64,7 +64,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			], false);
 
 			const propertiesTabGroup = { title: '', tabs: [this.generalTab] };
-			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel().withTabs([propertiesTabGroup]).component();
+			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
+				.withTabs([propertiesTabGroup])
+				.withProps({
+					CSSStyles: {
+						'margin-top': '-10px'
+					}
+				})
+				.component();
 			this.formContainer.addItem(propertiesTabbedPannel);
 		}
 	}
