@@ -439,6 +439,10 @@ export interface Database extends ObjectManagement.SqlObject {
 	sizeInMb?: string;
 	spaceAvailableInMb?: string;
 	status?: string;
+	azureBackupRedundancyLevel?: string;
+	azureServiceLevelObjective?: string;
+	azureEdition?: string;
+	azureMaxSize?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -447,4 +451,15 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels: string[];
 	containmentTypes: string[];
 	recoveryModels: string[];
+
+	isAzureDB: boolean;
+	azureBackupRedundancyLevels: string[];
+	azureServiceLevelObjectives: AzureEditionDetails[];
+	azureEditions: string[];
+	azureMaxSizes: AzureEditionDetails[];
+}
+
+export interface AzureEditionDetails {
+	editionDisplayName: string;
+	details: string[];
 }
