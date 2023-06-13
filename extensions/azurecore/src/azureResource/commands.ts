@@ -97,14 +97,20 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 	});
 
 	// Resource Tree commands
-
+	// Supports selecting subscriptions from single tenant account tree nodes or tenant tree node.
 	vscode.commands.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
-		if (!(node instanceof AzureResourceTenantTreeNode) && !(node instanceof FlatTenantTreeNode)) {
+		if (!(node instanceof AzureResourceAccountTreeNode) && !(node instanceof FlatAccountTreeNode)
+			&& !(node instanceof AzureResourceTenantTreeNode) && !(node instanceof FlatTenantTreeNode)) {
 			return;
 		}
 
 		const account = node.account;
-		const tenant = node.tenant;
+
+		// Select first tenant from single tenant accounts
+		let tenant = node.account.properties.tenants[0];
+		if (node instanceof AzureResourceTenantTreeNode || node instanceof FlatTenantTreeNode) {
+			tenant = node.tenant;
+		}
 		if (!account || !tenant) {
 			return;
 		}
@@ -115,7 +121,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		let subscriptions: azureResource.AzureResourceSubscription[] = [];
 		if (subscriptions.length === 0) {
 			try {
-				let tenantIds = node.tenant ? [node.tenant.id] : account.properties.tenants.flatMap(t => t.id);
+				let tenantIds = tenant ? [tenant.id] : account.properties.tenants.flatMap(t => t.id);
 				subscriptions = await subscriptionService.getSubscriptions(account, tenantIds);
 			} catch (error) {
 				account.isStale = true;
@@ -124,7 +130,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 			}
 		}
 
-		let selectedSubscriptions = await subscriptionFilterService.getSelectedSubscriptions(account, node.tenant);
+		let selectedSubscriptions = await subscriptionFilterService.getSelectedSubscriptions(account, tenant);
 		if (!selectedSubscriptions) {
 			selectedSubscriptions = [];
 		}
@@ -221,7 +227,8 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 	});
 
 	vscode.commands.registerCommand('azure.resource.connectiondialog.refresh', async (node?: TreeNode) => {
-		return connectionDialogTree.refresh(node, true);
+		await connectionDialogTree.refresh(node, true); // clear cache first
+		return connectionDialogTree.refresh(node, false);
 	});
 
 	vscode.commands.registerCommand('azure.resource.signin', async (node?: TreeNode) => {

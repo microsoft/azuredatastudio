@@ -142,7 +142,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		const treeItem = await accountTreeNode.getTreeItem();
 		should(treeItem.id).equal(accountTreeNodeId);
 		should(treeItem.label).equal(mockAccount.displayInfo.displayName);
-		should(treeItem.contextValue).equal(AzureResourceItemType.account);
+		should(treeItem.contextValue).equal(AzureResourceItemType.multipleTenantAccount);
 		should(treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 
 		const nodeInfo = accountTreeNode.getNodeInfo();
@@ -309,7 +309,8 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount, mockTenant)).returns(() => Promise.resolve([]));
 
-		const tenantTreeNode = new AzureResourceTenantTreeNode(mockAccount, mockTenant, mockAppContext, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
+		const tenantTreeNode = new AzureResourceTenantTreeNode(mockAccount, mockTenant, accountTreeNode, mockAppContext, mockTreeChangeHandler.object);
 		const children = await tenantTreeNode.getChildren();
 
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -359,7 +360,8 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 	it('Should handle when there is no subscriptions.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
-		const tenantTreeNode = new AzureResourceTenantTreeNode(mockAccount, mockTenant, mockAppContext, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
+		const tenantTreeNode = new AzureResourceTenantTreeNode(mockAccount, mockTenant, accountTreeNode, mockAppContext, mockTreeChangeHandler.object);
 		const children = await tenantTreeNode.getChildren();
 
 		should(tenantTreeNode.totalSubscriptionCount).equal(0);
@@ -388,7 +390,8 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	it('Should honor subscription filtering.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockFilteredSubscriptions));
 
-		const tenantTreeNode = new AzureResourceTenantTreeNode(mockAccount, mockTenant, mockAppContext, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
+		const tenantTreeNode = new AzureResourceTenantTreeNode(mockAccount, mockTenant, accountTreeNode, mockAppContext, mockTreeChangeHandler.object);
 		const subscriptions = await tenantTreeNode.getChildren();
 
 		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny()), TypeMoq.Times.once());

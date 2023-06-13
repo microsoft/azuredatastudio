@@ -5,6 +5,8 @@
 
 export enum AzureResourceItemType {
 	account = 'azure.resource.itemType.account',
+	singleTenantAccount = 'azure.resource.itemType.singleTenantAccount',
+	multipleTenantAccount = 'azure.resource.itemType.multipleTenantAccount',
 	subscription = 'azure.resource.itemType.subscription',
 	tenant = 'azure.resource.itemType.tenant',
 	databaseContainer = 'azure.resource.itemType.databaseContainer',

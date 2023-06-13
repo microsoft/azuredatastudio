@@ -21,71 +21,109 @@ import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
+import { FlatAccountTreeNode } from './flatAccountTreeNode';
 
 export class FlatTenantTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
 		public readonly account: AzureAccount,
 		public readonly tenant: Tenant,
+		private readonly parentNode: FlatAccountTreeNode | undefined,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 	) {
-		super(appContext, treeChangeHandler, undefined);
+		super(appContext, treeChangeHandler, parentNode);
 
 		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
 		this._resourceService = this.appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
 
-		this._id = `account_${this.account.key.accountId}_tenant_${tenant.id}`;
+		this._id = `account_${this.account.key.accountId}.tenant_${tenant.id}`;
 		this.setCacheKey(`${this._id}.dataresources`);
-		this._label = tenant.displayName;
-		this._loader = new FlatTenantTreeNodeLoader(appContext, this._resourceService, this._subscriptionService, this._subscriptionFilterService, this.account, this.tenant, this);
-		this._loader.onNewResourcesAvailable(() => {
-			this.treeChangeHandler.notifyNodeChanged(this);
-		});
-
-		this._loader.onLoadingStatusChanged(async () => {
-			await this.updateLabel();
-			this.treeChangeHandler.notifyNodeChanged(this);
-		});
-	}
-
-	public async updateLabel(): Promise<void> {
-		const subscriptionInfo = await getSubscriptionInfo(this.account, this.tenant, this._subscriptionService, this._subscriptionFilterService);
-		if (this._loader.isLoading) {
-			this._label = localize('azure.resource.tree.tenantTreeNode.titleLoading', "{0} - Loading...", this.tenant.displayName);
-		} else if (subscriptionInfo.total !== 0) {
-			this._label = localize({
-				key: 'azure.resource.tree.tenantTreeNode.title',
-				comment: [
-					'{0} is the display name of the azure tenant',
-					'{1} is the number of selected subscriptions in this tenant',
-					'{2} is the number of total subscriptions in this tenant'
-				]
-			}, "{0} ({1}/{2} subscriptions)", this.tenant.displayName, subscriptionInfo.selected, subscriptionInfo.total);
-		} else {
-			this._label = this.tenant.displayName;
-		}
+		this._label = this.generateLabel();
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
-		if (this._isClearingCache) {
-			this._loader.start().catch(err => console.error('Error loading Azure FlatTenantTreeNode ', err));
-			this._isClearingCache = false;
-			return [];
-		} else {
-			return this._loader.nodes;
+		try {
+			let nodesResult: TreeNode[] = [];
+			let subscriptions: azureResource.AzureResourceSubscription[] = [];
+			if (this._isClearingCache) {
+				subscriptions = await this._subscriptionService.getSubscriptions(this.account, [this.tenant.id]);
+				await this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
+			} else {
+				subscriptions = await this.getCachedSubscriptions();
+			}
+
+			this._totalSubscriptionCount = subscriptions.length;
+
+			const allSubscriptions = await this._subscriptionFilterService.getSelectedSubscriptions(this.account, this.tenant);
+			const selectedSubscriptions = allSubscriptions?.filter(subscription => subscription.tenant === this.tenant.id);
+			const selectedSubscriptionIds = (selectedSubscriptions || <azureResource.AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
+			if (selectedSubscriptionIds.length > 0) {
+				subscriptions = subscriptions.filter((subscription) => selectedSubscriptionIds.indexOf(subscription.id) !== -1);
+				this._selectedSubscriptionCount = selectedSubscriptionIds.length;
+			} else {
+				// ALL subscriptions are listed by default
+				this._selectedSubscriptionCount = this._totalSubscriptionCount;
+			}
+
+			this.refreshLabel();
+
+			if (this._isClearingCache) {
+				this._isClearingCache = false;
+				return [];
+			}
+
+			if (subscriptions.length === 0) {
+				nodesResult = [AzureResourceMessageTreeNode.create(FlatTenantTreeNode.noSubscriptionsLabel, this)];
+			} else {
+				let _nodes: AzureResourceResourceTreeNode[] = [];
+				const resources = await this._resourceService.getAllChildren(this.account, subscriptions, true);
+				if (resources?.length > 0) {
+					_nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this.parentNode ?? this, this.appContext)));
+					_nodes = _nodes.sort((a, b) => {
+						return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
+					});
+				}
+				nodesResult = _nodes;
+			}
+
+			return nodesResult;
+		} catch (error) {
+			if (error instanceof AzureSubscriptionError) {
+				void vscode.commands.executeCommand('azure.resource.signin');
+			}
+			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}
+	}
+
+	public async getCachedSubscriptions(): Promise<azureResource.AzureResourceSubscription[]> {
+		return this.getCache<azureResource.AzureResourceSubscription[]>() ?? [];
 	}
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
 		const item = new vscode.TreeItem(this._label, vscode.TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
 		item.contextValue = AzureResourceItemType.tenant;
-		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/type_hierarchy_inverse.svg'),
-			light: this.appContext.extensionContext.asAbsolutePath('resources/light/type_hierarchy.svg')
-		};
+		item.iconPath = this.appContext.extensionContext.asAbsolutePath('resources/tenant.svg');
 		return item;
+	}
+
+	protected refreshLabel(): void {
+		const newLabel = this.generateLabel();
+		if (this._label !== newLabel) {
+			this._label = newLabel;
+			this.treeChangeHandler.notifyNodeChanged(this);
+		}
+	}
+
+	private generateLabel(): string {
+		let label = this.tenant.displayName;
+
+		if (this._totalSubscriptionCount !== 0) {
+			label += ` (${this._selectedSubscriptionCount} / ${this._totalSubscriptionCount} subscriptions)`;
+		}
+
+		return label;
 	}
 
 	public getNodeInfo(): azdata.NodeInfo {
@@ -110,12 +148,16 @@ export class FlatTenantTreeNode extends AzureResourceContainerTreeNodeBase {
 	private _subscriptionService: IAzureResourceSubscriptionService;
 	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService;
 	private _resourceService: AzureResourceService;
-	private _loader: FlatTenantTreeNodeLoader;
+
 	private _id: string;
 	private _label: string;
+	public _totalSubscriptionCount = 0;
+	public _selectedSubscriptionCount = 0;
+
+	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', "No Subscriptions found.");
 }
 
-async function getSubscriptionInfo(account: AzureAccount, tenant: Tenant, subscriptionService: IAzureResourceSubscriptionService, subscriptionFilterService: IAzureResourceSubscriptionFilterService): Promise<{
+export async function getSubscriptionInfo(account: AzureAccount, tenant: Tenant, subscriptionService: IAzureResourceSubscriptionService, subscriptionFilterService: IAzureResourceSubscriptionFilterService): Promise<{
 	subscriptions: azureResource.AzureResourceSubscription[],
 	total: number,
 	selected: number
@@ -135,77 +177,4 @@ async function getSubscriptionInfo(account: AzureAccount, tenant: Tenant, subscr
 		total,
 		selected
 	};
-}
-class FlatTenantTreeNodeLoader {
-
-	private _isLoading: boolean = false;
-	private _nodes: TreeNode[] = [];
-	private readonly _onNewResourcesAvailable = new vscode.EventEmitter<void>();
-	public readonly onNewResourcesAvailable = this._onNewResourcesAvailable.event;
-	private readonly _onLoadingStatusChanged = new vscode.EventEmitter<void>();
-	public readonly onLoadingStatusChanged = this._onLoadingStatusChanged.event;
-
-	constructor(private readonly appContext: AppContext,
-		private readonly _resourceService: AzureResourceService,
-		private readonly _subscriptionService: IAzureResourceSubscriptionService,
-		private readonly _subscriptionFilterService: IAzureResourceSubscriptionFilterService,
-		private readonly _account: AzureAccount,
-		private readonly _tenant: Tenant,
-		private readonly _tenantNode: TreeNode) {
-	}
-
-	public get isLoading(): boolean {
-		return this._isLoading;
-	}
-
-	public get nodes(): TreeNode[] {
-		return this._nodes;
-	}
-
-	public async start(): Promise<void> {
-		if (this._isLoading) {
-			return;
-		}
-		this._isLoading = true;
-		this._nodes = [];
-		this._onLoadingStatusChanged.fire();
-		let newNodesAvailable = false;
-
-		// Throttle the refresh events to at most once per 500ms
-		const refreshHandle = setInterval(() => {
-			if (newNodesAvailable) {
-				this._onNewResourcesAvailable.fire();
-				newNodesAvailable = false;
-			}
-			if (!this.isLoading) {
-				clearInterval(refreshHandle);
-			}
-		}, 500);
-		try {
-			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._tenant, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
-			const resources = await this._resourceService.getAllChildren(this._account, subscriptions, true);
-			if (resources?.length > 0) {
-				this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._tenantNode, this.appContext)));
-				this._nodes = this.nodes.sort((a, b) => {
-					return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
-				});
-				newNodesAvailable = true;
-			}
-			// Create "No Resources Found" message node if no resources found under azure account.
-			if (this._nodes.length === 0) {
-				this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatTenantTreeNode.noResourcesLabel', "No Resources found."), this._tenantNode));
-			}
-		} catch (error) {
-			if (error instanceof AzureSubscriptionError) {
-				void vscode.commands.executeCommand('azure.resource.signin');
-			}
-			// http status code 429 means "too many requests"
-			// use a custom error message for azure resource graph api throttling error to make it more actionable for users.
-			const errorMessage = error?.statusCode === 429 ? localize('azure.resource.throttleerror', "Requests from this tenant have been throttled. To retry, please select a smaller number of subscriptions.") : AzureResourceErrorMessageUtil.getErrorMessage(error);
-			void vscode.window.showErrorMessage(localize('azure.resource.tree.loadresourceerror', "An error occurred while loading Azure resources: {0}", errorMessage));
-		}
-
-		this._isLoading = false;
-		this._onLoadingStatusChanged.fire();
-	}
 }

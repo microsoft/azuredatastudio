@@ -30,55 +30,66 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 		this._tenantFilterService = this.appContext.getService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService);
 
 		this._id = `account_${this.account.key.accountId}`;
-		this.setCacheKey(`${this._id}.dataresources`);
-		this._label = account.displayInfo.displayName;
-		this._loader = new FlatAccountTreeNodeLoader(appContext, this.account, this, this.treeChangeHandler);
-		this._loader.onNewResourcesAvailable(() => {
-			this.treeChangeHandler.notifyNodeChanged(this);
-		});
-
-		this._loader.onLoadingStatusChanged(async () => {
-			await this.updateLabel();
-			this.treeChangeHandler.notifyNodeChanged(this);
-		});
-	}
-
-	public async updateLabel(): Promise<void> {
-		const tenantInfo = await getTenantInfo(this.account, this._tenantFilterService);
-		if (this._loader.isLoading) {
-			this._label = localize('azure.resource.tree.accountTreeNode.titleLoading', "{0} - Loading...", this.account.displayInfo.displayName);
-		} else if (tenantInfo.total !== 0) {
-			this._label = localize({
-				key: 'azure.resource.tree.accountTreeNode.title',
-				comment: [
-					'{0} is the display name of the azure account',
-					'{1} is the number of selected tenants in this account',
-					'{2} is the number of total tenants in this account'
-				]
-			}, "{0} ({1}/{2} tenants)", this.account.displayInfo.displayName, tenantInfo.selected, tenantInfo.total);
-		} else {
-			this._label = this.account.displayInfo.displayName;
+		this.setCacheKey(`${this._id}.tenants`);
+		if (this.account.properties.tenants.length === 1) {
+			this._singleTenantTreeNode = new FlatTenantTreeNode(this.account, this.account.properties.tenants[0], this, this.appContext, this.treeChangeHandler);
 		}
+		this._label = this.generateLabel();
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
+		let nodesResult: TreeNode[] = [];
+		let tenants = this.account.properties.tenants;
+		this._totalTenantsCount = tenants.length;
+
+		const selectedTenants = await this._tenantFilterService.getSelectedTenants(this.account);
+		const selectedTenantIds = (selectedTenants || <Tenant[]>[]).map((Tenant) => Tenant.id);
+
+		if (selectedTenantIds.length > 0) {
+			tenants = tenants.filter((tenant) => selectedTenantIds.indexOf(tenant.id) !== -1);
+			this._selectedTenantsCount = selectedTenantIds.length;
+		} else {
+			// ALL Tenants are listed by default
+			this._selectedTenantsCount = this._totalTenantsCount;
+		}
+
+		this.refreshLabel();
+
+		if (this._totalTenantsCount === 1) {
+			if (this._isClearingCache) {
+				await this._singleTenantTreeNode?.getChildren();
+			} else {
+				nodesResult = await this._singleTenantTreeNode?.getChildren() ?? [];
+			}
+		} else if (tenants.length === 0) {
+			nodesResult = [AzureResourceMessageTreeNode.create(FlatAccountTreeNode.noTenantsLabel, this)];
+		} else {
+			if (!this._multiTenantTreeNodes) {
+				this._multiTenantTreeNodes = await Promise.all(tenants.map(async (tenant) => {
+					let node = new FlatTenantTreeNode(this.account, tenant, undefined, this.appContext, this.treeChangeHandler);
+					return node;
+				}));
+			}
+			nodesResult = this._multiTenantTreeNodes.sort((a, b) => a.tenant.displayName.localeCompare(b.tenant.displayName));
+		}
+
 		if (this._isClearingCache) {
-			this._loader.start().catch(err => console.error('Error loading Azure FlatAccountTreeNodes ', err));
+			this._multiTenantTreeNodes?.forEach(node => {
+				node.clearCache();
+			});
 			this._isClearingCache = false;
 			return [];
 		} else {
-			return this._loader.nodes;
+			return nodesResult;
 		}
 	}
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
 		const item = new vscode.TreeItem(this._label, vscode.TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
-		item.contextValue = AzureResourceItemType.account;
-		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/account_inverse.svg'),
-			light: this.appContext.extensionContext.asAbsolutePath('resources/light/account.svg')
-		};
+		item.contextValue = this.account.properties.tenants.length > 1 ?
+			AzureResourceItemType.multipleTenantAccount : AzureResourceItemType.singleTenantAccount;
+		item.iconPath = this.appContext.extensionContext.asAbsolutePath('resources/users.svg');
 		return item;
 	}
 
@@ -101,79 +112,34 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 		return this._id;
 	}
 
+	public refreshLabel(): void {
+		const newLabel = this.generateLabel();
+		if (this._label !== newLabel) {
+			this._label = newLabel;
+			this.treeChangeHandler.notifyNodeChanged(this);
+		}
+	}
+
+	private generateLabel(): string {
+		let label = this.account.displayInfo.displayName;
+
+		if (this._totalTenantsCount === 1 && this._singleTenantTreeNode) {
+			label += ` (${this._singleTenantTreeNode._selectedSubscriptionCount} / ${this._singleTenantTreeNode._totalSubscriptionCount} subscriptions)`;
+		} else if (this._totalTenantsCount > 0) {
+			label += ` (${this._selectedTenantsCount} / ${this._totalTenantsCount} tenants)`;
+		}
+
+		return label;
+	}
+
 	private _tenantFilterService: IAzureResourceTenantFilterService;
-	private _loader: FlatAccountTreeNodeLoader;
+
 	private _id: string;
 	private _label: string;
-}
+	private _totalTenantsCount = 0;
+	private _selectedTenantsCount = 0;
+	private _singleTenantTreeNode: FlatTenantTreeNode | undefined;
+	private _multiTenantTreeNodes: FlatTenantTreeNode[] | undefined;
 
-async function getTenantInfo(account: AzureAccount, tenantFilterService: IAzureResourceTenantFilterService,): Promise<{
-	tenants: Tenant[],
-	total: number,
-	selected: number
-}> {
-	let tenants = account.properties.tenants;
-	const total = tenants.length;
-	let selected = total;
-
-	const selectedTenants = await tenantFilterService.getSelectedTenants(account);
-	const selectedTenantIds = (selectedTenants || <Tenant[]>[]).map((tenant) => tenant.id);
-	if (selectedTenantIds.length > 0) {
-		tenants = tenants.filter((tenant) => selectedTenantIds.indexOf(tenant.id) !== -1);
-		selected = selectedTenantIds.length;
-	}
-	return {
-		tenants,
-		total,
-		selected
-	};
-}
-class FlatAccountTreeNodeLoader {
-
-	private _isLoading: boolean = false;
-	private _nodes: TreeNode[] = [];
-	private readonly _onNewResourcesAvailable = new vscode.EventEmitter<void>();
-	public readonly onNewResourcesAvailable = this._onNewResourcesAvailable.event;
-	private readonly _onLoadingStatusChanged = new vscode.EventEmitter<void>();
-	public readonly onLoadingStatusChanged = this._onLoadingStatusChanged.event;
-
-	constructor(private readonly appContext: AppContext,
-		private readonly _account: AzureAccount,
-		private readonly _tenantNode: TreeNode,
-		private readonly treeChangeHandler: IAzureResourceTreeChangeHandler) {
-	}
-
-	public get isLoading(): boolean {
-		return this._isLoading;
-	}
-
-	public get nodes(): TreeNode[] {
-		return this._nodes;
-	}
-
-	public async start(): Promise<void> {
-		if (this._isLoading) {
-			return;
-		}
-		this._isLoading = true;
-		this._nodes = [];
-		this._onLoadingStatusChanged.fire();
-
-		let tenants = this._account.properties.tenants;
-
-		if (tenants?.length > 0) {
-			this._nodes.push(...tenants.map(tenant => new FlatTenantTreeNode(this._account, tenant, this.appContext, this.treeChangeHandler)));
-			this._nodes = this.nodes.sort((a, b) => {
-				return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
-			});
-		}
-
-		// Create "No Resources Found" message node if no resources found under azure account.
-		if (this._nodes.length === 0) {
-			this._nodes.push(AzureResourceMessageTreeNode.create(localize('azure.resource.flatAccountTreeNode.noTenantsLabel', "No Tenants found."), this._tenantNode))
-		}
-
-		this._isLoading = false;
-		this._onLoadingStatusChanged.fire();
-	}
+	private static readonly noTenantsLabel = localize('azure.resource.tree.accountTreeNode.noTenantsLabel', "No Tenants found.");
 }

@@ -60,7 +60,7 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	treeItem: {
 		id: 'mock_resource_root_node',
 		label: 'mock resource root node',
-		iconPath: undefined,
+		iconPath: '',
 		collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 		contextValue: 'mock_resource_root_node'
 	}
@@ -76,6 +76,7 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 		name: 'mock database server 1',
 		id: 'mock-id-1',
 		provider: DATABASE_SERVER_PROVIDER_ID,
+		tenant: 'mockTenantId',
 		fullName: 'mock database server full name 1',
 		loginName: 'mock login',
 		defaultDatabaseName: 'master',
@@ -89,6 +90,7 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 		name: 'mock database server 2',
 		id: 'mock-id-2',
 		provider: DATABASE_SERVER_PROVIDER_ID,
+		tenant: 'mockTenantId',
 		fullName: 'mock database server full name 2',
 		loginName: 'mock login',
 		defaultDatabaseName: 'master',
@@ -139,7 +141,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 
 		const child = children[0];
 		should(child.id).equal('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer');
-		should(child.label).equal('SQL server');
+		should(child.label).equal('SQL servers');
 		should(child.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 		should(child.contextValue).equal('azure.resource.itemType.databaseServerContainer');
 	});
@@ -159,7 +161,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 			should(child.account).equal(mockAccount);
 			should(child.subscription).equal(mockSubscription);
 			should(child.tenantId).equal(mockTenantId);
-			should(child.treeItem.id).equal(`databaseServer_${mockAccount.key.accountId}${databaseServer.id}`);
+			should(child.treeItem.id).equal(`databaseServer_${mockAccount.key.accountId}${databaseServer.tenant}${databaseServer.id}`);
 			should(child.treeItem.label).equal(databaseServer.name);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 			should(child.treeItem.contextValue).equal(AzureResourceItemType.databaseServer);

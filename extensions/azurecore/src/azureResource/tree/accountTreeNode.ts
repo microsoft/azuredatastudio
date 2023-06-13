@@ -28,6 +28,9 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		super(appContext, treeChangeHandler, undefined);
 		this._tenantFilterService = this.appContext.getService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService);
 
+		if (this.account.properties.tenants.length === 1) {
+			this._singleTenantTreeNode = new AzureResourceTenantTreeNode(this.account, this.account.properties.tenants[0], this, this.appContext, this.treeChangeHandler);
+		}
 		this._id = `account_${this.account.key.accountId}`;
 		this.setCacheKey(`${this._id}.tenants`);
 		this._label = this.generateLabel();
@@ -50,11 +53,13 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 		this.refreshLabel();
 
-		if (tenants.length === 0) {
+		if (this.totalTenantsCount === 1) {
+			return await this._singleTenantTreeNode?.getChildren() ?? [];
+		} else if (tenants.length === 0) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noTenantsLabel, this)];
 		} else {
 			let subTreeNodes = await Promise.all(tenants.map(async (tenant) => {
-				return new AzureResourceTenantTreeNode(this.account, tenant, this.appContext, this.treeChangeHandler);
+				return new AzureResourceTenantTreeNode(this.account, tenant, this, this.appContext, this.treeChangeHandler);
 			}));
 			return subTreeNodes.sort((a, b) => a.tenant.displayName.localeCompare(b.tenant.displayName));
 		}
@@ -63,11 +68,9 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
 		const item = new vscode.TreeItem(this._label, vscode.TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
-		item.contextValue = AzureResourceItemType.account;
-		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/account_inverse.svg'),
-			light: this.appContext.extensionContext.asAbsolutePath('resources/light/account.svg')
-		};
+		item.contextValue = this.account.properties.tenants.length > 1 ?
+			AzureResourceItemType.multipleTenantAccount : AzureResourceItemType.singleTenantAccount;
+		item.iconPath = this.appContext.extensionContext.asAbsolutePath('resources/users.svg');
 		return item;
 	}
 
@@ -109,7 +112,9 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	private generateLabel(): string {
 		let label = this.account.displayInfo.displayName;
 
-		if (this._totalTenantsCount !== 0) {
+		if (this._totalTenantsCount === 1 && this._singleTenantTreeNode) {
+			label += ` (${this._singleTenantTreeNode.selectedSubscriptionCount} / ${this._singleTenantTreeNode.totalSubscriptionCount} subscriptions)`;
+		} else if (this._totalTenantsCount > 0) {
 			label += ` (${this._selectedTenantsCount} / ${this._totalTenantsCount} tenants)`;
 		}
 
@@ -122,6 +127,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	private _label: string;
 	private _totalTenantsCount = 0;
 	private _selectedTenantsCount = 0;
+	private _singleTenantTreeNode: AzureResourceTenantTreeNode | undefined;
 
 	private static readonly noTenantsLabel = localize('azure.resource.tree.accountTreeNode.noTenantsLabel', "No Tenants found.");
 

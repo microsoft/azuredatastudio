@@ -62,10 +62,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		const item = new TreeItem(this.subscription.name, TreeItemCollapsibleState.Collapsed);
 		item.contextValue = AzureResourceItemType.subscription;
-		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/subscription_inverse.svg'),
-			light: this.appContext.extensionContext.asAbsolutePath('resources/light/subscription.svg')
-		};
+		item.iconPath = this.appContext.extensionContext.asAbsolutePath('resources/subscriptions.svg');
 		return item;
 	}
 

@@ -20,15 +20,17 @@ import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
 import { AzureAccount, Tenant, azureResource } from 'azurecore';
+import { AzureResourceAccountTreeNode } from './accountTreeNode';
 
 export class AzureResourceTenantTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
 		public readonly account: AzureAccount,
 		public readonly tenant: Tenant,
+		parentNode: AzureResourceAccountTreeNode,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler
 	) {
-		super(appContext, treeChangeHandler, undefined);
+		super(appContext, treeChangeHandler, parentNode);
 
 		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
@@ -89,10 +91,7 @@ export class AzureResourceTenantTreeNode extends AzureResourceContainerTreeNodeB
 		const item = new vscode.TreeItem(this._label, vscode.TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
 		item.contextValue = AzureResourceItemType.tenant;
-		item.iconPath = {
-			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/type_hierarchy_inverse.svg'),
-			light: this.appContext.extensionContext.asAbsolutePath('resources/light/type_hierarchy.svg')
-		};
+		item.iconPath = this.appContext.extensionContext.asAbsolutePath('resources/tenant.svg');
 		return item;
 	}
 
