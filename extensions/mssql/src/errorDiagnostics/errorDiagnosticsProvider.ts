@@ -84,7 +84,6 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						label: 'Diagnose Error',
 						isPrimary: true,
 						closeDialog: true
-						//TODO: need to add run action to Diagnose Error button, which will trigger fetching diagnostics
 					};
 
 					actions.push(diagnoseErrorAction);
@@ -119,7 +118,6 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 								return Promise.reject(e);
 							}
 						);
-						// TODO: Fetch self-service results here from STS
 					} else {
 
 					}
