@@ -71,7 +71,6 @@ export class FileEncryptionHelper {
 		}
 		const cipherIv = crypto.createCipheriv(this._algorithm, this._keyBuffer!, this._ivBuffer!);
 		let cipherText = `${cipherIv.update(content, 'utf8', this._binaryEncoding)}${cipherIv.final(this._binaryEncoding)}`;
-		cipherText += `%${(cipherIv as crypto.CipherGCM).getAuthTag().toString(this._binaryEncoding)}`;
 		return cipherText;
 	}
 
