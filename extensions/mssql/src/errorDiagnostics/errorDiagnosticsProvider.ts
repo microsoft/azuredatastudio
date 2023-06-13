@@ -112,14 +112,16 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 							errorInfo: errorInfo
 						};
 						this.client.sendRequest(contracts.GetDiagnosticsRequest.type, params).then(
-							r => r,
+							r => {
+								return Promise.resolve(r);
+							},
 							e => {
 								this.client.logFailedRequest(contracts.GetDiagnosticsRequest.type, e);
 								return Promise.reject(e);
 							}
 						);
 					} else {
-
+						return { handled: false };
 					}
 				}
 				catch (e) {
