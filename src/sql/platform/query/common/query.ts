@@ -32,6 +32,7 @@ export interface IQueryEditorConfiguration {
 		readonly openAfterSave: boolean;
 		readonly showActionBar: boolean;
 		readonly preferProvidersCopyHandler: boolean;
+		readonly promptForLargeRowSelection: boolean;
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean;

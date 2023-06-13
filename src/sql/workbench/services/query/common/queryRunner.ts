@@ -30,6 +30,7 @@ import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -419,7 +420,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
-	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Promise<ResultSetSubset> {
+	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
@@ -428,7 +429,7 @@ export default class QueryRunner extends Disposable {
 			batchIndex: batchIndex
 		};
 
-		return this.queryManagementService.getQueryRows(rowData).then(r => r, error => {
+		return this.queryManagementService.getQueryRows(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
 			// this._notificationService.notify({
 			// 	severity: Severity.Error,
 			// 	message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
@@ -566,8 +567,8 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	) {
 	}
 
-	getRowData(rowStart: number, numberOfRows: number): Promise<ResultSetSubset> {
-		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId);
+	getRowData(rowStart: number, numberOfRows: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
 	}
 
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
@@ -590,7 +591,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		executeCopyWithNotification(this._notificationService, selections, false, async () => {
+		executeCopyWithNotification(this._notificationService, selections, async () => {
 			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldIncludeHeaders(includeHeaders));
 		});
 	}

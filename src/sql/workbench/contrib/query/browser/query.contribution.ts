@@ -424,6 +424,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.showActionBar', "Whether to show the action bar in the query results view"),
 			'default': true
 		},
+		'queryEditor.results.promptForLargeRowSelection': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('queryEditor.results.promptForLargeRowSelection', "When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.")
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),
