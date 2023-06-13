@@ -103,7 +103,6 @@ export const config = {
 	darwinHelpBookName: 'VS Code HelpBook',
 	darwinBundleDocumentTypes: [
 		darwinBundleDocumentType(['csv', 'json', 'sqlplan', 'sql', 'xml'], 'code_file'),
-			'Swift source code': 'swift',
 	],
 	darwinBundleURLTypes: [{
 		role: 'Viewer',

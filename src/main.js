@@ -28,7 +28,7 @@ const product = require('../product.json');
 const { app, protocol, crashReporter, Menu } = require('electron');
 
 // Enable sandbox globally
-app.enableSandbox();
+//app.enableSandbox(); // {{SQL CARBON EDIT}} - disable sandbox
 
 // Enable portable support
 const portable = bootstrapNode.configurePortable(product);
@@ -433,25 +433,16 @@ function configureCrashReporter() {
 
 	// Start crash reporter for all processes
 	/* {{SQL CARBON EDIT}} Disable crash reporting until we're actually set up to use it
-	const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
-	const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
-	const uploadToServer = !process.env['VSCODE_DEV'] && submitURL && !crashReporterDirectory;
-		crashReporter.start({
-			companyName: companyName,
-			productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
-			submitURL,
-			uploadToServer: false,
-			compress: true
-		});
-	} else {
-		crashReporter.start({
-			companyName: companyName,
-			productName: productName,
-			submitURL,
-			uploadToServer: !crashReporterDirectory,
-			compress: true
-		});
-	}
+	  const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
+	  const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
+	  const uploadToServer = Boolean(!process.env['VSCODE_DEV'] && submitURL && !crashReporterDirectory);
+	  crashReporter.start({
+		  companyName,
+		  productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
+		  submitURL,
+		  uploadToServer,
+		  compress: true
+	  });
 	*/
 }
 

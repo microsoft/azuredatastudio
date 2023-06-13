@@ -29,7 +29,10 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { KeyChord, KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ParseSyntaxCommandId } from 'sql/workbench/contrib/query/browser/queryActions';
-import { QueryEditorVisibleCondition } from 'sql/workbench/contrib/query/browser/query.contribution';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
+
+const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 
 const singleQuote = '\'';
 

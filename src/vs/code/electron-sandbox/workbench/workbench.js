@@ -29,7 +29,9 @@
 			// Mark start of workbench
 			performance.mark('code/didLoadWorkbenchMain');
 
-			return desktopMain.main(configuration);
+			// @ts-ignore // {{SQL CARBON EDIT}} - load desktop main directly
+			return require('vs/workbench/electron-sandbox/desktop.main').main(configuration);
+			//return desktopMain.main(configuration);
 		},
 		{
 			configureDeveloperSettings: function (windowConfig) {

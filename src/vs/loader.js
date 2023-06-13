@@ -341,6 +341,11 @@ var AMDLoader;
                     let dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
                     this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
                 }
+                if (this.options.nodeMain && this._env.isNode) {
+                    var nodeMain = this.options.nodeMain;
+                    var dirnameIndex = Math.max(nodeMain.lastIndexOf('/'), nodeMain.lastIndexOf('\\'));
+                    this.options.baseUrl = nodeMain.substring(0, dirnameIndex + 1);
+                }
             }
         }
         _createIgnoreDuplicateModulesMap() {

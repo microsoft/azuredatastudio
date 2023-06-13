@@ -30,6 +30,20 @@ export interface ISandboxNodeProcess extends INodeProcess {
 	readonly type: string;
 
 	/**
+	 * Whether the process is sandboxed or not.
+	 */
+	readonly sandboxed: boolean;
+
+	/**
+	 * The `process.pid` property returns the PID of the process.
+	 *
+	 * @deprecated this property will be removed once sandbox is enabled.
+	 *
+	 * TODO@bpasero remove this property when sandbox is on
+	 */
+	readonly pid: number;
+
+	/**
 	 * A list of versions for the current node.js/electron configuration.
 	 */
 	readonly versions: { [key: string]: string | undefined };

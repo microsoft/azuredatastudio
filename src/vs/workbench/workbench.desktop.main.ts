@@ -169,6 +169,9 @@ import 'vs/workbench/contrib/mergeEditor/electron-sandbox/mergeEditor.contributi
 import 'vs/workbench/contrib/remoteTunnel/electron-sandbox/remoteTunnel.contribution';
 
 //#endregion
+
+export { main } from 'vs/workbench/electron-sandbox/desktop.main';
+
 // {{SQL CARBON EDIT}} - SQL-specific services
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
