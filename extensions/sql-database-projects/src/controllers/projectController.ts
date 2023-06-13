@@ -1166,19 +1166,19 @@ export class ProjectsController {
 	public async addDatabaseReference(context: Project | dataworkspace.WorkspaceTreeItem): Promise<AddDatabaseReferenceDialog | undefined> {
 		const project = await this.getProjectFromContext(context);
 
-		// if (utils.getAzdataApi()) {
-		// 	const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
-		// 	addDatabaseReferenceDialog.addReference = async (proj, settings) => await this.addDatabaseReferenceCallback(proj, settings, context as dataworkspace.WorkspaceTreeItem);
+		if (utils.getAzdataApi()) {
+			const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
+			addDatabaseReferenceDialog.addReference = async (proj, settings) => await this.addDatabaseReferenceCallback(proj, settings, context as dataworkspace.WorkspaceTreeItem);
 
-		// 	await addDatabaseReferenceDialog.openDialog();
-		// 	return addDatabaseReferenceDialog;
-		// } else {
-		const settings = await addDatabaseReferenceQuickpick(project);
-		if (settings) {
-			await this.addDatabaseReferenceCallback(project, settings, context as dataworkspace.WorkspaceTreeItem);
+			await addDatabaseReferenceDialog.openDialog();
+			return addDatabaseReferenceDialog;
+		} else {
+			const settings = await addDatabaseReferenceQuickpick(project);
+			if (settings) {
+				await this.addDatabaseReferenceCallback(project, settings, context as dataworkspace.WorkspaceTreeItem);
+			}
+			return undefined;
 		}
-		return undefined;
-		// }
 	}
 
 	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
