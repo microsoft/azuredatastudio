@@ -488,9 +488,8 @@ import 'vs/workbench/contrib/workspaces/browser/workspaces.contribution';
 // List
 import 'vs/workbench/contrib/list/browser/list.contribution';
 
-// {{SQL CARBON EDIT}} - disable audio cues
 // Audio Cues
-// import 'vs/workbench/contrib/audioCues/browser/audioCues.contribution';
+import 'vs/workbench/contrib/audioCues/browser/audioCues.contribution';
 
 //#endregion
 

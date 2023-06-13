@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IDebugService } from 'vs/workbench/contrib/debug/common/debug';
+// import { IDebugService } from 'vs/workbench/contrib/debug/common/debug'; // {{SQL CARBON EDIT}} - turn off audio cues for breakpoints
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Event } from 'vs/base/common/event';
@@ -29,7 +29,7 @@ export class AudioCueLineFeatureContribution
 		this.instantiationService.createInstance(MarkerLineFeature, AudioCue.error, MarkerSeverity.Error),
 		this.instantiationService.createInstance(MarkerLineFeature, AudioCue.warning, MarkerSeverity.Warning),
 		this.instantiationService.createInstance(FoldedAreaLineFeature),
-		this.instantiationService.createInstance(BreakpointLineFeature),
+		// this.instantiationService.createInstance(BreakpointLineFeature), // {{SQL CARBON EDIT}} - turn off audio cues for breakpoints
 	];
 
 	private readonly isEnabledCache = new CachedFunction<AudioCue, IObservable<boolean>>((cue) => observableFromEvent(
@@ -236,23 +236,24 @@ class FoldedAreaLineFeature implements LineFeature {
 	}
 }
 
-class BreakpointLineFeature implements LineFeature {
-	public readonly audioCue = AudioCue.break;
+// {{SQL CARBON EDIT}} - turn off audio cues for breakpoints
+// class BreakpointLineFeature implements LineFeature {
+// 	public readonly audioCue = AudioCue.break;
 
-	constructor(@IDebugService private readonly debugService: IDebugService) { }
+// 	constructor(@IDebugService private readonly debugService: IDebugService) { }
 
-	getObservableState(editor: ICodeEditor, model: ITextModel): IObservable<LineFeatureState> {
-		return observableFromEvent<LineFeatureState>(
-			this.debugService.getModel().onDidChangeBreakpoints,
-			() => /** @description debugService.getModel().onDidChangeBreakpoints */({
-				isPresent: (position) => {
-					const breakpoints = this.debugService
-						.getModel()
-						.getBreakpoints({ uri: model.uri, lineNumber: position.lineNumber });
-					const hasBreakpoints = breakpoints.length > 0;
-					return hasBreakpoints;
-				},
-			})
-		);
-	}
-}
+// 	getObservableState(editor: ICodeEditor, model: ITextModel): IObservable<LineFeatureState> {
+// 		return observableFromEvent<LineFeatureState>(
+// 			this.debugService.getModel().onDidChangeBreakpoints,
+// 			() => /** @description debugService.getModel().onDidChangeBreakpoints */({
+// 				isPresent: (position) => {
+// 					const breakpoints = this.debugService
+// 						.getModel()
+// 						.getBreakpoints({ uri: model.uri, lineNumber: position.lineNumber });
+// 					const hasBreakpoints = breakpoints.length > 0;
+// 					return hasBreakpoints;
+// 				},
+// 			})
+// 		);
+// 	}
+// }
