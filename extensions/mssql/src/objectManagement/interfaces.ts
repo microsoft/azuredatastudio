@@ -440,7 +440,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	recoveryModels: string[];
 }
 
-export interface ServerPropertiesInfo extends ObjectManagement.SqlObject {
+export interface Server extends ObjectManagement.SqlObject {
 	language: string;
 	memoryInMb: number;
 	operatingSystem: string;
@@ -451,5 +451,5 @@ export interface ServerPropertiesInfo extends ObjectManagement.SqlObject {
 	maxMemoryInMb: number;
 }
 
-export interface ServerPropertiesViewInfo extends ObjectManagement.ObjectViewInfo<ServerPropertiesInfo> {
+export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
 }

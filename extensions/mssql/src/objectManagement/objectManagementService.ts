@@ -6,7 +6,7 @@ import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, Logi
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
-import { ServerPropertiesViewInfo } from './interfaces';
+import { ServerViewInfo } from './interfaces';
 
 import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-client';
 import { ObjectManagement, IObjectManagementService } from 'mssql';
@@ -200,7 +200,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
 			obj = this.getServerRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.Server) {
-			obj = this.getServerPropertiesView(isNewObject, objectUrn);
+			obj = this.getServerPropertiesView();
 		} else if (objectType === ObjectManagement.NodeType.User) {
 			obj = this.getUserView(isNewObject, objectUrn);
 		}
@@ -435,21 +435,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
-	private getServerPropertiesView(isNewObject: boolean, name: string): ServerPropertiesViewInfo {
-		return isNewObject ? <ServerPropertiesViewInfo>{
+	private getServerPropertiesView(): ServerViewInfo {
+		return <ServerViewInfo>{
 			objectInfo: {
-				name: 'Server Properties',
-				language: '',
-				memoryInMb: 0,
-				operatingSystem: '',
-				platform: '',
-				processors: '',
-				minMemoryInMb: 0,
-				maxMemoryInMb: 0
-			}
-		} : <ServerPropertiesViewInfo>{
-			objectInfo: {
-				name: 'Server Properties',
+				name: 'Test Server',
 				language: 'English (US)',
 				memoryInMb: 256,
 				operatingSystem: 'Windows',

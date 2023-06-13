@@ -7,9 +7,9 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewServerPropertiesDocUrl } from '../constants';
-import { ServerPropertiesInfo, ServerPropertiesViewInfo } from '../interfaces';
+import { Server, ServerViewInfo } from '../interfaces';
 
-export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPropertiesInfo, ServerPropertiesViewInfo> {
+export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
 	private generalSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
@@ -21,8 +21,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 	private memorySection: azdata.GroupContainer;
 	private minServerMemoryInput: azdata.InputBoxComponent;
 	private maxServerMemoryInput: azdata.InputBoxComponent;
-
-	private numberInputType: azdata.InputBoxInputType = 'number';
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -49,7 +47,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, undefined, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
 		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
 
-		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memoryInMb.toString(), this.options.isNewObject, this.numberInputType);
+		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memoryInMb.toString(), this.options.isNewObject, 'number');
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 
 		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, undefined, this.objectInfo.operatingSystem, this.options.isNewObject);
@@ -68,12 +66,12 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 	private initializeMemorySection(): void {
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
 			this.objectInfo.minMemoryInMb = +newValue;
-		}, this.objectInfo.minMemoryInMb.toString(), true, this.numberInputType);
+		}, this.objectInfo.minMemoryInMb.toString(), true, 'number');
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
 			this.objectInfo.maxMemoryInMb = +newValue;
-		}, this.objectInfo.maxMemoryInMb.toString(), true, this.numberInputType);
+		}, this.objectInfo.maxMemoryInMb.toString(), true, 'number');
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [
