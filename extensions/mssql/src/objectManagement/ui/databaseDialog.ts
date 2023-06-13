@@ -92,30 +92,29 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (this.viewInfo.azureEditions?.length > 0) {
 			let defaultEdition = this.viewInfo.azureEditions[0];
 			this.objectInfo.azureEdition = defaultEdition;
-			let editionDropbox = this.createDropdown(localizedConstants.EditionText, async () => {
-				this.objectInfo.azureEdition = editionDropbox.value as string;
-			}, this.viewInfo.azureEditions, defaultEdition);
-			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
 
+			// Service Level Objective options
 			let sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === defaultEdition);
 			let serviceLevels = sloDetails?.details ?? [];
 			this.objectInfo.azureServiceLevelObjective = serviceLevels[0];
 			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
 				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
 			}, serviceLevels, serviceLevels[0]);
-			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
 
+			// Maximum Database Size options
 			let sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === defaultEdition);
 			let maxSizes = sizeDetails?.details ?? [];
 			this.objectInfo.azureMaxSize = maxSizes[0];
 			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
 				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
 			}, maxSizes, maxSizes[0]);
-			containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeText, sizeDropbox));
 
-			this.disposables.push(editionDropbox.onValueChanged(async () => {
+			// Azure Database Edition options
+			let editionDropbox = this.createDropdown(localizedConstants.EditionText, async () => {
 				let edition = editionDropbox.value as string;
+				this.objectInfo.azureEdition = edition;
 
+				// Update dropboxes for SLO and Size, since they're edition specific
 				sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === edition);
 				serviceLevels = sloDetails?.details ?? [];
 				serviceLevelDropbox.loading = true;
@@ -127,7 +126,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				sizeDropbox.loading = true;
 				await sizeDropbox.updateProperties({ value: maxSizes[0], values: maxSizes });
 				sizeDropbox.loading = false;
-			}));
+			}, this.viewInfo.azureEditions, defaultEdition);
+
+			containers.push(this.createLabelInputContainer(localizedConstants.EditionText, editionDropbox));
+			containers.push(this.createLabelInputContainer(localizedConstants.CurrentSLOText, serviceLevelDropbox));
+			containers.push(this.createLabelInputContainer(localizedConstants.MaxSizeText, sizeDropbox));
 		}
 
 		if (this.viewInfo.azureBackupRedundancyLevels?.length > 0) {
