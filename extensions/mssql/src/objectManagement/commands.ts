@@ -107,10 +107,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const serverInfo = await azdata.connection.getServerInfo(connectionUri);
-		if (serverInfo) {
-
-		}
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
 		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
 		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
