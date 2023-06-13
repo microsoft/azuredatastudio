@@ -1629,19 +1629,16 @@ export namespace SearchObjectRequest {
 // ------------------------------- < Connection Diagnostics > ------------------------------------
 
 export interface GetDiagnosticsParams {
-
-
+	errorInfo: azdata.diagnostics.IErrorInformation;
 }
 
 export interface GetDiagnosticsRequest {
-
+	params: GetDiagnosticsParams;
 }
 
 export namespace GetDiagnosticsRequest {
-	export const type = new RequestType<GetDiagnosticsParams, azdata.diagnostics.GetDiagnosticsResult, void, void>('queryExecutionPlan/getExecutionPlan');
+	export const type = new RequestType<GetDiagnosticsParams, azdata.diagnostics.GetDiagnosticsResult, void, void>('diagnostics/getDiagnostics');
 }
-
-
 
 // ------------------------------- < Connection Diagnostics > ------------------------------------
 

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as contracts from '../contracts';
 import { ISqlOpsFeature, SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from '../appContext';
@@ -103,7 +104,21 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					// Result represents id of action taken by user.
 					if (result === 'diagnoseError') {
 						await this.showTroubleshooterDialog(errorCode, errorMessage, messageDetails);
-
+						let errorInfo: azdata.diagnostics.IErrorInformation = {
+							errorCode: 1234,
+							errorMessage: 'test error message',
+							messageDetails: 'test message details'
+						}
+						const params: contracts.GetDiagnosticsParams = {
+							errorInfo: errorInfo
+						};
+						this.client.sendRequest(contracts.GetDiagnosticsRequest.type, params).then(
+							r => r,
+							e => {
+								this.client.logFailedRequest(contracts.GetDiagnosticsRequest.type, e);
+								return Promise.reject(e);
+							}
+						);
 						// TODO: Fetch self-service results here from STS
 					} else {
 

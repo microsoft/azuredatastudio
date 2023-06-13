@@ -460,7 +460,6 @@ declare module 'azdata' {
 		}
 
 		export interface GetDiagnosticsResult {
-			errorCode: number,
 			recommendation: string
 		}
 
@@ -502,7 +501,7 @@ declare module 'azdata' {
 		 * @param errorDiagnostics The provider's diagnostic object that handles errors.
 		 * @returns  A disposable that when disposed will unregister the provider
 		 */
-		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: GetDiagnosticsResult): vscode.Disposable;
+		export function registerDiagnosticsProvider(providerMetadata: ErrorDiagnosticsProviderMetadata, errorDiagnostics: ErrorDiagnosticsProvider): vscode.Disposable;
 
 
 	}
