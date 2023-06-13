@@ -182,7 +182,7 @@ function nodejs(platform, arch) {
 	if (platform === 'win32') {
 		if (product.nodejsRepository) {
 			log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from ${product.nodejsRepository}...`);
-			return assetFromGithub(product.nodejsRepository, nodeVersion, name => name === `win-${arch}-patched-node.exe`)
+			return assetFromGithub(product.nodejsRepository, nodeVersion, name => name === `win-${arch}-node-patched.exe`)
 				.pipe(rename('node.exe'));
 		}
 		log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from https://nodejs.org`);
