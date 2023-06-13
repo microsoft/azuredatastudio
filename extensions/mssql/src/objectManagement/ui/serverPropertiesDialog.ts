@@ -10,14 +10,14 @@ import { ViewServerPropertiesDocUrl } from '../constants';
 import { ServerPropertiesInfo, ServerPropertiesViewInfo } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPropertiesInfo, ServerPropertiesViewInfo> {
-	private generalTab: azdata.window.DialogTab;
+	private generalTab: azdata.Tab;
 	private generalSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
 	private languageDropdown: azdata.DropDownComponent;
 	private memoryInput: azdata.InputBoxComponent;
 	private operatingSystemInput: azdata.InputBoxComponent;
 
-	private memoryTab: azdata.window.DialogTab;
+	private memoryTab: azdata.Tab;
 	private memorySection: azdata.GroupContainer;
 	private minServerMemoryInput: azdata.InputBoxComponent;
 	private maxServerMemoryInput: azdata.InputBoxComponent;
@@ -26,8 +26,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.generalTab = azdata.window.createTab(localizedConstants.GeneralSectionHeader);
-		this.memoryTab = azdata.window.createTab(localizedConstants.MemoryText);
 	}
 
 	protected override get helpUrl(): string {
@@ -37,8 +35,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 	protected async initializeUI(): Promise<void> {
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
-		this.dialogObject.content = [this.generalTab, this.memoryTab];
-		azdata.window.openDialog(this.dialogObject);
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
+		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel().withTabs([serverPropertiesTabGroup]).component();
+		this.formContainer.addItem(serverPropertiesTabbedPannel);
 	}
 
 	private initializeGeneralSection(): void {
@@ -63,7 +62,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 			operatingSystemContainer
 		], false);
 
-		this.registerTab(this.generalTab, [this.generalSection]);
+		this.generalTab = this.createTab('generalId', localizedConstants.GeneralSectionHeader, this.generalSection);
 	}
 
 	private initializeMemorySection(): void {
@@ -82,6 +81,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<ServerPro
 			maxMemoryContainer
 		], false);
 
-		this.registerTab(this.memoryTab, [this.memorySection]);
+		this.memoryTab = this.createTab('memoryId', localizedConstants.MemoryText, this.memorySection);
 	}
 }

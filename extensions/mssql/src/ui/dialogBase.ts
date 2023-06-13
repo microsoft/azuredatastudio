@@ -165,11 +165,12 @@ export abstract class DialogBase<DialogResult> {
 		}).withItems(items).component();
 	}
 
-	protected registerTab(tab: azdata.window.DialogTab, items: azdata.Component[]): void {
-		tab.registerContent(async view => {
-			let formModel = this.createFormContainer(items);
-			await view.initializeModel(formModel);
-		});
+	protected createTab(id: string, title: string, content?: azdata.Component): azdata.Tab {
+		return {
+			title: title,
+			content: content,
+			id: id
+		};
 	}
 
 	protected createTableList<T>(ariaLabel: string,
