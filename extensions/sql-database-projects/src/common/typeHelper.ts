@@ -10,3 +10,4 @@ export type ProjectType = mssql.ProjectType | vscodeMssql.ProjectType;
 export type GetScriptsResult = mssql.GetScriptsResult | vscodeMssql.GetScriptsResult;
 export type GetFoldersResult = mssql.GetFoldersResult | vscodeMssql.GetFoldersResult;
 export type SystemDatabase = mssql.SystemDatabase | vscodeMssql.SystemDatabase;
+export type SystemDbReferenceType = mssql.SystemDbReferenceType | vscodeMssql.SystemDbReferenceType;

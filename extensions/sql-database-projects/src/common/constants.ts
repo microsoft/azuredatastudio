@@ -291,7 +291,7 @@ export function retryMessage(name: string, error: string) { return localize('ret
 //#region Add Database Reference dialog strings
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
-export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Referenced Database Type");
 export const projectLabel = localize('projectLocString', "Project");
 export const systemDatabase = localize('systemDatabase', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
@@ -323,6 +323,9 @@ export const referencedDatabaseType = localize('referencedDatabaseType', "Refere
 export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "Excluding folders is not yet supported");
 export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
 export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
+export const artifactReference = localize('artifactReference', "Artifact Reference");
+export const packageReference = localize('packageReference', "Package Reference");
+export const referenceTypeRadioButtonsGroupTitle = localize('referenceTypeRadioButtonsGroupTitle', "Reference Type");
 
 //#endregion
 
