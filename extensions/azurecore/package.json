@@ -136,15 +136,15 @@
       {
         "id": "microsoft",
         "icon": {
-          "light": "./resources/light/microsoft_account_light.svg",
-          "dark": "./resources/dark/microsoft_account_dark.svg"
+          "light": "./resources/users.svg",
+          "dark": "./resources/users.svg"
         }
       },
       {
         "id": "work_school",
         "icon": {
-          "light": "./resources/light/work_school_account_light.svg",
-          "dark": "./resources/dark/work_school_account_dark.svg"
+          "light": "./resources/users.svg",
+          "dark": "./resources/users.svg"
         }
       }
     ],
