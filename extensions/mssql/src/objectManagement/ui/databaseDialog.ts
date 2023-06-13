@@ -11,10 +11,10 @@ import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
-	// Horizontal Tabs
-	private generalTab: azdata.window.DialogTab;
-	private filesTab: azdata.window.DialogTab;
+	// Database Properties tabs
+	private generalTab: azdata.Tab;
 
+	//Database properties options
 	private nameInput: azdata.InputBoxComponent;
 	private backupSection: azdata.GroupContainer;
 	private lastDatabaseBackupInput: azdata.InputBoxComponent;
@@ -34,8 +34,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
 		if (!options.isNewObject) {
-			this.generalTab = azdata.window.createTab(localizedConstants.GeneralSectionHeader);
-			this.filesTab = azdata.window.createTab(localizedConstants.FilesHeaderText);
+			this.generalTab = {
+				title: localizedConstants.GeneralSectionHeader,
+				content: undefined,
+				id: 'generalId'
+			};
 		}
 	}
 
@@ -54,14 +57,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeDatabaseSection();
 			this.initializeMaintenanceSection();
 
-			this.registerTabContent(this.generalTab, [this.backupSection, this.databaseSection, this.maintenanceSection]);
+			this.generalTab.content = this.createGroup('', [
+				this.backupSection,
+				this.databaseSection,
+				this.maintenanceSection
+			], false);
 
-			this.dialogObject.content = [this.generalTab, this.filesTab];
-
-			// We need to close the already opened dialog during handleObjectPropertiesDialogCommand,
-			// which is required for the horizontal dialog tabs, as we cannot refresh the exising dialog
-			azdata.window.closeDialog(this.dialogObject);
-			azdata.window.openDialog(this.dialogObject);
+			const propertiesTabGroup = { title: '', tabs: [this.generalTab] };
+			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel().withTabs([propertiesTabGroup]).component();
+			this.formContainer.addItem(propertiesTabbedPannel);
 		}
 	}
 
