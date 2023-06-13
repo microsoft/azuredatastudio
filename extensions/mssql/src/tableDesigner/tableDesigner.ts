@@ -38,7 +38,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken,
 				tableIcon: tableIcon
-			}, telemetryInfo);
+			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
@@ -70,7 +70,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				connectionString: connectionString,
 				accessToken: context.connectionProfile!.options.azureAccountToken,
 				tableIcon: tableIcon
-			}, telemetryInfo);
+			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });

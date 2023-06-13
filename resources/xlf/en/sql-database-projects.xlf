@@ -49,6 +49,9 @@
     <trans-unit id="addItemAction">
       <source xml:lang="en">Add Item</source>
     </trans-unit>
+    <trans-unit id="addSqlCmdVariableWithoutDefaultValue">
+      <source xml:lang="en">Add SQLCMD variable '{0}' to project without default value?</source>
+    </trans-unit>
     <trans-unit id="advancedOptionsButton">
       <source xml:lang="en">Advanced...</source>
     </trans-unit>
@@ -331,11 +334,11 @@
     <trans-unit id="downloading">
       <source xml:lang="en">Downloading</source>
     </trans-unit>
-    <trans-unit id="downloadingDacFxDlls">
-      <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
-    </trans-unit>
     <trans-unit id="downloadingFromTo">
       <source xml:lang="en">Downloading from {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="downloadingNuget">
+      <source xml:lang="en">Downloading {0} nuget to get build DLLs </source>
     </trans-unit>
     <trans-unit id="edgeEulaAgreementTitle">
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
@@ -801,8 +804,8 @@
     <trans-unit id="referenceRadioButtonsGroupTitle">
       <source xml:lang="en">Type</source>
     </trans-unit>
-    <trans-unit id="referenceType">
-      <source xml:lang="en">Reference type</source>
+    <trans-unit id="referencedDatabaseType">
+      <source xml:lang="en">Referenced Database type</source>
     </trans-unit>
     <trans-unit id="reloadProject">
       <source xml:lang="en">Would you like to reload your database project?</source>
@@ -1229,6 +1232,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.openInDesigner">
       <source xml:lang="en">Open in Designer</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.openReferencedSqlProject">
+      <source xml:lang="en">Open project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.properties">
       <source xml:lang="en">Properties</source>

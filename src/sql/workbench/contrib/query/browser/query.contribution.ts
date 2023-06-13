@@ -303,6 +303,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
+		'queryEditor.results.preferProvidersCopyHandler': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.preferProvidersCopyHandler', "Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio."),
+			'default': true
+		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
@@ -317,6 +322,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.showActionBar', "Whether to show the action bar in the query results view"),
 			'default': true
+		},
+		'queryEditor.results.promptForLargeRowSelection': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('queryEditor.results.promptForLargeRowSelection', "When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.")
 		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
