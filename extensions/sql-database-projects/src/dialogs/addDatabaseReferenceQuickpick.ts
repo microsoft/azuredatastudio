@@ -15,8 +15,6 @@ import { getSystemDbOptions, promptDacpacLocation } from './addDatabaseReference
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { ProjectType, SystemDbReferenceType } from 'vscode-mssql';
 
-
-
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
  */
