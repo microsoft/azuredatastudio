@@ -17,7 +17,7 @@ import * as azdata from 'azdata';
 
 export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainer';
-	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "CosmosDB for Mongo");
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "Azure CosmosDB for MongoDB");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -28,12 +28,9 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 
 	public getTreeItemForResource(databaseServer: AzureResourceMongoDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
 			label: `${databaseServer.name} (CosmosDB Mongo API)`,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/cosmosdb_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/cosmosdb.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.None,
 			contextValue: AzureResourceItemType.cosmosDBMongoAccount,
 			payload: {
@@ -65,10 +62,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 		return [{
 			id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
 			label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
 		}];

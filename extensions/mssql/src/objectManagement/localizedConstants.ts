@@ -181,6 +181,7 @@ export const BackupRedundancyText = localize('objectManagement.backupRedundancyL
 export const CurrentSLOText = localize('objectManagement.currentSLOLabel', "Current Service Level Objective");
 export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
+export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

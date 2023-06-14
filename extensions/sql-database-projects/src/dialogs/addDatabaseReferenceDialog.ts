@@ -16,7 +16,7 @@ import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectRef
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DbServerValues, ensureSetOrDefined, populateResultWithVars } from './utils';
-import { ProjectType } from 'mssql';
+import { ProjectType, SystemDbReferenceType } from 'mssql';
 
 export enum ReferencedDatabaseType {
 	project,
@@ -48,7 +48,10 @@ export class AddDatabaseReferenceDialog {
 	public exampleUsage: azdataType.TextComponent | undefined;
 	private projectRadioButton: azdataType.RadioButtonComponent | undefined;
 	private systemDatabaseRadioButton: azdataType.RadioButtonComponent | undefined;
-
+	private systemDatabaseArtifactRefRadioButton: azdataType.RadioButtonComponent | undefined;
+	private systemDatabasePackageRefRadioButton: azdataType.RadioButtonComponent | undefined;
+	private systemDbRefRadioButtonsComponent: azdataType.FormComponent | undefined;
+	private systemDbRefType: SystemDbReferenceType = SystemDbReferenceType.ArtifactReference;
 	public currentReferencedDatabaseType: ReferencedDatabaseType | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
@@ -107,12 +110,14 @@ export class AddDatabaseReferenceDialog {
 		this.addDatabaseReferenceTab.registerContent(async view => {
 			this.view = view;
 			this.projectFormComponent = await this.createProjectDropdown();
-			const radioButtonGroup = this.createRadioButtons();
+			const radioButtonGroup = this.createReferenceTypeRadioButtons();
 			this.systemDatabaseFormComponent = this.createSystemDatabaseDropdown();
 			this.dacpacFormComponent = this.createDacpacTextbox();
 			this.nupkgFormComponent = this.createNupkgFormComponentGroup();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
+			this.systemDbRefRadioButtonsComponent = this.createSystemDbReferenceTypeRadioButtons();
+
 			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProps({
 				label: constants.suppressMissingDependenciesErrors
 			}).component();
@@ -148,6 +153,8 @@ export class AddDatabaseReferenceDialog {
 				await this.projectRadioButton?.focus();
 			} else {
 				await this.systemDatabaseRadioButton?.focus();
+
+				this.insertSystemDatabaseReferenceTypeComponent();
 			}
 
 			this.initDialogComplete.resolve();
@@ -161,7 +168,8 @@ export class AddDatabaseReferenceDialog {
 			const systemDbRef: ISystemDatabaseReferenceSettings = {
 				databaseVariableLiteralValue: <string>this.databaseNameTextbox?.value,
 				systemDb: utils.getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked,
+				systemDbReferenceType: this.systemDbRefType
 			};
 
 			referenceSettings = systemDbRef;
@@ -212,7 +220,7 @@ export class AddDatabaseReferenceDialog {
 		this.dispose();
 	}
 
-	private createRadioButtons(): azdataType.FormComponent {
+	private createReferenceTypeRadioButtons(): azdataType.FormComponent {
 		this.projectRadioButton = this.view!.modelBuilder.radioButton()
 			.withProps({
 				name: 'referencedDatabaseType',
@@ -291,10 +299,61 @@ export class AddDatabaseReferenceDialog {
 		};
 	}
 
+	private createSystemDbReferenceTypeRadioButtons(): azdataType.FormComponent {
+		this.systemDatabasePackageRefRadioButton = this.view!.modelBuilder.radioButton()
+			.withProps({
+				name: 'systemDbRefType',
+				label: constants.packageReference
+			}).component();
+
+		this.systemDatabasePackageRefRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.systemDbRefType = SystemDbReferenceType.PackageReference;
+			}
+		});
+
+		this.systemDatabaseArtifactRefRadioButton = this.view!.modelBuilder.radioButton()
+			.withProps({
+				name: 'systemDbRefType',
+				label: constants.artifactReference
+			}).component();
+
+		this.systemDatabaseArtifactRefRadioButton.onDidChangeCheckedState((checked) => {
+			if (checked) {
+				this.systemDbRefType = SystemDbReferenceType.ArtifactReference;
+			}
+		});
+
+		const radioButtons = [this.systemDatabasePackageRefRadioButton!, this.systemDatabaseArtifactRefRadioButton!];
+
+		const flexRadioButtonsModel: azdataType.FlexContainer = this.view!.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems(radioButtons)
+			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceTypeRadioButtonsGroupTitle })
+			.component();
+
+		// default to PackageReference for SDK-style projects
+		this.systemDatabasePackageRefRadioButton!.checked = true;
+
+		return {
+			component: flexRadioButtonsModel,
+			title: constants.referenceTypeRadioButtonsGroupTitle
+		};
+	}
+
+	private insertSystemDatabaseReferenceTypeComponent(): void {
+		// add the radio buttons to choose ArtifactReference or PackageReference if it's an SDK-syle project
+		if (this.project.sqlProjStyle === ProjectType.SdkStyle) {
+			this.formBuilder!.insertFormItem(this.systemDbRefRadioButtonsComponent!, 3);
+			this.systemDbRefType = SystemDbReferenceType.PackageReference;
+		}
+	}
+
 	public projectRadioButtonClick(): void {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDbRefRadioButtonsComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.projectFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
@@ -310,6 +369,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent, 2);
+		this.insertSystemDatabaseReferenceTypeComponent();
 
 		// update dropdown values because only different database, same server is a valid location for system db references
 		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
@@ -325,6 +385,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDbRefRadioButtonsComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponent>this.dacpacFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
@@ -339,6 +400,7 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.projectFormComponent);
 		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.dacpacFormComponent);
+		this.formBuilder!.removeFormItem(<azdataType.FormComponent>this.systemDbRefRadioButtonsComponent);
 		this.formBuilder!.insertFormItem(<azdataType.FormComponentGroup>this.nupkgFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;

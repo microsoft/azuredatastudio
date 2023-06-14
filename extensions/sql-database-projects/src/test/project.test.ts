@@ -17,7 +17,7 @@ import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { ItemType } from 'sqldbproj';
 import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, DacpacReferenceProjectEntry } from '../models/projectEntry';
-import { ProjectType, SystemDatabase } from 'mssql';
+import { ProjectType, SystemDatabase, SystemDbReferenceType } from 'mssql';
 
 describe('Project: sqlproj content operations', function (): void {
 	before(async function (): Promise<void> {
@@ -551,15 +551,40 @@ describe('Project: database references', function (): void {
 		should(ref).equal(undefined, 'msdb reference should be deleted');
 	});
 
-	it('Should add system database reference correctly', async function (): Promise<void> {
+	it('Should add system database artifact reference correctly', async function (): Promise<void> {
 		let project = await testUtils.createTestSqlProject(this.test);
 
-		const msdbRefSettings: ISystemDatabaseReferenceSettings = { databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB), systemDb: SystemDatabase.MSDB, suppressMissingDependenciesErrors: true };
+		const msdbRefSettings: ISystemDatabaseReferenceSettings = {
+			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB),
+			systemDb: SystemDatabase.MSDB,
+			suppressMissingDependenciesErrors: true,
+			systemDbReferenceType: SystemDbReferenceType.ArtifactReference
+		};
 		await project.addSystemDatabaseReference(msdbRefSettings);
 
 		(project.databaseReferences.length).should.equal(1, 'There should be one database reference after adding a reference to msdb');
 		(project.databaseReferences[0].referenceName).should.equal(msdbRefSettings.databaseVariableLiteralValue, 'databaseName');
 		(project.databaseReferences[0].suppressMissingDependenciesErrors).should.equal(msdbRefSettings.suppressMissingDependenciesErrors, 'suppressMissingDependenciesErrors');
+		const projFileText = (await fs.readFile(project.projectFilePath)).toString();
+		(projFileText).should.containEql('<ArtifactReference Include="$(SystemDacpacsLocation)');
+	});
+
+	it('Should add system database package reference correctly', async function (): Promise<void> {
+		let project = await testUtils.createTestSqlProject(this.test);
+
+		const msdbRefSettings: ISystemDatabaseReferenceSettings = {
+			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.MSDB),
+			systemDb: SystemDatabase.MSDB,
+			suppressMissingDependenciesErrors: true,
+			systemDbReferenceType: SystemDbReferenceType.PackageReference
+		};
+		await project.addSystemDatabaseReference(msdbRefSettings);
+
+		(project.databaseReferences.length).should.equal(1, 'There should be one database reference after adding a reference to msdb');
+		(project.databaseReferences[0].referenceName).should.equal(msdbRefSettings.databaseVariableLiteralValue, 'databaseName');
+		(project.databaseReferences[0].suppressMissingDependenciesErrors).should.equal(msdbRefSettings.suppressMissingDependenciesErrors, 'suppressMissingDependenciesErrors');
+		const projFileText = (await fs.readFile(project.projectFilePath)).toString();
+		(projFileText).should.containEql('Include="Microsoft.SqlServer.Dacpacs.Msdb">');
 	});
 
 	it('Should add a dacpac reference to the same database correctly', async function (): Promise<void> {
@@ -783,7 +808,12 @@ describe('Project: database references', function (): void {
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
-		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.Master), systemDb: SystemDatabase.Master, suppressMissingDependenciesErrors: false };
+		const systemDbReference: ISystemDatabaseReferenceSettings = {
+			databaseVariableLiteralValue: systemDatabaseToString(SystemDatabase.Master),
+			systemDb: SystemDatabase.Master,
+			suppressMissingDependenciesErrors: false,
+			systemDbReferenceType: SystemDbReferenceType.ArtifactReference
+		};
 		await project.addSystemDatabaseReference(systemDbReference);
 		project = await Project.openProject(projFilePath);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');

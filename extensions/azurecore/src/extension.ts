@@ -12,7 +12,7 @@ import * as os from 'os';
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
 import { AzureResourceService } from './azureResource/resourceService';
-import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from './azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService, IAzureResourceTenantFilterService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
@@ -29,11 +29,10 @@ import { AzureResourceGroupService } from './azureResource/providers/resourceGro
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
-// import { AzureResourceUniversalService } from './azureResource/providers/universal/universalService';
 import { AzureResourceUniversalService } from './azureResource/providers/universal/universalService';
 import { AzureResourceUniversalTreeDataProvider } from './azureResource/providers/universal/universalTreeDataProvider';
 import { AzureResourceUniversalResourceProvider } from './azureResource/providers/universal/universalProvider';
-// import { AzureResourceUniversalTreeDataProvider } from './azureResource/providers/universal/universalTreeDataProvider';
+import { AzureResourceTenantFilterService } from './azureResource/services/tenantFilterService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -275,6 +274,7 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
+	appContext.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, new AzureResourceTenantFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureTerminalService>(AzureResourceServiceNames.terminalService, new AzureTerminalService(extensionContext));
 }
 
