@@ -356,4 +356,8 @@ export abstract class DialogBase<DialogResult> {
 	protected getSectionItemLayout(): azdata.FlexItemLayout {
 		return { CSSStyles: { 'margin-block-end': '5px' } };
 	}
+
+	protected createHyperlink(label: string, url: string): azdata.HyperlinkComponent {
+		return this.modelView.modelBuilder.hyperlink().withProps({ label: label, ariaLabel: label, url: url, showLinkIcon: true }).component();
+	}
 }

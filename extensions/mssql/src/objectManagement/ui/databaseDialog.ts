@@ -140,6 +140,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			containers.push(this.createLabelInputContainer(localizedConstants.BackupRedundancyText, backupDropbox));
 		}
 
+		containers.push(this.createHyperlink(localizedConstants.AzurePricingLinkText, 'https://azure.microsoft.com/en-us/pricing/details/azure-sql-database/single'));
+
 		return this.createGroup(localizedConstants.ConfigureSLOSectionHeader, containers, true, true);
 	}
 }
