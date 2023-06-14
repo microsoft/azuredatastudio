@@ -1,0 +1,714 @@
+{
+  "name": "notebook",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "engines": {
+    "vscode": "*",
+    "azdata": "*"
+  },
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
+  "main": "./out/extension",
+  "activationEvents": [
+    "*"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "enabledApiProposals": [
+    "notebookEditor"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "%notebook.configuration.title%",
+      "properties": {
+        "notebook.collapseBookItems": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.collapseBookItems.description%"
+        },
+        "notebook.maxBookSearchDepth": {
+          "type": "number",
+          "default": 10,
+          "description": "%notebook.maxBookSearchDepth.description%"
+        },
+        "notebook.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "%notebook.pythonPath.description%"
+        },
+        "notebook.useExistingPython": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.useExistingPython.description%"
+        },
+        "notebook.dontPromptPythonUpdate": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.dontPromptPythonUpdate.description%"
+        },
+        "notebook.jupyterServerShutdownTimeout": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "description": "%notebook.jupyterServerShutdownTimeout.description%"
+        },
+        "notebook.overrideEditorTheming": {
+          "type": "boolean",
+          "default": true,
+          "description": "%notebook.overrideEditorTheming.description%"
+        },
+        "notebook.allowRoot": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.allowRoot.description%"
+        },
+        "notebook.maxTableRows": {
+          "type": "number",
+          "default": 5000,
+          "description": "%notebook.maxTableRows.description%"
+        },
+        "notebook.trustedBooks": {
+          "type": "array",
+          "default": [],
+          "description": "%notebook.trustedBooks.description%",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notebook.remoteBookDownloadTimeout": {
+          "type": "number",
+          "default": 60000,
+          "description": "%notebook.remoteBookDownloadTimeout.description%"
+        },
+        "notebook.pinnedNotebooks": {
+          "type": "array",
+          "default": [],
+          "description": "%notebook.pinnedNotebooks.description%",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "notebook.command.open",
+        "title": "%notebook.command.open%"
+      },
+      {
+        "command": "notebook.command.runactivecell",
+        "title": "%notebook.command.runactivecell%",
+        "icon": "resources/dark/touchbar_run_cell.png"
+      },
+      {
+        "command": "notebook.command.clearactivecellresult",
+        "title": "%notebook.command.clearactivecellresult%"
+      },
+      {
+        "command": "notebook.command.runallcells",
+        "title": "%notebook.command.runallcells%"
+      },
+      {
+        "command": "notebook.command.addcode",
+        "title": "%notebook.command.addcode%"
+      },
+      {
+        "command": "notebook.command.addtext",
+        "title": "%notebook.command.addtext%"
+      },
+      {
+        "command": "notebook.command.addcell",
+        "title": "%notebook.command.addcell%",
+        "icon": "resources/dark/touchbar_add_cell.png"
+      },
+      {
+        "command": "jupyter.task.newNotebook",
+        "title": "%title.newJupyterNotebook%",
+        "icon": {
+          "dark": "resources/dark/new_notebook_inverse.svg",
+          "light": "resources/light/new_notebook.svg"
+        }
+      },
+      {
+        "command": "jupyter.task.openNotebook",
+        "title": "%title.openJupyterNotebook%"
+      },
+      {
+        "command": "jupyter.cmd.newNotebook",
+        "title": "%title.newJupyterNotebook%",
+        "icon": {
+          "dark": "resources/dark/new_notebook_inverse.svg",
+          "light": "resources/light/new_notebook.svg"
+        }
+      },
+      {
+        "command": "jupyter.cmd.managePackages",
+        "title": "%title.managePackages%",
+        "icon": {
+          "dark": "resources/dark/packages_inverse.svg",
+          "light": "resources/light/packages.svg"
+        }
+      },
+      {
+        "command": "jupyter.cmd.configurePython",
+        "title": "%title.configurePython%"
+      },
+      {
+        "command": "jupyter.reinstallDependencies",
+        "title": "%title.reinstallNotebookDependencies%"
+      },
+      {
+        "command": "books.command.openLocalizedBooks",
+        "title": "%title.PreviewLocalizedBook%",
+        "category": "%books-preview-category%"
+      },
+      {
+        "command": "notebook.command.revealInBooksViewlet",
+        "title": "%title.revealInBooksViewlet%",
+        "category": "%books-preview-category%"
+      },
+      {
+        "command": "notebook.command.saveBook",
+        "title": "%title.saveJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/save_inverse.svg",
+          "light": "resources/light/save.svg"
+        }
+      },
+      {
+        "command": "notebook.command.trustBook",
+        "title": "%title.trustBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/trust_inverse.svg",
+          "light": "resources/light/trust.svg"
+        }
+      },
+      {
+        "command": "notebook.command.searchBook",
+        "title": "%title.searchJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/search_inverse.svg",
+          "light": "resources/light/search.svg"
+        }
+      },
+      {
+        "command": "notebook.command.searchProvidedBook",
+        "title": "%title.searchJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/search_inverse.svg",
+          "light": "resources/light/search.svg"
+        }
+      },
+      {
+        "command": "notebook.command.openBook",
+        "title": "%title.openJupyterBook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_book_inverse.svg",
+          "light": "resources/light/open_book.svg"
+        }
+      },
+      {
+        "command": "notebook.command.openNotebookFolder",
+        "title": "%title.openNotebookFolder%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/open_folder_inverse.svg",
+          "light": "resources/light/open_folder.svg"
+        }
+      },
+      {
+        "command": "notebook.command.closeBook",
+        "title": "%title.closeJupyterBook%"
+      },
+      {
+        "command": "notebook.command.addNotebook",
+        "title": "%title.addNotebook%"
+      },
+      {
+        "command": "notebook.command.addMarkdown",
+        "title": "%title.addMarkdown%"
+      },
+      {
+        "command": "notebook.command.addSection",
+        "title": "%title.addSection%"
+      },
+      {
+        "command": "notebook.command.closeNotebook",
+        "title": "%title.closeNotebook%"
+      },
+      {
+        "command": "notebook.command.removeNotebook",
+        "title": "%title.removeNotebook%"
+      },
+      {
+        "command": "notebook.command.moveTo",
+        "title": "%title.moveTo%"
+      },
+      {
+        "command": "notebook.command.createBook",
+        "title": "%title.createJupyterBook%",
+        "category": "%books-preview-category%"
+      },
+      {
+        "command": "notebook.command.openRemoteBook",
+        "title": "%title.openRemoteJupyterBook%",
+        "category": "%books-preview-category%"
+      },
+      {
+        "command": "notebook.command.pinNotebook",
+        "title": "%title.pinNotebook%",
+        "category": "%books-preview-category%",
+        "icon": "$(pinned)"
+      },
+      {
+        "command": "notebook.command.unpinNotebook",
+        "title": "%title.unpinNotebook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/unpin_inverse.svg",
+          "light": "resources/light/unpin.svg"
+        }
+      },
+      {
+        "command": "notebook.command.boldText",
+        "title": "%notebook.command.boldText%"
+      },
+      {
+        "command": "notebook.command.italicizeText",
+        "title": "%notebook.command.italicizeText%"
+      },
+      {
+        "command": "notebook.command.underlineText",
+        "title": "%notebook.command.underlineText%"
+      },
+      {
+        "command": "notebook.command.codeBlock",
+        "title": "%notebook.command.codeBlock%"
+      },
+      {
+        "command": "notebook.command.highlightText",
+        "title": "%notebook.command.highlightText%"
+      }
+    ],
+    "languages": [
+      {
+        "id": "notebook",
+        "extensions": [
+          ".ipynb"
+        ],
+        "aliases": [
+          "Notebook"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "dib",
+        "extensions": [
+          ".dib"
+        ],
+        "aliases": [
+          ".NET Interactive Notebook"
+        ]
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "notebook.command.open"
+        },
+        {
+          "command": "notebook.command.runactivecell",
+          "when": "activeEditor == workbench.editor.notebookEditor"
+        },
+        {
+          "command": "notebook.command.clearactivecellresult",
+          "when": "activeEditor == workbench.editor.notebookEditor"
+        },
+        {
+          "command": "notebook.command.runallcells",
+          "when": "activeEditor == workbench.editor.notebookEditor"
+        },
+        {
+          "command": "notebook.command.addcode",
+          "when": "activeEditor == workbench.editor.notebookEditor"
+        },
+        {
+          "command": "notebook.command.addtext",
+          "when": "activeEditor == workbench.editor.notebookEditor"
+        },
+        {
+          "command": "notebook.command.addcell",
+          "when": "false"
+        },
+        {
+          "command": "jupyter.task.newNotebook",
+          "when": "false"
+        },
+        {
+          "command": "jupyter.cmd.newNotebook",
+          "when": "false"
+        },
+        {
+          "command": "jupyter.task.openNotebook",
+          "when": "false"
+        },
+        {
+          "command": "jupyter.cmd.configurePython",
+          "when": "!notebook:runningOnSAW"
+        },
+        {
+          "command": "jupyter.reinstallDependencies",
+          "when": "!notebook:runningOnSAW"
+        },
+        {
+          "command": "jupyter.cmd.managePackages",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.saveBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.searchBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.searchProvidedBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.trustBook",
+          "when": "view == bookTreeView && viewItem == savedBook"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.addNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.addSection",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.addMarkdown",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.closeNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.removeNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.moveTo",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.revealInBooksViewlet",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.pinNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.unpinNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.boldText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.italicizeText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.underlineText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.codeBlock",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.highlightText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        }
+      ],
+      "touchBar": [
+        {
+          "command": "notebook.command.runactivecell",
+          "when": "activeEditor == workbench.editor.notebookEditor",
+          "group": "1_notebook@1"
+        },
+        {
+          "command": "notebook.command.addcell",
+          "when": "activeEditor == workbench.editor.notebookEditor",
+          "group": "1_notebook@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "notebook.command.trustBook",
+          "when": "view == bookTreeView && viewItem == savedBook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.searchBook",
+          "when": "view == bookTreeView && viewItem == savedBook || viewItem  == section",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.searchProvidedBook",
+          "when": "view == providedBooksView && viewItem == providedBook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.saveBook",
+          "when": "view == providedBooksView && viewItem == providedBook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.closeBook",
+          "when": "view == bookTreeView && viewItem == savedBook && listMultiSelection == false"
+        },
+        {
+          "command": "notebook.command.closeNotebook",
+          "when": "view == bookTreeView && viewItem == savedNotebook && listMultiSelection == false"
+        },
+        {
+          "command": "notebook.command.removeNotebook",
+          "when": "view == bookTreeView && viewItem == savedBookNotebook && listMultiSelection == false"
+        },
+        {
+          "command": "notebook.command.addNotebook",
+          "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.addMarkdown",
+          "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.addSection",
+          "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.moveTo",
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == Markdown"
+        },
+        {
+          "command": "notebook.command.pinNotebook",
+          "when": "view == bookTreeView && viewItem  == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == Markdown",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.unpinNotebook",
+          "when": "view == pinnedBooksView || view == bookTreeView && viewItem == pinnedNotebook",
+          "group": "inline"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "notebook.command.openBook",
+          "when": "view == bookTreeView",
+          "group": "navigation"
+        },
+        {
+          "command": "notebook.command.openNotebookFolder",
+          "when": "view == bookTreeView",
+          "group": "navigation"
+        },
+        {
+          "command": "notebook.command.openRemoteBook",
+          "when": "view == bookTreeView"
+        },
+        {
+          "command": "notebook.command.createBook",
+          "when": "view == bookTreeView"
+        }
+      ],
+      "notebook/toolbar": [
+        {
+          "command": "jupyter.cmd.managePackages",
+          "when": "providerId == jupyter && notebook:pythonInstalled && !notebook:runningOnSAW"
+        }
+      ]
+    },
+    "views": {
+      "notebooks": [
+        {
+          "id": "pinnedBooksView",
+          "name": "%title.PinnedBooks%",
+          "when": "showPinnedbooks"
+        },
+        {
+          "id": "bookTreeView",
+          "name": "%title.SavedBooks%"
+        },
+        {
+          "id": "providedBooksView",
+          "name": "%title.ProvidedBooks%"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "notebook.command.runactivecell",
+        "key": "F5",
+        "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.clearactivecellresult",
+        "key": "Ctrl+Shift+R",
+        "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.runallcells",
+        "key": "Ctrl+Shift+F5",
+        "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.addcode",
+        "key": "Ctrl+Shift+C",
+        "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.addtext",
+        "key": "Ctrl+Shift+T",
+        "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.boldText",
+        "key": "Ctrl+B",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.italicizeText",
+        "key": "Ctrl+I",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.underlineText",
+        "key": "Ctrl+U",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.codeBlock",
+        "key": "Ctrl+Shift+K",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.highlightText",
+        "key": "Ctrl+Shift+H",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      }
+    ],
+    "notebook.languagemagics": [
+      {
+        "magic": "lang_python",
+        "language": "python",
+        "executionTarget": null,
+        "kernels": [
+          "sql"
+        ]
+      },
+      {
+        "magic": "lang_java",
+        "language": "java",
+        "executionTarget": null,
+        "kernels": [
+          "sql"
+        ]
+      }
+    ],
+    "notebook.providers": [
+      {
+        "provider": "jupyter",
+        "fileExtensions": [
+          ".ipynb"
+        ],
+        "standardKernels": [
+          {
+            "name": "python3",
+            "displayName": "Python 3",
+            "connectionProviderIds": [],
+            "supportedLanguages": [
+              "python"
+            ]
+          },
+          {
+            "name": "powershell",
+            "displayName": "PowerShell",
+            "connectionProviderIds": [],
+            "supportedLanguages": [
+              "powershell"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "@jupyterlab/services": "^3.2.1",
+    "@microsoft/ads-extension-telemetry": "^3.0.1",
+    "adm-zip": "^0.4.14",
+    "error-ex": "^1.3.1",
+    "fast-glob": "^3.1.0",
+    "fs-extra": "^5.0.0",
+    "glob": "^7.1.1",
+    "js-yaml": "^3.12.1",
+    "node-fetch": "^2.6.7",
+    "request": "^2.88.0",
+    "tar": "^6.1.9",
+    "vscode-languageclient": "^5.3.0-next.1",
+    "vscode-nls": "^4.0.0",
+    "ws": "^7.4.6"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.4.32",
+    "@types/fs-extra": "^5.0.0",
+    "@types/glob": "^7.1.1",
+    "@types/js-yaml": "^3.12.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.11.7",
+    "@types/request": "^2.48.1",
+    "@types/rimraf": "^2.0.2",
+    "@types/sinon": "^9.0.4",
+    "@types/tar": "^4.0.3",
+    "@types/uuid": "^3.4.5",
+    "assert": "^1.4.1",
+    "mocha": "^7.1.1",
+    "nock": "^13.0.2",
+    "should": "^13.2.3",
+    "sinon": "^9.0.2",
+    "typemoq": "^2.1.0",
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/azdata-test": "^3.0.1"
+  },
+  "resolutions": {
+    "url-parse": "^1.5.8",
+    "moment": "^2.29.2",
+    "ajv": "^6.12.3"
+  },
+  "enableProposedApi": true
+}

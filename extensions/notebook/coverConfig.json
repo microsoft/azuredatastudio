@@ -1,0 +1,22 @@
+{
+	"enabled": true,
+	"relativeSourcePath": "..",
+	"relativeCoverageDir": "../../coverage",
+	"ignorePatterns": [
+		"**/integrationTest/**",
+		"**/node_modules/**",
+		"**/test/**",
+		"extension.js",
+		"common/localizedConstants.js"
+	],
+	"reports": [
+		"cobertura",
+		"lcov",
+		"json"
+	],
+	"verbose": false,
+	"remapOptions": {
+		"basePath": "..",
+		"useAbsolutePaths": true
+	}
+}

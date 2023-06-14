@@ -1,0 +1,19 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"lib": [
+			"dom"
+		],
+		"outDir": "./out",
+		"strict": false,
+		"noUnusedParameters": false,
+		"typeRoots": [
+			"./node_modules/@types"
+		],
+		"strictNullChecks": false
+	},
+	"include": [
+		"src/**/*"
+	]
+}
