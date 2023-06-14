@@ -13,9 +13,7 @@ import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectRefer
 import { Project } from '../models/project';
 import { getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { ProjectType } from 'mssql';
-
-
+import { ProjectType, SystemDbReferenceType } from 'vscode-mssql';
 
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
@@ -137,7 +135,8 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 	return {
 		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
-		suppressMissingDependenciesErrors: suppressErrors
+		suppressMissingDependenciesErrors: suppressErrors,
+		systemDbReferenceType: SystemDbReferenceType.ArtifactReference
 	};
 }
 

@@ -5,7 +5,10 @@
 
 export enum AzureResourceItemType {
 	account = 'azure.resource.itemType.account',
+	singleTenantAccount = 'azure.resource.itemType.singleTenantAccount',
+	multipleTenantAccount = 'azure.resource.itemType.multipleTenantAccount',
 	subscription = 'azure.resource.itemType.subscription',
+	tenant = 'azure.resource.itemType.tenant',
 	databaseContainer = 'azure.resource.itemType.databaseContainer',
 	database = 'azure.resource.itemType.database',
 	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
@@ -32,6 +35,7 @@ export enum AzureResourceServiceNames {
 	subscriptionService = 'AzureResourceSubscriptionService',
 	subscriptionFilterService = 'AzureResourceSubscriptionFilterService',
 	tenantService = 'AzureResourceTenantService',
+	tenantFilterService = 'AzureResourceTenantFilterService',
 	terminalService = 'AzureTerminalService',
 }
 

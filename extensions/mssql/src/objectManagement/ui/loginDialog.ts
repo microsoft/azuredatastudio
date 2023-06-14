@@ -5,15 +5,16 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { IObjectManagementService } from 'mssql';
 import * as objectManagementLoc from '../localizedConstants';
 import * as uiLoc from '../../ui/localizedConstants';
 import { AlterLoginDocUrl, CreateLoginDocUrl, PublicServerRoleName } from '../constants';
 import { isValidSQLPassword } from '../utils';
 import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { AuthenticationType, Login, LoginViewInfo } from '../interfaces';
 
-export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, ObjectManagement.LoginViewInfo> {
+export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private sqlAuthSection: azdata.GroupContainer;
 	private serverRoleSection: azdata.GroupContainer;
@@ -46,7 +47,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 		// Empty password is only allowed when advanced password options are supported and the password policy check is off.
 		// To match the SSMS behavior, a warning is shown to the user.
 		if (this.viewInfo.supportAdvancedPasswordOptions
-			&& this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql
+			&& this.objectInfo.authenticationType === AuthenticationType.Sql
 			&& !this.objectInfo.password
 			&& !this.objectInfo.enforcePasswordPolicy) {
 			const result = await vscode.window.showWarningMessage(objectManagementLoc.BlankPasswordConfirmationText, { modal: true }, uiLoc.YesText);
@@ -57,7 +58,7 @@ export class LoginDialog extends PrincipalDialogBase<ObjectManagement.Login, Obj
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		if (this.objectInfo.authenticationType === ObjectManagement.AuthenticationType.Sql) {
+		if (this.objectInfo.authenticationType === AuthenticationType.Sql) {
 			if (!this.objectInfo.password && !(this.viewInfo.supportAdvancedPasswordOptions && !this.objectInfo.enforcePasswordPolicy)) {
 				errors.push(objectManagementLoc.PasswordCannotBeEmptyError);
 			}

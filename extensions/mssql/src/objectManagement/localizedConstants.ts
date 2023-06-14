@@ -6,6 +6,7 @@
 import * as nls from 'vscode-nls';
 import { ObjectManagement } from 'mssql';
 import { ObjectTypeInfo } from './ui/findObjectDialog';
+import { AuthenticationType, UserType } from './interfaces';
 const localize = nls.loadMessageBundle();
 
 // Object Types
@@ -52,7 +53,7 @@ export function RefreshObjectExplorerError(error: string): string {
 	return localize({
 		key: 'objectManagement.refreshOEError',
 		comment: ['{0}: error message.']
-	}, "An error occurred while while refreshing the object explorer. {0}", error);
+	}, "An error occurred while refreshing the object explorer. {0}", error);
 }
 
 export function DeleteObjectConfirmationText(objectType: string, objectName: string): string {
@@ -154,7 +155,11 @@ export const CollationText = localize('objectManagement.collationLabel', "Collat
 export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
 export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");
 export const ContainmentTypeText = localize('objectManagement.containmentTypeLabel', "Containment Type");
-
+export const ConfigureSLOSectionHeader = localize('objectManagement.configureSLOSectionHeader', "Configure SLO");
+export const BackupRedundancyText = localize('objectManagement.backupRedundancyLabel', "Backup Storage Redundancy");
+export const CurrentSLOText = localize('objectManagement.currentSLOLabel', "Current Service Level Objective");
+export const EditionText = localize('objectManagement.editionLabel', "Edition");
+export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -242,19 +247,19 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 	}
 }
 
-const AuthencationTypeDisplayNameMap = new Map<ObjectManagement.AuthenticationType, string>();
-AuthencationTypeDisplayNameMap.set(ObjectManagement.AuthenticationType.Windows, WindowsAuthenticationTypeDisplayText);
-AuthencationTypeDisplayNameMap.set(ObjectManagement.AuthenticationType.Sql, SQLAuthenticationTypeDisplayText);
-AuthencationTypeDisplayNameMap.set(ObjectManagement.AuthenticationType.AzureActiveDirectory, AADAuthenticationTypeDisplayText);
+const AuthencationTypeDisplayNameMap = new Map<AuthenticationType, string>();
+AuthencationTypeDisplayNameMap.set(AuthenticationType.Windows, WindowsAuthenticationTypeDisplayText);
+AuthencationTypeDisplayNameMap.set(AuthenticationType.Sql, SQLAuthenticationTypeDisplayText);
+AuthencationTypeDisplayNameMap.set(AuthenticationType.AzureActiveDirectory, AADAuthenticationTypeDisplayText);
 
-export function getAuthenticationTypeDisplayName(authType: ObjectManagement.AuthenticationType): string {
+export function getAuthenticationTypeDisplayName(authType: AuthenticationType): string {
 	if (AuthencationTypeDisplayNameMap.has(authType)) {
 		return AuthencationTypeDisplayNameMap.get(authType);
 	}
 	throw new Error(`Unknown authentication type: ${authType}`);
 }
 
-export function getAuthenticationTypeByDisplayName(displayName: string): ObjectManagement.AuthenticationType {
+export function getAuthenticationTypeByDisplayName(displayName: string): AuthenticationType {
 	for (let [key, value] of AuthencationTypeDisplayNameMap.entries()) {
 		if (value === displayName)
 			return key;
@@ -262,21 +267,21 @@ export function getAuthenticationTypeByDisplayName(displayName: string): ObjectM
 	throw new Error(`Unknown authentication type display name: ${displayName}`);
 }
 
-const UserTypeDisplayNameMap = new Map<ObjectManagement.UserType, string>();
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.LoginMapped, UserType_LoginMapped);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.WindowsUser, UserType_WindowsUser);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.SqlAuthentication, UserType_SqlAuthentication);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.AADAuthentication, UserType_AADAuthentication);
-UserTypeDisplayNameMap.set(ObjectManagement.UserType.NoLoginAccess, UserType_NoLoginAccess);
+const UserTypeDisplayNameMap = new Map<UserType, string>();
+UserTypeDisplayNameMap.set(UserType.LoginMapped, UserType_LoginMapped);
+UserTypeDisplayNameMap.set(UserType.WindowsUser, UserType_WindowsUser);
+UserTypeDisplayNameMap.set(UserType.SqlAuthentication, UserType_SqlAuthentication);
+UserTypeDisplayNameMap.set(UserType.AADAuthentication, UserType_AADAuthentication);
+UserTypeDisplayNameMap.set(UserType.NoLoginAccess, UserType_NoLoginAccess);
 
-export function getUserTypeDisplayName(userType: ObjectManagement.UserType): string {
+export function getUserTypeDisplayName(userType: UserType): string {
 	if (UserTypeDisplayNameMap.has(userType)) {
 		return UserTypeDisplayNameMap.get(userType);
 	}
 	throw new Error(`Unknown user type: ${userType}`);
 }
 
-export function getUserTypeByDisplayName(displayName: string): ObjectManagement.UserType {
+export function getUserTypeByDisplayName(displayName: string): UserType {
 	for (let [key, value] of UserTypeDisplayNameMap.entries()) {
 		if (value === displayName)
 			return key;

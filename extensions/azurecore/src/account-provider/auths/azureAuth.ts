@@ -142,7 +142,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
-		const tenants = await this.getTenants(token.token);
+		const tenants = await this.getTenants(token.token, tokenClaims);
 		account = this.createAccount(tokenClaims, token.key, tenants);
 		return account;
 	}
@@ -229,7 +229,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region tenant calls
 
-	public async getTenants(token: string): Promise<Tenant[]> {
+	public async getTenants(token: string, tokenClaims: TokenClaims): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
@@ -257,7 +257,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
-					userId: token,
+					userId: tokenClaims.oid,
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});

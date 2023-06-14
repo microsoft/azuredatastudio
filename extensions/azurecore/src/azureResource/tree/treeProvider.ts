@@ -43,7 +43,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			return element.getChildren();
 		}
 
 		if (!this.isSystemInitialized) {
@@ -54,10 +54,14 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 		}
 
 		try {
-			if (this.accounts && this.accounts.length > 0) {
-				return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
+			if (this.accounts) {
+				if (this.accounts.length === 0) {
+					return [new AzureResourceAccountNotSignedInTreeNode()];
+				} else {
+					return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
+				}
 			} else {
-				return [new AzureResourceAccountNotSignedInTreeNode()];
+				return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', "Loading ..."), undefined)];
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), undefined)];

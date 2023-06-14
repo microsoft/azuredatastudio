@@ -1401,6 +1401,11 @@ declare module 'vscode-mssql' {
 		MSDB = 1
 	}
 
+	export const enum SystemDbReferenceType {
+		ArtifactReference = 0,
+		PackageReference = 1
+	}
+
 	export interface DatabaseReference {
 		suppressMissingDependencies: boolean;
 		databaseVariableLiteralName?: string;

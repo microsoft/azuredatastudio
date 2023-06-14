@@ -122,15 +122,15 @@
       {
         "id": "microsoft",
         "icon": {
-          "light": "./resources/light/microsoft_account_light.svg",
-          "dark": "./resources/dark/microsoft_account_dark.svg"
+          "light": "./resources/users.svg",
+          "dark": "./resources/users.svg"
         }
       },
       {
         "id": "work_school",
         "icon": {
-          "light": "./resources/light/work_school_account_light.svg",
-          "dark": "./resources/dark/work_school_account_dark.svg"
+          "light": "./resources/users.svg",
+          "dark": "./resources/users.svg"
         }
       }
     ],
@@ -159,6 +159,11 @@
         "command": "azure.resource.connectiondialog.refresh",
         "title": "%azure.resource.refresh.title%",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "azure.resource.selecttenants",
+        "title": "%azure.resource.selecttenants.title%",
+        "icon": "$(filter)"
       },
       {
         "command": "azure.resource.selectsubscriptions",
@@ -224,6 +229,10 @@
           "when": "false"
         },
         {
+          "command": "azure.resource.selecttenants",
+          "when": "false"
+        },
+        {
           "command": "azure.resource.azureview.refresh",
           "when": "false"
         },
@@ -254,23 +263,43 @@
       ],
       "view/item/context": [
         {
+          "command": "azure.resource.selecttenants",
+          "when": "viewItem == azure.resource.itemType.multipleTenantAccount",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.selecttenants",
+          "when": "viewItem == azure.resource.itemType.multipleTenantAccount",
+          "group": "azurecore"
+        },
+        {
           "command": "azure.resource.selectsubscriptions",
-          "when": "viewItem == azure.resource.itemType.account",
+          "when": "viewItem == azure.resource.itemType.singleTenantAccount",
           "group": "inline"
         },
         {
           "command": "azure.resource.selectsubscriptions",
-          "when": "viewItem == azure.resource.itemType.account",
+          "when": "viewItem == azure.resource.itemType.singleTenantAccount",
+          "group": "azurecore"
+        },
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.tenant",
+          "group": "inline"
+        },
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "viewItem == azure.resource.itemType.tenant",
           "group": "azurecore"
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:singleTenantAccount|multipleTenantAccount|subscription|tenant|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "inline"
         },
         {
           "command": "azure.resource.azureview.refresh",
-          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:singleTenantAccount|multipleTenantAccount|subscription|tenant|databaseContainer|databaseServerContainer|synapseSqlPoolContainer|synapseWorkspaceContainer)$/",
           "group": "azurecore"
         },
         {
@@ -285,7 +314,7 @@
         },
         {
           "command": "azure.resource.startterminal",
-          "when": "viewItem == azure.resource.itemType.account",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:singleTenantAccount|multipleTenantAccount)$/",
           "group": "inline"
         },
         {
@@ -300,19 +329,29 @@
         },
         {
           "command": "azure.resource.startterminal",
-          "when": "viewItem == azure.resource.itemType.account",
+          "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:singleTenantAccount|multipleTenantAccount)$/",
           "group": "azurecore"
         }
       ],
       "connectionDialog/browseTree": [
         {
           "command": "azure.resource.selectsubscriptions",
-          "when": "contextValue == azure.resource.itemType.account",
+          "when": "contextValue == azure.resource.itemType.tenant",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.selecttenants",
+          "when": "contextValue == azure.resource.itemType.multipleTenantAccount",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "contextValue == azure.resource.itemType.singleTenantAccount",
           "group": "navigation"
         },
         {
           "command": "azure.resource.connectiondialog.refresh",
-          "when": "contextValue == azure.resource.itemType.account",
+          "when": "contextValue =~ /^azure\\.resource\\.itemType\\.(?:singleTenantAccount|multipleTenantAccount|tenant)$/",
           "group": "navigation"
         },
         {

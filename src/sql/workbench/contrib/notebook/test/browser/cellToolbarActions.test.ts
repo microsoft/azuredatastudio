@@ -5,7 +5,7 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { CellToggleMoreActions, RunCellsAction, removeDuplicatedAndStartingSeparators, AddCellFromContextAction, CollapseCellAction, ConvertCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { CellToggleMoreActionViewItem, RunCellsAction, removeDuplicatedAndStartingSeparators, AddCellFromContextAction, CollapseCellAction, ConvertCellAction, CellToggleMoreAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
@@ -16,7 +16,6 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import * as DOM from 'vs/base/browser/dom';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
@@ -147,21 +146,16 @@ suite('CellToolbarActions', function (): void {
 			instantiationService.stub(IContextMenuService, TypeMoq.Mock.ofType(ContextMenuService).object);
 		});
 
-		test('CellToggleMoreActions with Code CellType', function (): void {
-			const testContainer = DOM.$('div');
+		test('CellToggleMoreActionViewItem with Code CellType displays correct number of actions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'code');
-			const action = new CellToggleMoreActions(instantiationService);
-			action.onInit(testContainer, contextMock.object);
-			assert.strictEqual(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 18, 'Unexpected number of valid elements');
+			const action = new CellToggleMoreActionViewItem(new CellToggleMoreAction(), undefined, contextMock.object, undefined, instantiationService);
+			assert.equal(action.getValidActions().length, 18);
 		});
 
-		test('CellToggleMoreActions with Markdown CellType', function (): void {
-			const testContainer = DOM.$('div');
+		test('CellToggleMoreActionViewItem with Markdown CellType displays correct number of actions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'markdown');
-			const action = new CellToggleMoreActions(instantiationService);
-			action.onInit(testContainer, contextMock.object);
-			// Markdown elements don't show the code-cell related actions such as Run Cell
-			assert.strictEqual(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 7, 'Unexpected number of valid elements');
+			const action = new CellToggleMoreActionViewItem(new CellToggleMoreAction(), undefined, contextMock.object, undefined, instantiationService);
+			assert.equal(action.getValidActions().length, 7);
 		});
 	});
 

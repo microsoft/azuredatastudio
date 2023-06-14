@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, CreateNotebookViewAction, DashboardViewAction, kernelNotSupported, KernelsDropdown, msgChanging, noKernelName, noParameterCell, noParametersInCell, NotebookViewAction, NotebookViewsActionProvider, RunAllCellsAction, RunParametersAction, TrustedAction, untitledNotSupported } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCodeCellAction, AddTextCellAction, ClearAllOutputsAction, CollapseCellsAction, CreateNotebookViewAction, DashboardViewAction, kernelNotSupported, KernelsDropdown, msgChanging, noKernelName, noParameterCell, noParametersInCell, NotebookViewAction, NotebookViewsActionProvider, RunAllCellsAction, RunParametersAction, TrustedAction, untitledNotSupported } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub, NotebookServiceStub, NotebookViewsStub, NotebookViewStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -126,11 +126,36 @@ suite('Notebook Actions', function (): void {
 		mockNotebookEditor.reset();
 	});
 
-	test('Add Cell Action', async function (): Promise<void> {
+	test('Add Text Cell Action', async function (): Promise<void> {
+		let testCellType: CellType = 'markdown'
+		let actualCellType: CellType;
+
+		let action = new AddTextCellAction(mockNotebookService.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
+
+		// Normal use case
+		mockNotebookEditor.setup(x => x.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).returns((cellType, index) => { actualCellType = cellType; });
+		let mockNotebookComponent = TypeMoq.Mock.ofType<INotebookEditor>(NotebookComponentStub);
+		mockNotebookComponent.setup(c => c.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).returns(cellType => {
+			actualCellType = cellType;
+		});
+
+		assert.doesNotThrow(() => action.run(testUri));
+		assert.strictEqual(actualCellType, testCellType);
+
+		// Handle error case
+		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
+		mockNotebookEditor.setup(x => x.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).throws(new Error('Test Error'));
+		await assert.rejects(action.run(URI.parse('untitled')));
+	});
+
+	test('Add Code Cell Action', async function (): Promise<void> {
 		let testCellType: CellType = 'code';
 		let actualCellType: CellType;
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
+		let action = new AddCodeCellAction(mockNotebookService.object);
 		action.cellType = testCellType;
 
 		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);

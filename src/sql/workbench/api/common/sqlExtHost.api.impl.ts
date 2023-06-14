@@ -608,8 +608,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
 				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
 				TableIcon: sqlExtHostTypes.designers.TableIcon,
-				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
-					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo);
+				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): Promise<void> {
+					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo, objectExplorerContext);
 				}
 			};
 
