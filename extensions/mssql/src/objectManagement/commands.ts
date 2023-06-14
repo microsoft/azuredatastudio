@@ -26,7 +26,7 @@ import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
-	const service = getObjectManagementService(appContext, true);
+	const service = getObjectManagementService(appContext, false);
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
