@@ -77,6 +77,7 @@ const mockDatabases: azureResource.AzureResourceDatabase[] = [
 		name: 'mock database 1',
 		id: 'mock-id-1',
 		provider: DATABASE_PROVIDER_ID,
+		tenant: 'mockTenantId',
 		serverName: 'mock database server 1',
 		serverFullName: 'mock database server full name 1',
 		loginName: 'mock login',
@@ -90,6 +91,7 @@ const mockDatabases: azureResource.AzureResourceDatabase[] = [
 		name: 'mock database 2',
 		id: 'mock-id-2',
 		provider: DATABASE_PROVIDER_ID,
+		tenant: 'mockTenantId',
 		serverName: 'mock database server 2',
 		serverFullName: 'mock database server full name 2',
 		loginName: 'mock login',
@@ -140,7 +142,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 
 		const child = children[0];
 		should(child.id).equal('azure.resource.providers.database.treeDataProvider.databaseContainer');
-		should(child.label).equal('SQL database');
+		should(child.label).equal('SQL databases');
 		should(child.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 		should(child.contextValue).equal('azure.resource.itemType.databaseContainer');
 	});
@@ -160,7 +162,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 			should(child.account).equal(mockAccount);
 			should(child.subscription).equal(mockSubscription);
 			should(child.tenantId).equal(mockTenantId);
-			should(child.treeItem.id).equal(`databaseServer_${mockAccount.key.accountId}${database.serverFullName}.database_${database.id}`);
+			should(child.treeItem.id).equal(`database_${mockAccount.key.accountId}${database.tenant}${database.serverFullName}.database_${database.id}`);
 			should(child.treeItem.label).equal(`${database.name} (${database.serverName})`);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 			should(child.treeItem.contextValue).equal(AzureResourceItemType.database);
