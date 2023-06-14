@@ -102,7 +102,6 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 					);
 					// Result represents id of action taken by user.
 					if (result === 'diagnoseError') {
-						await this.showTroubleshooterDialog(errorCode, errorMessage, messageDetails);
 						let errorInfo: azdata.diagnostics.IErrorInformation = {
 							errorCode: 1234,
 							errorMessage: 'test error message',
@@ -111,6 +110,11 @@ export class ErrorDiagnosticsProvider extends SqlOpsFeature<any> {
 						const params: contracts.GetDiagnosticsParams = {
 							errorInfo: errorInfo
 						};
+						const test = await this.client.sendRequest(contracts.GetDiagnosticsRequest.type, params)
+						console.log(test);
+						//TODO: remove test
+						await this.showTroubleshooterDialog(errorCode, errorMessage, messageDetails);
+
 						this.client.sendRequest(contracts.GetDiagnosticsRequest.type, params).then(
 							r => {
 								return Promise.resolve(r);
