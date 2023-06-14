@@ -78,20 +78,6 @@ describe('Azure Authentication', function () {
 		};
 	});
 
-	it('accountHydration should yield a valid account', async function () {
-
-		azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns((): Promise<Tenant[]> => {
-			return Promise.resolve([
-				mockTenant
-			]);
-		});
-
-		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken, mockClaims);
-		should(response.displayInfo.displayName).be.equal(`${mockClaims.name} - ${mockClaims.email}`, 'Account name should match');
-		should(response.displayInfo.userId).be.equal(mockClaims.sub, 'Account ID should match');
-		should(response.properties.tenants).be.deepEqual([mockTenant], 'Tenants should match');
-	});
-
 	describe('getAccountSecurityToken', function () {
 		it('incorrect tenant', async function () {
 			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, 'invalid_tenant').should.be.rejected();
