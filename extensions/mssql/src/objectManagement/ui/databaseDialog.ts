@@ -47,14 +47,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	protected async initializeUI(): Promise<void> {
-		if (this.options.isNewObject) {          
-		let components = [];
-		components.push(this.initializeGeneralSection());
-		components.push(this.initializeOptionsSection());
-		if (this.viewInfo.isAzureDB) {
-			components.push(this.initializeConfigureSLOSection());
-		}
-		this.formContainer.addItems(components);
+		if (this.options.isNewObject) {
+			let components = [];
+			components.push(this.initializeGeneralSection());
+			components.push(this.initializeOptionsSection());
+			if (this.viewInfo.isAzureDB) {
+				components.push(this.initializeConfigureSLOSection());
+			}
+			this.formContainer.addItems(components);
 		} else {
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
