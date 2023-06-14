@@ -433,11 +433,11 @@ export interface Database extends ObjectManagement.SqlObject {
 	dateCreated?: string;
 	lastDatabaseBackup?: string;
 	lastDatabaseLogBackup?: string;
-	memoryAllocatedToMemoryOptimizedObjectsInMb?: string;
-	memoryUsedByMemoryOptimizedObjectsInMb?: string;
-	numberOfUsers?: string;
-	sizeInMb?: string;
-	spaceAvailableInMb?: string;
+	memoryAllocatedToMemoryOptimizedObjectsInMb?: number;
+	memoryUsedByMemoryOptimizedObjectsInMb?: number;
+	numberOfUsers?: number;
+	sizeInMb?: number;
+	spaceAvailableInMb?: number;
 	status?: string;
 	azureBackupRedundancyLevel?: string;
 	azureServiceLevelObjective?: string;

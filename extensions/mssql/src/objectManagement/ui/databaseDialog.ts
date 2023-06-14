@@ -9,6 +9,7 @@ import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
+import { ConvertNumberToTwoDecimalString } from '../utils';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -165,19 +166,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.dateCreatedInput = this.createInputBox(localizedConstants.DateCreatedText, async () => { }, this.objectInfo.dateCreated, this.options.isNewObject);
 		const dateCreatedContainer = this.createLabelInputContainer(localizedConstants.DateCreatedText, this.dateCreatedInput);
 
-		this.sizeInput = this.createInputBox(localizedConstants.SizeText, async () => { }, this.objectInfo.sizeInMb, this.options.isNewObject);
+		this.sizeInput = this.createInputBox(localizedConstants.SizeText, async () => { }, ConvertNumberToTwoDecimalString(this.objectInfo.sizeInMb), this.options.isNewObject);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.SizeText, this.sizeInput);
 
-		this.spaceAvailabeInput = this.createInputBox(localizedConstants.SpaceAvailableText, async () => { }, this.objectInfo.spaceAvailableInMb, this.options.isNewObject);
+		this.spaceAvailabeInput = this.createInputBox(localizedConstants.SpaceAvailableText, async () => { }, ConvertNumberToTwoDecimalString(this.objectInfo.spaceAvailableInMb), this.options.isNewObject);
 		const spaceAvailabeContainer = this.createLabelInputContainer(localizedConstants.SpaceAvailableText, this.spaceAvailabeInput);
 
-		this.numberOfUsersInput = this.createInputBox(localizedConstants.NumberOfUsersText, async () => { }, this.objectInfo.numberOfUsers, this.options.isNewObject);
+		this.numberOfUsersInput = this.createInputBox(localizedConstants.NumberOfUsersText, async () => { }, this.objectInfo.numberOfUsers.toString(), this.options.isNewObject);
 		const numberOfUsersContainer = this.createLabelInputContainer(localizedConstants.NumberOfUsersText, this.numberOfUsersInput);
 
-		this.memoryAllocatedInput = this.createInputBox(localizedConstants.MemoryAllocatedText, async () => { }, this.objectInfo.memoryAllocatedToMemoryOptimizedObjectsInMb, this.options.isNewObject);
+		this.memoryAllocatedInput = this.createInputBox(localizedConstants.MemoryAllocatedText, async () => { }, ConvertNumberToTwoDecimalString(this.objectInfo.memoryAllocatedToMemoryOptimizedObjectsInMb), this.options.isNewObject);
 		const memoryAllocatedContainer = this.createLabelInputContainer(localizedConstants.MemoryAllocatedText, this.memoryAllocatedInput);
 
-		this.memoryUsedInput = this.createInputBox(localizedConstants.MemoryUsedText, async () => { }, this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb, this.options.isNewObject);
+		this.memoryUsedInput = this.createInputBox(localizedConstants.MemoryUsedText, async () => { }, ConvertNumberToTwoDecimalString(this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb), this.options.isNewObject);
 		const memoryUsedContainer = this.createLabelInputContainer(localizedConstants.MemoryUsedText, this.memoryUsedInput);
 
 		this.databaseSection = this.createGroup(localizedConstants.DatabaseSectionHeader, [
