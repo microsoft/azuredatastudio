@@ -8,7 +8,7 @@ import * as errors from 'vs/base/common/errors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
+import { attachButtonStyler, attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { ISelectionEvent, ITree } from 'sql/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
@@ -187,7 +187,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			this._buttonSection = append(container, $('.button-section'));
 			const connectButton = new Button(this._buttonSection);
 			connectButton.label = localize('serverTree.newConnection', "New Connection");
-			this._register(connectButton);
+			this._register(attachButtonStyler(connectButton, this._themeService));
 			this._register(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog(undefined, {
 					showDashboard: true,

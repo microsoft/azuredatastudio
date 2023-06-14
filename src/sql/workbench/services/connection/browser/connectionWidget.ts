@@ -29,6 +29,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { ILogService } from 'vs/platform/log/common/log';
+import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -300,8 +301,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName }, option.name);
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
-						// {{SQL CARBON TODO}} - styles
-						//this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
+						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
 					default:
 						this._customOptionWidgets[i] = new InputBox(customOptionsContainer, this._contextViewService, {
@@ -309,7 +309,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							placeholder: option.placeholder,
 							inputBoxStyles: defaultInputBoxStyles
 						});
-						//this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
+						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
 						break;
 				}
 				this._register(this._customOptionWidgets[i]);
@@ -541,21 +541,21 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected registerListeners(): void {
 		// Theme styler
-		// this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		// this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		// this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		// this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		// this._register(attachButtonStyler(this._advancedButton, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
+		this._register(attachButtonStyler(this._advancedButton, this._themeService));
 		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
-		//this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
-			//this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
+			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 			this._register(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
 				this.onGroupSelected(selectedGroup.selected);
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			//this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
 			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
@@ -584,12 +584,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		if (this._connectionStringInputBox) {
-			//this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
+			this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
 		}
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
-			//this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
+			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected, true);
 				this.setConnectButton();
@@ -597,14 +597,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		if (this._azureAccountDropdown) {
-			//this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 			this._register(this._azureAccountDropdown.onDidSelect(() => {
 				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpected error handling Azure Account dropdown click : ${err}`));
 			}));
 		}
 
 		if (this._azureTenantDropdown) {
-			//this._register(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
+			this._register(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
 			this._register(this._azureTenantDropdown.onDidSelect((selectInfo) => {
 				this.onAzureTenantSelected(selectInfo.index);
 			}));

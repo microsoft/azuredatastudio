@@ -25,6 +25,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IThemable, attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Emitter } from 'vs/base/common/event';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
@@ -107,7 +108,7 @@ const defaultOptions: IModalOptions = {
 
 export type HideReason = 'close' | 'cancel' | 'ok';
 
-export abstract class Modal extends Disposable {
+export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	private _styleElement: HTMLStyleElement;
 	protected _messageElement?: HTMLElement;
@@ -310,6 +311,10 @@ export abstract class Modal extends Disposable {
 			};
 			this._closeMessageButton.label = CLOSE_TEXT;
 			this._register(this._closeMessageButton.onDidClick(() => this.setError(undefined)));
+
+			this._register(attachButtonStyler(this._toggleMessageDetailButton, this._themeService));
+			this._register(attachButtonStyler(this._copyMessageButton, this._themeService));
+			this._register(attachButtonStyler(this._closeMessageButton, this._themeService));
 
 			this._messageBody = DOM.append(this._messageElement, DOM.$('.dialog-message-body'));
 			this._messageSummary = DOM.append(this._messageBody, DOM.$('.dialog-message-summary'));
@@ -544,6 +549,7 @@ export abstract class Modal extends Disposable {
 		} else {
 			DOM.append(container, footerButton);
 		}
+		attachButtonStyler(button, this._themeService);
 		this._footerButtons.push(button);
 		return button;
 	}

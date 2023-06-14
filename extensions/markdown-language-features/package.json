@@ -17,8 +17,7 @@
   ],
   "enabledApiProposals": [
     "documentPaste",
-    "dropMetadata",
-    "notebookEditor"
+    "dropMetadata"
   ],
   "activationEvents": [
     "onLanguage:markdown",

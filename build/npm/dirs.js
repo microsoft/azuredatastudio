@@ -40,6 +40,7 @@ const dirs = [
 	'extensions/merge-conflict',
 	'extensions/microsoft-authentication',
 	'extensions/mssql',
+	'extensions/notebook',
 	'extensions/notebook-renderers',
 	'extensions/profiler',
 	'extensions/python',

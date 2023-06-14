@@ -33,7 +33,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { DecorationAddon } from 'vs/workbench/contrib/terminal/browser/xterm/decorationAddon';
 import { ITerminalCapabilityStore, ITerminalCommand, TerminalCapability } from 'vs/platform/terminal/common/capabilities/capabilities';
 import { Emitter } from 'vs/base/common/event';
-// import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SuggestAddon } from 'vs/workbench/contrib/terminal/browser/xterm/suggestAddon';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
@@ -189,7 +189,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IStorageService private readonly _storageService: IStorageService,
 		@IThemeService private readonly _themeService: IThemeService,
-		//@ITelemetryService private readonly _telemetryService: ITelemetryService
+		@ITelemetryService private readonly _telemetryService: ITelemetryService
 	) {
 		super();
 		const font = this._configHelper.getFont(undefined, true);
@@ -252,7 +252,7 @@ export class XtermTerminal extends DisposableStore implements IXtermTerminal, II
 		this._decorationAddon = this._instantiationService.createInstance(DecorationAddon, this._capabilities);
 		this._decorationAddon.onDidRequestRunCommand(e => this._onDidRequestRunCommand.fire(e));
 		this.raw.loadAddon(this._decorationAddon);
-		this._shellIntegrationAddon = this._instantiationService.createInstance(ShellIntegrationAddon, shellIntegrationNonce, disableShellIntegrationReporting);
+		this._shellIntegrationAddon = new ShellIntegrationAddon(shellIntegrationNonce, disableShellIntegrationReporting, this._telemetryService, this._logService); // {{SQL CARBON EDIT}} - create directly due to issues with instantiation service type checking
 		this.raw.loadAddon(this._shellIntegrationAddon);
 
 		// Load the suggest addon, this should be loaded regardless of the setting as the sequences

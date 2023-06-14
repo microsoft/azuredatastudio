@@ -18,6 +18,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { SelectBoxList } from 'vs/base/browser/ui/selectBox/selectBoxCustom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
+import { defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const $ = dom.$;
 
@@ -70,7 +71,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 
 	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions, id?: string) {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
-		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
+		super(optionItems, 0, contextViewProvider, defaultSelectBoxStyles, selectBoxOptions);
 
 		this._onDidSelect = new Emitter<ISelectData>();
 		this._onDidFocus = new Emitter<void>();

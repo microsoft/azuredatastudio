@@ -185,10 +185,10 @@ export class ConnectionDialogWidget extends Modal {
 
 		// Remove duplicate listings (CMS uses the same display name)
 		let uniqueProvidersMap = this.connectionManagementService.getUniqueConnectionProvidersByNameMap(filteredProviderMap);
-		this._providerTypeSelectBox.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
+		this._providerTypeSelectBox?.setOptions(Object.keys(uniqueProvidersMap).map(k => uniqueProvidersMap[k]));
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	protected override renderBody(container: HTMLElement): void {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
@@ -496,9 +496,10 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	public updateProvider(providerDisplayName: string) {
-		this._providerTypeSelectBox.selectWithOptionName(providerDisplayName);
-
-		this.onProviderTypeSelected(providerDisplayName);
+		if (this._providerTypeSelectBox) {
+			this._providerTypeSelectBox.selectWithOptionName(providerDisplayName);
+			this.onProviderTypeSelected(providerDisplayName);
+		}
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {
