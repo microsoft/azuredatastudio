@@ -444,12 +444,12 @@ export class TestObjectManagementService implements IObjectManagementService {
 				dateCreated: '5/31/2023 8:05:55 AM',
 				lastDatabaseBackup: 'None',
 				lastDatabaseLogBackup: 'None',
-				memoryAllocatedToMemoryOptimizedObjectsInMb: '0.00 MB',
-				memoryUsedByMemoryOptimizedObjectsInMb: '0.00 MB',
-				numberOfUsers: '5',
+				memoryAllocatedToMemoryOptimizedObjectsInMb: 0,
+				memoryUsedByMemoryOptimizedObjectsInMb: 0,
+				numberOfUsers: 5,
 				owner: 'databaseProperties 1',
-				sizeInMb: '16.00 MB',
-				spaceAvailableInMb: '1.15 MB',
+				sizeInMb: 16.00,
+				spaceAvailableInMb: 1.15,
 				status: 'Normal'
 			}
 		};
