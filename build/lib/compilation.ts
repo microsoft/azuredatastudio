@@ -122,6 +122,8 @@ export function compileTask(src: string, out: string, build: boolean, options: {
 
 	return function () {
 
+		options.disableMangle = true; // {{SQL CARBON EDIT}} - disable mangling
+
 		if (os.totalmem() < 4_000_000_000) {
 			throw new Error('compilation requires 4GB of RAM');
 		}
