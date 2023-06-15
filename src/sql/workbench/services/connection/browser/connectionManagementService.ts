@@ -724,19 +724,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
-	private findParentConnection(profile: interfaces.IConnectionProfile): string {
-		let activeConnections = this.getActiveConnections();
-		for (let i = 0; i < activeConnections.length; i++) {
-			let activeProfileKey = activeConnections[i].getOptionsKey();
-			activeProfileKey = activeProfileKey.replace(/database:\w*/, 'database:' + profile.databaseName);
-			let trimProfileKey = profile.getOptionsKey().replace(/databaseDisplayName:\w*\|?/, '');
-			if (activeProfileKey === trimProfileKey) {
-				return activeConnections[i].id;
-			}
-		}
-		return '';
-	}
-
 	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
 		let result = '';
 		if (profile) {
@@ -757,7 +744,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return inputProfile.matches(tempProfile)
 			});
 
-			let id = this.findParentConnection(tempProfile);
 			if (initialSearch.length === 0) {
 				if (secondarySearch.length === 1) {
 					// Sometimes the connection id will change for an object explorer connection, especially when connecting from dashboard,
@@ -973,11 +959,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
 		const groups = this._connectionStore.getConnectionProfileGroups(false, providers);
 		return groups;
-	}
-
-	private getAllConnectionsFromConfig(): ConnectionProfile[] {
-		const connections = this._connectionStore.getAllConnectionsFromConfig();
-		return connections;
 	}
 
 	public getConnectionGroupById(id: string): ConnectionProfileGroup | undefined {

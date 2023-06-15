@@ -706,8 +706,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				return;
 			}
 			await this._tree.setInput(treeInput!);
-			let isActive = view === ServerTreeViewView.active;
-			await this.refreshConnectionTreeTitles(isActive);
+			await this.refreshConnectionTreeTitles();
 			if (isHidden(this.messages!)) {
 				this._tree.getFocus();
 				if (this._tree instanceof AsyncServerTree) {
@@ -973,9 +972,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		return actionContext;
 	}
 
-	private async refreshConnectionTreeTitles(isActiveOnly?: boolean): Promise<void> {
+	private async refreshConnectionTreeTitles(): Promise<void> {
 		let treeInput = this._tree.getInput();
-		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], this._connectionManagementService, isActiveOnly);
+		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], this._connectionManagementService);
 		treeInput = treeArray[0];
 		await this._tree!.setInput(treeInput);
 	}

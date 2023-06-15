@@ -9,7 +9,6 @@ import { URI } from 'vs/base/common/uri';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IModelService } from 'vs/editor/common/services/model';
 import { ILanguageService } from 'vs/editor/common/languages/language';
 
@@ -84,18 +83,8 @@ export class DashboardInput extends EditorInput {
 			return '';
 		}
 
-		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName;
-		if (this.connectionProfile.databaseName
-			&& !this.isMasterMssql()) {
-			// Only add DB name if this is a non-default, non-master connection
-			name = name + ':' + this.connectionProfile.databaseName;
-		}
-		return name;
-	}
-
-	private isMasterMssql(): boolean {
-		return this.connectionProfile.providerName === mssqlProviderName
-			&& this.connectionProfile.databaseName?.toLowerCase() === 'master';
+		let newTitle = this._connectionService.getEditorConnectionProfileTitle(this.connectionProfile);
+		return newTitle;
 	}
 
 	public get uri(): string | undefined {

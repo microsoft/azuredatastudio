@@ -99,46 +99,16 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	private static alterRecentConnectionTitles(inputGroup: ConnectionProfileGroup, connectionManagementService: IConnectionManagementService): ConnectionProfileGroup {
-		let connections = inputGroup.connections;
-		for (let i = 0; i < connections.length; i++) {
-			let currentConnection = connections[i];
-			if (currentConnection.getOriginalTitle() === currentConnection.connectionName) {
-				let listOfDuplicates = connections.filter(connection => (connection.getServerInfo() !== currentConnection.getServerInfo() && connection.getOriginalTitle() === currentConnection.getOriginalTitle()));
-				if (listOfDuplicates.length > 0) {
-					connections[i].title = connectionManagementService.getEditorConnectionProfileTitle(currentConnection, false);
-				}
-			}
-		}
-		inputGroup.connections = connections;
-		return inputGroup;
-	}
-
-	private static alterActiveConnectionTitles(inputGroup: ConnectionProfileGroup, connectionManagementService: IConnectionManagementService): ConnectionProfileGroup {
-		let connections = inputGroup.connections;
-		for (let i = 0; i < connections.length; i++) {
-			connections[i].title = connectionManagementService.getEditorConnectionProfileTitle(connections[i], false);
-		}
-		inputGroup.connections = connections;
-		return inputGroup;
-	}
-
 	/**
 	 * Calls alterConnectionTitles on all levels of the Object Explorer Tree
 	 * so that profiles in connection groups can have distinguishing titles too.
 	 */
-	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[], connectionManagementService: IConnectionManagementService, isActiveOnly?: boolean): ConnectionProfileGroup[] {
+	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[], connectionManagementService: IConnectionManagementService): ConnectionProfileGroup[] {
 		inputGroups.forEach(group => {
-			group.children = TreeUpdateUtils.alterTreeChildrenTitles(group.children, connectionManagementService, isActiveOnly);
-			if (isActiveOnly) {
-				let moddedGroup = TreeUpdateUtils.alterActiveConnectionTitles(group, connectionManagementService);
-				group.connections = moddedGroup.connections;
-			}
-			else {
-				let connections = group.connections;
-				TreeUpdateUtils.alterConnectionTitles(connections, connectionManagementService);
-				group.connections = connections;
-			}
+			group.children = TreeUpdateUtils.alterTreeChildrenTitles(group.children, connectionManagementService);
+			let connections = group.connections;
+			TreeUpdateUtils.alterConnectionTitles(connections, connectionManagementService);
+			group.connections = connections;
 		});
 		return inputGroups;
 	}
