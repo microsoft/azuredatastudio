@@ -386,10 +386,9 @@ export interface IConnectionManagementService {
 	 * Gets the formatted title of the connection profile for display.
 	 * @param profile The connection profile we want to get the full display info for.
 	 * @param getOptionsOnly Provide if you only want to get the differing advanced options (for some titles).
-	 * @param forTree Provide if you want to base the titles on stored connections (otherwise use active connections as base).
 	 * @returns The title formatted with server info in front, with non default options at the end.
 	 */
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, forTree?: boolean): string;
+	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean): string;
 }
 
 export enum RunQueryOnConnectionMode {

@@ -68,13 +68,13 @@ export class TreeUpdateUtils {
 		if (viewKey === 'recent') {
 			groups = connectionManagementService.getRecentConnections(providers);
 			treeInput.addConnections(groups);
-			let treeGroup = TreeUpdateUtils.alterRecentConnectionTitles(treeInput, connectionManagementService);
-			treeInput = treeGroup;
+			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
+			treeInput = treeArray[0];
 		} else if (viewKey === 'active') {
 			groups = connectionManagementService.getActiveConnections(providers);
 			treeInput.addConnections(groups);
-			let treeGroup = TreeUpdateUtils.alterActiveConnectionTitles(treeInput, connectionManagementService);
-			treeInput = treeGroup;
+			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
+			treeInput = treeArray[0];
 		} else if (viewKey === 'saved') {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
@@ -106,7 +106,7 @@ export class TreeUpdateUtils {
 			if (currentConnection.getOriginalTitle() === currentConnection.connectionName) {
 				let listOfDuplicates = connections.filter(connection => (connection.getServerInfo() !== currentConnection.getServerInfo() && connection.getOriginalTitle() === currentConnection.getOriginalTitle()));
 				if (listOfDuplicates.length > 0) {
-					connections[i].title = connectionManagementService.getEditorConnectionProfileTitle(currentConnection, false, true);
+					connections[i].title = connectionManagementService.getEditorConnectionProfileTitle(currentConnection, false);
 				}
 			}
 		}
@@ -117,7 +117,7 @@ export class TreeUpdateUtils {
 	private static alterActiveConnectionTitles(inputGroup: ConnectionProfileGroup, connectionManagementService: IConnectionManagementService): ConnectionProfileGroup {
 		let connections = inputGroup.connections;
 		for (let i = 0; i < connections.length; i++) {
-			connections[i].title = connectionManagementService.getEditorConnectionProfileTitle(connections[i], false, false);
+			connections[i].title = connectionManagementService.getEditorConnectionProfileTitle(connections[i], false);
 		}
 		inputGroup.connections = connections;
 		return inputGroup;
@@ -430,7 +430,7 @@ export class TreeUpdateUtils {
 			let currentConnection = inputList[i];
 			let listOfDuplicates = inputList.filter(connection => connection.getOriginalTitle() === currentConnection.getOriginalTitle());
 			if (listOfDuplicates.length > 1) {
-				inputList[i].title = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], false, true);
+				inputList[i].title = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], false);
 			}
 		}
 	}

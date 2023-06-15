@@ -703,11 +703,11 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			if (this._tree instanceof AsyncServerTree) {
 				await this._tree.setInput(treeInput!);
 				await this._tree.updateChildren(treeInput!);
-				let isActive = view === ServerTreeViewView.active;
-				await this.refreshConnectionTreeTitles(isActive);
 				return;
 			}
 			await this._tree.setInput(treeInput!);
+			let isActive = view === ServerTreeViewView.active;
+			await this.refreshConnectionTreeTitles(isActive);
 			if (isHidden(this.messages!)) {
 				this._tree.getFocus();
 				if (this._tree instanceof AsyncServerTree) {

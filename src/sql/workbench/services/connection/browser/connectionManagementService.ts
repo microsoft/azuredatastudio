@@ -737,7 +737,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return '';
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, forTree?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
@@ -745,15 +745,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let idToFind = tempProfile.id;
 			let isChild = false;
 			let totalConnections: ConnectionProfile[] = [];
-			let configConnections = this.getAllConnectionsFromConfig();
-			let activeConnections = this.getActiveConnections();
+			let allConnections = this.getConnections();
 
-			if (forTree) {
-				totalConnections = totalConnections.concat(configConnections);
-			}
-			else {
-				totalConnections = totalConnections.concat(activeConnections);
-			}
+			totalConnections = totalConnections.concat(allConnections);
 
 			let initialSearch = totalConnections.filter(inputProfile => {
 				return inputProfile.id === tempProfile.id;
@@ -765,17 +759,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			let id = this.findParentConnection(tempProfile);
 			if (initialSearch.length === 0) {
-				if (!forTree && id !== '') {
-					isChild = true;
-					let parentProfile = configConnections.filter(profile => profile.id === id);
-					trimTitle = parentProfile[0].getOriginalTitle();
-					idToFind = parentProfile[0].id;
-				}
-				else if (forTree && secondarySearch.length === 1) {
+				if (secondarySearch.length === 1) {
 					// Sometimes the connection id will change for an object explorer connection, especially when connecting from dashboard,
 					// and it will identify as different from the stored one even without changes. Get the info for the stored version as it's the same profile.
 					idToFind = secondarySearch[0].id;
-
 				}
 				else {
 					totalConnections.concat(tempProfile);
