@@ -10,6 +10,7 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { IRange } from 'vs/editor/common/core/range';
 import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class TestQueryManagementService implements IQueryManagementService {
 	_serviceBrand: undefined;
@@ -50,7 +51,7 @@ export class TestQueryManagementService implements IQueryManagementService {
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult> {
 		throw new Error('Method not implemented.');
 	}
-	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<ResultSetSubset> {
+	getQueryRows(rowData: azdata.QueryExecuteSubsetParams, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		throw new Error('Method not implemented.');
 	}
 	async disposeQuery(ownerUri: string): Promise<void> {

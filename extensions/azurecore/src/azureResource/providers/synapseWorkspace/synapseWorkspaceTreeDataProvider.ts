@@ -27,12 +27,9 @@ export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeD
 
 	public getTreeItemForResource(synapseWorkspace: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.synapseWorkspace}${account.key.accountId}${synapseWorkspace.id ?? synapseWorkspace.name}`,
+			id: `${AzureResourcePrefixes.synapseWorkspace}${account.key.accountId}${synapseWorkspace.tenant}${synapseWorkspace.id ?? synapseWorkspace.name}`,
 			label: this.browseConnectionMode ? `${synapseWorkspace.name} (${AzureResourceSynapseWorkspaceTreeDataProvider.containerLabel}, ${synapseWorkspace.subscription.name})` : synapseWorkspace.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/azureSynapseAnalytics.svg'),
 			collapsibleState: this.browseConnectionMode ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseWorkspace,
 			payload: {
@@ -63,10 +60,7 @@ export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeD
 		return [{
 			id: AzureResourceSynapseWorkspaceTreeDataProvider.containerId,
 			label: AzureResourceSynapseWorkspaceTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/azureSynapseAnalytics.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseWorkspaceContainer
 		}];

@@ -194,7 +194,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
 		if (this._authLibrary === Constants.AuthLibrary.MSAL) {
-			const tenants = await this.getTenantsMsal(token.token);
+			const tenants = await this.getTenantsMsal(token.token, tokenClaims);
 			account = this.createAccount(tokenClaims, token.key, tenants);
 		} else { // fallback to ADAL as default
 			const tenants = await this.getTenantsAdal({ ...token });
@@ -471,7 +471,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return result;
 	}
 
-	public async getTenantsMsal(token: string): Promise<Tenant[]> {
+	public async getTenantsMsal(token: string, tokenClaims: TokenClaims): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
@@ -499,7 +499,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
-					userId: token,
+					userId: tokenClaims.oid,
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
