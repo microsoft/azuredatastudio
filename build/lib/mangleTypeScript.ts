@@ -583,22 +583,22 @@ function normalize(path: string): string {
 	return path.replace(/\\/g, '/');
 }
 
-async function _run() {
+// async function _run() {
 
-	const projectPath = path.join(__dirname, '../../src/tsconfig.json');
-	const projectBase = path.dirname(projectPath);
-	const newProjectBase = path.join(path.dirname(projectBase), path.basename(projectBase) + '2');
+// 	const projectPath = path.join(__dirname, '../../src/tsconfig.json');
+// 	const projectBase = path.dirname(projectPath);
+// 	const newProjectBase = path.join(path.dirname(projectBase), path.basename(projectBase) + '2');
 
-	for await (const [fileName, contents] of new Mangler(projectPath, console.log).computeNewFileContents(new Set(['saveState']))) {
-		const newFilePath = path.join(newProjectBase, path.relative(projectBase, fileName));
-		await fs.promises.mkdir(path.dirname(newFilePath), { recursive: true });
-		await fs.promises.writeFile(newFilePath, contents.out);
-		if (contents.sourceMap) {
-			await fs.promises.writeFile(newFilePath + '.map', contents.sourceMap);
-		}
-	}
-}
+// 	for await (const [fileName, contents] of new Mangler(projectPath, console.log).computeNewFileContents(new Set(['saveState']))) {
+// 		const newFilePath = path.join(newProjectBase, path.relative(projectBase, fileName));
+// 		await fs.promises.mkdir(path.dirname(newFilePath), { recursive: true });
+// 		await fs.promises.writeFile(newFilePath, contents.out);
+// 		if (contents.sourceMap) {
+// 			await fs.promises.writeFile(newFilePath + '.map', contents.sourceMap);
+// 		}
+// 	}
+// }
 
-if (__filename === argv[1]) {
-	_run();
-}
+// if (__filename === argv[1]) {
+// 	_run();
+// }

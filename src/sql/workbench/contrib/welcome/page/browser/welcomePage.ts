@@ -143,7 +143,7 @@ function isGuidedTourEnabled(configurationService: IConfigurationService): boole
 export class WelcomePageAction extends Action2 {
 	public static readonly ID = 'workbench.action.showWelcomePage';
 	public static readonly ORG_LABEL = 'Welcome';
-	public static readonly LABEL = localize('welcomePage', WelcomePageAction.ORG_LABEL);
+	public static readonly LABEL = localize('welcomePage', "Welcome");
 
 	constructor() {
 		super({

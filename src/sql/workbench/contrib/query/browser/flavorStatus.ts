@@ -176,18 +176,7 @@ export class ChangeFlavorAction extends Action2 {
 
 	public static ID = 'sql.action.editor.changeProvider';
 	public static LABEL_ORG = 'Change SQL Engine Provider';
-	public static LABEL = nls.localize('changeSqlProvider', ChangeFlavorAction.LABEL_ORG);
-
-
-	// actionRegistry.registerWorkbenchAction(
-	// 	SyncActionDescriptor.create(
-	// 		ChangeFlavorAction,
-	// 		ChangeFlavorAction.ID,
-	// 		ChangeFlavorAction.LABEL
-	// 	),
-	// 	'Change Language Flavor'
-	// );
-
+	public static LABEL = nls.localize('changeSqlProvider', "Change SQL Engine Provider");
 
 	constructor() {
 		super({

@@ -74,7 +74,7 @@ export class OpenExtensionAuthoringDocsAction extends Action2 {
 
 	static readonly ID = 'workbench.extensions.action.openExtensionAuthoringDocs';
 	static readonly LABEL_ORG = "Author an Extension...";
-	static readonly LABEL = localize('openExtensionAuthoringDocs', OpenExtensionAuthoringDocsAction.LABEL_ORG);
+	static readonly LABEL = localize('openExtensionAuthoringDocs', "Author an Extension...");
 	private static readonly extensionAuthoringDocsURI = 'https://docs.microsoft.com/sql/azure-data-studio/extension-authoring';
 
 	constructor() {

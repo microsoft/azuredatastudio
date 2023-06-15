@@ -62,7 +62,7 @@ let guidedTour: GuidedTour;
 export class GuidedTourAction extends Action2 {
 	public static readonly ID = 'workbench.action.createGuidedTour';
 	public static readonly ORG_LABEL = 'User Welcome Tour';
-	public static readonly LABEL = localize('guidedTour', GuidedTourAction.ORG_LABEL);
+	public static readonly LABEL = localize('guidedTour', "User Welcome Tour");
 
 	constructor() {
 		super({
@@ -85,7 +85,7 @@ export class GuidedTourAction extends Action2 {
 export class HideGuidedTourAction extends Action2 {
 	public static readonly ID = 'workbench.action.hideGuidedTour';
 	public static readonly ORG_LABEL = 'Hide Welcome Tour';
-	public static readonly LABEL = localize('hideGuidedTour', HideGuidedTourAction.ORG_LABEL);
+	public static readonly LABEL = localize('hideGuidedTour', "Hide Welcome Tour");
 
 	constructor() {
 		super({

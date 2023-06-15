@@ -19,8 +19,8 @@ import * as os from 'os';
 import ts = require('typescript');
 import * as File from 'vinyl';
 import * as task from './task';
-import { Mangler } from './mangleTypeScript';
-import { RawSourceMap } from 'source-map';
+// import { Mangler } from './mangleTypeScript';
+// import { RawSourceMap } from 'source-map';
 const watch = require('./watch');
 
 
@@ -136,29 +136,29 @@ export function compileTask(src: string, out: string, build: boolean, options: {
 		}
 
 		// mangle: TypeScript to TypeScript
-		let mangleStream = es.through();
-		if (build && !options.disableMangle) {
-			let ts2tsMangler = new Mangler(compile.projectPath, (...data) => fancyLog(ansiColors.blue('[mangler]'), ...data));
-			const newContentsByFileName = ts2tsMangler.computeNewFileContents(new Set(['saveState']));
-			mangleStream = es.through(function write(data: File & { sourceMap?: RawSourceMap }) {
-				type TypeScriptExt = typeof ts & { normalizePath(path: string): string };
-				const tsNormalPath = (<TypeScriptExt>ts).normalizePath(data.path);
-				const newContents = newContentsByFileName.get(tsNormalPath);
-				if (newContents !== undefined) {
-					data.contents = Buffer.from(newContents.out);
-					data.sourceMap = newContents.sourceMap && JSON.parse(newContents.sourceMap);
-				}
-				this.push(data);
-			}, function end() {
-				this.push(null);
-				// free resources
-				newContentsByFileName.clear();
-				(<any>ts2tsMangler) = undefined;
-			});
-		}
+		// let mangleStream = es.through();
+		// if (build && !options.disableMangle) {
+		// 	let ts2tsMangler = new Mangler(compile.projectPath, (...data) => fancyLog(ansiColors.blue('[mangler]'), ...data));
+		// 	const newContentsByFileName = ts2tsMangler.computeNewFileContents(new Set(['saveState']));
+		// 	mangleStream = es.through(function write(data: File & { sourceMap?: RawSourceMap }) {
+		// 		type TypeScriptExt = typeof ts & { normalizePath(path: string): string };
+		// 		const tsNormalPath = (<TypeScriptExt>ts).normalizePath(data.path);
+		// 		const newContents = newContentsByFileName.get(tsNormalPath);
+		// 		if (newContents !== undefined) {
+		// 			data.contents = Buffer.from(newContents.out);
+		// 			data.sourceMap = newContents.sourceMap && JSON.parse(newContents.sourceMap);
+		// 		}
+		// 		this.push(data);
+		// 	}, function end() {
+		// 		this.push(null);
+		// 		// free resources
+		// 		newContentsByFileName.clear();
+		// 		(<any>ts2tsMangler) = undefined;
+		// 	});
+		// }
 
 		return srcPipe
-			.pipe(mangleStream)
+			//.pipe(mangleStream)
 			.pipe(generator.stream)
 			.pipe(compile())
 			.pipe(gulp.dest(out));

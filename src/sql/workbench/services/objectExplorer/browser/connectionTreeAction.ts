@@ -204,7 +204,7 @@ export class AddServerAction1 extends Action {
 export class AddServerAction extends Action2 {
 	public static ID = 'registeredServers.addConnection';
 	public static LABEL_ORG = 'New Connection';
-	public static LABEL = localize('connectionTree.addConnection', AddServerAction.LABEL_ORG);
+	public static LABEL = localize('connectionTree.addConnection', "New Connection");
 
 	constructor() {
 		super({
@@ -254,7 +254,7 @@ export class AddServerAction extends Action2 {
 export class AddServerGroupAction extends Action2 {
 	public static ID = 'registeredServers.addServerGroup';
 	public static LABEL_ORG = 'New Server Group';
-	public static LABEL = localize('connectionTree.addServerGroup', AddServerGroupAction.LABEL_ORG);
+	public static LABEL = localize('connectionTree.addServerGroup', "New Server Group");
 
 	constructor() {
 		super({
@@ -302,9 +302,9 @@ export class EditServerGroupAction extends Action {
 export class ActiveConnectionsFilterAction extends Action2 {
 	public static ID = 'registeredServers.recentConnections';
 	public static SHOW_ACTIVE_CONNECTIONS_LABEL_ORG = 'Show Active Connections';
-	public static SHOW_ACTIVE_CONNECTIONS_LABEL = localize('activeConnections', ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL_ORG);
+	public static SHOW_ACTIVE_CONNECTIONS_LABEL = localize('activeConnections', "Show Active Connections");
 	public static SHOW_ALL_CONNECTIONS_LABEL_ORG = 'Show All Connections';
-	public static SHOW_ALL_CONNECTIONS_LABEL = localize('showAllConnections', ActiveConnectionsFilterAction.SHOW_ALL_CONNECTIONS_LABEL_ORG);
+	public static SHOW_ALL_CONNECTIONS_LABEL = localize('showAllConnections', "Show All Connections");
 	public static readonly ACTIVE = 'active';
 
 	constructor() {

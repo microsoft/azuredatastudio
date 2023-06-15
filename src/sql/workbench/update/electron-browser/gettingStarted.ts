@@ -13,7 +13,7 @@ import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 export class ShowGettingStartedAction extends Action2 {
 	static ID = 'update.showGettingStarted';
 	static LABEL_ORG = 'Show Getting Started';
-	static LABEL = nls.localize('showReleaseNotes', ShowGettingStartedAction.LABEL_ORG);
+	static LABEL = nls.localize('showReleaseNotes', "Show Getting Started");
 
 	constructor() {
 		super({

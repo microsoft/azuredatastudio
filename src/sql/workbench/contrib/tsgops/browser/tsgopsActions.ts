@@ -12,7 +12,7 @@ import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 export class HidePanel extends Action2 {
 	static readonly ID = 'workbench.action.hidePanel';
 	static readonly LABEL_ORG = 'Hide the panel';
-	static readonly LABEL = localize('hidePanel', HidePanel.LABEL_ORG);
+	static readonly LABEL = localize('hidePanel', "Hide the panel");
 
 	constructor() {
 		super({
@@ -30,7 +30,7 @@ export class HidePanel extends Action2 {
 export class HideSettings extends Action2 {
 	static readonly ID = 'workbench.action.hideSettings';
 	static readonly LABEL_ORG = 'Hide the settings icon';
-	static readonly LABEL = localize('hideSettings', HideSettings.LABEL_ORG);
+	static readonly LABEL = localize('hideSettings', "Hide the settings icon");
 
 	constructor() {
 		super({

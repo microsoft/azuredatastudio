@@ -907,7 +907,7 @@ export class NewNotebookTask extends Task {
 export class NewNotebookAction extends Action2 {
 	public static readonly ID = 'notebook.command.new';
 	public static readonly LABEL_ORG = 'New Notebook';
-	public static readonly LABEL = localize('newNotebookAction', NewNotebookAction.LABEL_ORG);
+	public static readonly LABEL = localize('newNotebookAction', "New Notebook");
 
 	constructor() {
 		super({

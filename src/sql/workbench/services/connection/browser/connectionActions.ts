@@ -115,7 +115,7 @@ export class ClearRecentConnectionsAction extends Action2 {
 
 	public static ID = 'clearRecentConnectionsAction';
 	public static LABEL_ORG = 'Clear List';
-	public static LABEL = nls.localize('ClearRecentlyUsedLabel', ClearRecentConnectionsAction.LABEL_ORG);
+	public static LABEL = nls.localize('ClearRecentlyUsedLabel', "Clear List");
 	public static ICON = 'search-action clear-search-results';
 
 	private _onRecentConnectionsRemoved = new Emitter<void>();
@@ -235,7 +235,7 @@ export class GetCurrentConnectionStringAction extends Action2 {
 
 	public static ID = 'getCurrentConnectionStringAction';
 	public static LABEL_ORG = 'Get Current Connection String';
-	public static LABEL = nls.localize('connectionAction.GetCurrentConnectionString', GetCurrentConnectionStringAction.LABEL_ORG);
+	public static LABEL = nls.localize('connectionAction.GetCurrentConnectionString', "Get Current Connection String");
 
 	constructor() {
 		//super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);

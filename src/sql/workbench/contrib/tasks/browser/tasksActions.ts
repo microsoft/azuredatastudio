@@ -14,7 +14,7 @@ export class ToggleTasksAction extends ToggleViewAction {
 
 	public static readonly ID = 'workbench.action.tasks.toggleTasks';
 	public static readonly LABEL_ORG = 'Toggle Tasks';
-	public static readonly LABEL = localize('toggleTasks', ToggleTasksAction.LABEL_ORG);
+	public static readonly LABEL = localize('toggleTasks', "Toggle Tasks");
 
 	constructor(
 

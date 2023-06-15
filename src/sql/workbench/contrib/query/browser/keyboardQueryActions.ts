@@ -73,7 +73,7 @@ export class FocusOnCurrentQueryKeyboardAction extends Action2 {
 
 	public static ID = 'focusOnCurrentQueryKeyboardAction';
 	public static LABEL_ORG = 'Focus on Current Query';
-	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', FocusOnCurrentQueryKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', "Focus on Current Query");
 
 	constructor() {
 		super({
@@ -100,7 +100,7 @@ export class RunQueryKeyboardAction extends Action2 {
 
 	public static ID = 'runQueryKeyboardAction';
 	public static LABEL_ORG = 'Run Query';
-	public static LABEL = nls.localize('runQueryKeyboardAction', RunQueryKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('runQueryKeyboardAction', "Run Query");
 
 	constructor() {
 		super({
@@ -126,7 +126,7 @@ export class RunQueryKeyboardAction extends Action2 {
 export class RunCurrentQueryKeyboardAction extends Action2 {
 	public static ID = 'runCurrentQueryKeyboardAction';
 	public static LABEL_ORG = 'Run Current Query';
-	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', RunCurrentQueryKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', "Run Current Query");
 
 	constructor(
 	) {
@@ -150,7 +150,7 @@ export class RunCurrentQueryKeyboardAction extends Action2 {
 export class CopyQueryWithResultsKeyboardAction extends Action2 {
 	public static ID = 'copyQueryWithResultsKeyboardAction';
 	public static LABEL_ORG = 'Copy Query With Results';
-	public static LABEL = nls.localize('copyQueryWithResultsKeyboardAction', CopyQueryWithResultsKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('copyQueryWithResultsKeyboardAction', "Copy Query With Results");
 
 	constructor() {
 		super({
@@ -227,7 +227,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action2 {
 export class EstimatedExecutionPlanKeyboardAction extends Action2 {
 	public static ID = 'estimatedExecutionPlanKeyboardAction';
 	public static LABEL_ORG = 'Display Estimated Execution Plan';
-	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', EstimatedExecutionPlanKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', "Display Estimated Execution Plan");
 
 	constructor() {
 		super({
@@ -251,7 +251,7 @@ export class EstimatedExecutionPlanKeyboardAction extends Action2 {
 export class ToggleActualPlanKeyboardAction extends Action2 {
 	public static ID = 'ToggleActualPlanKeyboardAction';
 	public static LABEL_ORG = 'Enable/Disable Actual Execution Plan';
-	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', ToggleActualPlanKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', "Enable/Disable Actual Execution Plan");
 
 	constructor() {
 		super({
@@ -279,7 +279,7 @@ export class ToggleActualPlanKeyboardAction extends Action2 {
 export class CancelQueryKeyboardAction extends Action2 {
 	public static ID = 'cancelQueryKeyboardAction';
 	public static LABEL_ORG = 'Cancel Query';
-	public static LABEL = nls.localize('cancelQueryKeyboardAction', CancelQueryKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('cancelQueryKeyboardAction', "Cancel Query");
 
 	constructor() {
 		super({
@@ -333,7 +333,7 @@ export class RefreshIntellisenseKeyboardAction extends Action2 {
 export class ToggleQueryResultsKeyboardAction extends Action2 {
 	public static ID = 'toggleQueryResultsKeyboardAction';
 	public static LABEL_ORG = 'Toggle Query Results';
-	public static LABEL = nls.localize('toggleQueryResultsKeyboardAction', ToggleQueryResultsKeyboardAction.LABEL_ORG);
+	public static LABEL = nls.localize('toggleQueryResultsKeyboardAction', "Toggle Query Results");
 
 	constructor() {
 		super({
@@ -363,7 +363,7 @@ export class ToggleQueryResultsKeyboardAction extends Action2 {
 export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action2 {
 	public static ID = 'ToggleFocusBetweenQueryEditorAndResultsAction';
 	public static LABEL_ORG = 'Toggle Focus Between Query And Results';
-	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', ToggleFocusBetweenQueryEditorAndResultsAction.LABEL_ORG);
+	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', "Toggle Focus Between Query And Results");
 
 	constructor() {
 		super({
