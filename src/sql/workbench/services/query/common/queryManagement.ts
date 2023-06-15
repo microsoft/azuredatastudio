@@ -124,7 +124,7 @@ export class QueryManagementService implements IQueryManagementService {
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@ILogService private _logService: ILogService,
+		@ILogService private _logService: ILogService
 	) {
 	}
 
@@ -278,9 +278,10 @@ export class QueryManagementService implements IQueryManagementService {
 			const result = [];
 			let start = rowData.rowsStartIndex;
 			this._logService.trace(`Getting ${rowData.rowsCount} rows starting from index: ${rowData.rowsStartIndex}.`);
+			let pageIdx = 1;
 			do {
 				const rowCount = Math.min(pageSize, rowData.rowsStartIndex + rowData.rowsCount - start);
-				this._logService.trace(`Paged Fetch - Getting ${rowCount} rows starting from index: ${start}.`);
+				this._logService.trace(`Page ${pageIdx} - Getting ${rowCount} rows starting from index: ${start}.`);
 				const rowSet = await runner.getQueryRows({
 					ownerUri: rowData.ownerUri,
 					batchIndex: rowData.batchIndex,
@@ -288,9 +289,10 @@ export class QueryManagementService implements IQueryManagementService {
 					rowsCount: rowCount,
 					rowsStartIndex: start
 				});
-				this._logService.trace(`Paged Fetch - Received ${rowSet.resultSubset.rows} rows starting from index: ${start}.`);
+				this._logService.trace(`Page ${pageIdx} - Received ${rowSet.resultSubset.rows.length} rows starting from index: ${start}.`);
 				result.push(...rowSet.resultSubset.rows);
 				start += rowCount;
+				pageIdx++;
 				if (onProgressCallback) {
 					onProgressCallback(start - rowData.rowsStartIndex);
 				}

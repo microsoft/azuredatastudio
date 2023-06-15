@@ -61,7 +61,7 @@ suite('SQL QueryAction Tests', () => {
 
 		editor.setup(x => x.getSelection()).returns(() => undefined);
 		editor.setup(x => x.getSelection(false)).returns(() => undefined);
-		editor.setup(x => x.isSelectionEmpty()).returns(() => false);
+		editor.setup(x => x.isEditorEmpty()).returns(() => false);
 		editor.setup(x => x.getSelections()).returns(() => [undefined]);
 		configurationService = TypeMoq.Mock.ofInstance({
 			getValue: () => undefined,
@@ -212,7 +212,7 @@ suite('SQL QueryAction Tests', () => {
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
-		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => isSelectionEmpty);
+		queryEditor.setup(x => x.isEditorEmpty()).returns(() => isSelectionEmpty);
 		queryEditor.setup(x => x.getSelections()).returns(() => [undefined]);
 
 		// If I call run on RunQueryAction when I have a non empty selection
@@ -270,7 +270,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(),
 			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined, undefined, undefined, undefined, undefined, new TestTextResourceConfigurationService());
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
-		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => false);
+		queryEditor.setup(x => x.isEditorEmpty()).returns(() => false);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
 			return selectionToReturnInGetSelection;
 		});
@@ -646,7 +646,7 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.runCurrent();
 
 		// Selection is empty
-		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => true);
+		queryEditor.setup(x => x.isEditorEmpty()).returns(() => true);
 
 		//connection dialog should not open and runQueryStatement should not be called
 		assert.strictEqual(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatemet');

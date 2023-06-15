@@ -2,32 +2,37 @@
 Needs Logs:
   comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
 
-First open the Settings page, find the `Mssql: Tracing Level` setting and change that to `All` then restart ADS and repro your issue.
+1. First open the Settings page, find the `Mssql: Tracing Level` setting and change that to `All` then restart ADS.
+2. Open Command Palette (Click **View** -> **Command Palette**) and run the command `Developer: Set Log Level...` and set the level to `Trace`.
+3. Run your reproduce scenarios
+4. Collect the following logs:
 
-Next there are two types of logs to collect:
-
-
-**Console Logs**
-
-
-- Open Developer Tools (Help -> Toggle Developer Tools)
-
-- Click the **Console** tab
-
-- Click in the log area and select all text (CTRL+A)
-
-- Save this text into a file named console.log and attach it to this issue.
-
-- Developer Tools can be closed via Help -> Toggle Developer Tools
-
-**Application Logs**
+      **Console Logs**
 
 
-- Open command palette (Click **View** -> **Command Palette**)
+      - Open Developer Tools (Help -> Toggle Developer Tools)
 
-- Run the command: **`Developer: Open Logs Folder`**
+      - Click the **Console** tab
 
-- This will open the log folder locally. Please zip up this folder and attach it to the issue."
+      - Click in the log area and select all text (CTRL+A)
+
+      - Save this text into a file named console.log and attach it to this issue.
+
+      - Developer Tools can be closed via Help -> Toggle Developer Tools
+
+
+      **Application Logs**
+
+
+      - Open command palette (Click **View** -> **Command Palette**)
+
+      - Run the command: **`Developer: Open Logs Folder`**
+
+      - This will open the log folder locally. Please zip up this folder and attach it to the issue.
+
+
+5. Now you can revert the Log/Tracing levels changes.
+"
 
 # actions for Needs Logs - Azure label
 Needs Logs - Azure:
