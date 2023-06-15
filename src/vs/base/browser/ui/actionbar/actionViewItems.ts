@@ -446,7 +446,7 @@ export class ActionViewItem extends BaseActionViewItem {
 	}
 
 	// {{SQL CARBON EDIT}} - BEGIN
-	override updateExpanded(): void {
+	protected override updateExpanded(): void {
 		if (this.label) {
 			if (this.action.expanded !== undefined) {
 				this.label.setAttribute('aria-expanded', `${this.action.expanded}`);
@@ -456,7 +456,7 @@ export class ActionViewItem extends BaseActionViewItem {
 		}
 	}
 
-	override updateTooltip(): void {
+	protected override updateTooltip(): void {
 		super.updateTooltip();
 		const tooltip = this.getTooltip();
 		if (tooltip) {

@@ -40,7 +40,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		super(_action, undefined, labeledkeybindingService, _notificationService, _contextKeyService, _themeService, _contextMenuService);
 	}
 
-	override updateLabel(): void {
+	protected override updateLabel(): void {
 		if (this.label) {
 			this.label.innerText = this._commandAction.label;
 		}
@@ -115,7 +115,7 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		super(action, undefined, keybindingService, notificationService, contextKeyService, _themeService, _contextMenuService);
 	}
 
-	override updateLabel(): void {
+	protected override updateLabel(): void {
 		if (this.label) {
 			this.label.innerText = this._commandAction.label;
 		}

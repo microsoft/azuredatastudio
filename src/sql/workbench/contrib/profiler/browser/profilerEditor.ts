@@ -336,7 +336,7 @@ export class ProfilerEditor extends EditorPane {
 			}
 		});
 		this._profilerTableEditor = this._instantiationService.createInstance(ProfilerTableEditor);
-		this._profilerTableEditor.createEditor(profilerTableContainer);
+		(<any>this._profilerTableEditor).createEditor(profilerTableContainer);
 		this._profilerTableEditor.onSelectedRowsChanged((e, args) => {
 			let data = this.input.data.getItem(args.rows[0]);
 			if (data) {

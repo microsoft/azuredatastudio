@@ -387,11 +387,11 @@ class ProviderElementRenderer extends BaseTreeItemRender<ConnectionDialogTreePro
 		super(menus, actionViewItemProvider);
 	}
 
-	getText(element: ConnectionDialogTreeProviderElement): string {
+	protected getText(element: ConnectionDialogTreeProviderElement): string {
 		return element.name;
 	}
 
-	getIconClass(element: ConnectionDialogTreeProviderElement): string {
+	protected getIconClass(element: ConnectionDialogTreeProviderElement): string {
 		return 'codicon-folder';
 	}
 }
@@ -400,11 +400,11 @@ class SavedConnectionsNodeRenderer extends BaseTreeItemRender<SavedConnectionNod
 	public static readonly TEMPLATE_ID = 'savedConnectionNode';
 	public readonly templateId = SavedConnectionsNodeRenderer.TEMPLATE_ID;
 
-	getText(element: SavedConnectionNode): string {
+	protected getText(element: SavedConnectionNode): string {
 		return localize('savedConnections', "Saved Connections");
 	}
 
-	getIconClass(element: SavedConnectionNode): string {
+	protected getIconClass(element: SavedConnectionNode): string {
 		return 'codicon-folder';
 	}
 }
@@ -413,11 +413,11 @@ class ConnectionProfileGroupRenderer extends BaseTreeItemRender<ConnectionProfil
 	public static readonly TEMPLATE_ID = 'connectionProfileGroup';
 	public readonly templateId = ConnectionProfileGroupRenderer.TEMPLATE_ID;
 
-	getText(element: ConnectionProfileGroup): string {
+	protected getText(element: ConnectionProfileGroup): string {
 		return element.name;
 	}
 
-	getIconClass(element: ConnectionProfileGroup): string {
+	protected getIconClass(element: ConnectionProfileGroup): string {
 		return 'codicon-folder';
 	}
 }

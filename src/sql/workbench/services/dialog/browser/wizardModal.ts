@@ -61,7 +61,7 @@ export class WizardModal extends Modal {
 		this._useDefaultMessageBoxLocation = false;
 	}
 
-	public layout(): void {
+	protected layout(): void {
 
 	}
 

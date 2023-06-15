@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { SqlIconId } from 'sql/base/common/codicons';
 import { Codicon } from 'vs/base/common/codicons';
 
 export type ColorIdentifier = string;
@@ -68,12 +69,20 @@ export namespace ThemeIcon {
 		if (!match) {
 			return asClassNameArray(Codicon.error);
 		}
+
+		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
 		const [, id, modifier] = match;
-		const classNames = ['codicon', 'codicon-' + id];
-		if (modifier) {
-			classNames.push('codicon-modifier-' + modifier.substring(1));
+		let sqlCarbonIcons: string[] = [SqlIconId.activeConnectionsAction, SqlIconId.addServerAction, SqlIconId.addServerGroupAction, SqlIconId.serverPage];
+		if (sqlCarbonIcons.includes(id)) {
+			return ['codicon', id];
+			// {{SQL CARBON EDIT}} End of edit
+		} else {
+			const classNames = ['codicon', 'codicon-' + id];
+			if (modifier) {
+				classNames.push('codicon-modifier-' + modifier.substring(1));
+			}
+			return classNames;
 		}
-		return classNames;
 	}
 
 	export function asClassName(icon: ThemeIcon): string {

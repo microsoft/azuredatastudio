@@ -154,7 +154,7 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		parent.classList.add('query-editor');
 
 		this.splitviewContainer = DOM.$('.query-editor-view');
@@ -453,7 +453,7 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
-	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
+	protected override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		this.textFileEditor.setVisible(visible, group);
 		this.textResourceEditor.setVisible(visible, group);
 		this.resultsEditor.setVisible(visible, group);

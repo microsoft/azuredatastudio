@@ -25,7 +25,7 @@ export interface IColorMapping {
 }
 
 export interface IComputedStyles {
-	[color: string]: Color | undefined;
+	[color: string]: string | Color | undefined;
 }
 
 export function computeStyles(theme: IColorTheme, styleMap: IColorMapping): IComputedStyles {
@@ -33,7 +33,11 @@ export function computeStyles(theme: IColorTheme, styleMap: IColorMapping): ICom
 	for (const key in styleMap) {
 		const value = styleMap[key];
 		if (value) {
-			styles[key] = resolveColorValue(value, theme);
+			let color: any = resolveColorValue(value, theme);
+			if (color) {
+				color = color.toString();
+			}
+			styles[key] = color;
 		}
 	}
 

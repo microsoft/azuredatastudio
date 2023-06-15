@@ -61,7 +61,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	 * This method overrides the original implementation to find the node by comparing the ids of the elements.
 	 * If the node is not found in the original implementation, we search for the node in the nodes map by ids.
 	 */
-	public override getDataNode(element: ServerTreeElement, throwError: boolean = true): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
+	protected override getDataNode(element: ServerTreeElement, throwError: boolean = true): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
 		try {
 			const node = super.getDataNode(element);
 			return node;

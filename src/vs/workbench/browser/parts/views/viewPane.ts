@@ -516,7 +516,7 @@ export abstract class ViewPane extends Pane implements IView {
 		this.headerContainer.classList.toggle('actions-always-visible', shouldAlwaysShowActions);
 	}
 
-	protected updateActions(): void {
+	public updateActions(): void { // {{SQL CARBON EDIT}} - Add public modifier
 		this.setActions();
 		this._onDidChangeTitleArea.fire();
 	}

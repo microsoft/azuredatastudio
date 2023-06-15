@@ -50,7 +50,7 @@ export class DialogModal extends Modal {
 		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
-	public layout(): void {
+	protected layout(): void {
 		this._dialogPane.layout();
 	}
 

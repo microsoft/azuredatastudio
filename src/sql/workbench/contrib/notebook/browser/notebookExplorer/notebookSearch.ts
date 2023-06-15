@@ -193,7 +193,7 @@ export class NotebookSearchView extends SearchView {
 		}
 	}
 
-	override renderBody(parent: HTMLElement): void {
+	protected override renderBody(parent: HTMLElement): void {
 		super.callRenderBody(parent);
 
 		this.container = dom.append(parent, dom.$('.search-view'));
