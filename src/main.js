@@ -27,17 +27,17 @@ const { getUNCHost, addUNCHostToAllowlist } = require('./vs/base/node/unc');
 const product = require('../product.json');
 const { app, protocol, crashReporter, Menu } = require('electron');
 
-// Enable sandbox globally
-//app.enableSandbox(); // {{SQL CARBON EDIT}} - disable sandbox
-
 // Enable portable support
 const portable = bootstrapNode.configurePortable(product);
 
 // Enable ASAR support
 bootstrap.enableASARSupport();
 
-// Set userData path before app 'ready' event
+// Enable sandbox globally unless disabled via `--no-sandbox` argument
 const args = parseCLIArgs();
+// if (args['sandbox']) {  // {{SQL CARBON EDIT}} - disable sandbox
+//	app.enableSandbox();
+// }
 
 if (args['nogpu']) { // {{SQL CARBON EDIT}}
 	app.disableHardwareAcceleration(); // {{SQL CARBON EDIT}}
@@ -45,7 +45,9 @@ if (args['nogpu']) { // {{SQL CARBON EDIT}}
 	app.commandLine.appendSwitch('disable-gpu'); // {{SQL CARBON EDIT}}
 } // {{SQL CARBON EDIT}}
 
-const userDataPath = getUserDataPath(args, product.nameShort ?? 'ads-oss-dev');  // {{SQL CARBON EDIT}} - ads path
+
+// Set userData path before app 'ready' event
+const userDataPath = getUserDataPath(args, product.nameShort ?? 'azuredatastudio-oss-dev'); // {{SQL CARBON EDIT}} - change app name
 if (process.platform === 'win32') {
 	const userDataUNCHost = getUNCHost(userDataPath);
 	if (userDataUNCHost) {
@@ -473,7 +475,13 @@ function parseCLIArgs() {
 			'locale',
 			'js-flags',
 			'crash-reporter-directory'
-		]
+		],
+		default: {
+			'sandbox': false // {{SQL CARBON EDIT} - set sandbox to false
+		},
+		alias: {
+			'no-sandbox': 'sandbox'
+		}
 	});
 }
 
