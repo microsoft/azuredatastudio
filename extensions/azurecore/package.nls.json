@@ -28,5 +28,5 @@
 	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the Azure Accounts output channel and the output channel log file.",
 	"config.loggingLevel": "[Optional] The verbosity of logging for the Azure Accounts extension.",
 	"config.authenticationLibrary": "The library used for the AAD auth flow. Please restart ADS after changing this option.",
-	"config.providerSettingsJson": "Please provide file path for import of custom Azure endpoints from a JSON file. Please restart ADS after changing this option."
+	"config.providerSettingsJson": "JSON file path containing custom Azure authentication endpoints. Please restart ADS after changing this option."
 }
