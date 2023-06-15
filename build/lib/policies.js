@@ -490,9 +490,9 @@ async function parsePolicies() {
     return policies;
 }
 async function getTranslations() {
-    const updateUrl = product.updateUrl;
-    if (!updateUrl) {
-        console.warn(`Skipping policy localization: No 'updateUrl' found in 'product.json'.`);
+    const extensionGalleryServiceUrl = product.extensionsGallery?.serviceUrl;
+    if (!extensionGalleryServiceUrl) {
+        console.warn(`Skipping policy localization: No 'extensionGallery.serviceUrl' found in 'product.json'.`);
         return [];
     }
     const resourceUrlTemplate = product.extensionsGallery?.resourceUrlTemplate;

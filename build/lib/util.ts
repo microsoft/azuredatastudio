@@ -15,6 +15,7 @@ import { ThroughStream } from 'through';
 import * as sm from 'source-map';
 import { pathToFileURL } from 'url';
 import * as ternaryStream from 'ternary-stream';
+import * as git from './git'; // {{SQL CARBON EDIT}} - add for get version
 
 const root = path.dirname(path.dirname(__dirname));
 
@@ -341,6 +342,16 @@ export function ensureDir(dirPath: string): void {
 	}
 	ensureDir(path.dirname(dirPath));
 	fs.mkdirSync(dirPath);
+}
+
+export function getVersion(root: string): string | undefined {
+	let version = process.env['VSCODE_DISTRO_COMMIT'] || process.env['BUILD_SOURCEVERSION'];
+
+	if (!version || !/^[0-9a-f]{40}$/i.test(version.trim())) {
+		version = git.getVersion(root);
+	}
+
+	return version;
 }
 
 export function rebase(count: number): NodeJS.ReadWriteStream {

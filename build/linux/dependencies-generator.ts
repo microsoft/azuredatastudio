@@ -3,11 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
 import { spawnSync } from 'child_process';
-import { constants, statSync } from 'fs';
 import path = require('path');
-import { additionalDeps, bundledDeps/*, referenceGeneratedDepsByArch*/ } from './dep-lists'; // {{SQL CARBON EDIT}} Not needed
-import { ArchString } from './types';
+import { generatePackageDeps as generatePackageDepsDebian } from './debian/calculate-deps';
+import { generatePackageDeps as generatePackageDepsRpm } from './rpm/calculate-deps';
+// import { referenceGeneratedDepsByArch as debianGeneratedDeps } from './debian/dep-lists';  // {{SQL CARBON EDIT}} remove unused import
+// import { referenceGeneratedDepsByArch as rpmGeneratedDeps } from './rpm/dep-lists';
+import { DebianArchString, isDebianArchString } from './debian/types';
+import { isRpmArchString, /*RpmArchString*/ } from './rpm/types'; // {{SQL CARBON EDIT}} remove unused import
 
 // A flag that can easily be toggled.
 // Make sure to compile the build directory after toggling the value.
@@ -18,12 +22,35 @@ import { ArchString } from './types';
 // are valid, are in dep-lists.ts
 // const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false; // {{SQL CARBON EDIT}} Not needed
 
-export function getDependencies(buildDir: string, applicationName: string, arch: ArchString): string[] {
+// Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/108.0.5359.215:chrome/installer/linux/BUILD.gn;l=64-80
+// and the Linux Archive build
+// Shared library dependencies that we already bundle.
+const bundledDeps = [
+	'libEGL.so',
+	'libGLESv2.so',
+	'libvulkan.so.1',
+	'libvk_swiftshader.so',
+	'libffmpeg.so'
+];
+
+export function getDependencies(packageType: 'deb' | 'rpm', buildDir: string, applicationName: string, arch: string, sysroot?: string): string[] {
+	if (packageType === 'deb') {
+		if (!isDebianArchString(arch)) {
+			throw new Error('Invalid Debian arch string ' + arch);
+		}
+		if (!sysroot) {
+			throw new Error('Missing sysroot parameter');
+		}
+	}
+	if (packageType === 'rpm' && !isRpmArchString(arch)) {
+		throw new Error('Invalid RPM arch string ' + arch);
+	}
+
 	// Get the files for which we want to find dependencies.
 	const nativeModulesPath = path.join(buildDir, 'resources', 'app', 'node_modules.asar.unpacked');
 	const findResult = spawnSync('find', [nativeModulesPath, '-name', '*.node']);
 	if (findResult.status) {
-		console.error(`Error finding files for ${arch}:`);
+		console.error('Error finding files:');
 		console.error(findResult.stderr.toString());
 		return [];
 	}
@@ -38,24 +65,17 @@ export function getDependencies(buildDir: string, applicationName: string, arch:
 	files.push(path.join(buildDir, 'chrome_crashpad_handler'));
 
 	// Generate the dependencies.
-	const dependencies: Set<string>[] = files.map((file) => calculatePackageDeps(file));
-
-	// Add additional dependencies.
-	const additionalDepsSet = new Set(additionalDeps);
-	dependencies.push(additionalDepsSet);
+	const dependencies = packageType === 'deb' ?
+		generatePackageDepsDebian(files, arch as DebianArchString, sysroot!) :
+		generatePackageDepsRpm(files);
 
 	// Merge all the dependencies.
 	const mergedDependencies = mergePackageDeps(dependencies);
-	let sortedDependencies: string[] = [];
-	for (const dependency of mergedDependencies) {
-		sortedDependencies.push(dependency);
-	}
-	sortedDependencies.sort();
 
-	// Exclude bundled dependencies
-	sortedDependencies = sortedDependencies.filter(dependency => {
+	// Exclude bundled dependencies and sort
+	const sortedDependencies: string[] = Array.from(mergedDependencies).filter(dependency => {
 		return !bundledDeps.some(bundledDep => dependency.startsWith(bundledDep));
-	});
+	}).sort();
 
 	/* {{SQL CARBON EDIT}} Not needed
 	const referenceGeneratedDeps = referenceGeneratedDepsByArch[arch];

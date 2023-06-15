@@ -4,22 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra'; // {{SQL CARBON EDIT}} - use fs-extra instead of fs
 import { makeUniversalApp } from 'vscode-universal-bundler';
 import { spawn } from '@malept/cross-spawn-promise';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as product from '../../product.json';
 import * as glob from 'glob'; // {{SQL CARBON EDIT}}
 
-async function main() {
-	const buildDir = process.env['AGENT_BUILDDIRECTORY'];
+const root = path.dirname(path.dirname(__dirname));
+
+async function main(buildDir?: string) {
 	const arch = process.env['VSCODE_ARCH'];
 
 	if (!buildDir) {
 		throw new Error('Build dir not provided');
 	}
 
+	const product = JSON.parse(fs.readFileSync(path.join(root, 'product.json'), 'utf8'));
 	const x64AppNameBase = 'azuredatastudio-darwin-x64';
 	const arm64AppNameBase = 'azuredatastudio-darwin-arm64';
 	// {{SQL CARBON EDIT}} - END

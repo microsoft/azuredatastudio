@@ -5,8 +5,8 @@
 
 import * as ts from 'typescript';
 import * as path from 'path';
-import * as fs from 'fs';
-import { argv } from 'process';
+// import * as fs from 'fs'; // {{SQL CARBON EDIT}} - disable unused
+// import { argv } from 'process';
 import { Mapping, SourceMapGenerator } from 'source-map';
 import { pathToFileURL } from 'url';
 

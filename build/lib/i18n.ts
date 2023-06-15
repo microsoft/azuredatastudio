@@ -50,8 +50,14 @@ export const extraLanguages: Language[] = [
 	{ id: 'tr', folderName: 'trk' }
 ];
 
-export interface Map<V> {	// {{SQL CARBON EDIT}} Needed in locfunc.
+export interface StringMap<V> {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	[key: string]: V;
+}
+
+export interface ParsedXLF {	// {{SQL CARBON EDIT}} Needed in locfunc.
+	messages: StringMap<string>;
+	originalFilePath: string;
+	language: string;
 }
 interface Item {
 	id: string;
@@ -62,10 +68,6 @@ interface Item {
 export interface Resource {
 	name: string;
 	project: string;
-export interface ParsedXLF {	// {{SQL CARBON EDIT}} Needed in locfunc.
-	messages: Map<string>;
-	originalFilePath: string;
-	language: string;
 }
 
 interface LocalizeInfo {
@@ -240,6 +242,88 @@ export class XLF {
 		line.append(content);
 		this.buffer.push(line.toString());
 	}
+
+	static parsePseudo = function (xlfString: string): Promise<ParsedXLF[]> {
+		return new Promise((resolve) => {
+			const parser = new xml2js.Parser();
+			const files: { messages: StringMap<string>; originalFilePath: string; language: string }[] = [];
+			parser.parseString(xlfString, function (_err: any, result: any) {
+				const fileNodes: any[] = result['xliff']['file'];
+				fileNodes.forEach(file => {
+					const originalFilePath = file.$.original;
+					const messages: StringMap<string> = {};
+					const transUnits = file.body[0]['trans-unit'];
+					if (transUnits) {
+						transUnits.forEach((unit: any) => {
+							const key = unit.$.id;
+							const val = pseudify(unit.source[0]['_'].toString());
+							if (key && val) {
+								messages[key] = decodeEntities(val);
+							}
+						});
+						files.push({ messages: messages, originalFilePath: originalFilePath, language: 'ps' });
+					}
+				});
+				resolve(files);
+			});
+		});
+	};
+
+
+	static org_parse = function (xlfString: string): Promise<ParsedXLF[]> {
+		return new Promise((resolve, reject) => {
+			const parser = new xml2js.Parser();
+
+			const files: { messages: StringMap<string>; originalFilePath: string; language: string }[] = [];
+
+			parser.parseString(xlfString, function (err: any, result: any) {
+				if (err) {
+					reject(new Error(`XLF parsing error: Failed to parse XLIFF string. ${err}`));
+				}
+
+				const fileNodes: any[] = result['xliff']['file'];
+				if (!fileNodes) {
+					reject(new Error(`XLF parsing error: XLIFF file does not contain "xliff" or "file" node(s) required for parsing.`));
+				}
+
+				fileNodes.forEach((file) => {
+					const originalFilePath = file.$.original;
+					if (!originalFilePath) {
+						reject(new Error(`XLF parsing error: XLIFF file node does not contain original attribute to determine the original location of the resource file.`));
+					}
+					const language = file.$['target-language'];
+					if (!language) {
+						reject(new Error(`XLF parsing error: XLIFF file node does not contain target-language attribute to determine translated language.`));
+					}
+					const messages: StringMap<string> = {};
+
+					const transUnits = file.body[0]['trans-unit'];
+					if (transUnits) {
+						transUnits.forEach((unit: any) => {
+							const key = unit.$.id;
+							if (!unit.target) {
+								return; // No translation available
+							}
+
+							let val = unit.target[0];
+							if (typeof val !== 'string') {
+								// We allow empty source values so support them for translations as well.
+								val = val._ ? val._ : '';
+							}
+							if (!key) {
+								reject(new Error(`XLF parsing error: trans-unit ${JSON.stringify(unit, undefined, 0)} defined in file ${originalFilePath} is missing the ID attribute.`));
+								return;
+							}
+							messages[key] = decodeEntities(val);
+						});
+						files.push({ messages: messages, originalFilePath: originalFilePath, language: language.toLowerCase() });
+					}
+				});
+
+				resolve(files);
+			});
+		});
+	};
 
 	static parse = function (xlfString: string): Promise<l10nJsonDetails[]> {
 		return new Promise((resolve, reject) => {
@@ -810,8 +894,8 @@ export function createXlfFilesForIsl(): ThroughStream {
 	});
 }
 
-function createI18nFile(originalFilePath: string, messages: any): File {
-	let result = Object.create(null);
+export function createI18nFile(name: string, messages: any): File { // {{SQL CARBON EDIT}} Needed for locfunc.
+	const result = Object.create(null);
 	result[''] = [
 		'--------------------------------------------------------------------------------------------',
 		'Copyright (c) Microsoft Corporation. All rights reserved.',
@@ -1007,4 +1091,8 @@ function encodeEntities(value: string): string {
 
 function decodeEntities(value: string): string {
 	return value.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+}
+
+function pseudify(message: string) {
+	return '\uFF3B' + message.replace(/[aouei]/g, '$&$&') + '\uFF3D';
 }

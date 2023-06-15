@@ -61,16 +61,6 @@ native-watchdog/build/**
 native-watchdog/src/**
 !native-watchdog/build/Release/*.node
 
-spdlog/binding.gyp
-spdlog/build/**
-spdlog/deps/**
-spdlog/src/**
-spdlog/test/**
-spdlog/*.yml
-!spdlog/build/Release/*.node
-
-jschardet/dist/**
-
 node-vsce-sign/**
 !node-vsce-sign/src/main.js
 !node-vsce-sign/package.json
@@ -91,6 +81,7 @@ keytar/node_modules/**
 node-pty/binding.gyp
 node-pty/build/**
 node-pty/src/**
+node-pty/lib/*.test.js
 node-pty/tools/**
 node-pty/deps/**
 node-pty/scripts/**
@@ -122,18 +113,6 @@ slickgrid/examples/**
 kerberos/build/**
 
 # END SQL Modules
-
-nsfw/binding.gyp
-nsfw/build/**
-nsfw/src/**
-nsfw/includes/**
-!nsfw/build/Release/*.node
-
-vscode-nsfw/binding.gyp
-vscode-nsfw/build/**
-vscode-nsfw/src/**
-vscode-nsfw/includes/**
-!vscode-nsfw/build/Release/*.node
 
 @parcel/watcher/binding.gyp
 @parcel/watcher/build/**
@@ -187,6 +166,9 @@ prebuild-install/**/*
 **/README.md
 **/readme.md
 **/readme.markdown
+**/CODE_OF_CONDUCT.md
+**/SUPPORT.md
+**/CONTRIBUTING.md
 
 **/*.ts
 
@@ -197,7 +179,9 @@ typescript/lib/tsserverlibrary.js
 # We still need to include stdlib d.ts
 !typescript/lib/lib*.d.ts
 
-jschardet/dist/**
+jschardet/index.js
+jschardet/src/**
+jschardet/dist/jschardet.js
 
 es6-promise/lib/**
 

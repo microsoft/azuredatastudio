@@ -104,7 +104,10 @@ function hasModifier(modifiers, kind) {
     return false;
 }
 function isStatic(ts, member) {
-    return hasModifier(member.modifiers, ts.SyntaxKind.StaticKeyword);
+    if (ts.canHaveModifiers(member)) {
+        return hasModifier(ts.getModifiers(member), ts.SyntaxKind.StaticKeyword);
+    }
+    return false;
 }
 function isDefaultExport(ts, declaration) {
     return (hasModifier(declaration.modifiers, ts.SyntaxKind.DefaultKeyword)

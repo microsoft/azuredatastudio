@@ -52,7 +52,8 @@ async function main(buildDir) {
         // TODO(deepak1556): Incorrectly declared type in electron-osx-sign
         ignore: (filePath) => {
             return filePath.includes(gpuHelperAppName) ||
-                filePath.includes(rendererHelperAppName);
+                filePath.includes(rendererHelperAppName) ||
+                filePath.includes(pluginHelperAppName);
         }
     };
     const gpuHelperOpts = {
@@ -66,6 +67,12 @@ async function main(buildDir) {
         app: path.join(appFrameworkPath, rendererHelperAppName),
         entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist'),
         'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist'),
+    };
+    const pluginHelperOpts = {
+        ...defaultOpts,
+        app: path.join(appFrameworkPath, pluginHelperAppName),
+        entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-plugin-entitlements.plist'),
+        'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-plugin-entitlements.plist'),
     };
     // Only overwrite plist entries for x64 and arm64 builds,
     // universal will get its copy from the x64 build.
