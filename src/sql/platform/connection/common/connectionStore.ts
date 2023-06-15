@@ -250,7 +250,7 @@ export class ConnectionStore {
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
 			let equal = value && value.connectionName === savedProfile.connectionName;
-			equal = equal && value.getConnectionInfoId(true) === savedProfile.getConnectionInfoId(true);
+			equal = equal && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -269,7 +269,7 @@ export class ConnectionStore {
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
 			let equal = value && value.connectionName === savedProfile.connectionName;
-			equal = equal && value.getConnectionInfoId(true) === savedProfile.getConnectionInfoId(true);
+			equal = equal && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
