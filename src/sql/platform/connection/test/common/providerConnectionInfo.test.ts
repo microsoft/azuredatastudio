@@ -24,6 +24,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: undefined,
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
 		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
