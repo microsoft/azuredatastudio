@@ -43,7 +43,6 @@ const dirs = [
 	'extensions/notebook',
 	'extensions/notebook-renderers',
 	'extensions/profiler',
-	'extensions/python',
 	'extensions/query-history',
 	'extensions/resource-deployment',
 	'extensions/schema-compare',
@@ -55,7 +54,6 @@ const dirs = [
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
 	'extensions/vscode-test-resolver',
-	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End
 	'remote',
 	'remote/web',
