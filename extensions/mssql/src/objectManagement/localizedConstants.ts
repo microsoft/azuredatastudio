@@ -155,7 +155,12 @@ export const CollationText = localize('objectManagement.collationLabel', "Collat
 export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
 export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");
 export const ContainmentTypeText = localize('objectManagement.containmentTypeLabel', "Containment Type");
-
+export const ConfigureSLOSectionHeader = localize('objectManagement.configureSLOSectionHeader', "Configure SLO");
+export const BackupRedundancyText = localize('objectManagement.backupRedundancyLabel', "Backup Storage Redundancy");
+export const CurrentSLOText = localize('objectManagement.currentSLOLabel', "Current Service Level Objective");
+export const EditionText = localize('objectManagement.editionLabel', "Edition");
+export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
+export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

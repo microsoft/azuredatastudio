@@ -13,9 +13,7 @@ import { IDacpacReferenceSettings, INugetPackageReferenceSettings, IProjectRefer
 import { Project } from '../models/project';
 import { getSystemDbOptions, promptDacpacLocation } from './addDatabaseReferenceDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { ProjectType } from 'mssql';
-
-
+import { ProjectType, SystemDbReferenceType } from 'vscode-mssql';
 
 /**
  * Create flow for adding a database reference using only VS Code-native APIs such as QuickPick
@@ -118,16 +116,27 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 
 	const selectedSystemDb = await vscode.window.showQuickPick(
 		getSystemDbOptions(project),
-		{ title: constants.systemDatabase, ignoreFocusOut: true, });
+		{ title: constants.systemDatabase, ignoreFocusOut: true });
 	if (!selectedSystemDb) {
 		// User cancelled
 		return undefined;
 	}
 
-	// 3. Prompt DB name
-	const dbName = await promptDbName(selectedSystemDb);
+	// 3 Prompt for Reference Type if it's an SDK-style project
+	const referenceType = await promptReferenceType(project);
+	if (referenceType === undefined) { // need to check for specifically undefined here because the enum SystemDbReferenceType.ArtifactReference evaluates to 0
+		// User cancelled
+		return undefined;
+	}
 
-	// 4. Prompt suppress unresolved ref errors
+	// 4. Prompt DB name
+	const dbName = await promptDbName(selectedSystemDb);
+	if (!dbName) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 5. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
 	TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
@@ -137,7 +146,8 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 	return {
 		databaseVariableLiteralValue: dbName,
 		systemDb: getSystemDatabase(selectedSystemDb),
-		suppressMissingDependenciesErrors: suppressErrors
+		suppressMissingDependenciesErrors: suppressErrors,
+		systemDbReferenceType: referenceType
 	};
 }
 
@@ -376,4 +386,22 @@ async function promptDbServerValues(location: string, defaultDbName: string): Pr
 		ret.serverVariable = serverVar;
 	}
 	return ret;
+}
+
+async function promptReferenceType(project: Project): Promise<SystemDbReferenceType | undefined> {
+	let referenceType = SystemDbReferenceType.ArtifactReference;
+	if (project.sqlProjStyle === ProjectType.SdkStyle) {
+		const referenceTypeString = await vscode.window.showQuickPick(
+			[constants.packageReference, constants.artifactReference],
+			{ title: constants.referenceTypeRadioButtonsGroupTitle, ignoreFocusOut: true }
+		);
+
+		if (referenceTypeString === undefined) { // need to check for specifically undefined here because the enum SystemDbReferenceType.ArtifactReference evaluates to 0
+			return undefined;
+		}
+
+		referenceType = referenceTypeString === constants.packageReference ? SystemDbReferenceType.PackageReference : SystemDbReferenceType.ArtifactReference;
+	}
+
+	return referenceType;
 }
