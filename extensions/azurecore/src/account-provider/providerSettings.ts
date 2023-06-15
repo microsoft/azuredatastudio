@@ -365,7 +365,8 @@ if (providerSettingsJson) {
 		void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
 	} catch (error) {
 		console.log(error);
-		void vscode.window.showErrorMessage(localize('providerSettings.error', `could not load custom endpoints file: ${0}`, error.message));
+		void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load custom endpoints file'));
+		throw Error(error.message);
 	}
 }
 
