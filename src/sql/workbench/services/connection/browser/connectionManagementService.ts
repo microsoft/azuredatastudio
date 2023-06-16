@@ -752,11 +752,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 			}
 
-			//handle case where a profile may have been edited an existing connection.
+			// Handle case where a profile may have been an edited existing connection (the one retrieved may not be up to date)
 			if (initialSearch.length === 1 && !initialSearch[0].matches(tempProfile)) {
+				// Remove the old profile with outdated information.
 				totalConnections = totalConnections.filter(inputProfile => {
 					return inputProfile.id !== tempProfile.id;
 				});
+				// Replace with up to date version of the profile.
 				totalConnections = totalConnections.concat(tempProfile);
 			}
 
