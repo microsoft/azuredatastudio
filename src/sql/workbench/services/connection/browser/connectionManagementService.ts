@@ -750,9 +750,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					// and it will identify as different from the stored one even without changes. Get the info for the stored version as it's the same profile.
 					idToFind = secondarySearch[0].id;
 				}
-				else {
-					totalConnections.concat(tempProfile);
-				}
+			}
+
+			//handle case where a profile may have been edited an existing connection.
+			if (initialSearch.length === 1 && !initialSearch[0].matches(tempProfile)) {
+				totalConnections = totalConnections.filter(inputProfile => {
+					return inputProfile.id !== tempProfile.id;
+				});
+				totalConnections = totalConnections.concat(tempProfile);
 			}
 
 			let newConnectionTitles = [];
