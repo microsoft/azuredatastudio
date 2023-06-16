@@ -76,6 +76,7 @@ export class LoginMigrationModel {
 	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
+	public errorCountMapString: string[] = [];
 
 	constructor() {
 		this.resultsPerStep = new Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>();
@@ -179,7 +180,25 @@ export class LoginMigrationModel {
 			}
 		}
 
-		this.errorCountMap.set(LoginMigrationStep[step], errorBuckets);
+		// Making a string of the map elements of errorBuckets
+		var errorBucketsString = JSON.stringify(
+			Array.from(errorBuckets.entries()).reduce((o: any, [key, value]) => {
+				o[key] = value;
+				return o;
+			}, {})
+		);
+
+		// Retaining this step in case a revert is needed, but we will be using errorCountMapString for telemetry
+		this.errorCountMap.set(LoginMigrationStep[step], errorBucketsString);
+
+		// Creating an array of the error codes and its counts for each step
+		this.errorCountMapString.push(
+			"[" +
+			LoginMigrationStep[step].toString() +
+			":" +
+			errorBucketsString.toString() +
+			"]"
+		);
 	}
 
 	private setDurationPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
