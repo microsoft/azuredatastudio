@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
+import * as utils from './common/utils';
+
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { AddTablesDialog } from './addTablesDialog';
 
 // TODO: localize
@@ -16,6 +17,9 @@ interface Deferred<T> {
 }
 
 export class ChooseTablesDialog {
+	// Azdata api
+	private azdata = utils.getAzdataApi();
+
 	// Dialog variables
 	public dialog: azdata.window.Dialog;
 	public dialogName: string = "Choose Tables to Document";
@@ -45,9 +49,9 @@ export class ChooseTablesDialog {
 		this.connection = connection;
 		this.databaseName = databaseName;
 
-		this.queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+		this.queryProvider = this.azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", this.azdata.DataProviderType.QueryProvider);
 
-		this.dialog = azdata.window.createModelViewDialog(this.dialogName);
+		this.dialog = this.azdata.window.createModelViewDialog(this.dialogName);
 		this.dialog.registerCloseValidator(async () => {
 			return true;
 		});
@@ -55,9 +59,9 @@ export class ChooseTablesDialog {
 
 	public async openDialog(): Promise<void> {
 
-		this.dialog = azdata.window.createModelViewDialog(this.dialogName);
+		this.dialog = this.azdata.window.createModelViewDialog(this.dialogName);
 
-		this.chooseTablesTab = azdata.window.createTab(this.dialogName);
+		this.chooseTablesTab = this.azdata.window.createTab(this.dialogName);
 		await this.initializeChooseTablesTab();
 		this.dialog.content = [this.chooseTablesTab];
 
@@ -68,7 +72,7 @@ export class ChooseTablesDialog {
 		this.dialog.cancelButton.label = "Cancel";
 		this.toDispose.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
-		azdata.window.openDialog(this.dialog);
+		this.azdata.window.openDialog(this.dialog);
 		await this.initDialogPromise;
 	}
 
@@ -85,7 +89,7 @@ export class ChooseTablesDialog {
 	private async initializeChooseTablesTab(): Promise<void> {
 		this.chooseTablesTab.registerContent(async view => {
 
-			let connectionUri = await azdata.connection.getUriForConnection(this.connection.connectionId);
+			let connectionUri = await this.azdata.connection.getUriForConnection(this.connection.connectionId);
 
 			let query = `SELECT TABLE_NAME FROM [${this.databaseName}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
 			let result = await this.queryProvider.runQueryAndReturn(connectionUri, query);

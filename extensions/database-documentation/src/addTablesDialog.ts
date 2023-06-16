@@ -2,10 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import type * as azdata from 'azdata';
+import * as utils from './common/utils';
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 
 // TODO: localize
 
@@ -15,6 +15,9 @@ interface Deferred<T> {
 }
 
 export class AddTablesDialog {
+	// Azdata api
+	private azdata = utils.getAzdataApi();
+
 	// Dialog variables
 	public dialog: azdata.window.Dialog;
 	public dialogName: string = "Tables";
@@ -32,7 +35,7 @@ export class AddTablesDialog {
 
 	constructor(availableTables: string[][]) {
 		this.availableTables = availableTables;
-		this.dialog = azdata.window.createModelViewDialog(this.dialogName);
+		this.dialog = this.azdata.window.createModelViewDialog(this.dialogName);
 		this.dialog.registerCloseValidator(async () => {
 			return true;
 		});
@@ -40,7 +43,7 @@ export class AddTablesDialog {
 
 	public async openDialog(): Promise<void> {
 
-		this.dialog = azdata.window.createModelViewDialog(this.dialogName);
+		this.dialog = this.azdata.window.createModelViewDialog(this.dialogName);
 
 		await this.initializeContent();
 
@@ -51,13 +54,13 @@ export class AddTablesDialog {
 		this.dialog.cancelButton.label = "Cancel";
 		this.toDispose.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
-		azdata.window.openDialog(this.dialog);
+		this.azdata.window.openDialog(this.dialog);
 		await this.initDialogPromise;
 	}
 
 	public async handleOkButtonClick(): Promise<void> {
 		const sendOver = this.addTablesTable.selectedRows[0]
-		this._onSuccess.fire(sendOver);
+		this._onSuccess.fire(sendOver)
 		this.cancel();
 	}
 

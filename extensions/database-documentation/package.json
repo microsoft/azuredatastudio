@@ -9,17 +9,15 @@
 		"vscode": "^1.25.0",
 		"azdata": ">=1.44.0"
 	},
-	"extensionDependencies": [
-		"Microsoft.mssql"
-	],
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
+		"*",
 		"onCommand:database-documentation.documentDatabaseADS",
 		"onCommand:database-documentation.documentTableADS",
 		"onCommand:database-documentation.documentDatabaseCode",
-		"onCommand:database-documentation.documentTable"
+		"onCommand:database-documentation.documentTableCode"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -61,7 +59,7 @@
 					"group": "export"
 				},
 				{
-					"command": "database-documentation.documentTableADS",
+					"command": "database-documentation.documentTableCode",
 					"when": "view == objectExplorer && viewItem =~ /^(Table)$/",
 					"group": "export"
 				}
@@ -86,13 +84,17 @@
 		"azdata-test": "^1.x",
 		"eslint": "^6.8.0",
 		"glob": "^7.1.7",
+		"mermaid": "^10.1.0",
 		"mocha": "^9.1.0",
 		"typescript": "^4.3.5",
-		"mermaid": "^10.1.0"
+		"vscode-nls": "^4.0.0",
+		"vscode-languageclient": "5.2.1"
 	},
 	"dependencies": {
 		"@microsoft/ads-extension-telemetry": "^3.0.1",
+		"azdata": "^1.0.0",
 		"openai": "^3.2.1",
-		"vscode-nls": "^4.0.0"
+		"vscode-nls": "^4.0.0",
+		"vscode-languageclient": "5.2.1"
 	}
 }
