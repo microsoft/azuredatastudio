@@ -458,7 +458,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			{
 				...getTelemetryProps(this.migrationStateModel),
 				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
-				'numberLoginsFailingPerStep': this.migrationStateModel._loginMigrationModel.errorCountMapString.toString(),
+				'numberLoginsFailingPerStep': this.migrationStateModel._loginMigrationModel.errorCountList.toString(),
 				'durationPerStepTimestamp': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.durationPerStep)),
 				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
 			},
