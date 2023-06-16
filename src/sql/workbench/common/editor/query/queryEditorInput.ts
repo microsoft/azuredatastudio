@@ -243,7 +243,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(profile, false);
+				let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(profile);
 				if (distinguishedTitle !== '') {
 					title += distinguishedTitle;
 				}

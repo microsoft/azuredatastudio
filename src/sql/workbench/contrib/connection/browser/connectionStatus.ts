@@ -68,7 +68,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
-		let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile, false);
+		let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
 		let text: string = '';
 		let tooltip: string = '';
 		if (distinguishedTitle === '') {

@@ -724,7 +724,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return result;
 	}
 
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean): string {
+	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName: boolean = true): string {
 		let result = '';
 		if (profile) {
 			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
@@ -755,17 +755,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 			}
 
-			//handle case where a profile may have been edited from recent connection (and would therefore be a new entry) (such as in notebook)
-			if (initialSearch.length === 1 && !initialSearch[0].matches(tempProfile)) {
-				// Can't use the original id, as it's matched to the unaltered profile, need to create a new ID for this instance.
-				tempProfile.id = 'edited_id_temp';
-				idToFind = tempProfile.id;
-				totalConnections.concat(tempProfile);
-			}
-
 			let newConnectionTitles = [];
 
 			this.generateEditorConnectionTitles(totalConnections);
+			if (includeGroupName) {
+				this.appendGroupName(totalConnections);
+			}
 			newConnectionTitles = totalConnections;
 
 			let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.id === idToFind);
@@ -870,6 +865,33 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				});
 			}
 		});
+	}
+
+	private appendGroupName(inputList: ConnectionProfile[]): void {
+		let profileListMap = new Map<string, number[]>();
+
+		// Map the indices of profiles that share the same server group
+		for (let i = 0; i < inputList.length; i++) {
+			let groupName = inputList[i].groupFullName;
+			if (profileListMap.has(groupName)) {
+				let profilesForKey = profileListMap.get(groupName);
+				profilesForKey.push(i);
+				profileListMap.set(groupName, profilesForKey);
+			}
+			else {
+				profileListMap.set(groupName, [i]);
+			}
+		}
+
+		if (profileListMap.size > 1) {
+			profileListMap.forEach(function (indexes, groupName) {
+				for (let t = 0; t < indexes.length; t++) {
+					if (groupName !== '') {
+						inputList[indexes[t]].title += nls.localize('connection.connTitleGroupSection', ' (Group: {0})', groupName);
+					}
+				}
+			});
+		}
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
