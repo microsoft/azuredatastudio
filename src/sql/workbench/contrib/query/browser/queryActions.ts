@@ -22,8 +22,7 @@ import {
 	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode,
-	IConnectionCompletionOptions,
-	IConnectableInput
+	IConnectionCompletionOptions
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -113,7 +112,7 @@ export abstract class QueryTaskbarAction extends Action {
 	}
 }
 
-export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initialContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
+export async function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initialContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const queryEditorService = accessor.get(IQueryEditorService);
 	const objectExplorerService = accessor.get(IObjectExplorerService);
@@ -121,20 +120,18 @@ export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionPr
 	if (!profile) {
 		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
 	}
-	return queryEditorService.newSqlEditor({ initialContent: initialContent }, profile?.providerName).then((owner: IConnectableInput) => {
-		// Connect our editor to the input connection
-		let options: IConnectionCompletionOptions = {
-			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: owner },
-			saveTheConnection: false,
-			showDashboard: false,
-			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: true
-		};
-		if (profile) {
-			return connectionManagementService.connect(profile, owner.uri, options).then();
-		}
-		return undefined;
-	});
+	const editorInput = await queryEditorService.newSqlEditor({ initialContent: initialContent }, profile?.providerName);
+	// Connect our editor to the input connection
+	let options: IConnectionCompletionOptions = {
+		params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: editorInput },
+		saveTheConnection: false,
+		showDashboard: false,
+		showConnectionDialogOnError: true,
+		showFirewallRuleOnError: true
+	};
+	if (profile) {
+		await connectionManagementService.connect(profile, editorInput.uri, options);
+	}
 }
 
 // --- actions

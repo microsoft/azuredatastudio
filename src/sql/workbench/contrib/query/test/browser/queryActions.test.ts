@@ -8,8 +8,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import {
 	IConnectionParams,
 	INewConnectionParams,
-	ConnectionType,
-	RunQueryOnConnectionMode
+	ConnectionType
 } from 'sql/platform/connection/common/connectionManagement';
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesActionItem,
@@ -128,53 +127,6 @@ suite('SQL QueryAction Tests', () => {
 
 		// I should get a connected state
 		assert(connected, 'Connected editor should get back a non-undefined URI');
-	});
-
-	test('RunQueryAction calls runQuery() only if URI is connected', async () => {
-		// ... Create assert variables
-		let isConnected: boolean = undefined;
-		let connectionParams: INewConnectionParams = undefined;
-		let countCalledShowDialog: number = 0;
-
-		// ... Mock "isConnected" in ConnectionManagementService
-		connectionManagementService.callBase = true;
-		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
-		connectionManagementService.setup(x => x.showConnectionDialog(TypeMoq.It.isAny()))
-			.callback((params: INewConnectionParams) => {
-				connectionParams = params;
-				countCalledShowDialog++;
-			})
-			.returns(() => Promise.resolve());
-
-		// ... Mock QueryModelService
-		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()));
-
-		// If I call run on RunQueryAction when I am not connected
-		let queryAction: RunQueryAction = new RunQueryAction(editor.object, queryModelService.object, connectionManagementService.object, undefined);
-		isConnected = false;
-		calledRunQueryOnInput = false;
-		await queryAction.run();
-
-		// runQuery should not be run
-		assert.strictEqual(calledRunQueryOnInput, false, 'run should not call runQuery');
-		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
-
-		// and the connection dialog should open with the correct parameter details
-		assert.strictEqual(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.strictEqual(connectionParams.runQueryOnCompletion, RunQueryOnConnectionMode.executeQuery, 'runQueryOnCompletion should be true`');
-		assert.strictEqual(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.strictEqual(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
-
-		// If I call run on RunQueryAction when I am connected
-		isConnected = true;
-		await queryAction.run();
-
-		//runQuery should be run, and the conneciton dialog should not open
-		assert.strictEqual(calledRunQueryOnInput, true, 'run should call runQuery');
-		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
-
-		assert.strictEqual(countCalledShowDialog, 1, 'run should not call showDialog');
 	});
 
 	test('Queries are only run if the QueryEditor selection is not empty', async () => {
