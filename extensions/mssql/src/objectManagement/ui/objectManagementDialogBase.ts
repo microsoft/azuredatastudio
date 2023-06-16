@@ -5,23 +5,21 @@
 
 import * as azdata from 'azdata';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
-import * as vscode from 'vscode';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import * as localizedConstants from '../localizedConstants';
-import { deepClone, refreshNode, refreshParentNode } from '../utils';
-import { DialogBase } from './dialogBase';
+import { refreshNode, refreshParentNode } from '../utils';
 import { ObjectManagementViewName, TelemetryActions } from '../constants';
 import { TelemetryReporter } from '../../telemetry';
 import { getErrorMessage } from '../../utils';
-import { providerId } from '../../constants';
-import { equals } from '../../util/objects';
+import { deepClone, equals } from '../../util/objects';
+import { ScriptableDialogBase, ScriptableDialogOptions } from '../../ui/scriptableDialogBase';
 
 
 function getDialogName(type: ObjectManagement.NodeType, isNewObject: boolean): string {
 	return isNewObject ? `New${type}` : `${type}Properties`
 }
 
-export interface ObjectManagementDialogOptions {
+export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	connectionUri: string;
 	database?: string;
 	objectType: ObjectManagement.NodeType;
@@ -29,43 +27,24 @@ export interface ObjectManagementDialogOptions {
 	parentUrn: string;
 	objectUrn?: string;
 	objectExplorerContext?: azdata.ObjectExplorerContext;
-	width?: azdata.window.DialogWidth;
 	objectName?: string;
 }
 
-export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends DialogBase<void> {
+export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends ScriptableDialogBase<ObjectManagementDialogOptions> {
 	private _contextId: string;
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
-	private _helpButton: azdata.window.Button;
-	private _scriptButton: azdata.window.Button;
 
-	constructor(protected readonly objectManagementService: IObjectManagementService, protected readonly options: ObjectManagementDialogOptions) {
+	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true)) :
 			localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName),
 			getDialogName(options.objectType, options.isNewObject),
-			options.width || 'narrow', 'flyout'
+			options
 		);
-		this._helpButton = azdata.window.createButton(localizedConstants.HelpText, 'left');
-		this.disposables.push(this._helpButton.onClick(async () => {
-			await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.docUrl));
-		}));
-		this._scriptButton = azdata.window.createButton(localizedConstants.ScriptText, 'left');
-		this.disposables.push(this._scriptButton.onClick(async () => { await this.onScriptButtonClick(); }));
-		this.dialogObject.customButtons = [this._helpButton, this._scriptButton];
 		this._contextId = generateUuid();
 	}
 
-	protected abstract initializeUI(): Promise<void>;
-
-	protected abstract get docUrl(): string;
-
 	protected postInitializeData(): void { }
-
-	protected override onFormFieldChange(): void {
-		this._scriptButton.enabled = this.isDirty;
-		this.dialogObject.okButton.enabled = this.isDirty;
-	}
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors: string[] = [];
@@ -76,8 +55,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	}
 
 	protected override async initialize(): Promise<void> {
-		await this.initializeData();
-		await this.initializeUI();
+		await super.initialize();
 		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
 		this.dialogObject.registerOperation({
 			displayName: this.options.isNewObject ? localizedConstants.CreateObjectOperationDisplayName(typeDisplayName)
@@ -146,49 +124,18 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		await this.objectManagementService.disposeView(this._contextId);
 	}
 
-	private async initializeData(): Promise<void> {
+	protected override async initializeData(): Promise<void> {
 		const viewInfo = await this.objectManagementService.initializeView(this._contextId, this.options.objectType, this.options.connectionUri, this.options.database, this.options.isNewObject, this.options.parentUrn, this.options.objectUrn);
 		this._viewInfo = viewInfo as ViewInfoType;
 		this.postInitializeData();
 		this._originalObjectInfo = deepClone(this.objectInfo);
 	}
 
-	protected override onLoadingStatusChanged(isLoading: boolean): void {
-		super.onLoadingStatusChanged(isLoading);
-		this._helpButton.enabled = !isLoading;
-		this.dialogObject.okButton.enabled = this._scriptButton.enabled = isLoading ? false : this.isDirty;
+	protected override async generateScript(): Promise<string> {
+		return await this.objectManagementService.script(this._contextId, this.objectInfo);
 	}
 
-	private async onScriptButtonClick(): Promise<void> {
-		this.onLoadingStatusChanged(true);
-		try {
-			const isValid = await this.runValidation();
-			if (!isValid) {
-				return;
-			}
-			let message: string;
-			const script = await this.objectManagementService.script(this._contextId, this.objectInfo);
-			if (script) {
-				message = localizedConstants.ScriptGeneratedText;
-				await azdata.queryeditor.openQueryDocument({ content: script }, providerId);
-			} else {
-				message = localizedConstants.NoActionScriptedMessage;
-			}
-			this.dialogObject.message = {
-				text: message,
-				level: azdata.window.MessageLevel.Information
-			};
-		} catch (err) {
-			this.dialogObject.message = {
-				text: localizedConstants.ScriptError(getErrorMessage(err)),
-				level: azdata.window.MessageLevel.Error
-			};
-		} finally {
-			this.onLoadingStatusChanged(false);
-		}
-	}
-
-	private get isDirty(): boolean {
+	protected get isDirty(): boolean {
 		return !equals(this.objectInfo, this._originalObjectInfo, false);
 	}
 }

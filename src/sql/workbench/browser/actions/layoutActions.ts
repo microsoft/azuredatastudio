@@ -3,39 +3,43 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action } from 'vs/base/common/actions';
+import { Action2 } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IKeybindingRule } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { FocusedViewContext } from 'vs/workbench/common/contextkeys';
 import { IViewDescriptorService, IViewsService, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 
 // --- Toggle View with Command
-export abstract class ToggleViewAction extends Action {
-
-	constructor(
-		id: string,
-		label: string,
-		private readonly viewId: string,
-		protected viewsService: IViewsService,
-		protected viewDescriptorService: IViewDescriptorService,
-		protected contextKeyService: IContextKeyService,
-		private layoutService: IWorkbenchLayoutService,
-		cssClass?: string
-	) {
-		super(id, label, cssClass);
+export abstract class ToggleViewAction extends Action2 {
+	private viewId: string;
+	constructor(id: string, labelOrg: string, label: string, keybinding?: Omit<IKeybindingRule, 'id'>) {
+		super({
+			id: id,
+			title: { value: label, original: labelOrg },
+			category: 'View',
+			f1: true,
+			keybinding: keybinding,
+		});
+		this.viewId = id;
 	}
 
-	override async run(): Promise<void> {
-		const focusedViewId = FocusedViewContext.getValue(this.contextKeyService);
+	run(accessor: ServicesAccessor): void {
+		const contextKeyService = accessor.get(IContextKeyService);
+		const viewDescriptorService = accessor.get(IViewDescriptorService);
+		const viewsService = accessor.get(IViewsService);
+		const layoutService = accessor.get(IWorkbenchLayoutService);
+		const focusedViewId = FocusedViewContext.getValue(contextKeyService);
 
 		if (focusedViewId === this.viewId) {
-			if (this.viewDescriptorService.getViewLocationById(this.viewId) === ViewContainerLocation.Sidebar) {
-				this.layoutService.setPartHidden(true, Parts.SIDEBAR_PART);
+			if (viewDescriptorService.getViewLocationById(this.viewId) === ViewContainerLocation.Sidebar) {
+				layoutService.setPartHidden(true, Parts.SIDEBAR_PART);
 			} else {
-				this.layoutService.setPartHidden(true, Parts.PANEL_PART);
+				layoutService.setPartHidden(true, Parts.PANEL_PART);
 			}
 		} else {
-			this.viewsService.openView(this.viewId, true);
+			viewsService.openView(this.viewId, true);
 		}
 	}
 }

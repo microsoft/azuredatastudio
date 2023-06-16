@@ -11,36 +11,15 @@ import * as os from 'os';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
-
-import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
-import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
-import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
-import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
 import { AzureResourceService } from './azureResource/resourceService';
-import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from './azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService, IAzureResourceTenantFilterService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { registerAzureResourceCommands } from './azureResource/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
-import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
-import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
-import { KustoResourceService } from './azureResource/providers/kusto/kustoService';
-import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
-import { AzureMonitorResourceService } from './azureResource/providers/azuremonitor/azuremonitorService';
-import { AzureMonitorProvider } from './azureResource/providers/azuremonitor/azuremonitorProvider';
-import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
-import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 import { AzureTerminalService } from './azureResource/services/terminalService';
-import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcProvider';
-import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
-import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
-import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
-import { CosmosDbMongoProvider } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoProvider';
-import { CosmosDbMongoService } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoService';
-import { MysqlFlexibleServerProvider } from './azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerProvider';
-import { MysqlFlexibleServerService } from './azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerService';
 import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
@@ -50,10 +29,10 @@ import { AzureResourceGroupService } from './azureResource/providers/resourceGro
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
-import { AzureResourceSynapseSqlPoolProvider } from './azureResource/providers/synapseSqlPool/synapseSqlPoolProvider';
-import { AzureResourceSynapseWorkspaceProvider } from './azureResource/providers/synapseWorkspace/synapseWorkspaceProvider';
-import { AzureResourceSynapseWorkspaceService } from './azureResource/providers/synapseWorkspace/synapseWorkspaceService';
-import { AzureResourceSynapseService } from './azureResource/providers/synapseSqlPool/synapseSqlPoolService';
+import { AzureResourceUniversalService } from './azureResource/providers/universal/universalService';
+import { AzureResourceUniversalTreeDataProvider } from './azureResource/providers/universal/universalTreeDataProvider';
+import { AzureResourceUniversalResourceProvider } from './azureResource/providers/universal/universalProvider';
+import { AzureResourceTenantFilterService } from './azureResource/services/tenantFilterService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -151,26 +130,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
 		},
 		provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
-			const arcFeaturedEnabled = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.EnableArcFeaturesSection);
-			const providers: azurecore.azureResource.IAzureResourceProvider[] = [
-				new KustoProvider(new KustoResourceService(), extensionContext),
-				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
-				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
-				new AzureResourceSynapseSqlPoolProvider(new AzureResourceSynapseService(), extensionContext),
-				new AzureResourceSynapseWorkspaceProvider(new AzureResourceSynapseWorkspaceService(), extensionContext),
-				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
-				new PostgresServerProvider(new PostgresServerService(), extensionContext),
-				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext),
-				new MysqlFlexibleServerProvider(new MysqlFlexibleServerService(), extensionContext)
-			];
-			if (arcFeaturedEnabled) {
-				providers.push(
-					new SqlInstanceArcProvider(new SqlInstanceArcResourceService(), extensionContext),
-					new PostgresServerArcProvider(new PostgresServerArcService(), extensionContext)
-				);
-			}
-			return providers;
+			return azureResourceUtils.getAllResourceProviders(extensionContext);
+		},
+		getUniversalProvider(): azurecore.azureResource.IAzureUniversalResourceProvider {
+			let providers = azureResourceUtils.getAllResourceProviders(extensionContext);
+			let treeDataProviders = new Map<string, azurecore.azureResource.IAzureResourceTreeDataProvider>();
+			providers.forEach(provider => {
+				treeDataProviders.set(provider.providerId, provider.getTreeDataProvider());
+			})
+			return new AzureResourceUniversalResourceProvider(Constants.UNIVERSAL_PROVIDER_ID, new AzureResourceUniversalTreeDataProvider(new AzureResourceUniversalService(treeDataProviders)));
 		},
 		getSqlManagedInstances(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
@@ -306,6 +274,7 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
+	appContext.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, new AzureResourceTenantFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureTerminalService>(AzureResourceServiceNames.terminalService, new AzureTerminalService(extensionContext));
 }
 

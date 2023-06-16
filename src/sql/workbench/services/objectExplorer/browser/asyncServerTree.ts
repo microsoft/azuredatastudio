@@ -37,7 +37,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 			user, container, delegate,
 			renderers, dataSource, options,
 			instantiationService, contextKeyService, listService,
-			themeService, configurationService);
+			configurationService);
 
 		// Adding support for expand/collapse on enter/space
 		this.onKeyDown(e => {
@@ -61,7 +61,7 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	 * This method overrides the original implementation to find the node by comparing the ids of the elements.
 	 * If the node is not found in the original implementation, we search for the node in the nodes map by ids.
 	 */
-	public override getDataNode(element: ServerTreeElement, throwError: boolean = true): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
+	protected override getDataNode(element: ServerTreeElement, throwError: boolean = true): IAsyncDataTreeNode<ConnectionProfileGroup, ServerTreeElement> | undefined {
 		try {
 			const node = super.getDataNode(element);
 			return node;
@@ -144,6 +144,12 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 	}
 
 	public async revealSelectFocusElement(element: ServerTreeElement) {
+		const dataNode = this.getDataNode(element);
+		// The root of the tree is a special case as it is not rendered
+		// so we instead reveal select and focus on the first child of the root.
+		if (dataNode === this.root) {
+			element = dataNode.children[0].element;
+		}
 		await this.reveal(element);
 		await this.setSelection([element]);
 		this.setFocus([element]);
@@ -151,3 +157,10 @@ export class AsyncServerTree extends WorkbenchAsyncDataTree<ConnectionProfileGro
 }
 
 export type ServerTreeElement = ConnectionProfile | ConnectionProfileGroup | TreeNode;
+
+
+export class ConnectionError extends Error {
+	constructor(message: string, public connection: ConnectionProfile) {
+		super(message);
+	}
+}

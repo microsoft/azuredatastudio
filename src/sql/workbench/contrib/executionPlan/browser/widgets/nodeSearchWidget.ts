@@ -17,6 +17,8 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 const SELECT_PROPERTY_TITLE = localize('executionPlanSelectPropertyTitle', 'Select property');
 const SELECT_SEARCH_TYPE_TITLE = localize('executionPlanSelectSearchTypeTitle', 'Select search type');
@@ -53,11 +55,20 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		@IThemeService public readonly themeService: IThemeService
 	) {
 		super(DOM.$('.search-node-widget'), 'searchWidget');
+		const labelId = 'search-node-widget-label';
+		const dialogLabel = localize('executionPlanFindNodeLabel', 'Find nodes');
+		this.container.setAttribute('role', 'dialog');
+		this.container.setAttribute('aria-labelledby', labelId);
+
+		const label = DOM.$('label.property-name-label');
+		label.innerText = dialogLabel;
+		label.id = labelId;
+		this.container.appendChild(label);
 
 		// property name dropdown
 		this._propertyNameSelectBoxContainer = DOM.$('.search-widget-property-name-select-box .dropdown-container');
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
-		this._propertyNameSelectBoxContainer.style.width = '150px';
+		this._propertyNameSelectBoxContainer.style.width = '120px';
 
 		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
 		this._propertyNameSelectBox = this._register(new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer));
@@ -114,7 +125,10 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		// search text input box
-		this._searchTextInputBox = this._register(new InputBox(this.container, this.contextViewService, {}));
+		this._searchTextInputBox = this._register(new InputBox(this.container, this.contextViewService,
+			{
+				inputBoxStyles: defaultInputBoxStyles
+			}));
 		this._searchTextInputBox.setAriaLabel(ENTER_SEARCH_VALUE_TITLE);
 		this._searchTextInputBox.element.style.marginLeft = '5px';
 		this._register(attachInputBoxStyler(this._searchTextInputBox, this.themeService));
@@ -148,7 +162,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	// Initial focus is set to the search text input box
 	public focus() {
-		this._searchTextInputBox.focus();
+		this._propertyNameSelectBox.focus();
 	}
 
 	public searchNodes(): void {
@@ -195,7 +209,7 @@ export class GoToNextMatchAction extends Action {
 	public static LABEL = localize('nextSearchItemAction', "Next Match");
 
 	constructor() {
-		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, Codicon.arrowDown.classNames);
+		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, ThemeIcon.asClassName(Codicon.arrowDown));
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
@@ -208,7 +222,7 @@ export class GoToPreviousMatchAction extends Action {
 	public static LABEL = localize('previousSearchItemAction', "Previous Match");
 
 	constructor() {
-		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, Codicon.arrowUp.classNames);
+		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, ThemeIcon.asClassName(Codicon.arrowUp));
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
@@ -221,7 +235,7 @@ export class CancelSearch extends Action {
 	public static LABEL = localize('cancelSearchAction', "Close");
 
 	constructor() {
-		super(CancelSearch.ID, CancelSearch.LABEL, Codicon.chromeClose.classNames);
+		super(CancelSearch.ID, CancelSearch.LABEL, ThemeIcon.asClassName(Codicon.chromeClose));
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {

@@ -49,6 +49,7 @@ import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/co
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Codicon } from 'vs/base/common/codicons';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -203,7 +204,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ICommandService private readonly commandService?: ICommandService
+		@ICommandService private readonly commandService: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -860,7 +861,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		}
 		try {
 			const result = await this.connectionManagementService.listDatabases(uri);
-			return result.databaseNames;
+			return result?.databaseNames ?? [];
 		} catch (err) {
 			this.logService.error(`Error loading database names for query editor `, err);
 		}
@@ -918,7 +919,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(connectionManagementService, editor, ExportAsNotebookAction.ID, Codicon.notebook.classNames);
+		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ThemeIcon.asClassName(Codicon.notebook));
 		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "To Notebook");
 		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebookTooltip', "Export as Notebook");
 	}
@@ -938,7 +939,7 @@ export const CATEGORIES = {
 export const ParseSyntaxCommandId = 'parseQueryAction';
 export class ParseSyntaxTaskbarAction extends Action {
 	constructor(@ICommandService private _commandService: ICommandService) {
-		super(ParseSyntaxCommandId, nls.localize('queryEditor.parse', "Parse"), Codicon.check.classNames);
+		super(ParseSyntaxCommandId, nls.localize('queryEditor.parse', "Parse"), ThemeIcon.asClassName(Codicon.check));
 	}
 
 	public override async run(): Promise<void> {

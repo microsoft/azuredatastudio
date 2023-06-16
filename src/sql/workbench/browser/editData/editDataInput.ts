@@ -14,10 +14,10 @@ import Severity from 'vs/base/common/severity';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { IUntitledTextEditorModel, UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
 
 /**
  * Input for the EditDataEditor.
@@ -44,6 +44,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		private _sql: UntitledTextEditorInput,
 		private _queryString: string,
 		private _results: EditDataResultsInput,
+		private _initialConnectionUri: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService
@@ -205,6 +206,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public override dispose(): void {
 		// Dispose our edit session then disconnect our input
 		this._queryModelService.disposeEdit(this.uri).then(() => {
+			if (this._initialConnectionUri) {
+				this._connectionManagementService.disconnect(this._initialConnectionUri);
+			}
 			return this._connectionManagementService.disconnectEditor(this, true);
 		});
 		this._queryModelService.disposeQuery(this.uri);
@@ -218,7 +222,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 
-	public override resolve(refresh?: boolean): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> { return this._sql.resolve(); }
+	public override async resolve(options?: IEditorOptions): Promise<IEditorModel | null> {
+		return this._sql.resolve();
+	}
+
 	public getEncoding(): string | undefined { return this._sql.getEncoding(); }
 	public override getName(): string { return this._sql.getName(); }
 	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }

@@ -5,7 +5,7 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { CellToggleMoreActions, RunCellsAction, removeDuplicatedAndStartingSeparators, AddCellFromContextAction, CollapseCellAction, ConvertCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { CellToggleMoreActionViewItem, RunCellsAction, removeDuplicatedAndStartingSeparators, AddCellFromContextAction, CollapseCellAction, ConvertCellAction, CellToggleMoreAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
@@ -16,12 +16,11 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import * as DOM from 'vs/base/browser/dom';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { Separator } from 'vs/base/common/actions';
+import { Action, Separator } from 'vs/base/common/actions';
 import { ICellModel, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -37,11 +36,12 @@ import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILanguageService } from 'vs/editor/common/languages/language';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { mock } from 'vs/base/test/common/mock';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -60,12 +60,12 @@ suite('CellToolbarActions', function (): void {
 			assert(actions.length === 3);
 		});
 		test('Array with only separators is cleared', function (): void {
-			const actions = [new Separator(), new Separator(), new Separator()];
+			const actions = <Action[]>[new Separator(), new Separator(), new Separator()];
 			removeDuplicatedAndStartingSeparators(actions);
 			assert(actions.length === 0);
 		});
 		test('Array with separators not on the ends is unchanged', function (): void {
-			const actions = [
+			const actions = <Action[]>[
 				TypeMoq.Mock.ofType(RunCellsAction).object,
 				new Separator(),
 				TypeMoq.Mock.ofType(AddCellFromContextAction).object,
@@ -76,7 +76,7 @@ suite('CellToolbarActions', function (): void {
 			assert(actions.length === 5);
 		});
 		test('Duplicate separators are removed', function (): void {
-			const actions = [
+			const actions = <Action[]>[
 				TypeMoq.Mock.ofType(RunCellsAction).object,
 				new Separator(),
 				new Separator(),
@@ -90,7 +90,7 @@ suite('CellToolbarActions', function (): void {
 			assert(actions.length === 5);
 		});
 		test('Starting and ending separators are removed', function (): void {
-			const actions = [
+			const actions = <Action[]>[
 				new Separator(),
 				new Separator(),
 				TypeMoq.Mock.ofType(RunCellsAction).object,
@@ -147,21 +147,16 @@ suite('CellToolbarActions', function (): void {
 			instantiationService.stub(IContextMenuService, TypeMoq.Mock.ofType(ContextMenuService).object);
 		});
 
-		test('CellToggleMoreActions with Code CellType', function (): void {
-			const testContainer = DOM.$('div');
+		test('CellToggleMoreActionViewItem with Code CellType displays correct number of actions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'code');
-			const action = new CellToggleMoreActions(instantiationService);
-			action.onInit(testContainer, contextMock.object);
-			assert.strictEqual(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 18, 'Unexpected number of valid elements');
+			const action = new CellToggleMoreActionViewItem(new CellToggleMoreAction(), undefined, contextMock.object, undefined, instantiationService);
+			assert.equal(action.getValidActions().length, 18);
 		});
 
-		test('CellToggleMoreActions with Markdown CellType', function (): void {
-			const testContainer = DOM.$('div');
+		test('CellToggleMoreActionViewItem with Markdown CellType displays correct number of actions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'markdown');
-			const action = new CellToggleMoreActions(instantiationService);
-			action.onInit(testContainer, contextMock.object);
-			// Markdown elements don't show the code-cell related actions such as Run Cell
-			assert.strictEqual(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 7, 'Unexpected number of valid elements');
+			const action = new CellToggleMoreActionViewItem(new CellToggleMoreAction(), undefined, contextMock.object, undefined, instantiationService);
+			assert.equal(action.getValidActions().length, 7);
 		});
 	});
 

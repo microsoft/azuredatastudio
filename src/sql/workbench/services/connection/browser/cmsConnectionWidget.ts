@@ -27,6 +27,7 @@ import { ConnectionWidget } from 'sql/workbench/services/connection/browser/conn
 import { ILogService } from 'vs/platform/log/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -119,7 +120,11 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		if (serverDescriptionOption) {
 			serverDescriptionOption.displayName = localize('serverDescription', "Server Description (optional)");
 			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, serverDescriptionOption.displayName, 'connection-label', 'connection-input', 'server-description-input');
-			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, { type: 'textarea', flexibleHeight: true });
+			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, {
+				type: 'textarea',
+				flexibleHeight: true,
+				inputBoxStyles: defaultInputBoxStyles
+			});
 			this._serverDescriptionInputBox.setHeight('75px');
 		}
 	}

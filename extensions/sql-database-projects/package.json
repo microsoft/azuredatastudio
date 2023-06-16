@@ -2,12 +2,12 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.43.0"
+    "azdata": ">=1.44.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -164,6 +164,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.openReferencedSqlProject",
+        "title": "%sqlDatabaseProjects.openReferencedSqlProject%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.validateExternalStreamingJob",
         "title": "%sqlDatabaseProjects.validateExternalStreamingJob%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -206,6 +211,11 @@
       {
         "command": "sqlDatabaseProjects.rename",
         "title": "%sqlDatabaseProjects.rename%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPublishProfile",
+        "title": "%sqlDatabaseProjects.newPublishProfile%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -296,6 +306,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.openReferencedSqlProject",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.validateExternalStreamingJob",
           "when": "false"
         },
@@ -333,6 +347,10 @@
         },
         {
           "command": "sqlDatabaseProjects.rename",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPublishProfile",
           "when": "false"
         }
       ],
@@ -403,6 +421,11 @@
           "group": "3_dbProjects_newItem@9"
         },
         {
+          "command": "sqlDatabaseProjects.newPublishProfile",
+          "when": "view == dataworkspace.views.main && viewItem =~ /^(databaseProject.itemType.project|databaseProject.itemType.legacyProject)$/ || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@10"
+        },
+        {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.referencesRoot",
           "group": "4_dbProjects_addDatabaseReference"
@@ -418,13 +441,18 @@
           "group": "6_dbProjects_openInDesigner"
         },
         {
+          "command": "sqlDatabaseProjects.openReferencedSqlProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.reference.sqlProject",
+          "group": "8_dbProjects_openReferencedSqlProject"
+        },
+        {
           "command": "sqlDatabaseProjects.exclude",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.sqlcmdVariable",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/ || viewItem == databaseProject.itemType.reference || viewItem == databaseProject.itemType.reference.sqlProject || viewItem == databaseProject.itemType.sqlcmdVariable",
           "group": "9_dbProjectsLast@2"
         },
         {

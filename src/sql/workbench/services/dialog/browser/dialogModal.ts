@@ -10,7 +10,7 @@ import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Emitter } from 'vs/base/common/event';
@@ -50,7 +50,7 @@ export class DialogModal extends Modal {
 		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
-	public layout(): void {
+	protected layout(): void {
 		this._dialogPane.layout();
 	}
 

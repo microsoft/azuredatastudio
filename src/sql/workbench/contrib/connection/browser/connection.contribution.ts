@@ -7,8 +7,7 @@ import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import * as azdata from 'azdata';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { Action2, MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { ConnectionStatusbarItem } from 'sql/workbench/contrib/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -28,49 +27,23 @@ const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(Workbench
 workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, LifecyclePhase.Restored);
 
 import 'sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint';
-import { ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IObjectExplorerService, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { Codicon } from 'vs/base/common/codicons';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 
 // Connection Dashboard registration
 
-const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 // Connection Actions
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ClearRecentConnectionsAction,
-		ClearRecentConnectionsAction.ID,
-		ClearRecentConnectionsAction.LABEL
-	),
-	ClearRecentConnectionsAction.LABEL
-);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		AddServerGroupAction,
-		AddServerGroupAction.ID,
-		AddServerGroupAction.LABEL
-	),
-	AddServerGroupAction.LABEL
-);
+registerAction2(ClearRecentConnectionsAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ActiveConnectionsFilterAction,
-		ActiveConnectionsFilterAction.ID,
-		ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL
-	),
-	ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL
-);
+registerAction2(AddServerGroupAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		AddServerAction,
-		AddServerAction.ID,
-		AddServerAction.LABEL
-	),
-	AddServerAction.LABEL
-);
+registerAction2(ActiveConnectionsFilterAction);
+
+registerAction2(AddServerAction);
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
@@ -109,6 +82,26 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 		}
 	},
 	when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID),
+});
+
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: 'registeredServers.collapseAll',
+			title: localize('registeredServers.collapseAll', "Collapse All Connections"),
+			menu: {
+				id: MenuId.ViewTitle,
+				when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID),
+				group: 'navigation',
+				order: Number.MAX_SAFE_INTEGER - 1,
+			},
+			icon: Codicon.collapseAll
+		});
+	}
+	async run(accessor: ServicesAccessor): Promise<void> {
+		const objectExplorerService = accessor.get(IObjectExplorerService);
+		await objectExplorerService.getServerTreeView().collapseAllConnections();
+	}
 });
 
 CommandsRegistry.registerCommand('azdata.connect',
@@ -160,14 +153,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 		}
 	});
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		GetCurrentConnectionStringAction,
-		GetCurrentConnectionStringAction.ID,
-		GetCurrentConnectionStringAction.LABEL
-	),
-	GetCurrentConnectionStringAction.LABEL
-);
+registerAction2(GetCurrentConnectionStringAction);
 
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({

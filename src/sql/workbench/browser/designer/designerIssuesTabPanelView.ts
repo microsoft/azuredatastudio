@@ -12,11 +12,12 @@ import { IListAccessibilityProvider, List } from 'vs/base/browser/ui/list/listWi
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { localize } from 'vs/nls';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { problemsErrorIconForeground, problemsInfoIconForeground, problemsWarningIconForeground } from 'vs/platform/theme/common/colorRegistry';
 import { Codicon } from 'vs/base/common/codicons';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Link } from 'vs/platform/opener/browser/link';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export class DesignerIssuesTabPanelView extends Disposable implements IPanelView {
 	private _container: HTMLElement;
@@ -116,13 +117,13 @@ class TableFilterListRenderer implements IListRenderer<DesignerIssue, DesignerIs
 		let iconClass;
 		switch (element.severity) {
 			case 'warning':
-				iconClass = Codicon.warning.classNames;
+				iconClass = ThemeIcon.asClassName(Codicon.warning);
 				break;
 			case 'information':
-				iconClass = Codicon.info.classNames;
+				iconClass = ThemeIcon.asClassName(Codicon.info);
 				break;
 			default:
-				iconClass = Codicon.error.classNames;
+				iconClass = ThemeIcon.asClassName(Codicon.error);
 				break;
 		}
 		templateData.issueIcon.className = `issue-icon ${iconClass}`;

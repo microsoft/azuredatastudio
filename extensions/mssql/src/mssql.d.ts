@@ -348,9 +348,10 @@ declare module 'mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param systemDatabase Type of system database
 		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param referenceType Type of reference - ArtifactReference or PackageReference
 		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 		 */
-		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus>;
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, referenceType: SystemDbReferenceType, databaseLiteral?: string): Promise<azdata.ResultStatus>;
 
 		/**
 		 * Add a nuget package database reference to a project
@@ -766,6 +767,11 @@ declare module 'mssql' {
 		MSDB = 1
 	}
 
+	export const enum SystemDbReferenceType {
+		ArtifactReference = 0,
+		PackageReference = 1
+	}
+
 	export interface SqlCmdVariable {
 		varName: string;
 		value: string;
@@ -917,370 +923,13 @@ declare module 'mssql' {
 		}
 
 		/**
-		 * Base interface for the object view information
+		 * Base interface for the object view information.
 		 */
 		export interface ObjectViewInfo<T extends SqlObject> {
 			/**
 			 * The object information
 			 */
 			objectInfo: T;
-		}
-
-		/**
-		 * Server level login.
-		 */
-		export interface Login extends SqlObject {
-			/**
-			 * Authentication type.
-			 */
-			authenticationType: AuthenticationType;
-			/**
-			 * Password for the login.
-			 * Only applicable when the authentication type is 'Sql'.
-			 */
-			password: string | undefined;
-			/**
-			 * Old password of the login.
-			 * Only applicable when the authentication type is 'Sql'.
-			 * The old password is required when updating the login's own password and it doesn't have the 'ALTER ANY LOGIN' permission.
-			 */
-			oldPassword: string | undefined;
-			/**
-			 * Whether the password complexity policy is enforced.
-			 * Only applicable when the authentication type is 'Sql'.
-			 */
-			enforcePasswordPolicy: boolean | undefined;
-			/**
-			 * Whether the password expiration policy is enforced.
-			 * Only applicable when the authentication type is 'Sql'.
-			 */
-			enforcePasswordExpiration: boolean | undefined;
-			/**
-			 * Whether SQL Server should prompt for an updated password when the next the login is used.
-			 * Only applicable when the authentication type is 'Sql'.
-			 */
-			mustChangePassword: boolean | undefined;
-			/**
-			 * Whether the login is locked out due to password policy violation.
-			 * Only applicable when the authentication type is 'Sql'.
-			 */
-			isLockedOut: boolean;
-			/**
-			 * The default database for the login.
-			 */
-			defaultDatabase: string;
-			/**
-			 * The default language for the login.
-			 */
-			defaultLanguage: string;
-			/**
-			 * The server roles of the login.
-			 */
-			serverRoles: string[];
-			/**
-			 * The database users the login is mapped to.
-			 */
-			userMapping: ServerLoginUserInfo[];
-			/**
-			 * Whether the login is enabled.
-			 */
-			isEnabled: boolean;
-			/**
-			 * Whether the connect permission is granted to the login.
-			 */
-			connectPermission: boolean;
-		}
-
-		/**
-		 * The authentication types.
-		 */
-		export const enum AuthenticationType {
-			Windows = 'Windows',
-			Sql = 'Sql',
-			AzureActiveDirectory = 'AAD'
-		}
-
-		/**
-		 * The user mapping information for login.
-		 */
-		export interface ServerLoginUserInfo {
-			/**
-			 * Target database name.
-			 */
-			database: string;
-			/**
-			 * User name.
-			 */
-			user: string;
-			/**
-			 * Default schema of the user.
-			 */
-			defaultSchema: string;
-			/**
-			 * Databases roles of the user.
-			 */
-			databaseRoles: string[];
-		}
-
-		/**
-		 * The information required to render the login view.
-		 */
-		export interface LoginViewInfo extends ObjectViewInfo<Login> {
-			/**
-			 * The authentication types supported by the server.
-			 */
-			authenticationTypes: AuthenticationType[];
-			/**
-			 * Whether the locked out state can be changed.
-			 */
-			canEditLockedOutState: boolean;
-			/**
-			 * Name of the databases in the server.
-			 */
-			databases: string[];
-			/**
-			 * Available languages in the server.
-			 */
-			languages: string[];
-			/**
-			 * All server roles in the server.
-			 */
-			serverRoles: string[];
-			/**
-			 * Whether advanced password options are supported.
-			 * Advanced password options: check policy, check expiration, must change, unlock.
-			 * Notes: 2 options to control the advanced options because Analytics Platform supports advanced options but does not support advanced options.
-			 */
-			supportAdvancedPasswordOptions: boolean;
-			/**
-			 * Whether advanced options are supported.
-			 * Advanced options: default database, default language and connect permission.
-			 */
-			supportAdvancedOptions: boolean;
-		}
-
-		/**
-		 * The permission information a principal has on a securable.
-		 */
-		export interface Permission {
-			/**
-			 * Name of the permission.
-			 */
-			name: string;
-			/**
-			 * Whether the permission is granted or denied.
-			 */
-			grant: boolean;
-			/**
-			 * Whether the pincipal can grant this permission to other principals.
-			 * The value will be ignored if the grant property is set to false.
-			 */
-			withGrant: boolean;
-		}
-
-		/**
-		 * The permissions a principal has over a securable.
-		 */
-		export interface SecurablePermissions {
-			/**
-			 * The securable.
-			 */
-			securable: SqlObject;
-			/**
-			 * The Permissions.
-			 */
-			permissions: Permission[];
-		}
-
-		/**
-		 * Extend property for objects.
-		 */
-		export interface ExtendedProperty {
-			/**
-			 * Name of the property.
-			 */
-			name: string;
-			/**
-			 * Value of the property.
-			 */
-			value: string;
-		}
-
-		/**
-		 * User types.
-		 */
-		export const enum UserType {
-			/**
-			 * Mapped to a server login.
-			 */
-			LoginMapped = 'LoginMapped',
-			/**
-			 * Mapped to a Windows user or group.
-			 */
-			WindowsUser = 'WindowsUser',
-			/**
-			 * Authenticate with password.
-			 */
-			SqlAuthentication = 'SqlAuthentication',
-			/**
-			 * Authenticate with Azure Active Directory.
-			 */
-			AADAuthentication = 'AADAuthentication',
-			/**
-			 * User that cannot authenticate.
-			 */
-			NoLoginAccess = 'NoLoginAccess'
-		}
-
-		/**
-		 * Database user.
-		 */
-		export interface User extends SqlObject {
-			/**
-			 * Type of the user.
-			 */
-			type: UserType;
-			/**
-			 * Default schema of the user.
-			 */
-			defaultSchema: string | undefined;
-			/**
-			 * Schemas owned by the user.
-			 */
-			ownedSchemas: string[];
-			/**
-			 * Database roles that the user belongs to.
-			 */
-			databaseRoles: string[];
-			/**
-			 * The name of the server login associated with the user.
-			 * Only applicable when the user type is 'WithLogin'.
-			 */
-			loginName: string | undefined;
-			/**
-			 * The default language of the user.
-			 * Only applicable when the user type is 'Contained'.
-			 */
-			defaultLanguage: string | undefined;
-			/**
-			 * Password of the user.
-			 * Only applicable when the user type is 'Contained' and the authentication type is 'Sql'.
-			 */
-			password: string | undefined;
-		}
-
-		/**
-		 * The information required to render the user view.
-		 */
-		export interface UserViewInfo extends ObjectViewInfo<User> {
-			/**
-			 * All user types supported by the database.
-			 */
-			userTypes: UserType[];
-			/**
-			 * All languages supported by the database.
-			 */
-			languages: string[];
-			/**
-			 * All schemas in the database.
-			 */
-			schemas: string[];
-			/**
-			 * Name of all the logins in the server.
-			 */
-			logins: string[];
-			/**
-			 * Name of all the database roles.
-			 */
-			databaseRoles: string[];
-		}
-
-		/**
-		 * Interface representing the server role object.
-		 */
-		export interface ServerRoleInfo extends SqlObject {
-			/**
-			 * Name of the server principal that owns the server role.
-			 */
-			owner: string;
-			/**
-			 * Name of the server principals that are members of the server role.
-			 */
-			members: string[];
-			/**
-			 * Server roles that the server role is a member of.
-			 */
-			memberships: string[];
-		}
-
-		/**
-		 * Interface representing the information required to render the server role view.
-		 */
-		export interface ServerRoleViewInfo extends ObjectViewInfo<ServerRoleInfo> {
-			/**
-			 * Whether the server role is a fixed role.
-			 */
-			isFixedRole: boolean;
-			/**
-			 * List of all the server roles.
-			 */
-			serverRoles: string[];
-		}
-
-		/**
-		 * Interface representing the application role object.
-		 */
-		export interface ApplicationRoleInfo extends SqlObject {
-			/**
-			 * Default schema of the application role.
-			 */
-			defaultSchema: string;
-			/**
-			 * Schemas owned by the application role.
-			 */
-			ownedSchemas: string[];
-			/**
-			 * Password of the application role.
-			 */
-			password: string;
-		}
-
-		/**
-		 * Interface representing the information required to render the application role view.
-		 */
-		export interface ApplicationRoleViewInfo extends ObjectViewInfo<ApplicationRoleInfo> {
-			/**
-			 * List of all the schemas in the database.
-			 */
-			schemas: string[];
-		}
-
-		/**
-		 * Interface representing the database role object.
-		 */
-		export interface DatabaseRoleInfo extends SqlObject {
-			/**
-			 * Name of the database principal that owns the database role.
-			 */
-			owner: string;
-			/**
-			 * Schemas owned by the database role.
-			 */
-			ownedSchemas: string[];
-			/**
-			 * Name of the user or database role that are members of the database role.
-			 */
-			members: string[];
-		}
-
-		/**
-		 * Interface representing the information required to render the database role view.
-		 */
-		export interface DatabaseRoleViewInfo extends ObjectViewInfo<DatabaseRoleInfo> {
-			/**
-			 * List of all the schemas in the database.
-			 */
-			schemas: string[];
 		}
 
 		/**
@@ -1294,7 +943,7 @@ declare module 'mssql' {
 			/**
 			 * type of the object.
 			 */
-			type: NodeType;
+			type: string;
 			/**
 			 * schema of the object.
 			 */
@@ -1353,7 +1002,7 @@ declare module 'mssql' {
 		 * @param searchText Search text.
 		 * @param schema Schema to search in.
 		 */
-		search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
+		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
 }

@@ -13,7 +13,7 @@ export class Button extends vsButton {
 	protected buttonFocusOutline?: Color;
 
 	constructor(container: HTMLElement, options?: IButtonOptions) {
-		super(container, options);
+		super(container, options ?? {});
 	}
 
 	public set title(value: string) {
@@ -30,5 +30,8 @@ export class Button extends vsButton {
 
 	public setWidth(value: string) {
 		this.element.style.width = value;
+	}
+
+	public style(styles: IButtonStyles): void {
 	}
 }

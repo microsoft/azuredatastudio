@@ -77,6 +77,7 @@ export enum TelemetryAction {
 	OpenLoginMigrationWizard = 'OpenLoginMigrationWizard',
 	LoginMigrationStarted = 'LoginMigrationStarted',
 	LoginMigrationCompleted = 'LoginMigrationCompleted',
+	LoginMigrationError = 'LoginMigrationError',
 	TdeMigrationSuccess = 'TdeMigrationSuccess',
 	TdeMigrationFailures = 'TdeMigrationFailures',
 	TdeMigrationClientException = 'TdeMigrationClientException',
@@ -97,7 +98,8 @@ export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telem
 }
 
 export function getTelemetryProps(migrationStateModel: MigrationStateModel): TelemetryEventProperties {
-	const tenantId = migrationStateModel._azureAccount?.properties?.tenants?.length > 0
+	const tenantId = migrationStateModel._azureTenant?.id ??
+		migrationStateModel._azureAccount?.properties?.tenants?.length > 0
 		? migrationStateModel._azureAccount?.properties?.tenants[0]?.id
 		: '';
 	return {

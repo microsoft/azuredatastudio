@@ -830,17 +830,17 @@ export class Project implements ISqlProject {
 			throw new Error(constants.databaseReferenceAlreadyExists);
 		}
 
-		let systemDb;
-		let result;
-		let sqlProjService;
+		let systemDb, referenceType, result, sqlProjService;
 		if (utils.getAzdataApi()) {
 			systemDb = <unknown>settings.systemDb as mssql.SystemDatabase;
+			referenceType = settings.systemDbReferenceType as mssql.SystemDbReferenceType;
 			sqlProjService = this.sqlProjService as mssql.ISqlProjectsService;
-			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseVariableLiteralValue);
+			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, referenceType, settings.databaseVariableLiteralValue);
 		} else {
 			systemDb = <unknown>settings.systemDb as vscodeMssql.SystemDatabase;
+			referenceType = settings.systemDbReferenceType as vscodeMssql.SystemDbReferenceType;
 			sqlProjService = this.sqlProjService as vscodeMssql.ISqlProjectsService;
-			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseVariableLiteralValue);
+			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, referenceType, settings.databaseVariableLiteralValue);
 		}
 
 		if (!result.success && result.errorMessage) {
@@ -1038,7 +1038,6 @@ export class Project implements ISqlProject {
 	/**
 	 * Moves a file to a different location
 	 * @param node Node being moved
-	 * @param projectFilePath Full file path to .sqlproj
 	 * @param destinationRelativePath path of the destination, relative to .sqlproj
 	 */
 	public async move(node: BaseProjectTreeItem, destinationRelativePath: string): Promise<azdataType.ResultStatus> {

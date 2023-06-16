@@ -27,7 +27,7 @@ export class LinkHandlerDirective {
 		@Inject(INotebookService) private readonly notebookService: INotebookService,
 		@Inject(IFileService) private readonly fileService: IFileService
 	) {
-		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-browser/workbench/workbench.html'));
+		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-sandbox/workbench/workbench.html'));
 	}
 
 	@HostListener('click', ['$event'])
@@ -76,7 +76,7 @@ export class LinkHandlerDirective {
 			// Store fragment before converting, since asFileUri removes the uri fragment
 			const fragment = uri.fragment;
 			// Convert vscode-file protocol URIs to file since that's what Notebooks expect to work with
-			uri = FileAccess.asFileUri(uri);
+			uri = FileAccess.uriToFileUri(uri);
 			if (this.isSupportedLink(uri)) {
 				if (fragment && fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 					this.notebookService.navigateTo(this.notebookUri, fragment);

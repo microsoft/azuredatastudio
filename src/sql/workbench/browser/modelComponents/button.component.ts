@@ -10,13 +10,13 @@ import { convertSize } from 'sql/base/browser/dom';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-import { attachInfoButtonStyler } from 'sql/platform/theme/common/styler';
+// import { attachInfoButtonStyler } from 'sql/platform/theme/common/styler';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+// import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
+// import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 enum ButtonType {
 	File = 'File',
@@ -54,7 +54,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		//@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService
 	) {
@@ -193,11 +193,12 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	 */
 	private updateStyler(): void {
 		this._buttonStyler?.dispose();
-		if (this.buttonType === ButtonType.Informational) {
-			this._buttonStyler = this._register(attachInfoButtonStyler(this._button, this.themeService));
-		} else {
-			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
-		}
+		// {{SQL CARBON TODO}} - style
+		// if (this.buttonType === ButtonType.Informational) {
+		// 	this._buttonStyler = this._register(attachInfoButtonStyler(this._button, this.themeService));
+		// } else {
+		// 	this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
+		// }
 	}
 
 	protected override get defaultIconHeight(): number {

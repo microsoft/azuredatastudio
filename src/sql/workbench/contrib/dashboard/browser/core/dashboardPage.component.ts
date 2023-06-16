@@ -182,7 +182,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, g => g === '', (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			primary.forEach(a => {
 				if (a instanceof MenuItemAction) {
@@ -219,7 +219,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		const toolbarTasks = this.tabToolbarActionsConfig.get(tabId);
 		let tasks = TaskRegistry.getTasks();
 		let content = [];
-		if (types.isArray(toolbarTasks.actions) && toolbarTasks.actions.length > 0) {
+		if (Array.isArray(toolbarTasks.actions) && toolbarTasks.actions.length > 0) {
 			tasks = toolbarTasks.actions.map(i => {
 				if (types.isString(i)) {
 					if (tasks.some(x => x === i)) {
@@ -514,7 +514,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return properties ? [this.propertiesWidget] : [];
 		} else if (types.isString(properties) && properties === 'collapsed') {
 			return [this.propertiesWidget];
-		} else if (types.isArray(properties)) {
+		} else if (Array.isArray(properties)) {
 			return properties.map((item) => {
 				const retVal = Object.assign({}, this.propertiesWidget);
 				retVal.edition = item.edition;

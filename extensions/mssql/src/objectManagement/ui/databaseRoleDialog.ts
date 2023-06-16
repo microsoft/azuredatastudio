@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterDatabaseRoleDocUrl, CreateDatabaseRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
-import { DefaultMaxTableHeight } from './dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
+import { DatabaseRoleInfo, DatabaseRoleViewInfo } from '../interfaces';
 
-export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagement.DatabaseRoleInfo, ObjectManagement.DatabaseRoleViewInfo> {
+export class DatabaseRoleDialog extends PrincipalDialogBase<DatabaseRoleInfo, DatabaseRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemasSection: azdata.GroupContainer;
@@ -27,18 +29,19 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 	private memberTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: false });
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateDatabaseRoleDocUrl : AlterDatabaseRoleDocUrl;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemasSection();
 		this.initializeMemberSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemasSection, this.memberSection, this.securableSection], this.getSectionItemLayout());
 	}
 
 	private initializeGeneralSection(): void {
@@ -52,10 +55,16 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 		}, this.objectInfo.owner, true, 'text', 210);
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
-				objectTypes: [ObjectManagement.NodeType.ApplicationRole, ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+				objectTypes: localizedConstants.getObjectTypeInfo([
+					ObjectManagement.NodeType.ApplicationRole,
+					ObjectManagement.NodeType.DatabaseRole,
+					ObjectManagement.NodeType.User
+				]),
+				selectAllObjectTypes: true,
 				multiSelect: false,
 				contextId: this.contextId,
-				title: localizedConstants.SelectDatabaseRoleOwnerDialogTitle
+				title: localizedConstants.SelectDatabaseRoleOwnerDialogTitle,
+				showSchemaColumn: false
 			});
 			await dialog.open();
 			const result = await dialog.waitForClose();
@@ -70,48 +79,48 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 	}
 
 	private initializeMemberSection(): void {
-		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [
-			{
-				type: azdata.ColumnType.text,
-				value: localizedConstants.NameText
-			}
-		], this.objectInfo.members.map(m => [m]));
+		this.memberTable = this.createTable(localizedConstants.MemberSectionHeader, [localizedConstants.NameText], this.objectInfo.members.map(m => [m]));
 		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
-					objectTypes: [ObjectManagement.NodeType.DatabaseRole, ObjectManagement.NodeType.User],
+					objectTypes: localizedConstants.getObjectTypeInfo([
+						ObjectManagement.NodeType.DatabaseRole,
+						ObjectManagement.NodeType.User
+					]),
+					selectAllObjectTypes: true,
 					multiSelect: true,
 					contextId: this.contextId,
-					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle
+					title: localizedConstants.SelectDatabaseRoleMemberDialogTitle,
+					showSchemaColumn: false
 				});
 				await dialog.open();
 				const result = await dialog.waitForClose();
-				this.addMembers(result.selectedObjects.map(r => r.name));
+				await this.addMembers(result.selectedObjects.map(r => r.name));
 			},
 			async () => {
 				if (this.memberTable.selectedRows.length === 1) {
-					this.removeMember(this.memberTable.selectedRows[0]);
+					await this.removeMember(this.memberTable.selectedRows[0]);
 				}
 			});
 		this.memberSection = this.createGroup(localizedConstants.MemberSectionHeader, [this.memberTable, buttonContainer]);
 	}
 
-	private addMembers(names: string[]): void {
+	private async addMembers(names: string[]): Promise<void> {
 		names.forEach(n => {
 			if (this.objectInfo.members.indexOf(n) === -1) {
 				this.objectInfo.members.push(n);
 			}
 		});
-		this.updateMembersTable();
+		await this.updateMembersTable();
 	}
 
-	private removeMember(idx: number): void {
+	private async removeMember(idx: number): Promise<void> {
 		this.objectInfo.members.splice(idx, 1);
-		this.updateMembersTable();
+		await this.updateMembersTable();
 	}
 
-	private updateMembersTable(): void {
-		this.setTableData(this.memberTable, this.objectInfo.members.map(m => [m]));
+	private async updateMembersTable(): Promise<void> {
+		await this.setTableData(this.memberTable, this.objectInfo.members.map(m => [m]));
 		this.onFormFieldChange();
 	}
 
@@ -120,7 +129,7 @@ export class DatabaseRoleDialog extends ObjectManagementDialogBase<ObjectManagem
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;

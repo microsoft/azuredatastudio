@@ -8,31 +8,28 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, mssqlProvider } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, mssqlProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { GraphData, SynapseWorkspaceGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, SynapseWorkspaceGraphData> {
 	private static readonly containerId = 'azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel', "Azure Synapse Analytics");
 
 	public constructor(
-		synapseWorkspaceService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		synapseWorkspaceService: azureResource.IAzureResourceService,
 		private _extensionContext: vscode.ExtensionContext
 	) {
 		super(synapseWorkspaceService);
 	}
 
-	protected getTreeItemForResource(synapseWorkspace: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(synapseWorkspace: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `synapseWorkspace_${synapseWorkspace.id ?? synapseWorkspace.name}`,
+			id: `${AzureResourcePrefixes.synapseWorkspace}${account.key.accountId}${synapseWorkspace.tenant}${synapseWorkspace.id ?? synapseWorkspace.name}`,
 			label: this.browseConnectionMode ? `${synapseWorkspace.name} (${AzureResourceSynapseWorkspaceTreeDataProvider.containerLabel}, ${synapseWorkspace.subscription.name})` : synapseWorkspace.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/azureSynapseAnalytics.svg'),
 			collapsibleState: this.browseConnectionMode ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseWorkspace,
 			payload: {
@@ -63,10 +60,7 @@ export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeD
 		return [{
 			id: AzureResourceSynapseWorkspaceTreeDataProvider.containerId,
 			label: AzureResourceSynapseWorkspaceTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/azureSynapseAnalytics.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseWorkspaceContainer
 		}];

@@ -19,7 +19,8 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Emitter } from 'vs/base/common/event';
-import { CountBadge, ICountBadgetyles } from 'vs/base/browser/ui/countBadge/countBadge';
+import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
+import { defaultCountBadgeStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 
@@ -45,7 +46,7 @@ const DefaultTableFilterOptions: ITableFilterOptions = {
 	refreshColumns: true
 };
 
-export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
+export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles {
 }
 
 interface NotificationProvider {
@@ -69,8 +70,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private okButton?: Button;
 	private clearButton?: Button;
 	private cancelButton?: Button;
-	private sortAscButton?: Button;
-	private sortDescButton?: Button;
+	// {{SQL CARBON TODO}} - disable
+	// private sortAscButton?: Button;
+	// private sortDescButton?: Button;
 	private selectAllCheckBox?: Checkbox;
 	private searchInputBox?: InputBox;
 	private countBadge?: CountBadge;
@@ -84,6 +86,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private disposableStore = new DisposableStore();
 	private columnButtonMapping: Map<string, HTMLElement> = new Map<string, HTMLElement>();
 	private previouslyFocusedElement: HTMLElement;
+	private listContainer?: HTMLElement;
 
 	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options: ITableFilterOptions = DefaultTableFilterOptions) {
 	}
@@ -180,7 +183,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private createButtonMenuItem(title: string, command: HeaderFilterCommands, iconClass: string): Button {
-		const buttonContainer = append(this.menu, $(''));
+		const buttonContainer = append(this.menu, $('.slick-header-menu-image-button-container'));
 		const button = new Button(buttonContainer);
 		button.icon = { id: `slick-header-menuicon ${iconClass}` };
 		button.label = title;
@@ -204,20 +207,21 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 
 		this.searchInputBox = new InputBox(append(searchRow, $('.search-input')), this.contextViewProvider, {
-			placeholder: localize('table.searchPlaceHolder', "Search")
+			placeholder: localize('table.searchPlaceHolder', "Search"),
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		const visibleCountContainer = append(searchRow, $('.visible-count'));
 		visibleCountContainer.setAttribute('aria-live', 'polite');
 		visibleCountContainer.setAttribute('aria-atomic', 'true');
 		this.visibleCountBadge = new CountBadge(visibleCountContainer, {
 			countFormat: localize({ key: 'tableFilter.visibleCount', comment: ['This tells the user how many items are shown in the list. Currently not visible, but read by screen readers.'] }, "{0} Results")
-		});
+		}, defaultCountBadgeStyles);
 
 		const selectedCountBadgeContainer = append(searchRow, $('.selected-count'));
 		selectedCountBadgeContainer.setAttribute('aria-live', 'polite');
 		this.countBadge = new CountBadge(selectedCountBadgeContainer, {
 			countFormat: localize({ key: 'tableFilter.selectedCount', comment: ['This tells the user how many items are selected in the list'] }, "{0} Selected")
-		});
+		}, defaultCountBadgeStyles);
 
 		this.searchInputBox.onDidChange(async (newString) => {
 			this.filteredListData = this.listData.filter(element => element.value?.toUpperCase().indexOf(newString.toUpperCase()) !== -1);
@@ -278,8 +282,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		this.filteredListData = this.listData;
 
-		const filter = append(this.menu, $('.filter'));
-		this.list = new List<TableFilterListElement>('TableFilter', filter, new TableFilterListDelegate(), [new TableFilterListRenderer()], {
+		this.listContainer = append(this.menu, $('.filter'));
+		this.list = new List<TableFilterListElement>('TableFilter', this.listContainer, new TableFilterListDelegate(), [new TableFilterListRenderer()], {
 			multipleSelectionSupport: false,
 			keyboardSupport: true,
 			mouseSupport: true,
@@ -347,29 +351,26 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 		this.previouslyFocusedElement = document.activeElement as HTMLElement;
 		await this.createFilterMenu(filterButton);
-		// Get the absolute coordinates of the filter button
-		const offset = jQuery(filterButton).offset();
-		// Calculate the position of menu item
-		let menuleft = offset.left - this.menu.offsetWidth + filterButton.offsetWidth;
-		let menutop = offset.top + filterButton.offsetHeight;
-		// Make sure the entire menu is on screen.
-		// If there is not enough vertical space under the filter button, we will move up the menu.
-		// If the left of the menu is off screen (negative value), we will show the menu next to the left edge of window.
+		// Try to fit the menu in the screen.
 		// We don't really consider the case when there is not enough space to show the entire menu since in that case the application is not usable already.
-		if (menutop + this.menu.offsetHeight > window.innerHeight) {
-			menutop = window.innerHeight - this.menu.offsetHeight;
-		}
-		menuleft = menuleft > 0 ? menuleft : 0;
+
+		const offset = jQuery(filterButton).offset();
+		// If there is not enough vertical space under the filter button, we will move up the menu.
+		const menuTop = offset.top + this.menu.offsetHeight <= window.innerHeight ? offset.top : window.innerHeight - this.menu.offsetHeight;
+		// Make sure the menu is on the screen horizontally.
+		const menuLeft = offset.left + filterButton.offsetWidth + this.menu.offsetWidth <= window.innerWidth ? offset.left + filterButton.offsetWidth : window.innerWidth - this.menu.offsetWidth;
 
 		this.contextViewProvider.showContextView({
 			getAnchor: () => {
 				return {
-					x: menuleft,
-					y: menutop
+					x: menuLeft,
+					y: menuTop
 				};
 			},
 			render: (container: HTMLElement) => {
 				container.appendChild(this.menu);
+				// Set the list size to its container size so that scrolling works correctly..
+				this.list.layout(this.listContainer.clientHeight);
 				return {
 					dispose: () => {
 						this.disposeMenu();
@@ -401,9 +402,18 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		// first add it to the document so that we can get the actual size of the menu
 		// later, it will be added to the correct container
 		this.menu = append(document.body, $('.slick-header-menu'));
+		const MenuVerticalPadding = 10;
+		const MenuBarHeight = 30;
+		const DefaultMenuHeight = 350;
+		// Make sure the menu can fit in the screen.
+		this.menu.style.height = `${Math.min(DefaultMenuHeight, window.innerHeight - MenuBarHeight) - MenuVerticalPadding}px`;
 
-		this.sortAscButton = this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
-		this.sortDescButton = this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		// {{SQL CARBON TODO}} - style buttons
+		// this.sortAscButton = this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		// this.sortDescButton = this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+
 		this.createSearchInputRow();
 		await this.createFilterList();
 
@@ -438,15 +448,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private applyStyles() {
 		if (this.filterStyles) {
-			this.okButton?.style(this.filterStyles);
-			this.cancelButton?.style(this.filterStyles);
-			this.clearButton?.style(this.filterStyles);
-			this.sortAscButton?.style(this.filterStyles);
-			this.sortDescButton?.style(this.filterStyles);
-			this.searchInputBox?.style(this.filterStyles);
-			this.countBadge?.style(this.filterStyles);
-			this.visibleCountBadge?.style(this.filterStyles);
-			this.list?.style(this.filterStyles);
+			// {{SQL CARBON TODO}} - apply styles
+			// this.okButton?.style(this.filterStyles);
+			// this.cancelButton?.style(this.filterStyles);
+			// this.clearButton?.style(this.filterStyles);
+			// this.sortAscButton?.style(this.filterStyles);
+			// this.sortDescButton?.style(this.filterStyles);
+			// this.searchInputBox?.style(this.filterStyles);
+			// this.countBadge?.style(this.filterStyles);
+			// this.visibleCountBadge?.style(this.filterStyles);
+			// this.list?.style(this.filterStyles);
 		}
 	}
 

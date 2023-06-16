@@ -11,7 +11,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -78,9 +77,9 @@ export class TableDesignerPublishDialog extends Modal {
 		const requireConfirmation = this._report.requireConfirmation === true;
 		this._okButton.enabled = !requireConfirmation;
 		this._generateScriptButton.enabled = !requireConfirmation;
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._generateScriptButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
+		this._register(this._okButton);
+		this._register(this._generateScriptButton);
+		this._register(this._cancelButton);
 	}
 
 	protected renderBody(container: HTMLElement) {

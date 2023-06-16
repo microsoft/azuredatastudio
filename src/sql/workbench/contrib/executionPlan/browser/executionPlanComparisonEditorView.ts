@@ -33,7 +33,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 const ADD_EXECUTION_PLAN_STRING = localize('epCompare.addExecutionPlanLabel', 'Add execution plan');

@@ -13,7 +13,7 @@ import { DialogModule } from 'sql/workbench/services/dialog/browser/dialog.modul
 import { Button } from 'vs/base/browser/ui/button/button';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -61,7 +61,7 @@ export class WizardModal extends Modal {
 		this._useDefaultMessageBoxLocation = false;
 	}
 
-	public layout(): void {
+	protected layout(): void {
 
 	}
 

@@ -35,10 +35,13 @@ export async function activate(ctx: RendererContext<void>) {
 		.katex-error {
 			color: var(--vscode-editorError-foreground);
 		}
+		.katex-block {
+			counter-reset: katexEqnNo mmlEqnNo;
+		}
 	`;
 	document.head.append(style);
 
-	const katex = require('@iktakahiro/markdown-it-katex');
+	const katex = require('@vscode/markdown-it-katex');
 	const macros = {};
 	markdownItRenderer.extendMarkdownIt((md: markdownIt.MarkdownIt) => {
 		return md.use(katex, {

@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
-import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { IAction } from 'vs/base/common/actions';
@@ -15,6 +14,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import { BaseDropdown, IBaseDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
+import { IAnchor, IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -22,7 +23,62 @@ export interface IDropdownStyles {
 	borderColor?: Color;
 }
 
-export class DropdownList extends Dropdown {
+
+export interface IDropdownOptions extends IBaseDropdownOptions {
+	contextViewProvider: IContextViewProvider;
+}
+
+export class Dropdown extends BaseDropdown {
+	private contextViewProvider: IContextViewProvider;
+
+	constructor(container: HTMLElement, options: IDropdownOptions) {
+		super(container, options);
+
+		this.contextViewProvider = options.contextViewProvider;
+	}
+
+	override show(): void {
+		super.show();
+
+		this.element.classList.add('active');
+
+		this.contextViewProvider.showContextView({
+			getAnchor: () => this.getAnchor(),
+
+			render: (container) => {
+				return this.renderContents(container);
+			},
+
+			onDOMEvent: (e, activeElement) => {
+				this.onEvent(e, activeElement);
+			},
+
+			onHide: () => this.onHide()
+		});
+	}
+
+	protected getAnchor(): HTMLElement | IAnchor {
+		return this.element;
+	}
+
+	protected onHide(): void {
+		this.element.classList.remove('active');
+	}
+
+	override hide(): void {
+		super.hide();
+
+		if (this.contextViewProvider) {
+			this.contextViewProvider.hideContextView();
+		}
+	}
+
+	protected renderContents(container: HTMLElement): IDisposable | null {
+		return null;
+	}
+}
+
+export class DropdownList extends BaseDropdown {
 
 	protected backgroundColor?: Color;
 	protected foregroundColor?: Color;
@@ -88,7 +144,7 @@ export class DropdownList extends Dropdown {
 	/**
 	 * Render the dropdown contents
 	 */
-	protected override renderContents(container: HTMLElement): IDisposable {
+	protected renderContents(container: HTMLElement): IDisposable | null {
 		let div = DOM.append(container, this._contentContainer);
 		div.style.width = (DOM.getTotalWidth(this.element) - this.borderWidth * 2) + 'px'; // Subtract border width
 		return { dispose: () => { } };
@@ -127,7 +183,8 @@ export class DropdownList extends Dropdown {
 		this.borderColor = styles.borderColor;
 		this.applyStyles();
 		if (this.button) {
-			this.button.style(styles);
+			// {{SQL CARBON TODO}} - style button
+			//this.button.style(styles);
 		}
 	}
 

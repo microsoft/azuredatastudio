@@ -194,7 +194,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
 		if (this._authLibrary === Constants.AuthLibrary.MSAL) {
-			const tenants = await this.getTenantsMsal(token.token);
+			const tenants = await this.getTenantsMsal(token.token, tokenClaims);
 			account = this.createAccount(tokenClaims, token.key, tenants);
 		} else { // fallback to ADAL as default
 			const tenants = await this.getTenantsAdal({ ...token });
@@ -471,7 +471,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return result;
 	}
 
-	public async getTenantsMsal(token: string): Promise<Tenant[]> {
+	public async getTenantsMsal(token: string, tokenClaims: TokenClaims): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
@@ -499,7 +499,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
-					userId: token,
+					userId: tokenClaims.oid,
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
@@ -870,10 +870,15 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected toBase64UrlEncoding(base64string: string): string {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
+
 	public async deleteAllCacheMsal(): Promise<void> {
 		this.clientApplication.clearCache();
-		await this.msalCacheProvider.clearLocalCache();
+
+		// unlink both cache files
+		await this.msalCacheProvider.unlinkMsalCache();
+		await this.msalCacheProvider.unlinkLocalCache();
 	}
+
 	public async deleteAllCacheAdal(): Promise<void> {
 		const results = await this.tokenCache.findCredentials('');
 

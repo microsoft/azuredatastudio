@@ -1580,7 +1580,7 @@ declare module 'azdata' {
 	}
 
 	export enum FrequencyTypes {
-		Unknown,
+		Unknown = 0,
 		OneTime = 1 << 1,
 		Daily = 1 << 2,
 		Weekly = 1 << 3,
@@ -2879,7 +2879,7 @@ declare module 'azdata' {
 		 * @param title The title shown in the editor tab
 		 * @param options Options to configure the editor
 		 * @param name The name used to identify the editor in telemetry
-		*/
+		 */
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.ModelViewPanel {
@@ -4761,7 +4761,7 @@ declare module 'azdata' {
 		 * @deprecated please use the method createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth) instead.
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
-		 * @param dialogName Name of the dialog.
+		 * @param dialogName Non-localized name of the dialog for identifying in telemetry events.
 		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
@@ -4769,7 +4769,7 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title Title of the dialog, displayed at the top.
-		 * @param dialogName Name of the dialog.
+		 * @param dialogName Non-localized name of the dialog for identifying in telemetry events.
 		 * @param width Width of the dialog, default is 'narrow'.
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
@@ -4777,7 +4777,7 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title Title of the dialog, displayed at the top.
-		 * @param dialogName Name of the dialog.
+		 * @param dialogName Non-localized name of the dialog for identifying in telemetry events.
 		 * @param width Width of the dialog, default is 'narrow'.
 		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
 		 * @param dialogPosition Defines the dialog position, default is undefined
@@ -4993,8 +4993,7 @@ declare module 'azdata' {
 			message?: DialogMessage;
 
 			/**
-			 * Set the dialog name when opening
-			 * the dialog for telemetry
+			 * Non-localized name of the dialog for identifying in telemetry events.
 			 */
 			dialogName?: string | undefined;
 
@@ -5392,18 +5391,17 @@ declare module 'azdata' {
 		 */
 		export function getQueryDocument(fileUri: string): Thenable<QueryDocument>;
 
-		/* eslint-disable */
 		/**
 		 * Opens an untitled text document. The editor will prompt the user for a file
 		 * path when the document is to be saved. The `options` parameter allows to
 		 * specify the *content* of the document.
 		 *
 		 * @param options Options to control how the document will be created.
+		 * @param options.content The initial content of the document
 		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
 		 * @return A promise that resolves to a {@link QueryDocument}.
 		 */
 		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
-		/* eslint-enable */
 	}
 
 	/**
@@ -5658,7 +5656,6 @@ declare module 'azdata' {
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 
-		/* eslint-disable */
 		/**
 		 * Show the given document in a notebook editor. A {@link vscode.ViewColumn} can be provided
 		 * to control where the editor is being shown. Might change the {@link nb.activeNotebookEditor}.
@@ -5670,15 +5667,11 @@ declare module 'azdata' {
 		 * will be derived from the file name.
 		 * For all other schemes the registered notebook providers are consulted.
 		 *
-		 * @param document A document to be shown.
-		 * @param column A view column in which the {@link NotebookEditor} should be shown. The default is the {@link vscode.ViewColumn}, other values
-		 * are adjusted to be `Min(column, columnCount + 1)`, the {@link vscode.ViewColumn.Active}-column is not adjusted. Use {@link vscode.ViewColumn.Beside}
-		 * to open the editor to the side of the currently active one.
-		 * @param preserveFocus When `true` the editor will not take focus.
+		 * @param uri The URI of the document to show
+		 * @param showOptions Options to control how the Notebook is shown
 		 * @return A promise that resolves to a {@link NotebookEditor}.
 		 */
 		export function showNotebookDocument(uri: vscode.Uri, showOptions?: NotebookShowOptions): Thenable<NotebookEditor>;
-		/* eslint-enable */
 
 		export interface NotebookDocument {
 			/**

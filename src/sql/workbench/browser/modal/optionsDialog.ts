@@ -12,12 +12,12 @@ import * as OptionsDialogHelper from './optionsDialogHelper';
 import * as azdata from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+//import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import * as styler from 'vs/platform/theme/common/styler';
+//import * as styler from 'sql/platform/theme/common/vsstyler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -32,6 +32,7 @@ import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { Actions } from 'sql/platform/connection/common/constants';
+import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 
 export interface IOptionsDialogOptions extends IModalOptions {
 	cancelLabel?: string;
@@ -74,13 +75,16 @@ export class OptionsDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		if (this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
-			styler.attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
+			//styler.attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
-		let okButton = this.addFooterButton(localize('optionsDialog.ok', "OK"), () => this.ok());
-		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
+		// {{SQL CARBON TODO}} - theming
+		this.addFooterButton(localize('optionsDialog.ok', "OK"), () => this.ok());
+		this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
+		// let okButton = this.addFooterButton(localize('optionsDialog.ok', "OK"), () => this.ok());
+		// let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
 		// Theme styler
-		styler.attachButtonStyler(okButton, this._themeService);
-		styler.attachButtonStyler(closeButton, this._themeService);
+		//styler.attachButtonStyler(okButton, this._themeService);
+		//styler.attachButtonStyler(closeButton, this._themeService);
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
 	}
@@ -134,17 +138,18 @@ export class OptionsDialog extends Modal {
 	private registerStyling(): void {
 		// Theme styler
 		for (let optionName in this._optionElements) {
-			let widget: Widget = this._optionElements[optionName].optionWidget;
+			// {{SQL CARBON TODO}} - styling
+			//let widget: Widget = this._optionElements[optionName].optionWidget;
 			let option = this._optionElements[optionName].option;
 			switch (option.valueType) {
 				case ServiceOptionType.category:
 				case ServiceOptionType.boolean:
-					this.disposableStore.add(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
+					//this.disposableStore.add(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
 					break;
 				case ServiceOptionType.string:
 				case ServiceOptionType.password:
 				case ServiceOptionType.number:
-					this.disposableStore.add(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
+				//this.disposableStore.add(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
 			}
 		}
 	}
@@ -246,7 +251,7 @@ export class OptionsDialog extends Modal {
 						let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
 						// Append required indicator when not present.
 						if (element && element.childElementCount === 1) {
-							DialogHelper.appendRequiredIndicator(element);
+							element.classList.add(RequiredIndicatorClassName);
 						}
 					}
 					// Force selection event if option value is available.
@@ -274,7 +279,7 @@ export class OptionsDialog extends Modal {
 				let element = DialogHelper.getOptionContainerByName(container, optionAction.optionName) as HTMLElement;
 				// Append required indicator when not present.
 				if (element && element.childElementCount === 1) {
-					DialogHelper.appendRequiredIndicator(element);
+					element.classList.add(RequiredIndicatorClassName);
 				}
 			}
 		} else {

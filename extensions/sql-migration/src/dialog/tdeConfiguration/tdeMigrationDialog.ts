@@ -297,7 +297,7 @@ export class TdeMigrationDialog {
 			this._updateProgressText();
 
 			//Get access token
-			const accessToken = await azdata.accounts.getAccountSecurityToken(this._model._azureAccount, this._model._azureAccount.properties.tenants[0].id, azdata.AzureResource.ResourceManagement);
+			const accessToken = await azdata.accounts.getAccountSecurityToken(this._model._azureAccount, this._model._azureTenant.id, azdata.AzureResource.ResourceManagement);
 
 			const operationResult = await this._model.startTdeMigration(accessToken!.token, this._updateTableResultRow.bind(this));
 

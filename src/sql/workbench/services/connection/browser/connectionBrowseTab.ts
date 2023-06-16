@@ -48,11 +48,12 @@ import { FileKind } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
-import { attachProgressBarStyler } from 'vs/platform/theme/common/styler';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
-import { FileThemeIcon, FolderThemeIcon, IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { FileThemeIcon, FolderThemeIcon, IThemeService } from 'vs/platform/theme/common/themeService';
 import { IResourceLabel, ResourceLabels } from 'vs/workbench/browser/labels';
 import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState, TreeViewItemHandleArg } from 'vs/workbench/common/views';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 
 
@@ -109,11 +110,12 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	renderFilterBox(container: HTMLElement): void {
 		this.filterInput = new InputBox(container, this.contextViewService, {
 			placeholder: localize('connectionDialog.FilterPlaceHolder', "Type here to filter the list"),
-			ariaLabel: localize('connectionDialog.FilterInputTitle', "Filter connections")
+			ariaLabel: localize('connectionDialog.FilterInputTitle', "Filter connections"),
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		this.filterProgressBar = new ProgressBar(this.filterInput.element);
 		this._register(this.filterProgressBar);
-		this._register(attachProgressBarStyler(this.filterProgressBar, this.themeService));
+		//this._register(attachProgressBarStyler(this.filterProgressBar, this.themeService));
 		this.filterInput.element.style.margin = '5px';
 		this._register(this.filterInput);
 		this._register(attachInputBoxStyler(this.filterInput, this.themeService));
@@ -385,11 +387,11 @@ class ProviderElementRenderer extends BaseTreeItemRender<ConnectionDialogTreePro
 		super(menus, actionViewItemProvider);
 	}
 
-	getText(element: ConnectionDialogTreeProviderElement): string {
+	protected getText(element: ConnectionDialogTreeProviderElement): string {
 		return element.name;
 	}
 
-	getIconClass(element: ConnectionDialogTreeProviderElement): string {
+	protected getIconClass(element: ConnectionDialogTreeProviderElement): string {
 		return 'codicon-folder';
 	}
 }
@@ -398,11 +400,11 @@ class SavedConnectionsNodeRenderer extends BaseTreeItemRender<SavedConnectionNod
 	public static readonly TEMPLATE_ID = 'savedConnectionNode';
 	public readonly templateId = SavedConnectionsNodeRenderer.TEMPLATE_ID;
 
-	getText(element: SavedConnectionNode): string {
+	protected getText(element: SavedConnectionNode): string {
 		return localize('savedConnections', "Saved Connections");
 	}
 
-	getIconClass(element: SavedConnectionNode): string {
+	protected getIconClass(element: SavedConnectionNode): string {
 		return 'codicon-folder';
 	}
 }
@@ -411,11 +413,11 @@ class ConnectionProfileGroupRenderer extends BaseTreeItemRender<ConnectionProfil
 	public static readonly TEMPLATE_ID = 'connectionProfileGroup';
 	public readonly templateId = ConnectionProfileGroupRenderer.TEMPLATE_ID;
 
-	getText(element: ConnectionProfileGroup): string {
+	protected getText(element: ConnectionProfileGroup): string {
 		return element.name;
 	}
 
-	getIconClass(element: ConnectionProfileGroup): string {
+	protected getIconClass(element: ConnectionProfileGroup): string {
 		return 'codicon-folder';
 	}
 }
@@ -608,7 +610,6 @@ class ConnectionBrowseTreeMenuProvider {
 		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result);
 
 		menu.dispose();
-		contextKeyService.dispose();
 
 		return result.primary;
 	}

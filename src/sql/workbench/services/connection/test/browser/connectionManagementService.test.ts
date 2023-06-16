@@ -16,7 +16,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 
-import { IConnectionProfile, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestConnectionProvider } from 'sql/platform/connection/test/common/testConnectionProvider';
 import { TestResourceProvider } from 'sql/workbench/services/resourceProvider/test/common/testResourceProviderService';
@@ -67,8 +67,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
-		getOptionsKey: () => { return 'connectionId'; },
 		serverCapabilities: undefined,
+		getOptionsKey: () => { return 'connectionId'; },
+		getOptionKeyIdNames: undefined!,
 		matches: undefined,
 		providerName: 'MSSQL',
 		options: {},
@@ -515,7 +516,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
 	});
 
-	test('findExistingConnection should find connection for connectionProfile with same basic info', async () => {
+	test('findExistingConnection should find connection for connectionProfile with same info', async () => {
 		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {
@@ -991,7 +992,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('Edit Connection - Changing connection profile name for same URI should persist after edit', async () => {
 		let profile = Object.assign({}, connectionProfile);
-		let uri1 = 'test_uri1';
+		let uri1 = 'connection:test_uri1';
 		let newname = 'connection renamed';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -1014,25 +1015,23 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		let originalProfileKey = '';
-		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((inputProfile, matcher) => {
-			let newProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), inputProfile);
-			let result = newProfile.getOptionsKey() === originalProfileKey;
-			return Promise.resolve(result);
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			//In a real scenario this would be false as it would match the first instance and not find a duplicate.
+			return Promise.resolve(false);
 		});
+		profile.getOptionsKey = () => { return 'test_uri1'; };
 		await connect(uri1, options, true, profile);
-		let originalProfile = ConnectionProfile.fromIConnectionProfile(new TestCapabilitiesService(), connectionProfile);
-		originalProfileKey = originalProfile.getOptionsKey();
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
+		newProfile.getOptionsKey = () => { return 'test_uri1'; };
 		options.params.isEditConnection = true;
 		await connect(uri1, options, true, newProfile);
 		assert.strictEqual(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
 	});
 
-	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', async () => {
-		let uri1 = 'test_uri1';
-		let uri2 = 'test_uri2';
+	test('Edit Connection - Connecting a different non editor URI with same profile via edit should not change profile ID.', async () => {
+		let currentUri = 'test_uri1';
+		let uri = 'connection:' + currentUri;
 		let profile = Object.assign({}, connectionProfile);
 		profile.id = '0451';
 		let options: IConnectionCompletionOptions = {
@@ -1044,7 +1043,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectStart: undefined,
 					onDisconnect: undefined,
 					onConnectCanceled: undefined,
-					uri: uri1
+					uri: uri
 				},
 				queryRange: undefined,
 				runQueryOnCompletion: RunQueryOnConnectionMode.none,
@@ -1056,13 +1055,17 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we check the test uris instead here.
-		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(uri1 === uri2));
-		await connect(uri1, options, true, profile);
+		// In an actual edit situation, the profile options would be different for different URIs, as a placeholder, we return false.
+		connectionStore.setup(x => x.isDuplicateEdit(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(false));
+		profile.getOptionsKey = () => { return currentUri; };
+
+		await connect(uri, options, true, profile);
+		let uri1info = connectionManagementService.getConnectionInfo(uri);
 		options.params.isEditConnection = true;
-		await connect(uri2, options, true, profile);
-		let uri1info = connectionManagementService.getConnectionInfo(uri1);
-		let uri2info = connectionManagementService.getConnectionInfo(uri2);
+		currentUri = 'test_uri2';
+		uri = 'connection:' + currentUri;
+		await connect(uri, options, true, profile);
+		let uri2info = connectionManagementService.getConnectionInfo(uri);
 		assert.strictEqual(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
 	});
 
@@ -1103,13 +1106,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		originalProfileKey = originalProfile.getOptionsKey();
 		let newProfile = Object.assign({}, connectionProfile);
 		options.params.isEditConnection = true;
-		try {
-			await connect(uri1, options, true, newProfile);
-			assert.fail;
-		}
-		catch {
-		}
+		await assert.rejects(async () => await connect(uri1, options, true, newProfile));
 	});
+
 
 
 	test('failed firewall rule should open the firewall rule dialog', async () => {
@@ -1639,7 +1638,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		const testInstantiationService = new TestInstantiationService();
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
 		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		// Check for invalid profile id
@@ -1669,7 +1668,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
 
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
 		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
@@ -1989,7 +1988,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		createInstanceStub.withArgs(ConnectionStore).returns(connectionStoreMock.object);
 		createInstanceStub.withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
 
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, errorDiagnosticsService, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
@@ -2010,154 +2009,42 @@ suite('SQL ConnectionManagementService tests', () => {
 		connections = connectionManagementService.getConnections(true);
 		verifyConnections(connections, ['1', '2'], 'parameter is true');
 	});
-});
 
-test('isRecent should evaluate whether a profile was recently connected or not', () => {
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	const testInstantiationService = new TestInstantiationService();
-	testInstantiationService.stub(IStorageService, new TestStorageService());
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
-	connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
-		return [createConnectionProfile('1')];
+	test('isRecent should evaluate whether a profile was recently connected or not', () => {
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		connectionStoreMock.setup(x => x.getRecentlyUsedConnections()).returns(() => {
+			return [createConnectionProfile('1')];
+		});
+		let profile1 = createConnectionProfile('1');
+		let profile2 = createConnectionProfile('2');
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		assert(connectionManagementService.isRecent(profile1));
+		assert(!connectionManagementService.isRecent(profile2));
 	});
-	let profile1 = createConnectionProfile('1');
-	let profile2 = createConnectionProfile('2');
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
-	assert(connectionManagementService.isRecent(profile1));
-	assert(!connectionManagementService.isRecent(profile2));
-});
 
-test('clearRecentConnection and ConnectionsList should call connectionStore functions', () => {
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	let called = false;
-	connectionStoreMock.setup(x => x.clearRecentlyUsed()).returns(() => {
-		called = true;
+	test('clearRecentConnection and ConnectionsList should call connectionStore functions', () => {
+		const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
+		let called = false;
+		connectionStoreMock.setup(x => x.clearRecentlyUsed()).returns(() => {
+			called = true;
+		});
+		connectionStoreMock.setup(x => x.removeRecentConnection(TypeMoq.It.isAny())).returns(() => {
+			called = true;
+		});
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.stub(IStorageService, new TestStorageService());
+		sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
+		let profile1 = createConnectionProfile('1');
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, workspaceConfigurationServiceMock.object, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
+		connectionManagementService.clearRecentConnection(profile1);
+		assert(called);
+		called = false;
+		connectionManagementService.clearRecentConnectionsList();
+		assert(called);
 	});
-	connectionStoreMock.setup(x => x.removeRecentConnection(TypeMoq.It.isAny())).returns(() => {
-		called = true;
-	});
-	const testInstantiationService = new TestInstantiationService();
-	testInstantiationService.stub(IStorageService, new TestStorageService());
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
-	let profile1 = createConnectionProfile('1');
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
-	connectionManagementService.clearRecentConnection(profile1);
-	assert(called);
-	called = false;
-	connectionManagementService.clearRecentConnectionsList();
-	assert(called);
-});
-
-test('getEditorConnectionProfileTitle should return a correctly formatted title for a connection profile', () => {
-	let profile: IConnectionProfile = {
-		connectionName: 'new name',
-		serverName: 'new server',
-		databaseName: 'database',
-		userName: 'user',
-		password: 'password',
-		authenticationType: Constants.AuthenticationType.Integrated,
-		savePassword: true,
-		groupFullName: 'g2/g2-2',
-		groupId: 'group id',
-		getOptionsKey: () => { return ''; },
-		serverCapabilities: undefined,
-		matches: undefined,
-		providerName: 'MSSQL',
-		options: {},
-		saveProfile: true,
-		id: undefined
-	};
-
-	let capabilitiesService = new TestCapabilitiesService();
-	const testOption1 = {
-		name: 'testOption1',
-		displayName: 'testOption1',
-		description: 'test description',
-		groupName: 'test group name',
-		valueType: ServiceOptionType.string,
-		specialValueType: undefined,
-		defaultValue: '',
-		categoryValues: undefined,
-		isIdentity: false,
-		isRequired: false
-	};
-
-	const testOption2 = {
-		name: 'testOption2',
-		displayName: 'testOption2',
-		description: 'test description',
-		groupName: 'test group name',
-		valueType: ServiceOptionType.number,
-		specialValueType: undefined,
-		defaultValue: '10',
-		categoryValues: undefined,
-		isIdentity: false,
-		isRequired: false
-	};
-
-	const testOption3 = {
-		name: 'testOption3',
-		displayName: 'testOption3',
-		description: 'test description',
-		groupName: 'test group name',
-		valueType: ServiceOptionType.string,
-		specialValueType: undefined,
-		defaultValue: 'default',
-		categoryValues: undefined,
-		isIdentity: false,
-		isRequired: false
-	};
-
-	profile.options['testOption1'] = 'test value';
-	profile.options['testOption2'] = '50';
-	profile.options['testOption3'] = 'default';
-
-	let mainProvider = capabilitiesService.capabilities['MSSQL'];
-	let mainProperties = mainProvider.connection;
-	let mainOptions = mainProperties.connectionOptions;
-
-	mainOptions.push(testOption1);
-	mainOptions.push(testOption2);
-	mainOptions.push(testOption3);
-
-	mainProperties.connectionOptions = mainOptions;
-	mainProvider.connection = mainProperties;
-
-	capabilitiesService.capabilities['MSSQL'] = mainProvider;
-
-	const connectionStoreMock = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
-	const testInstantiationService = new TestInstantiationService();
-	testInstantiationService.stub(IStorageService, new TestStorageService());
-	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, capabilitiesService, undefined, undefined, undefined, new TestErrorDiagnosticsService(), undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
-
-	// We should expect that non default options are returned when we try to get the nonDefaultOptions string.
-	let result = connectionManagementService.getEditorConnectionProfileTitle(profile, true);
-	let expectedNonDefaultOption = ' (testOption1=test value; testOption2=50)';
-	assert.strictEqual(result, expectedNonDefaultOption, `Profile non default options contained incorrect options`);
-
-	// We should expect that the string contains the connection name and the server info (with all non default options appended).
-	let generatedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, profile);
-	let profileServerInfo = generatedProfile.serverInfo;
-	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
-
-	assert.strictEqual(result, `${profile.connectionName}: ${profileServerInfo}`, `getEditorConnectionProfileTitle does not return the correct string for ${profile.connectionName}`);
-
-	// We should expect that the string contains only the server info (with non default options) if there is no connection name.
-	profile.connectionName = undefined;
-
-	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
-
-	assert.strictEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included a connection name when it shouldn't`);
-
-	// We should expect that the string only contains the server info without any non default options if no such options exist.
-	profile.options['testOption1'] = undefined;
-	profile.options['testOption2'] = undefined;
-	profile.options['testOption3'] = undefined;
-
-	result = connectionManagementService.getEditorConnectionProfileTitle(profile);
-
-	assert.notEqual(result, `${profileServerInfo}`, `getEditorConnectionProfileTitle included non default connection options when it shouldn't`);
 });
 
 export function createConnectionProfile(id: string, password?: string): ConnectionProfile {

@@ -52,7 +52,7 @@ export class EditDataResultsEditor extends EditorPane {
 		return this._input;
 	}
 
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		parent.appendChild(this.styleSheet);
 	}
 

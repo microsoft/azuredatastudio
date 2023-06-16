@@ -27,7 +27,9 @@ import { deepClone } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export abstract class ExecutionPlanPropertiesViewBase extends Disposable implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -73,7 +75,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IQuickInputService quickInputService: IQuickInputService,
-		@ITableService private _tableService: ITableService
+		@IComponentContextService private _componentContextService: IComponentContextService
 	) {
 		super();
 		const sashContainer = DOM.$('.properties-sash');
@@ -143,7 +145,8 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
 			ariaDescription: propertiesSearchDescription,
-			placeholder: searchPlaceholder
+			placeholder: searchPlaceholder,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 
 		this._register(attachInputBoxStyler(this._propertiesSearchInput, this._themeService));
@@ -192,7 +195,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._register(copyHandler.onCopy(e => {
 			this._instantiationService.createInstance(CopyTableData).run(this.getCopyString());
 		}));
-		this._register(this._tableService.registerTable(this._tableComponent));
+		this._register(this._componentContextService.registerTable(this._tableComponent));
 
 
 		new ResizeObserver((e) => {
@@ -403,7 +406,7 @@ export class ClosePropertyViewAction extends Action {
 	public static LABEL = localize('executionPlanPropertyViewClose', "Close");
 
 	constructor() {
-		super(ClosePropertyViewAction.ID, ClosePropertyViewAction.LABEL, Codicon.close.classNames);
+		super(ClosePropertyViewAction.ID, ClosePropertyViewAction.LABEL, ThemeIcon.asClassName(Codicon.close));
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
@@ -465,7 +468,7 @@ export class ExpandAllPropertiesAction extends Action {
 	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
 
 	constructor() {
-		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, Codicon.expandAll.classNames);
+		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, ThemeIcon.asClassName(Codicon.expandAll));
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
@@ -478,7 +481,7 @@ export class CollapseAllPropertiesAction extends Action {
 	public static LABEL = localize('executionPlanCollapseAllProperties', 'Collapse All');
 
 	constructor() {
-		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, Codicon.collapseAll.classNames);
+		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, ThemeIcon.asClassName(Codicon.collapseAll));
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {

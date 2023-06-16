@@ -9,7 +9,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -236,8 +236,8 @@ export class AccountDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._closeButton!, this._themeService));
-		this._register(attachButtonStyler(this._addAccountButton!, this._themeService));
+		this._register(this._closeButton!);
+		this._register(this._addAccountButton!);
 	}
 
 	/* Overwrite escape key behavior */
@@ -270,7 +270,6 @@ export class AccountDialog extends Modal {
 		else {
 			this.showNoAccountContainer();
 		}
-
 	}
 
 	private showNoAccountContainer() {

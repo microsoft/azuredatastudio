@@ -31,12 +31,12 @@ export interface IInputOptions extends vsIInputBoxOptions {
 }
 
 export class InputBox extends vsInputBox implements AdsWidget {
-	private enabledInputBackground?: Color;
-	private enabledInputForeground?: Color;
-	private enabledInputBorder?: Color;
-	private disabledInputBackground?: Color;
-	private disabledInputForeground?: Color;
-	private disabledInputBorder?: Color;
+	// private enabledInputBackground?: Color;
+	// private enabledInputForeground?: Color;
+	// private enabledInputBorder?: Color;
+	// private disabledInputBackground?: Color;
+	// private disabledInputForeground?: Color;
+	// private disabledInputBorder?: Color;
 
 	private _lastLoseFocusValue: string;
 
@@ -51,10 +51,11 @@ export class InputBox extends vsInputBox implements AdsWidget {
 
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private _sqlOptions?: IInputOptions, id?: string) {
 		super(container, contextViewProvider, _sqlOptions);
-		this.enabledInputBackground = this.inputBackground;
-		this.enabledInputForeground = this.inputForeground;
-		this.enabledInputBorder = this.inputBorder;
-		this.disabledInputBackground = Color.transparent;
+		// {{SQL CARBON TODO}} - fix styles
+		// this.enabledInputBackground = this.inputBackground;
+		// this.enabledInputForeground = this.inputForeground;
+		// this.enabledInputBorder = this.inputBorder;
+		//this.disabledInputBackground = Color.transparent;
 
 		this._lastLoseFocusValue = this.value;
 		let self = this;
@@ -75,18 +76,21 @@ export class InputBox extends vsInputBox implements AdsWidget {
 		if (this._sqlOptions.ariaDescription) {
 			this.inputElement.setAttribute('aria-description', this._sqlOptions.ariaDescription);
 		}
-		this.inputElement.id = id;
+
+		if (id !== undefined) {
+			this.inputElement.id = id;
+		}
 	}
 
 	public override style(styles: IInputBoxStyles): void {
-		super.style(styles);
-		this.enabledInputBackground = this.inputBackground;
-		this.enabledInputForeground = this.inputForeground;
-		this.enabledInputBorder = this.inputBorder;
-		this.disabledInputBackground = styles.disabledInputBackground;
-		this.disabledInputForeground = styles.disabledInputForeground;
-		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
+		// 	super.style(styles);
+		// 	this.enabledInputBackground = this.inputBackground;
+		// 	this.enabledInputForeground = this.inputForeground;
+		// 	this.enabledInputBorder = this.inputBorder;
+		// 	this.disabledInputBackground = styles.disabledInputBackground;
+		// 	this.disabledInputForeground = styles.disabledInputForeground;
+		// 	this.updateInputEnabledDisabledColors();
+		// 	this.applyStyles();
 	}
 
 	public override enable(): void {
@@ -165,10 +169,10 @@ export class InputBox extends vsInputBox implements AdsWidget {
 	}
 
 	private updateInputEnabledDisabledColors(): void {
-		let enabled = this.isEnabled();
-		this.inputBackground = enabled ? this.enabledInputBackground : this.disabledInputBackground;
-		this.inputForeground = enabled ? this.enabledInputForeground : this.disabledInputForeground;
-		this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
+		// let enabled = this.isEnabled();
+		// this.inputBackground = enabled ? this.enabledInputBackground : this.disabledInputBackground;
+		// this.inputForeground = enabled ? this.enabledInputForeground : this.disabledInputForeground;
+		// this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
 	}
 
 	public override validate(force?: boolean): MessageType | undefined {

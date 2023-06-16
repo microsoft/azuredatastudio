@@ -22,7 +22,6 @@ import * as nls from 'vs/nls';
 import { TabHeaderComponent } from 'sql/base/browser/ui/panel/tabHeader.component';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { IThemable } from 'vs/base/common/styler';
 import { ITabbedPanelStyles } from 'sql/base/browser/ui/panel/panel';
 import { createStyleSheet } from 'vs/base/browser/dom';
 
@@ -83,7 +82,7 @@ let idPool = 0;
 		</div>
 	`
 })
-export class PanelComponent extends Disposable implements IThemable {
+export class PanelComponent extends Disposable {
 	private _options: IPanelOptions = defaultOptions;
 
 	@Input() public set options(newOptions: IPanelOptions) {
@@ -439,10 +438,18 @@ export class PanelComponent extends Disposable implements IThemable {
 
 			if (styles.selectedTabContrastBorder) {
 				content.push(`
+				.tabbedPanel > .title .tabList .tab-header:focus,
 				.tabbedPanel > .title .tabList .tab-header.selected {
-					outline: 1px solid;
+					outline-width: 1px;
 					outline-offset: -3px;
 					outline-color: ${styles.selectedTabContrastBorder};
+				}
+				.tabbedPanel > .title .tabList .tab-header.selected {
+					outline-style: dashed;
+				}
+				.tabbedPanel > .title .tabList .tab-header:focus,
+				.tabbedPanel > .title .tabList .tab-header.selected:focus {
+					outline-style: solid;
 				}
 			`);
 			}

@@ -17,7 +17,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { mixin } from 'vs/base/common/objects';
-import { IThemable } from 'vs/base/common/styler';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -26,10 +25,11 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IThemable, attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Emitter } from 'vs/base/common/event';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export enum MessageLevel {
 	Error = 0,
@@ -85,6 +85,10 @@ export interface IModalOptions {
 	renderHeader?: boolean;
 	renderFooter?: boolean;
 	dialogProperties?: IDialogProperties;
+	/**
+	 * The height of the dialog, only applicable when the dialog style is normal.
+	 */
+	height?: number;
 }
 
 const defaultOptions: IModalOptions = {
@@ -98,7 +102,8 @@ const defaultOptions: IModalOptions = {
 	hasSpinner: true,
 	renderHeader: true,
 	renderFooter: true,
-	dialogProperties: undefined
+	dialogProperties: undefined,
+	height: 480
 };
 
 export type HideReason = 'close' | 'cancel' | 'ok';
@@ -210,9 +215,16 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		let top: number;
 		let builderClass = '.modal.fade';
-		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
-			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
-				: '';
+		switch (this._modalOptions.dialogStyle) {
+			case 'flyout':
+				builderClass += '.flyout-dialog';
+				break;
+			case 'callout':
+				builderClass += '.callout-dialog';
+				break;
+			default:
+				builderClass += '.normal-dialog';
+		}
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 
@@ -223,12 +235,19 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
+		const formElement = DOM.append(this._modalDialog, DOM.$('form'));
+
+		if (this._modalOptions.dialogStyle === 'normal') {
+			// set the height based on the available space and the expected height.
+			// so that the dialog can scroll vertically when needed.
+			this._modalDialog.style.height = `min(100%, ${this._modalOptions.height}px)`;
+		}
 
 		if (this._modalOptions.dialogStyle === 'callout') {
 			let arrowClass = `.callout-arrow.from-${this._modalOptions.dialogPosition}`;
-			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
+			this._modalContent = DOM.append(formElement, DOM.$(`.modal-content${arrowClass}`));
 		} else {
-			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+			this._modalContent = DOM.append(formElement, DOM.$('.modal-content'));
 		}
 
 		if (typeof this._modalOptions.width === 'number') {
@@ -519,7 +538,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, position: 'left' | 'right' = 'right', isSecondary: boolean = false, index?: number): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = this._register(new Button(footerButton, { secondary: isSecondary }));
+		let button = this._register(new Button(footerButton, { secondary: isSecondary, ...defaultButtonStyles }));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		const container = position === 'left' ? this._leftFooter! : this._rightFooter!;
@@ -660,7 +679,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Set the title of the modal
 	 */
-	protected set title(title: string) {
+	public set title(title: string) {
 		this._title = title;
 		if (this._modalTitle) {
 			this._modalTitle.innerText = title;
@@ -670,7 +689,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 	}
 
-	protected get title(): string {
+	public get title(): string {
 		return this._title;
 	}
 

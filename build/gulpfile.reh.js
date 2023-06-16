@@ -9,14 +9,15 @@ const gulp = require('gulp');
 const path = require('path');
 const es = require('event-stream');
 const util = require('./lib/util');
+const { getVersion } = require('./lib/getVersion');
 const task = require('./lib/task');
-const common = require('./lib/optimize');
+const optimize = require('./lib/optimize');
 const product = require('../product.json');
 const rename = require('gulp-rename');
 const replace = require('gulp-replace');
 const filter = require('gulp-filter');
-const _ = require('underscore');
 const { getProductionDependencies } = require('./lib/dependencies');
+const { assetFromGithub } = require('./lib/github');
 const vfs = require('vinyl-fs');
 const packageJson = require('../package.json');
 const flatmap = require('gulp-flatmap');
@@ -28,10 +29,11 @@ const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask, compileExtensionMediaBuildTask } = require('./gulpfile.extensions');
 const { vscodeWebEntryPoints, vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
 const cp = require('child_process');
+const log = require('fancy-log');
 const { rollupAngular } = require('./lib/rollup');
 
 const REPO_ROOT = path.dirname(__dirname);
-const commit = util.getVersion(REPO_ROOT);
+const commit = getVersion(REPO_ROOT);
 const BUILD_ROOT = path.dirname(REPO_ROOT);
 const REMOTE_FOLDER = path.join(REPO_ROOT, 'remote');
 
@@ -59,14 +61,9 @@ const serverResources = [
 	'out-build/bootstrap-fork.js',
 	'out-build/bootstrap-amd.js',
 	'out-build/bootstrap-node.js',
-	'out-build/paths.js',
 
 	// Performance
 	'out-build/vs/base/common/performance.js',
-
-	// main entry points
-	'out-build/server-cli.js',
-	'out-build/server-main.js',
 
 	// Watcher
 	'out-build/vs/platform/files/**/*.exe',
@@ -82,6 +79,8 @@ const serverResources = [
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-env.zsh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-profile.zsh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration.zsh',
+	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration.fish',
+  'out-build/vs/workbench/contrib/terminal/browser/media/fish_xdg_data/fish/vendor_conf.d/shellIntegration.fish',
 
 	'!**/test/**'
 ];
@@ -173,7 +172,7 @@ if (defaultNodeTask) {
 }
 
 function nodejs(platform, arch) {
-	const remote = require('gulp-remote-retry-src');
+	const { remote } = require('./lib/gulpRemoteSource');
 	const untar = require('gulp-untar');
 
 	if (arch === 'ia32') {
@@ -181,12 +180,19 @@ function nodejs(platform, arch) {
 	}
 
 	if (platform === 'win32') {
-		return remote(`/dist/v${nodeVersion}/win-${arch}/node.exe`, { base: 'https://nodejs.org' })
+		if (product.nodejsRepository) {
+			log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from ${product.nodejsRepository}...`);
+			return assetFromGithub(product.nodejsRepository, nodeVersion, name => name === `win-${arch}-node-patched.exe`)
+				.pipe(rename('node.exe'));
+		}
+		log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from https://nodejs.org`);
+		return remote(`/dist/v${nodeVersion}/win-${arch}/node.exe`, { base: 'https://nodejs.org', verbose: true })
 			.pipe(rename('node.exe'));
 	}
 
 	if (arch === 'alpine' || platform === 'alpine') {
 		const imageName = arch === 'arm64' ? 'arm64v8/node' : 'node';
+		log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from docker image ${imageName}`);
 		const contents = cp.execSync(`docker run --rm ${imageName}:${nodeVersion}-alpine /bin/sh -c 'cat \`which node\`'`, { maxBuffer: 100 * 1024 * 1024, encoding: 'buffer' });
 		return es.readArray([new File({ path: 'node', contents, stat: { mode: parseInt('755', 8) } })]);
 	}
@@ -194,8 +200,8 @@ function nodejs(platform, arch) {
 	if (arch === 'armhf') {
 		arch = 'armv7l';
 	}
-
-	return remote(`/dist/v${nodeVersion}/node-v${nodeVersion}-${platform}-${arch}.tar.gz`, { base: 'https://nodejs.org' })
+	log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from https://nodejs.org`);
+	return remote(`/dist/v${nodeVersion}/node-v${nodeVersion}-${platform}-${arch}.tar.gz`, { base: 'https://nodejs.org', verbose: true })
 		.pipe(flatmap(stream => stream.pipe(gunzip()).pipe(untar())))
 		.pipe(filter('**/node'))
 		.pipe(util.setExecutableBit('**'))
@@ -268,316 +274,14 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 		const date = new Date().toISOString();
 
 		const productJsonStream = gulp.src(['product.json'], { base: '.' })
-			.pipe(json({ commit, date }));
-
-		const license = gulp.src(['remote/LICENSE'], { base: 'remote' });
-
-		const jsFilter = util.filter(data => !data.isDirectory() && /\.js$/.test(data.path));
-
-		const productionDependencies = getProductionDependencies(REMOTE_FOLDER);
-		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(REPO_ROOT, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`, `!${d}/.bin/**`]));
-		const deps = gulp.src(dependenciesSrc, { base: 'remote', dot: true })
-			// filter out unnecessary files, no source maps in server build
-			.pipe(filter(['**', '!**/package-lock.json', '!**/yarn.lock', '!**/*.js.map']))
-			.pipe(util.cleanNodeModules(path.join(__dirname, '.moduleignore')))
-			.pipe(jsFilter)
-			.pipe(util.stripSourceMappingURL())
-			.pipe(jsFilter.restore);
-
-		const nodePath = `.build/node/v${nodeVersion}/${platform}-${platform === 'darwin' ? 'x64' : arch}`;
-		const node = gulp.src(`${nodePath}/**`, { base: nodePath, dot: true });
-
-		let web = [];
-		if (type === 'reh-web') {
-			web = [
-				'resources/server/favicon.ico',
-				'resources/server/code-192.png',
-				'resources/server/code-512.png',
-				'resources/server/manifest.json'
-			].map(resource => gulp.src(resource, { base: '.' }).pipe(rename(resource)));
-		}
-
-		let all = es.merge(
-			packageJsonStream,
-			productJsonStream,
-			license,
-			sources,
-			deps,
-			node,
-			...web
-		);
-
-		let result = all
-			.pipe(util.skipDirectories())
-			.pipe(util.fixWin32DirectoryPermissions());
-
-		if (platform === 'win32') {
-			result = es.merge(result,
-				gulp.src('resources/server/bin/code.cmd', { base: '.' })
-					.pipe(replace('@@VERSION@@', version))
-					.pipe(replace('@@COMMIT@@', commit))
-					.pipe(replace('@@APPNAME@@', product.applicationName))
-					.pipe(rename(`bin/${product.applicationName}.cmd`)),
-				// gulp.src('resources/server/bin/helpers/browser.cmd', { base: '.' })
-				// 	.pipe(replace('@@VERSION@@', version))
-				// 	.pipe(replace('@@COMMIT@@', commit))
-				// 	.pipe(replace('@@APPNAME@@', product.applicationName))
-				// 	.pipe(rename(`bin/helpers/browser.cmd`)),
-				gulp.src('resources/server/bin/server.cmd', { base: '.' })
-					.pipe(rename(`server.cmd`))
-			);
-		} else if (platform === 'linux' || platform === 'darwin') {
-			result = es.merge(result,
-				gulp.src('resources/server/bin/code.sh', { base: '.' })
-					.pipe(replace('@@VERSION@@', version))
-					.pipe(replace('@@COMMIT@@', commit))
-					.pipe(replace('@@APPNAME@@', product.applicationName))
-					.pipe(rename(`bin/${product.applicationName}`))
-					.pipe(util.setExecutableBit()),
-				// gulp.src('resources/server/bin/helpers/browser.sh', { base: '.' })
-				// 	.pipe(replace('@@VERSION@@', version))
-				// 	.pipe(replace('@@COMMIT@@', commit))
-				// 	.pipe(replace('@@APPNAME@@', product.applicationName))
-				// 	.pipe(rename(`bin/helpers/browser.sh`))
-				// 	.pipe(util.setExecutableBit()),
-				gulp.src('resources/server/bin/server.sh', { base: '.' })
-					.pipe(rename(`server.sh`))
-					.pipe(util.setExecutableBit())
-			);
-		}
-
-		return result.pipe(vfs.dest(destination));
-	};
-}
-
-function copyConfigTask(folder) {
-	const destination = path.join(BUILD_ROOT, folder);
-	return () => {
-		const json = require('gulp-json-editor');
-
-		return gulp.src(['remote/pkg-package.json'], { base: 'remote' })
-			.pipe(rename(path => path.basename += '.' + folder))
-			.pipe(json(obj => {
-				const pkg = obj.pkg;
-				pkg.scripts = pkg.scripts && pkg.scripts.map(p => path.join(destination, p));
-				pkg.assets = pkg.assets && pkg.assets.map(p => path.join(destination, p));
-				return obj;
-			}))
-			.pipe(vfs.dest('out-vscode-reh-pkg'));
-	};
-}
-
-function copyNativeTask(folder) {
-	const destination = path.join(BUILD_ROOT, folder);
-	return () => {
-		const nativeLibraries = gulp.src(['remote/node_modules/**/*.node']);
-		const license = gulp.src(['remote/LICENSE']);
-
-		const result = es.merge(
-			nativeLibraries,
-			license
-		);
-
-		return result
-			.pipe(rename({ dirname: '' }))
-			.pipe(vfs.dest(destination));
-	};
-}
-
-function packagePkgTask(platform, arch, pkgTarget) {
-	const folder = path.join(BUILD_ROOT, 'vscode-reh') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
-	return () => {
-		const cwd = process.cwd();
-		const config = path.join(cwd, 'out-vscode-reh-pkg', 'pkg-package.vscode-reh-' + platform + '-' + arch + '.json');
-		process.chdir(folder);
-		console.log(`TODO`, pkgTarget, config);
-		return null;
-		// return pkg.exec(['-t', pkgTarget, '-d', '-c', config, '-o', path.join(folder + '-pkg', platform === 'win32' ? 'vscode-reh.exe' : 'vscode-reh'), './out/remoteExtensionHostAgent.js'])
-		// 	.then(() => process.chdir(cwd));
-	};
-}
-
-['reh', 'reh-web'].forEach(type => {
-	const optimizeTask = task.define(`optimize-vscode-${type}`, task.series(
-		util.rimraf(`out-vscode-${type}`),
-		common.optimizeTask({
-			src: 'out-build',
-			entryPoints: _.flatten(type === 'reh' ? serverEntryPoints : serverWithWebEntryPoints),
-			otherSources: [],
-			resources: type === 'reh' ? serverResources : serverWithWebResources,
-			loaderConfig: common.loaderConfig(),
-			out: `out-vscode-${type}`,
-			inlineAmdImages: true,
-			bundleInfo: undefined,
-			fileContentMapper: createVSCodeWebFileContentMapper ? createVSCodeWebFileContentMapper('.build/extensions') : undefined
-		})
-	));
-
-	const minifyTask = task.define(`minify-vscode-${type}`, task.series(
-		optimizeTask,
-		util.rimraf(`out-vscode-${type}-min`),
-		common.minifyTask(`out-vscode-${type}`, `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)
-	));
-	gulp.task(minifyTask);
-
-	BUILD_TARGETS.forEach(buildTarget => {
-		const dashed = (str) => (str ? `-${str}` : ``);
-		const platform = buildTarget.platform;
-		const arch = buildTarget.arch;
-		const pkgTarget = buildTarget.pkgTarget;
-
-		const copyPkgConfigTask = task.define(`copy-pkg-config${dashed(platform)}${dashed(arch)}`, task.series(
-			util.rimraf(`out-vscode-${type}-pkg`),
-			copyConfigTask(`vscode-${type}${dashed(platform)}${dashed(arch)}`)
-		));
-
-		const copyPkgNativeTask = task.define(`copy-pkg-native${dashed(platform)}${dashed(arch)}`, task.series(
-			util.rimraf(path.join(BUILD_ROOT, `vscode-${type}${dashed(platform)}${dashed(arch)}-pkg`)),
-			copyNativeTask(`vscode-${type}${dashed(platform)}${dashed(arch)}-pkg`)
-		));
-
-		['', 'min'].forEach(minified => {
-			const sourceFolderName = `out-vscode-${type}${dashed(minified)}`;
-			const destinationFolderName = `vscode-${type}${dashed(platform)}${dashed(arch)}`;
-
-			const rollupAngularTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-rollup`, () => {
-				return rollupAngular(REMOTE_FOLDER);
-			});
-			gulp.task(rollupAngularTask);
-
-			// rebuild extensions that contain native npm modules or have conditional webpack rules
-			// when building with the web .yarnrc settings (e.g. runtime=node, etc.)
-			// this is needed to have correct module set published with desired ABI
-			const rebuildExtensions = ['mssql', 'notebook'];
-			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
-			function exec(cmdLine, cwd) {
-				console.log(cmdLine);
-				cp.execSync(cmdLine, { stdio: 'inherit', cwd: cwd });
-			}
-			const tasks = [];
-			rebuildExtensions.forEach(scope => {
-				const root = path.join(EXTENSIONS, scope);
-				tasks.push(
-					() => gulp.src(path.join(REMOTE_FOLDER, '.yarnrc')).pipe(gulp.dest(root)),
-					util.rimraf(path.join(root, 'node_modules')),
-					() => exec('yarn', root)
-				);
-			});
-			const yarnrcExtensions = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
-			gulp.task(yarnrcExtensions);
-
-			const cleanupExtensions = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}-cleanup-extensions`, () => {
-				return Promise.all(rebuildExtensions.map(scope => {
-					const root = path.join(EXTENSIONS, scope);
-					return util.rimraf(path.join(root, '.yarnrc'))();
-				}));
-			});
-			gulp.task(cleanupExtensions);
-
-			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
-				gulp.task(`node-${platform}-${platform === 'darwin' ? 'x64' : arch}`),
-				yarnrcExtensions,
-				compileExtensionsBuildTask,
-				cleanupExtensions,
-				rollupAngularTask,
-				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
-				packageTask(type, platform, arch, sourceFolderName, destinationFolderName)
-			));
-			gulp.task(serverTaskCI);
-
-			const serverTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
-				compileBuildTask,
-				compileExtensionsBuildTask,
-				minified ? minifyTask : optimizeTask,
-				serverTaskCI
-			));
-			gulp.task(serverTask);
-
-			const serverPkgTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-pkg`, task.series(
-				task.parallel(
-					serverTask,
-					copyPkgConfigTask,
-					copyPkgNativeTask
-				),
-				packagePkgTask(platform, arch, pkgTarget)
-			));
-			gulp.task(serverPkgTask);
-		});
-	});
-});
-
-function packageTask(type, platform, arch, sourceFolderName, destinationFolderName) {
-	const destination = path.join(BUILD_ROOT, destinationFolderName);
-
-	return () => {
-		const json = require('gulp-json-editor');
-
-		const src = gulp.src(sourceFolderName + '/**', { base: '.' })
-			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + sourceFolderName), 'out'); }))
-			.pipe(util.setExecutableBit(['**/*.sh']))
-			.pipe(filter(['**', '!**/*.js.map']));
-
-		const workspaceExtensionPoints = ['debuggers', 'jsonValidation'];
-		const isUIExtension = (manifest) => {
-			switch (manifest.extensionKind) {
-				case 'ui': return true;
-				case 'workspace': return false;
-				default: {
-					if (manifest.main) {
-						return false;
-					}
-					if (manifest.contributes && Object.keys(manifest.contributes).some(key => workspaceExtensionPoints.indexOf(key) !== -1)) {
-						return false;
-					}
-					// Default is UI Extension
-					return true;
-				}
-			}
-		};
-		const localWorkspaceExtensions = glob.sync('extensions/*/package.json')
-			.filter((extensionPath) => {
-				if (type === 'reh-web') {
-					return true; // web: ship all extensions for now
-				}
-
-				const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, extensionPath)).toString());
-				return !isUIExtension(manifest);
-			}).map((extensionPath) => path.basename(path.dirname(extensionPath)))
-			.filter(name => name !== 'vscode-api-tests' && name !== 'vscode-test-resolver'); // Do not ship the test extensions
-		const marketplaceExtensions = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'product.json'), 'utf8')).builtInExtensions
-			.filter(entry => !entry.platforms || new Set(entry.platforms).has(platform))
-			.filter(entry => !entry.clientOnly)
-			.map(entry => entry.name);
-		const extensionPaths = [...localWorkspaceExtensions, ...marketplaceExtensions]
-			.map(name => `.build/extensions/${name}/**`);
-
-		const extensions = gulp.src(extensionPaths, { base: '.build', dot: true });
-		const extensionsCommonDependencies = gulp.src('.build/extensions/node_modules/**', { base: '.build', dot: true });
-		const sources = es.merge(src, extensions, extensionsCommonDependencies)
-			.pipe(filter(['**', '!**/*.js.map'], { dot: true }));
-
-		let version = packageJson.version;
-		const quality = product.quality;
-
-		if (quality && quality !== 'stable') {
-			version += '-' + quality;
-		}
-
-		const name = product.nameShort;
-		const packageJsonStream = gulp.src(['remote/package.json'], { base: 'remote' })
-			.pipe(json({ name, version }));
-
-		const date = new Date().toISOString();
-
-		const productJsonStream = gulp.src(['product.json'], { base: '.' })
-			.pipe(json({ commit, date }));
+			.pipe(json({ commit, date, version }));
 
 		const license = gulp.src(['remote/LICENSE'], { base: 'remote', allowEmpty: true });
 
 		const jsFilter = util.filter(data => !data.isDirectory() && /\.js$/.test(data.path));
 
 		const productionDependencies = getProductionDependencies(REMOTE_FOLDER);
-		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(REPO_ROOT, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`, `!${d}/.bin/**`]));
+		const dependenciesSrc = productionDependencies.map(d => path.relative(REPO_ROOT, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`, `!${d}/.bin/**`]).flat();
 		const deps = gulp.src(dependenciesSrc, { base: 'remote', dot: true })
 			// filter out unnecessary files, no source maps in server build
 			.pipe(filter(['**', '!**/package-lock.json', '!**/yarn.lock', '!**/*.js.map']))
@@ -599,7 +303,7 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 			].map(resource => gulp.src(resource, { base: '.' }).pipe(rename(resource)));
 		}
 
-		let all = es.merge(
+		const all = es.merge(
 			packageJsonStream,
 			productJsonStream,
 			license,
@@ -625,8 +329,6 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 					.pipe(replace('@@COMMIT@@', commit))
 					.pipe(replace('@@APPNAME@@', product.applicationName))
 					.pipe(rename(`bin/helpers/browser.cmd`)),
-				gulp.src('resources/server/bin/server-old.cmd', { base: '.' })
-					.pipe(rename(`server.cmd`)),
 				gulp.src('resources/server/bin/code-server.cmd', { base: '.' })
 					.pipe(rename(`bin/${product.serverApplicationName}.cmd`)),
 			);
@@ -648,13 +350,6 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 					.pipe(rename(`bin/${product.serverApplicationName}`))
 					.pipe(util.setExecutableBit())
 			);
-			if (type !== 'reh-web') {
-				result = es.merge(result,
-					gulp.src('resources/server/bin/server-old.sh', { base: '.' })
-						.pipe(rename(`server.sh`))
-						.pipe(util.setExecutableBit()),
-				);
-			}
 		}
 
 		return result.pipe(vfs.dest(destination));
@@ -673,23 +368,43 @@ function tweakProductForServerWeb(product) {
 ['reh', 'reh-web'].forEach(type => {
 	const optimizeTask = task.define(`optimize-vscode-${type}`, task.series(
 		util.rimraf(`out-vscode-${type}`),
-		common.optimizeTask({
-			src: 'out-build',
-			entryPoints: _.flatten(type === 'reh' ? serverEntryPoints : serverWithWebEntryPoints),
-			otherSources: [],
-			resources: type === 'reh' ? serverResources : serverWithWebResources,
-			loaderConfig: common.loaderConfig(),
-			out: `out-vscode-${type}`,
-			inlineAmdImages: true,
-			bundleInfo: undefined,
-			fileContentMapper: createVSCodeWebFileContentMapper('.build/extensions', type === 'reh-web' ? tweakProductForServerWeb(product) : product)
-		})
+		optimize.optimizeTask(
+			{
+				out: `out-vscode-${type}`,
+				amd: {
+					src: 'out-build',
+					entryPoints: (type === 'reh' ? serverEntryPoints : serverWithWebEntryPoints).flat(),
+					otherSources: [],
+					resources: type === 'reh' ? serverResources : serverWithWebResources,
+					loaderConfig: optimize.loaderConfig(),
+					inlineAmdImages: true,
+					bundleInfo: undefined,
+					fileContentMapper: createVSCodeWebFileContentMapper('.build/extensions', type === 'reh-web' ? tweakProductForServerWeb(product) : product)
+				},
+				commonJS: {
+					src: 'out-build',
+					entryPoints: [
+						'out-build/server-main.js',
+						'out-build/server-cli.js'
+					],
+					platform: 'node',
+					external: [
+						'minimist',
+						// TODO: we cannot inline `product.json` because
+						// it is being changed during build time at a later
+						// point in time (such as `checksums`)
+						'../product.json',
+						'../package.json'
+					]
+				}
+			}
+		)
 	));
 
 	const minifyTask = task.define(`minify-vscode-${type}`, task.series(
 		optimizeTask,
 		util.rimraf(`out-vscode-${type}-min`),
-		common.minifyTask(`out-vscode-${type}`, `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)
+		optimize.minifyTask(`out-vscode-${type}`, `https://ticino.blob.core.windows.net/sourcemaps/${commit}/core`)
 	));
 	gulp.task(minifyTask);
 

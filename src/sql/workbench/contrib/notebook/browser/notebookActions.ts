@@ -36,11 +36,14 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
-import { Schemas } from 'vs/base/common/network';
+import { FileAccess, Schemas } from 'vs/base/common/network';
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, CONFIG_WORKBENCH_USEVSCODENOTEBOOKS } from 'sql/workbench/common/constants';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { Action2 } from 'vs/platform/actions/common/actions';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -59,8 +62,7 @@ export const noParameterCell: string = localize('noParametersCell', "This notebo
 export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const untitledNotSupported: string = localize('untitledNotSupported', "Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
-// Action to add a cell to notebook based on cell type(code/markdown).
-export class AddCellAction extends Action {
+export abstract class AddCellAction extends Action {
 	public cellType: CellType;
 
 	constructor(
@@ -92,6 +94,28 @@ export class AddCellAction extends Action {
 			editor.addCell(this.cellType, index);
 			editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 		}
+	}
+}
+
+/**
+ * Action to add a new Text cell to a Notebook
+ */
+export class AddTextCellAction extends AddCellAction {
+	public override cellType: CellType = 'markdown';
+
+	constructor(@INotebookService notebookService: INotebookService) {
+		super('notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown', notebookService);
+	}
+}
+
+/**
+ * Action to add a new Code cell to a Notebook
+ */
+export class AddCodeCellAction extends AddCellAction {
+	public override cellType: CellType = 'code';
+
+	constructor(@INotebookService notebookService: INotebookService) {
+		super('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code', notebookService);
 	}
 }
 
@@ -731,10 +755,7 @@ export class AttachToDropdown extends SelectBox {
 		} else {
 			let connections: string[] = [];
 			if (model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName))) {
-				let textResult = model.context.title;
-				let fullTitleText = this._connectionManagementService.getEditorConnectionProfileTitle(model.context);
-				textResult = fullTitleText.length !== 0 ? fullTitleText : textResult;
-				connections.push(textResult);
+				connections.push(model.context.title);
 			} else if (this._configurationService.getValue(saveConnectionNameConfigName) && model.savedConnectionName) {
 				connections.push(model.savedConnectionName);
 			} else {
@@ -883,34 +904,40 @@ export class NewNotebookTask extends Task {
 	}
 }
 
-export class NewNotebookAction extends Action {
-
+export class NewNotebookAction extends Action2 {
 	public static readonly ID = 'notebook.command.new';
+	public static readonly LABEL_ORG = 'New Notebook';
 	public static readonly LABEL = localize('newNotebookAction', "New Notebook");
 
-	constructor(
-		id: string,
-		label: string,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
-		@INotebookService private _notebookService: INotebookService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICommandService private _commandService: ICommandService,
-	) {
-		super(id, label);
-		this.class = 'notebook-action new-notebook';
+	constructor() {
+		super({
+			id: NewNotebookAction.ID,
+			icon: {
+				light: FileAccess.asBrowserUri(`sql/workbench/services/connection/browser/media/light/new_notebook.svg`),
+				dark: FileAccess.asBrowserUri(`sql/workbench/services/connection/browser/media/dark/new_notebook_inverse.svg`)
+			},
+			title: { value: NewNotebookAction.LABEL, original: NewNotebookAction.LABEL_ORG },
+			keybinding: { weight: KeybindingWeight.WorkbenchContrib, primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KeyN },
+			f1: true
+		});
 	}
 
-	override async run(context?: azdata.ObjectExplorerContext): Promise<void> {
+	public override async run(accessor: ServicesAccessor, context?: azdata.ObjectExplorerContext): Promise<void> {
+		const objectExplorerService = accessor.get(IObjectExplorerService);
+		const telemetryService = accessor.get(IAdsTelemetryService);
+		const notebookService = accessor.get(INotebookService);
+		const configurationService = accessor.get(IConfigurationService);
+		const commandService = accessor.get(ICommandService);
+
 		let connProfile: azdata.IConnectionProfile;
 		if (context && context.nodeInfo) {
-			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
+			let node = await objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);
 			connProfile = TreeUpdateUtils.getConnectionProfile(node).toIConnectionProfile();
 		} else if (context && context.connectionProfile) {
 			connProfile = context.connectionProfile;
 		}
 
-		await openNewNotebook(this._telemetryService, this._notebookService, this._configurationService, this._commandService, connProfile);
+		await openNewNotebook(telemetryService, notebookService, configurationService, commandService, connProfile);
 	}
 }
 

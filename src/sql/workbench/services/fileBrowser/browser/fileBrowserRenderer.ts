@@ -8,12 +8,10 @@ import { ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
 import { FileKind } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { toDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ResourceLabels, DEFAULT_LABELS_CONTAINER } from 'vs/workbench/browser/labels';
 // eslint-disable-next-line code-import-patterns
 import { IFileTemplateData } from 'vs/workbench/contrib/files/browser/views/explorerViewer';
-
-const EmptyDisposable = toDisposable(() => null);
 
 /**
  * Renders the tree items.
@@ -48,9 +46,10 @@ export class FileBrowserRenderer implements IRenderer {
 	 * Render template in a dom element based on template id
 	 */
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IFileTemplateData {
+		const templateDisposables = new DisposableStore();
 		const label = this.resourceLabels.create(container);
-		const elementDisposable = EmptyDisposable;
-		return { elementDisposable, label, container };
+		const templateData: IFileTemplateData = { templateDisposables, elementDisposables: templateDisposables.add(new DisposableStore()), label, container };
+		return templateData;
 	}
 
 	/**

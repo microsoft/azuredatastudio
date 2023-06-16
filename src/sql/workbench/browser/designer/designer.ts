@@ -17,7 +17,6 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ISelectBoxStyles, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -55,7 +54,9 @@ import { timeout } from 'vs/base/common/async';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -82,7 +83,7 @@ interface DesignerTableCellContext {
 const ScriptTabId = 'scripts';
 const IssuesTabId = 'issues';
 
-export class Designer extends Disposable implements IThemable {
+export class Designer extends Disposable {
 	private _loadingSpinner: LoadingSpinner;
 	private _horizontalSplitViewContainer: HTMLElement;
 	private _verticalSplitViewContainer: HTMLElement;
@@ -119,7 +120,7 @@ export class Designer extends Disposable implements IThemable {
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
-		@ITableService private readonly _tableService: ITableService) {
+		@IComponentContextService private readonly _componentContextService: IComponentContextService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -228,7 +229,8 @@ export class Designer extends Disposable implements IThemable {
 			this.removeTableSelectionStyles();
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Button) {
-			component.style(this._styles.buttonStyles);
+			// {{SQL CARBON TODO}} - styles
+			//component.style(this._styles.buttonStyles);
 		} else if (component instanceof Dropdown) {
 			component.style(this._styles.dropdownStyles);
 		} else {
@@ -765,7 +767,8 @@ export class Designer extends Disposable implements IThemable {
 				const input = new InputBox(inputContainer, this._contextViewProvider, {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
-					ariaDescription: componentDefinition.description
+					ariaDescription: componentDefinition.description,
+					inputBoxStyles: defaultInputBoxStyles
 				});
 				input.onLoseFocus((args) => {
 					if (args.hasChanged) {
@@ -876,7 +879,7 @@ export class Designer extends Disposable implements IThemable {
 					const moveRowsPlugin = new RowMoveManager({
 						cancelEditOnDrag: true,
 						id: 'moveRow',
-						iconCssClass: Codicon.grabber.classNames,
+						iconCssClass: ThemeIcon.asClassName(Codicon.grabber),
 						name: localize('designer.moveRowText', 'Move'),
 						width: 50,
 						resizable: true,
@@ -946,7 +949,7 @@ export class Designer extends Disposable implements IThemable {
 					const removeText = localize('designer.removeRowText', "Remove");
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
-						iconCssClass: Codicon.trash.classNames,
+						iconCssClass: ThemeIcon.asClassName(Codicon.trash),
 						name: removeText,
 						title: removeText,
 						width: 60,
@@ -978,7 +981,7 @@ export class Designer extends Disposable implements IThemable {
 					const moreActionsText = localize('designer.actions', "More Actions");
 					const actionsColumn = new ButtonColumn({
 						id: 'actions',
-						iconCssClass: Codicon.ellipsis.classNames,
+						iconCssClass: ThemeIcon.asClassName(Codicon.ellipsis),
 						name: moreActionsText,
 						title: moreActionsText,
 						width: 100,
@@ -1028,7 +1031,7 @@ export class Designer extends Disposable implements IThemable {
 					currentTableActions.forEach(a => a.updateState());
 					table.grid.setSelectedRows([]);
 				});
-				this._register(this._tableService.registerTable(table));
+				this._register(this._componentContextService.registerTable(table));
 				component = table;
 				break;
 			default:

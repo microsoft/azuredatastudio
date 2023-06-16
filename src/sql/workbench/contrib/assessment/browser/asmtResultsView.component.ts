@@ -50,7 +50,8 @@ import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultListStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -150,7 +151,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		@Inject(IContextViewService) private _contextViewService: IContextViewService,
 		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
 		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
-		@Inject(ITableService) private tableService: ITableService
+		@Inject(IComponentContextService) private componentContextService: IComponentContextService
 	) {
 		super();
 		let self = this;
@@ -362,7 +363,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._table.grid.setData(this.dataView, true);
 		this._table.registerPlugin(<any>this.rowDetail);
 		this._table.registerPlugin(filterPlugin);
-		this._register(this.tableService.registerTable(this._table));
+		this._register(this.componentContextService.registerTable(this._table));
 
 		this.placeholderElem = document.createElement('span');
 		this.placeholderElem.className = 'placeholder';
@@ -596,8 +597,10 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private _updateStyles(theme: IColorTheme): void {
 		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(DASHBOARD_BORDER, true).toString();
+		// {{SQL CARBON TODO}} - do defaultListStyles work here?
 		let tableStyle: ITableStyles = {
-			tableHeaderBackground: theme.getColor(themeColors.PANEL_BACKGROUND)
+			tableHeaderBackground: theme.getColor(themeColors.PANEL_BACKGROUND),
+			...defaultListStyles
 		};
 		this._table.style(tableStyle);
 		const rowExclSelector = '.asmtview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row';

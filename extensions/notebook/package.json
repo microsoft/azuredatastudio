@@ -19,9 +19,6 @@
       "supported": true
     }
   },
-  "enabledApiProposals": [
-    "notebookEditor"
-  ],
   "contributes": {
     "configuration": {
       "type": "object",
@@ -162,11 +159,6 @@
       {
         "command": "jupyter.reinstallDependencies",
         "title": "%title.reinstallNotebookDependencies%"
-      },
-      {
-        "command": "books.sqlserver2019",
-        "title": "%title.SQL19PreviewBook%",
-        "category": "%books-preview-category%"
       },
       {
         "command": "books.command.openLocalizedBooks",
@@ -381,10 +373,6 @@
           "when": "false"
         },
         {
-          "command": "books.sqlserver2019",
-          "when": "sqlserver2019"
-        },
-        {
           "command": "notebook.command.saveBook",
           "when": "false"
         },
@@ -541,10 +529,6 @@
           "command": "notebook.command.openBook",
           "when": "view == bookTreeView",
           "group": "navigation"
-        },
-        {
-          "command": "books.sqlserver2019",
-          "when": "view == providedBooksView"
         },
         {
           "command": "notebook.command.openNotebookFolder",
