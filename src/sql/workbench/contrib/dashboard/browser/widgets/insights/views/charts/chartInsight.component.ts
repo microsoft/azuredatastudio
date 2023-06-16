@@ -296,12 +296,16 @@ function isValidData(data: IInsightData): boolean {
 	return true;
 }
 
-chartjs.Chart.pluginService.register({
-	beforeDraw: function (chart) {
-		if ((chart.config.options as any).viewArea && (chart.config.options as any).viewArea.backgroundColor) {
-			let ctx = (chart as any).chart.ctx;
-			ctx.fillStyle = (chart.config.options as any).viewArea.backgroundColor;
-			ctx.fillRect(0, 0, (chart as any).chart.width, (chart as any).chart.height);
+chartjs.Chart.register(
+	{
+		id: 'viewArea',
+		beforeDraw: function (chart) {
+			const options = chart.config.options as any;
+			if (options.viewArea?.backgroundColor) {
+				let ctx = chart.ctx;
+				ctx.fillStyle = options.viewArea.backgroundColor;
+				ctx.fillRect(0, 0, chart.width, chart.height);
+			}
 		}
 	}
-});
+);
