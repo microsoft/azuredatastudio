@@ -134,7 +134,6 @@ export class FilterDialog extends Modal {
 	public open(): void {
 		this.render();
 		this.show();
-		this._okButton.consumeEscapeDownEvent = false; // Allows the escape key event to bubble up to the dialog
 		this._okButton.focus();
 	}
 

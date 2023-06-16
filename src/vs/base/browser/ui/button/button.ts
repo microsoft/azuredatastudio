@@ -80,7 +80,6 @@ export class Button extends Disposable implements IButton {
 	private buttonDisabledForeground: Color | undefined;
 	private buttonDisabledBorder: Color | undefined;
 	private hasIcon: boolean = false;
-	private consumeEscapeDown: boolean = true;
 	// {{SQL CARBON EDIT}} - END
 
 	private _onDidClick = this._register(new Emitter<Event>());
@@ -138,10 +137,7 @@ export class Button extends Disposable implements IButton {
 				eventHandled = true;
 			} else if (event.equals(KeyCode.Escape)) {
 				this._element.blur();
-				// {{SQL CARBON EDIT}}
-				if (this.consumeEscapeDown) {
-					eventHandled = true;
-				}
+				eventHandled = true;
 			}
 
 			if (eventHandled) {
@@ -292,11 +288,6 @@ export class Button extends Disposable implements IButton {
 		this.hasIcon = icon !== undefined;
 		this._element.classList.add(...icon.id.split(' '));
 		this.applyStyles();
-	}
-
-	// {{SQL CARBON EDIT}}
-	set consumeEscapeDownEvent(consumeEscapeDown: boolean) {
-		this.consumeEscapeDown = consumeEscapeDown;
 	}
 
 	set enabled(value: boolean) {
