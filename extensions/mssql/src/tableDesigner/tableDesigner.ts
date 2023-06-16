@@ -36,7 +36,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				isNewTable: true,
 				id: generateUuid(),
 				connectionString: connectionString,
-				accessToken: context.connectionProfile!.options.azureAccountToken,
+				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon
 			}, telemetryInfo, context);
 		} catch (error) {
@@ -68,7 +68,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				schema: schema,
 				id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 				connectionString: connectionString,
-				accessToken: context.connectionProfile!.options.azureAccountToken,
+				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon
 			}, telemetryInfo, context);
 		} catch (error) {
