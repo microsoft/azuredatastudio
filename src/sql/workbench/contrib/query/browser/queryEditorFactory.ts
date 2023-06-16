@@ -53,7 +53,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
 			queryEditorInput = await this.queryEditorService.newSqlEditor({
 				resource: this.editorService.isOpened(activeEditor) ? activeEditor.resource : undefined,
-				open: false, initalContent: content
+				open: false, initialContent: content
 			}) as UntitledQueryEditorInput;
 		}
 
@@ -115,7 +115,7 @@ export class FileQueryEditorSerializer implements IEditorSerializer {
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileQueryEditorInput | undefined {
 		const factory = editorFactoryRegistry.getEditorSerializer(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
-		// only successfully deserilize the file if the resource actually exists
+		// only successfully deserialize the file if the resource actually exists
 		if (this.fileService.exists(fileEditorInput.resource)) {
 			const queryResultsInput = instantiationService.createInstance(QueryResultsInput, fileEditorInput.resource.toString());
 			return instantiationService.createInstance(FileQueryEditorInput, '', fileEditorInput, queryResultsInput);

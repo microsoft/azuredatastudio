@@ -19,7 +19,7 @@ export interface IQueryEditorOptions extends IEditorOptions {
 export const IQueryEditorService = createDecorator<IQueryEditorService>('QueryEditorService');
 
 export interface INewSqlEditorOptions {
-	initalContent?: string;
+	initialContent?: string;
 	/**
 	 * Defaults based on user configuration
 	 */
