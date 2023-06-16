@@ -563,7 +563,10 @@ export class QueryEditor extends EditorPane {
 
 	// helper functions
 
-	public isSelectionEmpty(): boolean {
+	/**
+	 * Returns a boolean value indicating whether the editor is empty.
+	 */
+	public isEditorEmpty(): boolean {
 		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
 			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
