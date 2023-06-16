@@ -73,6 +73,11 @@
 		if (enableDeveloperKeybindings) {
 			developerDeveloperKeybindingsDisposable = registerDeveloperKeybindings(disallowReloadKeybinding);
 		}
+    
+    // Enable ASAR support (node.js enabled renderers only)
+		if (!safeProcess.sandboxed) {
+			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
+		}
 
 		// Get the nls configuration into the process.env as early as possible
 		const nlsConfig = globalThis.MonacoBootstrap.setupNLS();
