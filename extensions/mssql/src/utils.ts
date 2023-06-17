@@ -223,7 +223,7 @@ export function getErrorMessage(error: Error | any, removeHeader: boolean = fals
 	if (error instanceof Error) {
 		errorMessage = error.message;
 	} else if (error.responseText) {
-		errorMessage = error.responseText.toString() as string;
+		errorMessage = error.responseText as string;
 		if (error.status) {
 			errorMessage += ` (${error.status})`;
 		}
