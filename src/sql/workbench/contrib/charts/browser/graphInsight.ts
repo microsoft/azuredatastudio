@@ -13,7 +13,7 @@ import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsight, customMixin } from './interfaces';
-import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType, ChartTypeToChartJsType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType, ChartTypeToChartJsType, LegendPositionToChartJsPosition } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
@@ -279,7 +279,7 @@ export class Graph implements IInsight {
 
 			retval.plugins = {
 				legend: {
-					position: options.legendPosition as any,
+					position: LegendPositionToChartJsPosition[options.legendPosition],
 					display: options.legendPosition !== LegendPosition.None,
 					labels: {
 						color: foreground

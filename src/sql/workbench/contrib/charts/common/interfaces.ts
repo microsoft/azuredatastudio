@@ -57,6 +57,14 @@ export enum LegendPosition {
 	None = 'none'
 }
 
+export const LegendPositionToChartJsPosition: { [key in LegendPosition]: chartjs.LayoutPosition } = {
+	'top': 'top',
+	'bottom': 'bottom',
+	'left': 'left',
+	'right': 'right',
+	'none': 'left' // chart.js doesn't have a 'none' option, so we use 'left' and then hide the legend
+}
+
 export enum DataType {
 	Number = 'number',
 	Point = 'point'
