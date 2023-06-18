@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as chartjs from 'chart.js';
+
 export interface IInsightOptions {
 	type: InsightType | ChartType;
 	dataDirection?: DataDirection;
@@ -35,6 +37,16 @@ export enum ChartType {
 	Pie = 'pie',
 	TimeSeries = 'timeSeries',
 	Scatter = 'scatter'
+}
+
+export const ChartTypeToChartJsType: { [key in ChartType]: chartjs.ChartType } = {
+	'bar': 'bar',
+	'doughnut': 'doughnut',
+	'horizontalBar': 'bar',
+	'line': 'line',
+	'pie': 'pie',
+	'timeSeries': 'line',
+	'scatter': 'scatter'
 }
 
 export enum LegendPosition {

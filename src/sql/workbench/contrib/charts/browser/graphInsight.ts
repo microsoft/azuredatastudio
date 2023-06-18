@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as chartjs from 'chart.js';
+import 'chartjs-adapter-moment'; // Importing this library as datetime adapters are not included in the main chart.js bundle.
 
 import { mixin } from 'sql/base/common/objects';
 import { localize } from 'vs/nls';
@@ -12,10 +13,9 @@ import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsight, customMixin } from './interfaces';
-import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType, ChartTypeToChartJsType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
-import 'chartjs-adapter-moment'; // Importing this library as datetime adapters are not included in the main chart.js bundle.
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
@@ -112,14 +112,16 @@ export class Graph implements IInsight {
 		}
 
 		if (this.originalType === ChartType.TimeSeries) {
-			let dataSetMap: { [label: string]: chartjs.ChartDataset } = {};
+			let dataSetMap: { [label: string]: chartjs.ChartDataset<'line', any[]> } = {};
 			this._data.rows.map(row => {
 				if (row && row.length >= 3) {
 					let legend = row[0];
+					const dataPoint = { x: row[1], y: Number(row[2]) };
 					if (!dataSetMap[legend]) {
-						dataSetMap[legend] = { label: legend, data: [] };
+						dataSetMap[legend] = { label: legend, data: [dataPoint] };
+					} else {
+						dataSetMap[legend].data.push((dataPoint));
 					}
-					dataSetMap[legend].data.push(<any>({ x: row[1], y: Number(row[2]) }));
 				}
 			});
 			chartData = values(dataSetMap);
@@ -169,7 +171,7 @@ export class Graph implements IInsight {
 		}
 		if (this.chartjs) {
 			this.chartjs.data.datasets = chartData;
-			(<chartjs.ChartConfiguration>this.chartjs.config).type = this.options.type as chartjs.ChartType;
+			(<chartjs.ChartConfiguration>this.chartjs.config).type = ChartTypeToChartJsType[this.options.type]
 			// we don't want to include lables for timeSeries
 			this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels;
 			this.chartjs.options = this.transformOptions(this.options);

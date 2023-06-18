@@ -3,43 +3,35 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild } from '@angular/core';
-import { BaseChartDirective } from 'ng2-charts';
+
+import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef } from '@angular/core';
 import * as chartjs from 'chart.js';
 
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { mixin } from 'sql/base/common/objects';
-import { defaultChartConfig, IChartConfig, IDataSet } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
+import { defaultChartConfig, IChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
-import { IPointDataSet } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
-import { ChartType, LegendPosition } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartType, ChartTypeToChartJsType, LegendPosition } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 @Component({
-	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">
-					<canvas #canvas *ngIf="_isDataAvailable && _hasInit"
-							baseChart
-							[datasets]="chartData"
-							[labels]="labels"
-							[chartType]="chartType"
-							[colors]="colors"
-							[options]="_options"></canvas>
-					<div *ngIf="_hasError">{{CHART_ERROR_MESSAGE}}</div>
-				</div>`
+	templateUrl: decodeURI(require.toUrl('./chartInsight.component.html'))
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
 	private _isDataAvailable: boolean = false;
 	protected _hasInit: boolean = false;
 	protected _hasError: boolean = false;
-	private _options: any = {};
+	private _options: chartjs.ChartOptions = {};
+	private _chart: chartjs.Chart;
+	private _chartCanvas: HTMLCanvasElement;
 
-	@ViewChild(BaseChartDirective) private _chart: BaseChartDirective;
+	@ViewChild('chartContainer') private _chartContainer: ElementRef;
 
 	protected _defaultConfig = defaultChartConfig;
 	protected _config: IChartConfig;
@@ -55,6 +47,10 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
 	) {
 		super();
+		chartjs.Chart.register(
+			...chartjs.registerables,
+		);
+		chartjs.Chart.register(chartjs.Colors);
 	}
 
 	init() {
@@ -73,6 +69,20 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			this._hasError = true;
 			this._changeRef.detectChanges();
 		}
+		this._chartCanvas = document.createElement('canvas');
+		this._chartContainer.nativeElement.appendChild(this._chartCanvas);
+		this._chartCanvas.style.width = '100%';
+		this._chartCanvas.style.height = '100%';
+		this._chart = new chartjs.Chart(this._chartCanvas, {
+			type: ChartTypeToChartJsType[this.chartType],
+			data: {
+				labels: this.labels,
+				datasets: this.chartData,
+			},
+			options: this.options
+		});
+		this.refresh();
+
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ChartCreated)
 			.withAdditionalProperties({ type: this.chartType })
 			.send();
@@ -81,7 +91,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	/**
 	 * Sets the options for the chart; handles rerendering the chart if needed
 	 */
-	public set options(options: any) {
+	public set options(options: chartjs.ChartOptions) {
 		this._options = options;
 		if (this._isDataAvailable) {
 			this._options = mixin({}, mixin(this._options, { animation: { duration: 0 } }));
@@ -89,7 +99,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		}
 	}
 
-	public get options(): any {
+	public get options(): chartjs.ChartOptions {
 		return this._options;
 	}
 
@@ -98,30 +108,45 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		const foreground = foregroundColor ? foregroundColor.toString() : null;
 		const backgroundColor = e.getColor(colors.editorBackground);
 		const background = backgroundColor ? backgroundColor.toString() : null;
-
-		const options = {
-			legend: {
-				labels: {
-					fontColor: foreground
+		const options: chartjs.ChartOptions = {
+			plugins: {
+				legend: {
+					labels: {
+						color: foreground
+					}
 				}
-			},
-			viewArea: {
-				backgroundColor: background
 			}
 		};
 		this.options = mixin({}, mixin(this.options, options));
+
+		if (this._chart) {
+			this._chart.ctx.canvas.style.backgroundColor = background;
+			this._chart.options = this.options;
+			this._chart.update();
+		}
 	}
 
 	public refresh() {
 		// cheaper refresh but causes problems when change data for rerender
 		if (this._chart) {
-			this._chart.ngOnChanges({});
+			this._chart.options = this.options;
+			this._chart.data.datasets = <any>this.chartData;
+			this._chart.data.labels = this.labels;
+			this._chart.config['type'] = this.chartType as chartjs.ChartType;
+			this._chart.update();
+		}
+	}
+
+	public refreshChartOptions() {
+		if (this._chart) {
+			this._chart.options = this.options;
+			this._chart.update();
 		}
 	}
 
 	public getCanvasData(): string {
-		if (this._chart && this._chart.chart) {
-			return this._chart.chart.toBase64Image();
+		if (this._chart) {
+			return this._chart.toBase64Image();
 		} else {
 			return undefined;
 		}
@@ -184,8 +209,8 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	/* Typescript does not allow you to access getters/setters for super classes.
 	his is a workaround that allows us to still call base getter */
-	private _cachedChartData: Array<IDataSet>;
-	protected getChartData(): Array<IDataSet> {
+	private _cachedChartData: chartjs.ChartDataset[];
+	protected getChartData(): chartjs.ChartDataset[] {
 		if (!this._cachedChartData) {
 			if (this._config.dataDirection === 'horizontal') {
 				if (this._config.labelFirstColumn) {
@@ -224,7 +249,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		return this._cachedChartData;
 	}
 
-	public get chartData(): Array<IDataSet | IPointDataSet> {
+	public get chartData(): chartjs.ChartDataset[] {
 		return this.getChartData();
 	}
 
@@ -265,16 +290,18 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	public set legendPosition(input: LegendPosition) {
-		const options = {
-			legend: {
-				display: true,
-				position: 'top'
+		const options: chartjs.ChartOptions = {
+			plugins: {
+				legend: {
+					position: 'top',
+					display: true
+				}
 			}
 		};
 		if (input === 'none') {
-			options.legend.display = false;
+			options.plugins.legend.display = false;
 		} else {
-			options.legend.position = input;
+			options.plugins.legend.position = input;
 		}
 		this.options = mixin(this.options, options);
 	}
