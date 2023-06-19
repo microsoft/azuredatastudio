@@ -130,7 +130,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		// cheaper refresh but causes problems when change data for rerender
 		if (this._chart) {
 			this._chart.options = this.options;
-			this._chart.data.datasets = <any>this.chartData;
+			this._chart.data.datasets = this.chartData;
 			this._chart.data.labels = this.labels;
 			this._chart.config['type'] = this.chartType as chartjs.ChartType;
 			this._chart.update();
