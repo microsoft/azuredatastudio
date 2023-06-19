@@ -436,7 +436,18 @@ export class TestObjectManagementService implements IObjectManagementService {
 
 	private getDatabaseView(isNewObject: boolean, name: string): DatabaseViewInfo {
 		return isNewObject ? <DatabaseViewInfo>{
-
+			objectInfo: {
+				name: 'New Database Name',
+				owner: '',
+				collationName: '',
+				compatibilityLevel: '',
+				containmentType: '',
+				recoveryModel: '',
+				azureEdition: '',
+				azureMaxSize: '',
+				azureBackupRedundancyLevel: '',
+				azureServiceLevelObjective: ''
+			}
 		} : <DatabaseViewInfo>{
 			objectInfo: {
 				name: 'Database Properties1',

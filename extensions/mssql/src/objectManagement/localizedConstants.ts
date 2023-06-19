@@ -221,10 +221,6 @@ export const ObjectSelectionMethodDialog_AllObjectsOfTypes = localize('objectMan
 export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema', "All objects belonging to a schema");
 export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
-// Object Properties Dialog
-export const FilesHeaderText = localize('objectManagement.filesHeaderText', "Files");
-export const PropertiesCommandText = localize('objectManagement.propertiesCommandText', "Properties");
-
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
@@ -240,6 +236,7 @@ export const SpaceAvailableText = localize('objectManagement.databaseProperties.
 export const NumberOfUsersText = localize('objectManagement.databaseProperties.numberOfUsers', "Number of Users");
 export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
 export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
+export const StringValueInMB = (value: string) => localize('objectManagement.databaseProperties.mbUnitText', "{0} MB", value);
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
