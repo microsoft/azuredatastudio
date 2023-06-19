@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { RegressedQueries } from './reports/regressedQueries';
 
-export async function activate(_context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.regressedQueriesOpen', async () => { await new RegressedQueries().open() }));
 }
 
 export function deactivate(): void {
