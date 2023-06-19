@@ -36,9 +36,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				isNewTable: true,
 				id: generateUuid(),
 				connectionString: connectionString,
-				accessToken: context.connectionProfile!.options.azureAccountToken,
+				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon
-			}, telemetryInfo);
+			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
@@ -68,9 +68,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				schema: schema,
 				id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 				connectionString: connectionString,
-				accessToken: context.connectionProfile!.options.azureAccountToken,
+				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon
-			}, telemetryInfo);
+			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });

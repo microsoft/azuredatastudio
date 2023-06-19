@@ -85,6 +85,10 @@ export interface IModalOptions {
 	renderHeader?: boolean;
 	renderFooter?: boolean;
 	dialogProperties?: IDialogProperties;
+	/**
+	 * The height of the dialog, only applicable when the dialog style is normal.
+	 */
+	height?: number;
 }
 
 const defaultOptions: IModalOptions = {
@@ -98,7 +102,8 @@ const defaultOptions: IModalOptions = {
 	hasSpinner: true,
 	renderHeader: true,
 	renderFooter: true,
-	dialogProperties: undefined
+	dialogProperties: undefined,
+	height: 480
 };
 
 export type HideReason = 'close' | 'cancel' | 'ok';
@@ -210,9 +215,16 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		let top: number;
 		let builderClass = '.modal.fade';
-		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
-			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
-				: '';
+		switch (this._modalOptions.dialogStyle) {
+			case 'flyout':
+				builderClass += '.flyout-dialog';
+				break;
+			case 'callout':
+				builderClass += '.callout-dialog';
+				break;
+			default:
+				builderClass += '.normal-dialog';
+		}
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 
@@ -224,6 +236,12 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 		const formElement = DOM.append(this._modalDialog, DOM.$('form'));
+
+		if (this._modalOptions.dialogStyle === 'normal') {
+			// set the height based on the available space and the expected height.
+			// so that the dialog can scroll vertically when needed.
+			this._modalDialog.style.height = `min(100%, ${this._modalOptions.height}px)`;
+		}
 
 		if (this._modalOptions.dialogStyle === 'callout') {
 			let arrowClass = `.callout-arrow.from-${this._modalOptions.dialogPosition}`;
@@ -661,7 +679,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Set the title of the modal
 	 */
-	protected set title(title: string) {
+	public set title(title: string) {
 		this._title = title;
 		if (this._modalTitle) {
 			this._modalTitle.innerText = title;
@@ -671,7 +689,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 	}
 
-	protected get title(): string {
+	public get title(): string {
 		return this._title;
 	}
 

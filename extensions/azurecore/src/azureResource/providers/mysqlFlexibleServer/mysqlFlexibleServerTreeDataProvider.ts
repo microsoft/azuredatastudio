@@ -16,7 +16,7 @@ import { Account, ExtensionNodeType, TreeItem, connection } from 'azdata';
 
 export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainer';
-	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel', "Azure Database for MySQL Flexible server");
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel', "Azure Database for MySQL flexible servers");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -27,12 +27,9 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.mySqlFlexibleServer}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.mySqlFlexibleServer}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${MysqlFlexibleServerTreeDataProvider.CONTAINER_LABEL}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/mysql_server_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/mysql_server.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/mysqlDatabase.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
@@ -64,10 +61,7 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 		return [{
 			id: MysqlFlexibleServerTreeDataProvider.CONTAINER_ID,
 			label: MysqlFlexibleServerTreeDataProvider.CONTAINER_LABEL,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/mysqlDatabase.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
 		}];

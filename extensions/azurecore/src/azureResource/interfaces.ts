@@ -50,6 +50,7 @@ export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
+		connectionString: string;
 	};
 }
 
@@ -134,9 +135,14 @@ export interface IAzureResourceSubscriptionService {
 	getSubscriptions(account: AzureAccount, tenantIds?: string[] | undefined): Promise<azureResource.AzureResourceSubscription[]>;
 }
 
+export interface IAzureResourceTenantFilterService {
+	getSelectedTenants(account: AzureAccount): Promise<Tenant[]>;
+	saveSelectedTenants(account: AzureAccount, selectedTenants: Tenant[]): Promise<void>;
+}
+
 export interface IAzureResourceSubscriptionFilterService {
-	getSelectedSubscriptions(account: AzureAccount): Promise<azureResource.AzureResourceSubscription[]>;
-	saveSelectedSubscriptions(account: AzureAccount, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
+	getSelectedSubscriptions(account: AzureAccount, tenant: Tenant): Promise<azureResource.AzureResourceSubscription[]>;
+	saveSelectedSubscriptions(account: AzureAccount, tenant: Tenant, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
 }
 
 export interface IAzureTerminalService {

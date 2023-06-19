@@ -39,10 +39,11 @@ export class TableDesignerInput extends EditorInput {
 		private _provider: TableDesignerProvider,
 		tableInfo: azdata.designers.TableInfo,
 		telemetryInfo: { [key: string]: string },
+		objectExplorerContext: azdata.ObjectExplorerContext | undefined,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
-		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, tableInfo, telemetryInfo);
+		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, tableInfo, telemetryInfo, objectExplorerContext);
 		this._register(this._designerComponentInput.onStateChange((e) => {
 			if (e.previousState.pendingAction === 'publish') {
 				this.setEditorLabel();

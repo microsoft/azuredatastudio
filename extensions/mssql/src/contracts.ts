@@ -892,6 +892,11 @@ export interface AddSystemDatabaseReferenceParams extends AddDatabaseReferencePa
 	 * Type of system database
 	 */
 	systemDatabase: mssql.SystemDatabase;
+
+	/**
+	 * Type of reference - ArtifactReference or PackageReference
+	 */
+	referenceType: mssql.SystemDbReferenceType;
 }
 
 export interface AddUserDatabaseReferenceParams extends AddDatabaseReferenceParams {

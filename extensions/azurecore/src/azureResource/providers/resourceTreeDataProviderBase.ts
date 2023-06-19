@@ -12,7 +12,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { AzureAccount, azureResource } from 'azurecore';
 import { Logger } from '../../utils/Logger';
 import { ErrorResponse } from '@azure/arm-resourcegraph/esm/models';
-import { where } from './queryStringConstants';
+import { resourceGroupQuery, where } from './queryStringConstants';
 
 export abstract class ResourceTreeDataProviderBase<S extends GraphData, T extends GraphData> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -114,7 +114,9 @@ export abstract class ResourceServiceBase<T extends GraphData> implements IAzure
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResource[]> {
 		const convertedResources: azureResource.AzureResource[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, where + this.queryFilter);
+		// Resource Group query filter uses a custom format, so we use it as it is.
+		const query = (this.queryFilter === resourceGroupQuery) ? this.queryFilter : where + this.queryFilter;
+		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, query);
 		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
@@ -130,6 +132,3 @@ export abstract class ResourceServiceBase<T extends GraphData> implements IAzure
 
 	public abstract convertServerResource(resource: T): azureResource.AzureResource | undefined;
 }
-
-
-

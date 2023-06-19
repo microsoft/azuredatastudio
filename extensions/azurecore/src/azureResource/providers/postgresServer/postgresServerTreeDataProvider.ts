@@ -16,7 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL server");
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL servers");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -27,11 +27,11 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.postgresServer}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.postgresServer}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
+				dark: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/postgresServer.svg')
 			},
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
@@ -67,8 +67,8 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 			id: PostgresServerTreeDataProvider.containerId,
 			label: PostgresServerTreeDataProvider.containerLabel,
 			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+				dark: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/postgresServer.svg')
 			},
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer

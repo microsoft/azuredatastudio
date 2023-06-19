@@ -378,10 +378,12 @@ declare module 'azurecore' {
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
 			postgresServer = 'microsoft.dbforpostgresql/servers',
+			postgresFlexibleServer = 'microsoft.dbforpostgresql/flexibleservers',
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
 			logAnalytics = 'microsoft.operationalinsights/workspaces',
 			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts',
+			cosmosDbCluster = 'microsoft.documentdb/mongoclusters',
 			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 

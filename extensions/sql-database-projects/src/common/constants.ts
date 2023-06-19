@@ -158,6 +158,7 @@ export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Ch
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new default value for variable '{0}'", varName);
 export const enterNewSqlCmdVariableName = localize('enterNewSqlCmdVariableName', "Enter new SQLCMD Variable name");
 export const enterNewSqlCmdVariableDefaultValue = (varName: string) => localize('enterNewSqlCmdVariableDefaultValue', "Enter default value for SQLCMD variable '{0}'", varName);
+export const addSqlCmdVariableWithoutDefaultValue = (varName: string) => localize('addSqlCmdVariableWithoutDefaultValue', "Add SQLCMD variable '{0}' to project without default value?", varName);
 export const sqlcmdVariableAlreadyExists = localize('sqlcmdVariableAlreadyExists', "A SQLCMD Variable with the same name already exists in this project");
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
 export const createNew = localize('createNew', "Create New");
@@ -290,7 +291,7 @@ export function retryMessage(name: string, error: string) { return localize('ret
 //#region Add Database Reference dialog strings
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
-export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Referenced Database Type");
 export const projectLabel = localize('projectLocString', "Project");
 export const systemDatabase = localize('systemDatabase', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
@@ -318,10 +319,13 @@ export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 export const dacpacMustBeOnSameDrive = localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file.");
 export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
-export const referenceType = localize('referenceType', "Reference type");
+export const referencedDatabaseType = localize('referencedDatabaseType', "Referenced Database type");
 export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "Excluding folders is not yet supported");
 export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
 export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
+export const artifactReference = localize('artifactReference', "Artifact Reference");
+export const packageReference = localize('packageReference', "Package Reference");
+export const referenceTypeRadioButtonsGroupTitle = localize('referenceTypeRadioButtonsGroupTitle', "Reference Type");
 
 //#endregion
 
@@ -572,6 +576,7 @@ export enum DatabaseProjectItemType {
 	table = 'databaseProject.itemType.file.table',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
+	sqlProjectReference = 'databaseProject.itemType.reference.sqlProject',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 	sqlcmdVariablesRoot = 'databaseProject.itemType.sqlcmdVariablesRoot',
 	sqlcmdVariable = 'databaseProject.itemType.sqlcmdVariable',
@@ -672,7 +677,7 @@ export const downloading = localize('downloading', "Downloading");
 //#endregion
 
 //#region buildHelper
-export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
+export function downloadingNuget(nuget: string) { return localize('downloadingNuget', "Downloading {0} nuget to get build DLLs ", nuget); }
 export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
 export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }

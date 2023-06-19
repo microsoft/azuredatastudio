@@ -70,10 +70,11 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param systemDatabase Type of system database
 	 * @param suppressMissingDependencies Whether to suppress missing dependencies
+	 * @param SystemDbReferenceType Type of reference - ArtifactReference or PackageReference
 	 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 	 */
-	public async addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<azdata.ResultStatus> {
-		const params: contracts.AddSystemDatabaseReferenceParams = { projectUri: projectUri, systemDatabase: systemDatabase, suppressMissingDependencies: suppressMissingDependencies, databaseLiteral: databaseLiteral };
+	public async addSystemDatabaseReference(projectUri: string, systemDatabase: mssql.SystemDatabase, suppressMissingDependencies: boolean, SystemDbReferenceType: mssql.SystemDbReferenceType, databaseLiteral?: string): Promise<azdata.ResultStatus> {
+		const params: contracts.AddSystemDatabaseReferenceParams = { projectUri: projectUri, systemDatabase: systemDatabase, suppressMissingDependencies: suppressMissingDependencies, referenceType: SystemDbReferenceType, databaseLiteral: databaseLiteral };
 		return await this.runWithErrorHandling(contracts.AddSystemDatabaseReferenceRequest.type, params);
 	}
 
@@ -288,7 +289,6 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
 	 * @param defaultValue Default value of the SQLCMD variable
-	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
 	public async addSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };
@@ -310,7 +310,6 @@ export class SqlProjectsService extends BaseService implements mssql.ISqlProject
 	 * @param projectUri Absolute path of the project, including .sqlproj
 	 * @param name Name of the SQLCMD variable
 	 * @param defaultValue Default value of the SQLCMD variable
-	 * @param value Value of the SQLCMD variable, with or without the $()
 	 */
 	public async updateSqlCmdVariable(projectUri: string, name: string, defaultValue: string): Promise<azdata.ResultStatus> {
 		const params: contracts.AddSqlCmdVariableParams = { projectUri: projectUri, name: name, defaultValue: defaultValue };

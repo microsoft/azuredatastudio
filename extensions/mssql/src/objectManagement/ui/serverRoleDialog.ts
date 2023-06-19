@@ -9,8 +9,9 @@ import * as localizedConstants from '../localizedConstants';
 import { AlterServerRoleDocUrl, CreateServerRoleDocUrl } from '../constants';
 import { FindObjectDialog } from './findObjectDialog';
 import { PrincipalDialogBase } from './principalDialogBase';
+import { ServerRoleInfo, ServerRoleViewInfo } from '../interfaces';
 
-export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.ServerRoleInfo, ObjectManagement.ServerRoleViewInfo> {
+export class ServerRoleDialog extends PrincipalDialogBase<ServerRoleInfo, ServerRoleViewInfo> {
 	// Sections
 	private generalSection: azdata.GroupContainer;
 	private membershipSection: azdata.GroupContainer;
@@ -28,7 +29,7 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options, false, false);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: false, supportEffectivePermissions: false });
 	}
 
 	protected override get helpUrl(): string {
@@ -59,7 +60,10 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 		}, this.objectInfo.owner, !this.viewInfo.isFixedRole, 'text', 210);
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
-				objectTypes: [ObjectManagement.NodeType.ServerLevelLogin, ObjectManagement.NodeType.ServerLevelServerRole],
+				objectTypes: localizedConstants.getObjectTypeInfo([
+					ObjectManagement.NodeType.ServerLevelLogin,
+					ObjectManagement.NodeType.ServerLevelServerRole
+				]),
 				selectAllObjectTypes: true,
 				multiSelect: false,
 				contextId: this.contextId,
@@ -84,7 +88,10 @@ export class ServerRoleDialog extends PrincipalDialogBase<ObjectManagement.Serve
 		const buttonContainer = this.addButtonsForTable(this.memberTable, localizedConstants.AddMemberAriaLabel, localizedConstants.RemoveMemberAriaLabel,
 			async () => {
 				const dialog = new FindObjectDialog(this.objectManagementService, {
-					objectTypes: [ObjectManagement.NodeType.ServerLevelLogin, ObjectManagement.NodeType.ServerLevelServerRole],
+					objectTypes: localizedConstants.getObjectTypeInfo([
+						ObjectManagement.NodeType.ServerLevelLogin,
+						ObjectManagement.NodeType.ServerLevelServerRole
+					]),
 					selectAllObjectTypes: true,
 					multiSelect: true,
 					contextId: this.contextId,

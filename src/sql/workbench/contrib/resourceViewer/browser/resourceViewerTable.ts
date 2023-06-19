@@ -27,7 +27,7 @@ import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingS
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -45,7 +45,7 @@ export class ResourceViewerTable extends Disposable {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IAccessibilityService private _accessibilityService: IAccessibilityService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@ITableService private readonly _tableService: ITableService) {
+		@IComponentContextService private readonly _componentContextService: IComponentContextService) {
 		super();
 		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
@@ -91,7 +91,7 @@ export class ResourceViewerTable extends Disposable {
 		});
 		this._resourceViewerTable.registerPlugin(filterPlugin);
 		this._resourceViewerTable.registerPlugin(this._loadingSpinnerPlugin);
-		this._register(this._tableService.registerTable(this._resourceViewerTable));
+		this._register(this._componentContextService.registerTable(this._resourceViewerTable));
 	}
 
 	public set data(data: azdata.DataGridItem[]) {

@@ -17,7 +17,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<DbServerGraphData, DatabaseGraphData> {
 
 	private static readonly containerId = 'azure.resource.providers.database.treeDataProvider.databaseContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL database");
+	private static readonly containerLabel = localize('azure.resource.providers.database.treeDataProvider.databaseContainerLabel', "SQL databases");
 
 	public constructor(
 		databaseService: azureResource.IAzureResourceService,
@@ -28,12 +28,9 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 
 	public getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.databaseServer}${account.key.accountId}${database.serverFullName}.${AzureResourcePrefixes.database}${database.id ?? database.name}`,
+			id: `${AzureResourcePrefixes.database}${account.key.accountId}${database.tenant}${database.serverFullName}.${AzureResourcePrefixes.database}${database.id ?? database.name}`,
 			label: this.browseConnectionMode ? `${database.serverName}/${database.name} (${AzureResourceDatabaseTreeDataProvider.containerLabel}, ${database.subscription.name})` : `${database.name} (${database.serverName})`,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlDatabase.svg'),
 			collapsibleState: this.browseConnectionMode ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.database,
 			payload: {
@@ -64,10 +61,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 		return [{
 			id: AzureResourceDatabaseTreeDataProvider.containerId,
 			label: AzureResourceDatabaseTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlDatabase.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseContainer
 		}];
