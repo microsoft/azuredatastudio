@@ -63,7 +63,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 		tables = (await queryProvider.runQueryAndReturn(connectionUri, query)).rows.map(row => row[0].displayValue);
 	}
 
-	let diagram = `\`\`\`mermaid\nclassDiagram\n`;
+	let diagram = '```classDiagram\n';
 	let references = ``;
 	let documentation = ``;
 	for (let i = 0; i < tables.length; i++) {
@@ -78,7 +78,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 
 	diagram += references;
 
-	return diagram + `\`\`\`  \n` + documentation;
+	return diagram + '```  \n\n' + documentation;
 }
 
 export async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string): Promise<[string, string, string][]> {
@@ -136,9 +136,14 @@ export function getMermaidDiagramForTable(tableName: string, tableAttributes: [s
 export async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<String> {
 	let key = vscode.workspace.getConfiguration("openAI").get<string>("apiKey");
 
+	vscode.window.showInformationMessage("Starting API query")
+
 	const configuration = new Configuration({
 		apiKey: key, // Replace with actual key/ set up some config for it
 	});
+
+	vscode.window.showInformationMessage("Setting up config");
+
 	const openai = new OpenAIApi(configuration);
 
 	const columnNames = tableAttributes.map(row => row[0]);
@@ -153,15 +158,14 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 	Do not include the + in the datatype description. Include two spaces at the end of each description for  \n
 	formatting purposes.  \n
 	Format your answer exactly like so:  \n
-	\t•\t<Field Name>: <Field Description, min 20 words>  \n
-    \t•\t<Field Name>: <Field Description, min 20 words>  \n
-	For the bullet point, use \u2022  \n
+	\t•\t<Field Name>: <Field Description, min 20 words>  \t•\t<Field Name>: <Field Description, min 20 words>
+	\nFor the bullet point, use \u2022  \n
 	Fields: Name, datatype, Table it references  \n` + JSON.stringify(tableAttributes);
 
 	const relationshipsPrompt =
 		`Given the above ${tableName} table, write a detailed description of the relationship it has with other tables,
 	ie. which tables it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.
-	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces instead.`
+	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces followed by \u000D instead.`
 
 	try {
 
@@ -198,7 +202,7 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 
 		let relationshipsResult = relationshipsResponse.data.choices[0].message.content;
 
-		return `### ${tableName}  \n**Overview**  \n${overviewResult}  \n**Fields**  \n${fieldsResult}  \n**Relationships**  \n${relationshipsResult}`;
+		return `### ${tableName}  \n**Overview**  \n${overviewResult}  \n\n**Fields**  \n${fieldsResult}  \n\n**Relationships**  \n${relationshipsResult}`;
 	}
 	catch (error) {
 		vscode.window.showInformationMessage("Error:" + error.message);
