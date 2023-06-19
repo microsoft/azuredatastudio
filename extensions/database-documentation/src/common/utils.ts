@@ -63,7 +63,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 		tables = (await queryProvider.runQueryAndReturn(connectionUri, query)).rows.map(row => row[0].displayValue);
 	}
 
-	let diagram = '```classDiagram\n';
+	let diagram = '```mermaid\nclassDiagram\n';
 	let references = ``;
 	let documentation = ``;
 	for (let i = 0; i < tables.length; i++) {
