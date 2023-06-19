@@ -37,7 +37,6 @@ export const enum TelemetryActions {
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
-	AttachDatabase = 'AttachDatabase',
 	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog'
 }
 

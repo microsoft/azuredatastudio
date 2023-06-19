@@ -39,9 +39,6 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.attachDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleAttachDatabase(context, service);
-	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.detachDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleDetachDatabase(context, service);
 	}));
@@ -237,10 +234,6 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 			await refreshParentNode(context);
 		}
 	});
-}
-
-async function handleAttachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
-	throw new Error('Not implemented.');
 }
 
 async function handleDetachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
