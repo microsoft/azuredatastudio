@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import type * as azdata from 'azdata';
-import * as azdata from 'azdata'
+import type * as azdata from 'azdata';
+// import * as azdata from 'azdata'
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as constants from './constants';
+
+// The module 'openai' contains the OpenAI API
+import { Configuration, OpenAIApi } from "openai";
 
 // Try to load the azdata API - but gracefully handle the failure in case we're running
 // in a context where the API doesn't exist (such as VS Code)
@@ -37,69 +40,76 @@ export async function getMssqlApi(): Promise<mssql.IExtension> {
 	return ext.activate();
 }
 
-export async function generateMarkdown(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<string> {
-	//const azdata = getAzdataApi();
 
-	this.queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+export async function generateMarkdown(context: azdata.ObjectExplorerContext): Promise<string> {
+	const azdata = getAzdataApi();
 
-	const connectionUri = await this.azdata.connection.getUriForConnection(this.connection.connectionId);
-	// const query = `SELECT TABLE_NAME FROM [${this.databaseName}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
-	const query = ''
-	const tables = (await this.queryProvider.runQueryAndReturn(connectionUri, query)).rows.map(row => [row[0].displayValue]);
+	let connection = (await azdata.connection.getCurrentConnection());
+	let databaseName = context.connectionProfile.databaseName;
 
-	let diagram = `classDiagram\n`
+	let tables: string[];
+	if (context.nodeInfo.nodeType === 'Table') {
+		tables = [context.nodeInfo.metadata.name];
+	}
+	else {
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+		const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+		let query = `SELECT TABLE_NAME FROM [${databaseName}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
+
+		if (context.nodeInfo.nodeType === 'Schema') {
+			query += ` AND TABLE_SCHEMA = '${context.nodeInfo.metadata.name}'`;
+		}
+
+		tables = (await queryProvider.runQueryAndReturn(connectionUri, query)).rows.map(row => row[0].displayValue);
+	}
+
+	let diagram = `classDiagram\n`;
 	let references = ``;
+	let documentation = ``;
 	for (let i = 0; i < tables.length; i++) {
-		const tableAttributes = await this.tableToText(connection, databaseName, tables[i]);
-		const result = this.getMermaidDiagramForTable(tables[i], tableAttributes);
+		const tableAttributes = await tableToText(connection, databaseName, tables[i]);
+		const result = getMermaidDiagramForTable(tables[i], tableAttributes);
 		diagram += result[0] + `\n`;
-		references += result[1];
+		if (context.nodeInfo.nodeType !== 'Table') {
+			references += result[1];
+		}
+		documentation += await getDocumentationText(tables[i], tableAttributes);
 	}
 
 	diagram += references;
 
-	let document = await vscode.workspace.openTextDocument({ language: "markdown", content: diagram });
-	vscode.window.showTextDocument(document);
-
-	return "";
+	return diagram + `  \n  \n` + documentation;
 }
 
 export async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string): Promise<[string, string, string][]> {
 	const azdata = getAzdataApi();
 
+	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+
 	let connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
-
 	let baseQuery = `SELECT COLUMN_NAME, DATA_TYPE FROM [${databaseName}].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}'`;
-	let referenceQuery = `SELECT COLUMN_NAME, CONSTRAINT_NAME FROM [${databaseName}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '${tableName}' AND CONSTRAINT_NAME LIKE 'FK%'`;
+	let referenceQuery = `SELECT COLUMN_NAME, CONSTRAINT_NAME FROM [${databaseName}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '${tableName}'`;
 
-	let result = await this.queryProvider.runQueryAndReturn(connectionUri, baseQuery);
-	if (result.columnInfo[0].columnName === 'ErrorMessage') {
-		throw new Error(result.rows[0][0].displayValue);
-	}
-
-	let tempResult = await this.queryProvider.runQueryAndReturn(connectionUri, referenceQuery);
-	if (tempResult.columnInfo[0].columnName === 'ErrorMessage') {
-		throw new Error(tempResult.rows[0][0].displayValue);
-	}
+	let result = await queryProvider.runQueryAndReturn(connectionUri, baseQuery);
+	let tempResult = await queryProvider.runQueryAndReturn(connectionUri, referenceQuery);
 
 	let tableAttributes: [string, string, string][] = [];
 
 	for (let i = 0; i < result.rowCount; i++) {
-		if (tempResult.rowCount !== 0) {
-			for (let j = 0; j < tempResult.rowCount; j++) {
-				if (result.rows[i][0].displayValue === tempResult.rows[j][0].displayValue) {
-					const str = tempResult.rows[j][1].displayValue;
-					const reference = str.substring(str.lastIndexOf("_") + 1);
-					tableAttributes.push([result.rows[i][0].displayValue, result.rows[i][1].displayValue, reference]);
-					break;
-				}
-				if (j === tempResult.rowCount - 1) {
-					tableAttributes.push([result.rows[i][0].displayValue, result.rows[i][1].displayValue, null]);
-				}
-			}
+		const row = result.rows[i];
+		const matchingRow = tempResult.rows.find(tempRow => tempRow[0].displayValue === row[0].displayValue);
+		const str = matchingRow ? matchingRow[1].displayValue : null;
+
+		if (str && str.substring(0, 2) === "PK") {
+			row[1].displayValue = "+ " + row[1].displayValue;
+			tableAttributes.push([row[0].displayValue, row[1].displayValue, null]);
+		}
+		else if (str && str.substring(0, 2) === "FK") {
+			const reference = str.substring(str.lastIndexOf("_") + 1);
+			tableAttributes.push([row[0].displayValue, row[1].displayValue, reference]);
 		}
 		else {
-			tableAttributes.push([result.rows[i][0].displayValue, result.rows[i][1].displayValue, null]);
+			tableAttributes.push([row[0].displayValue, row[1].displayValue, null]);
 		}
 	}
 
@@ -113,21 +123,91 @@ export function getMermaidDiagramForTable(tableName: string, tableAttributes: [s
 
 	for (let i = 0; i < tableAttributes.length; i++) {
 		diagram += `\t\t${tableAttributes[i][1]} ${tableAttributes[i][0]}\n`
-		if (tableAttributes[i][2] && tableName !== tableAttributes[i][2] && this.tables.includes(tableAttributes[i][2])) {
+		if (tableAttributes[i][2] && tableName !== tableAttributes[i][2]) {
 			references += `${tableName} --> ${tableAttributes[i][2]}\n`;
 		}
 	}
 
 	diagram += `\t}\n`;
 
-	// Save diagram to documentation table
-	let save = `classDiagram\n` + diagram;
-
 	return [diagram, references];
 }
 
+export async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<String> {
+	let key = vscode.workspace.getConfiguration("openAI").get<string>("apiKey");
+
+	const configuration = new Configuration({
+		apiKey: key, // Replace with actual key/ set up some config for it
+	});
+	const openai = new OpenAIApi(configuration);
+
+	const columnNames = tableAttributes.map(row => row[0]);
+
+	const overviewPrompt =
+		`One sentence overview of this table, based on table name. Max 25 words.  \n
+	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces instead.  \n
+	Table: ${tableName} Columns: ` + JSON.stringify(columnNames);
+
+	const fieldsPrompt =
+		`Give an description for each field below. If the datatype has a preceding +, the field is the primary key.  \n
+	Do not include the + in the datatype description. Include two spaces at the end of each description for  \n
+	formatting purposes.  \n
+	Format your answer exactly like so:  \n
+	\t•\t<Field Name>: <Field Description, min 20 words>  \n
+    \t•\t<Field Name>: <Field Description, min 20 words>  \n
+	For the bullet point, use \u2022  \n
+	Fields: Name, datatype, Table it references  \n` + JSON.stringify(tableAttributes);
+
+	const relationshipsPrompt =
+		`Given the above ${tableName} table, write a detailed description of the relationship it has with other tables,  \n
+	ie. which tables it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.  \n
+	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces instead.`
+
+	try {
+
+		vscode.window.showInformationMessage("Attempting overview");
+
+		const overviewResponse = await
+			openai.createChatCompletion({
+				model: "gpt-3.5-turbo",
+				messages: [{ 'role': 'user', 'content': overviewPrompt }],
+				temperature: 0
+			})
+
+		let overviewResult = overviewResponse.data.choices[0].message.content;
+
+		vscode.window.showInformationMessage("Attempting fields");
+
+		const fieldsResponse = await
+			openai.createChatCompletion({
+				model: "gpt-3.5-turbo",
+				messages: [{ 'role': 'user', 'content': fieldsPrompt }],
+				temperature: 0
+			})
+
+		let fieldsResult = fieldsResponse.data.choices[0].message.content;
+
+		vscode.window.showInformationMessage("Attempting relationship");
+
+		const relationshipsResponse = await
+			openai.createChatCompletion({
+				model: "gpt-3.5-turbo",
+				messages: [{ 'role': 'user', 'content': relationshipsPrompt }],
+				temperature: 0
+			})
+
+		let relationshipsResult = relationshipsResponse.data.choices[0].message.content;
+
+		return `### ${tableName}  \n**Overview**  \n${overviewResult}  \n**Fields**  \n${fieldsResult}  \n**Relationships**  \n${relationshipsResult}`;
+	}
+	catch (error) {
+		vscode.window.showInformationMessage("Error:" + error.message);
+		return error.message;
+	}
+}
+
 export function getDatabaseFromNode(node: vscodeMssql.ITreeNodeInfo): vscodeMssql.ITreeNodeInfo {
-	while (node.nodeType != 'Database'){
+	while (node.nodeType != 'Database') {
 		node = node.parentNode;
 	}
 	return node;

@@ -13,17 +13,13 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*",
-		"onCommand:database-documentation.documentDatabaseADS",
-		"onCommand:database-documentation.documentTableADS",
-		"onCommand:database-documentation.documentDatabaseCode",
-		"onCommand:database-documentation.documentTableCode"
+		"*"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "database-documentation.documentDatabaseADS",
+				"command": "database-documentation.generateDocumentation",
 				"title": "%database-documentation.start%"
 			},
 			{
@@ -42,13 +38,8 @@
 		"menus": {
 			"objectExplorer/item/context": [
 				{
-					"command": "database-documentation.documentDatabaseADS",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
-					"group": "export"
-				},
-				{
-					"command": "database-documentation.documentTableADS",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Table && mssql:engineedition != 11",
+					"command": "database-documentation.generateDocumentation",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Database|Schema|Table)$/ && mssql:engineedition != 11",
 					"group": "export"
 				}
 			],
@@ -64,6 +55,13 @@
 					"group": "export"
 				}
 			]
+		},
+		"configuration": {
+			"openAI.apiKey": {
+                "type": "string",
+                "default": "",
+                "description": "API key for OpenAI"
+            }
 		}
 	},
 	"scripts": {

@@ -5,7 +5,7 @@ classDiagram
 		nvarchar TerritoryID
 	}
 ```
-m
+
 ### EmployeeTerritories
 **Overview**
 The EmployeeTerritories table stores the relationship between employees and territories. It indicates which territories are assigned to each employee.

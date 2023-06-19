@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as azdata from 'azdata';
 
+//import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
@@ -23,6 +24,9 @@ import * as mssql from 'mssql';
 // The module 'openai' contains the OpenAI API
 import { Configuration, OpenAIApi } from "openai";
 
+// Language localization features
+import * as nls from 'vscode-nls';
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -36,16 +40,24 @@ export async  function activate(context: vscode.ExtensionContext) {
 
     void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 
+    const azdata = getAzdataApi();
+
+    const localize = nls.loadMessageBundle();
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
-    context.subscriptions.push(vscode.commands.registerCommand('database-documentation.documentDatabaseADS', async (context: any) => {
-
-        let connection = (await azdata.connection.getCurrentConnection());
-        let databaseName: string = context.nodeInfo.metadata.name;
-
+    context.subscriptions.push(vscode.commands.registerCommand('database-documentation.generateDocumentation', async (context: azdata.ObjectExplorerContext) => {
         // The code you place here will be executed every time your command is executed
+        vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation... "));
+        let md = await generateMarkdown(context);
+        vscode.window.showInformationMessage(localize('database-documentation.finishedGen', "Documentation Generated!"));
+
+        // Open the text document
+        const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: md })
+        const editor = await vscode.window.showTextDocument(document);
+
+        
 
     }));
 
@@ -53,6 +65,8 @@ export async  function activate(context: vscode.ExtensionContext) {
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.documentTableADS', async (context: any) => {
+        const azdata = getAzdataApi();
+
         // The code you place here will be executed every time your command is executed
         vscode.window.showInformationMessage((!!azdata).toString());
 
