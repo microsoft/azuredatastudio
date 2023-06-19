@@ -124,7 +124,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			this._chart.options = this.options;
 			this._chart.data.datasets = this.chartData;
 			this._chart.data.labels = this.labels;
-			this._chart.config['type'] = this.chartType as chartjs.ChartType;
+			this._chart.config['type'] = ChartTypeToChartJsType[this.chartType];
 			this._chart.update();
 		}
 	}
@@ -136,7 +136,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 		}
 	}
 
-	public getCanvasData(): string {
+	public getCanvasData(): string | undefined {
 		if (this._chart) {
 			return this._chart.toBase64Image();
 		} else {

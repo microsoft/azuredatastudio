@@ -184,7 +184,7 @@ export class Graph implements IInsight {
 					labels: this.originalType === 'timeSeries' ? [] : labels,
 					datasets: chartData
 				},
-				type: this.options.type as chartjs.ChartType,
+				type: ChartTypeToChartJsType[this.options.type],
 				options: this.transformOptions(this.options)
 			});
 		}
