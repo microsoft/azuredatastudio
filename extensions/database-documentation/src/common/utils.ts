@@ -63,7 +63,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 		tables = (await queryProvider.runQueryAndReturn(connectionUri, query)).rows.map(row => row[0].displayValue);
 	}
 
-	let diagram = `classDiagram\n`;
+	let diagram = `\`\`\`mermaid\nclassDiagram\n`;
 	let references = ``;
 	let documentation = ``;
 	for (let i = 0; i < tables.length; i++) {
@@ -78,7 +78,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 
 	diagram += references;
 
-	return diagram + `  \n  \n` + documentation;
+	return diagram + `\`\`\`  \n` + documentation;
 }
 
 export async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string): Promise<[string, string, string][]> {
@@ -159,8 +159,8 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 	Fields: Name, datatype, Table it references  \n` + JSON.stringify(tableAttributes);
 
 	const relationshipsPrompt =
-		`Given the above ${tableName} table, write a detailed description of the relationship it has with other tables,  \n
-	ie. which tables it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.  \n
+		`Given the above ${tableName} table, write a detailed description of the relationship it has with other tables,
+	ie. which tables it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.
 	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces instead.`
 
 	try {
