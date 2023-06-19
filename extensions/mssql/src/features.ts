@@ -107,14 +107,14 @@ export class AccountFeature implements StaticFeature {
 
 		// find account
 		const accountList = await azdata.accounts.getAllAccounts();
-		const account = accountList.find(a => a.key.accountId === request.accountId);
+		const account: azurecore.AzureAccount | undefined = accountList.find(a => a.key.accountId === request.accountId);
 		if (!account) {
 			console.log(`Failed to find azure account ${request.accountId} when executing token refresh`);
 			throw Error(localizedConstants.failedToFindAccount(request.accountId));
 		}
 
 		// find tenant
-		const tenant = account.properties.tenants.find((tenant: any) => tenant.id === request.tenantId);
+		const tenant = account.properties.tenants.find(tenant => tenant.id === request.tenantId);
 		if (!tenant) {
 			console.log(`Failed to find tenant ${request.tenantId} in account ${account.displayInfo.displayName} when refreshing security token`);
 			throw Error(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
