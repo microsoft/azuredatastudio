@@ -28,6 +28,7 @@ export const AlterApplicationRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql
 export const CreateDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-role-transact-sql';
 export const AlterDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-role-transact-sql';
 export const CreateDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-database-transact-sql';
+export const DetachDatabaseDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/detach-a-database#TsqlProcedure';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
@@ -37,7 +38,7 @@ export const enum TelemetryActions {
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
 	AttachDatabase = 'AttachDatabase',
-	DetachDatabase = 'DetachDatabase'
+	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';

@@ -66,9 +66,13 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
 	}
 
-	async detachDatabase(connectionUri: string, objectUrn: string): Promise<void> {
-		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn };
+	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Promise<void> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
+	}
+	async scriptDetachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Promise<string> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics };
+		return this.runWithErrorHandling(contracts.ScriptDetachDatabaseRequest.type, params);
 	}
 }
 
@@ -235,8 +239,11 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve(items);
 	}
 
-	async detachDatabase(connectionUri: string, objectUrn: string): Promise<void> {
+	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Promise<void> {
 		return this.delayAndResolve();
+	}
+	async scriptDetachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Promise<string> {
+		return this.delayAndResolve('');
 	}
 
 	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {

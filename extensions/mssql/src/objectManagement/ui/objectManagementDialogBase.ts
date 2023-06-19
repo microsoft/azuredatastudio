@@ -54,6 +54,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return errors;
 	}
 
+	protected async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+		await this.objectManagementService.save(this._contextId, this.objectInfo);
+	}
+
 	protected override async initialize(): Promise<void> {
 		await super.initialize();
 		const typeDisplayName = localizedConstants.getNodeTypeDisplayName(this.options.objectType);
@@ -67,7 +71,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				try {
 					if (this.isDirty) {
 						const startTime = Date.now();
-						await this.objectManagementService.save(this._contextId, this.objectInfo);
+						await this.saveChanges(this._contextId, this.objectInfo);
 						if (this.options.objectExplorerContext) {
 							if (this.options.isNewObject) {
 								await refreshNode(this.options.objectExplorerContext);

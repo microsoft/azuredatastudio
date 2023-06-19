@@ -22,6 +22,7 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
+import { DetachDatabaseDialog } from './ui/detachDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -247,38 +248,28 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 	if (!connectionUri) {
 		return;
 	}
-
-	let confirmMessage = objectManagementLoc.DetachDatabaseConfirmationText(context.nodeInfo!.label);
-	const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, uiLoc.YesText);
-	if (confirmResult !== uiLoc.YesText) {
-		return;
+	try {
+		const parentUrn = await getParentUrn(context);
+		const options: ObjectManagementDialogOptions = {
+			connectionUri: connectionUri,
+			isNewObject: false,
+			database: context.connectionProfile!.databaseName!,
+			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
+			objectName: context.nodeInfo.label,
+			parentUrn: parentUrn,
+			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectExplorerContext: context
+		};
+		const dialog = new DetachDatabaseDialog(service, options);
+		await dialog.open();
 	}
-	azdata.tasks.startBackgroundOperation({
-		displayName: objectManagementLoc.DetachDatabaseOperationDisplayName(context.nodeInfo!.label),
-		description: '',
-		isCancelable: false,
-		operation: async (operation) => {
-			try {
-				const startTime = Date.now();
-				await service.detachDatabase(connectionUri, context.nodeInfo!.metadata!.urn, false, false);
-				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DetachDatabase, {
-					objectType: 'Database'
-				}, {
-					elapsedTimeMs: Date.now() - startTime
-				});
-			}
-			catch (err) {
-				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DetachDatabaseError(context.nodeInfo!.label, getErrorMessage(err)));
-				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DetachDatabase, err).withAdditionalProperties({
-					objectType: 'Database'
-				}).send();
-				console.error(err);
-				return;
-			}
-			operation.updateStatus(azdata.TaskStatus.Succeeded);
-			await refreshParentNode(context);
-		}
-	});
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
+			objectType: context.nodeInfo!.nodeType
+		}).send();
+		console.error(err);
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenDetachDatabaseDialogError(getErrorMessage(err)));
+	}
 }
 
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {

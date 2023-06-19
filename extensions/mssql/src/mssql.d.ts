@@ -981,6 +981,15 @@ declare module 'mssql' {
 		 * @param updateStatistics Whether to update the optimization statistics related to this database.
 		 */
 		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Thenable<void>;
+		/**
+		 * Generate a TQL script for detaching a database.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param dropConnections Whether to drop active connections to this database.
+		 * @param updateStatistics Whether to update the optimization statistics related to this database.
+		 * @returns A string value representing the generated TSQL query.
+		 */
+		scriptDetachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean): Thenable<string>;
 	}
 	// Object Management - End.
 }

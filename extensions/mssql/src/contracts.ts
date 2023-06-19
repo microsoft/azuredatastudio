@@ -1631,10 +1631,16 @@ export namespace SearchObjectRequest {
 export interface DetachDatabaseRequestParams {
 	connectionUri: string;
 	objectUrn: string;
+	dropConnections: boolean;
+	updateStatistics: boolean;
 }
 
 export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, void, void, void>('objectManagement/detachDatabase');
+}
+
+export namespace ScriptDetachDatabaseRequest {
+	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/scriptDetach');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

@@ -105,11 +105,11 @@ export function DeleteObjectError(objectType: string, objectName: string, error:
 	}, "An error occurred while deleting the {0}: {1}. {2}", objectType, objectName, error);
 }
 
-export function DetachDatabaseError(objectName: string, error: string): string {
+export function OpenDetachDatabaseDialogError(error: string): string {
 	return localize({
-		key: 'objectManagement.detachDatabaseError',
-		comment: ['{0}: object name, {1}: error message.']
-	}, "An error occurred while detaching the database: {0}. {1}", objectName, error);
+		key: 'objectManagement.openDetachDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
