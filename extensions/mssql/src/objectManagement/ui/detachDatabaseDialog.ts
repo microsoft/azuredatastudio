@@ -10,8 +10,8 @@ import { DetachDatabaseDocUrl } from '../constants';
 import { DetachDatabaseDialogTitle, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
-	private _dropConnections: boolean;
-	private _updateStatistics: boolean;
+	private _dropConnections = false;
+	private _updateStatistics = false;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, DetachDatabaseDialogTitle(options.database), 'DetachDatabase');
