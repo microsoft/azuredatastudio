@@ -17,6 +17,10 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		super(objectManagementService, options, DetachDatabaseDialogTitle(options.database), 'DetachDatabase');
 	}
 
+	protected override get isDirty(): boolean {
+		return true;
+	}
+
 	protected async initializeUI(): Promise<void> {
 		let connCheckbox = this.createCheckbox(DetachDropConnections, async checked => {
 			this._dropConnections = checked;
