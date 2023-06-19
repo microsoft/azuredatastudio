@@ -7,17 +7,25 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DetachDatabaseDocUrl } from '../constants';
+import { DetachDatabaseDialogTitle, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections: boolean;
 	private _updateStatistics: boolean;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, options, DetachDatabaseDialogTitle(options.database), 'DetachDatabase');
 	}
 
-	protected override initializeUI(): Promise<void> {
-		throw new Error('Method not implemented.');
+	protected async initializeUI(): Promise<void> {
+		let connCheckbox = this.createCheckbox(DetachDropConnections, async checked => {
+			this._dropConnections = checked;
+		});
+		let updateCheckbox = this.createCheckbox(DetachUpdateStatistics, async checked => {
+			this._updateStatistics = checked;
+		});
+		let components = [connCheckbox, updateCheckbox];
+		this.formContainer.addItems(components);
 	}
 
 	protected override get helpUrl(): string {

@@ -35,12 +35,16 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
 
-	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true)) :
-			localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName),
-			getDialogName(options.objectType, options.isNewObject),
-			options
-		);
+	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions, dialogTitle?: string, dialogName?: string) {
+		if (!dialogTitle) {
+			dialogTitle = options.isNewObject
+				? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true))
+				: localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName);
+		}
+		if (!dialogName) {
+			dialogName = getDialogName(options.objectType, options.isNewObject);
+		}
+		super(dialogTitle, dialogName, options);
 		this._contextId = generateUuid();
 	}
 

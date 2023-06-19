@@ -182,6 +182,10 @@ export const CurrentSLOText = localize('objectManagement.currentSLOLabel', "Curr
 export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
+export const DetachDatabaseDialogTitle = (dbName: string) => localize('objectManagement.detachDatabaseDialogTitle', "Detach Database - {0} (Preview)", dbName);
+export const DetachDropConnections = localize('objectManagement.detachDropConnections', "Drop connnections");
+export const DetachUpdateStatistics = localize('objectManagement.detachUpdateStatistics', "Update statistics");
+
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
