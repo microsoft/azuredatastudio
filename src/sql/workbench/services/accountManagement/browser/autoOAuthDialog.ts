@@ -11,7 +11,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { $, append } from 'vs/base/browser/dom';
 
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -54,7 +53,7 @@ export class AutoOAuthDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
-			'',
+			localize('deviceCodeAuthDialogTitle', 'Azure Auth: Device Code'),
 			TelemetryKeys.ModalDialogName.AutoOAuth,
 			telemetryService,
 			layoutService,
@@ -64,8 +63,8 @@ export class AutoOAuthDialog extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				dialogStyle: 'flyout',
-				hasBackButton: true,
+				dialogStyle: 'normal',
+				height: 340,
 				hasSpinner: true
 			}
 		);
@@ -74,9 +73,6 @@ export class AutoOAuthDialog extends Modal {
 	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this.backButton!.onDidClick(() => this.cancel());
-		this._register(attachButtonStyler(this.backButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
-
 		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', "Copy & Open"), () => this.addAccount());
 		this._closeButton = this.addFooterButton(localize('oauthDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
 		this.registerListeners();
