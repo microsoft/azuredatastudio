@@ -7,7 +7,7 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBProvider } from '../../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBMongoProvider } from '../../../constants';
 import { generateGuid } from '../../../utils';
 import { DbServerGraphData, GraphData } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
@@ -45,7 +45,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: cosmosDBProvider,
+				providerName: cosmosDBMongoProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -53,7 +53,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
-			childProvider: cosmosDBProvider,
+			childProvider: cosmosDBMongoProvider,
 			type: azdata.ExtensionNodeType.Server
 		};
 	}

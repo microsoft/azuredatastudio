@@ -71,7 +71,7 @@ export const cosmosMongoDbQuery = `type == "${azureResource.AzureResourceType.co
 /**
  * Lists all Cosmos DB for NoSQL accounts
  */
-export const cosmosNoSqlQuery = `where type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "GlobalDocumentDB"`;
+export const cosmosNoSqlQuery = `type == "${azureResource.AzureResourceType.cosmosDbAccount}" and kind == "${Constants.cosmosDbNoSqlKind}"`;
 
 /**
  * Lists all Log Analytics workspaces

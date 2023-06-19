@@ -20,7 +20,8 @@ export enum AzureResourceItemType {
 	message = 'azure.resource.itemType.message',
 	azureMonitor = 'azure.resource.itemType.azureMonitor',
 	azureMonitorContainer = 'azure.resource.itemType.azureMonitorContainer',
-	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount'
+	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount',
+	cosmosDBNoSqlAccount = 'azure.resource.itemType.cosmosDBNoSqlAccount'
 }
 
 export enum AzureResourceServiceNames {
@@ -51,7 +52,8 @@ export enum AzureResourcePrefixes {
 
 export const mssqlProvider = 'MSSQL';
 export const logAnalyticsProvider = 'LOGANALYTICS';
-export const cosmosDBProvider = 'COSMOSDB_MONGO';
+export const cosmosDBMongoProvider = 'COSMOSDB_MONGO';
+export const cosmosDBNoSqlProvider = 'COSMOSDB_NOSQL';
 export const kustoProvider = 'KUSTO';
 export const mySqlProvider = 'MySQL';
 export const pgsqlProvider = 'PGSQL';
@@ -59,6 +61,7 @@ export const pgsqlProvider = 'PGSQL';
 // Kinds
 export const analyticsKind = 'v12.0,analytics';
 export const mongoDbKind = 'MongoDB';
+export const cosmosDbNoSqlKind = 'GlobalDocumentDB';
 
 export enum ResourceCategory {
 	Server = 0,

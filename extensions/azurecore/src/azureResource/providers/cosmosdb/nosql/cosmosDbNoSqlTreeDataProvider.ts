@@ -7,35 +7,34 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBNoSqlProvider } from '../../../constants';
 import { generateGuid } from '../../../utils';
-import { IAzureResourceService } from '../../../interfaces';
+import { DbServerGraphData, GraphData } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
-import { azureResource } from 'azurecore';
+import { AzureAccountProperties, azureResource } from 'azurecore';
 import * as azdata from 'azdata';
 
-export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
-	private static readonly COSMOSDG_NOSQL_PROVIDER_ID = 'COSMOSDB_NOSQL';
+export class CosmosDbNoSqlTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainer';
-	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel', "CosmosDB for NoSQL");
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbNoSqlContainerLabel', "CosmosDB NoSql API");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
-			id: `Cosmosdb_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: `${databaseServer.name} (CosmosDB NoSQL API)`,
+			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			label: `${databaseServer.name} (CosmosDB NoSql API)`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/cosmosdb_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/cosmosdb.svg')
 			},
 			collapsibleState: TreeItemCollapsibleState.None,
-			contextValue: AzureResourceItemType.cosmosDBMongoAccount,
+			contextValue: AzureResourceItemType.cosmosDBNoSqlAccount,
 			payload: {
 				id: generateGuid(),
 				connectionName: databaseServer.name,
@@ -46,23 +45,23 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: CosmosDbMongoTreeDataProvider.COSMOSDG_NOSQL_PROVIDER_ID,
+				providerName: cosmosDBNoSqlProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
 				azureTenantId: databaseServer.tenant,
 				azureResourceId: databaseServer.id,
-				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
+				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
-			childProvider: CosmosDbMongoTreeDataProvider.COSMOSDG_NOSQL_PROVIDER_ID,
+			childProvider: cosmosDBNoSqlProvider,
 			type: azdata.ExtensionNodeType.Server
 		};
 	}
 
 	public async getRootChildren(): Promise<azdata.TreeItem[]> {
 		return [{
-			id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
-			label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
+			id: CosmosDbNoSqlTreeDataProvider.CONTAINER_ID,
+			label: CosmosDbNoSqlTreeDataProvider.CONTAINER_LABEL,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')

@@ -4,28 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ResourceServiceBase, GraphData } from '../../resourceTreeDataProviderBase';
+import { ResourceServiceBase } from '../../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
 import { cosmosNoSqlQuery } from '../../queryStringConstants';
+import { DbServerGraphData } from '../../../interfaces';
+import { COSMOSDB_NOSQL_PROVIDER_ID } from '../../../../constants';
 
+export class CosmosDbNoSqlService extends ResourceServiceBase<DbServerGraphData> {
+	public override queryFilter: string = cosmosNoSqlQuery;
 
-interface DbServerGraphData extends GraphData {
-	properties: {
-		fullyQualifiedDomainName: string;
-		administratorLogin: string;
-	};
-}
-
-export class CosmosDbNoSqlService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
-
-	protected get query(): string {
-		return cosmosNoSqlQuery;
-	}
-
-	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
+	public convertServerResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: COSMOSDB_NOSQL_PROVIDER_ID,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: '',
