@@ -106,8 +106,6 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected updateTheme(e: IColorTheme): void {
 		const foregroundColor = e.getColor(colors.editorForeground);
 		const foreground = foregroundColor ? foregroundColor.toString() : null;
-		const backgroundColor = e.getColor(colors.editorBackground);
-		const background = backgroundColor ? backgroundColor.toString() : null;
 		const options: chartjs.ChartOptions = {
 			plugins: {
 				legend: {
@@ -118,12 +116,6 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 			}
 		};
 		this.options = mixin({}, mixin(this.options, options));
-
-		if (this._chart) {
-			this._chart.ctx.canvas.style.backgroundColor = background;
-			this._chart.options = this.options;
-			this._chart.update();
-		}
 	}
 
 	public refresh() {
@@ -322,17 +314,3 @@ function isValidData(data: IInsightData): boolean {
 
 	return true;
 }
-
-chartjs.Chart.register(
-	{
-		id: 'viewArea',
-		beforeDraw: function (chart) {
-			const options = chart.config.options as any;
-			if (options.viewArea?.backgroundColor) {
-				let ctx = chart.ctx;
-				ctx.fillStyle = options.viewArea.backgroundColor;
-				ctx.fillRect(0, 0, chart.width, chart.height);
-			}
-		}
-	}
-);
