@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as path from 'path';
 
 export abstract class QueryStoreReport {
 	protected editor: azdata.workspace.ModelViewEditor;
@@ -14,7 +16,7 @@ export abstract class QueryStoreReport {
 	protected toolbar?: azdata.ToolbarBuilder;
 	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(reportName: string, private reportTitle: string) {
+	constructor(reportName: string, private reportTitle: string, private extensionContext: vscode.ExtensionContext) {
 		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
 	}
 
@@ -55,7 +57,10 @@ export abstract class QueryStoreReport {
 		this.configureButton = view.modelBuilder.button().withProps({
 			label: 'Configure',
 			title: 'Configure',
-			iconPath: '$(notifications-configure)'
+			iconPath: {
+				light: path.join(this.extensionContext.extensionPath, 'images', 'light', 'gear.svg'),
+				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
+			}
 		}).component();
 
 		// TODO: enable after the configuration dialog is implemented
@@ -122,6 +127,7 @@ export abstract class QueryStoreReport {
 		});
 		await rightContainer.updateCssStyles({ 'background-color': 'coral' });
 
+		// TODO: figure out why the horizontal spliview isn't working
 		// const horizontalSplitView = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().withLayout({
 		// 	orientation: 'horizontal',
 		// 	splitViewHeight: 200

@@ -7,8 +7,8 @@ import { QueryStoreReport } from './common/queryStoreReport';
 
 
 export class RegressedQueries extends QueryStoreReport {
-	constructor() {
-		super('Regressed Queries', 'Top 25 regressed queries for database WideWorldImporters');
+	constructor(extensionContext: vscode.ExtensionContext) {
+		super('Regressed Queries', 'Top 25 regressed queries for database WideWorldImporters', extensionContext);
 	}
 
 	public override async open(): Promise<void> {
