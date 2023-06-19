@@ -43,4 +43,8 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	protected override async generateScript(): Promise<string> {
 		return await this.objectManagementService.scriptDetachDatabase(this.contextId, this.options.objectUrn, this._dropConnections, this._updateStatistics);
 	}
+
+	protected override async validateInput(): Promise<string[]> {
+		return [];
+	}
 }
