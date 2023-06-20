@@ -12,13 +12,8 @@ import * as constants from '../common/constants';
 export abstract class BaseQueryStoreReport {
 	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
-	protected topFlexModel?: azdata.FlexContainer;
-	protected verticalSplitView?: azdata.SplitViewContainer;
-	protected horizontalSplitView?: azdata.SplitViewContainer;
-	protected toolbar?: azdata.ToolbarBuilder;
-	protected configureButton?: azdata.ButtonComponent;
 
-	constructor(reportName: string, private reportTitle: string, private extensionContext: vscode.ExtensionContext) {
+	constructor(reportName: string, private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
 		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
 	}
 
@@ -27,12 +22,18 @@ export abstract class BaseQueryStoreReport {
 			this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
 
 			const toolbar = (await this.createToolbar(view)).component();
-			await toolbar.updateCssStyles({ 'padding': '0px' });
+			await toolbar.updateCssStyles({ 'padding': '5px' });
 			this.flexModel.addItem(toolbar, { flex: 'none' });
 
-			this.verticalSplitView = utils.createVerticalSplitView(view, await this.createTopSection(view), await this.createBottomSection(view), 800);
+			if (this.resizeable) {
+				// TODO: replace 800 to have the number be based on how big the window is
+				const verticalSplitView = utils.createVerticalSplitView(view, await this.createTopSection(view), await this.createBottomSection(view), 800);
+				this.flexModel.addItem(verticalSplitView);
+			} else {
+				const verticalFlexContainer = await utils.createTwoComponentFlexContainer(view, await this.createTopSection(view), await this.createBottomSection(view), 'column');
+				this.flexModel.addItem(verticalFlexContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+			}
 
-			this.flexModel.addItem(this.verticalSplitView);
 
 			this.flexModel.setLayout({
 				flexFlow: 'column',
@@ -48,23 +49,24 @@ export abstract class BaseQueryStoreReport {
 	/**
 	 * Creates the toolbar for the overall report with the report title, time range, and configure button
 	 * @param view
-	 * @returns
 	 */
 	protected async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarBuilder> {
 		const toolBar = <azdata.ToolbarBuilder>view.modelBuilder.toolbarContainer();
 
 		const reportTitle = view.modelBuilder.text().withProps({
 			value: this.reportTitle,
-			title: this.reportTitle
+			title: this.reportTitle,
+			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
 		// TODO: get time from configuration
 		const timePeriod = view.modelBuilder.text().withProps({
 			value: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
-			title: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM'
+			title: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
+			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
-		this.configureButton = view.modelBuilder.button().withProps({
+		const configureButton = view.modelBuilder.button().withProps({
 			label: constants.configure,
 			title: constants.configure,
 			iconPath: {
@@ -74,14 +76,14 @@ export abstract class BaseQueryStoreReport {
 		}).component();
 
 		// TODO: enable after the configuration dialog is implemented
-		this.configureButton.enabled = false;
+		configureButton.enabled = false;
 
-		this.configureButton.onDidClick(() => {
+		configureButton.onDidClick(() => {
 			// TODO: implement configuration dialog
 			console.error('configuration dialog not implemented')
 		});
 
-		await this.configureButton.updateCssStyles({ 'margin-top': '15px' });
+		await configureButton.updateCssStyles({ 'margin-top': '5px' });
 
 		toolBar.addToolbarItems([
 			{
@@ -93,7 +95,7 @@ export abstract class BaseQueryStoreReport {
 				toolbarSeparatorAfter: true
 			},
 			{
-				component: this.configureButton
+				component: configureButton
 			}
 		]);
 

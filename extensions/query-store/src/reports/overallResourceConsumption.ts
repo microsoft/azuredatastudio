@@ -7,12 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
-import { createOneComponentFlexContainer, createTwoComponentHorizontalFlexContainer } from '../common/utils';
+import { createOneComponentFlexContainer, createTwoComponentFlexContainer } from '../common/utils';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
 	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), extensionContext);
+		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), false, extensionContext);
 	}
 
 	public override async open(): Promise<void> {
@@ -20,32 +20,32 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 	}
 
 	public override async createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		const leftComponent = view.modelBuilder.text().withProps({
-			value: 'topLeft'
+		const durationComponent = view.modelBuilder.text().withProps({
+			value: 'Duration'
 		}).component();
-		const leftContainer = await createOneComponentFlexContainer(view, leftComponent, 'chartreuse');
+		const leftContainer = await createOneComponentFlexContainer(view, durationComponent, 'chartreuse');
 
-		const rightComponent = view.modelBuilder.text().withProps({
-			value: 'topRight'
+		const executionCountComponent = view.modelBuilder.text().withProps({
+			value: 'Execution Count'
 		}).component();
 
-		const rightContainer = await createOneComponentFlexContainer(view, rightComponent, 'coral');
+		const rightContainer = await createOneComponentFlexContainer(view, executionCountComponent, 'coral');
 
-		return createTwoComponentHorizontalFlexContainer(view, leftContainer, rightContainer);
+		return createTwoComponentFlexContainer(view, leftContainer, rightContainer, 'row');
 	}
 
 	public override async createBottomSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		const leftComponent = view.modelBuilder.text().withProps({
-			value: 'bottomLeft'
+		const cpuTimeComponent = view.modelBuilder.text().withProps({
+			value: 'CPU Time'
 		}).component();
-		const leftContainer = await createOneComponentFlexContainer(view, leftComponent, 'darkturquoise');
+		const leftContainer = await createOneComponentFlexContainer(view, cpuTimeComponent, 'darkturquoise');
 
-		const rightComponent = view.modelBuilder.text().withProps({
-			value: 'bottomRight'
+		const logicalReadsComponent = view.modelBuilder.text().withProps({
+			value: 'Logical Reads'
 		}).component();
 
-		const rightContainer = await createOneComponentFlexContainer(view, rightComponent, 'forestgreen');
+		const rightContainer = await createOneComponentFlexContainer(view, logicalReadsComponent, 'forestgreen');
 
-		return createTwoComponentHorizontalFlexContainer(view, leftContainer, rightContainer);
+		return createTwoComponentFlexContainer(view, leftContainer, rightContainer, 'row');
 	}
 }

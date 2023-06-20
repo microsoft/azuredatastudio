@@ -5,9 +5,7 @@
 
 import * as nls from 'vscode-nls';
 
-
 const localize = nls.loadMessageBundle();
-
 
 export const overallResourceConsumption = localize('overallResourceConsumption', "Overall Resource Consumption");
 export function overallResourceConsumptionToolbarLabel(databaseName: string): string { return localize('overallResourceConsumptionToolbarLabel', 'Overall resource consumption for database {0}', databaseName); }
