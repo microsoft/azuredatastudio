@@ -271,7 +271,7 @@ suite('KeybindingResolver', () => {
 		test('contextIsEntirelyIncluded', () => {
 			const toContextKeyExpression = (expr: ContextKeyExpression | string | null) => {
 				if (typeof expr === 'string' || !expr) {
-				return ContextKeyExpr.deserialize(expr as string); // {{SQL CARBON EDIT}} strict-null compilation
+					return ContextKeyExpr.deserialize(expr as string); // {{SQL CARBON EDIT}} strict-null compilation
 				}
 				return expr;
 			};

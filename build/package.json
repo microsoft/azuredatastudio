@@ -43,7 +43,7 @@
     "@types/tmp": "^0.2.1",
     "@types/underscore": "^1.8.9",
     "@types/xml2js": "0.4.11",
-    "@typescript-eslint/experimental-utils": "^5.10.0",
+    "@typescript-eslint/experimental-utils": "^5.57.0",
     "@vscode/iconv-lite-umd": "0.7.0",
     "@vscode/vsce": "^2.16.0",
     "applicationinsights": "1.0.8",

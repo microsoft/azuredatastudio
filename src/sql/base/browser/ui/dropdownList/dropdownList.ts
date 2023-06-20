@@ -183,8 +183,7 @@ export class DropdownList extends BaseDropdown {
 		this.borderColor = styles.borderColor;
 		this.applyStyles();
 		if (this.button) {
-			// {{SQL CARBON TODO}} - style button
-			//this.button.style(styles);
+			this.button.style(styles);
 		}
 	}
 

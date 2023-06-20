@@ -253,7 +253,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	isModified(): boolean {
 		return this.isDirty();
 	}
-	
+
 	public setDirty(dirty: boolean): void {   // {{SQL CARBON EDIT}} - make method public
 		if (this.dirty === dirty) {
 			return;

@@ -67,7 +67,7 @@ export class MainThreadMessageService implements MainThreadMessageServiceShape {
 
 			const secondaryActions: IAction[] = [];
 			if (options.source) {
-			
+
 				// {{SQL CARBON EDIT}}} - Do not expose 'manage extension' action for built-in extensions to avoid the users from disabling them by mistake.
 				const extension = this._extensionService?.local.find(e => e.identifier.id.toUpperCase() === options.source.identifier.value.toUpperCase());
 				if (extension && !extension.isBuiltin) {

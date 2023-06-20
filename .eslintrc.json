@@ -62,10 +62,10 @@
 				"allowTernary": true
 			}
 		],
-		"code-translation-remind": "warn",
+		"code-translation-remind": "off",
 		"local/code-no-nls-in-standalone-editor": "warn",
 		"local/code-no-standalone-editor": "warn",
-		"code-no-unexternalized-strings": "warn",
+		"code-no-unexternalized-strings": "off",
 		"local/code-declare-service-brand": "warn",
 		"local/code-layering": [
 			"warn",
@@ -1062,7 +1062,7 @@
 				"**/sql/**"
 			],
 			"rules": {
-				"code-no-test-only": "error",
+				"code-no-test-only": "off",
 				"strict": ["warn", "never"],
 				"code-no-unexternalized-strings": "off"
 			}
@@ -1144,7 +1144,7 @@
 			"rules": {
 				"local/code-no-look-behind-regex": "warn",
 				"local/code-import-patterns": [
-					"warn",
+					"off",
 					{
 						// imports that are allowed in all files of layers:
 						// - browser

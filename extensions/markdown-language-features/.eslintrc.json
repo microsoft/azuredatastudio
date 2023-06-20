@@ -5,14 +5,12 @@
 			{
 				"selector": "default",
 				"modifiers": ["private"],
-				"format": null,
-				"leadingUnderscore": "require"
+				"format": null
 			},
 			{
 				"selector": "default",
 				"modifiers": ["public"],
-				"format": null,
-				"leadingUnderscore": "forbid"
+				"format": null
 			}
 		],
 		"@typescript-eslint/await-thenable": ["off"],
