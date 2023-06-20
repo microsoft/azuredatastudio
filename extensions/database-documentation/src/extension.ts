@@ -57,7 +57,10 @@ export async  function activate(context: vscode.ExtensionContext) {
         const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: md })
         const editor = await vscode.window.showTextDocument(document);
 
-        
+        const previewUri = vscode.Uri.file(vscode.window.activeTextEditor.document.fileName);
+        await vscode.commands.executeCommand('markdown.showPreviewToSide', previewUri);
+
+        const markdownSave = document.getText();
 
     }));
 

@@ -10,8 +10,14 @@ import * as mssql from 'mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as constants from './constants';
 
+// Language localization features
+import * as nls from 'vscode-nls';
+
+
 // The module 'openai' contains the OpenAI API
 import { Configuration, OpenAIApi } from "openai";
+
+const localize = nls.loadMessageBundle();
 
 // Try to load the azdata API - but gracefully handle the failure in case we're running
 // in a context where the API doesn't exist (such as VS Code)
@@ -68,10 +74,10 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 	let documentation = ``;
 	for (let i = 0; i < tables.length; i++) {
 		const tableAttributes = await tableToText(connection, databaseName, tables[i]);
-		const result = getMermaidDiagramForTable(tables[i], tableAttributes);
-		diagram += result[0] + `\n`;
+		const tableResult = getMermaidDiagramForTable(tables[i], tableAttributes);
+		diagram += tableResult[0] + `\n`;
 		if (context.nodeInfo.nodeType !== 'Table') {
-			references += result[1];
+			references += tableResult[1];
 		}
 		documentation += await getDocumentationText(tables[i], tableAttributes);
 	}
@@ -133,7 +139,7 @@ export function getMermaidDiagramForTable(tableName: string, tableAttributes: [s
 	return [diagram, references];
 }
 
-export async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<String> {
+export async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<string> {
 	let key = vscode.workspace.getConfiguration("openAI").get<string>("apiKey");
 
 	vscode.window.showInformationMessage("Starting API query")
@@ -148,24 +154,24 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 
 	const columnNames = tableAttributes.map(row => row[0]);
 
-	const overviewPrompt =
+	const overviewPrompt = localize("database-documentation.overviewPrompt",
 		`One sentence overview of this table, based on table name. Max 25 words.  \n
 	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces instead.  \n
-	Table: ${tableName} Columns: ` + JSON.stringify(columnNames);
+	Table: ${tableName} Columns: `) + JSON.stringify(columnNames);
 
-	const fieldsPrompt =
+	const fieldsPrompt = localize("database-documentation.fieldsPrompt",
 		`Give an description for each field below. If the datatype has a preceding +, the field is the primary key.  \n
 	Do not include the + in the datatype description. Include two spaces at the end of each description for  \n
 	formatting purposes.  \n
 	Format your answer exactly like so:  \n
 	\t•\t<Field Name>: <Field Description, min 20 words>  \t•\t<Field Name>: <Field Description, min 20 words>
 	\nFor the bullet point, use \u2022  \n
-	Fields: Name, datatype, Table it references  \n` + JSON.stringify(tableAttributes);
+	Fields: Name, datatype, Table it references  \n`) + JSON.stringify(tableAttributes);
 
-	const relationshipsPrompt =
+	const relationshipsPrompt = localize("database-documentation.relationshipPrompt",
 		`Given the above ${tableName} table, write a detailed description of the relationship it has with other tables,
 	ie. which tables it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.
-	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces followed by \u000D instead.`
+	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces followed by \u000D instead.`)
 
 	try {
 
@@ -202,7 +208,7 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 
 		let relationshipsResult = relationshipsResponse.data.choices[0].message.content;
 
-		return `### ${tableName}  \n**Overview**  \n${overviewResult}  \n\n**Fields**  \n${fieldsResult}  \n\n**Relationships**  \n${relationshipsResult}`;
+		return localize("database-documentation.generatedDocumentation", `### ${tableName}  \n**Overview**  \n${overviewResult}  \n\n**Fields**  \n${fieldsResult}  \n\n**Relationships**  \n${relationshipsResult}`);;
 	}
 	catch (error) {
 		vscode.window.showInformationMessage("Error:" + error.message);

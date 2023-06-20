@@ -75,6 +75,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.4",
+		"@types/markdown-it": "^12.2.3",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "^13.11.0",
 		"@typescript-eslint/eslint-plugin": "^2.30.0",
@@ -93,6 +94,7 @@
 		"azdata": "^1.0.0",
 		"openai": "^3.2.1",
 		"vscode-nls": "^4.0.0",
-		"vscode-languageclient": "5.2.1"
+		"vscode-languageclient": "5.2.1",
+		"markdown-it-container": "^3.0.0"
 	}
 }
