@@ -5,13 +5,14 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { QueryStoreReport } from './common/queryStoreReport';
-import { createOneComponentFlexContainer, createTwoComponentHorizontalFlexContainer } from './common/utils';
+import * as constants from '../common/constants';
+import { BaseQueryStoreReport } from './baseQueryStoreReport';
+import { createOneComponentFlexContainer, createTwoComponentHorizontalFlexContainer } from '../common/utils';
 
 
-export class TopResourceConsumingQueries extends QueryStoreReport {
-	constructor(extensionContext: vscode.ExtensionContext) {
-		super('Top Resource Consuming Queries', 'Top 25 resource consumers for database WideWorldImporters', extensionContext);
+export class TopResourceConsumingQueries extends BaseQueryStoreReport {
+	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
+		super(constants.topResourceConsumingQueries, constants.topResourceConsumingQueriesToolbarLabel(databaseName), extensionContext);
 	}
 
 	public override async open(): Promise<void> {
@@ -19,6 +20,7 @@ export class TopResourceConsumingQueries extends QueryStoreReport {
 	}
 
 	public override async createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+		// TODO: replace these text components with the actual chart components
 		const leftComponent = view.modelBuilder.text().withProps({
 			value: 'left'
 		}).component();

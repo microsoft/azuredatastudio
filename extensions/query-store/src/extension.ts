@@ -8,8 +8,9 @@ import { TopResourceConsumingQueries } from './reports/topResourceConsumingQueri
 import { OverallResourceConsumption } from './reports/overallResourceConsumption';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.topResourceConsumingQueriesOpen', async () => { await new TopResourceConsumingQueries(context).open() }));
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.overallResourceConsumptionOpen', async () => { await new OverallResourceConsumption(context).open() }));
+	// TODO: get db name
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.topResourceConsumingQueriesOpen', async () => { await new TopResourceConsumingQueries(context, 'WideWorldImporters').open() }));
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.overallResourceConsumptionOpen', async () => { await new OverallResourceConsumption(context, 'WideWorldImporters').open() }));
 }
 
 export function deactivate(): void {

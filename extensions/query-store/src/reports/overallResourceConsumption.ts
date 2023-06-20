@@ -5,13 +5,14 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { QueryStoreReport } from './common/queryStoreReport';
-import { createOneComponentFlexContainer, createTwoComponentHorizontalFlexContainer } from './common/utils';
+import * as constants from '../common/constants';
+import { BaseQueryStoreReport } from './baseQueryStoreReport';
+import { createOneComponentFlexContainer, createTwoComponentHorizontalFlexContainer } from '../common/utils';
 
 
-export class OverallResourceConsumption extends QueryStoreReport {
-	constructor(extensionContext: vscode.ExtensionContext) {
-		super('Overall Resource Consumption', 'Overall resource consumption for database WideWorldImporters', extensionContext);
+export class OverallResourceConsumption extends BaseQueryStoreReport {
+	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
+		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), extensionContext);
 	}
 
 	public override async open(): Promise<void> {

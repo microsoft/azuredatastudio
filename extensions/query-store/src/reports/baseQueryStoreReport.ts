@@ -6,8 +6,10 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
+import * as utils from '../common/utils';
+import * as constants from '../common/constants';
 
-export abstract class QueryStoreReport {
+export abstract class BaseQueryStoreReport {
 	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
 	protected topFlexModel?: azdata.FlexContainer;
@@ -28,15 +30,7 @@ export abstract class QueryStoreReport {
 			await toolbar.updateCssStyles({ 'padding': '0px' });
 			this.flexModel.addItem(toolbar, { flex: 'none' });
 
-			this.verticalSplitView = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().component();
-
-			this.verticalSplitView.addItem(await this.createTopSection(view));
-			this.verticalSplitView.addItem(await this.createBottomSection(view));
-
-			this.verticalSplitView.setLayout({
-				orientation: 'vertical',
-				splitViewHeight: 800
-			});
+			this.verticalSplitView = utils.createVerticalSplitView(view, await this.createTopSection(view), await this.createBottomSection(view), 800);
 
 			this.flexModel.addItem(this.verticalSplitView);
 
@@ -51,12 +45,28 @@ export abstract class QueryStoreReport {
 		await this.editor.openEditor();
 	}
 
+	/**
+	 * Creates the toolbar for the overall report with the report title, time range, and configure button
+	 * @param view
+	 * @returns
+	 */
 	protected async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarBuilder> {
 		const toolBar = <azdata.ToolbarBuilder>view.modelBuilder.toolbarContainer();
 
+		const reportTitle = view.modelBuilder.text().withProps({
+			value: this.reportTitle,
+			title: this.reportTitle
+		}).component();
+
+		// TODO: get time from configuration
+		const timePeriod = view.modelBuilder.text().withProps({
+			value: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
+			title: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM'
+		}).component();
+
 		this.configureButton = view.modelBuilder.button().withProps({
-			label: 'Configure',
-			title: 'Configure',
+			label: constants.configure,
+			title: constants.configure,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'images', 'light', 'gear.svg'),
 				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
@@ -72,18 +82,6 @@ export abstract class QueryStoreReport {
 		});
 
 		await this.configureButton.updateCssStyles({ 'margin-top': '15px' });
-
-		const reportTitle = view.modelBuilder.text().withProps({
-			value: this.reportTitle,
-			title: this.reportTitle
-		}).component();
-
-		// TODO: get time from configuration
-		const timePeriod = view.modelBuilder.text().withProps({
-			value: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
-			title: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM'
-		}).component();
-
 
 		toolBar.addToolbarItems([
 			{
@@ -102,12 +100,8 @@ export abstract class QueryStoreReport {
 		return toolBar;
 	}
 
-	protected createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		throw new Error('inheriting class should implement this');
-	}
+	protected abstract createTopSection(_view: azdata.ModelView): Promise<azdata.FlexContainer>;
 
-	protected createBottomSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		throw new Error('inheriting class should implement this');
-	}
+	protected abstract createBottomSection(_view: azdata.ModelView): Promise<azdata.FlexContainer>;
 }
 
