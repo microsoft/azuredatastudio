@@ -29,7 +29,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private numberOfUsersInput: azdata.InputBoxComponent;
 	private memoryAllocatedInput: azdata.InputBoxComponent;
 	private memoryUsedInput: azdata.InputBoxComponent;
-	private maintenanceSection: azdata.GroupContainer;
 	private collationInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -53,16 +52,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
-			this.initializeMaintenanceSection();
 
 			// Initilaize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
 				id: 'generalId',
 				content: this.createGroup('', [
-					this.backupSection,
 					this.databaseSection,
-					this.maintenanceSection
+					this.backupSection
 				], false)
 			};
 
@@ -149,7 +146,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.backupSection = this.createGroup(localizedConstants.BackupSectionHeader, [
 			lastDatabaseBackupContainer,
 			lastDatabaseLogBackupContainer
-		], false);
+		], true);
 	}
 
 	private initializeDatabaseSection(): void {
@@ -180,24 +177,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.memoryUsedInput = this.createInputBox(localizedConstants.MemoryUsedText, async () => { }, convertNumToTwoDecimalStringinMB(this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb), this.options.isNewObject);
 		const memoryUsedContainer = this.createLabelInputContainer(localizedConstants.MemoryUsedText, this.memoryUsedInput);
 
+		this.collationInput = this.createInputBox(localizedConstants.CollationText, async () => { }, this.objectInfo.collationName, this.options.isNewObject);
+		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, this.collationInput);
+
 		this.databaseSection = this.createGroup(localizedConstants.DatabaseSectionHeader, [
 			nameContainer,
 			statusContainer,
 			ownerContainer,
+			collationContainer,
 			dateCreatedContainer,
 			sizeContainer,
 			spaceAvailabeContainer,
 			numberOfUsersContainer,
 			memoryAllocatedContainer,
 			memoryUsedContainer
-		], false);
-	}
-
-	private initializeMaintenanceSection(): void {
-		this.collationInput = this.createInputBox(localizedConstants.CollationText, async () => { }, this.objectInfo.collationName, this.options.isNewObject);
-		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, this.collationInput);
-
-		this.maintenanceSection = this.createGroup(localizedConstants.MaintenanceSectionHeader, [collationContainer], false);
+		], true);
 	}
 	//#endregion
 
