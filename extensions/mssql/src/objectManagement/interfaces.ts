@@ -443,6 +443,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels: string[];
 	containmentTypes: string[];
 	recoveryModels: string[];
+	files: DatabaseFile[];
 
 	isAzureDB: boolean;
 	azureBackupRedundancyLevels: string[];
@@ -454,4 +455,11 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	details: string[];
+}
+
+export interface DatabaseFile {
+	name: string;
+	type: string;
+	path: string;
+	fileGroup: string;
 }

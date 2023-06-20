@@ -185,7 +185,12 @@ export const AzurePricingLinkText = localize('objectManagement.azurePricingLink'
 export const DetachDatabaseDialogTitle = (dbName: string) => localize('objectManagement.detachDatabaseDialogTitle', "Detach Database - {0} (Preview)", dbName);
 export const DetachDropConnections = localize('objectManagement.detachDropConnections', "Drop connnections");
 export const DetachUpdateStatistics = localize('objectManagement.detachUpdateStatistics', "Update statistics");
-
+export const DatabaseFilesLabel = localize('objectManagement.databaseFiles', "Database Files");
+export const DatabaseFileNameLabel = localize('objectManagement.databaseFileName', "Name");
+export const DatabaseFileTypeLabel = localize('objectManagement.databaseFileType', "Type");
+export const DatabaseFilePathLabel = localize('objectManagement.databaseFilePath', "Path");
+export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGroup', "File Group");
+export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

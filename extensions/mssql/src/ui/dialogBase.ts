@@ -231,7 +231,8 @@ export abstract class DialogBase<DialogResult> {
 				data: data,
 				columns: columns,
 				width: DefaultTableWidth,
-				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount),
+				forceFitColumns: azdata.ColumnSizingMode.ForceFit
 			}
 		).component();
 		return table;

@@ -7,7 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DetachDatabaseDocUrl } from '../constants';
-import { DetachDatabaseDialogTitle, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
+import { DatabaseFileGroupLabel, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DetachDatabaseDialogTitle, DetachDatabaseOptions, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections = false;
@@ -22,13 +22,20 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected async initializeUI(): Promise<void> {
+		let tableData = this.viewInfo.files.map(file => [file.name, file.type, file.fileGroup, file.path]);
+		let columnNames = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
+		let fileTable = this.createTable(DatabaseFilesLabel, columnNames, tableData);
+		let tableGroup = this.createGroup(DatabaseFilesLabel, [fileTable], false);
+
 		let connCheckbox = this.createCheckbox(DetachDropConnections, async checked => {
 			this._dropConnections = checked;
 		});
 		let updateCheckbox = this.createCheckbox(DetachUpdateStatistics, async checked => {
 			this._updateStatistics = checked;
 		});
-		let components = [connCheckbox, updateCheckbox];
+		let checkboxGroup = this.createGroup(DetachDatabaseOptions, [connCheckbox, updateCheckbox], false);
+
+		let components = [tableGroup, checkboxGroup];
 		this.formContainer.addItems(components);
 	}
 
