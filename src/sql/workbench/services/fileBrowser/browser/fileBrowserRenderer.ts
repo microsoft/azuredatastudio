@@ -10,7 +10,6 @@ import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ResourceLabels, DEFAULT_LABELS_CONTAINER } from 'vs/workbench/browser/labels';
-// eslint-disable-next-line code-import-patterns
 import { IFileTemplateData } from 'vs/workbench/contrib/files/browser/views/explorerViewer';
 
 /**
