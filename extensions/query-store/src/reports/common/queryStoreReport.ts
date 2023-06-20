@@ -30,8 +30,8 @@ export abstract class QueryStoreReport {
 
 			this.verticalSplitView = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().component();
 
-			this.verticalSplitView.addItem(await this.createTopFlexContainer(view));
-			this.verticalSplitView.addItem(await this.createBottomFlexContainer(view));
+			this.verticalSplitView.addItem(await this.createTopSection(view));
+			this.verticalSplitView.addItem(await this.createBottomSection(view));
 
 			this.verticalSplitView.setLayout({
 				orientation: 'vertical',
@@ -73,23 +73,25 @@ export abstract class QueryStoreReport {
 
 		await this.configureButton.updateCssStyles({ 'margin-top': '15px' });
 
-		const label = view.modelBuilder.text().withProps({
+		const reportTitle = view.modelBuilder.text().withProps({
 			value: this.reportTitle,
 			title: this.reportTitle
 		}).component();
 
-		const timePeriodLabel = view.modelBuilder.text().withProps({
+		// TODO: get time from configuration
+		const timePeriod = view.modelBuilder.text().withProps({
 			value: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
 			title: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM'
 		}).component();
 
+
 		toolBar.addToolbarItems([
 			{
-				component: label,
+				component: reportTitle,
 				toolbarSeparatorAfter: true
 			},
 			{
-				component: timePeriodLabel,
+				component: timePeriod,
 				toolbarSeparatorAfter: true
 			},
 			{
@@ -100,71 +102,12 @@ export abstract class QueryStoreReport {
 		return toolBar;
 	}
 
-	protected async createTopFlexContainer(view: azdata.ModelView): Promise<azdata.Component> {
-		const topFlexContainer = view.modelBuilder.flexContainer().component();
-
-		const leftText = view.modelBuilder.text().withProps({
-			value: 'left'
-		}).component();
-
-		const leftContainer = view.modelBuilder.flexContainer().component();
-		leftContainer.addItem(leftText);
-		leftContainer.setLayout({
-			width: '100%',
-			height: '100%'
-		});
-		await leftContainer.updateCssStyles({ 'background-color': 'chartreuse' });
-
-		const rightText = view.modelBuilder.text().withProps({
-			value: 'right'
-		}).component();
-
-		const rightContainer = view.modelBuilder.flexContainer().component();
-		rightContainer.addItem(rightText);
-		rightContainer.setLayout({
-			width: '100%',
-			height: '100%'
-		});
-		await rightContainer.updateCssStyles({ 'background-color': 'coral' });
-
-		// TODO: figure out why the horizontal spliview isn't working
-		// const horizontalSplitView = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().withLayout({
-		// 	orientation: 'horizontal',
-		// 	splitViewHeight: 200
-		// }).component();
-		// horizontalSplitView.addItem(leftContainer);
-		// horizontalSplitView.addItem(rightContainer);
-		// topFlexContainer.addItem(horizontalSplitView);
-
-		topFlexContainer.addItems([leftContainer, rightContainer]);
-
-		topFlexContainer.setLayout({
-			flexFlow: 'row',
-			width: '100%',
-			height: '100%'
-		});
-
-		return topFlexContainer;
+	protected createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+		throw new Error('inheriting class should implement this');
 	}
 
-	protected async createBottomFlexContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		const bottomFlexBuilder = view.modelBuilder.flexContainer().component();
-
-		await bottomFlexBuilder.updateCssStyles({ 'background-color': 'darkturquoise' });
-
-		let bottomText = view.modelBuilder.text().withProps({
-			value: 'bottom'
-		}).component();
-
-		bottomFlexBuilder.addItem(bottomText);
-
-		bottomFlexBuilder.setLayout({
-			flexFlow: 'row',
-			width: '100%',
-			height: '50%'
-		});
-
-		return bottomFlexBuilder;
+	protected createBottomSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+		throw new Error('inheriting class should implement this');
 	}
 }
 

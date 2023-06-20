@@ -4,10 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { RegressedQueries } from './reports/regressedQueries';
+import { TopResourceConsumingQueries } from './reports/topResourceConsumingQueries';
+import { OverallResourceConsumption } from './reports/overallResourceConsumption';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	context.subscriptions.push(vscode.commands.registerCommand('queryStore.regressedQueriesOpen', async () => { await new RegressedQueries(context).open() }));
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.topResourceConsumingQueriesOpen', async () => { await new TopResourceConsumingQueries(context).open() }));
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.overallResourceConsumptionOpen', async () => { await new OverallResourceConsumption(context).open() }));
 }
 
 export function deactivate(): void {
