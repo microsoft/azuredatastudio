@@ -1870,10 +1870,8 @@ declare module 'azdata' {
 		GreaterThanOrEquals = 5,
 		Between = 6,
 		NotBetween = 7,
-		Contains = 8,
-		NotContains = 9,
-		IsNull = 10,
-		IsNotNull = 11
+		Like = 8,
+		NotLike = 9,
 	}
 
 	export namespace window {
