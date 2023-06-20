@@ -56,8 +56,12 @@ const GREATER_THAN_SELECT_BOX = localize('objectExplorer.greaterThanSelectBox', 
 const GREATER_THAN_OR_EQUALS_SELECT_BOX = localize('objectExplorer.greaterThanOrEqualsSelectBox', "Greater Than Or Equals");
 const BETWEEN_SELECT_BOX = localize('objectExplorer.betweenSelectBox', "Between");
 const NOT_BETWEEN_SELECT_BOX = localize('objectExplorer.notBetweenSelectBox', "Not Between");
-const LIKE_SELECT_BOX = localize('objectExplorer.likeSelectBox', "Like");
-const NOT_LIKE_SELECT_BOX = localize('objectExplorer.notLikeSelectBox', "Not Like");
+const CONTAINS_SELECT_BOX = localize('objectExplorer.containsSelectBox', "Contains");
+const NOT_CONTAINS_SELECT_BOX = localize('objectExplorer.notContainsSelectBox', "Not Contains");
+const STARTS_WITH_SELECT_BOX = localize('objectExplorer.startsWithSelectBox', "Starts With");
+const NOT_STARTS_WITH_SELECT_BOX = localize('objectExplorer.notStartsWithSelectBox', "Not Starts With");
+const ENDS_WITH_SELECT_BOX = localize('objectExplorer.endsWithSelectBox', "Ends With");
+const NOT_ENDS_WITH_SELECT_BOX = localize('objectExplorer.notEndsWithSelectBox', "Not Ends With");
 const AND_SELECT_BOX = localize('objectExplorer.andSelectBox', "And");
 
 // strings for filter table column headers
@@ -562,8 +566,12 @@ export class FilterDialog extends Modal {
 		switch (type) {
 			case NodeFilterPropertyDataType.String:
 				return [
-					LIKE_SELECT_BOX,
-					NOT_LIKE_SELECT_BOX,
+					CONTAINS_SELECT_BOX,
+					NOT_CONTAINS_SELECT_BOX,
+					STARTS_WITH_SELECT_BOX,
+					NOT_STARTS_WITH_SELECT_BOX,
+					ENDS_WITH_SELECT_BOX,
+					NOT_ENDS_WITH_SELECT_BOX,
 					EQUALS_SELECT_BOX,
 					NOT_EQUALS_SELECT_BOX
 				];
@@ -604,10 +612,18 @@ export class FilterDialog extends Modal {
 
 	private getFilterOperatorString(operator: NodeFilterOperator): string {
 		switch (operator) {
-			case NodeFilterOperator.Like:
-				return LIKE_SELECT_BOX;
-			case NodeFilterOperator.NotLike:
-				return NOT_LIKE_SELECT_BOX;
+			case NodeFilterOperator.Contains:
+				return CONTAINS_SELECT_BOX;
+			case NodeFilterOperator.NotContains:
+				return NOT_CONTAINS_SELECT_BOX;
+			case NodeFilterOperator.StartsWith:
+				return STARTS_WITH_SELECT_BOX;
+			case NodeFilterOperator.NotStartsWith:
+				return NOT_STARTS_WITH_SELECT_BOX;
+			case NodeFilterOperator.EndsWith:
+				return ENDS_WITH_SELECT_BOX;
+			case NodeFilterOperator.NotEndsWith:
+				return NOT_ENDS_WITH_SELECT_BOX;
 			case NodeFilterOperator.Equals:
 				return EQUALS_SELECT_BOX;
 			case NodeFilterOperator.NotEquals:
@@ -631,10 +647,18 @@ export class FilterDialog extends Modal {
 
 	private getFilterOperatorEnum(operator: string): NodeFilterOperator {
 		switch (operator) {
-			case LIKE_SELECT_BOX:
-				return NodeFilterOperator.Like;
-			case NOT_LIKE_SELECT_BOX:
-				return NodeFilterOperator.NotLike;
+			case CONTAINS_SELECT_BOX:
+				return NodeFilterOperator.Contains;
+			case NOT_CONTAINS_SELECT_BOX:
+				return NodeFilterOperator.NotContains;
+			case STARTS_WITH_SELECT_BOX:
+				return NodeFilterOperator.StartsWith;
+			case NOT_STARTS_WITH_SELECT_BOX:
+				return NodeFilterOperator.NotStartsWith;
+			case ENDS_WITH_SELECT_BOX:
+				return NodeFilterOperator.EndsWith;
+			case NOT_ENDS_WITH_SELECT_BOX:
+				return NodeFilterOperator.NotEndsWith;
 			case EQUALS_SELECT_BOX:
 				return NodeFilterOperator.Equals;
 			case NOT_EQUALS_SELECT_BOX:
