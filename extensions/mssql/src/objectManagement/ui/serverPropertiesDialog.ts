@@ -11,11 +11,17 @@ import { Server, ServerViewInfo } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
-	private generalSection: azdata.GroupContainer;
+	private platformSection: azdata.GroupContainer;
+	private sqlServerSection: azdata.GroupContainer;
 	private nameInput: azdata.InputBoxComponent;
 	private languageDropdown: azdata.DropDownComponent;
 	private memoryInput: azdata.InputBoxComponent;
 	private operatingSystemInput: azdata.InputBoxComponent;
+	private platformInput: azdata.InputBoxComponent;
+	private processorsInput: azdata.InputBoxComponent;
+	private isClusteredInput: azdata.InputBoxComponent;
+	private isHadrEnabledInput: azdata.InputBoxComponent;
+	private isPolyBaseInstalledInput: azdata.InputBoxComponent;
 
 	private memoryTab: azdata.Tab;
 	private memorySection: azdata.GroupContainer;
@@ -47,31 +53,56 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, undefined, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
 		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
 
-		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memoryInMb.toString(), this.options.isNewObject, 'number');
+		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memoryInMB.toString(), this.options.isNewObject, 'number');
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 
 		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, undefined, this.objectInfo.operatingSystem, this.options.isNewObject);
 		const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
 
-		this.generalSection = this.createGroup('', [
+		this.platformInput = this.createInputBox(localizedConstants.PlatformText, undefined, this.objectInfo.processors, this.options.isNewObject);
+		const platformContainer = this.createLabelInputContainer(localizedConstants.PlatformText, this.platformInput);
+
+		this.processorsInput = this.createInputBox(localizedConstants.ProcessorsText, undefined, this.objectInfo.processors, this.options.isNewObject);
+		const processorsContainer = this.createLabelInputContainer(localizedConstants.ProcessorsText, this.processorsInput);
+
+		this.isClusteredInput = this.createInputBox(localizedConstants.IsClusteredText, undefined, this.objectInfo.isClustered.toString(), this.options.isNewObject);
+		const isClusteredContainer = this.createLabelInputContainer(localizedConstants.IsClusteredText, this.isClusteredInput);
+
+		this.isHadrEnabledInput = this.createInputBox(localizedConstants.IsHadrEnabledText, undefined, this.objectInfo.isHadrEnabled.toString(), this.options.isNewObject);
+		const isHadrEnabledContainer = this.createLabelInputContainer(localizedConstants.IsHadrEnabledText, this.isHadrEnabledInput);
+
+		this.isPolyBaseInstalledInput = this.createInputBox(localizedConstants.IsPolyBaseInstalledText, undefined, this.objectInfo.isPolyBaseInstalled.toString(), this.options.isNewObject);
+		const isPolyBaseInstalledContainer = this.createLabelInputContainer(localizedConstants.IsPolyBaseInstalledText, this.isPolyBaseInstalledInput);
+
+		this.platformSection = this.createGroup('Platform', [
 			nameContainer,
 			languageContainer,
 			memoryContainer,
-			operatingSystemContainer
-		], false);
+			operatingSystemContainer,
+			platformContainer,
+			processorsContainer
+		], true);
 
-		this.generalTab = this.createTab('generalId', localizedConstants.GeneralSectionHeader, this.generalSection);
+		this.sqlServerSection = this.createGroup('SQL Server', [
+			isClusteredContainer,
+			isHadrEnabledContainer,
+			isPolyBaseInstalledContainer
+		], true);
+
+		const generalContainer = this.createGroup('', [this.platformSection, this.sqlServerSection])
+
+		this.generalTab = this.createTab('generalId', localizedConstants.GeneralSectionHeader, generalContainer);
 	}
 
 	private initializeMemorySection(): void {
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
-			this.objectInfo.minMemoryInMb = +newValue;
-		}, this.objectInfo.minMemoryInMb.toString(), true, 'number');
+			this.objectInfo.minServerMemory = +newValue;
+		}, this.objectInfo.minServerMemory.toString(), true, 'number');
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
-			this.objectInfo.maxMemoryInMb = +newValue;
-		}, this.objectInfo.maxMemoryInMb.toString(), true, 'number');
+			this.objectInfo.maxServerMemory = +newValue;
+		}, this.objectInfo.maxServerMemory.toString(), true, 'number');
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [

@@ -223,6 +223,11 @@ export const PropertiesHeader = localize('objectManagement.properties', "Propert
 export const LanguageText = localize('objectManagement.language', "Language");
 export const MemoryText = localize('objectManagement.memory', "Memory");
 export const OperatingSystemText = localize('objectManagement.operatingSystem', "Operating System");
+export const PlatformText = localize('objectManagement.platform', "Platform");
+export const ProcessorsText = localize('objectManagement.processors', "Processors");
+export const IsClusteredText = localize('objectManagement.isClustered', "Is Clustered");
+export const IsHadrEnabledText = localize('objectManagement.isHadrEnabled', "Is HADR Enabled");
+export const IsPolyBaseInstalledText = localize('objectManagement.isPolyBaseInstalled', "Is PolyBase Installed");
 
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");

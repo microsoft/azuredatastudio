@@ -442,13 +442,23 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 
 export interface Server extends ObjectManagement.SqlObject {
 	language: string;
-	memoryInMb: number;
+	memoryInMB: number;
 	operatingSystem: string;
 	platform: string;
 	processors: string;
 	version: string;
-	minMemoryInMb: number;
-	maxMemoryInMb: number;
+	isClustered: boolean;
+	isHadrEnabled: boolean;
+	isPolyBaseInstalled: boolean;
+	isXTPSupported: boolean;
+	product: string;
+	reservedStorageSizeMB: number;
+	rootDirectory: string;
+	serverCollation: string;
+	serviceTier: string;
+	storageSpaceUsageInGb: number;
+	minServerMemory: number;
+	maxServerMemory: number;
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
