@@ -81,7 +81,7 @@ export abstract class PrincipalDialogBase<ObjectInfoType extends SecurityPrincip
 			width: DefaultTableWidth
 		}).component();
 		this.disposables.push(this.permissionTable.onCellAction(async (arg: azdata.ICheckboxCellActionEventArgs) => {
-			const permissionName = this.permissionTable.data[arg.row][0];
+			const permissionName = this.permissionTable.data[arg.row][0] as string;
 			const securable = this.securablePermissions[this.securableTable.selectedRows[0]];
 			let permission: SecurablePermissionItem = securable.permissions.find(securablePermission => securablePermission.permission === permissionName);
 			if (!permission) {
