@@ -74,7 +74,12 @@ export class AutoOAuthDialogController {
 
 	private async handleOnAddAccount(): Promise<void> {
 		if (this._userCode && this._uri) {
-			return this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri);
+			if (!this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri)) {
+				const selfHelpMessage = localize('selfHelpMessage', "Browser cannot be launched in this environment, please launch browser and enter code manually in the URI above.");
+				// URI could not be opened, prompt user to open themselves
+				this._autoOAuthDialog.hideCopyButton();
+				this._autoOAuthDialog.updateSelfHelpMessage(selfHelpMessage);
+			}
 		} else {
 			throw new Error('Missing user code and uri');
 		}

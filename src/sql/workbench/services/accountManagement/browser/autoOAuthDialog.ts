@@ -30,6 +30,7 @@ export class AutoOAuthDialog extends Modal {
 	private _userCodeInputBox?: InputBox;
 	private _websiteInputBox?: InputBox;
 	private _descriptionElement?: HTMLElement;
+	private _selfHelpElement?: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onHandleAddAccount = new Emitter<void>();
@@ -38,6 +39,13 @@ export class AutoOAuthDialog extends Modal {
 	private _onCancel = new Emitter<void>();
 	public get onCancel(): Event<void> { return this._onCancel.event; }
 
+	public hideCopyButton(): void {
+		this._copyAndOpenButton.element.hidden = true;
+	}
+
+	public updateSelfHelpMessage(message: string): void {
+		this._selfHelpElement.innerText = message;
+	}
 
 	private _onCloseEvent = new Emitter<void>();
 	public get onCloseEvent(): Event<void> { return this._onCloseEvent.event; }
@@ -87,10 +95,10 @@ export class AutoOAuthDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = append(container, $('.auto-oauth-dialog'));
 		this._descriptionElement = append(body, $('.auto-oauth-description-section.new-section'));
-
 		const addAccountSection = append(body, $('.auto-oauth-info-section.new-section'));
 		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', "User code"));
 		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', "Website"));
+		this._selfHelpElement = append(body, $('.auto-oauth-selfhelp-section.new-section'));
 	}
 
 	private createInputBoxHelper(container: HTMLElement, label: string): InputBox {
