@@ -22,8 +22,7 @@ import {
 	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode,
-	IConnectionCompletionOptions,
-	IConnectableInput
+	IConnectionCompletionOptions
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
@@ -114,7 +113,7 @@ export abstract class QueryTaskbarAction extends Action {
 	}
 }
 
-export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initalContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
+export async function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initialContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const queryEditorService = accessor.get(IQueryEditorService);
 	const objectExplorerService = accessor.get(IObjectExplorerService);
@@ -122,20 +121,18 @@ export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionPr
 	if (!profile) {
 		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
 	}
-	return queryEditorService.newSqlEditor({ initalContent }, profile?.providerName).then((owner: IConnectableInput) => {
-		// Connect our editor to the input connection
-		let options: IConnectionCompletionOptions = {
-			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: owner },
-			saveTheConnection: false,
-			showDashboard: false,
-			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: true
-		};
-		if (profile) {
-			return connectionManagementService.connect(profile, owner.uri, options).then();
-		}
-		return undefined;
-	});
+	const editorInput = await queryEditorService.newSqlEditor({ initialContent: initialContent }, profile?.providerName);
+	// Connect our editor to the input connection
+	let options: IConnectionCompletionOptions = {
+		params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: editorInput },
+		saveTheConnection: false,
+		showDashboard: false,
+		showConnectionDialogOnError: true,
+		showFirewallRuleOnError: true
+	};
+	if (profile) {
+		await connectionManagementService.connect(profile, editorInput.uri, options);
+	}
 }
 
 // --- actions
@@ -211,63 +208,47 @@ export class RunQueryAction extends QueryTaskbarAction {
 	}
 
 	public override async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			const runQueryResult = await this.runQuery(this.editor);
-			if (!runQueryResult) {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
-			}
-		}
-		return;
+		await this.runQuery();
 	}
 
 	public async runCurrent(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			const runQueryResult = await this.runQuery(this.editor, true);
-			if (!runQueryResult) {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
-			}
-		}
-		return;
+		await this.runQuery(true);
 	}
 
-	private async runQuery(editor: QueryEditor, runCurrentStatement: boolean = false): Promise<boolean> {
-		if (!editor) {
-			editor = this.editor;
+	private async runQuery(runCurrentStatement: boolean = false): Promise<void> {
+		if (this.editor.isEditorEmpty()) {
+			return;
 		}
-
-		if (this.isConnected(editor)) {
+		if (this.isConnected(this.editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
 			this.commandService?.executeCommand('hideSuggestWidget');
 			// Do not execute when there are multiple selections in the editor until it can be properly handled.
 			// Otherwise only the first selection will be executed and cause unexpected issues.
-			if (editor.getSelections()?.length > 1) {
+			if (this.editor.getSelections()?.length > 1) {
 				this.notificationService.error(nls.localize('query.multiSelectionNotSupported', "Running query is not supported when the editor is in multiple selection mode."));
-				return true;
 			}
 
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let selection = editor.getSelection(false);
+			let selection = this.editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
-				editor.input.runQueryStatement(selection);
+				this.editor.input.runQueryStatement(selection);
 			} else {
-				if (editor.input.state.isActualExecutionPlanMode) {
-					selection = editor.getSelection();
-					editor.input.runQuery(selection, { displayActualQueryPlan: true });
+				if (this.editor.input.state.isActualExecutionPlanMode) {
+					selection = this.editor.getSelection();
+					this.editor.input.runQuery(selection, { displayActualQueryPlan: true });
 				}
 				else {
 					// get the selection again this time with trimming
-					selection = editor.getSelection();
-					editor.input.runQuery(selection);
+					selection = this.editor.getSelection();
+					this.editor.input.runQuery(selection);
 				}
 			}
-			return true;
+		} else {
+			// If we are not already connected, prompt for connection and run the query if the
+			// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
+			this.connectEditor(this.editor, runCurrentStatement ? RunQueryOnConnectionMode.executeCurrentQuery : RunQueryOnConnectionMode.executeQuery, this.editor.getSelection(!runCurrentStatement));
 		}
-		return false;
 	}
 
 	protected isCursorPosition(selection: IRange) {
@@ -323,7 +304,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	}
 
 	public override async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
+		if (!this.editor.isEditorEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -413,7 +394,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 	}
 
 	public override async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
+		if (!this.editor.isEditorEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -461,7 +442,7 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
-		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
+		// determine if we need to disconnect, cancel an in-progress connection, or do nothing
 		this.connectionManagementService.disconnectEditor(this.editor.input);
 		return;
 	}
@@ -627,13 +608,13 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
 
 		// set query options
-		let queryoptions: QueryExecutionOptions = { options: {} };
-		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
+		let queryOptions: QueryExecutionOptions = { options: {} };
+		queryOptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
 			this.logService.error('editor input was null');
 			return;
 		}
-		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
+		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryOptions);
 
 		// set intellisense options
 		toSqlCmdState ? this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL') : this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL');

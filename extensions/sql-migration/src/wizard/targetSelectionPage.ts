@@ -267,12 +267,12 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.migrationStateModel._resourceGroup = undefined!;
 			this.migrationStateModel._targetServerInstance = undefined!;
 
-			utils.clearDropDown(this._azureAccountsDropdown);
-			utils.clearDropDown(this._accountTenantDropdown);
-			utils.clearDropDown(this._azureSubscriptionDropdown);
-			utils.clearDropDown(this._azureLocationDropdown);
-			utils.clearDropDown(this._azureResourceGroupDropdown);
-			utils.clearDropDown(this._azureResourceDropdown);
+			await utils.clearDropDown(this._azureAccountsDropdown);
+			await utils.clearDropDown(this._accountTenantDropdown);
+			await utils.clearDropDown(this._azureSubscriptionDropdown);
+			await utils.clearDropDown(this._azureLocationDropdown);
+			await utils.clearDropDown(this._azureResourceGroupDropdown);
+			await utils.clearDropDown(this._azureResourceDropdown);
 		}
 
 		await this.populateAzureAccountsDropdown();
@@ -313,8 +313,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._azureAccount = (selectedAccount)
 						? utils.deepClone(selectedAccount)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._azureAccount = undefined!;
 				}
-				utils.clearDropDown(this._accountTenantDropdown);
+				await utils.clearDropDown(this._accountTenantDropdown);
 				await this.populateTenantsDropdown();
 			}));
 
@@ -366,8 +368,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._azureTenant = selectedTenant
 						? utils.deepClone(selectedTenant)
 						: undefined!;
+				} else {
+					this.migrationStateModel._azureTenant = undefined!;
 				}
-				utils.clearDropDown(this._azureSubscriptionDropdown);
+				await utils.clearDropDown(this._azureSubscriptionDropdown);
 				await this.populateSubscriptionDropdown();
 			}));
 
@@ -408,9 +412,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._targetSubscription = (selectedSubscription)
 						? utils.deepClone(selectedSubscription)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._targetSubscription = undefined!;
 				}
 				this.migrationStateModel.refreshDatabaseBackupPage = true;
-				utils.clearDropDown(this._azureLocationDropdown);
+				await utils.clearDropDown(this._azureLocationDropdown);
 				await this.populateLocationDropdown();
 			}));
 
@@ -439,9 +445,11 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._location = (selectedLocation)
 						? utils.deepClone(selectedLocation)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._location = undefined!;
 				}
 				this.migrationStateModel.refreshDatabaseBackupPage = true;
-				utils.clearDropDown(this._azureResourceGroupDropdown);
+				await utils.clearDropDown(this._azureResourceGroupDropdown);
 				await this.populateResourceGroupDropdown();
 			}));
 
@@ -667,8 +675,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._resourceGroup = (selectedResourceGroup)
 						? utils.deepClone(selectedResourceGroup)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._resourceGroup = undefined!;
 				}
-				utils.clearDropDown(this._azureResourceDropdown);
+				await utils.clearDropDown(this._azureResourceDropdown);
 				await this.populateResourceInstanceDropdown();
 			}));
 
@@ -775,6 +785,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					await this._validateFields();
 				} else {
 					this.migrationStateModel._targetServerInstance = undefined!;
+					this.migrationStateModel._vmInstanceView = undefined!;
+
 					if (isSqlDbTarget) {
 						this._targetUserNameInputBox.value = '';
 					}
