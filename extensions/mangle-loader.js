@@ -1,8 +1,7 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-// @ts-check
 
 const fs = require('fs');
 const webpack = require('webpack');
@@ -38,22 +37,4 @@ function getMangledFileContents(projectPath) {
  */
 module.exports = async function (source, sourceMap, meta) {
 	return source; // {{SQL CARBON EDIT}} skip mangling
-	// if (this.mode !== 'production') {
-	// 	// Only enable mangling in production builds
-	// 	return source;
-	// }
-
-	// if (source !== fs.readFileSync(this.resourcePath).toString()) {
-	// 	// File content has changed by previous webpack steps.
-	// 	// Skip mangling.
-	// 	return source;
-	// }
-
-	// const options = this.getOptions();
-	// const callback = this.async();
-
-	// const fileContentsMap = getMangledFileContents(options.configFile);
-
-	// const newContents = fileContentsMap.get(this.resourcePath);
-	// callback(null, newContents?.out ?? source, sourceMap, meta);
 };

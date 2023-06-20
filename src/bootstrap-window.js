@@ -73,8 +73,8 @@
 		if (enableDeveloperKeybindings) {
 			developerDeveloperKeybindingsDisposable = registerDeveloperKeybindings(disallowReloadKeybinding);
 		}
-    
-    // Enable ASAR support (node.js enabled renderers only)
+
+		// Enable ASAR support (node.js enabled renderers only)
 		if (!safeProcess.sandboxed) {
 			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
 		}

@@ -208,8 +208,8 @@ const core = task.define('core-ci', task.series(
 	gulp.task('compile-build'),
 	task.parallel(
 		gulp.task('minify-vscode'),
-		gulp.task('minify-vscode-reh'),
-		gulp.task('minify-vscode-reh-web'),
+		// gulp.task('minify-vscode-reh'), // {{SQL CARBON EDIT}} - turn off web/remote build
+		// gulp.task('minify-vscode-reh-web'),
 	)
 ));
 gulp.task(core);

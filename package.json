@@ -46,7 +46,7 @@
     "web": "echo 'yarn web' is replaced by './scripts/code-server' or './scripts/code-web'",
     "compile-web": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js compile-web",
     "watch-web": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js watch-web",
-    "eslint": "node --max_old_space_size=4095 build/eslint",
+    "eslint": "node --max_old_space_size=8191 build/eslint",
     "stylelint": "node build/stylelint",
     "playwright-install": "node build/azure-pipelines/common/installPlaywright.js",
     "compile-build": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js compile-build",

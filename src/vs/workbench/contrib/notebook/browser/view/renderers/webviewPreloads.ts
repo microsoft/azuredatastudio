@@ -1580,7 +1580,7 @@ async function webviewPreloads(ctx: PreloadContext) {
 				this.postDebugMessage('Imported renderer', { duration: `${performance.now() - importStart}ms` });
 
 				if (!module) {
-				return undefined; // {{SQL CARBON EDIT}} strict-nulls
+					return undefined; // {{SQL CARBON EDIT}} strict-nulls
 				}
 
 				this._api = await module.activate(this.createRendererContext());

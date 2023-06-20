@@ -80,7 +80,7 @@ const serverResources = [
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration-profile.zsh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration.zsh',
 	'out-build/vs/workbench/contrib/terminal/browser/media/shellIntegration.fish',
-  'out-build/vs/workbench/contrib/terminal/browser/media/fish_xdg_data/fish/vendor_conf.d/shellIntegration.fish',
+	'out-build/vs/workbench/contrib/terminal/browser/media/fish_xdg_data/fish/vendor_conf.d/shellIntegration.fish',
 
 	'!**/test/**'
 ];
@@ -364,7 +364,7 @@ function tweakProductForServerWeb(product) {
 	delete result.webEndpointUrlTemplate;
 	return result;
 }
-
+/* // {{SQL CARBON EDIT}} - turn off web/remote build tasks
 ['reh', 'reh-web'].forEach(type => {
 	const optimizeTask = task.define(`optimize-vscode-${type}`, task.series(
 		util.rimraf(`out-vscode-${type}`),
@@ -435,3 +435,4 @@ function tweakProductForServerWeb(product) {
 		});
 	});
 });
+*/

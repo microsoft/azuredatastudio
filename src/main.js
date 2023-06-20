@@ -435,16 +435,16 @@ function configureCrashReporter() {
 
 	// Start crash reporter for all processes
 	/* {{SQL CARBON EDIT}} Disable crash reporting until we're actually set up to use it
-	  const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
-	  const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
-	  const uploadToServer = Boolean(!process.env['VSCODE_DEV'] && submitURL && !crashReporterDirectory);
-	  crashReporter.start({
-		  companyName,
-		  productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
-		  submitURL,
-		  uploadToServer,
-		  compress: true
-	  });
+	const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
+	const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
+	const uploadToServer = Boolean(!process.env['VSCODE_DEV'] && submitURL && !crashReporterDirectory);
+	crashReporter.start({
+		companyName,
+		productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
+		submitURL,
+		uploadToServer,
+		compress: true
+	});
 	*/
 }
 
