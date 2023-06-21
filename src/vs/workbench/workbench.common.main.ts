@@ -222,7 +222,7 @@ import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/comm
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
-import { ITableService, TableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -267,7 +267,7 @@ registerSingleton(IDataGridProviderService, DataGridProviderService);
 registerSingleton(ITableDesignerService, TableDesignerService);
 registerSingleton(IExecutionPlanService, ExecutionPlanService);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
-registerSingleton(ITableService, TableService);
+registerSingleton(IComponentContextService, ComponentContextService);
 //#endregion
 
 
@@ -416,6 +416,7 @@ import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 import 'vs/workbench/contrib/welcomeOverlay/browser/welcomeOverlay';
 import 'sql/workbench/contrib/welcome/page/browser/welcomePage.contribution'; // {{SQL CARBON EDIT}} - add welcome page contribution
 import 'sql/workbench/contrib/welcome/notifyEncryption/notifyEncryption.contribution'; // {{SQL CARBON EDIT}} - add notifying Encrypt change contribution
+import 'sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenant.contribution'; // {{SQL CARBON EDIT}} - add notifying Hidden Tenant change contribution
 // import 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution'; // {{SQL CARBON EDIT}} - remove vscode getting started
 import 'vs/workbench/contrib/welcomeWalkthrough/browser/walkThrough.contribution';
 import 'vs/workbench/contrib/welcomeViews/common/viewsWelcome.contribution';

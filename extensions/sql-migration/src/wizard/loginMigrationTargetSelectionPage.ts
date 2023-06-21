@@ -18,6 +18,7 @@ import { AzureSqlDatabaseServer, getVMInstanceView, SqlVMServer } from '../api/a
 import { collectSourceLogins, collectTargetLogins, getSourceConnectionId, getSourceConnectionProfile, isSourceConnectionSysAdmin, LoginTableInfo } from '../api/sqlUtils';
 import { NetworkInterfaceModel } from '../api/dataModels/azure/networkInterfaceModel';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
+import { ConnectingToTargetFailed, } from '../models/loginMigrationModel';
 
 export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -373,10 +374,13 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._azureAccountsDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined') {
 					const selectedAccount = this.migrationStateModel._azureAccounts.find(account => account.displayInfo.displayName === value);
-					this.migrationStateModel._azureAccount = (selectedAccount)
+					this.migrationStateModel._azureAccount = selectedAccount
 						? utils.deepClone(selectedAccount)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._azureAccount = undefined!;
 				}
+				await utils.clearDropDown(this._accountTenantDropdown);
 				await this.populateTenantsDropdown();
 			}));
 
@@ -424,16 +428,14 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		this._disposables.push(
 			this._accountTenantDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined') {
-					/**
-					 * Replacing all the tenants in azure account with the tenant user has selected.
-					 * All azure requests will only run on this tenant from now on
-					 */
-					const selectedTenant = this.migrationStateModel._accountTenants.find(tenant => tenant.displayName === value);
-					if (selectedTenant) {
-						this.migrationStateModel._azureTenant = utils.deepClone(selectedTenant)!;
-						this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel._azureTenant];
-					}
+					const selectedTenant = this.migrationStateModel._accountTenants?.find(tenant => tenant.displayName === value);
+					this.migrationStateModel._azureTenant = selectedTenant
+						? utils.deepClone(selectedTenant)
+						: undefined!;
+				} else {
+					this.migrationStateModel._azureTenant = undefined!;
 				}
+				await utils.clearDropDown(this._azureSubscriptionDropdown);
 				await this.populateSubscriptionDropdown();
 			}));
 
@@ -469,12 +471,16 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		this._disposables.push(
 			this._azureSubscriptionDropdown.onValueChanged(async (value) => {
 				if (value && value !== 'undefined' && value !== constants.NO_SUBSCRIPTIONS_FOUND) {
-					const selectedSubscription = this.migrationStateModel._subscriptions.find(subscription => `${subscription.name} - ${subscription.id}` === value);
+					const selectedSubscription = this.migrationStateModel._subscriptions?.find(
+						subscription => `${subscription.name} - ${subscription.id}` === value);
 					this.migrationStateModel._targetSubscription = (selectedSubscription)
 						? utils.deepClone(selectedSubscription)!
 						: undefined!;
-					this.migrationStateModel.refreshDatabaseBackupPage = true;
+				} else {
+					this.migrationStateModel._targetSubscription = undefined!;
 				}
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				await utils.clearDropDown(this._azureLocationDropdown);
 				await this.populateLocationDropdown();
 			}));
 
@@ -503,8 +509,11 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._location = (selectedLocation)
 						? utils.deepClone(selectedLocation)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._location = undefined!;
 				}
 				this.migrationStateModel.refreshDatabaseBackupPage = true;
+				await utils.clearDropDown(this._azureResourceGroupDropdown);
 				await this.populateResourceGroupDropdown();
 			}));
 
@@ -636,7 +645,16 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							loginsOnTarget,
 							constants.AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE);
 
-						logError(TelemetryViews.LoginMigrationTargetSelectionPage, 'ConnectingToTargetFailed', error);
+						logError(TelemetryViews.LoginMigrationTargetSelectionPage, ConnectingToTargetFailed, error);
+						sendSqlMigrationActionEvent(
+							TelemetryViews.LoginMigrationTargetSelectionPage,
+							TelemetryAction.LoginMigrationError,
+							{
+								...getTelemetryProps(this.migrationStateModel),
+								'errorMessage': ConnectingToTargetFailed,
+							},
+							{}
+						);
 						connectionSuccessful = false;
 					}
 					finally {
@@ -722,7 +740,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._resourceGroup = (selectedResourceGroup)
 						? utils.deepClone(selectedResourceGroup)!
 						: undefined!;
+				} else {
+					this.migrationStateModel._resourceGroup = undefined!;
 				}
+				await utils.clearDropDown(this._azureResourceDropdown);
 				await this.populateResourceInstanceDropdown();
 			}));
 
@@ -768,7 +789,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								this.wizard.message = { text: '' };
 
 								// validate power state from VM instance view
-								const runningState = 'PowerState/running'.toLowerCase();
+								const runningState = 'powerstate/running';
 								if (!this.migrationStateModel._vmInstanceView.statuses.some(status => status.code.toLowerCase() === runningState)) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_POWER_STATE_ERROR(this.migrationStateModel._targetServerInstance.name),
@@ -777,7 +798,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								}
 
 								// validate IaaS extension mode
-								const fullMode = 'Full'.toLowerCase();
+								const fullMode = 'full';
 								if (this.migrationStateModel._targetServerInstance.properties.sqlManagement.toLowerCase() !== fullMode) {
 									this.wizard.message = {
 										text: constants.VM_NOT_READY_IAAS_EXTENSION_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.sqlManagement),
@@ -900,7 +921,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private async populateSubscriptionDropdown(): Promise<void> {
 		try {
 			this._azureSubscriptionDropdown.loading = true;
-			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(this.migrationStateModel._azureAccount);
+			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(
+				this.migrationStateModel._azureAccount,
+				this.migrationStateModel._azureTenant?.id);
+
 			this._azureSubscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(this.migrationStateModel._subscriptions);
 		} catch (e) {
 			console.log(e);

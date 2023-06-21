@@ -8,32 +8,29 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, mssqlProvider } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, mssqlProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { SynapseGraphData, SynapseWorkspaceGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class AzureResourceSynapseSqlPoolTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
+export class AzureResourceSynapseSqlPoolTreeDataProvider extends ResourceTreeDataProviderBase<SynapseWorkspaceGraphData, SynapseGraphData> {
 
 	private static readonly containerId = 'azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainer';
 	private static readonly containerLabel = localize('azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel', "Dedicated SQL Pools");
 
 	public constructor(
-		synapseSqlPoolService: IAzureResourceService<azureResource.AzureResourceDatabase>,
+		synapseSqlPoolService: azureResource.IAzureResourceService,
 		private _extensionContext: vscode.ExtensionContext
 	) {
 		super(synapseSqlPoolService);
 	}
 
-	protected getTreeItemForResource(synapse: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(synapse: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
-			id: `synapseWorkspace_${synapse.serverFullName}.synapseSqlPool_${synapse.name}`,
+			id: `${AzureResourcePrefixes.synapseWorkspace}${account.key.accountId}${synapse.tenant}${synapse.serverFullName}.${AzureResourcePrefixes.synapseSqlPool}${synapse.id ?? synapse.name}`,
 			label: this.browseConnectionMode ? `${synapse.serverName}/${synapse.name} (${AzureResourceSynapseSqlPoolTreeDataProvider.containerLabel}, ${synapse.subscription.name})` : `${synapse.name} (${synapse.serverName})`,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlPools.svg'),
 			collapsibleState: this.browseConnectionMode ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseSqlPool,
 			payload: {
@@ -64,10 +61,7 @@ export class AzureResourceSynapseSqlPoolTreeDataProvider extends ResourceTreeDat
 		return [{
 			id: AzureResourceSynapseSqlPoolTreeDataProvider.containerId,
 			label: AzureResourceSynapseSqlPoolTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlPools.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseSqlPoolContainer
 		}];

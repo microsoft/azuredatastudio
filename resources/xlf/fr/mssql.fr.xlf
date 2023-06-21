@@ -90,6 +90,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
   </file>
   <file original="extensions/mssql/dist/objectManagement/localizedConstants" source-language="en" datatype="plaintext" target-language="fr">
     <body>
+      <trans-unit id="objectManagement.ApplicationRoleTypeDisplayName">
+        <source xml:lang="en">application role</source>
+        <target state="translated">rôle d’application</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ApplicationRoleTypeDisplayNameInTitle">
+        <source xml:lang="en">Application Role</source>
+        <target state="translated">Rôle d’application</target>
+      </trans-unit>
       <trans-unit id="objectManagement.ColumnDisplayName">
         <source xml:lang="en">column</source>
         <target state="translated">colonne</target>
@@ -97,6 +105,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="objectManagement.DatabaseDisplayName">
         <source xml:lang="en">database</source>
         <target state="translated">base de données</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseRoleTypeDisplayName">
+        <source xml:lang="en">database role</source>
+        <target state="translated">rôle de base de données</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.DatabaseRoleTypeDisplayNameInTitle">
+        <source xml:lang="en">Database Role</source>
+        <target state="translated">Rôle de base de données</target>
       </trans-unit>
       <trans-unit id="objectManagement.LoginTypeDisplayName">
         <source xml:lang="en">login</source>
@@ -109,6 +125,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="objectManagement.OkText">
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
+        <source xml:lang="en">server role</source>
+        <target state="translated">rôle serveur</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ServerRoleTypeDisplayNameInTitle">
+        <source xml:lang="en">Server Role</source>
+        <target state="translated">Rôle serveur</target>
       </trans-unit>
       <trans-unit id="objectManagement.TableDisplayName">
         <source xml:lang="en">table</source>
@@ -126,6 +150,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">view</source>
         <target state="translated">vue</target>
       </trans-unit>
+      <trans-unit id="objectManagement.addMemberText">
+        <source xml:lang="en">Add a member</source>
+        <target state="translated">Ajouter un membre</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addText">
+        <source xml:lang="en">Add…</source>
+        <target state="translated">Ajouter…</target>
+      </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
         <target state="translated">Avancé</target>
@@ -133,6 +165,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="objectManagement.blankPasswordConfirmation">
         <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
         <target state="translated">La création d'une connexion avec un mot de passe vide pose un problème de sécurité.  Êtes-vous sûr de vouloir continuer ?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.browseForOwnerText">
+        <source xml:lang="en">Browse for an owner</source>
+        <target state="translated">Rechercher un propriétaire</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.browseText">
+        <source xml:lang="en">Browse…</source>
+        <target state="translated">Parcourir…</target>
       </trans-unit>
       <trans-unit id="objectManagement.confirmPasswordLabel">
         <source xml:lang="en">Confirm password</source>
@@ -142,6 +182,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Create {0}</source>
         <note>{0} object type</note>
         <target state="translated">Créer {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
+        <source xml:lang="en">Select Database Role Members</source>
+        <target state="translated">Sélectionner des membres du rôle de base de données</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseRole.SelectOwnerDialogTitle">
+        <source xml:lang="en">Select Database Role Owner</source>
+        <target state="translated">Sélectionner le propriétaire du rôle de base de données</target>
       </trans-unit>
       <trans-unit id="objectManagement.deleteLoginConfirmation">
         <source xml:lang="en">Deleting server logins does not delete the database users associated with the logins. To complete the process, delete the users in each database. It may be necessary to first transfer the ownership of schemas to new users.</source>
@@ -166,6 +214,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Enabled</source>
         <target state="translated">Activée</target>
       </trans-unit>
+      <trans-unit id="objectManagement.filterText">
+        <source xml:lang="en">Filter</source>
+        <target state="translated">Filtrer</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.findText">
+        <source xml:lang="en">Find</source>
+        <target state="translated">Rechercher</target>
+      </trans-unit>
       <trans-unit id="objectManagement.generalSectionHeader">
         <source xml:lang="en">General</source>
         <target state="translated">Général</target>
@@ -181,6 +237,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="objectManagement.loadingDialog">
         <source xml:lang="en">Loading dialog...</source>
         <target state="translated">Chargement en cours du dialogue...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
+        <source xml:lang="en">Loading objects completed, {0} objects found</source>
+        <target state="translated">Chargement des objets terminé, {0} objets trouvés</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.loadingObjectsLabel">
+        <source xml:lang="en">Loading objects…</source>
+        <target state="translated">Chargement des objets en cours…</target>
       </trans-unit>
       <trans-unit id="objectManagement.login.aadAuthenticationType">
         <source xml:lang="en">Azure Active Directory Authentication</source>
@@ -250,6 +314,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Login is not selected.</source>
         <target state="translated">La connexion n’est pas sélectionnée.</target>
       </trans-unit>
+      <trans-unit id="objectManagement.membersLabel">
+        <source xml:lang="en">Members</source>
+        <target state="translated">Membres</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.membershipLabel">
+        <source xml:lang="en">Membership</source>
+        <target state="translated">Appartenance</target>
+      </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
         <target state="translated">Le nom ne peut pas être vide.</target>
@@ -263,6 +335,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <note>{0} object type.</note>
         <target state="translated">{0} : nouveau (préversion)</target>
       </trans-unit>
+      <trans-unit id="objectManagement.noActionScriptedMessage">
+        <source xml:lang="en">There is no action to be scripted.</source>
+        <target state="translated">Aucune action ne requiert de script.</target>
+      </trans-unit>
       <trans-unit id="objectManagement.noConnectionUriError">
         <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
         <target state="translated">Échec de la récupération des informations de connexion. Veuillez vous reconnecter et réessayez.</target>
@@ -271,6 +347,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">{0} - {1} (Preview)</source>
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">{0} : {1} (préversion)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectTypeLabel">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">Type d’objet</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectsLabel">
+        <source xml:lang="en">Objects</source>
+        <target state="translated">Objets</target>
       </trans-unit>
       <trans-unit id="objectManagement.openNewObjectDialogError">
         <source xml:lang="en">An error occurred while opening the new {0} dialog. {1}</source>
@@ -281,6 +365,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
         <note>{0} object type, {1}: object name, {2}: error message.</note>
         <target state="translated">Une erreur s’est produite lors de l’ouverture du dialogue des propriétés de {0} : {1}. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ownerText">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">Propriétaire</target>
       </trans-unit>
       <trans-unit id="objectManagement.passwordCannotBeEmptyError">
         <source xml:lang="en">Password cannot be empty.</source>
@@ -299,6 +387,14 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <note>{0}: error message.</note>
         <target state="translated">Une erreur s’est produite lors de l’actualisation de l’Explorateur d’objets. {0}</target>
       </trans-unit>
+      <trans-unit id="objectManagement.removeMemberText">
+        <source xml:lang="en">Remove selected member</source>
+        <target state="translated">Supprimer le membre sélectionné</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.removeText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">Supprimer</target>
+      </trans-unit>
       <trans-unit id="objectManagement.renameObjectDialogTitle">
         <source xml:lang="en">Enter new name</source>
         <target state="translated">Entrez le nouveau nom</target>
@@ -313,18 +409,46 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <note>{0} object type, {1}: original name, {2}: new name</note>
         <target state="translated">Renommer {0} '{1}' en '{2}'</target>
       </trans-unit>
+      <trans-unit id="objectManagement.schemaLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">Schéma</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.scriptError">
+        <source xml:lang="en">An error occurred while generating script. {0}</source>
+        <target state="translated">Une erreur s'est produite lors de la génération du script. {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.scriptGenerated">
+        <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
+        <target state="translated">Le script a été généré avec succès. Vous pouvez fermer la boîte de dialogue pour l'afficher dans l'éditeur nouvellement ouvert.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.scriptText">
+        <source xml:lang="en">Script</source>
+        <target state="translated">Script</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectText">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Sélectionner</target>
+      </trans-unit>
       <trans-unit id="objectManagement.selectedLabel">
         <source xml:lang="en">Selected</source>
         <target state="translated">Sélectionné</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
+        <source xml:lang="en">Select Server Role Members</source>
+        <target state="translated">Sélectionner les membres du rôle serveur</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
+        <source xml:lang="en">Select Server Role Owner</source>
+        <target state="translated">Sélectionner le propriétaire du rôle serveur</target>
       </trans-unit>
       <trans-unit id="objectManagement.updateObjectOperationName">
         <source xml:lang="en">Update {0} '{1}'</source>
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">Mise à jour du type {0} « {1} »</target>
       </trans-unit>
-      <trans-unit id="objectManagement.user.containedUser">
-        <source xml:lang="en">Contained user</source>
-        <target state="translated">Utilisateur à relation contenant-contenu</target>
+      <trans-unit id="objectManagement.user.aadAuth">
+        <source xml:lang="en">Authenticate with Azure Active Directory</source>
+        <target state="translated">S’authentifier avec Azure Active Directory</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.defaultSchemaLabel">
         <source xml:lang="en">Default schema</source>
@@ -334,29 +458,29 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Login</source>
         <target state="translated">Connexion</target>
       </trans-unit>
-      <trans-unit id="objectManagement.user.membershipLabel">
-        <source xml:lang="en">Membership</source>
-        <target state="translated">Appartenance</target>
+      <trans-unit id="objectManagement.user.loginMapped">
+        <source xml:lang="en">Mapped to a server login</source>
+        <target state="translated">Mappé à une connexion au serveur</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.user.noLogin">
+        <source xml:lang="en">No Login Access</source>
+        <target state="translated">Aucun accès à la connexion</target>
       </trans-unit>
       <trans-unit id="objectManagement.user.ownedSchemasLabel">
         <source xml:lang="en">Owned Schemas</source>
         <target state="translated">Schémas détenus</target>
       </trans-unit>
+      <trans-unit id="objectManagement.user.sqlAuth">
+        <source xml:lang="en">Authenticate with password</source>
+        <target state="translated">S’authentifier avec un mot de passe</target>
+      </trans-unit>
       <trans-unit id="objectManagement.user.type">
         <source xml:lang="en">Type</source>
         <target state="translated">Type</target>
       </trans-unit>
-      <trans-unit id="objectManagement.user.userWithGroupLogin">
-        <source xml:lang="en">User with Windows group login</source>
-        <target state="translated">Utilisateur avec une connexion de groupe Windows</target>
-      </trans-unit>
-      <trans-unit id="objectManagement.user.userWithLogin">
-        <source xml:lang="en">User with login</source>
-        <target state="translated">Utilisateur avec connexion</target>
-      </trans-unit>
-      <trans-unit id="objectManagement.user.userWithNoConnectAccess">
-        <source xml:lang="en">User with no connect access</source>
-        <target state="translated">Utilisateur sans accès à une connexion</target>
+      <trans-unit id="objectManagement.user.windowsUser">
+        <source xml:lang="en">Mapped to a Windows user/group</source>
+        <target state="translated">Mappé à un utilisateur/groupe Windows</target>
       </trans-unit>
       <trans-unit id="objectManagement.yesText">
         <source xml:lang="en">Yes</source>
@@ -414,6 +538,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
   </file>
   <file original="extensions/mssql/dist/tableDesigner/tableDesigner" source-language="en" datatype="plaintext" target-language="fr">
     <body>
+      <trans-unit id="tableDesigner.FailedToGetConnectionStringError">
+        <source xml:lang="en">Failed to get connection string for the table. Please reconnect to the server and try again.</source>
+        <target state="translated">Échec de l’obtention de la chaîne de connexion pour la table. Veuillez vous reconnecter au serveur et réessayez.</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.NewTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Nouvelle table</target>
@@ -530,17 +658,13 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Application name</source>
         <target state="translated">Nom de l'application</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">Attacher le nom de fichier de base de données</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
+      <trans-unit id="mssql.connectionOptions.attachDbFilename.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
         <target state="translated">Nom de fichier principal, y compris le nom de chemin complet, d'une base de données pouvant être attachée</target>
       </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">Nom du fichier de base de données attaché</target>
+      <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">Attacher le nom de fichier de base de données</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -647,7 +771,7 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <target state="translated">Aucun(e)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
-        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
         <target state="translated">Spécifie un protocole pour attester une enclave côté serveur utilisée avec Always Encrypted avec des enclaves sécurisées</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
@@ -655,7 +779,7 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <target state="translated">Protocole d'attestation</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
-        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
         <target state="translated">Spécifie un point de terminaison pour attester une enclave côté serveur utilisée avec Always Encrypted avec des enclaves sécurisées</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
@@ -825,6 +949,10 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
       <trans-unit id="mssql.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
         <target state="translated">Serveur</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.serverName.placeholder">
+        <source xml:lang="en">e.g. tcp:servername,1433</source>
+        <target state="translated">par exemple. tcp:servername,1433</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
@@ -1174,29 +1302,13 @@ Remarque : un certificat auto-signé offre uniquement une protection limitée et
         <source xml:lang="en">Design</source>
         <target state="translated">Conception</target>
       </trans-unit>
-      <trans-unit id="title.newApplicationRole">
-        <source xml:lang="en">New Application Role</source>
-        <target state="translated">Nouveau rôle d’application</target>
-      </trans-unit>
-      <trans-unit id="title.newDatabaseRole">
-        <source xml:lang="en">New Database Role</source>
-        <target state="translated">Nouveau rôle de base de données</target>
-      </trans-unit>
-      <trans-unit id="title.newLogin">
-        <source xml:lang="en">New Login</source>
-        <target state="translated">Nouvelle connexion</target>
-      </trans-unit>
-      <trans-unit id="title.newServerRole">
-        <source xml:lang="en">New Server Role</source>
-        <target state="translated">Nouveau rôle serveur</target>
+      <trans-unit id="title.newObject">
+        <source xml:lang="en">New</source>
+        <target state="translated">Nouveau</target>
       </trans-unit>
       <trans-unit id="title.newTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Nouvelle table</target>
-      </trans-unit>
-      <trans-unit id="title.newUser">
-        <source xml:lang="en">New User</source>
-        <target state="translated">Nouvel utilisateur</target>
       </trans-unit>
       <trans-unit id="title.objectProperties">
         <source xml:lang="en">Properties (Preview)</source>

@@ -41,7 +41,7 @@ export class SqlNotebookController implements vscode.Disposable {
 
 		this._controller.supportedLanguages = ['sql'];
 		this._controller.supportsExecutionOrder = true;
-		this._controller.executeHandler = this.execute.bind(this);
+		this._controller.executeHandler = this.execute.bind(this) as (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
 
 		const sqlProvider = 'MSSQL';
 		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(sqlProvider, azdata.DataProviderType.QueryProvider);
@@ -105,13 +105,13 @@ export class SqlNotebookController implements vscode.Disposable {
 
 	public getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
 		let connectionProfile: azdata.IConnectionProfile = {
-			connectionName: connection.options.connectionName,
-			serverName: connection.options.server,
-			databaseName: connection.options.database,
-			userName: connection.options.user,
-			password: connection.options.password,
-			authenticationType: connection.options.authenticationType,
-			savePassword: connection.options.savePassword,
+			connectionName: connection.options.connectionName as string,
+			serverName: connection.options.server as string,
+			databaseName: connection.options.database as string,
+			userName: connection.options.user as string,
+			password: connection.options.password as string,
+			authenticationType: connection.options.authenticationType as string,
+			savePassword: connection.options.savePassword as boolean,
 			groupFullName: undefined,
 			groupId: undefined,
 			providerName: connection.providerName,

@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { IObjectManagementService, ObjectManagement } from 'mssql';
+import { ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { AlterUserDocUrl, CreateUserDocUrl } from '../constants';
 import { isValidSQLPassword } from '../utils';
-import { DefaultMaxTableHeight } from './dialogBase';
+import { DefaultMaxTableRowCount } from '../../ui/dialogBase';
+import { PrincipalDialogBase } from './principalDialogBase';
+import { User, UserType, UserViewInfo } from '../interfaces';
 
-export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User, ObjectManagement.UserViewInfo> {
+export class UserDialog extends PrincipalDialogBase<User, UserViewInfo> {
 	private generalSection: azdata.GroupContainer;
 	private ownedSchemaSection: azdata.GroupContainer;
 	private membershipSection: azdata.GroupContainer;
@@ -31,10 +33,10 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 	private membershipTable: azdata.TableComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(objectManagementService, options);
+		super(objectManagementService, { ...options, isDatabaseLevelPrincipal: true, supportEffectivePermissions: true });
 	}
 
-	protected override get docUrl(): string {
+	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateUserDocUrl : AlterUserDocUrl;
 	}
 
@@ -44,7 +46,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		if (this.objectInfo.type === ObjectManagement.UserType.SqlAuthentication) {
+		if (this.objectInfo.type === UserType.SqlAuthentication) {
 			if (!this.objectInfo.password) {
 				errors.push(localizedConstants.PasswordCannotBeEmptyError);
 			}
@@ -55,18 +57,19 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 				&& (this.options.isNewObject || this.objectInfo.password !== this.originalObjectInfo.password)) {
 				errors.push(localizedConstants.InvalidPasswordError);
 			}
-		} else if (this.objectInfo.type === ObjectManagement.UserType.LoginMapped && !this.objectInfo.loginName) {
+		} else if (this.objectInfo.type === UserType.LoginMapped && !this.objectInfo.loginName) {
 			errors.push(localizedConstants.LoginNotSelectedError);
 		}
 		return errors;
 	}
 
-	protected async initializeUI(): Promise<void> {
+	protected override async initializeUI(): Promise<void> {
+		await super.initializeUI();
 		this.initializeGeneralSection();
 		this.initializeOwnedSchemaSection();
 		this.initializeMembershipSection();
 		this.initializeAdvancedSection();
-		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.advancedSection]);
+		this.formContainer.addItems([this.generalSection, this.ownedSchemaSection, this.membershipSection, this.securableSection, this.advancedSection], this.getSectionItemLayout());
 		setTimeout(() => {
 			this.setViewByUserType();
 		}, 100);
@@ -94,7 +97,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 
 		this.loginDropdown = this.createDropdown(localizedConstants.LoginText, async (newValue) => {
 			this.objectInfo.loginName = newValue;
-		}, this.viewInfo.logins, this.objectInfo.loginName, this.options.isNewObject);
+		}, this.options.isNewObject ? this.viewInfo.logins : [this.objectInfo.loginName], this.objectInfo.loginName, this.options.isNewObject);
 		this.loginContainer = this.createLabelInputContainer(localizedConstants.LoginText, this.loginDropdown);
 
 		this.passwordInput = this.createPasswordInputBox(localizedConstants.PasswordText, async (newValue) => {
@@ -119,7 +122,7 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 			[localizedConstants.SchemaText],
 			this.viewInfo.schemas,
 			this.objectInfo.ownedSchemas,
-			DefaultMaxTableHeight,
+			DefaultMaxTableRowCount,
 			(item) => {
 				// It is not allowed to have unassigned schema.
 				return this.objectInfo.ownedSchemas.indexOf(item) === -1;
@@ -146,16 +149,21 @@ export class UserDialog extends ObjectManagementDialogBase<ObjectManagement.User
 		this.removeItem(this.generalSection, this.confirmPasswordContainer);
 		this.removeItem(this.formContainer, this.advancedSection);
 		switch (this.objectInfo.type) {
-			case ObjectManagement.UserType.LoginMapped:
+			case UserType.LoginMapped:
 				this.addItem(this.generalSection, this.loginContainer);
 				break;
-			case ObjectManagement.UserType.AADAuthentication:
+			case UserType.AADAuthentication:
 				this.addItem(this.formContainer, this.advancedSection);
 				break;
-			case ObjectManagement.UserType.SqlAuthentication:
+			case UserType.SqlAuthentication:
 				this.addItem(this.generalSection, this.passwordContainer);
 				this.addItem(this.generalSection, this.confirmPasswordContainer);
 				this.addItem(this.formContainer, this.advancedSection);
+				break;
+			case UserType.WindowsUser:
+				if (this.objectInfo.loginName) {
+					this.addItem(this.generalSection, this.loginContainer);
+				}
 				break;
 			default:
 				break;

@@ -77,6 +77,12 @@ const RULES: IRule[] = [
 		skip: true // -> skip all test files
 	},
 
+	// TODO@bpasero remove me once electron utility process has landed
+	{
+		target: '**/vs/workbench/services/extensions/electron-sandbox/nativeLocalProcessExtensionHost.ts',
+		skip: true
+	},
+
 	// Common: vs/base/common/platform.ts
 	{
 		target: '**/{vs,sql}/base/common/platform.ts',
@@ -117,7 +123,7 @@ const RULES: IRule[] = [
 
 	// Common: vs/platform/native/common/native.ts
 	{
-		target: '**/vs/platform/native/common/native.ts',
+		target: '**/{vs,sql}/platform/native/common/native.ts',
 		allowedTypes: CORE_TYPES,
 		disallowedTypes: [/* Ignore native types that are defined from here */],
 		disallowedDefinitions: [

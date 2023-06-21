@@ -301,6 +301,9 @@ export class MockTableComponent extends MockUIComponent implements azdata.TableC
 	appendData(data: any[][]): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	setActiveCell(row: number, column: number): void {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class MockDeclarativeTableComponent extends MockUIComponent implements azdata.DeclarativeTableComponent {

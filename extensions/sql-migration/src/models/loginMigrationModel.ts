@@ -26,6 +26,12 @@ export enum LoginMigrationStep {
 	MigrationCompleted = 3,
 }
 
+export const CollectingSourceLoginsFailed = 'Collecting source logins failed';
+export const CollectingTargetLoginsFailed = 'Collecting target logins failed';
+export const ConnectingToTargetFailed = 'Connecting to target failed';
+export const InternalServerError = 'Login Migrations Internal Server Error';
+
+
 export function GetLoginMigrationStepString(step: LoginMigrationStep): string {
 	switch (step) {
 		case LoginMigrationStep.NotStarted:
@@ -70,6 +76,7 @@ export class LoginMigrationModel {
 	private _currentStepIdx: number = 0;
 	private _logins: Map<string, Login>;
 	private _loginMigrationSteps: LoginMigrationStep[] = [];
+	public errorCountList: string[] = [];
 
 	constructor() {
 		this.resultsPerStep = new Map<contracts.LoginMigrationStep, contracts.StartLoginMigrationResult>();
@@ -159,8 +166,33 @@ export class LoginMigrationModel {
 	}
 
 	private setErrorCountMapPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {
-		const errorCount = result.exceptionMap ? Object.keys(result.exceptionMap).length : 0;
-		this.errorCountMap.set(LoginMigrationStep[step], errorCount);
+		const errorBuckets: Map<string, number> = new Map<string, number>();
+
+		if (!result.exceptionMap) {
+			return;
+		}
+
+		for (const exceptions of Object.values(result.exceptionMap)) {
+			for (const exception of exceptions) {
+				// Get the value for the key, or the default value of t0 if he key is not in the map
+				const errorCount = errorBuckets.get(exception.ErrorCodeString) ?? 0;
+				errorBuckets.set(exception.ErrorCodeString, errorCount + 1)
+			}
+		}
+
+		// Making a string of the map elements of errorBuckets
+		const errorBucketsString = JSON.stringify(
+			Array.from(errorBuckets.entries()).reduce((o: any, [key, value]) => {
+				o[key] = value;
+				return o;
+			}, {})
+		);
+
+		// Retaining this step in case a revert is needed, but we will be using errorCountList for telemetry
+		this.errorCountMap.set(LoginMigrationStep[step], errorBucketsString);
+
+		// Creating an array of the error codes and its counts for each step
+		this.errorCountList.push(`[${LoginMigrationStep[step]}: ${errorBucketsString}]`);
 	}
 
 	private setDurationPerStep(step: LoginMigrationStep, result: contracts.StartLoginMigrationResult) {

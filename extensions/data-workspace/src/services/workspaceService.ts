@@ -81,7 +81,7 @@ export class WorkspaceService implements IWorkspaceService {
 			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, undefined, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
 		}
 
-		// 2. Compare projcets being added against prior (cached) list of projects in the workspace
+		// 2. Compare projects being added against prior (cached) list of projects in the workspace
 
 		const previousProjects: string[] = (await this.getProjectsInWorkspace(undefined, false)).map(p => p.path);
 		let newProjectAdded: boolean = false;

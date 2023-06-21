@@ -3,14 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import BarChart from './barChart.component';
+import BarChart, { IBarChartConfig } from './barChart.component';
 import { forwardRef, Inject, ChangeDetectorRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import * as chartjs from 'chart.js';
+import { mixin } from 'sql/base/common/objects';
+import { customMixin } from 'sql/workbench/contrib/charts/browser/interfaces';
 
 export default class HorizontalBarChart extends BarChart {
-	protected override readonly chartType: ChartType = ChartType.HorizontalBar;
+	protected override readonly chartType: ChartType = ChartType.Bar;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
@@ -18,5 +21,13 @@ export default class HorizontalBarChart extends BarChart {
 		@Inject(IAdsTelemetryService) telemetryService: IAdsTelemetryService
 	) {
 		super(_changeRef, themeService, telemetryService);
+	}
+
+	public override setConfig(config: IBarChartConfig): void {
+		let options: chartjs.ChartOptions = {
+			indexAxis: 'y'
+		};
+		this.options = mixin({}, mixin(this.options, options, true, customMixin));
+		super.setConfig(config);
 	}
 }

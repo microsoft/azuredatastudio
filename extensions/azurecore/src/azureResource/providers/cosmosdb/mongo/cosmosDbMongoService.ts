@@ -4,29 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ResourceServiceBase, GraphData } from '../../resourceTreeDataProviderBase';
+import { ResourceServiceBase } from '../../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
 import { cosmosMongoDbQuery } from '../../queryStringConstants';
+import { DbServerGraphData } from '../../../interfaces';
+import { COSMOSDB_MONGO_PROVIDER_ID } from '../../../../constants';
 
-
-interface DbServerGraphData extends GraphData {
-	properties: {
-		fullyQualifiedDomainName: string;
-		administratorLogin: string;
-	};
+export interface AzureResourceMongoDatabaseServer extends azureResource.AzureResourceDatabaseServer {
+	isServer: boolean;
 }
 
-export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
+export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData> {
+	public override queryFilter: string = cosmosMongoDbQuery;
 
-	protected get query(): string {
-		return cosmosMongoDbQuery;
-	}
-
-	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
+	public convertServerResource(resource: DbServerGraphData): AzureResourceMongoDatabaseServer | undefined {
+		let host = resource.name;
+		const isServer = resource.type === azureResource.AzureResourceType.cosmosDbCluster;
+		if (isServer) {
+			const url = new URL(resource.properties.connectionString);
+			host = url.hostname;
+		}
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.properties.fullyQualifiedDomainName,
+			provider: COSMOSDB_MONGO_PROVIDER_ID,
+			isServer: isServer,
+			fullName: host,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: '',
 			tenant: resource.tenantId,

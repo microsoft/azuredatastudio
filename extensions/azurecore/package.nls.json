@@ -9,6 +9,7 @@
 	"azure.resource.refresh.title": "Refresh",
 	"azure.resource.signin.title": "Azure: Sign In",
 	"azure.resource.selectsubscriptions.title": "Select Subscriptions",
+	"azure.resource.selecttenants.title": "Select Tenants",
 	"azure.resource.startterminal.title": "Start Cloud Shell",
 	"azure.resource.connectsqlserver.title": "Connect",
 	"azure.resource.connectsqldb.title": "Add to Servers",

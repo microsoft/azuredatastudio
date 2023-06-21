@@ -13,7 +13,7 @@ import * as baselines from '../baselines/baselines';
 import * as templates from '../../templates/templates';
 import * as testUtils from '../testUtils';
 import * as constants from '../../common/constants';
-import { AddDatabaseReferenceDialog, ReferenceType } from '../../dialogs/addDatabaseReferenceDialog';
+import { AddDatabaseReferenceDialog, ReferencedDatabaseType } from '../../dialogs/addDatabaseReferenceDialog';
 
 describe('Add Database Reference Dialog', () => {
 	before(async function (): Promise<void> {
@@ -58,7 +58,7 @@ describe('Add Database Reference Dialog', () => {
 		await dialog.openDialog();
 
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since initial type of systemDb has default values filled');
-		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
+		should(dialog.currentReferencedDatabaseType).equal(ReferencedDatabaseType.systemDb);
 
 		// empty db name textbox
 		dialog.databaseNameTextbox!.value = '';
@@ -72,7 +72,7 @@ describe('Add Database Reference Dialog', () => {
 
 		// change to dacpac reference
 		dialog.dacpacRadioButtonClick();
-		should(dialog.currentReferenceType).equal(ReferenceType.dacpac);
+		should(dialog.currentReferencedDatabaseType).equal(ReferencedDatabaseType.dacpac);
 		should(dialog.locationDropdown?.value).equal(constants.differentDbSameServer);
 		should(dialog.databaseNameTextbox!.value).equal('', 'database name text box should be empty because no dacpac has been selected');
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because dacpac input box is not filled');
@@ -117,12 +117,12 @@ describe('Add Database Reference Dialog', () => {
 		await dialog.openDialog();
 
 		// dialog starts with system db because there aren't any other projects in the workspace
-		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
+		should(dialog.currentReferencedDatabaseType).equal(ReferencedDatabaseType.systemDb);
 		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false });
 
 		// change to dacpac reference
 		dialog.dacpacRadioButtonClick();
-		should(dialog.currentReferenceType).equal(ReferenceType.dacpac);
+		should(dialog.currentReferencedDatabaseType).equal(ReferencedDatabaseType.dacpac);
 		should(dialog.locationDropdown!.value).equal(constants.differentDbSameServer);
 		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: true, serverNameEnabled: false, serverVariabledEnabled: false });
 
@@ -138,7 +138,7 @@ describe('Add Database Reference Dialog', () => {
 
 		// change to project reference
 		dialog.projectRadioButtonClick();
-		should(dialog.currentReferenceType).equal(ReferenceType.project);
+		should(dialog.currentReferencedDatabaseType).equal(ReferencedDatabaseType.project);
 		should(dialog.locationDropdown!.value).equal(constants.sameDatabase);
 		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false });
 	});

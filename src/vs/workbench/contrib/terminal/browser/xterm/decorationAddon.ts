@@ -27,6 +27,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IGenericMarkProperties } from 'vs/platform/terminal/common/terminalProcess';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { Codicon } from 'vs/base/common/codicons';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 const enum DecorationSelector {
 	CommandDecoration = 'terminal-command-decoration',
@@ -68,7 +69,8 @@ export class DecorationAddon extends Disposable implements ITerminalAddon {
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		@IQuickInputService private readonly _quickInputService: IQuickInputService
+		@IQuickInputService private readonly _quickInputService: IQuickInputService,
+		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		super();
 		this._register(toDisposable(() => this._dispose()));
@@ -408,7 +410,15 @@ export class DecorationAddon extends Disposable implements ITerminalAddon {
 			const labelRun = localize("terminal.rerunCommand", 'Rerun Command');
 			actions.push({
 				class: undefined, tooltip: labelRun, dispose: () => { }, id: 'terminal.rerunCommand', label: labelRun, enabled: true,
-				run: () => this._onDidRequestRunCommand.fire({ command })
+				run: async () => {
+					this._notificationService.prompt(Severity.Info, localize('rerun', 'Do you want to run the command: {0}', command.command), [{
+						label: localize('yes', 'Yes'),
+						run: () => this._onDidRequestRunCommand.fire({ command })
+					}, {
+						label: localize('no', 'No'),
+						run: () => { }
+					}]);
+				}
 			});
 			const labelCopy = localize("terminal.copyCommand", 'Copy Command');
 			actions.push({

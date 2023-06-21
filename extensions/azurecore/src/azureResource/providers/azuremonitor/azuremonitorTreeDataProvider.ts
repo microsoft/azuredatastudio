@@ -8,32 +8,28 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, logAnalyticsProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { AzureMonitorGraphData, GraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, AzureMonitorGraphData> {
 	private static readonly containerId = 'azure.resource.providers.AzureMonitorContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Log Analytics workspace");
+	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Log Analytics workspaces");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `LogAnalytics_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.logAnalytics}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${AzureMonitorTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/azure_monitor_dark.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/azure_monitor_light.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/logAnalyticsWorkspaces.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.azureMonitor,
 			payload: {
@@ -47,7 +43,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'LOGANALYTICS',
+				providerName: logAnalyticsProvider,
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -55,7 +51,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'LOGANALYTICS',
+			childProvider: logAnalyticsProvider,
 			type: ExtensionNodeType.Server
 		};
 	}
@@ -64,10 +60,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 		return [{
 			id: AzureMonitorTreeDataProvider.containerId,
 			label: AzureMonitorTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/logAnalyticsWorkspaces.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
 		}];

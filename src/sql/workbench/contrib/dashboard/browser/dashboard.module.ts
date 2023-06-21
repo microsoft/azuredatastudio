@@ -9,7 +9,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes, UrlSerializer, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgGridModule } from 'angular2-grid';
-import { ChartsModule } from 'ng2-charts';
 
 import CustomUrlSerializer from 'sql/base/browser/urlSerializer';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
@@ -141,7 +140,6 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			BrowserModule,
 			FormsModule,
 			NgGridModule,
-			ChartsModule,
 			RouterModule.forRoot(appRoutes),
 			PanelModule,
 			ScrollableModule,

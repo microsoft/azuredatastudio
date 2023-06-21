@@ -126,6 +126,9 @@ export interface IConnectionManagementService {
 	onConnectionProfileGroupMoved: Event<ConnectionElementMovedParams>;
 	// End of Event Emitters for async tree
 
+	// Event emitters for recent connections tree
+	onRecentConnectionProfileDeleted: Event<ConnectionProfile>;
+
 	// Properties
 	providerNameToDisplayNameMap: { [providerDisplayName: string]: string };
 
@@ -378,14 +381,6 @@ export interface IConnectionManagementService {
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
-
-	/**
-	 * Gets the formatted title of the connection profile for display.
-	 * @param profile The connection profile to change the password.
-	 * @param getNonDefaultsOnly Provide if you only want to get the non default options string (for some titles).
-	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
-	 */
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getNonDefaultsOnly?: boolean): string;
 }
 
 export enum RunQueryOnConnectionMode {

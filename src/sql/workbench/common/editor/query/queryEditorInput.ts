@@ -146,7 +146,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService protected readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService
@@ -243,18 +243,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				let fullTitleText = this.connectionManagementService.getEditorConnectionProfileTitle(profile);
-				if (fullTitleText.length !== 0) {
-					title += fullTitleText;
+				title += `${profile.serverName}`;
+				if (profile.databaseName) {
+					title += `.${profile.databaseName}`;
 				}
-				else {
-					title += `${profile.serverName}`;
-					if (profile.databaseName) {
-						title += `.${profile.databaseName}`;
-					}
-					title += ` (${profile.userName || profile.authenticationType})`;
-					title += profile.getOptionsKey();
-				}
+				title += ` (${profile.userName || profile.authenticationType})`;
 			} else {
 				title += localize('disconnected', "disconnected");
 			}

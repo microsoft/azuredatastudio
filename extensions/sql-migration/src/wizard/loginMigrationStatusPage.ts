@@ -14,6 +14,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { LoginMigrationStatusCodes } from '../constants/helper';
 import { MultiStepStatusDialog } from '../dialog/generic/multiStepStatusDialog';
 import { getTelemetryProps, logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemetry';
+import { InternalServerError } from '../models/loginMigrationModel';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -93,7 +94,17 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			};
 
 			this._progressLoader.loading = false;
-			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', 'Login Migrations Internal Server Error');
+			logError(TelemetryViews.LoginMigrationWizard, 'LoginMigrationFailed', InternalServerError);
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.LoginMigrationStatusPage,
+				TelemetryAction.LoginMigrationError,
+				{
+					...getTelemetryProps(this.migrationStateModel),
+					'errorMessage': InternalServerError,
+				},
+				{}
+			);
 		}
 
 		this._logMigrationResult();
@@ -447,12 +458,13 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			{
 				...getTelemetryProps(this.migrationStateModel),
 				'loginsAuthType': this.migrationStateModel._loginMigrationModel.loginsAuthType,
-				'numberLoginsFailingPerStep': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.errorCountMap)),
+				'numberLoginsFailingPerStep': this.migrationStateModel._loginMigrationModel.errorCountList.toString(),
 				'durationPerStepTimestamp': JSON.stringify(Array.from(this.migrationStateModel._loginMigrationModel.durationPerStep)),
 				'hasSystemError': JSON.stringify(this.migrationStateModel._loginMigrationModel.hasSystemError),
-				// AKMA TODO: add error code string count map
 			},
-			{}
+			{
+				'numberLogins': this.migrationStateModel._loginMigrationModel.loginsForMigration.length,
+			}
 		);
 	}
 }

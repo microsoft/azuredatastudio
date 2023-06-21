@@ -17,7 +17,7 @@ import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAc
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { DBCellValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { DBCellValue, getCellDisplayValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -33,11 +33,11 @@ import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/acti
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IAction, Separator } from 'vs/base/common/actions';
+import { IAction, Separator, toAction } from 'vs/base/common/actions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { CancellationToken } from 'vs/base/common/cancellation';
+import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
@@ -48,7 +48,7 @@ import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationHandle, INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
@@ -57,7 +57,9 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
-import { ITableService } from 'sql/workbench/services/table/browser/tableService';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { GridRange } from 'sql/base/common/gridRange';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -357,7 +359,12 @@ const defaultGridTableOptions: IGridTableOptions = {
 	actionOrientation: ActionsOrientation.VERTICAL
 };
 
-export abstract class GridTableBase<T> extends Disposable implements IView {
+export interface IQueryResultGrid {
+	readonly htmlElement: HTMLElement;
+	runAction(actionId: string): void;
+}
+
+export abstract class GridTableBase<T> extends Disposable implements IView, IQueryResultGrid {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -368,6 +375,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private filterPlugin: HeaderFilter<T>;
 	private isDisposed: boolean = false;
 	private gridConfig: IResultGridConfiguration;
+	private selectionChangeHandlerTokenSource: CancellationTokenSource | undefined;
 
 	private columns: Slick.Column<T>[];
 
@@ -419,7 +427,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
-		@ITableService private readonly tableService: ITableService
+		@IComponentContextService private readonly componentContextService: IComponentContextService,
+		@IContextKeyService protected readonly contextKeyService: IContextKeyService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 
@@ -429,7 +439,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			return <Slick.Column<T>>{
 				id: i.toString(),
@@ -443,6 +452,47 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
+	}
+
+	public get htmlElement(): HTMLElement {
+		return this.tableContainer;
+	}
+
+	runAction(actionId: string): void {
+		let action: IAction | undefined;
+		switch (actionId) {
+			case CopyResultAction.COPYWITHHEADERS_ID:
+				action = this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true);
+				break;
+			case CopyHeadersAction.ID:
+				action = this.instantiationService.createInstance(CopyHeadersAction);
+				break;
+			case SelectAllGridAction.ID:
+				action = this.instantiationService.createInstance(SelectAllGridAction);
+				break;
+			case SaveResultAction.SAVECSV_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV);
+				break;
+			case SaveResultAction.SAVEEXCEL_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL);
+				break;
+			case SaveResultAction.SAVEJSON_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON);
+				break;
+			case SaveResultAction.SAVEMARKDOWN_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN);
+				break;
+			case SaveResultAction.SAVEXML_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML);
+				break;
+			default:
+				this.logService.error(`No handler registered for action '${actionId}'`);
+				break;
+		}
+		if (action) {
+			action.run(this.generateContext());
+			action.dispose();
+		}
 	}
 
 	abstract get gridDataProvider(): IGridDataProvider;
@@ -582,7 +632,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 
 		this.table.registerPlugin(this.filterPlugin);
-		this._register(this.tableService.registerTable(this.table));
+		const result = this.componentContextService.registerQueryResultGrid(this);
+		this._register(result);
+		this._register(this.componentContextService.registerTable(this.table, result.componentContextKeyService));
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -615,7 +667,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
 			}
-			await this.notifyTableSelectionChanged();
+			await this.handleTableSelectionChange();
 		});
 
 		this.table.grid.onScroll.subscribe((e, data) => {
@@ -714,7 +766,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._state = val;
 	}
 
-	private async getRowData(start: number, length: number): Promise<ICellValue[][]> {
+	private async getRowData(start: number, length: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ICellValue[][]> {
 		let subset;
 		if (this.dataProvider.isDataInMemory) {
 			// handle the scenario when the data is sorted/filtered,
@@ -722,23 +774,102 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const data = await this.dataProvider.getRangeAsync(start, length);
 			subset = data.map(item => Object.keys(item).map(key => item[key]));
 		} else {
-			subset = (await this.gridDataProvider.getRowData(start, length)).rows;
+			subset = (await this.gridDataProvider.getRowData(start, length, cancellationToken, onProgressCallback)).rows;
 		}
 		return subset;
 	}
 
-	private async notifyTableSelectionChanged() {
-		const selectedCells = [];
-		for (const range of this.state.selection) {
-			const subset = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
-			subset.forEach(row => {
-				// start with range.fromCell -1 because we have row number column which is not available in the actual data
-				for (let i = range.fromCell - 1; i < range.toCell; i++) {
-					selectedCells.push(row[i]);
-				}
-			});
+	private async handleTableSelectionChange(): Promise<void> {
+		if (this.selectionChangeHandlerTokenSource) {
+			this.selectionChangeHandlerTokenSource.cancel();
 		}
-		this.queryModelService.notifyCellSelectionChanged(selectedCells);
+		this.selectionChangeHandlerTokenSource = new CancellationTokenSource();
+		await this.notifyTableSelectionChanged(this.selectionChangeHandlerTokenSource);
+	}
+
+	private async notifyTableSelectionChanged(cancellationTokenSource: CancellationTokenSource): Promise<void> {
+		const gridRanges = GridRange.fromSlickRanges(this.state.selection ?? []);
+		const rowRanges = GridRange.getUniqueRows(gridRanges);
+		const columnRanges = GridRange.getUniqueColumns(gridRanges);
+		const rowCount = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
+		const runAction = async (proceed: boolean) => {
+			const selectedCells = [];
+			if (proceed && !cancellationTokenSource.token.isCancellationRequested) {
+				let notificationHandle: INotificationHandle = undefined;
+				const timeout = setTimeout(() => {
+					notificationHandle = this.notificationService.notify({
+						message: localize('resultsGrid.loadingData', "Loading selected rows for calculation..."),
+						severity: Severity.Info,
+						progress: {
+							infinite: true
+						},
+						actions: {
+							primary: [
+								toAction({
+									id: 'cancelLoadingCells',
+									label: localize('resultsGrid.cancel', "Cancel"),
+									run: () => {
+										cancellationTokenSource.cancel();
+										notificationHandle.close();
+									}
+								})]
+						}
+					});
+				}, 1000);
+				this.queryModelService.notifyCellSelectionChanged([]);
+				let rowsInProcessedRanges = 0;
+				for (const range of rowRanges) {
+					if (cancellationTokenSource.token.isCancellationRequested) {
+						break;
+					}
+					const rows = await this.getRowData(range.start, range.end - range.start + 1, cancellationTokenSource.token, (availableRows: number) => {
+						notificationHandle?.updateMessage(localize('resultsGrid.loadingDataWithProgress', "Loading selected rows for calculation ({0}/{1})...", rowsInProcessedRanges + availableRows, rowCount));
+					});
+					rows.forEach((row, rowIndex) => {
+						columnRanges.forEach(cr => {
+							for (let i = cr.start; i <= cr.end; i++) {
+								if (this.state.selection.some(selection => selection.contains(rowIndex + range.start, i))) {
+									// need to reduce the column index by 1 because we have row number column which is not available in the actual data
+									selectedCells.push(row[i - 1]);
+								}
+							}
+						});
+					});
+					rowsInProcessedRanges += range.end - range.start + 1;
+				}
+				clearTimeout(timeout);
+				notificationHandle?.close();
+			}
+			cancellationTokenSource.dispose();
+			if (!cancellationTokenSource.token.isCancellationRequested) {
+				this.queryModelService.notifyCellSelectionChanged(selectedCells);
+			}
+		};
+		const showPromptConfigValue = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.promptForLargeRowSelection;
+		if (this.options.inMemoryDataCountThreshold && rowCount > this.options.inMemoryDataCountThreshold && showPromptConfigValue) {
+			this.notificationService.prompt(Severity.Warning, localize('resultsGrid.largeRowSelectionPrompt.', 'You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?', rowCount), [
+				{
+					label: localize('resultsGrid.confirmLargeRowSelection', "Yes"),
+					run: async () => {
+						await runAction(true);
+					}
+				}, {
+					label: localize('resultsGrid.cancelLargeRowSelection', "Cancel"),
+					run: async () => {
+						await runAction(false);
+					}
+				}, {
+					label: localize('resultsGrid.donotShowLargeRowSelectionPromptAgain', "Don't show again"),
+					run: async () => {
+						this.configurationService.updateValue('queryEditor.results.promptForLargeRowSelection', false).catch(e => onUnexpectedError(e));
+						await runAction(true);
+					},
+					isSecondary: true
+				}
+			]);
+		} else {
+			await runAction(true);
+		}
 	}
 
 	private async onTableClick(event: ITableMouseEvent) {
@@ -749,24 +880,25 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
 			if (column.isXml || (this.gridConfig.showJsonAsLink && isJsonCell(value))) {
-				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
-				if (result.isExecutionPlan) {
-					const executionPlanGraphInfo = {
-						graphFileContent: value.displayValue,
-						graphFileType: result.queryExecutionPlanFileExtension
-					};
+				if (column.isXml && this.providerId) {
+					const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
+					if (result.isExecutionPlan) {
+						const executionPlanGraphInfo = {
+							graphFileContent: value.displayValue,
+							graphFileType: result.queryExecutionPlanFileExtension
+						};
 
-					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
-					await this.editorService.openEditor(executionPlanInput);
+						const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
+						await this.editorService.openEditor(executionPlanInput);
+						return;
+					}
 				}
-				else {
-					const content = value.displayValue;
-					const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
-					await input.resolve();
-					await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-					input.setDirty(false);
-					await this.editorService.openEditor(input);
-				}
+				const content = value.displayValue;
+				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
+				await input.resolve();
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+				input.setDirty(false);
+				await this.editorService.openEditor(input);
 			}
 		}
 	}
@@ -809,7 +941,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private rebuildActionBar() {
-		let actions = this.getCurrentActions();
+		let actions = this.getActionBarItems();
 		this.actionBar.clear();
 		if (this.options.showActionBar) {
 			this.actionBar.push(actions, { icon: true, label: false });
@@ -827,7 +959,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	protected abstract getCurrentActions(): IAction[];
+	protected getActionBarItems(): IAction[] {
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
+		];
+	}
 
 	protected abstract getContextActions(): IAction[];
 
@@ -867,9 +1007,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
+					const displayValue = r[i - 1].displayValue ?? '';
+					const ariaLabel = getCellDisplayValue(displayValue);
 					dataWithSchema[this.columns[i].field] = {
-						displayValue: r[i - 1].displayValue,
-						ariaLabel: escape(r[i - 1].displayValue),
+						displayValue: displayValue,
+						ariaLabel: ariaLabel,
 						isNull: r[i - 1].isNull,
 						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue
 					};
@@ -888,11 +1030,18 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					new SelectAllGridAction(),
 					new Separator()
 				];
+				actions.push(
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
+				);
 				let contributedActions: IAction[] = this.getContextActions();
 				if (contributedActions && contributedActions.length > 0) {
 					actions.push(...contributedActions);
-					actions.push(new Separator());
 				}
+				actions.push(new Separator());
 				actions.push(
 					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true),
@@ -959,7 +1108,7 @@ class GridTable<T> extends GridTableBase<T> {
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -970,14 +1119,15 @@ class GridTable<T> extends GridTableBase<T> {
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IQuickInputService quickInputService: IQuickInputService,
-		@ITableService tableService: ITableService
+		@IComponentContextService componentContextService: IComponentContextService,
+		@ILogService logService: ILogService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, tableService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}
@@ -986,7 +1136,7 @@ class GridTable<T> extends GridTableBase<T> {
 		return this._gridDataProvider;
 	}
 
-	protected getCurrentActions(): IAction[] {
+	protected override getActionBarItems(): IAction[] {
 
 		let actions = [];
 
@@ -998,14 +1148,8 @@ class GridTable<T> extends GridTableBase<T> {
 			}
 		}
 
-		actions.push(
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
-		);
+		actions.push(...super.getActionBarItems());
+		actions.push(this.instantiationService.createInstance(ChartDataAction));
 
 		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
 			actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
@@ -1015,13 +1159,7 @@ class GridTable<T> extends GridTableBase<T> {
 	}
 
 	protected getContextActions(): IAction[] {
-		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-		];
+		return [];
 	}
 }
 

@@ -25,10 +25,10 @@ import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
 import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
-import { readPublishProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
+import { readPublishProfile, promptForSavingProfile, savePublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings, INugetPackageReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
+import { DatabaseReferenceTreeItem, SqlProjectReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { UpdateProjectFromDatabaseDialog } from '../dialogs/updateProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -245,6 +245,9 @@ export class ProjectsController {
 				break;
 			case ItemType.postDeployScript:
 				await project.addPostDeploymentScript(relativePath);
+				break;
+			case ItemType.publishProfile:
+				await project.addNoneItem(relativePath);
 				break;
 			default: // a normal SQL object script
 				await project.addSqlObjectScript(relativePath);
@@ -471,6 +474,7 @@ export class ProjectsController {
 
 		if (publishTarget === constants.PublishTargetType.docker) {
 			const publishToDockerSettings = await getPublishToDockerSettings(project);
+			void promptForSavingProfile(project, publishToDockerSettings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (!publishToDockerSettings) {
 				// User cancelled
 				return;
@@ -479,6 +483,7 @@ export class ProjectsController {
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			try {
 				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
+				void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 				if (settings?.deploySettings && settings?.sqlDbSetting) {
 					await this.publishToNewAzureServer(project, settings);
 				}
@@ -489,6 +494,7 @@ export class ProjectsController {
 		} else {
 			let settings: ISqlProjectPublishSettings | undefined = await getPublishDatabaseSettings(project);
 
+			void promptForSavingProfile(project, settings);		// not awaiting this call, because saving profile should not stop the actual publish workflow
 			if (settings) {
 				// 5. Select action to take
 				const action = await vscode.window.showQuickPick(
@@ -534,7 +540,7 @@ export class ProjectsController {
 		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
-		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		telemetryProps.profileUsed = (settings.publishProfileUri !== undefined ? true : false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getTime();
 		const currentPublishTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
@@ -729,7 +735,10 @@ export class ProjectsController {
 
 		const itemType = templates.get(itemTypeName);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePath);
-		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, constants.sqlFileExtension, options?.defaultName);
+		const isItemTypePublishProfile = itemTypeName === constants.publishProfileFriendlyName || itemTypeName === ItemType.publishProfile;
+		const fileExtension = isItemTypePublishProfile ? constants.publishProfileExtension : constants.sqlFileExtension;
+		const defaultName = isItemTypePublishProfile ? `${project.projectFileName}_` : options?.defaultName;
+		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, fileExtension, defaultName);
 
 		itemObjectName = itemObjectName?.trim();
 
@@ -737,7 +746,7 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
+		const relativeFilePath = path.join(relativePath, itemObjectName + fileExtension);
 
 		const telemetryProps: Record<string, string> = { itemType: itemType.type };
 		const telemetryMeasurements: Record<string, number> = {};
@@ -749,7 +758,7 @@ export class ProjectsController {
 		}
 
 		try {
-			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName]]));
+			const absolutePath = await this.addFileToProjectFromTemplate(project, itemType, relativeFilePath, new Map([['OBJECT_NAME', itemObjectName], ['PROJECT_NAME', project.projectFileName]]));
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
@@ -888,12 +897,12 @@ export class ProjectsController {
 				.send();
 
 			this.refreshProjectsTree(context);
-		} catch {
+		} catch (err) {
 			TelemetryReporter.createErrorEvent2(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
-			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.relativeProjectUri.path));
+			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.relativeProjectUri.path, utils.getErrorMessage(err)));
 		}
 	}
 
@@ -984,14 +993,21 @@ export class ProjectsController {
 			return;
 		}
 
-		const defaultValue = await vscode.window.showInputBox(
+		let defaultValue = await vscode.window.showInputBox(
 			{
 				title: constants.enterNewSqlCmdVariableDefaultValue(variableName),
 				ignoreFocusOut: true
 			});
 
 		if (!defaultValue) {
-			return;
+			// prompt asking if they want to add to add a sqlcmd variable without a default value
+			const result = await vscode.window.showInformationMessage(constants.addSqlCmdVariableWithoutDefaultValue(variableName), constants.yesString, constants.noString);
+
+			if (result === constants.noString) {
+				return;
+			} else {
+				defaultValue = '';
+			}
 		}
 
 		await project.addSqlCmdVariable(variableName, defaultValue);
@@ -1017,6 +1033,22 @@ export class ProjectsController {
 	public async openContainingFolder(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = await this.getProjectFromContext(context);
 		await vscode.commands.executeCommand(constants.revealFileInOsCommand, vscode.Uri.file(project.projectFilePath));
+	}
+
+	/**
+	 * Open the project indicated by `context` in the workspace
+	 * @param context a SqlProjectReferenceTreeItem in the project's tree
+	 */
+	public async openReferencedSqlProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = await this.getProjectFromContext(node);
+
+		if (!(node instanceof SqlProjectReferenceTreeItem)) {
+			return;
+		}
+
+		const absolutePath = path.normalize(path.join(project.projectFolderPath, node.reference.fsUri.fsPath));
+		await this.openProjectInWorkspace(absolutePath);
 	}
 
 	/**

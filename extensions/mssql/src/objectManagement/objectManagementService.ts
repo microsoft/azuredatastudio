@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
@@ -67,6 +67,126 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	}
 }
 
+const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
+	{
+		name: 'Server',
+		displayName: 'Server',
+		permissions: [{
+			name: 'CONNECT SQL',
+			displayName: 'CONNECT SQL'
+		}, {
+			name: 'VIEW ANY DATABASE',
+			displayName: 'VIEW ANY DATABASE'
+		}]
+	}, {
+		name: 'ServerRole',
+		displayName: 'Server Role',
+		permissions: [{
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}
+];
+
+const DatabaseLevelSecurableTypes: SecurableTypeMetadata[] = [
+	{
+		name: 'AggregateFunction',
+		displayName: 'Aggregate Function',
+		permissions: [{
+			name: 'EXECUTE',
+			displayName: 'EXECUTE'
+		}, {
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}]
+	}, {
+		name: 'Table',
+		displayName: 'Table',
+		permissions: [{
+			name: 'SELECT',
+			displayName: 'SELECT'
+		}, {
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}, {
+		name: 'View',
+		displayName: 'View',
+		permissions: [{
+			name: 'ALTER',
+			displayName: 'ALTER'
+		}, {
+			name: 'CONTROL',
+			displayName: 'CONTROL'
+		}, {
+			name: 'TAKE OWNERSHIP',
+			displayName: 'TAKE OWNERSHIP'
+		}]
+	}
+]
+
+const ServerLevelPermissions: SecurablePermissions[] = [
+	{
+		name: 'Server',
+		type: 'Server',
+		permissions: [
+			{
+				permission: 'CONNECT SQL',
+				grant: true,
+				grantor: 'sa',
+				withGrant: undefined
+			}, {
+				permission: 'VIEW ANY DATABASE',
+				grant: false,
+				grantor: 'sa',
+				withGrant: undefined
+			}
+		],
+		effectivePermissions: ['CONNECT SQL', 'VIEW ANY DATABASE']
+	}
+];
+
+const DatabaseLevelPermissions: SecurablePermissions[] = [
+	{
+		name: 'table1',
+		type: 'Table',
+		schema: 'dbo',
+		permissions: [
+			{
+				permission: 'SELECT',
+				grant: true,
+				grantor: '',
+				withGrant: undefined
+			}
+		],
+		effectivePermissions: ['SELECT']
+	}, {
+		name: 'view1',
+		type: 'View',
+		schema: 'Sales',
+		permissions: [
+			{
+				permission: 'ALTER',
+				grant: true,
+				grantor: '',
+				withGrant: undefined
+			}
+		],
+		effectivePermissions: ['ALTER']
+	}
+];
 export class TestObjectManagementService implements IObjectManagementService {
 	initializeView(contextId: string, objectType: ObjectManagement.NodeType, connectionUri: string, database: string, isNewObject: boolean, parentUrn: string, objectUrn: string): Thenable<ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 		let obj;
@@ -102,32 +222,32 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve();
 	}
 
-	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText: string, schema: string): Promise<ObjectManagement.SearchResultItem[]> {
+	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Promise<ObjectManagement.SearchResultItem[]> {
 		const items: ObjectManagement.SearchResultItem[] = [];
 		objectTypes.forEach(type => {
-			items.push(...this.generateSearchResult(type, 15));
+			items.push(...this.generateSearchResult(type, schema, 15));
 		});
 		return this.delayAndResolve(items);
 	}
 
-	private generateSearchResult(objectType: ObjectManagement.NodeType, count: number): ObjectManagement.SearchResultItem[] {
+	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {
 		let items: ObjectManagement.SearchResultItem[] = [];
 		for (let i = 0; i < count; i++) {
-			items.push(<ObjectManagement.SearchResultItem>{ name: `${objectType} ${i}`, type: objectType });
+			items.push(<ObjectManagement.SearchResultItem>{ name: `${objectType} ${i}`, schema: schema, type: objectType });
 		}
 		return items;
 	}
 
-	private getLoginView(isNewObject: boolean, name: string): ObjectManagement.LoginViewInfo {
+	private getLoginView(isNewObject: boolean, name: string): LoginViewInfo {
 		const serverRoles = ['sysadmin', 'public', 'bulkadmin', 'dbcreator', 'diskadmin', 'processadmin', 'securityadmin', 'serveradmin'];
 		const languages = ['<default>', 'English'];
 		const databases = ['master', 'db1', 'db2'];
-		let login: ObjectManagement.LoginViewInfo;
+		let login: LoginViewInfo;
 		if (isNewObject) {
-			login = <ObjectManagement.LoginViewInfo>{
+			login = <LoginViewInfo>{
 				objectInfo: {
 					name: '',
-					authenticationType: ObjectManagement.AuthenticationType.Sql,
+					authenticationType: AuthenticationType.Sql,
 					enforcePasswordPolicy: true,
 					enforcePasswordExpiration: true,
 					mustChangePassword: true,
@@ -136,21 +256,23 @@ export class TestObjectManagementService implements IObjectManagementService {
 					serverRoles: ['public', 'bulkadmin'],
 					connectPermission: true,
 					isEnabled: true,
-					isLockedOut: false
+					isLockedOut: false,
+					securablePermissions: []
 				},
-				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
+				authenticationTypes: [AuthenticationType.Sql, AuthenticationType.Windows],
 				supportAdvancedOptions: true,
 				supportAdvancedPasswordOptions: true,
 				canEditLockedOutState: false,
 				languages: languages,
 				databases: databases,
-				serverRoles: serverRoles
+				serverRoles: serverRoles,
+				supportedSecurableTypes: ServerLevelSecurableTypes
 			};
 		} else {
-			login = <ObjectManagement.LoginViewInfo>{
+			login = <LoginViewInfo>{
 				objectInfo: {
 					name: name,
-					authenticationType: ObjectManagement.AuthenticationType.Sql,
+					authenticationType: AuthenticationType.Sql,
 					enforcePasswordPolicy: true,
 					enforcePasswordExpiration: true,
 					mustChangePassword: true,
@@ -160,22 +282,24 @@ export class TestObjectManagementService implements IObjectManagementService {
 					connectPermission: true,
 					isEnabled: true,
 					isLockedOut: false,
-					password: '******************'
+					password: '******************',
+					securablePermissions: ServerLevelPermissions
 				},
-				authenticationTypes: [ObjectManagement.AuthenticationType.Sql, ObjectManagement.AuthenticationType.Windows],
+				authenticationTypes: [AuthenticationType.Sql, AuthenticationType.Windows],
 				supportAdvancedOptions: true,
 				supportAdvancedPasswordOptions: true,
 				canEditLockedOutState: false,
 				languages: languages,
 				databases: databases,
-				serverRoles: serverRoles
+				serverRoles: serverRoles,
+				supportedSecurableTypes: ServerLevelSecurableTypes
 			};
 		}
 		return login;
 	}
 
-	private getUserView(isNewObject: boolean, name: string): ObjectManagement.UserViewInfo {
-		let viewInfo: ObjectManagement.UserViewInfo;
+	private getUserView(isNewObject: boolean, name: string): UserViewInfo {
+		let viewInfo: UserViewInfo;
 		const languages = ['<default>', 'English'];
 		const schemas = ['dbo', 'sys', 'alanren'];
 		const logins = ['sa', 'alanren', 'alanren@microsoft.com'];
@@ -183,112 +307,128 @@ export class TestObjectManagementService implements IObjectManagementService {
 
 		if (isNewObject) {
 			viewInfo = {
-				objectInfo: <ObjectManagement.User>{
+				objectInfo: <User>{
 					name: '',
-					type: ObjectManagement.UserType.LoginMapped,
+					type: UserType.LoginMapped,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
-					authenticationType: ObjectManagement.AuthenticationType.Sql,
+					authenticationType: AuthenticationType.Sql,
 					loginName: 'sa',
 					ownedSchemas: [],
 					databaseRoles: [],
-					password: ''
+					password: '',
+					securablePermissions: []
 				},
 				languages: languages,
 				schemas: schemas,
 				logins: logins,
 				databaseRoles: databaseRoles,
 				userTypes: [
-					ObjectManagement.UserType.LoginMapped,
-					ObjectManagement.UserType.AADAuthentication,
-					ObjectManagement.UserType.SqlAuthentication,
-					ObjectManagement.UserType.NoLoginAccess
-				]
+					UserType.LoginMapped,
+					UserType.AADAuthentication,
+					UserType.SqlAuthentication,
+					UserType.NoLoginAccess
+				],
+				supportedSecurableTypes: DatabaseLevelSecurableTypes
 			};
 		} else {
 			viewInfo = {
-				objectInfo: <ObjectManagement.User>{
+				objectInfo: <User>{
 					name: name,
-					type: ObjectManagement.UserType.LoginMapped,
+					type: UserType.LoginMapped,
 					defaultSchema: 'dbo',
 					defaultLanguage: '<default>',
 					loginName: 'sa',
 					ownedSchemas: ['dbo'],
-					databaseRoles: ['dbmanager', 'bulkadmin']
+					databaseRoles: ['dbmanager', 'bulkadmin'],
+					securablePermissions: DatabaseLevelPermissions
 				},
 				languages: languages,
 				schemas: schemas,
 				logins: logins,
 				databaseRoles: databaseRoles,
 				userTypes: [
-					ObjectManagement.UserType.LoginMapped,
-					ObjectManagement.UserType.AADAuthentication,
-					ObjectManagement.UserType.SqlAuthentication,
-					ObjectManagement.UserType.NoLoginAccess
-				]
+					UserType.LoginMapped,
+					UserType.AADAuthentication,
+					UserType.SqlAuthentication,
+					UserType.NoLoginAccess
+				],
+				supportedSecurableTypes: DatabaseLevelSecurableTypes
 			};
 		}
 		return viewInfo;
 	}
 
-	private getServerRoleView(isNewObject: boolean, name: string): ObjectManagement.ServerRoleViewInfo {
-		return isNewObject ? <ObjectManagement.ServerRoleViewInfo>{
+	private getServerRoleView(isNewObject: boolean, name: string): ServerRoleViewInfo {
+		return isNewObject ? <ServerRoleViewInfo>{
 			objectInfo: {
 				name: '',
 				members: [],
 				owner: '',
-				memberships: []
+				memberships: [],
+				securablePermissions: []
 			},
 			isFixedRole: false,
 			serverRoles: ['ServerLevelServerRole 1', 'ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
-		} : <ObjectManagement.ServerRoleViewInfo>{
+			supportedSecurableTypes: ServerLevelSecurableTypes
+		} : <ServerRoleViewInfo>{
 			objectInfo: {
 				name: 'ServerLevelServerRole 1',
 				members: ['ServerLevelLogin 1', 'ServerLevelServerRole 2'],
 				owner: 'ServerLevelLogin 2',
-				memberships: ['ServerLevelServerRole 3', 'ServerLevelServerRole 4']
+				memberships: ['ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
+				securablePermissions: ServerLevelPermissions
 			},
 			isFixedRole: false,
-			serverRoles: ['ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4']
+			serverRoles: ['ServerLevelServerRole 2', 'ServerLevelServerRole 3', 'ServerLevelServerRole 4'],
+			supportedSecurableTypes: ServerLevelSecurableTypes
 		};
 	}
 
-	private getApplicationRoleView(isNewObject: boolean, name: string): ObjectManagement.ApplicationRoleViewInfo {
-		return isNewObject ? <ObjectManagement.ApplicationRoleViewInfo>{
+	private getApplicationRoleView(isNewObject: boolean, name: string): ApplicationRoleViewInfo {
+		return isNewObject ? <ApplicationRoleViewInfo>{
 			objectInfo: {
 				name: '',
 				defaultSchema: 'dbo',
 				ownedSchemas: [],
+				securablePermissions: []
 			},
-			schemas: ['dbo', 'sys', 'admin']
-		} : <ObjectManagement.ApplicationRoleViewInfo>{
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: []
+		} : <ApplicationRoleViewInfo>{
 			objectInfo: {
 				name: 'app role1',
 				password: '******************',
 				defaultSchema: 'dbo',
 				ownedSchemas: ['dbo'],
+				securablePermissions: DatabaseLevelPermissions
 			},
-			schemas: ['dbo', 'sys', 'admin']
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: DatabaseLevelSecurableTypes
 		};
 	}
 
-	private getDatabaseRoleView(isNewObject: boolean, name: string): ObjectManagement.DatabaseRoleViewInfo {
-		return isNewObject ? <ObjectManagement.DatabaseRoleViewInfo>{
+	private getDatabaseRoleView(isNewObject: boolean, name: string): DatabaseRoleViewInfo {
+		return isNewObject ? <DatabaseRoleViewInfo>{
 			objectInfo: {
 				name: '',
 				owner: '',
 				members: [],
-				ownedSchemas: []
+				ownedSchemas: [],
+				securablePermissions: []
 			},
-			schemas: ['dbo', 'sys', 'admin']
-		} : <ObjectManagement.DatabaseRoleViewInfo>{
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: DatabaseLevelSecurableTypes
+		} : <DatabaseRoleViewInfo>{
 			objectInfo: {
 				name: 'db role1',
 				owner: '',
 				members: [],
-				ownedSchemas: ['dbo']
+				ownedSchemas: ['dbo'],
+				securablePermissions: DatabaseLevelPermissions
 			},
-			schemas: ['dbo', 'sys', 'admin']
+			schemas: ['dbo', 'sys', 'admin'],
+			supportedSecurableTypes: DatabaseLevelSecurableTypes
 		};
 	}
 
