@@ -814,6 +814,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "useFullOptions": true,
       "isExecutionPlanProvider": true,
       "supportCopyResultsToClipboard": true,
       "azureResource": "Sql",
@@ -952,7 +953,7 @@
           "description": "%mssql.connectionOptions.applicationName.description%",
           "groupName": "%mssql.connectionOptions.groupName.initialization%",
           "valueType": "string",
-          "defaultValue": null,
+          "defaultValue": "azdata",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,

@@ -363,8 +363,16 @@ export class ConnectionConfig {
 			p.options.database === profile.options.database &&
 			p.options.server === profile.options.server &&
 			p.options.user === profile.options.user &&
-			p.groupId === newGroupID);
+			p.options.connectionName === profile.options.connectionName &&
+			p.groupId === newGroupID &&
+			this.checkIfNonDefaultOptionsMatch(p, profile));
 		return existingProfile === undefined;
+	}
+
+	private checkIfNonDefaultOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
+		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
+		return result;
 	}
 
 	/**
