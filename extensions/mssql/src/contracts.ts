@@ -1640,7 +1640,7 @@ export namespace DetachDatabaseRequest {
 }
 
 export namespace ScriptDetachDatabaseRequest {
-	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/scriptDetach');
+	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/scriptDetachDatabase');
 }
 
 // ------------------------------- < Object Management > ------------------------------------
