@@ -44,11 +44,11 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._updateStatistics);
+		await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._updateStatistics, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.scriptDetachDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._updateStatistics);
+		return await this.objectManagementService.detachDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._updateStatistics, true);
 	}
 
 	protected override async validateInput(): Promise<string[]> {
