@@ -15,10 +15,6 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), false, extensionContext);
 	}
 
-	public override async open(): Promise<void> {
-		await super.open();
-	}
-
 	public override async createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		const durationComponent = view.modelBuilder.text().withProps({
 			value: 'Duration'

@@ -15,10 +15,6 @@ export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 		super(constants.topResourceConsumingQueries, constants.topResourceConsumingQueriesToolbarLabel(databaseName), true, extensionContext);
 	}
 
-	public override async open(): Promise<void> {
-		await super.open();
-	}
-
 	public override async createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		// TODO: replace these text components with the actual chart components
 		const queriesComponent = view.modelBuilder.text().withProps({
