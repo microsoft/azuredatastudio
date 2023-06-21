@@ -227,7 +227,6 @@ export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBac
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
 export const BackupSectionHeader = localize('objectManagement.databaseProperties.backupSectionHeader', "Backup");
 export const DatabaseSectionHeader = localize('objectManagement.databaseProperties.databaseSectionHeader', "Database");
-export const MaintenanceSectionHeader = localize('objectManagement.databaseProperties.maintenanceSectionHeader', "Maintenance");
 export const NamePropertyText = localize('objectManagement.databaseProperties.name', "Name");
 export const StatusText = localize('objectManagement.databaseProperties.status', "Status");
 export const OwnerPropertyText = localize('objectManagement.databaseProperties.owner', "Owner");

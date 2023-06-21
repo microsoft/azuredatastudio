@@ -69,7 +69,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				.withTabs([propertiesTabGroup])
 				.withProps({
 					CSSStyles: {
-						'margin-top': '-10px'
+						'margin': '-10px 0px 0px -10px'
 					}
 				})
 				.component();
