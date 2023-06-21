@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { mixin, deepClone } from 'vs/base/common/objects';
+import * as chartjs from 'chart.js';
 
 import BarChart, { IBarChartConfig } from './barChart.component';
-import { defaultChartConfig, IDataSet } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
+import { defaultChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IPointDataSet } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { DataType, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -40,7 +40,7 @@ export default class LineChart extends BarChart {
 		super.init();
 	}
 
-	public override get chartData(): Array<IDataSet | IPointDataSet> {
+	public override get chartData(): chartjs.ChartDataset[] {
 		if (this._config.dataType === DataType.Number) {
 			return super.getChartData();
 		} else {
@@ -53,10 +53,10 @@ export default class LineChart extends BarChart {
 		this._cachedPointData = undefined;
 	}
 
-	private _cachedPointData: Array<IPointDataSet>;
-	protected getDataAsPoint(): Array<IPointDataSet> {
+	private _cachedPointData: chartjs.ChartDataset[];
+	protected getDataAsPoint(): chartjs.ChartDataset[] {
 		if (!this._cachedPointData) {
-			const dataSetMap: { [label: string]: IPointDataSet } = {};
+			const dataSetMap: { [label: string]: chartjs.ChartDataset } = {};
 			this._data.rows.map(row => {
 				if (row && row.length >= 3) {
 					const legend = row[0];
@@ -82,25 +82,24 @@ export default class LineChart extends BarChart {
 	protected addAxisLabels(): void {
 		const xLabel = this._config.xAxisLabel || this._data.columns[1] || 'x';
 		const yLabel = this._config.yAxisLabel || this._data.columns[2] || 'y';
-		const options = {
+		const options: chartjs.ChartOptions = {
 			scales: {
-				xAxes: [{
+				x: {
 					type: 'linear',
 					position: 'bottom',
 					display: true,
-					scaleLabel: {
+					title: {
 						display: true,
-						labelString: xLabel
+						text: xLabel
 					}
-				}],
-
-				yAxes: [{
+				},
+				y: {
 					display: true,
-					scaleLabel: {
+					title: {
 						display: true,
-						labelString: yLabel,
+						text: yLabel
 					}
-				}]
+				}
 			}
 		};
 
