@@ -170,7 +170,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 						copyString = `${copyString}${value}\t`;
 						htmlCopyString = `${htmlCopyString}<td style="border:1.0pt solid black;padding:3pt;font-size:9pt;">${escape(value)}</td>`;
 					}
-					// Removes the tab seperator from the end of a row
+					// Removes the tab separator from the end of a row
 					copyString = copyString.slice(0, -1 * '\t'.length) + '\n';
 					htmlCopyString = htmlCopyString + '</tr>';
 				}
@@ -538,7 +538,7 @@ export class ParseSyntaxAction extends Action {
 	public override async run(): Promise<void> {
 		const editor = this.editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
-			if (!editor.isSelectionEmpty()) {
+			if (!editor.isEditorEmpty()) {
 				if (this.isConnected(editor)) {
 					let text = editor.getSelectionText();
 					if (text === '') {
