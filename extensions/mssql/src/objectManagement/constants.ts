@@ -40,3 +40,5 @@ export const enum TelemetryActions {
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
+
+export const AzureSQLMI = 'Azure SQL Database Managed Instance';

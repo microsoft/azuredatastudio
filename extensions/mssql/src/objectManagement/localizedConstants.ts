@@ -220,6 +220,7 @@ export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('o
 
 // Object Properties Dialog
 export const PropertiesHeader = localize('objectManagement.properties', "Properties");
+export const HardwareGenerationText = localize('objectManagement.hardwareGeneration', "Hardware Generation");
 export const LanguageText = localize('objectManagement.language', "Language");
 export const MemoryText = localize('objectManagement.memory', "Memory");
 export const OperatingSystemText = localize('objectManagement.operatingSystem', "Operating System");
@@ -228,6 +229,15 @@ export const ProcessorsText = localize('objectManagement.processors', "Processor
 export const IsClusteredText = localize('objectManagement.isClustered', "Is Clustered");
 export const IsHadrEnabledText = localize('objectManagement.isHadrEnabled', "Is HADR Enabled");
 export const IsPolyBaseInstalledText = localize('objectManagement.isPolyBaseInstalled', "Is PolyBase Installed");
+export const IsXTPSupportedText = localize('objectManagement.isXTPSupported', "Is XTP Supported");
+export const ProductText = localize('objectManagement.product', "Product");
+export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size");
+export const RootDirectoryText = localize('objectManagement.rootDirectory', "Root Directory");
+export const ServerCollationText = localize('objectManagement.serverCollation', "Server Collation");
+export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
+export const StorageSpaceUsageInGBText = localize('objectManagement.storageSpaceUsageInGB', "Storage Space Usage");
+export const VersionText = localize('objectManagement.versionText', "Version");
+
 
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");

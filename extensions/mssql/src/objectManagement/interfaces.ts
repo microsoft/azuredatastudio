@@ -441,6 +441,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 }
 
 export interface Server extends ObjectManagement.SqlObject {
+	hardwareGeneration: string;
 	language: string;
 	memoryInMB: number;
 	operatingSystem: string;
@@ -456,7 +457,7 @@ export interface Server extends ObjectManagement.SqlObject {
 	rootDirectory: string;
 	serverCollation: string;
 	serviceTier: string;
-	storageSpaceUsageInGb: number;
+	storageSpaceUsageInGB: number;
 	minServerMemory: number;
 	maxServerMemory: number;
 }
