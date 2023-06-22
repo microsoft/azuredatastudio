@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
-import { Database, DatabaseViewInfo } from '../interfaces';
+import { BooleanOptions, Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringinMB } from '../utils';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -48,6 +48,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private databaseReadOnlyInput: azdata.DropDownComponent;
 	private encryptionEnabledInput: azdata.DropDownComponent;
 	private restrictAccessInput: azdata.DropDownComponent;
+	private booleanOptionsArray: string[];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -67,6 +68,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			this.formContainer.addItems(components);
 		} else {
+			// Options of a boolean dropdown
+			this.booleanOptionsArray = Object.keys(BooleanOptions);
+
+			//Sample data: TODO: REMOVE this after getting real values
+			this.viewInfo.pageVerifyOptions = ['CHECKSUM', 'TORN_PAGE_DETECTION', 'NONE'];
+			this.viewInfo.restrictAccessOptions = ['MULTI_USER', 'SINGLE_USER', 'RESTRICTED_USER'];
+
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
@@ -234,28 +242,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Database Properties - Options Tab
 	private initializeAutomaticSection(): void {
 		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatisticsText, async (newValue) => {
-			this.objectInfo.autoCreateIncrementalStatistics = newValue;
-		}, ['True', 'False'], this.objectInfo.autoCreateIncrementalStatistics, true);
+			this.objectInfo.autoCreateIncrementalStatistics = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.autoCreateIncrementalStatistics), true);
 		const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatisticsText, this.autoCreateIncrementalStatisticsInput);
 
 		this.autoCreateStatisticsInput = this.createDropdown(localizedConstants.AutoCreateStatisticsText, async (newValue) => {
-			this.objectInfo.autoCreateStatistics = newValue;
-		}, ['True', 'False'], this.objectInfo.autoCreateStatistics, true);
+			this.objectInfo.autoCreateStatistics = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.autoCreateStatistics), true);
 		const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatisticsText, this.autoCreateStatisticsInput);
 
 		this.autoShrinkInput = this.createDropdown(localizedConstants.AutoShrinkText, async (newValue) => {
-			this.objectInfo.autoShrink = newValue;
-		}, ['True', 'False'], this.objectInfo.autoShrink, true);
+			this.objectInfo.autoShrink = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.autoShrink), true);
 		const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrinkText, this.autoShrinkInput);
 
 		this.autoUpdateStatisticsInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsText, async (newValue) => {
-			this.objectInfo.autoUpdateStatistics = newValue;
-		}, ['True', 'False'], this.objectInfo.autoUpdateStatistics, true);
+			this.objectInfo.autoUpdateStatistics = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.autoUpdateStatistics), true);
 		const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsText, this.autoUpdateStatisticsInput);
 
 		this.autoUpdateStatisticsAsynchronouslyInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, async (newValue) => {
-			this.objectInfo.autoUpdateStatisticsAsynchronously = newValue;
-		}, ['True', 'False'], this.objectInfo.autoUpdateStatisticsAsynchronously, true);
+			this.objectInfo.autoUpdateStatisticsAsynchronously = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.autoUpdateStatisticsAsynchronously), true);
 		const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, this.autoUpdateStatisticsAsynchronouslyInput);
 
 		this.automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
@@ -269,8 +277,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	private initializeLedgerSection(): void {
 		this.isLedgerDatabaseInput = this.createDropdown(localizedConstants.IsLedgerDatabaseText, async (newValue) => {
-			this.objectInfo.isLedgerDatabase = newValue;
-		}, ['True', 'False'], this.objectInfo.isLedgerDatabase, true);
+			this.objectInfo.isLedgerDatabase = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.isLedgerDatabase), true);
 		const isLedgerDatabaseInputContainer = this.createLabelInputContainer(localizedConstants.IsLedgerDatabaseText, this.isLedgerDatabaseInput);
 
 		this.ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
@@ -282,7 +290,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeRecoverySection(): void {
 		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
 			this.objectInfo.pageVerify = newValue;
-		}, ['True', 'False'], this.objectInfo.pageVerify, true);
+		}, this.viewInfo.pageVerifyOptions, this.objectInfo.pageVerify, true);
 		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
 
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
@@ -290,28 +298,29 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true);
 		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
 
-		this.stateSection = this.createGroup(localizedConstants.RecoverySectionHeader, [
+		this.recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [
 			pageVerifyContainer,
 			targetRecoveryTimeContainer
 		], true);
 	}
 
 	private initializeStateSection(): void {
-		this.databaseReadOnlyInput = this.createDropdown(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
-			this.objectInfo.databaseReadOnly = newValue;
-		}, ['True', 'False'], this.objectInfo.databaseReadOnly, true);
-		const databaseReadOnlyContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.databaseReadOnlyInput);
+		this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
+			this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.databaseReadOnly), true);
+		const databaseReadOnlyContainer = this.createLabelInputContainer(localizedConstants.DatabaseReadOnlyText, this.databaseReadOnlyInput);
 
+		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
 		const databaseStateContainer = this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput);
 
 		this.encryptionEnabledInput = this.createDropdown(localizedConstants.EncryptionEnabledText, async (newValue) => {
-			this.objectInfo.encryptionEnabled = newValue;
-		}, ['True', 'False'], this.objectInfo.encryptionEnabled, true);
+			this.objectInfo.encryptionEnabled = (newValue.toLowerCase() === 'true');
+		}, this.booleanOptionsArray, String(this.objectInfo.encryptionEnabled), true);
 		const encryptionEnabledContainer = this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput);
 
 		this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
 			this.objectInfo.restrictAccess = newValue;
-		}, ['True', 'False'], this.objectInfo.restrictAccess, true);
+		}, this.viewInfo.restrictAccessOptions, this.objectInfo.restrictAccess, true);
 		const restrictAccessContainer = this.createLabelInputContainer(localizedConstants.RestrictAccessText, this.restrictAccessInput);
 
 		this.stateSection = this.createGroup(localizedConstants.StateSectionHeader, [

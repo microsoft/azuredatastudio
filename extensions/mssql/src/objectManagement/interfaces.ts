@@ -286,6 +286,14 @@ export const enum UserType {
 }
 
 /**
+ * Boolean options for boolean type dropdowns
+ */
+export enum BooleanOptions {
+	True = 'True',
+	False = 'False'
+}
+
+/**
  * Database user.
  */
 export interface User extends SecurityPrincipalObject {
@@ -443,17 +451,16 @@ export interface Database extends ObjectManagement.SqlObject {
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
 	azureMaxSize?: string;
-	autoCreateIncrementalStatistics?: string;
-	autoCreateStatistics?: string;
-	autoShrink?: string;
-	autoUpdateStatistics?: string;
-	autoUpdateStatisticsAsynchronously?: string;
-	isLedgerDatabase?: string;
+	autoCreateIncrementalStatistics?: boolean;
+	autoCreateStatistics?: boolean;
+	autoShrink?: boolean;
+	autoUpdateStatistics?: boolean;
+	autoUpdateStatisticsAsynchronously?: boolean;
+	isLedgerDatabase?: boolean;
 	pageVerify?: string;
 	targetRecoveryTimeInSec?: number;
-	databaseReadOnly?: string;
-	databaseState?: string;
-	encryptionEnabled?: string;
+	databaseReadOnly?: boolean;
+	encryptionEnabled?: boolean;
 	restrictAccess?: string;
 }
 
@@ -469,6 +476,9 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureServiceLevelObjectives: AzureEditionDetails[];
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
+
+	pageVerifyOptions: string[];
+	restrictAccessOptions: string[];
 }
 
 export interface AzureEditionDetails {
