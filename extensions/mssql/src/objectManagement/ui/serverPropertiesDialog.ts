@@ -48,7 +48,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	protected async initializeUI(): Promise<void> {
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel().withTabs([serverPropertiesTabGroup]).component();
 		this.formContainer.addItem(serverPropertiesTabbedPannel);
 	}
