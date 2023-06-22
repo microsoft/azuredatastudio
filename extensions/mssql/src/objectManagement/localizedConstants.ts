@@ -223,7 +223,7 @@ export const ObjectSelectionMethodDialog_AllObjectsOfTypes = localize('objectMan
 export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema', "All objects belonging to a schema");
 export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
-// Object Properties Dialog
+// Server Properties Dialog
 export const PropertiesHeader = localize('objectManagement.properties', "Properties");
 export const HardwareGenerationText = localize('objectManagement.hardwareGeneration', "Hardware Generation");
 export const LanguageText = localize('objectManagement.language', "Language");
