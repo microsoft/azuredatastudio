@@ -226,6 +226,10 @@ export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('o
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
 export const BackupSectionHeader = localize('objectManagement.databaseProperties.backupSectionHeader', "Backup");
+export const AutomaticSectionHeader = localize('objectManagement.databaseProperties.automaticSectionHeader', "Automatic");
+export const LedgerSectionHeader = localize('objectManagement.databaseProperties.ledgerSectionHeader', "Ledger");
+export const RecoverySectionHeader = localize('objectManagement.databaseProperties.recoverySectionHeader', "Recovery");
+export const StateSectionHeader = localize('objectManagement.databaseProperties.stateSectionHeader', "State");
 export const DatabaseSectionHeader = localize('objectManagement.databaseProperties.databaseSectionHeader', "Database");
 export const NamePropertyText = localize('objectManagement.databaseProperties.name', "Name");
 export const StatusText = localize('objectManagement.databaseProperties.status', "Status");
@@ -237,6 +241,12 @@ export const NumberOfUsersText = localize('objectManagement.databaseProperties.n
 export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
 export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
 export const StringValueInMB = (value: string) => localize('objectManagement.databaseProperties.mbUnitText', "{0} MB", value);
+export const AutoCreateIncrementalStatistics = localize('objectManagement.databaseProperties.autoCreateIncrementalStatistics', "Auto Create Incremental Statistics");
+export const AutoCreateStatistics = localize('objectManagement.databaseProperties.AutoCreateStatistics', "Auto Create Statistics");
+export const AutoShrink = localize('objectManagement.databaseProperties.autoShrink', "Auto Shrink");
+export const AutoUpdateStatistics = localize('objectManagement.databaseProperties.autoUpdateStatistics', "Auto Update Statistics");
+export const AutoUpdateStatisticsAsynchronously = localize('objectManagement.databaseProperties.autoUpdateStatisticsAsynchronously', "Auto Update Statistics Asynchronously");
+
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

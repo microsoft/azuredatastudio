@@ -14,8 +14,10 @@ import { convertNumToTwoDecimalStringinMB } from '../utils';
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
+	private optionsTab: azdata.Tab;
 
-	//Database properties options
+	// Database properties options
+	// General Tab
 	private nameInput: azdata.InputBoxComponent;
 	private backupSection: azdata.GroupContainer;
 	private lastDatabaseBackupInput: azdata.InputBoxComponent;
@@ -30,6 +32,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private memoryAllocatedInput: azdata.InputBoxComponent;
 	private memoryUsedInput: azdata.InputBoxComponent;
 	private collationInput: azdata.InputBoxComponent;
+	// Options Tab
+	private automaticSection: azdata.GroupContainer;
+	private ledgerSection: azdata.GroupContainer;
+	private recoverySection: azdata.GroupContainer;
+	private stateSection: azdata.GroupContainer;
+	private autoCreateIncrementalStatisticsInput: azdata.DropDownComponent;
+	private autoCreateStatisticsInput: azdata.DropDownComponent;
+	private autoShrinkInput: azdata.DropDownComponent;
+	private autoUpdateStatisticsInput: azdata.DropDownComponent;
+	private autoUpdateStatisticsAsynchronouslyInput: azdata.DropDownComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -53,6 +65,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
+			//Initilaize options Tab sections
+			this.initializeAutomaticSection();
+			this.initializeLedgerSection();
+			this.initializeRecoverySection();
+			this.initializeStateSection();
+
 			// Initilaize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
@@ -63,8 +81,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				], false)
 			};
 
+			// Initilaize Options Tab
+			this.optionsTab = {
+				title: localizedConstants.OptionsSectionHeader,
+				id: 'optionsId',
+				content: this.createGroup('', [
+					this.automaticSection,
+					this.ledgerSection,
+					this.recoverySection,
+					this.stateSection
+				], false)
+			};
+
 			// Initilaize tab group with tabbed panel
-			const propertiesTabGroup = { title: '', tabs: [this.generalTab] };
+			const propertiesTabGroup = { title: '', tabs: [this.generalTab, this.optionsTab] };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
 				.withProps({
@@ -191,6 +221,59 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			numberOfUsersContainer,
 			memoryAllocatedContainer,
 			memoryUsedContainer
+		], true);
+	}
+	//#endregion
+
+	//#region Database Properties - Options Tab
+	private initializeAutomaticSection(): void {
+		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatistics, async (newValue) => {
+			this.objectInfo.autoCreateIncrementalStatistics = newValue;
+		}, ['True', 'False'], this.objectInfo.autoCreateIncrementalStatistics, true);
+		const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatistics, this.autoCreateIncrementalStatisticsInput);
+
+		this.autoCreateStatisticsInput = this.createDropdown(localizedConstants.AutoCreateStatistics, async (newValue) => {
+			this.objectInfo.autoCreateStatistics = newValue as string;
+		}, ['True', 'False'], this.objectInfo.autoCreateStatistics, true);
+		const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatistics, this.autoCreateStatisticsInput);
+
+		this.autoShrinkInput = this.createDropdown(localizedConstants.AutoShrink, async (newValue) => {
+			this.objectInfo.autoShrink = newValue as string;
+		}, ['True', 'False'], this.objectInfo.autoShrink, true);
+		const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrink, this.autoShrinkInput);
+
+		this.autoUpdateStatisticsInput = this.createDropdown(localizedConstants.AutoUpdateStatistics, async (newValue) => {
+			this.objectInfo.autoUpdateStatistics = newValue as string;
+		}, ['True', 'False'], this.objectInfo.autoUpdateStatistics, true);
+		const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatistics, this.autoUpdateStatisticsInput);
+
+		this.autoUpdateStatisticsAsynchronouslyInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsAsynchronously, async (newValue) => {
+			this.objectInfo.autoUpdateStatisticsAsynchronously = newValue as string;
+		}, ['True', 'False'], this.objectInfo.autoUpdateStatisticsAsynchronously, true);
+		const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronously, this.autoUpdateStatisticsAsynchronouslyInput);
+
+		this.automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+			autoCreateIncrementalStatisticsContainer,
+			autoCreateStatisticsContainer,
+			autoShrinkContainer,
+			autoUpdateStatisticsContainer,
+			autoUpdateStatisticsAsynchronouslyContainer
+		], true);
+	}
+
+	private initializeLedgerSection(): void {
+		this.ledgerSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		], true);
+	}
+
+
+	private initializeRecoverySection(): void {
+		this.stateSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		], true);
+	}
+
+	private initializeStateSection(): void {
+		this.stateSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
 		], true);
 	}
 	//#endregion

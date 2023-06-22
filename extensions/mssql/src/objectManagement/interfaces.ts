@@ -443,6 +443,11 @@ export interface Database extends ObjectManagement.SqlObject {
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
 	azureMaxSize?: string;
+	autoCreateIncrementalStatistics?: string;
+	autoCreateStatistics?: string;
+	autoShrink?: string;
+	autoUpdateStatistics?: string;
+	autoUpdateStatisticsAsynchronously?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {

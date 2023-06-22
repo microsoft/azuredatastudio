@@ -461,7 +461,12 @@ export class TestObjectManagementService implements IObjectManagementService {
 				owner: 'databaseProperties 1',
 				sizeInMb: 16.00,
 				spaceAvailableInMb: 1.15,
-				status: 'Normal'
+				status: 'Normal',
+				autoCreateIncrementalStatistics: 'true',
+				autoCreateStatistics: 'false',
+				autoShrink: 'false',
+				autoUpdateStatistics: 'true',
+				autoUpdateStatisticsAsynchronously: 'true'
 			}
 		};
 	}
