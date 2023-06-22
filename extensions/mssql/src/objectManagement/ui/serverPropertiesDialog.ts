@@ -49,7 +49,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
 		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
-		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel().withTabs([serverPropertiesTabGroup]).component();
+		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
+			.withTabs([serverPropertiesTabGroup])
+			.withProps({
+				CSSStyles: {
+					'margin': '-10px 0px 0px -10px'
+				}
+			}).component();
 		this.formContainer.addItem(serverPropertiesTabbedPannel);
 	}
 
