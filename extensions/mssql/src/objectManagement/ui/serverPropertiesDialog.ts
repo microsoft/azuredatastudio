@@ -65,55 +65,55 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}, this.objectInfo.name, this.options.isNewObject);
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.hardwareGenerationInput = this.createInputBox(localizedConstants.HardwareGenerationText, undefined, this.objectInfo.hardwareGeneration.toString(), this.options.isNewObject);
+		this.hardwareGenerationInput = this.createInputBox(localizedConstants.HardwareGenerationText, async () => { }, this.objectInfo.hardwareGeneration.toString(), this.options.isNewObject);
 		const hardwareGenerationContainer = this.createLabelInputContainer(localizedConstants.HardwareGenerationText, this.hardwareGenerationInput);
 
-		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, undefined, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
+		this.languageDropdown = this.createDropdown(localizedConstants.LanguageText, async () => { }, [this.objectInfo.language], this.objectInfo.language, this.options.isNewObject);
 		const languageContainer = this.createLabelInputContainer(localizedConstants.LanguageText, this.languageDropdown);
 
-		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, undefined, this.objectInfo.memoryInMB.toString().concat(' MB'), this.options.isNewObject);
+		this.memoryInput = this.createInputBox(localizedConstants.MemoryText, async () => { }, this.objectInfo.memoryInMB.toString().concat(' MB'), this.options.isNewObject);
 		const memoryContainer = this.createLabelInputContainer(localizedConstants.MemoryText, this.memoryInput);
 
-		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, undefined, this.objectInfo.operatingSystem, this.options.isNewObject);
+		this.operatingSystemInput = this.createInputBox(localizedConstants.OperatingSystemText, async () => { }, this.objectInfo.operatingSystem, this.options.isNewObject);
 		const operatingSystemContainer = this.createLabelInputContainer(localizedConstants.OperatingSystemText, this.operatingSystemInput);
 
-		this.platformInput = this.createInputBox(localizedConstants.PlatformText, undefined, this.objectInfo.platform, this.options.isNewObject);
+		this.platformInput = this.createInputBox(localizedConstants.PlatformText, async () => { }, this.objectInfo.platform, this.options.isNewObject);
 		const platformContainer = this.createLabelInputContainer(localizedConstants.PlatformText, this.platformInput);
 
-		this.processorsInput = this.createInputBox(localizedConstants.ProcessorsText, undefined, this.objectInfo.processors, this.options.isNewObject);
+		this.processorsInput = this.createInputBox(localizedConstants.ProcessorsText, async () => { }, this.objectInfo.processors, this.options.isNewObject);
 		const processorsContainer = this.createLabelInputContainer(localizedConstants.ProcessorsText, this.processorsInput);
 
-		this.isClusteredInput = this.createInputBox(localizedConstants.IsClusteredText, undefined, this.objectInfo.isClustered.toString(), this.options.isNewObject);
+		this.isClusteredInput = this.createInputBox(localizedConstants.IsClusteredText, async () => { }, this.objectInfo.isClustered.toString(), this.options.isNewObject);
 		const isClusteredContainer = this.createLabelInputContainer(localizedConstants.IsClusteredText, this.isClusteredInput);
 
-		this.isHadrEnabledInput = this.createInputBox(localizedConstants.IsHadrEnabledText, undefined, this.objectInfo.isHadrEnabled.toString(), this.options.isNewObject);
+		this.isHadrEnabledInput = this.createInputBox(localizedConstants.IsHadrEnabledText, async () => { }, this.objectInfo.isHadrEnabled.toString(), this.options.isNewObject);
 		const isHadrEnabledContainer = this.createLabelInputContainer(localizedConstants.IsHadrEnabledText, this.isHadrEnabledInput);
 
-		this.isPolyBaseInstalledInput = this.createInputBox(localizedConstants.IsPolyBaseInstalledText, undefined, this.objectInfo.isPolyBaseInstalled.toString(), this.options.isNewObject);
+		this.isPolyBaseInstalledInput = this.createInputBox(localizedConstants.IsPolyBaseInstalledText, async () => { }, this.objectInfo.isPolyBaseInstalled.toString(), this.options.isNewObject);
 		const isPolyBaseInstalledContainer = this.createLabelInputContainer(localizedConstants.IsPolyBaseInstalledText, this.isPolyBaseInstalledInput);
 
-		this.isXTPSupportedInput = this.createInputBox(localizedConstants.IsXTPSupportedText, undefined, this.objectInfo.isXTPSupported.toString(), this.options.isNewObject);
+		this.isXTPSupportedInput = this.createInputBox(localizedConstants.IsXTPSupportedText, async () => { }, this.objectInfo.isXTPSupported.toString(), this.options.isNewObject);
 		const isXTPSupportedContainer = this.createLabelInputContainer(localizedConstants.IsXTPSupportedText, this.isXTPSupportedInput);
 
-		this.productInput = this.createInputBox(localizedConstants.ProductText, undefined, this.objectInfo.product, this.options.isNewObject);
+		this.productInput = this.createInputBox(localizedConstants.ProductText, async () => { }, this.objectInfo.product, this.options.isNewObject);
 		const productContainer = this.createLabelInputContainer(localizedConstants.ProductText, this.productInput);
 
-		this.reservedStorageSizeInMBInput = this.createInputBox(localizedConstants.ReservedStorageSizeInMBText, undefined, this.objectInfo.reservedStorageSizeMB.toString().concat(' MB'), this.options.isNewObject);
+		this.reservedStorageSizeInMBInput = this.createInputBox(localizedConstants.ReservedStorageSizeInMBText, async () => { }, this.objectInfo.reservedStorageSizeMB.toString().concat(' MB'), this.options.isNewObject);
 		const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
 
-		this.rootDirectoryInput = this.createInputBox(localizedConstants.RootDirectoryText, undefined, this.objectInfo.rootDirectory, this.options.isNewObject);
+		this.rootDirectoryInput = this.createInputBox(localizedConstants.RootDirectoryText, async () => { }, this.objectInfo.rootDirectory, this.options.isNewObject);
 		const rootDirectoryContainer = this.createLabelInputContainer(localizedConstants.RootDirectoryText, this.rootDirectoryInput);
 
-		this.serverCollationInput = this.createInputBox(localizedConstants.ServerCollationText, undefined, this.objectInfo.serverCollation, this.options.isNewObject);
+		this.serverCollationInput = this.createInputBox(localizedConstants.ServerCollationText, async () => { }, this.objectInfo.serverCollation, this.options.isNewObject);
 		const serverCollationContainer = this.createLabelInputContainer(localizedConstants.ServerCollationText, this.serverCollationInput);
 
-		this.serviceTierInput = this.createInputBox(localizedConstants.ServiceTierText, undefined, this.objectInfo.serviceTier, this.options.isNewObject);
+		this.serviceTierInput = this.createInputBox(localizedConstants.ServiceTierText, async () => { }, this.objectInfo.serviceTier, this.options.isNewObject);
 		const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
 
-		this.storageSpaceUsageInGBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInGBText, undefined, this.objectInfo.storageSpaceUsageInGB.toString().concat(' GB'), this.options.isNewObject);
+		this.storageSpaceUsageInGBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInGBText, async () => { }, this.objectInfo.storageSpaceUsageInGB.toString().concat(' GB'), this.options.isNewObject);
 		const storageSpaceUsageInGbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInGBText, this.storageSpaceUsageInGBInput);
 
-		this.versionInput = this.createInputBox(localizedConstants.VersionText, undefined, this.objectInfo.version, this.options.isNewObject);
+		this.versionInput = this.createInputBox(localizedConstants.VersionText, async () => { }, this.objectInfo.version, this.options.isNewObject);
 		const versionContainer = this.createLabelInputContainer(localizedConstants.VersionText, this.versionInput);
 
 		let platformItems = [
