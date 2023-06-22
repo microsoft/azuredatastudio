@@ -524,7 +524,7 @@
         },
         {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType == Server && mssql:engineedition != 11 && isDevelopment",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
           "group": "0_query@1"
         },
         {
