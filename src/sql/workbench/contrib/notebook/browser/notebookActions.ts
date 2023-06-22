@@ -59,8 +59,7 @@ export const noParameterCell: string = localize('noParametersCell', "This notebo
 export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const untitledNotSupported: string = localize('untitledNotSupported', "Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
-// Action to add a cell to notebook based on cell type(code/markdown).
-export class AddCellAction extends Action {
+export abstract class AddCellAction extends Action {
 	public cellType: CellType;
 
 	constructor(
@@ -92,6 +91,28 @@ export class AddCellAction extends Action {
 			editor.addCell(this.cellType, index);
 			editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 		}
+	}
+}
+
+/**
+ * Action to add a new Text cell to a Notebook
+ */
+export class AddTextCellAction extends AddCellAction {
+	public override cellType: CellType = 'markdown';
+
+	constructor(@INotebookService notebookService: INotebookService) {
+		super('notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown', notebookService);
+	}
+}
+
+/**
+ * Action to add a new Code cell to a Notebook
+ */
+export class AddCodeCellAction extends AddCellAction {
+	public override cellType: CellType = 'code';
+
+	constructor(@INotebookService notebookService: INotebookService) {
+		super('notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code', notebookService);
 	}
 }
 
@@ -731,7 +752,10 @@ export class AttachToDropdown extends SelectBox {
 		} else {
 			let connections: string[] = [];
 			if (model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName))) {
-				connections.push(model.context.title);
+				let textResult = model.context.title;
+				let fullTitleText = this._connectionManagementService.getEditorConnectionProfileTitle(model.context);
+				textResult = fullTitleText.length !== 0 ? fullTitleText : textResult;
+				connections.push(textResult);
 			} else if (this._configurationService.getValue(saveConnectionNameConfigName) && model.savedConnectionName) {
 				connections.push(model.savedConnectionName);
 			} else {

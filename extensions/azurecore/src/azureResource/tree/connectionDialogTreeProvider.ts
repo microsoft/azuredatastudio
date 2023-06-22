@@ -15,9 +15,9 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil, equals, filterAccounts } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { FlatAccountTreeNode } from './flatAccountTreeNode';
 import { Logger } from '../../utils/Logger';
 import { AzureAccount } from 'azurecore';
+import { FlatAccountTreeNode } from './flatAccountTreeNode';
 
 export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
@@ -45,7 +45,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			return element.getChildren();
 		}
 
 		if (!this.isSystemInitialized) {
@@ -63,6 +63,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			for (const account of accounts) {
 				try {
 					const accountNode = new FlatAccountTreeNode(account, this.appContext, this);
+					accountNode.refreshLabel();
 					accountNodes.push(accountNode);
 				}
 				catch (error) {

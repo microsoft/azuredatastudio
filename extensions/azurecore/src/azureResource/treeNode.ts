@@ -39,7 +39,7 @@ export abstract class TreeNode {
 		}
 
 		// TODO support filtering by already expanded / not yet expanded
-		let children = await node.getChildren(false);
+		let children = await node.getChildren();
 		if (children) {
 			for (let child of children) {
 				if (filter && filter(child)) {
@@ -55,7 +55,7 @@ export abstract class TreeNode {
 
 	public parent: TreeNode | undefined = undefined;
 
-	public abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
+	public abstract getChildren(): TreeNode[] | Promise<TreeNode[]>;
 	public abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
 
 	public abstract getNodeInfo(): azdata.NodeInfo;

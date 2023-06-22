@@ -185,6 +185,10 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return this._connectionManagementService.openChangePasswordDialog(convertedProfile);
 	}
 
+	public $getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string | undefined> {
+		return Promise.resolve(this._connectionManagementService.getEditorConnectionProfileTitle(profile, getOptionsOnly, includeGroupName));
+	}
+
 	public async $listDatabases(connectionId: string): Promise<string[]> {
 		let connectionUri = await this.$getUriForConnection(connectionId);
 		let result = await this._connectionManagementService.listDatabases(connectionUri);

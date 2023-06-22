@@ -89,6 +89,24 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.LoginTypeDisplayNameInTitle">
       <source xml:lang="en">Login</source>
     </trans-unit>
+    <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema">
+      <source xml:lang="en">All objects belonging to a schema</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes">
+      <source xml:lang="en">All objects of certain types</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel">
+      <source xml:lang="en">Schema</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SpecificObjects">
+      <source xml:lang="en">Specific objects…</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.ObjectSelectionMethodDialog_TypeLabel">
+      <source xml:lang="en">How do you want to add objects?</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.SearchTextLabel">
+      <source xml:lang="en">Search Text</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
       <source xml:lang="en">server role</source>
     </trans-unit>
@@ -116,6 +134,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.advancedSectionHeader">
       <source xml:lang="en">Advanced</source>
     </trans-unit>
+    <trans-unit id="objectManagement.azurePricingLink">
+      <source xml:lang="en">Azure SQL Database pricing calculator</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.backupRedundancyLabel">
+      <source xml:lang="en">Backup Storage Redundancy</source>
+    </trans-unit>
     <trans-unit id="objectManagement.blankPasswordConfirmation">
       <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
     </trans-unit>
@@ -131,6 +155,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.compatibilityLevelLabel">
       <source xml:lang="en">Compatibility Level</source>
     </trans-unit>
+    <trans-unit id="objectManagement.configureSLOSectionHeader">
+      <source xml:lang="en">Configure SLO</source>
+    </trans-unit>
     <trans-unit id="objectManagement.confirmPasswordLabel">
       <source xml:lang="en">Confirm password</source>
     </trans-unit>
@@ -140,6 +167,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.createObjectOperationName">
       <source xml:lang="en">Create {0}</source>
       <note>{0} object type</note>
+    </trans-unit>
+    <trans-unit id="objectManagement.currentSLOLabel">
+      <source xml:lang="en">Current Service Level Objective</source>
     </trans-unit>
     <trans-unit id="objectManagement.databaseExistsError">
       <source xml:lang="en">Database '{0}' already exists. Choose a different database name.</source>
@@ -168,6 +198,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.denyColumnHeader">
       <source xml:lang="en">Deny</source>
     </trans-unit>
+    <trans-unit id="objectManagement.editionLabel">
+      <source xml:lang="en">Edition</source>
+    </trans-unit>
     <trans-unit id="objectManagement.effectivePermissionsTableLabel">
       <source xml:lang="en">Effective permissions for selected securable</source>
     </trans-unit>
@@ -183,8 +216,8 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.explicitPermissionsTableLabelSelected">
       <source xml:lang="en">Explicit permissions for: {0}</source>
     </trans-unit>
-    <trans-unit id="objectManagement.filterText">
-      <source xml:lang="en">Filter</source>
+    <trans-unit id="objectManagement.filterSectionTitle">
+      <source xml:lang="en">Filters</source>
     </trans-unit>
     <trans-unit id="objectManagement.findText">
       <source xml:lang="en">Find</source>
@@ -258,6 +291,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.loginNotSelectedError">
       <source xml:lang="en">Login is not selected.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.maxSizeLabel">
+      <source xml:lang="en">Max Size</source>
+    </trans-unit>
     <trans-unit id="objectManagement.membersLabel">
       <source xml:lang="en">Members</source>
     </trans-unit>
@@ -281,8 +317,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">{0} - {1} (Preview)</source>
       <note>{0} object type, {1}: object name.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
+      <source xml:lang="en">Add Objects</source>
+    </trans-unit>
     <trans-unit id="objectManagement.objectTypeLabel">
       <source xml:lang="en">Object Type</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.objectTypesLabel">
+      <source xml:lang="en">Object Types</source>
     </trans-unit>
     <trans-unit id="objectManagement.objectsLabel">
       <source xml:lang="en">Objects</source>
@@ -317,7 +359,7 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Recovery Model</source>
     </trans-unit>
     <trans-unit id="objectManagement.refreshOEError">
-      <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+      <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
       <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="objectManagement.removeMemberText">
@@ -453,6 +495,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
   <file original="extensions/mssql/dist/ui/localizedConstants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="mssql.ui.OkText">
       <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.generatingScript">
+      <source xml:lang="en">Generating script...</source>
+    </trans-unit>
+    <trans-unit id="mssql.ui.generatingScriptCompleted">
+      <source xml:lang="en">Script generated</source>
     </trans-unit>
     <trans-unit id="mssql.ui.helpText">
       <source xml:lang="en">Help</source>

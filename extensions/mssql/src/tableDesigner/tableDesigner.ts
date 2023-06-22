@@ -26,19 +26,26 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
+			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
+			// append distinguishing options to end to let users know exact connection.
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			if (distinguishingOptions !== '') {
+				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+				titleString += `${distinguishingOptions}`;
+			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: NewTableText,
-				tooltip: `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`,
+				tooltip: titleString,
 				server: context.connectionProfile!.serverName,
 				database: context.connectionProfile!.databaseName,
 				isNewTable: true,
 				id: generateUuid(),
 				connectionString: connectionString,
-				accessToken: context.connectionProfile!.options.azureAccountToken,
+				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon
-			}, telemetryInfo);
+			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });
@@ -56,11 +63,18 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			if (!connectionString) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
+			let titleString = `${server} - ${database} - ${schema}.${name}`;
+			// append distinguishing options to end to let users know exact connection.
+			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			if (distinguishingOptions !== '') {
+				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+				titleString += `${distinguishingOptions}`;
+			}
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
 				title: `${schema}.${name}`,
-				tooltip: `${server} - ${database} - ${schema}.${name}`,
+				tooltip: titleString,
 				server: server,
 				database: database,
 				isNewTable: false,
@@ -68,9 +82,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				schema: schema,
 				id: `${sqlProviderName}|${server}|${database}|${schema}|${name}`,
 				connectionString: connectionString,
-				accessToken: context.connectionProfile!.options.azureAccountToken,
+				accessToken: context.connectionProfile!.options.azureAccountToken as string,
 				tableIcon: tableIcon
-			}, telemetryInfo);
+			}, telemetryInfo, context);
 		} catch (error) {
 			console.error(error);
 			await vscode.window.showErrorMessage(getErrorMessage(error), { modal: true });

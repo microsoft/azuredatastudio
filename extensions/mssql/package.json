@@ -33,6 +33,10 @@
     ],
     "commands": [
       {
+        "command": "objectExplorer.scriptAsAlter",
+        "title": "Script as Alter"
+      },
+      {
         "command": "mssql.exportSqlAsNotebook",
         "title": "%mssql.exportSqlAsNotebook%"
       },
@@ -492,6 +496,11 @@
       ],
       "objectExplorer/item/context": [
         {
+          "command": "objectExplorer.scriptAsAlter",
+          "when": "nodeType == Table",
+          "group": "0_query@5"
+        },
+        {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
           "group": "0_query@3",
@@ -515,7 +524,7 @@
         },
         {
           "command": "mssql.objectProperties",
-          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType == Server && mssql:engineedition != 11 && isDevelopment",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
           "group": "0_query@1"
         },
         {
@@ -810,7 +819,9 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "useFullOptions": true,
       "isExecutionPlanProvider": true,
+      "supportCopyResultsToClipboard": true,
       "azureResource": "Sql",
       "supportedExecutionPlanFileExtensions": [
         "sqlplan"
@@ -947,7 +958,7 @@
           "description": "%mssql.connectionOptions.applicationName.description%",
           "groupName": "%mssql.connectionOptions.groupName.initialization%",
           "valueType": "string",
-          "defaultValue": null,
+          "defaultValue": "azdata",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
@@ -1463,7 +1474,7 @@
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^3.0.1",
     "@microsoft/ads-service-downloader": "^1.2.1",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.4",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.5",
     "find-remove": "1.2.1",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"

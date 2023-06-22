@@ -141,6 +141,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
+				getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string> {
+					return extHostConnectionManagement.$getEditorConnectionProfileTitle(profile, getOptionsOnly, includeGroupName);
+				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
@@ -608,8 +611,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
 				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
 				TableIcon: sqlExtHostTypes.designers.TableIcon,
-				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
-					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo);
+				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): Promise<void> {
+					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo, objectExplorerContext);
 				}
 			};
 

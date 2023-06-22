@@ -16,7 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, KustoGraphData> {
 	private static readonly containerId = 'azure.resource.providers.KustoContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.KustoContainerLabel', "Azure Data Explorer Cluster");
+	private static readonly containerLabel = localize('azure.resource.providers.KustoContainerLabel', "Azure Data Explorer Clusters");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -27,12 +27,9 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphDat
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.kusto}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.kusto}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/dataExplorerClusterDb.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.azureDataExplorer,
 			payload: {
@@ -63,10 +60,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphDat
 		return [{
 			id: KustoTreeDataProvider.containerId,
 			label: KustoTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/dataExplorerClusterDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
 		}];
