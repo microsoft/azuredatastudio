@@ -241,11 +241,18 @@ export const NumberOfUsersText = localize('objectManagement.databaseProperties.n
 export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
 export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
 export const StringValueInMB = (value: string) => localize('objectManagement.databaseProperties.mbUnitText', "{0} MB", value);
-export const AutoCreateIncrementalStatistics = localize('objectManagement.databaseProperties.autoCreateIncrementalStatistics', "Auto Create Incremental Statistics");
-export const AutoCreateStatistics = localize('objectManagement.databaseProperties.AutoCreateStatistics', "Auto Create Statistics");
-export const AutoShrink = localize('objectManagement.databaseProperties.autoShrink', "Auto Shrink");
-export const AutoUpdateStatistics = localize('objectManagement.databaseProperties.autoUpdateStatistics', "Auto Update Statistics");
-export const AutoUpdateStatisticsAsynchronously = localize('objectManagement.databaseProperties.autoUpdateStatisticsAsynchronously', "Auto Update Statistics Asynchronously");
+export const AutoCreateIncrementalStatisticsText = localize('objectManagement.databaseProperties.autoCreateIncrementalStatisticsText', "Auto Create Incremental Statistics");
+export const AutoCreateStatisticsText = localize('objectManagement.databaseProperties.AutoCreateStatisticsText', "Auto Create Statistics");
+export const AutoShrinkText = localize('objectManagement.databaseProperties.autoShrinkText', "Auto Shrink");
+export const AutoUpdateStatisticsText = localize('objectManagement.databaseProperties.autoUpdateStatisticsText', "Auto Update Statistics");
+export const AutoUpdateStatisticsAsynchronouslyText = localize('objectManagement.databaseProperties.autoUpdateStatisticsAsynchronouslyText', "Auto Update Statistics Asynchronously");
+export const IsLedgerDatabaseText = localize('objectManagement.databaseProperties.isLedgerDatabaseText', "Is Ledger Database");
+export const PageVerifyText = localize('objectManagement.databaseProperties.pageVerifyText', "Page Verify");
+export const TargetRecoveryTimeInSecondsText = localize('objectManagement.databaseProperties.targetRecoveryTimeInSecondsText', "Target Recovery Time (Seconds)");
+export const DatabaseReadOnlyText = localize('objectManagement.databaseProperties.databaseReadOnlyText', "Database Read-Only");
+export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
+export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
+export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
 
 
 // Util functions

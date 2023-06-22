@@ -42,6 +42,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private autoShrinkInput: azdata.DropDownComponent;
 	private autoUpdateStatisticsInput: azdata.DropDownComponent;
 	private autoUpdateStatisticsAsynchronouslyInput: azdata.DropDownComponent;
+	private isLedgerDatabaseInput: azdata.DropDownComponent;
+	private pageVerifyInput: azdata.DropDownComponent;
+	private targetRecoveryTimeInSecInput: azdata.InputBoxComponent;
+	private databaseReadOnlyInput: azdata.DropDownComponent;
+	private encryptionEnabledInput: azdata.DropDownComponent;
+	private restrictAccessInput: azdata.DropDownComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -227,30 +233,30 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	//#region Database Properties - Options Tab
 	private initializeAutomaticSection(): void {
-		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatistics, async (newValue) => {
+		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatisticsText, async (newValue) => {
 			this.objectInfo.autoCreateIncrementalStatistics = newValue;
 		}, ['True', 'False'], this.objectInfo.autoCreateIncrementalStatistics, true);
-		const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatistics, this.autoCreateIncrementalStatisticsInput);
+		const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatisticsText, this.autoCreateIncrementalStatisticsInput);
 
-		this.autoCreateStatisticsInput = this.createDropdown(localizedConstants.AutoCreateStatistics, async (newValue) => {
-			this.objectInfo.autoCreateStatistics = newValue as string;
+		this.autoCreateStatisticsInput = this.createDropdown(localizedConstants.AutoCreateStatisticsText, async (newValue) => {
+			this.objectInfo.autoCreateStatistics = newValue;
 		}, ['True', 'False'], this.objectInfo.autoCreateStatistics, true);
-		const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatistics, this.autoCreateStatisticsInput);
+		const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatisticsText, this.autoCreateStatisticsInput);
 
-		this.autoShrinkInput = this.createDropdown(localizedConstants.AutoShrink, async (newValue) => {
-			this.objectInfo.autoShrink = newValue as string;
+		this.autoShrinkInput = this.createDropdown(localizedConstants.AutoShrinkText, async (newValue) => {
+			this.objectInfo.autoShrink = newValue;
 		}, ['True', 'False'], this.objectInfo.autoShrink, true);
-		const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrink, this.autoShrinkInput);
+		const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrinkText, this.autoShrinkInput);
 
-		this.autoUpdateStatisticsInput = this.createDropdown(localizedConstants.AutoUpdateStatistics, async (newValue) => {
-			this.objectInfo.autoUpdateStatistics = newValue as string;
+		this.autoUpdateStatisticsInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsText, async (newValue) => {
+			this.objectInfo.autoUpdateStatistics = newValue;
 		}, ['True', 'False'], this.objectInfo.autoUpdateStatistics, true);
-		const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatistics, this.autoUpdateStatisticsInput);
+		const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsText, this.autoUpdateStatisticsInput);
 
-		this.autoUpdateStatisticsAsynchronouslyInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsAsynchronously, async (newValue) => {
-			this.objectInfo.autoUpdateStatisticsAsynchronously = newValue as string;
+		this.autoUpdateStatisticsAsynchronouslyInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, async (newValue) => {
+			this.objectInfo.autoUpdateStatisticsAsynchronously = newValue;
 		}, ['True', 'False'], this.objectInfo.autoUpdateStatisticsAsynchronously, true);
-		const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronously, this.autoUpdateStatisticsAsynchronouslyInput);
+		const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, this.autoUpdateStatisticsAsynchronouslyInput);
 
 		this.automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
 			autoCreateIncrementalStatisticsContainer,
@@ -262,18 +268,57 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeLedgerSection(): void {
-		this.ledgerSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		this.isLedgerDatabaseInput = this.createDropdown(localizedConstants.IsLedgerDatabaseText, async (newValue) => {
+			this.objectInfo.isLedgerDatabase = newValue;
+		}, ['True', 'False'], this.objectInfo.isLedgerDatabase, true);
+		const isLedgerDatabaseInputContainer = this.createLabelInputContainer(localizedConstants.IsLedgerDatabaseText, this.isLedgerDatabaseInput);
+
+		this.ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
+			isLedgerDatabaseInputContainer
 		], true);
 	}
 
 
 	private initializeRecoverySection(): void {
-		this.stateSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
+			this.objectInfo.pageVerify = newValue;
+		}, ['True', 'False'], this.objectInfo.pageVerify, true);
+		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
+
+		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
+			this.objectInfo.targetRecoveryTimeInSec = Number(newValue);
+		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true);
+		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
+
+		this.stateSection = this.createGroup(localizedConstants.RecoverySectionHeader, [
+			pageVerifyContainer,
+			targetRecoveryTimeContainer
 		], true);
 	}
 
 	private initializeStateSection(): void {
-		this.stateSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		this.databaseReadOnlyInput = this.createDropdown(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
+			this.objectInfo.databaseReadOnly = newValue;
+		}, ['True', 'False'], this.objectInfo.databaseReadOnly, true);
+		const databaseReadOnlyContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.databaseReadOnlyInput);
+
+		const databaseStateContainer = this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput);
+
+		this.encryptionEnabledInput = this.createDropdown(localizedConstants.EncryptionEnabledText, async (newValue) => {
+			this.objectInfo.encryptionEnabled = newValue;
+		}, ['True', 'False'], this.objectInfo.encryptionEnabled, true);
+		const encryptionEnabledContainer = this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput);
+
+		this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
+			this.objectInfo.restrictAccess = newValue;
+		}, ['True', 'False'], this.objectInfo.restrictAccess, true);
+		const restrictAccessContainer = this.createLabelInputContainer(localizedConstants.RestrictAccessText, this.restrictAccessInput);
+
+		this.stateSection = this.createGroup(localizedConstants.StateSectionHeader, [
+			databaseReadOnlyContainer,
+			databaseStateContainer,
+			encryptionEnabledContainer,
+			restrictAccessContainer
 		], true);
 	}
 	//#endregion

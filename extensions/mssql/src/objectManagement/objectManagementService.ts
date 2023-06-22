@@ -466,7 +466,14 @@ export class TestObjectManagementService implements IObjectManagementService {
 				autoCreateStatistics: 'false',
 				autoShrink: 'false',
 				autoUpdateStatistics: 'true',
-				autoUpdateStatisticsAsynchronously: 'true'
+				autoUpdateStatisticsAsynchronously: 'true',
+				isLedgerDatabase: '',
+				pageVerify: '',
+				targetRecoveryTimeInSec: 60,
+				databaseReadOnly: 'true',
+				databaseState: '',
+				encryptionEnabled: 'false',
+				restrictAccess: '',
 			}
 		};
 	}

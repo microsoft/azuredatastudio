@@ -448,6 +448,13 @@ export interface Database extends ObjectManagement.SqlObject {
 	autoShrink?: string;
 	autoUpdateStatistics?: string;
 	autoUpdateStatisticsAsynchronously?: string;
+	isLedgerDatabase?: string;
+	pageVerify?: string;
+	targetRecoveryTimeInSec?: number;
+	databaseReadOnly?: string;
+	databaseState?: string;
+	encryptionEnabled?: string;
+	restrictAccess?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
