@@ -42,3 +42,8 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
+
+// Converts number to two decimal placed string
+export function convertNumToTwoDecimalStringinMB(value: number): string {
+	return localizedConstants.StringValueInMB(value?.toFixed(2));
+}

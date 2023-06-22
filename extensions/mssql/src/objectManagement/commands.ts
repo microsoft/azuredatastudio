@@ -106,7 +106,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const parentUrn = await getParentUrn(context);
+		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,

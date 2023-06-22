@@ -430,7 +430,15 @@ export interface Database extends ObjectManagement.SqlObject {
 	recoveryModel?: string;
 	compatibilityLevel?: string;
 	containmentType?: string;
-
+	dateCreated?: string;
+	lastDatabaseBackup?: string;
+	lastDatabaseLogBackup?: string;
+	memoryAllocatedToMemoryOptimizedObjectsInMb?: number;
+	memoryUsedByMemoryOptimizedObjectsInMb?: number;
+	numberOfUsers?: number;
+	sizeInMb?: number;
+	spaceAvailableInMb?: number;
+	status?: string;
 	azureBackupRedundancyLevel?: string;
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
