@@ -252,6 +252,22 @@ export const ObjectSelectionMethodDialog_AllObjectsOfTypes = localize('objectMan
 export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema', "All objects belonging to a schema");
 export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
+//Database properties Dialog
+export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
+export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
+export const BackupSectionHeader = localize('objectManagement.databaseProperties.backupSectionHeader', "Backup");
+export const DatabaseSectionHeader = localize('objectManagement.databaseProperties.databaseSectionHeader', "Database");
+export const NamePropertyText = localize('objectManagement.databaseProperties.name', "Name");
+export const StatusText = localize('objectManagement.databaseProperties.status', "Status");
+export const OwnerPropertyText = localize('objectManagement.databaseProperties.owner', "Owner");
+export const DateCreatedText = localize('objectManagement.databaseProperties.dateCreated', "Date Created");
+export const SizeText = localize('objectManagement.databaseProperties.size', "Size");
+export const SpaceAvailableText = localize('objectManagement.databaseProperties.spaceAvailable', "Space Available");
+export const NumberOfUsersText = localize('objectManagement.databaseProperties.numberOfUsers', "Number of Users");
+export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
+export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
+export const StringValueInMB = (value: string) => localize('objectManagement.databaseProperties.mbUnitText', "{0} MB", value);
+
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
 	switch (type) {

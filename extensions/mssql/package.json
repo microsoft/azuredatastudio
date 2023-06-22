@@ -528,6 +528,11 @@
           "isDefault": true
         },
         {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
+          "group": "0_query@1"
+        },
+        {
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@2"
@@ -824,6 +829,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "useFullOptions": true,
       "isExecutionPlanProvider": true,
       "supportCopyResultsToClipboard": true,
       "azureResource": "Sql",
@@ -962,7 +968,7 @@
           "description": "%mssql.connectionOptions.applicationName.description%",
           "groupName": "%mssql.connectionOptions.groupName.initialization%",
           "valueType": "string",
-          "defaultValue": null,
+          "defaultValue": "azdata",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
