@@ -11,7 +11,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -39,6 +39,7 @@ import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes'
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -246,6 +247,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Set copy-only check box
 		this.copyOnlyCheckBox = this._register(new Checkbox(this.copyOnlyElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.COPY_ONLY,
 			checked: false,
 			onChange: (viaKeyboard) => { },
@@ -254,6 +256,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Set to url check box
 		this.toUrlCheckBox = this._register(new Checkbox(this.toUrlElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.TO_URL,
 			checked: false,
 			onChange: () => this.onChangeToUrl(),
@@ -262,6 +265,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Encryption checkbox
 		this.encryptCheckBox = this._register(new Checkbox(this.encryptElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.ENCRYPTION,
 			checked: false,
 			onChange: () => this.onChangeEncrypt(),
@@ -270,6 +274,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Verify backup checkbox
 		this.verifyCheckBox = this._register(new Checkbox(this.verifyElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.VERIFY_CONTAINER,
 			checked: false,
 			onChange: () => { },
@@ -278,6 +283,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Perform checksum checkbox
 		this.checksumCheckBox = this._register(new Checkbox(this.checksumElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.CHECKSUM_CONTAINER,
 			checked: false,
 			onChange: () => { },
@@ -286,6 +292,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Continue on error checkbox
 		this.continueOnErrorCheckBox = this._register(new Checkbox(this.continueOnErrorElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER,
 			checked: false,
 			onChange: () => { },
@@ -614,12 +621,6 @@ export class BackupComponent extends AngularDisposable {
 		this._register(attachInputBoxStyler(this.urlInputBox!, this.themeService));
 		this._register(attachInputBoxStyler(this.mediaDescriptionBox!, this.themeService));
 		this._register(attachInputBoxStyler(this.backupRetainDaysBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.copyOnlyCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.toUrlCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.encryptCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.verifyCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.checksumCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.continueOnErrorCheckBox!, this.themeService));
 
 		this._register(this.backupTypeSelectBox!.onDidSelect(selected => this.onBackupTypeChanged()));
 		this._register(this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick()));
