@@ -430,7 +430,15 @@ export interface Database extends ObjectManagement.SqlObject {
 	recoveryModel?: string;
 	compatibilityLevel?: string;
 	containmentType?: string;
-
+	dateCreated?: string;
+	lastDatabaseBackup?: string;
+	lastDatabaseLogBackup?: string;
+	memoryAllocatedToMemoryOptimizedObjectsInMb?: number;
+	memoryUsedByMemoryOptimizedObjectsInMb?: number;
+	numberOfUsers?: number;
+	sizeInMb?: number;
+	spaceAvailableInMb?: number;
+	status?: string;
 	azureBackupRedundancyLevel?: string;
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
@@ -454,4 +462,29 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	details: string[];
+}
+
+export interface Server extends ObjectManagement.SqlObject {
+	hardwareGeneration: string;
+	language: string;
+	memoryInMB: number;
+	operatingSystem: string;
+	platform: string;
+	processors: string;
+	version: string;
+	isClustered: boolean;
+	isHadrEnabled: boolean;
+	isPolyBaseInstalled: boolean;
+	isXTPSupported: boolean;
+	product: string;
+	reservedStorageSizeMB: number;
+	rootDirectory: string;
+	serverCollation: string;
+	serviceTier: string;
+	storageSpaceUsageInGB: number;
+	minServerMemory: number;
+	maxServerMemory: number;
+}
+
+export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
 }
