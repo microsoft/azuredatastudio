@@ -282,36 +282,30 @@ const chinaAzureSettings: ProviderSettings = {
 };
 let allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
 
-let providerSettingsJson = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson, false)
-vscode.workspace.onDidChangeConfiguration((changeEvent) => {
+let providerSettingsJson = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson, {}) as ProviderSettingsJson[];
+vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
 	const impactProvider = changeEvent.affectsConfiguration(Constants.ProviderSettingsJsonSection);
 	if (impactProvider === true) {
-		// update provider clouds list
-		providerSettingsJson = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson, false)
-		console.log(providerSettingsJson)
+		await displayReloadAds(Constants.ProviderSettingsJsonSection);
 	}
 });
+if (providerSettingsJson && providerSettingsJson[0].name !== '') {
+	try {
 
-try {
-	vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
-		const impactProvider = changeEvent.affectsConfiguration(Constants.ProviderSettingsJsonSection);
-		if (impactProvider === true) {
-			await displayReloadAds(Constants.ProviderSettingsJsonSection);
+		let providerSettingsJson = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson) as ProviderSettingsJson[];
+		if (providerSettingsJson) {
+			for (let cloudProvider of providerSettingsJson) {
+				// build provider setting
+				let newSettings = buildProviderSettings(cloudProvider);
+				allSettings.push(newSettings)
+			}
+			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
 		}
-	});
-	let providerSettingsJson = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson) as ProviderSettingsJson[];
-	if (providerSettingsJson && providerSettingsJson[0].name !== '') {
-		for (let cloudProvider of providerSettingsJson) {
-			// build provider setting
-			let newSettings = buildProviderSettings(cloudProvider);
-			allSettings.push(newSettings)
-		}
-		void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
+	} catch (error) {
+		console.log(error);
+		void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load custom endpoints file'));
+		throw Error(error.message);
 	}
-} catch (error) {
-	console.log(error);
-	void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load custom endpoints file'));
-	throw Error(error.message);
 }
 
 export function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
