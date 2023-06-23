@@ -88,7 +88,7 @@ suite('SQL Connection Tree Action tests', () => {
 
 	/**
 	 * Creates a mock dialog service that and select the choice at the given index when show is called.
-	 * @param choiceIndex index of the button in the dialog to be selected starting from 0.
+	 * @param choice index of the button in the dialog to be selected starting from 0.
 	 * @returns
 	 */
 	function createDialogService(choice: number | boolean): TypeMoq.Mock<IDialogService> {
