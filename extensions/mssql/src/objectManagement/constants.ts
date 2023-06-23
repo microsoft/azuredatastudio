@@ -28,6 +28,8 @@ export const AlterApplicationRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql
 export const CreateDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-role-transact-sql';
 export const AlterDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-role-transact-sql';
 export const CreateDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-database-transact-sql';
+export const ViewServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/functions/serverproperty-transact-sql';
+export const DatabasePropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
@@ -39,3 +41,5 @@ export const enum TelemetryActions {
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
+
+export const AzureSQLMI = 'Azure SQL Database Managed Instance';
