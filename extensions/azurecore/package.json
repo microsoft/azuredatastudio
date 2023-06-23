@@ -130,11 +130,41 @@
             "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
           },
           "azure.providerSettingsJson": {
-            "type": "string",
-            "description": "%config.providerSettingsJson%"
+            "type": "array",
+            "description": "%config.providerSettingsJson%",
+            "default":
+              [
+                {
+                  "name": "",
+                  "settings": {
+                    "metadata": {
+                      "displayName": "",
+                      "id": "",
+                      "endpoints": {
+                        "host": "",
+                        "microsoftResource": "",
+                        "graphResource": "",
+                        "msGraphResource": "",
+                        "armResource": "",
+                        "sqlResource": "",
+                        "azureKeyVaultResource": "",
+                        "azureLogAnalyticsResource": "",
+                        "azureStorageResource": {
+                          "endpoint": "",
+                          "endpointSuffix": ""
+                        },
+                        "azureKustoResource": "",
+                        "powerBiResource": "",
+                        "scopes": "",
+                        "portalEndpoint": ""
+                      }
+                    }
+                  }
+                }
+              ]
+            }
           }
         }
-      }
     ],
     "account-type": [
       {
