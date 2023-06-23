@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+// import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ProviderSettings } from './interfaces';
 import { AzureResource } from 'azdata';
-import * as Constants from '../constants';
-import { displayReloadAds } from '../extension';
+// import * as Constants from '../constants';
+// import { displayReloadAds } from '../extension';
 
 const localize = nls.loadMessageBundle();
 
@@ -308,77 +308,77 @@ if (providerSettingsJson && providerSettingsJson[0].name !== '') {
 	}
 }
 
-export function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
-	// build provider setting
-	let newSettings = {
-		configKey: 'enable' + cloudProvider.settings.metadata.id,
-		metadata: {
-			displayName: cloudProvider.settings.metadata.displayName,
-			id: cloudProvider.settings.metadata.id,
-			settings: {
-				host: cloudProvider.settings.metadata.endpoints.host,
-				clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
-				microsoftResource: {
-					id: SettingIds.marm,
-					endpoint: cloudProvider.settings.metadata.endpoints.microsoftResource,
-					azureResourceId: AzureResource.MicrosoftResourceManagement
-				},
-				graphResource: {
-					id: SettingIds.graph,
-					endpoint: cloudProvider.settings.metadata.endpoints.graphResource,
-					azureResourceId: AzureResource.Graph
-				},
-				msGraphResource: {
-					id: SettingIds.msgraph,
-					endpoint: cloudProvider.settings.metadata.endpoints.msGraphResource,
-					azureResourceId: AzureResource.MsGraph
-				},
-				armResource: {
-					id: SettingIds.arm,
-					endpoint: cloudProvider.settings.metadata.endpoints.armResource,
-					azureResourceId: AzureResource.ResourceManagement
-				},
-				sqlResource: {
-					id: SettingIds.sql,
-					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
-					azureResourceId: AzureResource.Sql
-				},
-				azureKeyVaultResource: {
-					id: SettingIds.vault,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
-					azureResourceId: AzureResource.AzureKeyVault
-				},
-				azureLogAnalyticsResource: {
-					id: SettingIds.ala,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
-					azureResourceId: AzureResource.AzureLogAnalytics,
-				},
-				azureStorageResource: {
-					id: SettingIds.storage,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpoint,
-					endpointSuffix: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
-					azureResourceId: AzureResource.AzureStorage
-				},
-				azureKustoResource: {
-					id: SettingIds.kusto,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
-					azureResourceId: AzureResource.AzureKusto,
-				},
-				powerBiResource: {
-					id: SettingIds.powerbi,
-					endpoint: cloudProvider.settings.metadata.endpoints.powerBiResource,
-					azureResourceId: AzureResource.PowerBi
-				},
-				redirectUri: 'http://localhost',
-				scopes: [
-					'openid', 'email', 'profile', 'offline_access',
-					cloudProvider.settings.metadata.endpoints.scopes
-				],
-				portalEndpoint: cloudProvider.settings.metadata.endpoints.portalEndpoint
-			}
-		}
-	};
-	return newSettings;
-}
+// export function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
+// 	// build provider setting
+// 	let newSettings = {
+// 		configKey: 'enable' + cloudProvider.settings.metadata.id,
+// 		metadata: {
+// 			displayName: cloudProvider.settings.metadata.displayName,
+// 			id: cloudProvider.settings.metadata.id,
+// 			settings: {
+// 				host: cloudProvider.settings.metadata.endpoints.host,
+// 				clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+// 				microsoftResource: {
+// 					id: SettingIds.marm,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.microsoftResource,
+// 					azureResourceId: AzureResource.MicrosoftResourceManagement
+// 				},
+// 				graphResource: {
+// 					id: SettingIds.graph,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.graphResource,
+// 					azureResourceId: AzureResource.Graph
+// 				},
+// 				msGraphResource: {
+// 					id: SettingIds.msgraph,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.msGraphResource,
+// 					azureResourceId: AzureResource.MsGraph
+// 				},
+// 				armResource: {
+// 					id: SettingIds.arm,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.armResource,
+// 					azureResourceId: AzureResource.ResourceManagement
+// 				},
+// 				sqlResource: {
+// 					id: SettingIds.sql,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
+// 					azureResourceId: AzureResource.Sql
+// 				},
+// 				azureKeyVaultResource: {
+// 					id: SettingIds.vault,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
+// 					azureResourceId: AzureResource.AzureKeyVault
+// 				},
+// 				azureLogAnalyticsResource: {
+// 					id: SettingIds.ala,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
+// 					azureResourceId: AzureResource.AzureLogAnalytics,
+// 				},
+// 				azureStorageResource: {
+// 					id: SettingIds.storage,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpoint,
+// 					endpointSuffix: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
+// 					azureResourceId: AzureResource.AzureStorage
+// 				},
+// 				azureKustoResource: {
+// 					id: SettingIds.kusto,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
+// 					azureResourceId: AzureResource.AzureKusto,
+// 				},
+// 				powerBiResource: {
+// 					id: SettingIds.powerbi,
+// 					endpoint: cloudProvider.settings.metadata.endpoints.powerBiResource,
+// 					azureResourceId: AzureResource.PowerBi
+// 				},
+// 				redirectUri: 'http://localhost',
+// 				scopes: [
+// 					'openid', 'email', 'profile', 'offline_access',
+// 					cloudProvider.settings.metadata.endpoints.scopes
+// 				],
+// 				portalEndpoint: cloudProvider.settings.metadata.endpoints.portalEndpoint
+// 			}
+// 		}
+// 	};
+// 	return newSettings;
+// }
 
 export default allSettings;
