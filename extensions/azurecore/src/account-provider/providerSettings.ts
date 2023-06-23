@@ -282,7 +282,7 @@ const chinaAzureSettings: ProviderSettings = {
 };
 let allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
 
-let providerSettingsJson = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson, {}) as ProviderSettingsJson[];
+let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson);
 vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
 	const impactProvider = changeEvent.affectsConfiguration(Constants.ProviderSettingsJsonSection);
 	if (impactProvider === true) {
