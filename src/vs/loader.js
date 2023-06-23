@@ -334,6 +334,9 @@ var AMDLoader;
             this._env = env;
             this.options = ConfigurationOptionsUtil.mergeConfigurationOptions(options);
             this._createIgnoreDuplicateModulesMap();
+
+            this._createNodeModulesMap(); // {{SQL CARBON EDIT}} - add back node module map for unit tests
+
             this._createSortedPathsRules();
             if (this.options.baseUrl === '') {
                 if (this.options.nodeRequire && this.options.nodeRequire.main && this.options.nodeRequire.main.filename && this._env.isNode) {
@@ -355,6 +358,20 @@ var AMDLoader;
                 this.ignoreDuplicateModulesMap[this.options.ignoreDuplicateModules[i]] = true;
             }
         }
+
+        _createNodeModulesMap() { // {{SQL CARBON EDIT}} - add back node modules map
+            if (!this.options.nodeModules) {
+                return;
+            }
+
+            // Build a map out of nodeModules array
+            this.nodeModulesMap = Object.create(null);
+            for (var _i = 0, _a = this.options.nodeModules; _i < _a.length; _i++) {
+                var nodeModule = _a[_i];
+                this.nodeModulesMap[nodeModule] = true;
+            }
+        };
+
         _createSortedPathsRules() {
             // Create an array our of the paths rules, sorted descending by length to
             // result in a more specific -> less specific order
@@ -432,8 +449,9 @@ var AMDLoader;
          */
         moduleIdToPaths(moduleId) {
             if (this._env.isNode) {
-                const isNodeModule = (this.options.amdModulesPattern instanceof RegExp
-                    && !this.options.amdModulesPattern.test(moduleId));
+                const isNodeModule = ((this.nodeModulesMap[moduleId] === true) // {{SQL CARBON EDIT}} - add back node modules map
+                    || (this.options.amdModulesPattern instanceof RegExp
+                        && !this.options.amdModulesPattern.test(moduleId)));
                 if (isNodeModule) {
                     // This is a node module...
                     if (this.isBuild()) {

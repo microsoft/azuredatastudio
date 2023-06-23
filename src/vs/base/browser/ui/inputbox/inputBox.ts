@@ -582,6 +582,10 @@ export class InputBox extends Widget {
 	}
 
 	protected applyStyles(): void {
+		if (!this.options?.inputBoxStyles) {
+			return;
+		}
+
 		const styles = this.options.inputBoxStyles;
 
 		const background = styles.inputBackground ?? '';

@@ -42,7 +42,7 @@ import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IConfirmationResult, IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { workbenchTreeDataPreamble } from 'vs/platform/list/browser/listService';
 import { LogService } from 'vs/platform/log/common/logService';
@@ -91,12 +91,17 @@ suite('SQL Connection Tree Action tests', () => {
 	 * @param choiceIndex index of the button in the dialog to be selected starting from 0.
 	 * @returns
 	 */
-	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
+	function createDialogService(choice: number | boolean): TypeMoq.Mock<IDialogService> {
 		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
 		dialogService.callBase = true;
 		dialogService.setup(x => x.prompt(TypeMoq.It.isAny())).returns(() => {
 			return <any>Promise.resolve({
-				choice: choiceIndex
+				choice: choice
+			})
+		});
+		dialogService.setup(x => x.confirm(TypeMoq.It.isAny())).returns(() => {
+			return <any>Promise.resolve({
+				confirmed: choice
 			})
 		});
 		return dialogService;
@@ -359,7 +364,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createDialogService(0).object); // Select 'Yes' on the modal dialog
+			createDialogService(true).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -389,7 +394,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createDialogService(1).object); // Selecting 'No' on the modal dialog
+			createDialogService(false).object); // Selecting 'No' on the modal dialog
 
 		await connectionAction.run();
 		connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
@@ -403,7 +408,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
 			connectionManagementService.object,
-			createDialogService(0).object); // Select 'Yes' on the modal dialog
+			createDialogService(true).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());

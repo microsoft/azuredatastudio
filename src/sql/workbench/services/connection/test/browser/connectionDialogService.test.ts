@@ -34,7 +34,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
+import { ClearRecentConnectionsAction1 } from 'sql/workbench/services/connection/browser/connectionActions';
 import { RecentConnectionActionsProvider } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
 import { RecentConnectionDataSource } from 'sql/workbench/services/objectExplorer/browser/recentConnectionDataSource';
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
@@ -98,7 +98,9 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // telemetry service
 			new TestConfigurationService(), // configuration service
 			new TestCapabilitiesService());
+
 		testInstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
+
 		testInstantiationService.stub(IContextKeyService, new MockContextKeyService());
 		testInstantiationService.stub(IThemeService, new TestThemeService());
 
@@ -219,8 +221,8 @@ suite('ConnectionDialogService tests', () => {
 		mockWidget.setup(x => x.databaseDropdownExpanded).returns(() => false);
 		mockWidget.setup(x => x.databaseDropdownExpanded = false);
 
-		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ClearRecentConnectionsAction))).returns(() => {
-			return testInstantiationService.createInstance(ClearRecentConnectionsAction);
+		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ClearRecentConnectionsAction1), TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => {
+			return testInstantiationService.createInstance(ClearRecentConnectionsAction1, ClearRecentConnectionsAction1.ID, ClearRecentConnectionsAction1.LABEL);
 		});
 		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(RecentConnectionActionsProvider))).returns(() => {
 			return testInstantiationService.createInstance(RecentConnectionActionsProvider);

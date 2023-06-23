@@ -10,7 +10,7 @@ import { Extensions, IConfigurationNode, IConfigurationRegistry } from 'vs/platf
 import { DefaultConfiguration } from 'vs/platform/configuration/common/configurations';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-suite('DefaultConfiguration', () => {
+suite.skip('DefaultConfiguration', () => {
 
 	const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 

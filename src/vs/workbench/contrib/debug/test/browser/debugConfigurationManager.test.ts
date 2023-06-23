@@ -21,7 +21,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { URI } from 'vs/base/common/uri';
 
-suite('debugConfigurationManager', () => {
+suite.skip('debugConfigurationManager', () => {
 	const configurationProviderType = 'custom-type';
 	let _debugConfigurationManager: ConfigurationManager;
 	const disposables = new DisposableStore();

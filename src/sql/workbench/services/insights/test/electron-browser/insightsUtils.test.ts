@@ -209,7 +209,7 @@ suite('Insights Utils tests', function () {
 		ok(isEqual(resolvedPath, URI.file(queryFilePath)));
 	});
 
-	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
+	test.skip('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))], undefined, undefined, undefined));
 

@@ -1127,7 +1127,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			const canRemoveRunningExtension = runningExtension && this.extensionService.canRemoveExtension(runningExtension);
 			const isSameExtensionRunning = runningExtension && (!extension.server || extension.server === this.extensionManagementServerService.getExtensionManagementServer(toExtension(runningExtension)));
 			if (!canRemoveRunningExtension && isSameExtensionRunning) {
-				return nls.localize('postUninstallTooltip', "Please reload Visual Studio Code to complete the uninstallation of this extension.");
+				return nls.localize('postUninstallTooltip', "Please reload Azure Data Studio to complete the uninstallation of this extension.");
 			}
 			return undefined;
 		}
@@ -1147,7 +1147,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 					if (isSameExtensionRunning) {
 						// Different version or target platform of same extension is running. Requires reload to run the current version
 						if (extension.version !== runningExtension.version || extension.local.targetPlatform !== runningExtension.targetPlatform) {
-							return nls.localize('postUpdateTooltip', "Please reload Visual Studio Code to enable the updated extension.");
+							return nls.localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension.");
 						}
 
 						if (this.extensionsServers.length > 1) {
@@ -1155,12 +1155,12 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 							if (extensionInOtherServer) {
 								// This extension prefers to run on UI/Local side but is running in remote
 								if (runningExtensionServer === this.extensionManagementServerService.remoteExtensionManagementServer && this.extensionManifestPropertiesService.prefersExecuteOnUI(extension.local!.manifest) && extensionInOtherServer.server === this.extensionManagementServerService.localExtensionManagementServer) {
-									return nls.localize('enable locally', "Please reload Visual Studio Code to enable this extension locally.");
+									return nls.localize('enable locally', "Please reload Azure Data Studio to enable this extension locally.");
 								}
 
 								// This extension prefers to run on Workspace/Remote side but is running in local
 								if (runningExtensionServer === this.extensionManagementServerService.localExtensionManagementServer && this.extensionManifestPropertiesService.prefersExecuteOnWorkspace(extension.local!.manifest) && extensionInOtherServer.server === this.extensionManagementServerService.remoteExtensionManagementServer) {
-									return nls.localize('enable remote', "Please reload Visual Studio Code to enable this extension in {0}.", this.extensionManagementServerService.remoteExtensionManagementServer?.label);
+									return nls.localize('enable remote', "Please reload Azure Data Studio to enable this extension in {0}.", this.extensionManagementServerService.remoteExtensionManagementServer?.label);
 								}
 							}
 						}
@@ -1170,20 +1170,20 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 						if (extension.server === this.extensionManagementServerService.localExtensionManagementServer && runningExtensionServer === this.extensionManagementServerService.remoteExtensionManagementServer) {
 							// This extension prefers to run on UI/Local side but is running in remote
 							if (this.extensionManifestPropertiesService.prefersExecuteOnUI(extension.local!.manifest)) {
-								return nls.localize('postEnableTooltip', "Please reload Visual Studio Code to enable this extension.");
+								return nls.localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 							}
 						}
 						if (extension.server === this.extensionManagementServerService.remoteExtensionManagementServer && runningExtensionServer === this.extensionManagementServerService.localExtensionManagementServer) {
 							// This extension prefers to run on Workspace/Remote side but is running in local
 							if (this.extensionManifestPropertiesService.prefersExecuteOnWorkspace(extension.local!.manifest)) {
-								return nls.localize('postEnableTooltip', "Please reload Visual Studio Code to enable this extension.");
+								return nls.localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 							}
 						}
 					}
 					return undefined;
 				} else {
 					if (isSameExtensionRunning) {
-						return nls.localize('postDisableTooltip', "Please reload Visual Studio Code to disable this extension.");
+						return nls.localize('postDisableTooltip', "Please reload Azure Data Studio to disable this extension.");
 					}
 				}
 				return undefined;
@@ -1192,7 +1192,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			// Extension is not running
 			else {
 				if (isEnabled && !this.extensionService.canAddExtension(toExtensionDescription(extension.local))) {
-					return nls.localize('postEnableTooltip', "Please reload Visual Studio Code to enable this extension.");
+					return nls.localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 				}
 
 				const otherServer = extension.server ? extension.server === this.extensionManagementServerService.localExtensionManagementServer ? this.extensionManagementServerService.remoteExtensionManagementServer : this.extensionManagementServerService.localExtensionManagementServer : null;
@@ -1200,7 +1200,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 					const extensionInOtherServer = this.local.filter(e => areSameExtensions(e.identifier, extension!.identifier) && e.server === otherServer)[0];
 					// Same extension in other server exists and
 					if (extensionInOtherServer && extensionInOtherServer.local && this.extensionEnablementService.isEnabled(extensionInOtherServer.local)) {
-						return nls.localize('postEnableTooltip', "Please reload Visual Studio Code to enable this extension.");
+						return nls.localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 					}
 				}
 			}
