@@ -25,13 +25,31 @@ export abstract class BaseQueryStoreReport {
 			await toolbar.updateCssStyles({ 'padding': '5px' });
 			this.flexModel.addItem(toolbar, { flex: 'none' });
 
+			const views = await this.createViews(view);
+
 			if (this.resizeable) {
 				// TODO: replace 800 to have the number be based on how big the window is
-				const verticalSplitView = utils.createVerticalSplitView(view, await this.createTopSection(view), await this.createBottomSection(view), 800);
-				this.flexModel.addItem(verticalSplitView);
+				if (views.length === 2) {
+					const verticalSplitView = utils.createVerticalSplitView(view, views[0], views[1], 800);
+					this.flexModel.addItem(verticalSplitView);
+				} else if (views.length === 3) {
+					const verticalSplitView = utils.createVerticalSplitView(view, await utils.createTwoComponentFlexContainer(view, views[0], views[1], 'row'), views[2], 800);
+					this.flexModel.addItem(verticalSplitView);
+				} else if (views.length === 4) {
+					const verticalSplitView = utils.createVerticalSplitView(view, await utils.createTwoComponentFlexContainer(view, views[0], views[1], 'row'), await utils.createTwoComponentFlexContainer(view, views[2], views[3], 'row'), 800);
+					this.flexModel.addItem(verticalSplitView);
+				}
 			} else {
-				const verticalFlexContainer = await utils.createTwoComponentFlexContainer(view, await this.createTopSection(view), await this.createBottomSection(view), 'column');
-				this.flexModel.addItem(verticalFlexContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+				if (views.length === 2) {
+					const verticalFlexContainer = await utils.createTwoComponentFlexContainer(view, views[0], views[1], 'column');
+					this.flexModel.addItem(verticalFlexContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+				} else if (views.length === 3) {
+					const verticalFlexContainer = await utils.createTwoComponentFlexContainer(view, await utils.createTwoComponentFlexContainer(view, views[0], views[1], 'row'), views[2], 'column');
+					this.flexModel.addItem(verticalFlexContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+				} else if (views.length === 4) {
+					const verticalFlexContainer = await utils.createTwoComponentFlexContainer(view, await utils.createTwoComponentFlexContainer(view, views[0], views[1], 'row'), await utils.createTwoComponentFlexContainer(view, views[2], views[3], 'row'), 'column');
+					this.flexModel.addItem(verticalFlexContainer, { CSSStyles: { 'width': '100%', 'height': '100%' } });
+				}
 			}
 
 
@@ -102,8 +120,6 @@ export abstract class BaseQueryStoreReport {
 		return toolBar;
 	}
 
-	protected abstract createTopSection(_view: azdata.ModelView): Promise<azdata.FlexContainer>;
-
-	protected abstract createBottomSection(_view: azdata.ModelView): Promise<azdata.FlexContainer>;
+	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;
 }
 

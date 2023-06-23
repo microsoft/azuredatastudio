@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
-import { createOneComponentFlexContainer, createTwoComponentFlexContainer } from '../common/utils';
+import { createOneComponentFlexContainer } from '../common/utils';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
@@ -15,33 +15,29 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), false, extensionContext);
 	}
 
-	public override async createTopSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+	public override async createViews(view: azdata.ModelView): Promise<azdata.FlexContainer[]> {
 		const durationComponent = view.modelBuilder.text().withProps({
 			value: 'Duration'
 		}).component();
-		const leftContainer = await createOneComponentFlexContainer(view, durationComponent, 'chartreuse');
+		const durationContainer = await createOneComponentFlexContainer(view, durationComponent, 'chartreuse');
 
 		const executionCountComponent = view.modelBuilder.text().withProps({
 			value: 'Execution Count'
 		}).component();
 
-		const rightContainer = await createOneComponentFlexContainer(view, executionCountComponent, 'coral');
+		const executionCountContainer = await createOneComponentFlexContainer(view, executionCountComponent, 'coral');
 
-		return createTwoComponentFlexContainer(view, leftContainer, rightContainer, 'row');
-	}
-
-	public override async createBottomSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		const cpuTimeComponent = view.modelBuilder.text().withProps({
 			value: 'CPU Time'
 		}).component();
-		const leftContainer = await createOneComponentFlexContainer(view, cpuTimeComponent, 'darkturquoise');
+		const cpuTimeContainer = await createOneComponentFlexContainer(view, cpuTimeComponent, 'darkturquoise');
 
 		const logicalReadsComponent = view.modelBuilder.text().withProps({
 			value: 'Logical Reads'
 		}).component();
 
-		const rightContainer = await createOneComponentFlexContainer(view, logicalReadsComponent, 'forestgreen');
+		const logicalReadsContainer = await createOneComponentFlexContainer(view, logicalReadsComponent, 'forestgreen');
 
-		return createTwoComponentFlexContainer(view, leftContainer, rightContainer, 'row');
+		return [durationContainer, executionCountContainer, cpuTimeContainer, logicalReadsContainer];
 	}
 }
