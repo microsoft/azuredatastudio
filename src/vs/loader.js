@@ -449,7 +449,7 @@ var AMDLoader;
          */
         moduleIdToPaths(moduleId) {
             if (this._env.isNode) {
-                const isNodeModule = ((this.nodeModulesMap[moduleId] === true) // {{SQL CARBON EDIT}} - add back node modules map
+                const isNodeModule = ((this.nodeModulesMap && this.nodeModulesMap[moduleId] === true) // {{SQL CARBON EDIT}} - add back node modules map
                     || (this.options.amdModulesPattern instanceof RegExp
                         && !this.options.amdModulesPattern.test(moduleId)));
                 if (isNodeModule) {

@@ -42,7 +42,7 @@ import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
-import { IConfirmationResult, IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { workbenchTreeDataPreamble } from 'vs/platform/list/browser/listService';
 import { LogService } from 'vs/platform/log/common/logService';
