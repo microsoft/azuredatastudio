@@ -57,6 +57,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -222,7 +223,6 @@ export class Designer extends Disposable {
 		if (component instanceof InputBox) {
 			component.style(this._styles.inputBoxStyles);
 		} else if (component instanceof Checkbox) {
-			component.style(this._styles.checkboxStyles);
 		} else if (component instanceof TabbedPanel) {
 			component.style(this._styles.tabbedPanelStyles);
 		} else if (component instanceof Table) {
@@ -258,8 +258,10 @@ export class Designer extends Disposable {
 	public style(styles: IDesignerStyle): void {
 		this._styles = styles;
 		this._componentMap.forEach((value, key, map) => {
-			if (value.component.style) {
-				this.styleComponent(value.component);
+			if (!(value.component instanceof Checkbox)) {
+				if (value.component.style) {
+					this.styleComponent(value.component);
+				}
 			}
 		});
 		this._propertiesPane.componentMap.forEach((value) => {
@@ -832,7 +834,7 @@ export class Designer extends Disposable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const checkboxContainer = container.appendChild(DOM.$(''));
 				const checkboxProperties = componentDefinition.componentProperties as CheckBoxProperties;
-				const checkbox = new Checkbox(checkboxContainer, { label: '', ariaLabel: checkboxProperties.title, ariaDescription: componentDefinition.description });
+				const checkbox = new Checkbox(checkboxContainer, { ...defaultCheckboxStyles, label: '', ariaLabel: checkboxProperties.title, ariaDescription: componentDefinition.description });
 				checkbox.onChange((newValue) => {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue, source: view });
 				});

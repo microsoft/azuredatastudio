@@ -21,7 +21,8 @@ export type IStyleOverride<T> = {
 	[P in keyof T]?: ColorIdentifier | undefined;
 };
 
-function overrideStyles<T>(override: IStyleOverride<T>, styles: T): any {
+// {{SQL CARBON EDIT}} - add export keyword so that this can be used by the defaultStyles.ts in sql folder.
+export function overrideStyles<T>(override: IStyleOverride<T>, styles: T): any {
 	const result = { ...styles } as { [P in keyof T]: string | undefined };
 	for (const key in override) {
 		const val = override[key];

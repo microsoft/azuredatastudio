@@ -47,6 +47,7 @@ import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/br
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -536,7 +537,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let rowContainer = DOM.append(container, DOM.$(`tr.${rowContainerClass}`));
 		DOM.append(rowContainer, DOM.$('td'));
 		let checkboxContainer = DOM.append(rowContainer, DOM.$(`td.${cellContainerClass}`));
-		return new Checkbox(checkboxContainer, { label, checked: isChecked, ariaLabel: label });
+		return new Checkbox(checkboxContainer, { ...defaultCheckboxStyles, label, checked: isChecked, ariaLabel: label });
 	}
 
 	protected registerListeners(): void {
@@ -546,7 +547,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._register(attachButtonStyler(this._advancedButton, this._themeService));
-		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
 			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));

@@ -20,9 +20,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Mimes } from 'vs/base/common/mime';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import * as azdata from 'azdata';
-import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { MarkdownRenderer } from 'vs/editor/contrib/markdownRenderer/browser/markdownRenderer';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const OkText: string = localize('tableDesigner.UpdateDatabase', "Update Database");
 const CancelText: string = localize('tableDesigner.cancel', "Cancel");
@@ -95,6 +95,7 @@ export class TableDesignerPublishDialog extends Modal {
 		if (this._report.requireConfirmation && this._report.confirmationText) {
 			const checkboxContainer = DOM.append(body, DOM.$('div'));
 			const checkbox = new Checkbox(checkboxContainer, {
+				...defaultCheckboxStyles,
 				label: this._report.confirmationText,
 				checked: false
 			});
@@ -102,7 +103,6 @@ export class TableDesignerPublishDialog extends Modal {
 				this._okButton.enabled = checked;
 				this._generateScriptButton.enabled = checked;
 			}));
-			this._register(attachCheckboxStyler(checkbox, this._themeService));
 		}
 	}
 
