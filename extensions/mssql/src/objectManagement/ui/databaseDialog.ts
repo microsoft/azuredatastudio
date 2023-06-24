@@ -15,6 +15,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
+	private optionsSectionsContainer: azdata.Component[] = [];
 
 	// Database properties options
 	// General Tab
@@ -71,18 +72,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Options of a boolean dropdown
 			this.booleanOptionsArray = Object.keys(BooleanOptions);
 
-			//Sample data: TODO: REMOVE this after getting real values
-			this.viewInfo.pageVerifyOptions = ['CHECKSUM', 'TORN_PAGE_DETECTION', 'NONE'];
-			this.viewInfo.restrictAccessOptions = ['MULTI_USER', 'SINGLE_USER', 'RESTRICTED_USER'];
-
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
 			//Initilaize options Tab sections
 			this.initializeAutomaticSection();
-			this.initializeLedgerSection();
-			this.initializeRecoverySection();
+			if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
+				this.initializeLedgerSection();
+				this.initializeRecoverySection();
+			}
 			this.initializeStateSection();
 
 			// Initilaize general Tab
@@ -99,12 +98,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: 'optionsId',
-				content: this.createGroup('', [
-					this.automaticSection,
-					this.ledgerSection,
-					this.recoverySection,
-					this.stateSection
-				], false)
+				content: this.createGroup('', this.optionsSectionsContainer, false)
 			};
 
 			// Initilaize tab group with tabbed panel
@@ -273,6 +267,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			autoUpdateStatisticsContainer,
 			autoUpdateStatisticsAsynchronouslyContainer
 		], true);
+
+		this.optionsSectionsContainer.push(this.automaticSection);
 	}
 
 	private initializeLedgerSection(): void {
@@ -284,13 +280,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
 			isLedgerDatabaseInputContainer
 		], true);
+
+		this.optionsSectionsContainer.push(this.ledgerSection);
 	}
 
 
 	private initializeRecoverySection(): void {
 		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
 			this.objectInfo.pageVerify = newValue;
-		}, this.viewInfo.pageVerifyOptions, this.objectInfo.pageVerify, true);
+		}, Object.values(this.viewInfo.pageVerifyOptions), this.objectInfo.pageVerify, true);
 		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
 
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
@@ -302,33 +300,36 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			pageVerifyContainer,
 			targetRecoveryTimeContainer
 		], true);
+
+		this.optionsSectionsContainer.push(this.recoverySection);
 	}
 
 	private initializeStateSection(): void {
-		this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
-			this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === 'true');
-		}, this.booleanOptionsArray, String(this.objectInfo.databaseReadOnly), true);
-		const databaseReadOnlyContainer = this.createLabelInputContainer(localizedConstants.DatabaseReadOnlyText, this.databaseReadOnlyInput);
+		let containers: azdata.Component[] = [];
+		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
+			this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
+				this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === 'true');
+			}, this.booleanOptionsArray, String(this.objectInfo.databaseReadOnly), true);
+			containers.push(this.createLabelInputContainer(localizedConstants.DatabaseReadOnlyText, this.databaseReadOnlyInput));
+		}
 
 		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
-		const databaseStateContainer = this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput);
+		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput));
 
 		this.encryptionEnabledInput = this.createDropdown(localizedConstants.EncryptionEnabledText, async (newValue) => {
 			this.objectInfo.encryptionEnabled = (newValue.toLowerCase() === 'true');
 		}, this.booleanOptionsArray, String(this.objectInfo.encryptionEnabled), true);
-		const encryptionEnabledContainer = this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput);
+		containers.push(this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput));
 
-		this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
-			this.objectInfo.restrictAccess = newValue;
-		}, this.viewInfo.restrictAccessOptions, this.objectInfo.restrictAccess, true);
-		const restrictAccessContainer = this.createLabelInputContainer(localizedConstants.RestrictAccessText, this.restrictAccessInput);
+		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
+			this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
+				this.objectInfo.restrictAccess = newValue;
+			}, Object.values(this.viewInfo.restrictAccessOptions), this.objectInfo.restrictAccess, true);
+			containers.push(this.createLabelInputContainer(localizedConstants.RestrictAccessText, this.restrictAccessInput));
 
-		this.stateSection = this.createGroup(localizedConstants.StateSectionHeader, [
-			databaseReadOnlyContainer,
-			databaseStateContainer,
-			encryptionEnabledContainer,
-			restrictAccessContainer
-		], true);
+		}
+		this.stateSection = this.createGroup(localizedConstants.StateSectionHeader, containers, true);
+		this.optionsSectionsContainer.push(this.stateSection);
 	}
 	//#endregion
 

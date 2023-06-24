@@ -470,15 +470,14 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels: string[];
 	containmentTypes: string[];
 	recoveryModels: string[];
-
+	databaseEngineEdition: string;
 	isAzureDB: boolean;
 	azureBackupRedundancyLevels: string[];
 	azureServiceLevelObjectives: AzureEditionDetails[];
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
-
-	pageVerifyOptions: string[];
-	restrictAccessOptions: string[];
+	pageVerifyOptions: { [key: string]: string };
+	restrictAccessOptions: { [key: string]: string };
 }
 
 export interface AzureEditionDetails {

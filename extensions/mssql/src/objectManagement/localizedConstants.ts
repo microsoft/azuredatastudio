@@ -253,6 +253,7 @@ export const DatabaseReadOnlyText = localize('objectManagement.databasePropertie
 export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
 export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
 export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
+export const SqlManagedInstance = localize('objectManagement.databaseProperties.sqlManagedInstance', "SqlManagedInstance");
 
 
 // Util functions
