@@ -8,7 +8,7 @@ import * as colors from './colors';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { IThemable, attachStyler, computeStyles, defaultButtonStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'sql/platform/theme/common/vsstyler';
+import { IThemable, attachStyler, computeStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'sql/platform/theme/common/vsstyler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export interface IDropdownStyleOverrides extends IStyleOverrides {
@@ -338,17 +338,6 @@ export interface IInfoButtonStyleOverrides {
 	buttonHoverBackground: cr.ColorIdentifier
 }
 
-export const defaultInfoButtonStyles: IInfoButtonStyleOverrides = {
-	buttonBackground: sqlcr.infoButtonBackground,
-	buttonForeground: sqlcr.infoButtonForeground,
-	buttonBorder: sqlcr.infoButtonBorder,
-	buttonHoverBackground: sqlcr.infoButtonHoverBackground
-};
-
-export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeService, style?: IInfoButtonStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultInfoButtonStyles, ...style }, widget);
-}
-
 export function attachTableFilterStyler(widget: IThemable, themeService: IThemeService): IDisposable {
 	return attachStyler(themeService, {
 		...defaultInputBoxStyles,
@@ -377,14 +366,12 @@ export function attachDesignerStyler(widget: any, themeService: IThemeService): 
 		const selectBoxStyles = computeStyles(colorTheme, defaultSelectBoxStyles);
 		const tableStyles = computeStyles(colorTheme, defaultTableStyles);
 		const checkboxStyles = computeStyles(colorTheme, defaultCheckboxStyles);
-		const buttonStyles = computeStyles(colorTheme, defaultButtonStyles);
 		const editableDropdownStyles = computeStyles(colorTheme, defaultEditableDropdownStyle);
 		widget.style({
 			inputBoxStyles: inputStyles,
 			selectBoxStyles: selectBoxStyles,
 			tableStyles: tableStyles,
 			checkboxStyles: checkboxStyles,
-			buttonStyles: buttonStyles,
 			dropdownStyles: editableDropdownStyles,
 			paneSeparator: cr.resolveColorValue(sqlcr.DesignerPaneSeparator, colorTheme),
 			groupHeaderBackground: cr.resolveColorValue(sqlcr.GroupHeaderBackground, colorTheme)

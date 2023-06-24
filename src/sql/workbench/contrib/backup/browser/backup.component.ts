@@ -37,8 +37,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
@@ -335,13 +334,13 @@ export class BackupComponent extends AngularDisposable {
 		this.pathListBox.render(this.filePathElement!.nativeElement);
 
 		// Set backup path add/remove buttons
-		this.addUrlPathButton = this._register(new Button(this.addUrlPathElement!.nativeElement, { secondary: true }));
+		this.addUrlPathButton = this._register(new Button(this.addUrlPathElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.addUrlPathButton.label = localize('backupBrowseButton', "Browse");
 		this.addUrlPathButton.title = localize('addUrl', "Add URL");
-		this.addFilePathButton = this._register(new Button(this.addFilePathElement!.nativeElement, { secondary: true }));
+		this.addFilePathButton = this._register(new Button(this.addFilePathElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.addFilePathButton.label = '+';
 		this.addFilePathButton.title = localize('addFile', "Add File");
-		this.removeFilePathButton = this._register(new Button(this.removeFilePathElement!.nativeElement, { secondary: true }));
+		this.removeFilePathButton = this._register(new Button(this.removeFilePathElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.removeFilePathButton.label = '-';
 		this.removeFilePathButton.title = localize('removeFile', "Remove files");
 
@@ -455,21 +454,21 @@ export class BackupComponent extends AngularDisposable {
 
 	private addFooterButtons(): void {
 		// Set script footer button
-		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true }));
+		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.scriptButton.label = localize('backupComponent.script', "Script");
 		this._register(this.scriptButton.onDidClick(() => this.onScript()));
 		this._register(this.scriptButton);
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
-		this.backupButton = this._register(new Button(this.backupButtonElement!.nativeElement));
+		this.backupButton = this._register(new Button(this.backupButtonElement!.nativeElement, defaultButtonStyles));
 		this.backupButton.label = localize('backupComponent.backup', "Backup");
 		this._register(this.backupButton.onDidClick(() => this.onOk()));
 		this._register(this.backupButton);
 		this.backupEnabled = false;
 
 		// Set cancel footer button
-		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true }));
+		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
 		this._register(this.cancelButton.onDidClick(() => this.onCancel()));
 		this._register(this.cancelButton);
@@ -611,9 +610,6 @@ export class BackupComponent extends AngularDisposable {
 		this._register(attachInputBoxStyler(this.recoveryBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.backupTypeSelectBox!, this.themeService));
 		this._register(attachListBoxStyler(this.pathListBox!, this.themeService));
-		this._register(attachButtonStyler(this.addUrlPathButton!, this.themeService));
-		this._register(attachButtonStyler(this.addFilePathButton!, this.themeService));
-		this._register(attachButtonStyler(this.removeFilePathButton!, this.themeService));
 		this._register(attachSelectBoxStyler(this.compressionSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.algorithmSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.encryptorSelectBox!, this.themeService));

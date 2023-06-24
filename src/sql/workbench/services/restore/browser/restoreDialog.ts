@@ -50,7 +50,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 interface FileListElement {
@@ -215,7 +215,7 @@ export class RestoreDialog extends Modal {
 		DOM.append(urlBrowseContainer, DOM.$('.dialog-label')).innerText = '';
 
 		let browseLabel = localize('restoreDialog.browse', "Browse");
-		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true }));
+		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true, ...defaultButtonStyles }));
 		this._browseUrlButton.label = browseLabel;
 		this._browseUrlButton.setWidth('50px');
 
@@ -236,7 +236,7 @@ export class RestoreDialog extends Modal {
 
 		this._filePathInputBox = this._register(new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions));
 
-		this._browseFileButton = this._register(new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true }));
+		this._browseFileButton = this._register(new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true, ...defaultButtonStyles }));
 		this._browseFileButton.label = '...';
 
 		this._sourceDatabasesElement = DOM.$('.source-database-list');

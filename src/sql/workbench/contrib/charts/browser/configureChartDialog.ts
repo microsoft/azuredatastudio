@@ -14,7 +14,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 
 export class ConfigureChartDialog extends Modal {
 	constructor(
@@ -39,9 +38,7 @@ export class ConfigureChartDialog extends Modal {
 	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-
-		let closeButton = this.addFooterButton(localize('configureChartDialog.close', "Close"), () => this.close());
-		attachButtonStyler(closeButton, this._themeService);
+		this.addFooterButton(localize('configureChartDialog.close', "Close"), () => this.close());
 	}
 
 	protected renderBody(container: HTMLElement) {

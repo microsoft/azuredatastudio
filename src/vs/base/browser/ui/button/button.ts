@@ -37,11 +37,12 @@ export interface IButtonStyles {
 	readonly buttonSecondaryHoverBackground: string | undefined;
 	readonly buttonSecondaryForeground: string | undefined;
 	readonly buttonBorder: string | undefined;
-	// {{SQL CARBON EDIT}}
-	buttonSecondaryBorder?: Color;
-	buttonDisabledBackground?: Color;
-	buttonDisabledForeground?: Color;
-	buttonDisabledBorder?: Color;
+	// {{SQL CARBON EDIT}} - Start
+	readonly buttonSecondaryBorder: string | undefined;
+	readonly buttonDisabledBackground: string | undefined;
+	readonly buttonDisabledForeground: string | undefined;
+	readonly buttonDisabledBorder: string | undefined;
+	// {{SQL CARBON EDIT}} - End
 }
 
 export const unthemedButtonStyles: IButtonStyles = {
@@ -52,7 +53,13 @@ export const unthemedButtonStyles: IButtonStyles = {
 	buttonBorder: undefined,
 	buttonSecondaryBackground: undefined,
 	buttonSecondaryForeground: undefined,
-	buttonSecondaryHoverBackground: undefined
+	buttonSecondaryHoverBackground: undefined,
+	// {{SQL CARBON EDIT}} - Start
+	buttonSecondaryBorder: undefined,
+	buttonDisabledBackground: undefined,
+	buttonDisabledForeground: undefined,
+	buttonDisabledBorder: undefined
+	// {{SQL CARBON EDIT}} - End
 };
 
 export interface IButton extends IDisposable {
@@ -60,7 +67,7 @@ export interface IButton extends IDisposable {
 	readonly onDidClick: BaseEvent<Event | undefined>;
 
 	set label(value: string | IMarkdownString);
-	set icon(value: ThemeIcon);
+	set icon(value: ThemeIcon | string); // {{SQL CARBON EDIT}} - add string to the value type.
 	set enabled(value: boolean);
 
 	focus(): void;
@@ -78,6 +85,9 @@ export class Button extends Disposable implements IButton {
 	protected _label: string | IMarkdownString = '';
 	protected _labelElement: HTMLElement | undefined;
 	protected _labelShortElement: HTMLElement | undefined;
+	// {{SQL CARBON EDIT}} - Start
+	private hasIcon: boolean = false;
+	// {{SQL CARBON EDIT}} - End
 
 	private _onDidClick = this._register(new Emitter<Event>());
 	get onDidClick(): BaseEvent<Event> { return this._onDidClick.event; }
@@ -157,6 +167,9 @@ export class Button extends Disposable implements IButton {
 		this.focusTracker = this._register(trackFocus(this._element));
 		this._register(this.focusTracker.onDidFocus(() => { if (this.enabled) { this.updateBackground(true); } }));
 		this._register(this.focusTracker.onDidBlur(() => { if (this.enabled) { this.updateBackground(false); } }));
+		// {{SQL CARBON EDIT}} - Start
+		this.updateStyles();
+		// {{SQL CARBON EDIT}} - End
 	}
 
 	private getContentElements(content: string): HTMLElement[] {
@@ -182,7 +195,13 @@ export class Button extends Disposable implements IButton {
 		return elements;
 	}
 
-	private updateBackground(hover: boolean): void {
+	// {{ SQL CARBON EDIT}} - Mark as protected
+	protected updateBackground(hover: boolean): void {
+		// // {{SQL CARBON EDIT}} - Start
+		if (!this.enabled || this.hasIcon) {
+			return;
+		}
+		// {{SQL CARBON EDIT}} - End
 		let background;
 		if (this.options.secondary) {
 			background = hover ? this.options.buttonSecondaryHoverBackground : this.options.buttonSecondaryBackground;
@@ -193,6 +212,45 @@ export class Button extends Disposable implements IButton {
 			this._element.style.backgroundColor = background;
 		}
 	}
+
+	// {{SQL CARBON EDIT}} - Start
+	protected updateStyles(): void {
+		let background, foreground, border, fontWeight, fontSize: string;
+		if (this.hasIcon) {
+			background = border = 'transparent';
+			foreground = this.options.buttonSecondaryForeground;
+			fontWeight = fontSize = 'inherit';
+		} else {
+			if (this.enabled) {
+				if (this.options.secondary) {
+					foreground = this.options.buttonSecondaryForeground;
+					background = this.options.buttonSecondaryBackground;
+					border = this.options.buttonSecondaryBorder;
+				} else {
+					foreground = this.options.buttonForeground;
+					background = this.options.buttonBackground;
+					border = this.options.buttonBorder;
+				}
+			}
+			else {
+				foreground = this.options.buttonDisabledForeground;
+				background = this.options.buttonDisabledBackground;
+				border = this.options.buttonDisabledBorder;
+			}
+			fontWeight = '600';
+			fontSize = '12px';
+		}
+		this._element.style.color = foreground || '';
+		this._element.style.backgroundColor = background || '';
+		this._element.style.borderWidth = border ? '1px' : '';
+		this._element.style.borderStyle = border ? 'solid' : '';
+		this._element.style.borderColor = border || '';
+		this._element.style.opacity = this.hasIcon ? '' : '1';
+		this._element.style.fontWeight = fontWeight;
+		this._element.style.fontSize = fontSize;
+		this._element.style.borderRadius = '2px';
+	}
+	// {{SQL CARBON EDIT}} - End
 
 	get element(): HTMLElement {
 		return this._element;
@@ -256,10 +314,17 @@ export class Button extends Disposable implements IButton {
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
-	set icon(icon: ThemeIcon) {
-		this._element.classList.add(...ThemeIcon.asClassNameArray(icon));
+	// {{SQL CARBON EDIT}} - accept class name directly
+	set icon(icon: ThemeIcon | string) {
+		if (typeof icon === 'string') {
+			this._element.classList.add(...icon.split(' '));
+		} else {
+			this._element.classList.add(...ThemeIcon.asClassNameArray(icon));
+		}
+		this.hasIcon = icon !== undefined;
+		this.updateStyles();
 	}
+	// {{SQL CARBON EDIT}} - End
 
 	set enabled(value: boolean) {
 		if (value) {
@@ -271,6 +336,9 @@ export class Button extends Disposable implements IButton {
 			this._element.setAttribute('aria-disabled', String(true));
 			removeTabIndexAndUpdateFocus(this._element); // {{SQL CARBON EDIT}} - remove tabindex when disabled otherwise disabled control is still keyboard focusable.
 		}
+		// {{SQL CARBON EDIT}} - Start
+		this.updateStyles();
+		// {{SQL CARBON EDIT}} - End
 	}
 
 	get enabled() {

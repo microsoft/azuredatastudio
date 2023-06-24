@@ -371,7 +371,7 @@ class WelcomePage extends Disposable {
 		const newButtonContainer = document.createElement('div');
 		newButtonContainer.classList.add('btn', 'btn-primary');
 		container.appendChild(newButtonContainer);
-		const newButton = this._register(new Button(newButtonContainer));
+		const newButton = this._register(new Button(newButtonContainer, defaultButtonStyles));
 		newButton.label = localize('welcomePage.new', "New");
 		const newButtonHtmlElement = newButton.element;
 		newButtonHtmlElement.setAttribute('aria-haspopup', 'true');
@@ -415,7 +415,7 @@ class WelcomePage extends Disposable {
 			const btnContainer = document.createElement('div');
 			btnContainer.classList.add('btn', 'btn-secondary');
 			container.appendChild(btnContainer);
-			const secondaryButton = this._register(new Button(btnContainer));
+			const secondaryButton = this._register(new Button(btnContainer, { secondary: true, ...defaultButtonStyles }));
 			secondaryButton.label = item.title;
 			secondaryButton.element.classList.add('btn-secondary');
 			secondaryButton.onDidClick(async () => {
@@ -433,7 +433,7 @@ class WelcomePage extends Disposable {
 		const icon = document.createElement('div');
 		const containerLeft = document.createElement('div');
 		const containerRight = document.createElement('div');
-		let startTourBtn = new Button(containerRight);
+		let startTourBtn = new Button(containerRight, defaultButtonStyles);
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
 		removeTourBtn.setAttribute('role', 'button');

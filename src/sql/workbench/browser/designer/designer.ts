@@ -26,7 +26,6 @@ import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEdito
 import { CheckBoxColumn } from 'sql/base/browser/ui/table/plugins/checkboxColumn.plugin';
 import { DesignerTabPanelView } from 'sql/workbench/browser/designer/designerTabPanelView';
 import { DesignerPropertiesPane } from 'sql/workbench/browser/designer/designerPropertiesPane';
-import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
@@ -65,7 +64,6 @@ export interface IDesignerStyle {
 	tableStyles?: ITableStyles;
 	selectBoxStyles?: ISelectBoxStyles;
 	checkboxStyles?: ICheckboxStyles;
-	buttonStyles?: IButtonStyles;
 	dropdownStyles?: IListStyles & IInputBoxStyles & IDropdownStyles;
 	paneSeparator?: Color;
 	groupHeaderBackground?: Color;
@@ -219,7 +217,7 @@ export class Designer extends Disposable {
 		}, this._instantiationService);
 	}
 
-	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
+	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown): void {
 		if (component instanceof InputBox) {
 			component.style(this._styles.inputBoxStyles);
 		} else if (component instanceof Checkbox) {
@@ -228,9 +226,6 @@ export class Designer extends Disposable {
 		} else if (component instanceof Table) {
 			this.removeTableSelectionStyles();
 			component.style(this._styles.tableStyles);
-		} else if (component instanceof Button) {
-			// {{SQL CARBON TODO}} - styles
-			//component.style(this._styles.buttonStyles);
 		} else if (component instanceof Dropdown) {
 			component.style(this._styles.dropdownStyles);
 		} else {

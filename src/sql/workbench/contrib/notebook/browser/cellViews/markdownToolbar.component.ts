@@ -28,6 +28,7 @@ import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/note
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { FileAccess } from 'vs/base/common/network';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -117,7 +118,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	private initActionBar() {
 		let linkButtonContainer = DOM.$('li.action-item');
 		linkButtonContainer.setAttribute('role', 'presentation');
-		let linkButton = new Button(linkButtonContainer);
+		let linkButton = new Button(linkButtonContainer, defaultButtonStyles);
 		linkButton.title = this.insertLink;
 		linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
 
@@ -133,7 +134,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 		let imageButtonContainer = DOM.$('li.action-item');
 		imageButtonContainer.setAttribute('role', 'presentation');
-		let imageButton = new Button(imageButtonContainer);
+		let imageButton = new Button(imageButtonContainer, defaultButtonStyles);
 		imageButton.title = this.insertImage;
 		imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
 

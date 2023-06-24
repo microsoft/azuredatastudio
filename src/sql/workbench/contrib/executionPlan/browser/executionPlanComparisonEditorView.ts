@@ -33,8 +33,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const ADD_EXECUTION_PLAN_STRING = localize('epCompare.addExecutionPlanLabel', 'Add execution plan');
 
@@ -214,8 +214,7 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
 
-		this._placeholderButton = this._register(new Button(this._placeholderInfoboxContainer, { secondary: true }));
-		this._register(attachButtonStyler(this._placeholderButton, this.themeService));
+		this._placeholderButton = this._register(new Button(this._placeholderInfoboxContainer, { secondary: true, ...defaultButtonStyles }));
 		this._placeholderButton.label = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.ariaLabel = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.enabled = true;

@@ -66,7 +66,6 @@ export class ConnectionDialogWidget extends Modal {
 	private _connectionTypeContainer: HTMLElement;
 	private _connectionDetailTitle: HTMLElement;
 	private _connectButton: Button;
-	private _closeButton: Button;
 	private _providerTypeSelectBox: SelectBox;
 	private _newConnectionParams: INewConnectionParams;
 	private _recentConnectionTree: AsyncServerTree | ITree;
@@ -261,7 +260,7 @@ export class ConnectionDialogWidget extends Modal {
 		const cancelLabel = localize('connectionDialog.cancel', "Cancel");
 		this._connectButton = this.addFooterButton(connectLabel, () => this.connect());
 		this._connectButton.enabled = false;
-		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
+		this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.registerListeners();
 		this.onProviderTypeSelected(this._providerTypeSelectBox.value);
 	}
@@ -282,9 +281,6 @@ export class ConnectionDialogWidget extends Modal {
 	private registerListeners(): void {
 		// Theme styler
 		this._register(styler.attachSelectBoxStyler(this._providerTypeSelectBox, this._themeService));
-		this._register(styler.attachButtonStyler(this._connectButton, this._themeService));
-		this._register(styler.attachButtonStyler(this._closeButton, this._themeService));
-
 		this._register(this._providerTypeSelectBox.onDidSelect(selectedProviderType => {
 			this.onProviderTypeSelected(selectedProviderType.selected);
 		}));

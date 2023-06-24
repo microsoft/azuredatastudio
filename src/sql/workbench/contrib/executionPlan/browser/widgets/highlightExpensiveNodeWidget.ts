@@ -22,6 +22,7 @@ import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browse
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const SELECT_EXPENSE_METRIC_TITLE = localize('executionPlanSelectExpenseMetricTitle', 'Select expense metric');
 
@@ -126,7 +127,8 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		const self = this;
 		const applyButton = this._register(new Button(this.container, {
-			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation')
+			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation'),
+			...defaultButtonStyles
 		}));
 
 		applyButton.label = localize('highlightExpensiveOperationApplyButton', 'Apply');

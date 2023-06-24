@@ -13,9 +13,10 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
-import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { BaseDropdown, IBaseDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IAnchor, IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
+import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;
@@ -23,9 +24,9 @@ export interface IDropdownStyles {
 	borderColor?: Color;
 }
 
-
 export interface IDropdownOptions extends IBaseDropdownOptions {
 	contextViewProvider: IContextViewProvider;
+	buttonStyles: IButtonStyles;
 }
 
 export class Dropdown extends BaseDropdown {
@@ -96,7 +97,7 @@ export class DropdownList extends BaseDropdown {
 	) {
 		super(container, _options);
 		if (action) {
-			this.button = new Button(_contentContainer);
+			this.button = new Button(_contentContainer, this._options.buttonStyles);
 			this.button.label = action.label;
 			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
 				action.run();
@@ -177,14 +178,11 @@ export class DropdownList extends BaseDropdown {
 		}
 	}
 
-	public style(styles: IDropdownStyles & IButtonStyles): void {
+	public style(styles: IDropdownStyles): void {
 		this.backgroundColor = styles.backgroundColor;
 		this.foregroundColor = styles.foregroundColor;
 		this.borderColor = styles.borderColor;
 		this.applyStyles();
-		if (this.button) {
-			this.button.style(styles);
-		}
 	}
 
 	protected applyStyles(): void {
