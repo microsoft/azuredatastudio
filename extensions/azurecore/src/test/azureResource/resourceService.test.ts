@@ -57,13 +57,13 @@ let resourceService: AzureResourceService;
 describe('AzureResourceService.listResourceProviderIds', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getRootChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azdata.TreeItem>().object]));
+		mockResourceTreeDataProvider1.setup((o) => o.getRootChild()).returns(() => Promise.resolve(TypeMoq.Mock.ofType<azdata.TreeItem>().object));
 		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
 		mockResourceTreeDataProvider2 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider2.setup((o) => o.getRootChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azdata.TreeItem>().object]));
+		mockResourceTreeDataProvider2.setup((o) => o.getRootChild()).returns(() => Promise.resolve(TypeMoq.Mock.ofType<azdata.TreeItem>().object));
 		mockResourceProvider2 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider2.setup((o) => o.providerId).returns(() => 'mockResourceProvider2');
 		mockResourceProvider2.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider2.object);
@@ -92,7 +92,7 @@ describe('AzureResourceService.listResourceProviderIds', function (): void {
 describe('AzureResourceService.getRootChildren', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getRootChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azdata.TreeItem>().object]));
+		mockResourceTreeDataProvider1.setup((o) => o.getRootChild()).returns(() => Promise.resolve(TypeMoq.Mock.ofType<azdata.TreeItem>().object));
 		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
@@ -103,15 +103,15 @@ describe('AzureResourceService.getRootChildren', function (): void {
 	});
 
 	it('Should be correct when provider id is correct.', async function (): Promise<void> {
-		const children = await resourceService.getRootChildren(mockResourceProvider1.object.providerId, mockAccount, mockSubscription);
+		const child = await resourceService.getRootChild(mockResourceProvider1.object.providerId, mockAccount, mockSubscription);
 
-		should(children).Array();
+		should(child).Object();
 	});
 
 	it('Should throw exceptions when provider id is incorrect.', async function (): Promise<void> {
 		const providerId = 'non_existent_provider_id';
 		try {
-			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription);
+			await resourceService.getRootChild(providerId, mockAccount, mockSubscription);
 		} catch (error) {
 			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
 			return;
@@ -124,7 +124,7 @@ describe('AzureResourceService.getRootChildren', function (): void {
 describe('AzureResourceService.getChildren', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getRootChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azdata.TreeItem>().object]));
+		mockResourceTreeDataProvider1.setup((o) => o.getRootChild()).returns(() => Promise.resolve(TypeMoq.Mock.ofType<azdata.TreeItem>().object));
 		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
 		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
@@ -143,7 +143,7 @@ describe('AzureResourceService.getChildren', function (): void {
 	it('Should throw exceptions when provider id is incorrect.', async function (): Promise<void> {
 		const providerId = 'non_existent_provider_id';
 		try {
-			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription);
+			await resourceService.getRootChild(providerId, mockAccount, mockSubscription);
 		} catch (error) {
 			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
 			return;
