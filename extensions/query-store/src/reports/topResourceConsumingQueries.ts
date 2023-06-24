@@ -7,32 +7,25 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
-import { createOneComponentFlexContainer } from '../common/utils';
+import { QueryStoreView } from './queryStoreView';
 
 
 export class TopResourceConsumingQueries extends BaseQueryStoreReport {
+	queries: QueryStoreView;
+	planSummary: QueryStoreView;
+	plan: QueryStoreView;
+
 	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
 		super(constants.topResourceConsumingQueries, constants.topResourceConsumingQueriesToolbarLabel(databaseName), true, extensionContext);
+		this.queries = new QueryStoreView('Queries', 'chartreuse');
+		this.planSummary = new QueryStoreView('Plan summary for query x', 'coral');
+		this.plan = new QueryStoreView('Plan x', 'darkturquoise');
 	}
 
 	public override async createViews(view: azdata.ModelView): Promise<azdata.FlexContainer[]> {
-		// TODO: replace these text components with the actual chart components
-		const queriesComponent = view.modelBuilder.text().withProps({
-			value: 'Queries'
-		}).component();
-		const queriesContainer = await createOneComponentFlexContainer(view, queriesComponent, 'chartreuse');
-
-		const planSummaryComponent = view.modelBuilder.text().withProps({
-			value: 'Plan summary for query x'
-		}).component();
-
-		const planSummaryContainer = await createOneComponentFlexContainer(view, planSummaryComponent, 'coral');
-
-		const planComponent = view.modelBuilder.text().withProps({
-			value: 'Plan x'
-		}).component();
-
-		const planContainer = await createOneComponentFlexContainer(view, planComponent, 'darkturquoise');
+		const queriesContainer = await this.queries.createViewContainer(view);
+		const planSummaryContainer = await this.planSummary.createViewContainer(view);
+		const planContainer = await this.plan.createViewContainer(view);
 
 		return [queriesContainer, planSummaryContainer, planContainer];
 	}

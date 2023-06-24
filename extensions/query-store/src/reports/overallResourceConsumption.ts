@@ -7,36 +7,28 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
-import { createOneComponentFlexContainer } from '../common/utils';
+import { QueryStoreView } from './queryStoreView';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
+	duration: QueryStoreView;
+	execution: QueryStoreView;
+	cpuTime: QueryStoreView;
+	logicalReads: QueryStoreView;
+
 	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
 		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), false, extensionContext);
+		this.duration = new QueryStoreView('Duration', 'chartreuse');
+		this.execution = new QueryStoreView('Execution Count', 'coral');
+		this.cpuTime = new QueryStoreView('CPU Time', 'darkturquoise');
+		this.logicalReads = new QueryStoreView('Logical Reads', 'forestgreen');
 	}
 
 	public override async createViews(view: azdata.ModelView): Promise<azdata.FlexContainer[]> {
-		const durationComponent = view.modelBuilder.text().withProps({
-			value: 'Duration'
-		}).component();
-		const durationContainer = await createOneComponentFlexContainer(view, durationComponent, 'chartreuse');
-
-		const executionCountComponent = view.modelBuilder.text().withProps({
-			value: 'Execution Count'
-		}).component();
-
-		const executionCountContainer = await createOneComponentFlexContainer(view, executionCountComponent, 'coral');
-
-		const cpuTimeComponent = view.modelBuilder.text().withProps({
-			value: 'CPU Time'
-		}).component();
-		const cpuTimeContainer = await createOneComponentFlexContainer(view, cpuTimeComponent, 'darkturquoise');
-
-		const logicalReadsComponent = view.modelBuilder.text().withProps({
-			value: 'Logical Reads'
-		}).component();
-
-		const logicalReadsContainer = await createOneComponentFlexContainer(view, logicalReadsComponent, 'forestgreen');
+		const durationContainer = await this.duration.createViewContainer(view);
+		const executionCountContainer = await this.execution.createViewContainer(view);
+		const cpuTimeContainer = await this.cpuTime.createViewContainer(view);
+		const logicalReadsContainer = await this.logicalReads.createViewContainer(view);
 
 		return [durationContainer, executionCountContainer, cpuTimeContainer, logicalReadsContainer];
 	}
