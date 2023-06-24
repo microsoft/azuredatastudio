@@ -12,8 +12,6 @@ import { displayReloadAds } from '../extension';
 
 const localize = nls.loadMessageBundle();
 
-export const PROVIDER_CONFIG_KEY = 'provider.clouds';
-
 export type ProviderSettingsJson = {
 	name: string,
 	settings: {
@@ -282,7 +280,7 @@ const chinaAzureSettings: ProviderSettings = {
 };
 let allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
 
-let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson);
+let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.ProviderSettingsJson) as ProviderSettingsJson[];
 vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
 	const impactProvider = changeEvent.affectsConfiguration(Constants.ProviderSettingsJsonSection);
 	if (impactProvider === true) {
