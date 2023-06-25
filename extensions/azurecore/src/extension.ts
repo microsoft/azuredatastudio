@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	if (authLibrary !== Constants.DefaultAuthLibrary) {
 		void vscode.window.showWarningMessage(loc.deprecatedOption, loc.switchMsal, loc.dismiss).then(async (value) => {
 			if (value === loc.switchMsal) {
-				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.AuthenticationLibrarySection, 'MSAL', vscode.ConfigurationTarget.Global);
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.AuthenticationLibrarySection, Constants.DefaultAuthLibrary, vscode.ConfigurationTarget.Global);
 			}
 		});
 	}
