@@ -20,6 +20,7 @@ export const ColumnTypeDisplayName: string = localize('objectManagement.ColumnDi
 export const DatabaseTypeDisplayName: string = localize('objectManagement.DatabaseDisplayName', "database");
 export const ServerRoleTypeDisplayName: string = localize('objectManagement.ServerRoleTypeDisplayName', "server role");
 export const ServerRoleTypeDisplayNameInTitle: string = localize('objectManagement.ServerRoleTypeDisplayNameInTitle', "Server Role");
+export const ServerTypeDisplayName: string = localize('objectManagement.ServerDisplayName', "Server");
 export const ApplicationRoleTypeDisplayName: string = localize('objectManagement.ApplicationRoleTypeDisplayName', "application role");
 export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectManagement.ApplicationRoleTypeDisplayNameInTitle', "Application Role");
 export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
@@ -222,6 +223,29 @@ export const ObjectSelectionMethodDialog_AllObjectsOfTypes = localize('objectMan
 export const ObjectSelectionMethodDialog_AllObjectsOfSchema = localize('objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema', "All objects belonging to a schema");
 export const ObjectSelectionMethodDialog_SelectSchemaDropdownLabel = localize('objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel', "Schema");
 
+// Server Properties Dialog
+export const PropertiesHeader = localize('objectManagement.properties', "Properties");
+export const HardwareGenerationText = localize('objectManagement.hardwareGeneration', "Hardware Generation");
+export const LanguageText = localize('objectManagement.language', "Language");
+export const MemoryText = localize('objectManagement.memory', "Memory");
+export const OperatingSystemText = localize('objectManagement.operatingSystem', "Operating System");
+export const PlatformText = localize('objectManagement.platform', "Platform");
+export const ProcessorsText = localize('objectManagement.processors', "Processors");
+export const IsClusteredText = localize('objectManagement.isClustered', "Is Clustered");
+export const IsHadrEnabledText = localize('objectManagement.isHadrEnabled', "Is HADR Enabled");
+export const IsPolyBaseInstalledText = localize('objectManagement.isPolyBaseInstalled', "Is PolyBase Installed");
+export const IsXTPSupportedText = localize('objectManagement.isXTPSupported', "Is XTP Supported");
+export const ProductText = localize('objectManagement.product', "Product");
+export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size");
+export const RootDirectoryText = localize('objectManagement.rootDirectory', "Root Directory");
+export const ServerCollationText = localize('objectManagement.serverCollation', "Server Collation");
+export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
+export const StorageSpaceUsageInGBText = localize('objectManagement.storageSpaceUsageInGB', "Storage Space Usage");
+export const VersionText = localize('objectManagement.versionText', "Version");
+
+
+export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
+export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
@@ -267,6 +291,8 @@ export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): 
 			return inTitle ? LoginTypeDisplayNameInTitle : LoginTypeDisplayName;
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return inTitle ? ServerRoleTypeDisplayNameInTitle : ServerRoleTypeDisplayName;
+		case ObjectManagement.NodeType.Server:
+			return ServerTypeDisplayName;
 		case ObjectManagement.NodeType.User:
 			return inTitle ? UserTypeDisplayNameInTitle : UserTypeDisplayName;
 		case ObjectManagement.NodeType.Table:

@@ -27,7 +27,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { localize } from 'vs/nls';
 import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { Action } from 'vs/base/common/actions';
+import { Action, toAction } from 'vs/base/common/actions';
 
 //#region -- Data Explorer
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';
@@ -211,7 +211,7 @@ async function runScriptingAction(accessor: ServicesAccessor, args: ObjectExplor
 	const logService = accessor.get(ILogService);
 	const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
 	const notificationHandle = notificationService.notify({
-		message: localize('scriptActionError.inProgress', "Generating script..."),
+		message: localize('scriptingAction.inProgress', "Generating script..."),
 		severity: Severity.Info,
 		progress: {
 			infinite: true
@@ -227,10 +227,21 @@ async function runScriptingAction(accessor: ServicesAccessor, args: ObjectExplor
 		selectionHandler.onTreeActionStateChange(false);
 		notificationHandle.close();
 	} catch (error) {
-		notificationHandle.updateSeverity(Severity.Error);
 		const msg = localize('scriptActionError', "An error occurred while executing the action: {0}.", getErrorMessage(error));
 		logService.error(msg);
+		notificationHandle.updateSeverity(Severity.Error);
 		notificationHandle.updateMessage(msg);
+		notificationHandle.progress.done();
+		notificationHandle.updateActions({
+			primary: [
+				toAction({
+					id: 'closeScriptingNotification',
+					label: localize('scriptingAction.close', "Close"),
+					run: () => {
+						notificationHandle.close();
+					}
+				})]
+		})
 	}
 }
 
