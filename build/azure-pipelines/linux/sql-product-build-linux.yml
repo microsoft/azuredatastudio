@@ -166,19 +166,20 @@ steps:
   #   displayName: Run Extension Unit Tests (Fail on Error)
   #   condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
-  - bash: |
-      set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd /tmp
-      for folder in adsuser*/
-      do
-      folder=${folder%/}
-      # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
-      done
-    displayName: Archive Logs
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # - bash: |
+  #     set -e
+  #     mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+  #     cd /tmp
+  #     for folder in adsuser*/
+  #     do
+  #     folder=${folder%/}
+  #     # Only archive directories we want for debugging purposes
+  #     tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+  #     done
+  #   displayName: Archive Logs
+  #   continueOnError: true
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # {{SQL CARBON TODO}} - end disable extension unit tests while investigating post merge (6/26/2023)
 
   - script: |
       set -e
