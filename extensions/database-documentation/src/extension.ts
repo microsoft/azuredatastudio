@@ -46,17 +46,10 @@ export async function activate(context: vscode.ExtensionContext) {
         const version = result[0];
         let md = result[1];
 
-        vscode.window.showInformationMessage("Current version: " + version.toString());
-
         if (!version) {
-            vscode.window.showInformationMessage("Generating Documentation");
-
             vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation... "));
             md = await generateMarkdown(context, connection);
             vscode.window.showInformationMessage(localize('database-documentation.finishedGen', "Documentation Generated!"));
-        }
-        else {
-            vscode.window.showInformationMessage("Loaded Documentation");
         }
 
         // Show generated docs
@@ -78,7 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 const markdownJSON = convertMarkdownToJSON(markdownSave);
                 await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
 
-                vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved markdown to database!"));
+                vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved markdown to master database!"));
             }
         })
 
