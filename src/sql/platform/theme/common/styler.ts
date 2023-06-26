@@ -11,32 +11,6 @@ import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { IThemable, attachStyler, computeStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'sql/platform/theme/common/vsstyler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-export interface IDropdownStyleOverrides extends IStyleOverrides {
-	foregroundColor?: cr.ColorIdentifier;
-	borderColor?: cr.ColorIdentifier;
-	backgroundColor?: cr.ColorIdentifier;
-	buttonForeground?: cr.ColorIdentifier;
-	buttonBackground?: cr.ColorIdentifier;
-	buttonHoverBackground?: cr.ColorIdentifier;
-	buttonBorder?: cr.ColorIdentifier;
-	buttonFocusOutline?: cr.ColorIdentifier;
-}
-
-export const defaultDropdownStyle: IDropdownStyleOverrides = {
-	foregroundColor: cr.inputForeground,
-	borderColor: cr.inputBorder,
-	backgroundColor: cr.editorBackground,
-	buttonForeground: cr.buttonForeground,
-	buttonBackground: cr.buttonBackground,
-	buttonHoverBackground: cr.buttonHoverBackground,
-	buttonBorder: cr.contrastBorder,
-	buttonFocusOutline: colors.buttonFocusOutline
-};
-
-export function attachDropdownStyler(widget: IThemable, themeService: IThemeService, style?: IDropdownStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultDropdownStyle, ...(style || {}) }, widget);
-}
-
 export interface IInputBoxStyleOverrides extends IStyleOverrides {
 	inputBackground?: cr.ColorIdentifier,
 	inputForeground?: cr.ColorIdentifier,

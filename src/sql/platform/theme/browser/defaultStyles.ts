@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
+import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { disabledCheckboxForeground } from 'sql/platform/theme/common/colors';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { IStyleOverride, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { asCssVariable } from 'vs/platform/theme/common/colorRegistry';
+import { asCssVariable, editorBackground, inputBorder, inputForeground } from 'vs/platform/theme/common/colorRegistry';
 
 
 export const defaultCheckboxStyles: ICheckboxStyles = {
@@ -31,4 +32,10 @@ export const defaultInfoButtonStyles: IButtonStyles = {
 	buttonDisabledBackground: undefined,
 	buttonDisabledForeground: undefined,
 	buttonDisabledBorder: undefined
+}
+
+export const defaultDropdownStyles: IDropdownStyles = {
+	foregroundColor: asCssVariable(inputForeground),
+	borderColor: asCssVariable(inputBorder),
+	backgroundColor: asCssVariable(editorBackground)
 }
