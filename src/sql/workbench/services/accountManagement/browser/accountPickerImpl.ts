@@ -19,12 +19,12 @@ import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeServic
 
 import * as azdata from 'azdata';
 import { DropdownList, IDropdownOptions } from 'sql/base/browser/ui/dropdownList/dropdownList';
-import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { Tenant, TenantListDelegate, TenantPickerListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
@@ -137,13 +137,15 @@ export class AccountPicker extends Disposable {
 		const accountOptions: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
 			labelRenderer: (container) => this.renderAccountLabel(container),
-			buttonStyles: defaultButtonStyles
+			buttonStyles: defaultButtonStyles,
+			dropdownStyles: defaultDropdownStyles
 		};
 
 		const tenantOption: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
 			labelRenderer: (container) => this.renderTenantLabel(container),
-			buttonStyles: defaultButtonStyles
+			buttonStyles: defaultButtonStyles,
+			dropdownStyles: defaultDropdownStyles
 		};
 
 		// Create the add account action
@@ -154,9 +156,6 @@ export class AccountPicker extends Disposable {
 
 		this._dropdown = this._register(new DropdownList(this._accountContainer, accountOptions, this._accountListContainer, this._accountList, addAccountAction));
 		this._tenantDropdown = this._register(new DropdownList(this._tenantContainer, tenantOption, this._tenantListContainer, this._tenantList));
-
-		this._register(attachDropdownStyler(this._dropdown, this._themeService));
-		this._register(attachDropdownStyler(this._tenantDropdown, this._themeService));
 
 		this._register(this._accountList.onDidChangeSelection((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {
