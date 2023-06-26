@@ -301,18 +301,6 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	return attachStyler(themeService, { ...defaultEditableDropdownStyle, ...(style || {}) }, widget);
 }
 
-export interface ICheckboxStyleOverrides extends IStyleOverrides {
-	disabledCheckboxForeground?: cr.ColorIdentifier
-}
-
-export const defaultCheckboxStyles: ICheckboxStyleOverrides = {
-	disabledCheckboxForeground: colors.disabledCheckboxForeground
-};
-
-export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: ICheckboxStyleOverrides): IDisposable {
-	return attachStyler(themeService, {}, widget);
-}
-
 export interface IInfoBoxStyleOverrides {
 	informationBackground: cr.ColorIdentifier,
 	warningBackground: cr.ColorIdentifier,
@@ -365,13 +353,11 @@ export function attachDesignerStyler(widget: any, themeService: IThemeService): 
 		const inputStyles = computeStyles(colorTheme, defaultInputBoxStyles);
 		const selectBoxStyles = computeStyles(colorTheme, defaultSelectBoxStyles);
 		const tableStyles = computeStyles(colorTheme, defaultTableStyles);
-		const checkboxStyles = computeStyles(colorTheme, defaultCheckboxStyles);
 		const editableDropdownStyles = computeStyles(colorTheme, defaultEditableDropdownStyle);
 		widget.style({
 			inputBoxStyles: inputStyles,
 			selectBoxStyles: selectBoxStyles,
 			tableStyles: tableStyles,
-			checkboxStyles: checkboxStyles,
 			dropdownStyles: editableDropdownStyles,
 			paneSeparator: cr.resolveColorValue(sqlcr.DesignerPaneSeparator, colorTheme),
 			groupHeaderBackground: cr.resolveColorValue(sqlcr.GroupHeaderBackground, colorTheme)

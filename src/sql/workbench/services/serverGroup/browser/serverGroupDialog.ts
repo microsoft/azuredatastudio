@@ -11,7 +11,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler, attachToggleStyler } from 'sql/platform/theme/common/vsstyler';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -24,7 +24,6 @@ import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { Color } from 'vs/base/common/color';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
@@ -199,18 +198,12 @@ export class ServerGroupDialog extends Modal {
 
 			const colorBox = new Colorbox(container, {
 				name: 'server-group-color',
-				label: color
+				color: color
 			});
 
 			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorBox.style({
-				backgroundColor: Color.fromHex(color)
-			});
-
-			// Theme styler
-			this._register(attachToggleStyler(colorBox, this._themeService));
 
 			// add the new colorbox to the color map
 			this._colorColorBoxesMap[i] = { color, colorbox: colorBox };
