@@ -19,49 +19,29 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "database-documentation.generateDocumentation",
-				"title": "%database-documentation.start%"
-			},
-			{
-				"command": "database-documentation.documentTableADS",
-				"title": "%database-documentation.start%"
-			},
-			{
-				"command": "database-documentation.documentDatabaseCode",
-				"title": "%database-documentation.start%"
-			},
-			{
-				"command": "database-documentation.documentTableCode",
+				"command": "database-documentation.viewDocumentation",
 				"title": "%database-documentation.start%"
 			}
 		],
 		"menus": {
 			"objectExplorer/item/context": [
 				{
-					"command": "database-documentation.generateDocumentation",
+					"command": "database-documentation.viewDocumentation",
 					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Database|Schema|Table)$/ && mssql:engineedition != 11",
-					"group": "export"
-				}
-			],
-			"view/item/context": [
-				{
-					"command": "database-documentation.documentDatabaseCode",
-					"when": "view == objectExplorer && viewItem =~ /^(Database)$/",
-					"group": "export"
-				},
-				{
-					"command": "database-documentation.documentTableCode",
-					"when": "view == objectExplorer && viewItem =~ /^(Table)$/",
 					"group": "export"
 				}
 			]
 		},
 		"configuration": {
-			"openAI.apiKey": {
-                "type": "string",
-                "default": "",
-                "description": "API key for OpenAI"
-            }
+			"type": "object",
+			"title": "Database Documentation Configuration",
+			"properties": {
+			  "openAI.apiKey": {
+				"type": "string",
+				"default": "",
+				"description": "API key for OpenAI"
+			  }
+			}
 		}
 	},
 	"scripts": {
@@ -75,7 +55,6 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.4",
-		"@types/markdown-it": "^12.2.3",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "^13.11.0",
 		"@typescript-eslint/eslint-plugin": "^2.30.0",
@@ -90,11 +69,8 @@
 		"vscode-languageclient": "5.2.1"
 	},
 	"dependencies": {
-		"@microsoft/ads-extension-telemetry": "^3.0.1",
-		"azdata": "^1.0.0",
 		"openai": "^3.2.1",
 		"vscode-nls": "^4.0.0",
-		"vscode-languageclient": "5.2.1",
-		"markdown-it-container": "^3.0.0"
+		"vscode-languageclient": "5.2.1"
 	}
 }

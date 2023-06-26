@@ -1,18 +1,9 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {
-        "@typescript-eslint/semi": "warn",
-        "curly": "warn",
-        "eqeqeq": "warn",
-        "no-throw-literal": "warn",
-        "semi": "off"
+		"project": "./extensions/database-documentation/tsconfig.json"
+	},
+	"rules": {
+		// Disabled until the issues can be fixed
+		"@typescript-eslint/explicit-function-return-type": ["off"]
     }
 }

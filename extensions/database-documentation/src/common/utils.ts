@@ -3,55 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdata from 'azdata';
-// import * as azdata from 'azdata'
+import * as azdata from 'azdata'
 import * as vscode from 'vscode';
-import * as mssql from 'mssql';
-import * as vscodeMssql from 'vscode-mssql';
-import * as constants from './constants';
-
+import * as fs from 'fs';
 // Language localization features
 import * as nls from 'vscode-nls';
-
-
 // The module 'openai' contains the OpenAI API
 import { Configuration, OpenAIApi } from "openai";
 
 const localize = nls.loadMessageBundle();
 
-// Try to load the azdata API - but gracefully handle the failure in case we're running
-// in a context where the API doesn't exist (such as VS Code)
-let azdataApi: typeof azdata | undefined = undefined;
-try {
-	azdataApi = require('azdata');
-	if (!azdataApi?.version) {
-		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
-		azdataApi = undefined;
-	}
-} catch {
-	// no-op
-}
-
-/**
- * Gets the azdata API if it's available in the context this extension is running in.
- * @returns The azdata API if it's available
- */
-export function getAzdataApi(): typeof azdata | undefined {
-	return azdataApi;
-}
-
-export async function getMssqlApi(): Promise<mssql.IExtension> {
-	const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
-	console.log((!!ext).toString());
-	return ext.activate();
-}
-
-
-export async function generateMarkdown(context: azdata.ObjectExplorerContext): Promise<string> {
-	const azdata = getAzdataApi();
-
-	let connection = (await azdata.connection.getCurrentConnection());
-	let databaseName = context.connectionProfile.databaseName;
+export async function generateMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
+	const databaseName = context.connectionProfile.databaseName;
 
 	let tables: string[];
 	if (context.nodeInfo.nodeType === 'Table') {
@@ -88,22 +51,20 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext): P
 }
 
 export async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string): Promise<[string, string, string][]> {
-	const azdata = getAzdataApi();
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
 
-	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+	const baseQuery = `SELECT COLUMN_NAME, DATA_TYPE FROM [${databaseName}].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}'`;
+	const referenceQuery = `SELECT COLUMN_NAME, CONSTRAINT_NAME FROM [${databaseName}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '${tableName}'`;
 
-	let connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
-	let baseQuery = `SELECT COLUMN_NAME, DATA_TYPE FROM [${databaseName}].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}'`;
-	let referenceQuery = `SELECT COLUMN_NAME, CONSTRAINT_NAME FROM [${databaseName}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '${tableName}'`;
-
-	let result = await queryProvider.runQueryAndReturn(connectionUri, baseQuery);
-	let tempResult = await queryProvider.runQueryAndReturn(connectionUri, referenceQuery);
+	const baseResult = await queryProvider.runQueryAndReturn(connectionUri, baseQuery);
+	const referenceResult = await queryProvider.runQueryAndReturn(connectionUri, referenceQuery);
 
 	let tableAttributes: [string, string, string][] = [];
 
-	for (let i = 0; i < result.rowCount; i++) {
-		const row = result.rows[i];
-		const matchingRow = tempResult.rows.find(tempRow => tempRow[0].displayValue === row[0].displayValue);
+	for (let i = 0; i < baseResult.rowCount; i++) {
+		const row = baseResult.rows[i];
+		const matchingRow = referenceResult.rows.find(referenceRow => referenceRow[0].displayValue === row[0].displayValue);
 		const str = matchingRow ? matchingRow[1].displayValue : null;
 
 		if (str && str.substring(0, 2) === "PK") {
@@ -140,15 +101,11 @@ export function getMermaidDiagramForTable(tableName: string, tableAttributes: [s
 }
 
 export async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<string> {
-	let key = vscode.workspace.getConfiguration("openAI").get<string>("apiKey");
-
-	vscode.window.showInformationMessage("Starting API query")
+	let key = await getOpenApiKey();
 
 	const configuration = new Configuration({
 		apiKey: key, // Replace with actual key/ set up some config for it
 	});
-
-	vscode.window.showInformationMessage("Setting up config");
 
 	const openai = new OpenAIApi(configuration);
 
@@ -164,9 +121,8 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 	Do not include the + in the datatype description. Include two spaces at the end of each description for  \n
 	formatting purposes.  \n
 	Format your answer exactly like so:  \n
-	\t•\t<Field Name>: <Field Description, min 20 words>  \t•\t<Field Name>: <Field Description, min 20 words>
-	\nFor the bullet point, use \u2022  \n
-	Fields: Name, datatype, Table it references  \n`) + JSON.stringify(tableAttributes);
+	 - <Field Name>: <Field Description, min 20 words>   - <Field Name>: <Field Description, min 20 words>
+	\nFields: Name, datatype, Table it references  \n`) + JSON.stringify(tableAttributes);
 
 	const relationshipsPrompt = localize("database-documentation.relationshipPrompt",
 		`Given the above ${tableName} table, write a detailed description of the relationship it has with other tables,
@@ -175,8 +131,6 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 
 	try {
 
-		vscode.window.showInformationMessage("Attempting overview");
-
 		const overviewResponse = await
 			openai.createChatCompletion({
 				model: "gpt-3.5-turbo",
@@ -184,9 +138,7 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 				temperature: 0
 			})
 
-		let overviewResult = overviewResponse.data.choices[0].message.content;
-
-		vscode.window.showInformationMessage("Attempting fields");
+		const overviewResult = overviewResponse.data.choices[0].message.content;
 
 		const fieldsResponse = await
 			openai.createChatCompletion({
@@ -195,9 +147,7 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 				temperature: 0
 			})
 
-		let fieldsResult = fieldsResponse.data.choices[0].message.content;
-
-		vscode.window.showInformationMessage("Attempting relationship");
+		const fieldsResult = fieldsResponse.data.choices[0].message.content;
 
 		const relationshipsResponse = await
 			openai.createChatCompletion({
@@ -206,7 +156,7 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 				temperature: 0
 			})
 
-		let relationshipsResult = relationshipsResponse.data.choices[0].message.content;
+		const relationshipsResult = relationshipsResponse.data.choices[0].message.content;
 
 		return localize("database-documentation.generatedDocumentation", `### ${tableName}  \n**Overview**  \n${overviewResult}  \n\n**Fields**  \n${fieldsResult}  \n\n**Relationships**  \n${relationshipsResult}`);;
 	}
@@ -216,10 +166,158 @@ export async function getDocumentationText(tableName: string, tableAttributes: [
 	}
 }
 
-export function getDatabaseFromNode(node: vscodeMssql.ITreeNodeInfo): vscodeMssql.ITreeNodeInfo {
-	while (node.nodeType != 'Database') {
-		node = node.parentNode;
+export async function setupGeneration(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<[number, string]> {
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+
+	// Try to get schema
+	const schemaExists = await queryProvider.runQueryAndReturn(connectionUri,
+		`SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'db_documentation';`);
+
+	// If schema does not exist, create the schema
+	if (!schemaExists.rowCount) {
+		await queryProvider.runQueryString(connectionUri, `CREATE SCHEMA db_documentation`);
 	}
-	return node;
+
+	const tableExists = await queryProvider.runQueryAndReturn(connectionUri,
+		`SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DatabaseDocumentation'`);
+
+	// If table does not exist, create it
+	if (!tableExists.rowCount) {
+		// Create table
+		const createTableQuery = `
+		CREATE TABLE [db_documentation].[DatabaseDocumentation] (\n
+		\t[ObjectName]    NVARCHAR(50) NOT NULL,\n
+		\t[Version]   INT NOT NULL,\n
+		\t[Markdown]   NVARCHAR(MAX) NOT NULL,\n
+		\t[JSONMarkdown]  NVARCHAR(MAX) NOT NULL,\n
+		);
+		`
+		await queryProvider.runQueryString(connectionUri, createTableQuery);
+	}
+
+	// Same deal; if an entry with the ObjectName already exists, get it's version and markdown to show,
+	// otherwise, put it into the table for future use
+	const objectExists = await queryProvider.runQueryAndReturn(connectionUri,
+		`SELECT [Version],[Markdown] FROM [master].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${context.nodeInfo.metadata.name}'`);
+
+	if (objectExists.rowCount) {
+		return [parseInt(objectExists.rows[0][0].displayValue), objectExists.rows[0][1].displayValue];
+	}
+	// Otherwise, insert new entry into table
+	else {
+		const insertQuery = `
+		INSERT INTO [db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
+		VALUES ('${context.nodeInfo.metadata.name}', ${0}, '', '');\n
+		`
+		// Insert data into table
+		await queryProvider.runQueryString(connectionUri, insertQuery);
+
+		return [0, ""];
+	}
+}
+
+export async function saveMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile, version: number, markdown: string, markdownJSON: string): Promise<void> {
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+
+	// Set updated version of object
+	const newVersion = version + 1;
+
+	vscode.window.showInformationMessage("Updated Version: " + newVersion.toString())
+
+	const updateQuery = `
+	UPDATE [db_documentation].[DatabaseDocumentation]
+	SET [Version] = ${newVersion}, [Markdown] = '${markdown}', [JSONMarkdown] = '${markdownJSON}' WHERE [ObjectName] = '${context.nodeInfo.metadata.name}';
+	`
+	// Update data in table
+	await queryProvider.runQueryString(connectionUri, updateQuery);
+}
+
+export async function getOpenApiKey(): Promise<string> {
+	const configuration = vscode.workspace.getConfiguration('openAI');
+	let apiKey = await configuration.get<string>('apiKey');
+
+	if (!apiKey || apiKey == '') {
+		apiKey = await vscode.window.showInputBox({
+			prompt: 'Please enter your OpenAI API key',
+			ignoreFocusOut: true,
+		});
+
+		if (apiKey) {
+			try {
+				await configuration.update('apiKey', apiKey, vscode.ConfigurationTarget.Global);
+			}
+			catch (err) {
+			}
+		}
+	}
+
+	apiKey = await vscode.workspace.getConfiguration("openAI").get<string>("apiKey");
+
+	return apiKey;
+}
+
+// TO DO, throw errors if not formatted correctly
+export function convertMarkdownToJSON(markdown: string): string {
+	const lines = markdown.split('\n');
+	const json: any = {};
+
+	let regex = /```mermaid[\s\S]*?```/g;
+	let match = markdown.match(regex);
+	if (!match) {
+		throw new Error("Mermaid code isn't formatted correctly");
+	}
+	const mermaid = match[0];
+
+	json['Mermaid'] = mermaid;
+	json['Text'] = {};
+
+	let currentKey = '';
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		if (line.startsWith('### ')) {
+			currentKey = line.substring(4).trim();
+			json['Text'][currentKey] = {
+				Overview: '',
+				Fields: {},
+				Relationships: ''
+			};
+		}
+		else if (line.startsWith('**Overview**')) {
+			let overview = '';
+			for (let j = i + 1; j < lines.length; j++) {
+				const nextLine = lines[j];
+				if (nextLine.startsWith('**Fields**')) {
+					break;
+				}
+				i++;
+				overview += nextLine.trim();
+			}
+			// Get all lines until line **Fields**
+			json['Text'][currentKey].Overview = overview;
+		}
+		else if (line.startsWith('- ')) {
+			const fieldName = line.substring(2, line.indexOf(':'));
+			const fieldValue = line.substring(line.indexOf(':') + 1).trim();
+			json['Text'][currentKey].Fields[fieldName] = fieldValue;
+		}
+		else if (line.startsWith('**Relationships**')) {
+			// Get all lines until either EOF or line that starts with ###
+			let relationships = '';
+			for (let j = i + 1; j < lines.length; j++) {
+				const nextLine = lines[j];
+				if (nextLine.startsWith('### ') || j === lines.length) {
+					break;
+				}
+				i++;
+				relationships += nextLine.trim();
+			}
+			json['Text'][currentKey].Relationships = relationships;
+		}
+	}
+
+	return JSON.stringify(json);
 }
 

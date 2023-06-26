@@ -1,5 +1,5 @@
 {
 	"displayName": "Database Documentation and Diagrams",
 	"description": "Generate Documentation and Diagrams for Database Schemas",
-	"database-documentation.start": "Generate Documentation"
+	"database-documentation.start": "View Documentation"
 }
