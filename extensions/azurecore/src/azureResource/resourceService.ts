@@ -32,6 +32,10 @@ export class AzureResourceService {
 		this.doRegisterResourceProvider(resourceProvider);
 	}
 
+	public registerUniversalResourceProvider(resourceProvider: azureResource.IAzureUniversalResourceProvider): void {
+		this._universalProvider = resourceProvider;
+	}
+
 	public clearResourceProviders(): void {
 		this._resourceProviders = {};
 		this._treeDataProviders = {};

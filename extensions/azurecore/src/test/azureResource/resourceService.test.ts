@@ -104,7 +104,6 @@ describe('AzureResourceService.getRootChildren', function (): void {
 
 	it('Should be correct when provider id is correct.', async function (): Promise<void> {
 		const child = await resourceService.getRootChild(mockResourceProvider1.object.providerId, mockAccount, mockSubscription);
-
 		should(child).Object();
 	});
 

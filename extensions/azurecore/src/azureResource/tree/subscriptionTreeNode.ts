@@ -55,20 +55,6 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 					return new AzureResourceResourceTreeNode(child, this, this.appContext);
 				}).sort((a, b) => a.nodePathValue.localeCompare(b.nodePathValue));
 			}
-
-			// for (const resourceProviderId of await resourceService.listResourceProviderIds()) {
-			// 	children.push(...await resourceService.getRootChildren(resourceProviderId, this.account, this.subscription));
-			// }
-
-			// if (children.length === 0) {
-			// 	return [AzureResourceMessageTreeNode.create(AzureResourceSubscriptionTreeNode.noResourcesLabel, this)];
-			// } else {
-			// 	return children.map((child) => {
-			// 		// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
-			// 		child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
-			// 		return new AzureResourceResourceTreeNode(child, this, this.appContext);
-			// 	}).sort((a, b) => a.nodePathValue.localeCompare(b.nodePathValue));
-			// }
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}
