@@ -10,10 +10,6 @@
 			"dom"
 		],
 		"sourceMap": true,
-		"strict": false,
-		"noImplicitAny": false,
-		"noImplicitReturns": false,
-		"noUnusedLocals": false,
 		"strictNullChecks": false,
 		"moduleResolution": "node"
 	},

@@ -1,5 +1,5 @@
 {
 	"displayName": "Database Documentation and Diagrams",
-	"description": "Generate Documentation and Diagrams for Database Schemas",
+	"description": "Generate Documentation and Diagrams for Databases, Schemas, and Tables for Microsoft SQL Server and SQL Database",
 	"database-documentation.start": "View Documentation"
 }
