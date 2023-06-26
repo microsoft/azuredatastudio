@@ -165,6 +165,14 @@ export abstract class DialogBase<DialogResult> {
 		}).withItems(items).component();
 	}
 
+	protected createTab(id: string, title: string, content?: azdata.Component): azdata.Tab {
+		return {
+			title: title,
+			content: content,
+			id: id
+		};
+	}
+
 	protected createTableList<T>(ariaLabel: string,
 		columnNames: string[],
 		allItems: T[],

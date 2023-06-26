@@ -22,6 +22,7 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
+import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
 import { DetachDatabaseDialog } from './ui/detachDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
@@ -111,14 +112,18 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	}
 	try {
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
+		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
+		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
+		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
+			objectType: objectType,
+			objectName: objectName,
 			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectUrn: objectUrn,
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
@@ -275,6 +280,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new LoginDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.Server:
+			return new ServerPropertiesDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:
