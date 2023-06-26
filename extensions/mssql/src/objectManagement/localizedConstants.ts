@@ -64,13 +64,6 @@ export function DeleteObjectConfirmationText(objectType: string, objectName: str
 	}, "Are you sure you want to delete the {0}: {1}?", objectType, objectName);
 }
 
-export function DetachDatabaseConfirmationText(objectName: string): string {
-	return localize({
-		key: 'objectManagement.detachDatabaseConfirmation',
-		comment: ['{0}: object name.']
-	}, "Are you sure you want to detach the database: {0}?", objectName);
-}
-
 export function CreateObjectOperationDisplayName(objectType: string): string {
 	return localize({
 		key: 'objectManagement.createObjectOperationName',
@@ -90,13 +83,6 @@ export function DeleteObjectOperationDisplayName(objectType: string, objectName:
 		key: 'objectManagement.deleteObjectOperationName',
 		comment: ['{0} object type, {1}: object name.']
 	}, "Delete {0} '{1}'", objectType, objectName);
-}
-
-export function DetachDatabaseOperationDisplayName(objectName: string): string {
-	return localize({
-		key: 'objectManagement.detachDatabaseOperationName',
-		comment: ['{0}: object name.']
-	}, "Detach database '{0}'", objectName);
 }
 
 export function DeleteObjectError(objectType: string, objectName: string, error: string): string {
