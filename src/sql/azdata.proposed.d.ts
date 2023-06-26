@@ -867,6 +867,10 @@ declare module 'azdata' {
 		 */
 		removeNewLines: boolean;
 		/**
+		 * Whether to avoid adding a line break between rows during row concatenation for copying result when the previous row already has a trailing line break.
+		 */
+		avoidNewLineAfterTailingLineBreak: boolean;
+		/**
 		 * The selected ranges to be copied.
 		 */
 		selections: SelectionRange[];

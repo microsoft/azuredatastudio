@@ -468,12 +468,13 @@ export default class QueryRunner extends Disposable {
 	 * @param removeNewLines Whether to remove line breaks from values.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, includeHeaders?: boolean): Promise<void> {
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, avoidNewLineAfterTailingLineBreak: boolean, includeHeaders?: boolean): Promise<void> {
 		await this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
 			removeNewLines: removeNewLines,
+			avoidNewLineAfterTailingLineBreak: avoidNewLineAfterTailingLineBreak,
 			includeHeaders: includeHeaders,
 			selections: selections.map(selection => {
 				return {
@@ -592,7 +593,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		executeCopyWithNotification(this._notificationService, selections, async () => {
-			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldIncludeHeaders(includeHeaders));
+			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldAvoidNewLineAfterTailingLineBreak(), this.shouldIncludeHeaders(includeHeaders));
 		});
 	}
 
@@ -613,6 +614,9 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldAvoidNewLineAfterTailingLineBreak(): boolean {
+		return shouldAvoidNewLineAfterTailingLineBreak(this._configurationService);
 	}
 	getColumnHeaders(range: Slick.Range): string[] | undefined {
 		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
@@ -646,6 +650,12 @@ export function shouldRemoveNewLines(configurationService: IConfigurationService
 	// get config copyRemoveNewLine option from vscode config
 	let removeNewLines = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyRemoveNewLine;
 	return !!removeNewLines;
+}
+
+export function shouldAvoidNewLineAfterTailingLineBreak(configurationService: IConfigurationService): boolean {
+	// get config avoidNewLineAfterTailingLineBreak option from vscode config
+	let avoidNewLineAfterTailingLineBreak = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.avoidNewLineAfterTailingLineBreak;
+	return !!avoidNewLineAfterTailingLineBreak;
 }
 
 function isRangeOrUndefined(input: string | IRange | undefined): input is IRange | undefined {
