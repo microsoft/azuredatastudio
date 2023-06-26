@@ -17,7 +17,7 @@ import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ISelectBoxStyles, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
@@ -63,7 +63,6 @@ export interface IDesignerStyle {
 	inputBoxStyles?: IInputBoxStyles;
 	tableStyles?: ITableStyles;
 	selectBoxStyles?: ISelectBoxStyles;
-	checkboxStyles?: ICheckboxStyles;
 	dropdownStyles?: IListStyles & IInputBoxStyles & IDropdownStyles;
 	paneSeparator?: Color;
 	groupHeaderBackground?: Color;

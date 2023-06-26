@@ -60,20 +60,6 @@ export function attachStyler<T extends IColorMapping>(themeService: IThemeServic
 	return themeService.onDidColorThemeChange(applyStyles);
 }
 
-export interface IToggleStyleOverrides extends IStyleOverrides {
-	inputActiveOptionBorderColor?: ColorIdentifier;
-	inputActiveOptionForegroundColor?: ColorIdentifier;
-	inputActiveOptionBackgroundColor?: ColorIdentifier;
-}
-
-export function attachToggleStyler(widget: IThemable, themeService: IThemeService, style?: IToggleStyleOverrides): IDisposable {
-	return attachStyler(themeService, {
-		inputActiveOptionBorder: style?.inputActiveOptionBorderColor || inputActiveOptionBorder,
-		inputActiveOptionForeground: style?.inputActiveOptionForegroundColor || inputActiveOptionForeground,
-		inputActiveOptionBackground: style?.inputActiveOptionBackgroundColor || inputActiveOptionBackground
-	} as IToggleStyleOverrides, widget);
-}
-
 export interface IBadgeStyleOverrides extends IStyleOverrides {
 	badgeBackground?: ColorIdentifier;
 	badgeForeground?: ColorIdentifier;
