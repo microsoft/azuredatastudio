@@ -54,5 +54,5 @@ export function convertNumToTwoDecimalStringinMB(value: number): string {
 * Converts string to pascal case, first character to uppercase
 */
 export function toPascalCase(value: string): string {
-	return value[0].toUpperCase() + value.substring(1);
+	return value === '' ? value : value[0].toUpperCase() + value.substring(1);
 }
