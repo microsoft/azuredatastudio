@@ -47,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
         let md = result[1];
 
         if (!version) {
-            vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation... "));
+            vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
             md = await generateMarkdown(context, connection);
             vscode.window.showInformationMessage(localize('database-documentation.finishedGen', "Documentation Generated!"));
         }
