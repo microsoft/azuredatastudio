@@ -8,13 +8,13 @@ import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 import { IButtonOptions } from 'vs/base/browser/ui/button/button';
 
 export interface IInfoButtonOptions extends IButtonOptions {
-	buttonMaxHeight: number,
-	buttonMaxWidth: number,
-	description: string,
-	iconClass: string,
-	iconHeight: number,
-	iconWidth: number,
-	title: string,
+	buttonMaxHeight?: number,
+	buttonMaxWidth?: number,
+	description?: string,
+	iconClass?: string,
+	iconHeight?: number,
+	iconWidth?: number,
+	title?: string,
 }
 
 export class InfoButton extends sqlButton {
@@ -33,8 +33,6 @@ export class InfoButton extends sqlButton {
 	private _iconHeight?: number;
 	private _iconWidth?: number;
 	private _title?: string;
-
-	//private _styles: IButtonStyles;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -143,28 +141,37 @@ export class InfoButton extends sqlButton {
 		if (!options) {
 			return;
 		}
-		this.buttonMaxHeight = options.buttonMaxHeight;
-		this.buttonMaxWidth = options.buttonMaxWidth;
-		this.description = options.description;
-		this.iconHeight = options.iconHeight;
-		this.iconWidth = options.iconWidth;
-		this.iconClass = options.iconClass;
-		this.title = options.title;
+		if (options.buttonMaxHeight !== undefined) {
+			this.buttonMaxHeight = options.buttonMaxHeight;
+		}
+		if (options.buttonMaxWidth !== undefined) {
+			this.buttonMaxWidth = options.buttonMaxWidth;
+		}
+		if (options.description) {
+			this.description = options.description;
+		}
+		if (options.iconHeight !== undefined) {
+			this.iconHeight = options.iconHeight;
+		}
+		if (options.iconWidth !== undefined) {
+			this.iconWidth = options.iconWidth;
+		}
+		if (options.iconClass) {
+			this.iconClass = options.iconClass;
+		}
+		if (options.title) {
+			this.title = options.title;
+		}
 	}
 
-	// {{SQL CARBON TODO}} - apply styles
-	// override style(styles: IButtonStyles): void {
-	// 	this._styles = styles;
-	// 	this.applyStyles();
-	// }
+	override updateStyles() {
+		this.element.style.backgroundColor = this.options.buttonBackground ?? '';
+		this.element.style.color = this.options.buttonForeground ?? '';
+		this.element.style.borderColor = this.options.buttonBorder ?? '';
+	}
 
-	// override applyStyles(): void {
-	// 	this.element.style.backgroundColor = this._styles?.buttonBackground?.toString();
-	// 	this.element.style.color = this._styles?.buttonForeground?.toString();
-	// 	this.element.style.borderColor = this._styles?.buttonBorder?.toString();
-	// }
+	override updateBackground(hover: boolean): void {
+		this.element.style.backgroundColor = (hover ? this.options.buttonHoverBackground : this.options.buttonBackground) ?? '';
+	}
 
-	// override setHoverBackground(): void {
-	// 	this.element.style.backgroundColor = this._styles?.buttonHoverBackground?.toString();
-	// }
 }

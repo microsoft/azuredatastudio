@@ -13,7 +13,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -87,8 +86,6 @@ export class PasswordChangeDialog extends Modal {
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
 		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 	}
 
 	protected renderBody(container: HTMLElement) {

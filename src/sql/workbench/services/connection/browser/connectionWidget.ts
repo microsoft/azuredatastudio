@@ -29,7 +29,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -46,7 +45,7 @@ import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
@@ -502,7 +501,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		const buttonContainer = DOM.append(rowContainer, DOM.$('td'));
 		buttonContainer.setAttribute('align', 'right');
 		const divContainer = DOM.append(buttonContainer, DOM.$('div.advanced-button'));
-		this._advancedButton = new Button(divContainer, { secondary: true });
+		this._advancedButton = new Button(divContainer, { secondary: true, ...defaultButtonStyles });
 		this._register(this._advancedButton);
 		this._advancedButton.label = localize('advanced', "Advanced...");
 		this._register(this._advancedButton.onDidClick(() => {
@@ -546,7 +545,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._register(attachButtonStyler(this._advancedButton, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
 			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));

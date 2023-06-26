@@ -32,7 +32,7 @@ import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Deferred } from 'sql/base/common/promise';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 /**
  * This function adds one year to the current date and returns it in the UTC format.
@@ -186,7 +186,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 		let sasButtonContainer = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
 		let sasButtonLabel = localize('backupRestoreUrlBrowserDialog.sharedAccessSignatureButton', "Create Credentials");
-		this._sasButton = this._register(new Button(sasButtonContainer, { title: sasButtonLabel }));
+		this._sasButton = this._register(new Button(sasButtonContainer, { title: sasButtonLabel, ...defaultButtonStyles }));
 		this._sasButton.label = sasButtonLabel;
 		this._sasButton.title = sasButtonLabel;
 		this._register(this._sasButton.onDidClick(e => this.generateSharedAccessSignature()));

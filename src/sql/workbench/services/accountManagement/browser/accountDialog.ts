@@ -48,6 +48,7 @@ import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinne
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { ADAL_AUTH_LIBRARY, AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -224,7 +225,7 @@ export class AccountDialog extends Modal {
 
 		// Show the add account button for the first provider
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
-		this._addAccountButton = new Button(buttonSection);
+		this._addAccountButton = new Button(buttonSection, defaultButtonStyles);
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
 		this._register(this._addAccountButton.onDidClick(async () => {

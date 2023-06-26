@@ -60,6 +60,7 @@ import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegist
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { GridRange } from 'sql/base/common/gridRange';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -618,10 +619,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			};
 			this.table.rerenderGrid();
 		}));
-		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+		this.filterPlugin = new HeaderFilter({
 			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
-		});
+			refreshColumns: !autoSizeOnRender, // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
+			buttonStyles: defaultButtonStyles
+		}, this.contextViewService, this.notificationService,);
 		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);

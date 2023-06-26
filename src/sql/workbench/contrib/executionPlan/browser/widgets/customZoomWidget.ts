@@ -18,7 +18,7 @@ import { zoomIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/
 import { Button } from 'sql/base/browser/ui/button/button';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
 
 export class CustomZoomWidget extends ExecutionPlanWidgetBase {
@@ -61,7 +61,8 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		const applyButton = this._register(new Button(this.container, {
-			title: localize('customZoomApplyButtonTitle', "Apply Zoom")
+			title: localize('customZoomApplyButtonTitle', "Apply Zoom"),
+			...defaultButtonStyles
 		}));
 		applyButton.setWidth('60px');
 		applyButton.label = localize('customZoomApplyButton', "Apply");

@@ -59,6 +59,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { debounce } from 'vs/base/common/decorators';
 import { ToggleAddCellDropdownAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -632,7 +633,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
-		let button = new Button(container);
+		let button = new Button(container, defaultButtonStyles);
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));

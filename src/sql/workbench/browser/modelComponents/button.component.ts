@@ -10,13 +10,11 @@ import { convertSize } from 'sql/base/browser/dom';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
-// import { attachInfoButtonStyler } from 'sql/platform/theme/common/styler';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
-// import { attachButtonStyler } from 'sql/platform/theme/common/vsstyler';
-// import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultInfoButtonStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 enum ButtonType {
 	File = 'File',
@@ -46,7 +44,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
 	private _currentButtonType?: ButtonType = undefined;
-	private _buttonStyler: IDisposable | undefined = undefined;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
@@ -54,7 +51,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		//@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService
 	) {
@@ -77,9 +73,9 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this._currentButtonType = this.buttonType;
 		const elementToRemove = this._button?.element;
 		if (this._inputContainer) {
-			this._button = new Button(this._inputContainer.nativeElement, { secondary: this.secondary });
+			this._button = new Button(this._inputContainer.nativeElement, { secondary: this.secondary, ...defaultButtonStyles });
 		} else if (this._infoButtonContainer) {
-			this._button = new InfoButton(this._infoButtonContainer.nativeElement);
+			this._button = new InfoButton(this._infoButtonContainer.nativeElement, defaultInfoButtonStyles);
 		}
 
 		// remove the previously created element if any.
@@ -89,7 +85,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		}
 
 		this._register(this._button);
-		this.updateStyler();
 		this._register(this._button.onDidClick(e => {
 			if (this._fileInputContainer) {
 				const self = this;
@@ -176,29 +171,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				this._button.icon = {
-					id: this._iconClass + ' icon'
-				};
-				this.updateStyler();
+				this._button.icon = this._iconClass + ' icon';
 			} else {
 				super.updateIcon();
 			}
-		} else {
-			this.updateStyler();
 		}
-	}
-
-	/**
-	 * Updates the styler for this button based on whether it has an icon or not
-	 */
-	private updateStyler(): void {
-		this._buttonStyler?.dispose();
-		// {{SQL CARBON TODO}} - style
-		// if (this.buttonType === ButtonType.Informational) {
-		// 	this._buttonStyler = this._register(attachInfoButtonStyler(this._button, this.themeService));
-		// } else {
-		// 	this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
-		// }
 	}
 
 	protected override get defaultIconHeight(): number {

@@ -5,7 +5,7 @@
 
 import { Color } from 'vs/base/common/color';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { activeContrastBorder, badgeBackground, badgeForeground, breadcrumbsActiveSelectionForeground, breadcrumbsBackground, breadcrumbsFocusForeground, breadcrumbsForeground, buttonBackground, buttonBorder, buttonForeground, buttonHoverBackground, buttonSecondaryBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground, ColorIdentifier, ColorTransform, ColorValue, contrastBorder, editorWidgetBackground, editorWidgetBorder, editorWidgetForeground, focusBorder, inputActiveOptionBackground, inputActiveOptionBorder, inputActiveOptionForeground, inputBackground, inputBorder, inputForeground, inputValidationErrorBackground, inputValidationErrorBorder, inputValidationErrorForeground, inputValidationInfoBackground, inputValidationInfoBorder, inputValidationInfoForeground, inputValidationWarningBackground, inputValidationWarningBorder, inputValidationWarningForeground, keybindingLabelBackground, keybindingLabelBorder, keybindingLabelBottomBorder, keybindingLabelForeground, listActiveSelectionBackground, listActiveSelectionForeground, listActiveSelectionIconForeground, listDropBackground, listFilterWidgetBackground, listFilterWidgetNoMatchesOutline, listFilterWidgetOutline, listFocusBackground, listFocusForeground, listFocusOutline, listHoverBackground, listHoverForeground, listInactiveFocusBackground, listInactiveFocusOutline, listInactiveSelectionBackground, listInactiveSelectionForeground, listInactiveSelectionIconForeground, menuBackground, menuBorder, menuForeground, menuSelectionBackground, menuSelectionBorder, menuSelectionForeground, menuSeparatorBackground, pickerGroupForeground, problemsErrorIconForeground, problemsInfoIconForeground, problemsWarningIconForeground, progressBarBackground, quickInputListFocusBackground, quickInputListFocusForeground, quickInputListFocusIconForeground, resolveColorValue, scrollbarShadow, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, selectBackground, selectBorder, selectForeground, selectListBackground, checkboxBackground, checkboxBorder, checkboxForeground, tableColumnsBorder, tableOddRowsBackgroundColor, textLinkForeground, treeIndentGuidesStroke, widgetShadow, listFocusAndSelectionOutline, listFilterWidgetShadow, buttonSeparator, buttonSecondaryBorder, buttonDisabledBorder, buttonDisabledBackground, buttonDisabledForeground } from 'vs/platform/theme/common/colorRegistry'; // {{SQL CARBON EDIT}} Added buttonSecondaryBorder, buttonDisabledBorder, buttonDisabledBackground, buttonDisabledForeground to import list
+import { activeContrastBorder, badgeBackground, badgeForeground, breadcrumbsActiveSelectionForeground, breadcrumbsBackground, breadcrumbsFocusForeground, breadcrumbsForeground, buttonBackground, buttonBorder, buttonForeground, buttonHoverBackground, buttonSecondaryBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground, ColorIdentifier, ColorTransform, ColorValue, contrastBorder, editorWidgetBackground, editorWidgetBorder, editorWidgetForeground, focusBorder, inputActiveOptionBackground, inputActiveOptionBorder, inputActiveOptionForeground, inputBackground, inputBorder, inputForeground, inputValidationErrorBackground, inputValidationErrorBorder, inputValidationErrorForeground, inputValidationInfoBackground, inputValidationInfoBorder, inputValidationInfoForeground, inputValidationWarningBackground, inputValidationWarningBorder, inputValidationWarningForeground, keybindingLabelBackground, keybindingLabelBorder, keybindingLabelBottomBorder, keybindingLabelForeground, listActiveSelectionBackground, listActiveSelectionForeground, listActiveSelectionIconForeground, listDropBackground, listFilterWidgetBackground, listFilterWidgetNoMatchesOutline, listFilterWidgetOutline, listFocusBackground, listFocusForeground, listFocusOutline, listHoverBackground, listHoverForeground, listInactiveFocusBackground, listInactiveFocusOutline, listInactiveSelectionBackground, listInactiveSelectionForeground, listInactiveSelectionIconForeground, menuBackground, menuBorder, menuForeground, menuSelectionBackground, menuSelectionBorder, menuSelectionForeground, menuSeparatorBackground, pickerGroupForeground, problemsErrorIconForeground, problemsInfoIconForeground, problemsWarningIconForeground, progressBarBackground, quickInputListFocusBackground, quickInputListFocusForeground, quickInputListFocusIconForeground, resolveColorValue, scrollbarShadow, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, selectBackground, selectBorder, selectForeground, selectListBackground, checkboxBackground, checkboxBorder, checkboxForeground, tableColumnsBorder, tableOddRowsBackgroundColor, textLinkForeground, treeIndentGuidesStroke, widgetShadow, listFocusAndSelectionOutline, listFilterWidgetShadow, buttonSeparator } from 'vs/platform/theme/common/colorRegistry'; // {{SQL CARBON EDIT}} Added buttonSecondaryBorder, buttonDisabledBorder, buttonDisabledBackground, buttonDisabledForeground to import list
 import { isHighContrast } from 'vs/platform/theme/common/theme';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 
@@ -248,55 +248,6 @@ export const defaultListStyles: IColorMapping = {
 	inputValidationErrorBorder,
 };
 
-export interface IButtonStyleOverrides extends IStyleOverrides {
-	buttonForeground?: ColorIdentifier;
-	buttonSeparator?: ColorIdentifier;
-	buttonBackground?: ColorIdentifier;
-	buttonHoverBackground?: ColorIdentifier;
-	buttonSecondaryForeground?: ColorIdentifier;
-	buttonSecondaryBackground?: ColorIdentifier;
-	buttonSecondaryHoverBackground?: ColorIdentifier;
-	buttonBorder?: ColorIdentifier;
-	// {{SQL CARBON EDIT}}
-	buttonSecondaryBorder?: ColorIdentifier;
-	buttonDisabledForeground?: ColorIdentifier;
-	buttonDisabledBackground?: ColorIdentifier;
-	buttonDisabledBorder?: ColorIdentifier;
-}
-
-// {{SQL CARBON EDIT}}
-export const defaultButtonStyles: IButtonStyleOverrides = {
-	buttonForeground: buttonForeground,
-	buttonBackground: buttonBackground,
-	buttonHoverBackground: buttonHoverBackground,
-	buttonSecondaryForeground: buttonSecondaryForeground,
-	buttonSecondaryBackground: buttonSecondaryBackground,
-	buttonSecondaryHoverBackground: buttonSecondaryHoverBackground,
-	buttonBorder: buttonBorder,
-	buttonSecondaryBorder: buttonSecondaryBorder,
-	buttonDisabledBorder: buttonDisabledBorder,
-	buttonDisabledBackground: buttonDisabledBackground,
-	buttonDisabledForeground: buttonDisabledForeground
-};
-
-export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: IButtonStyleOverrides): IDisposable {
-	return attachStyler(themeService, {
-		buttonForeground: style?.buttonForeground || buttonForeground,
-		buttonSeparator: style?.buttonSeparator || buttonSeparator,
-		buttonBackground: style?.buttonBackground || buttonBackground,
-		buttonHoverBackground: style?.buttonHoverBackground || buttonHoverBackground,
-		buttonSecondaryForeground: style?.buttonSecondaryForeground || buttonSecondaryForeground,
-		buttonSecondaryBackground: style?.buttonSecondaryBackground || buttonSecondaryBackground,
-		buttonSecondaryHoverBackground: style?.buttonSecondaryHoverBackground || buttonSecondaryHoverBackground,
-		buttonBorder: style?.buttonBorder || buttonBorder,
-		// {{SQL CARBON EDIT}}
-		buttonSecondaryBorder: style?.buttonSecondaryBorder || buttonSecondaryBorder,
-		buttonDisabledBorder: style?.buttonDisabledBorder || buttonDisabledBorder,
-		buttonDisabledBackground: style?.buttonDisabledBackground || buttonDisabledBackground,
-		buttonDisabledForeground: style?.buttonDisabledForeground || buttonDisabledForeground
-	} as IButtonStyleOverrides, widget);
-}
-
 export interface IKeybindingLabelStyleOverrides extends IStyleOverrides {
 	keybindingLabelBackground?: ColorIdentifier;
 	keybindingLabelForeground?: ColorIdentifier;
@@ -379,7 +330,7 @@ export function attachMenuStyler(widget: IThemable, themeService: IThemeService,
 	return attachStyler(themeService, { ...defaultMenuStyles, ...style }, widget);
 }
 
-export interface IDialogStyleOverrides extends IButtonStyleOverrides {
+export interface IDialogStyleOverrides {
 	dialogForeground?: ColorIdentifier;
 	dialogBackground?: ColorIdentifier;
 	dialogShadow?: ColorIdentifier;

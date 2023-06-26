@@ -28,6 +28,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -61,7 +62,7 @@ export class ResourceViewerTable extends Disposable {
 		}));
 
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		let filterPlugin = new HeaderFilter<azdata.DataGridItem>(this._contextViewService);
+		let filterPlugin = new HeaderFilter<azdata.DataGridItem>({ buttonStyles: defaultButtonStyles }, this._contextViewService);
 		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));

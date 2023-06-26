@@ -23,6 +23,7 @@ import { ConnectionsViewIcon } from 'sql/workbench/contrib/dataExplorer/browser/
 import { ThemeIcon } from 'vs/base/common/themables';
 import { Action2, registerAction2 } from 'vs/platform/actions/common/actions';
 import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const $ = dom.$;
 interface TourData {
@@ -181,7 +182,7 @@ export class GuidedTour extends Disposable {
 			headerTag.innerText = header;
 			bodyTag.innerText = body;
 			stepText.innerText = `${step} of ${tourData.length}`;
-			let button = new Button(btnContainer);
+			let button = new Button(btnContainer, defaultButtonStyles);
 			button.label = btnText;
 			btnContainer.appendChild(stepText);
 			flexContainer.appendChild(img);

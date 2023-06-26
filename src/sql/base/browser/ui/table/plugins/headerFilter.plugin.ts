@@ -36,17 +36,17 @@ export interface ITableFilterOptions {
 	 */
 	disabledFilterMessage?: string;
 	/**
-	 * The columns are refreshed by default to add the filter menu button to the headers.
+	 * The columns are refreshed by default to add the filter menu button to the headers. The default value is true.
 	 * Set to false to prevent the grid from being re-drawn multiple times by different plugins.
 	 */
 	refreshColumns?: boolean;
+	/**
+	 * The button styles.
+	 */
+	buttonStyles: IButtonStyles;
 }
 
-const DefaultTableFilterOptions: ITableFilterOptions = {
-	refreshColumns: true
-};
-
-export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles {
+export interface ITableFilterStyles extends IInputBoxStyles, IListStyles {
 }
 
 interface NotificationProvider {
@@ -88,7 +88,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private previouslyFocusedElement: HTMLElement;
 	private listContainer?: HTMLElement;
 
-	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options: ITableFilterOptions = DefaultTableFilterOptions) {
+	constructor(private readonly options: ITableFilterOptions, private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider) {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -184,8 +184,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private createButtonMenuItem(title: string, command: HeaderFilterCommands, iconClass: string): Button {
 		const buttonContainer = append(this.menu, $('.slick-header-menu-image-button-container'));
-		const button = new Button(buttonContainer);
-		button.icon = { id: `slick-header-menuicon ${iconClass}` };
+		const button = new Button(buttonContainer, this.options.buttonStyles);
+		button.icon = `slick-header-menuicon ${iconClass}`;
 		button.label = title;
 		button.onDidClick(async () => {
 			await this.handleMenuItemClick(command, this.columnDef);
@@ -418,21 +418,21 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		await this.createFilterList();
 
 		const buttonGroupContainer = append(this.menu, $('.filter-menu-button-container'));
-		this.okButton = this.createButton(buttonGroupContainer, 'filter-ok-button', localize('headerFilter.ok', "OK"));
+		this.okButton = this.createButton(buttonGroupContainer, 'filter-ok-button', localize('headerFilter.ok', "OK"), this.options.buttonStyles);
 		this.okButton.onDidClick(async () => {
 			this.columnDef.filterValues = this.listData.filter(element => element.checked).map(element => element.value);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
 			await this.handleApply(this.columnDef);
 		});
 
-		this.clearButton = this.createButton(buttonGroupContainer, 'filter-clear-button', localize('headerFilter.clear', "Clear"), { secondary: true });
+		this.clearButton = this.createButton(buttonGroupContainer, 'filter-clear-button', localize('headerFilter.clear', "Clear"), { secondary: true, ...this.options.buttonStyles });
 		this.clearButton.onDidClick(async () => {
 			this.columnDef.filterValues!.length = 0;
 			this.setButtonImage($menuButton, false);
 			await this.handleApply(this.columnDef);
 		});
 
-		this.cancelButton = this.createButton(buttonGroupContainer, 'filter-cancel-button', localize('headerFilter.cancel', "Cancel"), { secondary: true });
+		this.cancelButton = this.createButton(buttonGroupContainer, 'filter-cancel-button', localize('headerFilter.cancel', "Cancel"), { secondary: true, ...this.options.buttonStyles });
 		this.cancelButton.onDidClick(() => {
 			this.hideMenu();
 		});

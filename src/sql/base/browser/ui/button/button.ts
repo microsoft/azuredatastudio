@@ -3,11 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Button as vsButton, IButtonOptions, IButtonStyles as vsIButtonStyles } from 'vs/base/browser/ui/button/button';
+import { Button as vsButton, IButtonOptions } from 'vs/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
-
-export interface IButtonStyles extends vsIButtonStyles {
-}
 
 export class Button extends vsButton {
 	protected buttonFocusOutline?: Color;
@@ -30,8 +27,5 @@ export class Button extends vsButton {
 
 	public setWidth(value: string) {
 		this.element.style.width = value;
-	}
-
-	public style(styles: IButtonStyles): void {
 	}
 }
