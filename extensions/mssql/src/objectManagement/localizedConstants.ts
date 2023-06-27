@@ -99,6 +99,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function OpenAttachDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openAttachDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the attach database dialog. {0}", error);
+}
+
 export function OpenObjectPropertiesDialogError(objectType: string, objectName: string, error: string): string {
 	return localize({
 		key: 'objectManagement.openObjectPropertiesDialogError',

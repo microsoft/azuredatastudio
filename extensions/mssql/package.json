@@ -107,6 +107,11 @@
         "title": "%title.detachDatabase%"
       },
       {
+        "command": "mssql.attachDatabase",
+        "category": "MSSQL",
+        "title": "%title.attachDatabase%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -497,6 +502,14 @@
         {
           "command": "mssql.renameObject",
           "when": "false"
+        },
+        {
+          "command": "mssql.detachDatabase",
+          "when": "false"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -550,6 +563,11 @@
         {
           "command": "mssql.detachDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && config.workbench.enablePreviewFeatures",
+          "group": "0_query@4"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
           "group": "0_query@4"
         },
         {
