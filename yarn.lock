@@ -6963,10 +6963,10 @@ native-keymap@3.3.0:
   resolved "https://registry.yarnpkg.com/native-keymap/-/native-keymap-3.3.0.tgz#927ca6afcf4ebd986b5dc1bddfab4270e750915d"
   integrity sha512-nvhI1Cdr+ywhpqqGdM+JM8EjMYA1s6SW8EqhWNKtffHU07JcTKDhd8N3o0TLSFn8y2YuRFoOwfAIzdTU6TVhDA==
 
-native-watchdog@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/native-watchdog/-/native-watchdog-1.4.0.tgz#547a1f9f88754c38089c622d405ed1e324c7a545"
-  integrity sha512-4FynAeGtTpoQ2+5AxVJXGEGsOzPsNYDh8Xmawjgs7YWJe+bbbgt7CYlA/Qx6X+kwtN5Ey1aNSm9MqZa0iNKkGw==
+native-watchdog@^1.4.1:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/native-watchdog/-/native-watchdog-1.4.2.tgz#cf9f913157ee992723aa372b6137293c663be9b7"
+  integrity sha512-iT3Uj6FFdrW5vHbQ/ybiznLus9oiUoMJ8A8nyugXv9rV3EBhIodmGs+mztrwQyyBc+PB5/CrskAH/WxaUVRRSQ==
 
 natural-compare-lite@^1.4.0:
   version "1.4.0"
@@ -7050,12 +7050,12 @@ node-gyp-build@^4.3.0:
   resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.6.0.tgz#0c52e4cbf54bbd28b709820ef7b6a3c2d6209055"
   integrity sha512-NTZVKn9IylLwUzaKjkas1e4u2DLNcV4rdYagA4PWdPwW87Bi7z+BznyKSRwS/761tV/lzCGXplWsiaMjLqP2zQ==
 
-node-pty@0.11.0-beta11:
-  version "0.11.0-beta11"
-  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.11.0-beta11.tgz#10843516868129c26a97253903c46fe0e4520eb0"
-  integrity sha512-Gw58duqHle4k/BunssCE1CUKKWipRQZTUFhaTegkKC19fw3IXsvillblLUuD2bQL42+3mQCAFSgTDo+OsJzYCQ==
+node-pty@0.11.0-beta32:
+  version "0.11.0-beta32"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.11.0-beta32.tgz#49c0f174f600ac3f54a21df2a41b6f78256ff6ce"
+  integrity sha512-xtzB4/jYH64ksdVatYQnaU3TtCtSaDiiZPsZITmLHnywFSpI2bgfyj/bu6ofOXbe8PTtziL8bDn1U3xkRmx3mg==
   dependencies:
-    nan "^2.14.0"
+    nan "^2.17.0"
 
 node-releases@^2.0.8:
   version "2.0.10"

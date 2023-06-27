@@ -6,7 +6,6 @@
 import 'vs/css!./media/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Color } from 'vs/base/common/color';
 import { IAction } from 'vs/base/common/actions';
 import { EventType as GestureEventType } from 'vs/base/browser/touch';
 import { List } from 'vs/base/browser/ui/list/listWidget';
@@ -19,14 +18,15 @@ import { IAnchor, IContextViewProvider } from 'vs/base/browser/ui/contextview/co
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 
 export interface IDropdownStyles {
-	backgroundColor?: Color;
-	foregroundColor?: Color;
-	borderColor?: Color;
+	backgroundColor?: string;
+	foregroundColor?: string;
+	borderColor?: string;
 }
 
 export interface IDropdownOptions extends IBaseDropdownOptions {
 	contextViewProvider: IContextViewProvider;
 	buttonStyles: IButtonStyles;
+	dropdownStyles: IDropdownStyles;
 }
 
 export class Dropdown extends BaseDropdown {
@@ -80,10 +80,6 @@ export class Dropdown extends BaseDropdown {
 }
 
 export class DropdownList extends BaseDropdown {
-
-	protected backgroundColor?: Color;
-	protected foregroundColor?: Color;
-	protected borderColor?: Color;
 	protected borderWidth = 1;
 
 	private button?: Button;
@@ -140,6 +136,10 @@ export class DropdownList extends BaseDropdown {
 		}));
 
 		this.element.setAttribute('tabindex', '0');
+		this.applyStylesOnElement(this._contentContainer, _options.dropdownStyles.backgroundColor, _options.dropdownStyles.foregroundColor, _options.dropdownStyles.borderColor);
+		if (this.label) {
+			this.applyStylesOnElement(this.element, _options.dropdownStyles.backgroundColor, _options.dropdownStyles.foregroundColor, _options.dropdownStyles.borderColor);
+		}
 	}
 
 	/**
@@ -175,23 +175,6 @@ export class DropdownList extends BaseDropdown {
 				this.hide();
 				e.stopPropagation();
 			}
-		}
-	}
-
-	public style(styles: IDropdownStyles): void {
-		this.backgroundColor = styles.backgroundColor;
-		this.foregroundColor = styles.foregroundColor;
-		this.borderColor = styles.borderColor;
-		this.applyStyles();
-	}
-
-	protected applyStyles(): void {
-		const background = this.backgroundColor ? this.backgroundColor.toString() : '';
-		const foreground = this.foregroundColor ? this.foregroundColor.toString() : '';
-		const border = this.borderColor ? this.borderColor.toString() : '';
-		this.applyStylesOnElement(this._contentContainer, background, foreground, border);
-		if (this.label) {
-			this.applyStylesOnElement(this.element, background, foreground, border);
 		}
 	}
 

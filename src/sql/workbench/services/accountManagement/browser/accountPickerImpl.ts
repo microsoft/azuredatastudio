@@ -24,6 +24,7 @@ import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/se
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { Tenant, TenantListDelegate, TenantPickerListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
@@ -136,13 +137,15 @@ export class AccountPicker extends Disposable {
 		const accountOptions: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
 			labelRenderer: (container) => this.renderAccountLabel(container),
-			buttonStyles: defaultButtonStyles
+			buttonStyles: defaultButtonStyles,
+			dropdownStyles: defaultDropdownStyles
 		};
 
 		const tenantOption: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
 			labelRenderer: (container) => this.renderTenantLabel(container),
-			buttonStyles: defaultButtonStyles
+			buttonStyles: defaultButtonStyles,
+			dropdownStyles: defaultDropdownStyles
 		};
 
 		// Create the add account action
