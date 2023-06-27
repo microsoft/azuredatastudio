@@ -9,6 +9,21 @@ import * as nls from 'vscode-nls';
 import { Configuration, OpenAIApi } from "openai";
 
 const localize = nls.loadMessageBundle();
+let connection: azdata.connection.ConnectionProfile;
+let context: azdata.ObjectExplorerContext;
+let version: number;
+
+
+export function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnection: azdata.connection.ConnectionProfile, docsVersion: number) {
+	context = extensionContext;
+	connection = extensionConnection;
+	version = docsVersion;
+}
+
+export function getContextVariables(): [azdata.ObjectExplorerContext, azdata.connection.ConnectionProfile, number] {
+	return [context, connection, version];
+}
+
 
 export async function generateMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
 	const databaseName = context.connectionProfile!.databaseName;
@@ -48,7 +63,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	return diagram + '```  \n\n' + documentation;
 }
 
-export async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string): Promise<[string, string, string][]> {
+async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string): Promise<[string, string, string][]> {
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
 
 	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
@@ -82,7 +97,7 @@ export async function tableToText(connection: azdata.connection.ConnectionProfil
 	return tableAttributes;
 }
 
-export function getMermaidDiagramForTable(tableName: string, tableAttributes: [string, string, string][]): [string, string] {
+function getMermaidDiagramForTable(tableName: string, tableAttributes: [string, string, string][]): [string, string] {
 	let diagram = `\tclass ${tableName} {\n`;
 	let references = ``;
 
@@ -98,7 +113,7 @@ export function getMermaidDiagramForTable(tableName: string, tableAttributes: [s
 	return [diagram, references];
 }
 
-export async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<string> {
+async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][]): Promise<string> {
 	let key = await getOpenApiKey();
 
 	const configuration = new Configuration({
@@ -233,7 +248,7 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 	await queryProvider.runQueryString(connectionUri, updateQuery);
 }
 
-export async function getOpenApiKey(): Promise<string> {
+async function getOpenApiKey(): Promise<string> {
 	const configuration = vscode.workspace.getConfiguration('openAI');
 	let apiKey = await configuration.get<string>('apiKey');
 
@@ -338,3 +353,27 @@ function validate(input: string): string {
 
   return sanitizedKeywords;
 }
+
+export function updateRanges(document: vscode.TextDocument, text: string, restrictedRanges: [string, string, string, vscode.Range][]): [string, string, string, vscode.Range][] {
+	for (let i = 0; i < restrictedRanges.length; i++) {
+		restrictedRanges[i][3] = new vscode.Range(
+			document.positionAt(text.indexOf(restrictedRanges[i][0])),
+			document.positionAt(text.indexOf(restrictedRanges[i][1]) + restrictedRanges[i][1].length)
+		);
+
+		if (restrictedRanges[i][2]) {
+			restrictedRanges[i][2] = document.getText(restrictedRanges[i][3]);
+		}
+	}
+	return restrictedRanges;
+}
+
+export function inRangeAndChanged(document: vscode.TextDocument, restrictedRanges: [string, string, string, vscode.Range][], range: vscode.Range): boolean {
+	for (let i = 0; i < restrictedRanges.length; i++) {
+		if (restrictedRanges[i][3].contains(range.start) || restrictedRanges[i][3].contains(range.end)) {
+			return document.getText(restrictedRanges[i][3]) !== restrictedRanges[i][2];
+		}
+	}
+	return false
+}
+

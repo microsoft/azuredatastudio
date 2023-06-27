@@ -13,7 +13,9 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:database-documentation.viewDocumentation"
+		"onCommand:database-documentation.viewDocumentation",
+		"onCommand:database-documentation.regenerateDocumentation",
+		"onCommand:database-documentation.saveDocumentationToDatabase"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -21,6 +23,22 @@
 			{
 				"command": "database-documentation.viewDocumentation",
 				"title": "%database-documentation.start%"
+			},
+			{
+				"command": "database-documentation.regenerateDocumentation",
+				"title": "Regenerate documentation",
+				"icon": {
+					"light": "images/refresh-light.svg",
+					"dark": "images/refresh-dark.svg"
+				}
+			},
+			{
+				"command": "database-documentation.saveDocumentationToDatabase",
+				"title": "Save documentation to database",
+				"icon": {
+					"light": "images/upload-light.svg",
+					"dark": "images/upload-dark.svg"
+				}
 			}
 		],
 		"menus": {
@@ -30,17 +48,29 @@
 					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Database|Schema|Table)$/ && mssql:engineedition != 11",
 					"group": "export"
 				}
+			],
+			"editor/title": [
+				{
+					"command": "database-documentation.regenerateDocumentation",
+					"group": "navigation",
+					"when": "documentOpen"
+				},
+				{
+					"command": "database-documentation.saveDocumentationToDatabase",
+					"group": "navigation",
+					"when": "documentOpen"
+				}
 			]
 		},
 		"configuration": {
 			"type": "object",
 			"title": "Database Documentation Configuration",
 			"properties": {
-			  "openAI.apiKey": {
-				"type": "string",
-				"default": "",
-				"description": "API key for OpenAI"
-			  }
+				"openAI.apiKey": {
+					"type": "string",
+					"default": "",
+					"description": "API key for OpenAI"
+				}
 			}
 		}
 	},

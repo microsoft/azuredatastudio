@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { convertMarkdownToJSON, generateMarkdown, saveMarkdown, setupGeneration } from './common/utils';
+import { convertMarkdownToJSON, generateMarkdown, getContextVariables, saveMarkdown, setContextVariables, setupGeneration } from './common/utils';
 import * as nls from 'vscode-nls';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -28,6 +28,8 @@ export async function activate(context: vscode.ExtensionContext) {
         const version = result[0];
         let md = result[1];
 
+        setContextVariables(context, connection, version);
+
         if (!version) {
             vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
             md = await generateMarkdown(context, connection);
@@ -41,22 +43,72 @@ export async function activate(context: vscode.ExtensionContext) {
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
 
-        vscode.workspace.onDidSaveTextDocument(async (document) => {
+        // Register the event listener for the tab switch event
+        vscode.window.onDidChangeActiveTextEditor(() => {
+            vscode.commands.executeCommand('setContext', 'documentOpen', vscode.window.visibleTextEditors.some((editor) => editor.document === document));
+        });
 
+        // Register the event listener for user saving the documentation locally
+        vscode.workspace.onDidSaveTextDocument(async () => {
             const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
             const yes = localize('database-documentation.yes', 'Yes');
             const no = localize('database-documentation.no', 'No');
             const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
             if (choice === yes) {
-                const markdownSave = document.getText();
-                const markdownJSON = convertMarkdownToJSON(markdownSave);
-                await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
-
-                vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved markdown to master database!"));
+                await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase', context, connection, version);
             }
         })
 
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('database-documentation.regenerateDocumentation', async () => {
+        const contextVariables = getContextVariables();
+        const context = contextVariables[0];
+        const connection = contextVariables[1];
+
+        vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
+        const md = await generateMarkdown(context, connection);
+        vscode.window.showInformationMessage(localize('database-documentation.finishedGen', "Documentation Generated!"));
+
+        await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+
+        // Show generated docs
+        let document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
+        await vscode.window.showTextDocument(document);
+
+        // Show markdown preview
+        await vscode.commands.executeCommand('markdown.showPreviewToSide');
+
+        // Register the event listener for the tab switch event
+        vscode.window.onDidChangeActiveTextEditor(() => {
+            vscode.commands.executeCommand('setContext', 'documentOpen', vscode.window.visibleTextEditors.some((editor) => editor.document === document));
+        });
+
+        // Register the event listener for user saving the documentation locally
+        vscode.workspace.onDidSaveTextDocument(async () => {
+            const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+            const yes = localize('database-documentation.yes', 'Yes');
+            const no = localize('database-documentation.no', 'No');
+            const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+
+            if (choice === yes) {
+                await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
+            }
+        })
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('database-documentation.saveDocumentationToDatabase', async () => {
+        const contextVariables = getContextVariables();
+        const context = contextVariables[0];
+        const connection = contextVariables[1];
+        const version = contextVariables[2];
+
+        const markdownSave = vscode.window.activeTextEditor.document.getText();
+        const markdownJSON = convertMarkdownToJSON(markdownSave);
+        await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
+
+        vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved markdown to master database!"));
     }));
 }
 
