@@ -12,16 +12,17 @@ const localize = nls.loadMessageBundle();
 let connection: azdata.connection.ConnectionProfile;
 let context: azdata.ObjectExplorerContext;
 let version: number;
+let document: vscode.TextDocument;
 
-
-export function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnection: azdata.connection.ConnectionProfile, docsVersion: number) {
+export function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnection: azdata.connection.ConnectionProfile, docsVersion: number, extensionDocument: vscode.TextDocument) {
 	context = extensionContext;
 	connection = extensionConnection;
 	version = docsVersion;
+	document = extensionDocument;
 }
 
-export function getContextVariables(): [azdata.ObjectExplorerContext, azdata.connection.ConnectionProfile, number] {
-	return [context, connection, version];
+export function getContextVariables(): [azdata.ObjectExplorerContext, azdata.connection.ConnectionProfile, number, vscode.TextDocument] {
+	return [context, connection, version, document];
 }
 
 
@@ -284,11 +285,17 @@ export function convertMarkdownToJSON(markdown: string): string {
 	}
 	const mermaid = match[0];
 
+	const expectedValue = mermaid.match(/class /g).length;
+
 	json['Mermaid'] = mermaid;
 	json['Text'] = {};
 
 	let currentKey = '';
 
+	let objectNameCount = 0;
+	let overviewCount = 0;
+	let fieldsCount = 0;
+	let relationshipsCount = 0;
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
 		if (line.startsWith('### ')) {
@@ -298,12 +305,14 @@ export function convertMarkdownToJSON(markdown: string): string {
 				Fields: {},
 				Relationships: ''
 			};
+			objectNameCount++;
 		}
 		else if (line.startsWith('**Overview**')) {
 			let overview = '';
 			for (let j = i + 1; j < lines.length; j++) {
 				const nextLine = lines[j];
 				if (nextLine.startsWith('**Fields**')) {
+					fieldsCount++;
 					break;
 				}
 				i++;
@@ -311,6 +320,7 @@ export function convertMarkdownToJSON(markdown: string): string {
 			}
 			// Get all lines until line **Fields**
 			json['Text'][currentKey].Overview = overview;
+			overviewCount++;
 		}
 		else if (line.startsWith('- ')) {
 			const fieldName = line.substring(2, line.indexOf(':'));
@@ -329,7 +339,29 @@ export function convertMarkdownToJSON(markdown: string): string {
 				relationships += nextLine.trim();
 			}
 			json['Text'][currentKey].Relationships = relationships;
+			relationshipsCount++;
 		}
+	}
+
+	if (objectNameCount !== expectedValue || fieldsCount !== expectedValue || overviewCount !== expectedValue || relationshipsCount !== expectedValue) {
+		throw new Error(`
+			Documentation is not formatted correctly.\n
+			Expected ${expectedValue} of headers.\n
+			Instead there are:\n
+			- ${objectNameCount} objects stored, ie. ### <Object Name>\n
+			- ${overviewCount} overview headers stored, ie. **Overview**\n
+			- ${fieldsCount} field headers stored, ie. **Fields**\n
+			- ${relationshipsCount} relationship headers stored, ie. **Relationships**\n
+			\n
+			Make sure the format of your documentation follows:\n
+			### <Object Name>\n
+			**Overview**\n
+			<Overview Text>\n
+			**Fields**\n
+			- <Field Name>: Field Description\n
+			**Relationships**\n
+			<Object Relationships Description>
+		`);
 	}
 
 	return JSON.stringify(json);

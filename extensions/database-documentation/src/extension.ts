@@ -28,8 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
         const version = result[0];
         let md = result[1];
 
-        setContextVariables(context, connection, version);
-
         if (!version) {
             vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
             md = await generateMarkdown(context, connection);
@@ -39,6 +37,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // Show generated docs
         let document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
+
+        setContextVariables(context, connection, version, document);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
@@ -66,6 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const contextVariables = getContextVariables();
         const context = contextVariables[0];
         const connection = contextVariables[1];
+        const version = contextVariables[2];
 
         vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
         const md = await generateMarkdown(context, connection);
@@ -76,6 +77,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // Show generated docs
         let document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
+
+        setContextVariables(context, connection, version, document);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
@@ -103,8 +106,9 @@ export async function activate(context: vscode.ExtensionContext) {
         const context = contextVariables[0];
         const connection = contextVariables[1];
         const version = contextVariables[2];
+        const document = contextVariables[3];
 
-        const markdownSave = vscode.window.activeTextEditor.document.getText();
+        const markdownSave = document.getText();
         const markdownJSON = convertMarkdownToJSON(markdownSave);
         await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
 
