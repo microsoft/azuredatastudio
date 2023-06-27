@@ -451,16 +451,16 @@ export interface Database extends ObjectManagement.SqlObject {
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
 	azureMaxSize?: string;
-	autoCreateIncrementalStatistics?: boolean;
-	autoCreateStatistics?: boolean;
-	autoShrink?: boolean;
-	autoUpdateStatistics?: boolean;
-	autoUpdateStatisticsAsynchronously?: boolean;
+	autoCreateIncrementalStatistics: boolean;
+	autoCreateStatistics: boolean;
+	autoShrink: boolean;
+	autoUpdateStatistics: boolean;
+	autoUpdateStatisticsAsynchronously: boolean;
 	isLedgerDatabase?: boolean;
 	pageVerify?: string;
-	targetRecoveryTimeInSec?: number;
-	databaseReadOnly?: boolean;
-	encryptionEnabled?: boolean;
+	targetRecoveryTimeInSec: number;
+	databaseReadOnly: boolean;
+	encryptionEnabled: boolean;
 	restrictAccess?: string;
 }
 
