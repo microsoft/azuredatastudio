@@ -45,7 +45,8 @@ export interface IGridDataProvider {
 	shouldIncludeHeaders(includeHeaders: boolean): boolean;
 
 	shouldRemoveNewLines(): boolean;
-	shouldAvoidNewLineAfterTailingLineBreak(): boolean;
+
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean;
 
 	getColumnHeaders(range: Slick.Range): string[] | undefined;
 
@@ -102,7 +103,7 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 		const eol = provider.getEolString();
 		const valueSeparator = '\t';
 		const shouldRemoveNewLines = provider.shouldRemoveNewLines();
-		const shouldAvoidNewLineAfterTailingLineBreak = provider.shouldAvoidNewLineAfterTailingLineBreak();
+		const shouldSkipNewLineAfterTrailingLineBreak = provider.shouldSkipNewLineAfterTrailingLineBreak();
 
 		// Merge the selections to get the unique columns and unique rows.
 		const gridRanges = GridRange.fromSlickRanges(selections);
@@ -157,7 +158,7 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 		}
 		if (!cancellationTokenSource.token.isCancellationRequested) {
 			resultString += rowValues.reduce(
-				(prevVal, currVal, idx) => prevVal + (idx > 0 && (!prevVal?.endsWith(eol) || !shouldAvoidNewLineAfterTailingLineBreak) ? eol : '') + currVal,
+				(prevVal, currVal, idx) => prevVal + (idx > 0 && (!prevVal?.endsWith(eol) || !shouldSkipNewLineAfterTrailingLineBreak) ? eol : '') + currVal,
 			);
 			await clipboardService.writeText(resultString);
 		}

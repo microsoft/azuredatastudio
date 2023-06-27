@@ -27,7 +27,7 @@ export interface IQueryEditorConfiguration {
 		readonly streaming: boolean;
 		readonly copyIncludeHeaders: boolean;
 		readonly copyRemoveNewLine: boolean;
-		readonly avoidNewLineAfterTailingLineBreak: boolean;
+		readonly skipNewLineAfterTrailingLineBreak: boolean;
 		readonly optimizedTable: boolean;
 		readonly inMemoryDataProcessingThreshold: number;
 		readonly openAfterSave: boolean;

@@ -466,16 +466,16 @@ export default class QueryRunner extends Disposable {
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
 	 * @param removeNewLines Whether to remove line breaks from values.
-	 * @param avoidNewLineAfterTailingLineBreak Whether to avoid adding a new line to the end of the copied value if the last character is a new line.
+	 * @param skipNewLineAfterTrailingLineBreak Whether to avoid adding a new line to the end of the copied value if the last character is a new line.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, avoidNewLineAfterTailingLineBreak: boolean, includeHeaders?: boolean): Promise<void> {
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, skipNewLineAfterTrailingLineBreak: boolean, includeHeaders?: boolean): Promise<void> {
 		await this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
 			removeNewLines: removeNewLines,
-			avoidNewLineAfterTailingLineBreak: avoidNewLineAfterTailingLineBreak,
+			skipNewLineAfterTrailingLineBreak: skipNewLineAfterTrailingLineBreak,
 			includeHeaders: includeHeaders,
 			selections: selections.map(selection => {
 				return {
@@ -594,7 +594,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		executeCopyWithNotification(this._notificationService, selections, async () => {
-			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldAvoidNewLineAfterTailingLineBreak(), this.shouldIncludeHeaders(includeHeaders));
+			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldSkipNewLineAfterTrailingLineBreak(), this.shouldIncludeHeaders(includeHeaders));
 		});
 	}
 
@@ -616,8 +616,8 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
 	}
-	shouldAvoidNewLineAfterTailingLineBreak(): boolean {
-		return shouldAvoidNewLineAfterTailingLineBreak(this._configurationService);
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 	getColumnHeaders(range: Slick.Range): string[] | undefined {
 		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
@@ -653,10 +653,10 @@ export function shouldRemoveNewLines(configurationService: IConfigurationService
 	return !!removeNewLines;
 }
 
-export function shouldAvoidNewLineAfterTailingLineBreak(configurationService: IConfigurationService): boolean {
-	// get config avoidNewLineAfterTailingLineBreak option from vscode config
-	let avoidNewLineAfterTailingLineBreak = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.avoidNewLineAfterTailingLineBreak;
-	return !!avoidNewLineAfterTailingLineBreak;
+export function shouldSkipNewLineAfterTrailingLineBreak(configurationService: IConfigurationService): boolean {
+	// get config skipNewLineAfterTrailingLineBreak option from vscode config
+	let skipNewLineAfterTrailingLineBreak = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.skipNewLineAfterTrailingLineBreak;
+	return !!skipNewLineAfterTrailingLineBreak;
 }
 
 function isRangeOrUndefined(input: string | IRange | undefined): input is IRange | undefined {

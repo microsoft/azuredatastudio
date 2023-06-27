@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
-import QueryRunner, { shouldRemoveNewLines, shouldAvoidNewLineAfterTailingLineBreak } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner, { shouldRemoveNewLines, shouldSkipNewLineAfterTrailingLineBreak } from 'sql/workbench/services/query/common/queryRunner';
 import { ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
@@ -173,7 +173,7 @@ export class QueryModelService implements IQueryModelService {
 	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
 			const runner = this._queryInfoMap.get(uri)!.queryRunner;
-			return runner!.copyResults(selection, batchId, resultId, shouldRemoveNewLines(this._configurationService), shouldAvoidNewLineAfterTailingLineBreak(this._configurationService), includeHeaders);
+			return runner!.copyResults(selection, batchId, resultId, shouldRemoveNewLines(this._configurationService), shouldSkipNewLineAfterTrailingLineBreak(this._configurationService), includeHeaders);
 		}
 	}
 
