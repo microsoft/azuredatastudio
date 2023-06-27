@@ -135,118 +135,100 @@
             "scope": "resource",
             "items": {
               "type": "object",
-              "default": {
-                "name": "",
-                  "settings": {
-                    "metadata": {
-                      "displayName": "",
-                      "id": "",
-                      "endpoints": {
-                        "host": "",
-                        "microsoftResource": "",
-                        "graphResource": "",
-                        "msGraphResource": "",
-                        "armResource": "",
-                        "sqlResource": "",
-                        "azureKeyVaultResource": "",
-                        "azureLogAnalyticsResource": "",
-                        "azureStorageResource": {
-                          "endpoint": "",
-                          "endpointSuffix": ""
-                        },
-                        "azureKustoResource": "",
-                        "powerBiResource": "",
-                        "scopes": "",
-                        "portalEndpoint": ""
-                      }
-                    }
-                  }
-              }
-            },
-            "properties":
-              {
+              "properties":{
                 "name": {
                   "type": "string",
                   "default": ""
                 },
                 "settings": {
-                  "type": "object"
-                },
-                "metadata": {
-                  "type": "object"
-                },
-                "displayName": {
-                  "type": "string",
-                  "default": ""
-                },
-                "id": {
-                  "type": "string",
-                  "default": ""
-                },
-                "endpoints": {
-                  "type": "object"
-                },
-                "host": {
-                  "type": "string",
-                  "default": ""
-                },
-                "microsoftResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "graphResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "msGraphResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "armResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "sqlResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "azureKeyVaultResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "azureLogAnalyticsResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "azureStorageResource": {
-                  "type": "object"
-                },
-                "endpoint": {
-                  "type": "string",
-                  "default": ""
-                },
-                "endpointSuffix": {
-                  "type": "string",
-                  "default": ""
-                },
-                "azureKustoResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "powerBiResource": {
-                  "type": "string",
-                  "default": ""
-                },
-                "scopes": {
-                  "type": "string",
-                  "default": ""
-                },
-                "portalEndpoint": {
-                  "type": "string",
-                  "default": ""
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "id": {
+                          "type": "string",
+                          "default": ""
+                        },
+                        "endpoints": {
+                          "type": "object",
+                          "properties": {
+                            "type": "object",
+                            "host": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "microsoftResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "graphResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "msGraphResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "armResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "sqlResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "azureKeyVaultResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "azureLogAnalyticsResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "azureStorageResource": {
+                              "type": "object",
+                              "properties": {
+                                "endpoint": {
+                                  "type": "string",
+                                  "default": ""
+                                },
+                                "endpointSuffix": {
+                                  "type": "string",
+                                  "default": ""
+                                }
+                              }
+                            },
+                            "azureKustoResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "powerBiResource": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "scopes": {
+                              "type": "string",
+                              "default": ""
+                            },
+                            "portalEndpoint": {
+                              "type": "string",
+                              "default": ""
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
+          }
+
           }
         }
     ],
