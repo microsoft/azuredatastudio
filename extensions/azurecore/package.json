@@ -163,12 +163,17 @@
                   }
               }
             },
-
             "properties":
               {
                 "name": {
                   "type": "string",
                   "default": ""
+                },
+                "settings": {
+                  "type": "object"
+                },
+                "metadata": {
+                  "type": "object"
                 },
                 "displayName": {
                   "type": "string",
@@ -177,6 +182,9 @@
                 "id": {
                   "type": "string",
                   "default": ""
+                },
+                "endpoints": {
+                  "type": "object"
                 },
                 "host": {
                   "type": "string",
@@ -209,6 +217,9 @@
                 "azureLogAnalyticsResource": {
                   "type": "string",
                   "default": ""
+                },
+                "azureStorageResource": {
+                  "type": "object"
                 },
                 "endpoint": {
                   "type": "string",
