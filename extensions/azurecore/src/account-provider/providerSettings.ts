@@ -287,7 +287,7 @@ vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
 		await displayReloadAds(Constants.ProviderSettingsJsonSection);
 	}
 });
-if (providerSettingsJson && providerSettingsJson[0].name !== '') {
+if (providerSettingsJson && providerSettingsJson.length > 0 && providerSettingsJson[0] && providerSettingsJson[0].name !== '') {
 	try {
 		if (providerSettingsJson) {
 			for (let cloudProvider of providerSettingsJson) {
