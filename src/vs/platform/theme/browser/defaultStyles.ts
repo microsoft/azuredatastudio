@@ -16,6 +16,7 @@ import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { ISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IMenuStyles } from 'vs/base/browser/ui/menu/menu';
+import { disabledInputBackground, disabledInputForeground } from 'sql/platform/theme/common/colors'; // {{SQL CARBON EDIT}}
 
 export type IStyleOverride<T> = {
 	[P in keyof T]?: ColorIdentifier | undefined;
@@ -118,7 +119,12 @@ export const defaultInputBoxStyles: IInputBoxStyles = {
 	inputValidationWarningForeground: asCssVariable(inputValidationWarningForeground),
 	inputValidationErrorBorder: asCssVariable(inputValidationErrorBorder),
 	inputValidationErrorBackground: asCssVariable(inputValidationErrorBackground),
-	inputValidationErrorForeground: asCssVariable(inputValidationErrorForeground)
+	inputValidationErrorForeground: asCssVariable(inputValidationErrorForeground),
+	// {{SQL CARBON EDIT}}
+	disabledInputBackground: asCssVariable(disabledInputBackground),
+	disabledInputForeground: asCssVariable(disabledInputForeground),
+	disabledInputBorder: 'transparent'
+	// {{SQL CARBON EDIT}} - END
 };
 
 export function getInputBoxStyle(override: IStyleOverride<IInputBoxStyles>): IInputBoxStyles {

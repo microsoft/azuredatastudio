@@ -20,7 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -227,7 +227,6 @@ export class FileBrowserDialog extends Modal {
 		}));
 
 		// Theme styler
-		this._register(attachInputBoxStyler(this._filePathInputBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._fileFilterSelectBox, this._themeService));
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme()));

@@ -46,7 +46,7 @@ import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/br
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -309,7 +309,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							placeholder: option.placeholder,
 							inputBoxStyles: defaultInputBoxStyles
 						});
-						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
 						break;
 				}
 				this._register(this._customOptionWidgets[i]);
@@ -468,7 +467,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				strictSelection: false,
 				placeholder: databaseOption.placeholder ?? this._defaultDatabaseName,
 				maxHeight: 125,
-				ariaLabel: databaseOption.displayName
+				ariaLabel: databaseOption.displayName,
+				...defaultEditableDropdownStyles
 			});
 			this._register(this._databaseNameInputBox);
 		}
@@ -541,10 +541,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected registerListeners(): void {
 		// Theme styler
-		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
 			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
@@ -553,7 +549,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
 			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
@@ -579,10 +574,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					this._databaseNameInputBox.value = s;
 				}
 			}));
-		}
-
-		if (this._connectionStringInputBox) {
-			this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
 		}
 
 		if (this._authTypeSelectBox) {

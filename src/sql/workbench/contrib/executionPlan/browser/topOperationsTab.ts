@@ -14,7 +14,7 @@ import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionP
 import { Table } from 'sql/base/browser/ui/table/table';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
@@ -186,7 +186,6 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			placeholder: searchPlaceholder,
 			inputBoxStyles: defaultInputBoxStyles,
 		}));
-		this._register(attachInputBoxStyler(topOperationsSearchInput, this._themeService));
 		topOperationsSearchInput.element.classList.add('codicon', filterIconClassNames);
 
 		const header = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, headerInfoContainer, {
