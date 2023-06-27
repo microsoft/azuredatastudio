@@ -497,6 +497,10 @@
         {
           "command": "mssql.renameObject",
           "when": "false"
+        },
+        {
+          "command": "mssql.detachDatabase",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
