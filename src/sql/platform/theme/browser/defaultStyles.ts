@@ -3,11 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
+import { IEditableDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { ITableFilterStyles } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { disabledCheckboxForeground } from 'sql/platform/theme/common/colors';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
-import { IStyleOverride, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { asCssVariable } from 'vs/platform/theme/common/colorRegistry';
+import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { asCssVariable, editorBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 
 
 export const defaultCheckboxStyles: ICheckboxStyles = {
@@ -31,4 +33,18 @@ export const defaultInfoButtonStyles: IButtonStyles = {
 	buttonDisabledBackground: undefined,
 	buttonDisabledForeground: undefined,
 	buttonDisabledBorder: undefined
+}
+
+export const defaultEditableDropdownStyles: IEditableDropdownStyles = {
+	contextBackground: asCssVariable(editorBackground),
+	contextBorder: asCssVariable(inputBorder),
+	...defaultInputBoxStyles,
+	...defaultListStyles
+}
+
+export const defaultTableFilterStyles: ITableFilterStyles = {
+	...defaultInputBoxStyles,
+	...defaultButtonStyles,
+	...defaultCountBadgeStyles,
+	...defaultListStyles
 }

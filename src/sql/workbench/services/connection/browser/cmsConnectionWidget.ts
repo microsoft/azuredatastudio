@@ -13,7 +13,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
@@ -57,13 +56,6 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
-		}
-	}
-
-	protected override registerListeners(): void {
-		super.registerListeners();
-		if (this._serverDescriptionInputBox) {
-			this._register(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
 		}
 	}
 

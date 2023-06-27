@@ -8,66 +8,8 @@ import * as colors from './colors';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { IThemable, attachStyler, computeStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'sql/platform/theme/common/vsstyler';
+import { IThemable, attachStyler, computeStyles, IStyleOverrides } from 'sql/platform/theme/common/vsstyler';
 import { IDisposable } from 'vs/base/common/lifecycle';
-
-export interface IDropdownStyleOverrides extends IStyleOverrides {
-	foregroundColor?: cr.ColorIdentifier;
-	borderColor?: cr.ColorIdentifier;
-	backgroundColor?: cr.ColorIdentifier;
-	buttonForeground?: cr.ColorIdentifier;
-	buttonBackground?: cr.ColorIdentifier;
-	buttonHoverBackground?: cr.ColorIdentifier;
-	buttonBorder?: cr.ColorIdentifier;
-	buttonFocusOutline?: cr.ColorIdentifier;
-}
-
-export const defaultDropdownStyle: IDropdownStyleOverrides = {
-	foregroundColor: cr.inputForeground,
-	borderColor: cr.inputBorder,
-	backgroundColor: cr.editorBackground,
-	buttonForeground: cr.buttonForeground,
-	buttonBackground: cr.buttonBackground,
-	buttonHoverBackground: cr.buttonHoverBackground,
-	buttonBorder: cr.contrastBorder,
-	buttonFocusOutline: colors.buttonFocusOutline
-};
-
-export function attachDropdownStyler(widget: IThemable, themeService: IThemeService, style?: IDropdownStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultDropdownStyle, ...(style || {}) }, widget);
-}
-
-export interface IInputBoxStyleOverrides extends IStyleOverrides {
-	inputBackground?: cr.ColorIdentifier,
-	inputForeground?: cr.ColorIdentifier,
-	disabledInputBackground?: cr.ColorIdentifier,
-	disabledInputForeground?: cr.ColorIdentifier,
-	inputBorder?: cr.ColorIdentifier,
-	inputValidationInfoBorder?: cr.ColorIdentifier,
-	inputValidationInfoBackground?: cr.ColorIdentifier,
-	inputValidationWarningBorder?: cr.ColorIdentifier,
-	inputValidationWarningBackground?: cr.ColorIdentifier,
-	inputValidationErrorBorder?: cr.ColorIdentifier,
-	inputValidationErrorBackground?: cr.ColorIdentifier
-}
-
-export const defaultInputBoxStyles: IInputBoxStyleOverrides = {
-	inputBackground: cr.inputBackground,
-	inputForeground: cr.inputForeground,
-	disabledInputBackground: colors.disabledInputBackground,
-	disabledInputForeground: colors.disabledInputForeground,
-	inputBorder: cr.inputBorder,
-	inputValidationInfoBorder: cr.inputValidationInfoBorder,
-	inputValidationInfoBackground: cr.inputValidationInfoBackground,
-	inputValidationWarningBorder: cr.inputValidationWarningBorder,
-	inputValidationWarningBackground: cr.inputValidationWarningBackground,
-	inputValidationErrorBorder: cr.inputValidationErrorBorder,
-	inputValidationErrorBackground: cr.inputValidationErrorBackground
-};
-
-export function attachInputBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInputBoxStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultInputBoxStyles, ...(style || {}) }, widget);
-}
 
 export interface ISelectBoxStyleOverrides extends IStyleOverrides {
 	selectBackground?: cr.ColorIdentifier,
@@ -187,120 +129,6 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 	return attachStyler(themeService, { ...defaultTableStyles, ...(style || {}) }, widget);
 }
 
-export interface IHighPerfTableStyleOverrides extends IStyleOverrides {
-	listFocusBackground?: cr.ColorIdentifier,
-	listFocusForeground?: cr.ColorIdentifier,
-	listActiveSelectionBackground?: cr.ColorIdentifier,
-	listActiveSelectionForeground?: cr.ColorIdentifier,
-	listFocusAndSelectionBackground?: cr.ColorIdentifier,
-	listFocusAndSelectionForeground?: cr.ColorIdentifier,
-	listInactiveFocusBackground?: cr.ColorIdentifier,
-	listInactiveSelectionBackground?: cr.ColorIdentifier,
-	listInactiveSelectionForeground?: cr.ColorIdentifier,
-	listHoverBackground?: cr.ColorIdentifier,
-	listHoverForeground?: cr.ColorIdentifier,
-	listDropBackground?: cr.ColorIdentifier,
-	listFocusOutline?: cr.ColorIdentifier,
-	listInactiveFocusOutline?: cr.ColorIdentifier,
-	listSelectionOutline?: cr.ColorIdentifier,
-	listHoverOutline?: cr.ColorIdentifier,
-	tableHeaderBackground?: cr.ColorIdentifier,
-	tableHeaderForeground?: cr.ColorIdentifier,
-	cellOutlineColor?: cr.ColorIdentifier,
-	tableHeaderAndRowCountColor?: cr.ColorIdentifier
-}
-
-export const defaultHighPerfTableStyles: IColorMapping = {
-	listFocusBackground: cr.listFocusBackground,
-	listFocusForeground: cr.listFocusForeground,
-	listActiveSelectionBackground: cr.listActiveSelectionBackground,
-	listActiveSelectionForeground: cr.listActiveSelectionForeground,
-	listFocusAndSelectionBackground: colors.listFocusAndSelectionBackground,
-	listFocusAndSelectionForeground: cr.listActiveSelectionForeground,
-	listInactiveFocusBackground: cr.listInactiveFocusBackground,
-	listInactiveSelectionBackground: cr.listInactiveSelectionBackground,
-	listInactiveSelectionForeground: cr.listInactiveSelectionForeground,
-	listHoverBackground: cr.listHoverBackground,
-	listHoverForeground: cr.listHoverForeground,
-	listDropBackground: cr.listDropBackground,
-	listFocusOutline: cr.activeContrastBorder,
-	listSelectionOutline: cr.activeContrastBorder,
-	listHoverOutline: cr.activeContrastBorder,
-	tableHeaderBackground: colors.tableHeaderBackground,
-	tableHeaderForeground: colors.tableHeaderForeground,
-	cellOutlineColor: colors.tableCellOutline,
-	tableHeaderAndRowCountColor: colors.tableCellOutline
-};
-
-export function attachHighPerfTableStyler(widget: IThemable, themeService: IThemeService, overrides?: IHighPerfTableStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultHighPerfTableStyles, ...(overrides || {}) }, widget);
-}
-
-export interface IEditableDropdownStyleOverrides extends IStyleOverrides {
-	listFocusBackground?: cr.ColorIdentifier,
-	listFocusForeground?: cr.ColorIdentifier,
-	listActiveSelectionBackground?: cr.ColorIdentifier,
-	listActiveSelectionForeground?: cr.ColorIdentifier,
-	listFocusAndSelectionBackground?: cr.ColorIdentifier,
-	listFocusAndSelectionForeground?: cr.ColorIdentifier,
-	listInactiveFocusBackground?: cr.ColorIdentifier,
-	listInactiveSelectionBackground?: cr.ColorIdentifier,
-	listInactiveSelectionForeground?: cr.ColorIdentifier,
-	listHoverBackground?: cr.ColorIdentifier,
-	listHoverForeground?: cr.ColorIdentifier,
-	listDropBackground?: cr.ColorIdentifier,
-	listFocusOutline?: cr.ColorIdentifier,
-	listInactiveFocusOutline?: cr.ColorIdentifier,
-	listSelectionOutline?: cr.ColorIdentifier,
-	listHoverOutline?: cr.ColorIdentifier,
-	inputBackground?: cr.ColorIdentifier,
-	inputForeground?: cr.ColorIdentifier,
-	inputBorder?: cr.ColorIdentifier,
-	inputValidationInfoBorder?: cr.ColorIdentifier,
-	inputValidationInfoBackground?: cr.ColorIdentifier,
-	inputValidationWarningBorder?: cr.ColorIdentifier,
-	inputValidationWarningBackground?: cr.ColorIdentifier,
-	inputValidationErrorBorder?: cr.ColorIdentifier,
-	inputValidationErrorBackground?: cr.ColorIdentifier,
-	contextBackground?: cr.ColorIdentifier,
-	contextBorder?: cr.ColorIdentifier
-}
-
-export const defaultEditableDropdownStyle: IEditableDropdownStyleOverrides = {
-	listFocusBackground: cr.listFocusBackground,
-	listFocusForeground: cr.listFocusForeground,
-	listActiveSelectionBackground: cr.listActiveSelectionBackground,
-	listActiveSelectionForeground: cr.listActiveSelectionForeground,
-	listFocusAndSelectionBackground: cr.listActiveSelectionBackground,
-	listFocusAndSelectionForeground: cr.listActiveSelectionForeground,
-	listInactiveFocusBackground: cr.listInactiveFocusBackground,
-	listInactiveSelectionBackground: cr.listInactiveSelectionBackground,
-	listInactiveSelectionForeground: cr.listInactiveSelectionForeground,
-	listHoverBackground: cr.listHoverBackground,
-	listHoverForeground: cr.listHoverForeground,
-	listDropBackground: cr.listDropBackground,
-	listFocusOutline: cr.activeContrastBorder,
-	listSelectionOutline: cr.activeContrastBorder,
-	listHoverOutline: cr.activeContrastBorder,
-	listInactiveFocusOutline: cr.listInactiveFocusOutline,
-	inputBackground: cr.inputBackground,
-	inputForeground: cr.inputForeground,
-	inputBorder: cr.inputBorder,
-	inputValidationInfoBorder: cr.inputValidationInfoBorder,
-	inputValidationInfoBackground: cr.inputValidationInfoBackground,
-	inputValidationWarningBorder: cr.inputValidationWarningBorder,
-	inputValidationWarningBackground: cr.inputValidationWarningBackground,
-	inputValidationErrorBorder: cr.inputValidationErrorBorder,
-	inputValidationErrorBackground: cr.inputValidationErrorBackground,
-	contextBackground: cr.editorBackground,
-	contextBorder: cr.inputBorder
-};
-
-
-export function attachEditableDropdownStyler(widget: IThemable, themeService: IThemeService, style?: IEditableDropdownStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultEditableDropdownStyle, ...(style || {}) }, widget);
-}
-
 export interface IInfoBoxStyleOverrides {
 	informationBackground: cr.ColorIdentifier,
 	warningBackground: cr.ColorIdentifier,
@@ -326,39 +154,14 @@ export interface IInfoButtonStyleOverrides {
 	buttonHoverBackground: cr.ColorIdentifier
 }
 
-export function attachTableFilterStyler(widget: IThemable, themeService: IThemeService): IDisposable {
-	return attachStyler(themeService, {
-		...defaultInputBoxStyles,
-		buttonForeground: cr.buttonForeground,
-		buttonBackground: cr.buttonBackground,
-		buttonHoverBackground: cr.buttonHoverBackground,
-		buttonSecondaryForeground: cr.buttonSecondaryForeground,
-		buttonSecondaryBackground: cr.buttonSecondaryBackground,
-		buttonSecondaryHoverBackground: cr.buttonSecondaryHoverBackground,
-		buttonBorder: cr.buttonBorder,
-		buttonSecondaryBorder: cr.buttonSecondaryBorder,
-		buttonDisabledBorder: cr.buttonDisabledBorder,
-		buttonDisabledBackground: cr.buttonDisabledBackground,
-		buttonDisabledForeground: cr.buttonDisabledForeground,
-		badgeBackground: cr.badgeBackground,
-		badgeForeground: cr.badgeForeground,
-		badgeBorder: cr.contrastBorder,
-		...defaultListStyles,
-	}, widget);
-}
-
 export function attachDesignerStyler(widget: any, themeService: IThemeService): IDisposable {
 	function applyStyles(): void {
 		const colorTheme = themeService.getColorTheme();
-		const inputStyles = computeStyles(colorTheme, defaultInputBoxStyles);
 		const selectBoxStyles = computeStyles(colorTheme, defaultSelectBoxStyles);
 		const tableStyles = computeStyles(colorTheme, defaultTableStyles);
-		const editableDropdownStyles = computeStyles(colorTheme, defaultEditableDropdownStyle);
 		widget.style({
-			inputBoxStyles: inputStyles,
 			selectBoxStyles: selectBoxStyles,
 			tableStyles: tableStyles,
-			dropdownStyles: editableDropdownStyles,
 			paneSeparator: cr.resolveColorValue(sqlcr.DesignerPaneSeparator, colorTheme),
 			groupHeaderBackground: cr.resolveColorValue(sqlcr.GroupHeaderBackground, colorTheme)
 		});

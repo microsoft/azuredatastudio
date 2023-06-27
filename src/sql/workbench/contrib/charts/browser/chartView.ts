@@ -25,7 +25,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ChartOptions, ControlType, IChartOption } from './chartOptions';
 import { Insight } from './insight';
@@ -385,7 +385,6 @@ export class ChartView extends Disposable implements IPanelView {
 						input.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(input, this._themeService));
 				break;
 			case ControlType.numberInput:
 				let numberInput = new InputBox(optionInput, this._contextViewService, {
@@ -408,7 +407,6 @@ export class ChartView extends Disposable implements IPanelView {
 						numberInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
 			case ControlType.dateInput:
 				let dateInput = new InputBox(optionInput, this._contextViewService, {
@@ -431,7 +429,6 @@ export class ChartView extends Disposable implements IPanelView {
 						dateInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
 				break;
 		}
 		this.optionMap[entry] = { element: optionContainer, set: setFunc };

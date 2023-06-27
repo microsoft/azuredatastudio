@@ -11,7 +11,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachListBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -606,17 +606,11 @@ export class BackupComponent extends AngularDisposable {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachInputBoxStyler(this.backupNameBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.recoveryBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.backupTypeSelectBox!, this.themeService));
 		this._register(attachListBoxStyler(this.pathListBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.compressionSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.algorithmSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.encryptorSelectBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.mediaNameBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.urlInputBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.mediaDescriptionBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.backupRetainDaysBox!, this.themeService));
 
 		this._register(this.backupTypeSelectBox!.onDidSelect(selected => this.onBackupTypeChanged()));
 		this._register(this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick()));

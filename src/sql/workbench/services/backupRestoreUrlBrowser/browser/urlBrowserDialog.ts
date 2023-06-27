@@ -13,7 +13,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -445,11 +445,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		this._register(attachSelectBoxStyler(this._subscriptionSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._storageAccountSelectorBox, this._themeService));
 		this._register(attachSelectBoxStyler(this._blobContainerSelectorBox, this._themeService));
-		this._register(attachInputBoxStyler(this._sasInputBox, this._themeService));
-
-		if (this._backupFileInputBox) {
-			this._register(attachInputBoxStyler(this._backupFileInputBox, this._themeService));
-		}
 		if (this._backupFileSelectorBox) {
 			this._register(attachSelectBoxStyler(this._backupFileSelectorBox, this._themeService));
 		}

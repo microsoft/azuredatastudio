@@ -14,7 +14,6 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { localize } from 'vs/nls';
 import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
@@ -98,8 +97,6 @@ export class ViewOptionsModal extends Modal {
 
 		this._submitButton = this.addFooterButton(localize('save', "Save"), () => this.onSubmitHandler());
 		this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
-
-		this._register(attachInputBoxStyler(this._viewNameInput!, this._themeService));
 
 		this._register(this._viewNameInput.onDidChange(v => this.validate()));
 
