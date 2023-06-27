@@ -13,7 +13,6 @@ import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -26,6 +25,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { errorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -88,13 +88,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 				strictSelection: false,
 				placeholder: this.placeholder,
 				maxHeight: 125,
-				ariaLabel: ''
+				ariaLabel: '',
+				...defaultEditableDropdownStyles
 			};
-			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService,
-				dropdownOptions);
-
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, dropdownOptions);
 			this._register(this._editableDropdown);
-			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
 			this._register(this._editableDropdown.onValueChange(async e => {
 				if (this.editable) {
 					this.setSelectedValue(e);

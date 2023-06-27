@@ -10,7 +10,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { Codicon } from 'vs/base/common/codicons';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -131,7 +131,6 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			}));
 		this._searchTextInputBox.setAriaLabel(ENTER_SEARCH_VALUE_TITLE);
 		this._searchTextInputBox.element.style.marginLeft = '5px';
-		this._register(attachInputBoxStyler(this._searchTextInputBox, this.themeService));
 		this._register(this._searchTextInputBox.onDidChange(e => {
 			this._usePreviousSearchResult = false;
 		}));

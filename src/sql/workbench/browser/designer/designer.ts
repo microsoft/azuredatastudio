@@ -14,7 +14,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
@@ -41,8 +41,7 @@ import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticip
 import { listActiveSelectionBackground, listActiveSelectionForeground, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
-import { Dropdown, IDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IAction } from 'vs/base/common/actions';
 import { InsertAfterSelectedRowAction, InsertBeforeSelectedRowAction, AddRowAction, DesignerTableActionContext, MoveRowDownAction, MoveRowUpAction, DesignerTableAction } from 'sql/workbench/browser/designer/tableActions';
 import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/table/plugins/rowMoveManager.plugin';
@@ -54,16 +53,14 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultInputBoxStyles, defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
-import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
-	inputBoxStyles?: IInputBoxStyles;
 	tableStyles?: ITableStyles;
 	selectBoxStyles?: ISelectBoxStyles;
-	dropdownStyles?: IListStyles & IInputBoxStyles & IDropdownStyles;
 	paneSeparator?: Color;
 	groupHeaderBackground?: Color;
 }
@@ -136,10 +133,9 @@ export class Designer extends Disposable {
 				optionsGetter: (item, column): string[] => {
 					return item[column.field].values;
 				},
-				editorStyler: (component) => {
-					this.styleComponent(component);
-				},
-				onStyleChange: this._onStyleChangeEventEmitter.event
+				inputBoxStyles: defaultInputBoxStyles,
+				editableDropdownStyles: defaultEditableDropdownStyles,
+				selectBoxStyles: defaultSelectBoxStyles
 			}, this._contextViewProvider
 		);
 		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
@@ -218,7 +214,6 @@ export class Designer extends Disposable {
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown): void {
 		if (component instanceof InputBox) {
-			component.style(this._styles.inputBoxStyles);
 		} else if (component instanceof Checkbox) {
 		} else if (component instanceof TabbedPanel) {
 			component.style(this._styles.tabbedPanelStyles);
@@ -226,7 +221,6 @@ export class Designer extends Disposable {
 			this.removeTableSelectionStyles();
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Dropdown) {
-			component.style(this._styles.dropdownStyles);
 		} else {
 			component.style(this._styles.selectBoxStyles);
 		}
@@ -252,7 +246,7 @@ export class Designer extends Disposable {
 	public style(styles: IDesignerStyle): void {
 		this._styles = styles;
 		this._componentMap.forEach((value, key, map) => {
-			if (!(value.component instanceof Checkbox)) {
+			if (value.component instanceof Table) {
 				if (value.component.style) {
 					this.styleComponent(value.component);
 				}
@@ -792,7 +786,8 @@ export class Designer extends Disposable {
 					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, {
 						values: dropdownProperties.values as string[] || [],
 						ariaLabel: componentDefinition.componentProperties?.title,
-						ariaDescription: componentDefinition.description
+						ariaDescription: componentDefinition.description,
+						...defaultEditableDropdownStyles
 					});
 					dropdown.onValueChange((value) => {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value, source: view });

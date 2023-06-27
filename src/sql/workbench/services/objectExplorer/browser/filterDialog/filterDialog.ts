@@ -15,13 +15,10 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-//import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { NodeFilterPropertyDataType, NodeFilterOperator } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEditorFactory';
 import { Emitter } from 'vs/base/common/event';
@@ -30,15 +27,14 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { defaultInputBoxStyles, defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 // strings for filter dialog
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -85,7 +81,6 @@ export class FilterDialog extends Modal {
 
 	private filterTable: Table<Slick.SlickData>;
 	private _tableCellEditorFactory: TableCellEditorFactory;
-	private _onStyleChangeEventEmitter = new Emitter<void>();
 	private _description: HTMLElement;
 	private _onFilterApplied = new Emitter<azdata.NodeFilter[]>();
 	public readonly onFilterApplied = this._onFilterApplied.event;
@@ -228,10 +223,9 @@ export class FilterDialog extends Modal {
 				optionsGetter: (item, column): string[] => {
 					return item[column.field].values;
 				},
-				editorStyler: (component) => {
-					this.styleComponent(component);
-				},
-				onStyleChange: this._onStyleChangeEventEmitter.event
+				inputBoxStyles: defaultInputBoxStyles,
+				editableDropdownStyles: defaultEditableDropdownStyles,
+				selectBoxStyles: defaultSelectBoxStyles
 			}, this._contextViewProvider
 		);
 		const columns: Slick.Column<Slick.SlickData>[] = [
@@ -676,17 +670,6 @@ export class FilterDialog extends Modal {
 			return choice.displayName ?? choice.value;
 		});
 	}
-
-	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
-		// if (component instanceof InputBox) {
-		// 	this._register(attachInputBoxStyler(component, this._themeService));
-		// } else if (component instanceof SelectBox) {
-		// 	this._register(attachSelectBoxStyler(component, this._themeService));
-		// } else if (component instanceof Table) {
-		// 	this._register(attachTableStyler(component, this._themeService));
-		// }
-	}
-
 
 	/**
 	 * This method is used to let user apply filters on the given filters properties.
