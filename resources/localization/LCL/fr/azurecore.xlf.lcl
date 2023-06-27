@@ -35,8 +35,8 @@
         <Item ItemId=";(...) viders.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[CosmosDB pour Mongo]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure Cosmos DB pour MongoDB]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[CosmosDB for Mongo]]></Val>
@@ -65,8 +65,8 @@
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.databaseServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL servers]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Serveur SQL]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Serveurs SQL]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[SQL server]]></Val>
@@ -254,6 +254,9 @@
         <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No Tenants found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Aucun locataire trouvé.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -855,6 +858,9 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Tenants found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aucun locataire trouvé.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

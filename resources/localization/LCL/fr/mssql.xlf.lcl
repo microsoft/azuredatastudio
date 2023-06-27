@@ -396,6 +396,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.azurePricingLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database pricing calculator]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Calculatrice de la tarification Azure SQL Database]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -457,7 +460,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Configure SLO]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Configurer l'objectif de niveau de service]]></Val>
+            <Val><![CDATA[Configurer l’objectif de niveau de service]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1041,7 +1044,7 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.refreshOEError" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the object explorer. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Une erreur s’est produite lors de l’actualisation de l’Explorateur d’objets. {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">

@@ -107,6 +107,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.SearchTextLabel">
       <source xml:lang="en">Search Text</source>
     </trans-unit>
+    <trans-unit id="objectManagement.ServerDisplayName">
+      <source xml:lang="en">Server</source>
+    </trans-unit>
     <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
       <source xml:lang="en">server role</source>
     </trans-unit>
@@ -174,6 +177,42 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.databaseExistsError">
       <source xml:lang="en">Database '{0}' already exists. Choose a different database name.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
+      <source xml:lang="en">Backup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.databaseSectionHeader">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.dateCreated">
+      <source xml:lang="en">Date Created</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.mbUnitText">
+      <source xml:lang="en">{0} MB</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.memoryAllocated">
+      <source xml:lang="en">Memory Allocated To Memory Optimized Objects</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.memoryUsed">
+      <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.numberOfUsers">
+      <source xml:lang="en">Number of Users</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.owner">
+      <source xml:lang="en">Owner</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.size">
+      <source xml:lang="en">Size</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
+      <source xml:lang="en">Space Available</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
       <source xml:lang="en">Select Database Role Members</source>
     </trans-unit>
@@ -231,8 +270,32 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.grantorColumnHeader">
       <source xml:lang="en">Grantor</source>
     </trans-unit>
+    <trans-unit id="objectManagement.hardwareGeneration">
+      <source xml:lang="en">Hardware Generation</source>
+    </trans-unit>
     <trans-unit id="objectManagement.invalidPasswordError">
       <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.isClustered">
+      <source xml:lang="en">Is Clustered</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.isHadrEnabled">
+      <source xml:lang="en">Is HADR Enabled</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.isPolyBaseInstalled">
+      <source xml:lang="en">Is PolyBase Installed</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.isXTPSupported">
+      <source xml:lang="en">Is XTP Supported</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.language">
+      <source xml:lang="en">Language</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.lastDatabaseBackup">
+      <source xml:lang="en">Last Database Backup</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.lastDatabaseLogBackup">
+      <source xml:lang="en">Last Database Log Backup</source>
     </trans-unit>
     <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
       <source xml:lang="en">Loading objects completed, {0} objects found</source>
@@ -291,6 +354,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.loginNotSelectedError">
       <source xml:lang="en">Login is not selected.</source>
     </trans-unit>
+    <trans-unit id="objectManagement.maxServerMemoryText">
+      <source xml:lang="en">Maximum Server Memory (MB)</source>
+    </trans-unit>
     <trans-unit id="objectManagement.maxSizeLabel">
       <source xml:lang="en">Max Size</source>
     </trans-unit>
@@ -299,6 +365,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.membershipLabel">
       <source xml:lang="en">Membership</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.memory">
+      <source xml:lang="en">Memory</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.minServerMemoryText">
+      <source xml:lang="en">Minimum Server Memory (MB)</source>
     </trans-unit>
     <trans-unit id="objectManagement.nameCannotBeEmptyError">
       <source xml:lang="en">Name cannot be empty.</source>
@@ -337,6 +409,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
       <note>{0} object type, {1}: object name, {2}: error message.</note>
     </trans-unit>
+    <trans-unit id="objectManagement.operatingSystem">
+      <source xml:lang="en">Operating System</source>
+    </trans-unit>
     <trans-unit id="objectManagement.optionsSectionHeader">
       <source xml:lang="en">Options</source>
     </trans-unit>
@@ -354,6 +429,18 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.permissionColumnHeader">
       <source xml:lang="en">Permission</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.platform">
+      <source xml:lang="en">Platform</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.processors">
+      <source xml:lang="en">Processors</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.product">
+      <source xml:lang="en">Product</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.properties">
+      <source xml:lang="en">Properties</source>
     </trans-unit>
     <trans-unit id="objectManagement.recoveryModelLabel">
       <source xml:lang="en">Recovery Model</source>
@@ -379,6 +466,12 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <source xml:lang="en">Rename {0} '{1}' to '{2}'</source>
       <note>{0} object type, {1}: original name, {2}: new name</note>
     </trans-unit>
+    <trans-unit id="objectManagement.reservedStorageSizeInMB">
+      <source xml:lang="en">Reserved Storage Size</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.rootDirectory">
+      <source xml:lang="en">Root Directory</source>
+    </trans-unit>
     <trans-unit id="objectManagement.schemaLabel">
       <source xml:lang="en">Schema</source>
     </trans-unit>
@@ -391,11 +484,20 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     <trans-unit id="objectManagement.selectText">
       <source xml:lang="en">Select</source>
     </trans-unit>
+    <trans-unit id="objectManagement.serverCollation">
+      <source xml:lang="en">Server Collation</source>
+    </trans-unit>
     <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
       <source xml:lang="en">Select Server Role Members</source>
     </trans-unit>
     <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
       <source xml:lang="en">Select Server Role Owner</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.serviceTier">
+      <source xml:lang="en">Service Tier</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.storageSpaceUsageInGB">
+      <source xml:lang="en">Storage Space Usage</source>
     </trans-unit>
     <trans-unit id="objectManagement.updateObjectOperationName">
       <source xml:lang="en">Update {0} '{1}'</source>
@@ -427,6 +529,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
     </trans-unit>
     <trans-unit id="objectManagement.user.windowsUser">
       <source xml:lang="en">Mapped to a Windows user/group</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.versionText">
+      <source xml:lang="en">Version</source>
     </trans-unit>
     <trans-unit id="objectManagement.withGrantColumnHeader">
       <source xml:lang="en">With Grant</source>

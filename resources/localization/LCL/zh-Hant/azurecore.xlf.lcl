@@ -35,8 +35,8 @@
         <Item ItemId=";(...) viders.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Mongo 的 CosmosDB]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[適用於 MongoDB 的 Azure CosmosDB]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[CosmosDB for Mongo]]></Val>
@@ -65,7 +65,7 @@
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.databaseServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL servers]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 伺服器]]></Val>
             </Tgt>
             <Prev Cat="Text">
@@ -153,7 +153,7 @@
           <Str Cat="Text">
             <Val><![CDATA[SQL managed instances]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[SQL 受管理的執行個體]]></Val>
+              <Val><![CDATA[SQL 受控執行個體]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Azure SQL DB managed instance]]></Val>
@@ -254,6 +254,9 @@
         <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No Tenants found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[找不到任何租用戶。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -288,7 +291,7 @@
           <Str Cat="Text">
             <Val><![CDATA[No Subscriptions found.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[找不到訂用帳戶。]]></Val>
+              <Val><![CDATA[找不到任何訂用帳戶。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -855,6 +858,9 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Tenants found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到任何租用戶。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

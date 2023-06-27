@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
+import { ApplicationRoleViewInfo, AuthenticationType, DatabaseRoleViewInfo, DatabaseViewInfo, LoginViewInfo, SecurablePermissions, SecurableTypeMetadata, ServerRoleViewInfo, User, UserType, UserViewInfo } from './interfaces';
 import * as Utils from '../utils';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
@@ -64,6 +64,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	async search(contextId: string, objectTypes: ObjectManagement.NodeType[], searchText?: string, schema?: string): Promise<ObjectManagement.SearchResultItem[]> {
 		const params: contracts.SearchObjectRequestParams = { contextId, searchText, objectTypes, schema };
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
+	}
+
+	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics, generateScript };
+		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 }
 
@@ -194,6 +199,8 @@ export class TestObjectManagementService implements IObjectManagementService {
 			obj = this.getApplicationRoleView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.DatabaseRole) {
 			obj = this.getDatabaseRoleView(isNewObject, objectUrn);
+		} else if (objectType === ObjectManagement.NodeType.Database) {
+			obj = this.getDatabaseView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelLogin) {
 			obj = this.getLoginView(isNewObject, objectUrn);
 		} else if (objectType === ObjectManagement.NodeType.ServerLevelServerRole) {
@@ -228,6 +235,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 			items.push(...this.generateSearchResult(type, schema, 15));
 		});
 		return this.delayAndResolve(items);
+	}
+
+	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
 	}
 
 	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {
@@ -432,6 +443,38 @@ export class TestObjectManagementService implements IObjectManagementService {
 		};
 	}
 
+	private getDatabaseView(isNewObject: boolean, name: string): DatabaseViewInfo {
+		return isNewObject ? <DatabaseViewInfo>{
+			objectInfo: {
+				name: 'New Database Name',
+				owner: '',
+				collationName: '',
+				compatibilityLevel: '',
+				containmentType: '',
+				recoveryModel: '',
+				azureEdition: '',
+				azureMaxSize: '',
+				azureBackupRedundancyLevel: '',
+				azureServiceLevelObjective: ''
+			}
+		} : <DatabaseViewInfo>{
+			objectInfo: {
+				name: 'Database Properties1',
+				collationName: 'Latin1_General_100_CI_AS_KS_WS',
+				dateCreated: '5/31/2023 8:05:55 AM',
+				lastDatabaseBackup: 'None',
+				lastDatabaseLogBackup: 'None',
+				memoryAllocatedToMemoryOptimizedObjectsInMb: 0,
+				memoryUsedByMemoryOptimizedObjectsInMb: 0,
+				numberOfUsers: 5,
+				owner: 'databaseProperties 1',
+				sizeInMb: 16.00,
+				spaceAvailableInMb: 1.15,
+				status: 'Normal'
+			}
+		};
+	}
+
 	private delayAndResolve(obj?: any): Promise<any> {
 		return new Promise((resolve, reject) => {
 			setTimeout(() => {
@@ -440,3 +483,4 @@ export class TestObjectManagementService implements IObjectManagementService {
 		});
 	}
 }
+
