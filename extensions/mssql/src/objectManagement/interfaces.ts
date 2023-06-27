@@ -456,7 +456,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	autoShrink: boolean;
 	autoUpdateStatistics: boolean;
 	autoUpdateStatisticsAsynchronously: boolean;
-	isLedgerDatabase?: boolean;
+	isLedgerDatabase: boolean;
 	pageVerify?: string;
 	targetRecoveryTimeInSec: number;
 	databaseReadOnly: boolean;

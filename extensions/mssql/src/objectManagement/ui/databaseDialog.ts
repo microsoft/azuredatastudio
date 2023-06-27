@@ -78,8 +78,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 			//Initilaize options Tab sections
 			this.initializeAutomaticSection();
+			// Managed Instance doesn't support ledger and recovery section properties
 			if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
-				this.initializeLedgerSection();
+				// Express edition doesn't support Ledger property
+				if (this.viewInfo.databaseEngineEdition !== localizedConstants.ExpressEdition) {
+					this.initializeLedgerSection();
+				}
 				this.initializeRecoverySection();
 			}
 			this.initializeStateSection();
