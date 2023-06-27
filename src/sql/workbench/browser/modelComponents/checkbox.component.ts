@@ -12,13 +12,12 @@ import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
-import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-checkbox',
@@ -34,7 +33,6 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el, logService);
@@ -43,6 +41,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			let inputOptions: ICheckboxOptions = {
+				...defaultCheckboxStyles,
 				label: ''
 			};
 
@@ -57,7 +56,6 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 					args: e
 				});
 			}));
-			this._register(attachCheckboxStyler(this._input, this.themeService));
 			this._validations.push(() => !this.required || this.checked);
 		}
 		this.baseInit();

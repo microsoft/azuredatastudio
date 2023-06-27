@@ -15,7 +15,7 @@ import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { isArray, isBoolean } from 'vs/base/common/types';
+import { isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -23,6 +23,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
 import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 import { localize } from 'vs/nls';
+import { IThemable } from 'sql/platform/theme/common/vsstyler';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -32,7 +33,7 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
+export class Table<T extends Slick.SlickData> extends Widget implements IDisposable, IThemable {
 	protected styleElement: HTMLStyleElement;
 	protected idPrefix: string;
 
@@ -75,10 +76,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		configuration?: ITableConfiguration<T>,
 		options?: Slick.GridOptions<T>) {
 		super();
-		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
+		if (!configuration || !configuration.dataProvider || Array.isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
 		} else {
-			this._data = configuration.dataProvider;
+			this._data = <any>configuration.dataProvider;
 		}
 
 		this._register(this._data);

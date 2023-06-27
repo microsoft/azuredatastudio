@@ -11,7 +11,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler, attachToggleStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -24,13 +24,13 @@ import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { Color } from 'vs/base/common/color';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 interface IRenderedServerGroupDialog {
 	groupNameInputBox: InputBox;
@@ -104,7 +104,8 @@ export class ServerGroupDialog extends Modal {
 				validation: (value: string) => !value && !this._skipGroupNameValidation ? ({ type: MessageType.ERROR, content: localize('MissingGroupNameError', "Group name is required.") }) : null
 			},
 			ariaLabel: serverGroupNameLabel,
-			required: true
+			required: true,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Connection Group Description
@@ -112,7 +113,8 @@ export class ServerGroupDialog extends Modal {
 		DOM.append(body, DOM.$('.dialog-label')).innerText = groupDescriptionLabel;
 
 		this._groupDescriptionInputBox = new InputBox(DOM.append(body, DOM.$('.input-divider')), this._contextViewService, {
-			ariaLabel: groupDescriptionLabel
+			ariaLabel: groupDescriptionLabel,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Connection Group Color
@@ -176,8 +178,8 @@ export class ServerGroupDialog extends Modal {
 		// Theme styler
 		this._register(attachInputBoxStyler(renderedDialog.groupNameInputBox, this._themeService));
 		this._register(attachInputBoxStyler(renderedDialog.groupDescriptionInputBox, this._themeService));
-		this._register(attachButtonStyler(renderedDialog.addServerButton, this._themeService));
-		this._register(attachButtonStyler(renderedDialog.closeButton, this._themeService));
+		this._register(renderedDialog.addServerButton);
+		this._register(renderedDialog.closeButton);
 
 		// handler for name change events
 		this._register(renderedDialog.groupNameInputBox.onDidChange(groupName => {
@@ -196,18 +198,12 @@ export class ServerGroupDialog extends Modal {
 
 			const colorBox = new Colorbox(container, {
 				name: 'server-group-color',
-				label: color
+				color: color
 			});
 
 			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorBox.style({
-				backgroundColor: Color.fromHex(color)
-			});
-
-			// Theme styler
-			this._register(attachToggleStyler(colorBox, this._themeService));
 
 			// add the new colorbox to the color map
 			this._colorColorBoxesMap[i] = { color, colorbox: colorBox };

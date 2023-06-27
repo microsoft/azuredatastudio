@@ -8,13 +8,6 @@ import { IStringDictionary } from 'vs/base/common/collections';
 import { Event } from 'vs/base/common/event';
 import { IExtensionRecommendation } from 'sql/workbench/services/extensionManagement/common/extensionManagement'; // {{SQL CARBON EDIT}} Custom extension recommendation
 
-export type DynamicRecommendation = 'dynamic';
-export type ConfigRecommendation = 'config';
-export type ExecutableRecommendation = 'executable';
-export type CachedRecommendation = 'cached';
-export type ApplicationRecommendation = 'application';
-export type ExperimentalRecommendation = 'experimental';
-
 export const enum ExtensionRecommendationReason {
 	Workspace,
 	File,
@@ -25,7 +18,7 @@ export const enum ExtensionRecommendationReason {
 	Application,
 }
 
-export interface IExtensionRecommendationReson {
+export interface IExtensionRecommendationReason {
 	reasonId: ExtensionRecommendationReason;
 	reasonText: string;
 }
@@ -36,7 +29,7 @@ export interface IExtensionRecommendationsService {
 	readonly _serviceBrand: undefined;
 
 	readonly onDidChangeRecommendations: Event<void>;
-	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReson>;
+	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReason>;
 
 	getImportantRecommendations(): Promise<string[]>;
 	getOtherRecommendations(): Promise<string[]>;
@@ -49,6 +42,7 @@ export interface IExtensionRecommendationsService {
 	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>; // {{SQL CARBON EDIT}}
 	promptRecommendedExtensionsByScenario(scenarioType: string): void; // {{SQL CARBON EDIT}}
 	getLanguageRecommendations(): string[];
+	getRemoteRecommendations(): string[];
 }
 
 export type IgnoredRecommendationChangeNotification = {

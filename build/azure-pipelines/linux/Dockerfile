@@ -1,22 +1,20 @@
-#Download base image ubuntu 20.04
-FROM mcr.microsoft.com/mirror/docker/library/ubuntu:20.04
+#Download base image ubuntu 22.04
+FROM mcr.microsoft.com/mirror/docker/library/ubuntu:22.04
 
-#Adding apt repos for g++-4.9
-RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main" >> /etc/apt/sources.list
-RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list
+#Set timezone to avoid blocking prompts on docker build
+ENV TZ=America/Los_Angeles
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime
+RUN echo "$TZ" > /etc/timezone
+
+RUN apt-get update
+RUN apt-get install -y tzdata
 
 # Update Software repository
 RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 \
 	libkrb5-dev git apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
-	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++-4.9 python-dev \
-	libgbm-dev
-
-RUN rm /usr/bin/gcc
-RUN rm /usr/bin/g++
-RUN ln -s /usr/bin/gcc-4.9 /usr/bin/gcc
-RUN ln -s /usr/bin/g++-4.9 /usr/bin/g++
+	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++ libgbm-dev
 
 #docker
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -

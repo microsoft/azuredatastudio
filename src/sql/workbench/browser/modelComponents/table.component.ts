@@ -41,6 +41,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { deepClone, equals } from 'vs/base/common/objects';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -606,7 +607,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 	private registerFilterPlugin() {
-		const filterPlugin = new HeaderFilter<Slick.SlickData>(this.contextViewService);
+		const filterPlugin = new HeaderFilter<Slick.SlickData>({ buttonStyles: defaultButtonStyles }, this.contextViewService);
 		this._register(attachTableFilterStyler(filterPlugin, this.themeService));
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {

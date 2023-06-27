@@ -535,7 +535,7 @@ function getTestState(): AccountManagementState {
 	// Create instantiation service
 	let mockInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 	mockInstantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountStore), TypeMoq.It.isAny()))
-		.returns(() => mockAccountStore.object);
+		.returns(() => <any>mockAccountStore.object);
 
 	const testNotificationService = new TestNotificationService();
 	const testConfigurationService = new TestConfigurationService();

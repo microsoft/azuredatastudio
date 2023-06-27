@@ -3,15 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SelectBox, ISelectBoxStyles, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox, ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/inputBox';
+import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { Emitter } from 'vs/base/common/event';
 import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
+import { defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const $ = dom.$;
 
@@ -31,12 +32,12 @@ export interface IListBoxStyles {
 *  Extends SelectBox to allow multiple selection and adding/remove items dynamically
 */
 export class ListBox extends SelectBox {
-	private enabledSelectBackground?: Color;
-	private enabledSelectForeground?: Color;
-	private enabledSelectBorder?: Color;
-	private disabledSelectBackground?: Color;
-	private disabledSelectForeground?: Color;
-	private disabledSelectBorder?: Color;
+	// private enabledSelectBackground?: Color;
+	// private enabledSelectForeground?: Color;
+	// private enabledSelectBorder?: Color;
+	// private disabledSelectBackground?: Color;
+	// private disabledSelectForeground?: Color;
+	// private disabledSelectBorder?: Color;
 
 	private inputValidationInfoBorder?: Color;
 	private inputValidationInfoBackground?: Color;
@@ -56,7 +57,7 @@ export class ListBox extends SelectBox {
 		private options: ISelectOptionItem[],
 		contextViewProvider: IContextViewProvider) {
 
-		super(options, 0, contextViewProvider);
+		super(options, 0, contextViewProvider, defaultSelectBoxStyles);
 		this.contextViewProvider = contextViewProvider;
 		this.isValid = true;
 		this.selectElement.multiple = true;
@@ -77,51 +78,53 @@ export class ListBox extends SelectBox {
 			this.selectElement.focus();
 		}));
 
-		this.enabledSelectBackground = this.selectBackground;
-		this.enabledSelectForeground = this.selectForeground;
-		this.enabledSelectBorder = this.selectBorder;
-		this.disabledSelectBackground = Color.transparent;
+		// this.enabledSelectBackground = this.selectBackground;
+		// this.enabledSelectForeground = this.selectForeground;
+		// this.enabledSelectBorder = this.selectBorder;
+		//this.disabledSelectBackground = Color.transparent;
 
-		this.inputValidationInfoBorder = defaultOpts.inputValidationInfoBorder;
-		this.inputValidationInfoBackground = defaultOpts.inputValidationInfoBackground;
-		this.inputValidationWarningBorder = defaultOpts.inputValidationWarningBorder;
-		this.inputValidationWarningBackground = defaultOpts.inputValidationWarningBackground;
-		this.inputValidationErrorBorder = defaultOpts.inputValidationErrorBorder;
-		this.inputValidationErrorBackground = defaultOpts.inputValidationErrorBackground;
+		// this.inputValidationInfoBorder = defaultOpts.inputValidationInfoBorder;
+		// this.inputValidationInfoBackground = defaultOpts.inputValidationInfoBackground;
+		// this.inputValidationWarningBorder = defaultOpts.inputValidationWarningBorder;
+		// this.inputValidationWarningBackground = defaultOpts.inputValidationWarningBackground;
+		// this.inputValidationErrorBorder = defaultOpts.inputValidationErrorBorder;
+		// this.inputValidationErrorBackground = defaultOpts.inputValidationErrorBackground;
 
 		this.onblur(this.selectElement, () => this.onBlur());
 		this.onfocus(this.selectElement, () => this.onFocus());
 	}
 
-	public override style(styles: IListBoxStyles): void {
-		let superStyle: ISelectBoxStyles = {
-			selectBackground: styles.selectBackground,
-			selectForeground: styles.selectForeground,
-			selectBorder: styles.selectBorder
-		};
-		super.style(superStyle);
-		this.enabledSelectBackground = this.selectBackground;
-		this.enabledSelectForeground = this.selectForeground;
-		this.enabledSelectBorder = this.selectBorder;
+	// {{SQL CARBON TODO}} - apply styles
+	public style(styles: IListBoxStyles): void {
+		// 	let superStyle: ISelectBoxStyles = {
+		// 		selectBackground: styles.selectBackground,
+		// 		selectForeground: styles.selectForeground,
+		// 		selectBorder: styles.selectBorder
+		// 	};
+		// 	super.style(superStyle);
+		// 	this.enabledSelectBackground = this.selectBackground;
+		// 	this.enabledSelectForeground = this.selectForeground;
+		// 	this.enabledSelectBorder = this.selectBorder;
 
-		this.inputValidationInfoBackground = styles.inputValidationInfoBackground;
-		this.inputValidationInfoBorder = styles.inputValidationInfoBorder;
-		this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
-		this.inputValidationWarningBorder = styles.inputValidationWarningBorder;
-		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
-		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
+		// 	this.inputValidationInfoBackground = styles.inputValidationInfoBackground;
+		// 	this.inputValidationInfoBorder = styles.inputValidationInfoBorder;
+		// 	this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
+		// 	this.inputValidationWarningBorder = styles.inputValidationWarningBorder;
+		// 	this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
+		// 	this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 	}
 
 	public setValidation(isValid: boolean, message?: IMessage): void {
 		this.isValid = isValid;
 		this.message = message;
 
-		if (this.isValid) {
-			this.selectElement.style.border = `1px solid ${this.selectBorder}`;
-		} else if (this.message) {
-			const styles = this.stylesForType(this.message.type);
-			this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
-		}
+		// {{SQL CARBON TODO}} - apply styles
+		// if (this.isValid) {
+		// 	this.selectElement.style.border = `1px solid ${this.selectBorder}`;
+		// } else if (this.message) {
+		// 	const styles = this.stylesForType(this.message.type);
+		// 	this.selectElement.style.border = styles.border ? `1px solid ${styles.border}` : '';
+		// }
 	}
 
 	public get isContentValid(): boolean {
@@ -171,18 +174,18 @@ export class ListBox extends SelectBox {
 
 	public enable(): void {
 		this.selectElement.disabled = false;
-		this.selectBackground = this.enabledSelectBackground;
-		this.selectForeground = this.enabledSelectForeground;
-		this.selectBorder = this.enabledSelectBorder;
-		this.applyStyles();
+		// this.selectBackground = this.enabledSelectBackground;
+		// this.selectForeground = this.enabledSelectForeground;
+		// this.selectBorder = this.enabledSelectBorder;
+		// this.applyStyles();
 	}
 
 	public disable(): void {
 		this.selectElement.disabled = true;
-		this.selectBackground = this.disabledSelectBackground;
-		this.selectForeground = this.disabledSelectForeground;
-		this.selectBorder = this.disabledSelectBorder;
-		this.applyStyles();
+		// this.selectBackground = this.disabledSelectBackground;
+		// this.selectForeground = this.disabledSelectForeground;
+		// this.selectBorder = this.disabledSelectBorder;
+		// this.applyStyles();
 	}
 
 	public onBlur(): void {

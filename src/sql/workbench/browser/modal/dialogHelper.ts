@@ -10,6 +10,7 @@ import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { wrapStringWithNewLine } from 'sql/workbench/common/sqlWorkbenchUtils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string, titleMaxWidth?: number): HTMLElement {
 	let rowContainer = append(container, $('tr'));
@@ -41,7 +42,7 @@ export function appendRowLink(container: HTMLElement, label: string, labelClass:
 	let rowContainer = append(container, $('tr'));
 	append(append(rowContainer, $(`td.${labelClass}`)), $('div')).innerText = label;
 	let buttonContainer = append(append(rowContainer, $(`td.${cellContainerClass}`)), $('div'));
-	let rowButton = new Button(buttonContainer);
+	let rowButton = new Button(buttonContainer, defaultButtonStyles);
 
 	return rowButton.element;
 }

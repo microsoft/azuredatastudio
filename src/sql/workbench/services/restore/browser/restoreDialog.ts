@@ -30,7 +30,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
-import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -43,7 +43,6 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
@@ -51,6 +50,8 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -202,7 +203,8 @@ export class RestoreDialog extends Modal {
 				validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: urlErrorMessage }) : null
 			},
 			placeholder: localize('enterBackupUrl', "Please enter URL"),
-			ariaLabel: LocalizedStrings.BACKURL
+			ariaLabel: LocalizedStrings.BACKURL,
+			inputBoxStyles: defaultInputBoxStyles
 		};
 		const urlInputContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
 		DOM.append(urlInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKURL;
@@ -213,7 +215,7 @@ export class RestoreDialog extends Modal {
 		DOM.append(urlBrowseContainer, DOM.$('.dialog-label')).innerText = '';
 
 		let browseLabel = localize('restoreDialog.browse', "Browse");
-		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true }));
+		this._browseUrlButton = this._register(new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true, ...defaultButtonStyles }));
 		this._browseUrlButton.label = browseLabel;
 		this._browseUrlButton.setWidth('50px');
 
@@ -226,14 +228,15 @@ export class RestoreDialog extends Modal {
 				validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: errorMessage }) : null
 			},
 			placeholder: localize('multipleBackupFilePath', "Please enter one or more file paths separated by commas"),
-			ariaLabel: LocalizedStrings.BACKFILEPATH
+			ariaLabel: LocalizedStrings.BACKFILEPATH,
+			inputBoxStyles: defaultInputBoxStyles
 		};
 		const filePathInputContainer = DOM.append(this._restoreFromBackupFileElement, DOM.$('.dialog-input-section'));
 		DOM.append(filePathInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKFILEPATH;
 
 		this._filePathInputBox = this._register(new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions));
 
-		this._browseFileButton = this._register(new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true }));
+		this._browseFileButton = this._register(new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true, ...defaultButtonStyles }));
 		this._browseFileButton.label = '...';
 
 		this._sourceDatabasesElement = DOM.$('.source-database-list');
@@ -295,6 +298,7 @@ export class RestoreDialog extends Modal {
 			validationOptions: {
 				validation: (value: string) => this.viewModel.databases?.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
 			},
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 
 		const restoreToLabel = localize('restoreTo', "Restore to");
@@ -550,12 +554,12 @@ export class RestoreDialog extends Modal {
 
 	private createCheckBoxHelper(container: HTMLElement, label: string, isChecked: boolean, onCheck: (viaKeyboard: boolean) => void): Checkbox {
 		const checkbox = this._register(new Checkbox(DOM.append(container, DOM.$('.dialog-input-section')), {
+			...defaultCheckboxStyles,
 			label: label,
 			checked: isChecked,
 			onChange: onCheck,
 			ariaLabel: label
 		}));
-		this._register(attachCheckboxStyler(checkbox, this._themeService));
 		return checkbox;
 	}
 
@@ -665,11 +669,11 @@ export class RestoreDialog extends Modal {
 		this._register(attachInputBoxStyler(this._destinationRestoreToInputBox!, this._themeService));
 		this._register(attachSelectBoxStyler(this._restoreFromSelectBox!, this._themeService));
 		this._register(attachSelectBoxStyler(this._sourceDatabaseSelectBox!, this._themeService));
-		this._register(attachButtonStyler(this._browseFileButton!, this._themeService));
-		this._register(attachButtonStyler(this._browseUrlButton!, this._themeService));
-		this._register(attachButtonStyler(this._scriptButton!, this._themeService));
-		this._register(attachButtonStyler(this._restoreButton!, this._themeService));
-		this._register(attachButtonStyler(this._closeButton!, this._themeService));
+		this._register(this._browseFileButton!);
+		this._register(this._browseUrlButton!);
+		this._register(this._scriptButton!);
+		this._register(this._restoreButton!);
+		this._register(this._closeButton!);
 		this._register(attachTableStyler(this._fileListTable!, this._themeService));
 		this._register(attachTableStyler(this._restorePlanTable!, this._themeService));
 

@@ -37,6 +37,7 @@ import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -188,7 +189,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<IItem>(this._contextViewService);
+		let filterPlugin = new HeaderFilter<IItem>({ buttonStyles: defaultButtonStyles }, this._contextViewService);
 		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();

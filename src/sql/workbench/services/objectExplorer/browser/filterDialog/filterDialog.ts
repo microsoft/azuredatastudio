@@ -15,7 +15,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+//import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import * as azdata from 'azdata';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
@@ -39,7 +39,6 @@ import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
 
 // strings for filter dialog
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -81,10 +80,6 @@ const VALUE_COLUMN_ID = 'value';
 const CLEAR_COLUMN_ID = 'clear';
 
 export class FilterDialog extends Modal {
-
-	private _okButton?: Button;
-	private _cancelButton?: Button;
-	private _clearAllButton?: Button;
 
 	private filterTable: Table<Slick.SlickData>;
 	private _tableCellEditorFactory: TableCellEditorFactory;
@@ -134,7 +129,7 @@ export class FilterDialog extends Modal {
 	public open(): void {
 		this.render();
 		this.show();
-		this._okButton.focus();
+		this.filterTable.focus();
 	}
 
 	public override render() {
@@ -142,12 +137,9 @@ export class FilterDialog extends Modal {
 		this.title = this._filterDialogTitle;
 		this.titleIconClassName = TitleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._okButton = this.addFooterButton(OkButtonText, async () => { await this.onApply() });
-		this._cancelButton = this.addFooterButton(CancelButtonText, () => { this.onClose() });
-		this._clearAllButton = this.addFooterButton(ClearAllButtonText, () => { this.onClearAll() }, 'left', true);
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-		this._register(attachButtonStyler(this._clearAllButton, this._themeService));
+		this.addFooterButton(OkButtonText, async () => { await this.onApply() });
+		this.addFooterButton(CancelButtonText, () => { this.onClose() });
+		this.addFooterButton(ClearAllButtonText, () => { this.onClearAll() }, 'left', true);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -684,13 +676,13 @@ export class FilterDialog extends Modal {
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
-		if (component instanceof InputBox) {
-			this._register(attachInputBoxStyler(component, this._themeService));
-		} else if (component instanceof SelectBox) {
-			this._register(attachSelectBoxStyler(component, this._themeService));
-		} else if (component instanceof Table) {
-			this._register(attachTableStyler(component, this._themeService));
-		}
+		// if (component instanceof InputBox) {
+		// 	this._register(attachInputBoxStyler(component, this._themeService));
+		// } else if (component instanceof SelectBox) {
+		// 	this._register(attachSelectBoxStyler(component, this._themeService));
+		// } else if (component instanceof Table) {
+		// 	this._register(attachTableStyler(component, this._themeService));
+		// }
 	}
 
 

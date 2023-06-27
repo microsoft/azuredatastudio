@@ -33,6 +33,7 @@ import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
@@ -182,7 +183,8 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 		const topOperationsSearchInput = this._register(new InputBox(headerSearchBarContainer, this._contextViewService, {
 			ariaDescription: topOperationsSearchDescription,
-			placeholder: searchPlaceholder
+			placeholder: searchPlaceholder,
+			inputBoxStyles: defaultInputBoxStyles,
 		}));
 		this._register(attachInputBoxStyler(topOperationsSearchInput, this._themeService));
 		topOperationsSearchInput.element.classList.add('codicon', filterIconClassNames);
