@@ -288,7 +288,7 @@ export const enum UserType {
 /**
  * Boolean options for boolean type dropdowns
  */
-export enum BooleanOptions {
+export enum BooleanDropdownOptions {
 	True = 'True',
 	False = 'False'
 }
@@ -461,7 +461,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	targetRecoveryTimeInSec: number;
 	databaseReadOnly: boolean;
 	encryptionEnabled: boolean;
-	restrictAccess?: string;
+	userAccess?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -477,7 +477,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
 	pageVerifyOptions: { [key: string]: string };
-	restrictAccessOptions: { [key: string]: string };
+	userAccessOptions: { [key: string]: string };
 }
 
 export interface AzureEditionDetails {

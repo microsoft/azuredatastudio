@@ -8,14 +8,14 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
-import { BooleanOptions, Database, DatabaseViewInfo } from '../interfaces';
+import { BooleanDropdownOptions, Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringinMB, toPascalCase } from '../utils';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
-	private optionsSectionsContainer: azdata.Component[] = [];
+	private optionsTabSectionsContainer: azdata.Component[] = [];
 
 	// Database properties options
 	// General Tab
@@ -70,7 +70,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.formContainer.addItems(components);
 		} else {
 			// Options of a boolean dropdown
-			this.booleanOptionsArray = Object.keys(BooleanOptions);
+			this.booleanOptionsArray = Object.keys(BooleanDropdownOptions);
 
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
@@ -102,7 +102,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: 'optionsId',
-				content: this.createGroup('', this.optionsSectionsContainer, false)
+				content: this.createGroup('', this.optionsTabSectionsContainer, false)
 			};
 
 			// Initilaize tab group with tabbed panel
@@ -272,7 +272,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			autoUpdateStatisticsAsynchronouslyContainer
 		], true);
 
-		this.optionsSectionsContainer.push(this.automaticSection);
+		this.optionsTabSectionsContainer.push(this.automaticSection);
 	}
 
 	private initializeLedgerSection(): void {
@@ -285,9 +285,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			isLedgerDatabaseInputContainer
 		], true);
 
-		this.optionsSectionsContainer.push(this.ledgerSection);
+		this.optionsTabSectionsContainer.push(this.ledgerSection);
 	}
-
 
 	private initializeRecoverySection(): void {
 		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
@@ -307,11 +306,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			targetRecoveryTimeContainer
 		], true);
 
-		this.optionsSectionsContainer.push(this.recoverySection);
+		this.optionsTabSectionsContainer.push(this.recoverySection);
 	}
 
 	private initializeStateSection(): void {
 		let containers: azdata.Component[] = [];
+
+		// Sql Managed instance does not support database read only property
 		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
 			this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
 				this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === 'true');
@@ -327,17 +328,18 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.encryptionEnabled)), true);
 		containers.push(this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput));
 
+		// Sql Managed instance does not support user access property
 		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
-			this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
-				this.objectInfo.restrictAccess = newValue;
-			}, Object.values(this.viewInfo.restrictAccessOptions)
-				, this.viewInfo.restrictAccessOptions[this.objectInfo.restrictAccess[0].toLowerCase() + this.objectInfo.restrictAccess.substring(1)]
+			this.restrictAccessInput = this.createDropdown(localizedConstants.UserAccessText, async (newValue) => {
+				this.objectInfo.userAccess = newValue;
+			}, Object.values(this.viewInfo.userAccessOptions)
+				, this.viewInfo.userAccessOptions[this.objectInfo.userAccess[0].toLowerCase() + this.objectInfo.userAccess.substring(1)]
 				, true);
-			containers.push(this.createLabelInputContainer(localizedConstants.RestrictAccessText, this.restrictAccessInput));
+			containers.push(this.createLabelInputContainer(localizedConstants.UserAccessText, this.restrictAccessInput));
 
 		}
 		this.stateSection = this.createGroup(localizedConstants.StateSectionHeader, containers, true);
-		this.optionsSectionsContainer.push(this.stateSection);
+		this.optionsTabSectionsContainer.push(this.stateSection);
 	}
 	//#endregion
 

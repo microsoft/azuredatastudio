@@ -162,6 +162,8 @@ export const CurrentSLOText = localize('objectManagement.currentSLOLabel', "Curr
 export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
+export const SqlManagedInstance = localize('objectManagement.sqlManagedInstance', "SqlManagedInstance");
+export const ExpressEdition = localize('objectManagement.expressEdition', "Express");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
@@ -276,9 +278,7 @@ export const TargetRecoveryTimeInSecondsText = localize('objectManagement.databa
 export const DatabaseReadOnlyText = localize('objectManagement.databaseProperties.databaseReadOnlyText', "Database Read-Only");
 export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
 export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
-export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
-export const SqlManagedInstance = localize('objectManagement.databaseProperties.sqlManagedInstance', "SqlManagedInstance");
-export const ExpressEdition = localize('objectManagement.databaseProperties.expressEdition', "Express");
+export const UserAccessText = localize('objectManagement.databaseProperties.userAccessText', "Restrict Access");
 
 
 // Util functions
