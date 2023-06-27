@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.45.0",
-  "distro": "f5f6b5e0f287b42f0d43e79f3e0edf5ceab942c8",
+  "distro": "a42cd60600a6cdad91afc25af929f5fe33c08e12",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -101,8 +101,8 @@
     "moment": "^2.29.4",
     "native-is-elevated": "0.4.3",
     "native-keymap": "3.3.0",
-    "native-watchdog": "1.4.0",
-    "node-pty": "0.11.0-beta11",
+    "native-watchdog": "^1.4.1",
+    "node-pty": "0.11.0-beta32",
     "plotly.js-dist-min": "^1.53.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
