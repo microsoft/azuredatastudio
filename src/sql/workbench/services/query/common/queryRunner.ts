@@ -466,7 +466,7 @@ export default class QueryRunner extends Disposable {
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
 	 * @param removeNewLines Whether to remove line breaks from values.
-	 * @param skipNewLineAfterTrailingLineBreak Whether to avoid adding a new line to the end of the copied value if the last character is a new line.
+	 * @param skipNewLineAfterTrailingLineBreak Whether to skip adding a line break between rows when copying results when the previous row already has a trailing line break.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
 	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, skipNewLineAfterTrailingLineBreak: boolean, includeHeaders?: boolean): Promise<void> {
