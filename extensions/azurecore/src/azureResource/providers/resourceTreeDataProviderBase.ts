@@ -56,7 +56,7 @@ export abstract class ResourceTreeDataProviderBase<S extends GraphData, T extend
 
 	public abstract getTreeItemForResource(resource: azureResource.AzureResource, account: AzureAccount): azdata.TreeItem;
 
-	public abstract getRootChildren(): Promise<azdata.TreeItem[]>;
+	public abstract getRootChild(): Promise<azdata.TreeItem>;
 }
 
 export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
