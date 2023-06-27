@@ -60,8 +60,8 @@ export class QueryEditorService implements IQueryEditorService {
 		const mode = this._connectionManagementService.getProviderLanguageMode(connectionProviderName);
 		const fileInput = await this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, languageId: mode }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve();
-		if (options.initalContent) {
-			untitledEditorModel.textEditorModel.setValue(options.initalContent);
+		if (options.initialContent) {
+			untitledEditorModel.textEditorModel.setValue(options.initialContent);
 			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 				(untitledEditorModel as UntitledTextEditorModel).setDirty(false);
 			}

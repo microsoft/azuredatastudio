@@ -213,7 +213,7 @@ export class TaskService implements ITaskService {
 			if ((task.status === TaskStatus.Succeeded || task.status === TaskStatus.SucceededWithWarning)
 				&& eventArgs.script && eventArgs.script !== '') {
 				if (task.taskExecutionMode === TaskExecutionMode.script) {
-					this.queryEditorService.newSqlEditor({ initalContent: eventArgs.script });
+					this.queryEditorService.newSqlEditor({ initialContent: eventArgs.script });
 				} else if (task.taskExecutionMode === TaskExecutionMode.executeAndScript) {
 					task.script = eventArgs.script;
 				}

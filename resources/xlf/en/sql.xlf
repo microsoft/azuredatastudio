@@ -3397,6 +3397,9 @@ Error: {1}</source>
     <trans-unit id="RemoveParameterCell">
       <source xml:lang="en">Remove parameter cell</source>
     </trans-unit>
+    <trans-unit id="addCellLabel">
+      <source xml:lang="en">Add cell</source>
+    </trans-unit>
     <trans-unit id="clear">
       <source xml:lang="en">Clear Result</source>
     </trans-unit>
@@ -3429,9 +3432,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="markdownBelow">
       <source xml:lang="en">Insert Text Below</source>
-    </trans-unit>
-    <trans-unit id="moreActionsLabel">
-      <source xml:lang="en">More</source>
     </trans-unit>
     <trans-unit id="runAllAbove">
       <source xml:lang="en">Run Cells Above</source>
@@ -3887,9 +3887,6 @@ Error: {1}</source>
     <trans-unit id="clearResults">
       <source xml:lang="en">Clear Results</source>
     </trans-unit>
-    <trans-unit id="codeCellsPreview">
-      <source xml:lang="en">Add cell</source>
-    </trans-unit>
     <trans-unit id="codePreview">
       <source xml:lang="en">Code cell</source>
     </trans-unit>
@@ -4107,9 +4104,6 @@ Error: {1}</source>
     <trans-unit id="insertCells">
       <source xml:lang="en">Insert Cells</source>
     </trans-unit>
-    <trans-unit id="moreActionsLabel">
-      <source xml:lang="en">More</source>
-    </trans-unit>
     <trans-unit id="runCell">
       <source xml:lang="en">Run cell</source>
     </trans-unit>
@@ -4178,6 +4172,11 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="plotlyError">
       <source xml:lang="en">Error displaying Plotly graph: {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/notebook/common/notebookLoc" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="moreActionsLabel">
+      <source xml:lang="en">More</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
@@ -4473,6 +4472,27 @@ Error: {1}</source>
     <trans-unit id="resultsGrid">
       <source xml:lang="en">Results grid</source>
     </trans-unit>
+    <trans-unit id="resultsGrid.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.cancelLargeRowSelection">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.confirmLargeRowSelection">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.donotShowLargeRowSelectionPromptAgain">
+      <source xml:lang="en">Don't show again</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.largeRowSelectionPrompt.">
+      <source xml:lang="en">You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.loadingData">
+      <source xml:lang="en">Loading selected rows for calculation...</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.loadingDataWithProgress">
+      <source xml:lang="en">Loading selected rows for calculation ({0}/{1})...</source>
+    </trans-unit>
     <trans-unit id="resultsGrid.maxRowCountExceeded">
       <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
     </trans-unit>
@@ -4574,6 +4594,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.preferProvidersCopyHandler">
       <source xml:lang="en">Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.promptForLargeRowSelection">
+      <source xml:lang="en">When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsCsv.delimiter">
       <source xml:lang="en">The custom delimiter to use between values when saving as CSV</source>
@@ -4902,6 +4925,15 @@ Error: {1}</source>
     <trans-unit id="refreshError">
       <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
     </trans-unit>
+    <trans-unit id="scriptActionError">
+      <source xml:lang="en">An error occurred while executing the action: {0}.</source>
+    </trans-unit>
+    <trans-unit id="scriptingAction.close">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="scriptingAction.inProgress">
+      <source xml:lang="en">Generating script...</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="tableDesigner.publishTableChanges">
@@ -5019,28 +5051,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="enablePreviewFeatures.yes">
       <source xml:lang="en">Yes (recommended)</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notifyEncryption.message">
-      <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-    </trans-unit>
-    <trans-unit id="notifyEncryption.moreInfoLink">
-      <source xml:lang="en">More information</source>
-    </trans-unit>
-    <trans-unit id="notifyEncryption.title">
-      <source xml:lang="en">Important Update</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notifyHiddenTenant.message">
-      <source xml:lang="en">Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.</source>
-    </trans-unit>
-    <trans-unit id="notifyHiddenTenant.moreInfoLink">
-      <source xml:lang="en">More information</source>
-    </trans-unit>
-    <trans-unit id="notifyHiddenTenant.title">
-      <source xml:lang="en">Important Update</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
@@ -5616,6 +5626,9 @@ Error Message: {1}</source>
   <file original="src/sql/workbench/services/connection/browser/connectionManagementService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+    </trans-unit>
+    <trans-unit id="connection.connTitleGroupSection">
+      <source xml:lang="en"> (Group: {0})</source>
     </trans-unit>
     <trans-unit id="connection.duplicateEditErrorMessage">
       <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
@@ -7068,6 +7081,10 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.publishChangeSuccess">
       <source xml:lang="en">The changes have been successfully published.</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.refreshOEError">
+      <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
+      <note>{0}: error message.</note>
     </trans-unit>
     <trans-unit id="tableDesigner.savingChanges">
       <source xml:lang="en">Publishing table designer changes...</source>

@@ -33,6 +33,10 @@
     ],
     "commands": [
       {
+        "command": "objectExplorer.scriptAsAlter",
+        "title": "Script as Alter"
+      },
+      {
         "command": "mssql.exportSqlAsNotebook",
         "title": "%mssql.exportSqlAsNotebook%"
       },
@@ -492,6 +496,11 @@
       ],
       "objectExplorer/item/context": [
         {
+          "command": "objectExplorer.scriptAsAlter",
+          "when": "nodeType == Table",
+          "group": "0_query@5"
+        },
+        {
           "command": "mssql.designTable",
           "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
           "group": "0_query@3",
@@ -512,6 +521,11 @@
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
           "group": "0_query@1",
           "isDefault": true
+        },
+        {
+          "command": "mssql.objectProperties",
+          "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
+          "group": "0_query@1"
         },
         {
           "command": "mssql.deleteObject",
@@ -805,6 +819,7 @@
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
+      "useFullOptions": true,
       "isExecutionPlanProvider": true,
       "supportCopyResultsToClipboard": true,
       "azureResource": "Sql",
@@ -943,7 +958,7 @@
           "description": "%mssql.connectionOptions.applicationName.description%",
           "groupName": "%mssql.connectionOptions.groupName.initialization%",
           "valueType": "string",
-          "defaultValue": null,
+          "defaultValue": "azdata",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,

@@ -61,6 +61,10 @@ export class SingleConnectionManagementService {
 	public get connectionInfo(): ConnectionManagementInfo {
 		return this._connectionService.getConnectionInfo(this._uri);
 	}
+
+	public getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): string {
+		return this._connectionService.getEditorConnectionProfileTitle(profile, getOptionsOnly, includeGroupName);
+	}
 }
 
 export class SingleAdminService {
