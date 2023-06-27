@@ -34,10 +34,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private memoryUsedInput: azdata.InputBoxComponent;
 	private collationInput: azdata.InputBoxComponent;
 	// Options Tab
-	private automaticSection: azdata.GroupContainer;
-	private ledgerSection: azdata.GroupContainer;
-	private recoverySection: azdata.GroupContainer;
-	private stateSection: azdata.GroupContainer;
 	private autoCreateIncrementalStatisticsInput: azdata.DropDownComponent;
 	private autoCreateStatisticsInput: azdata.DropDownComponent;
 	private autoShrinkInput: azdata.DropDownComponent;
@@ -240,31 +236,31 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Database Properties - Options Tab
 	private initializeAutomaticSection(): void {
 		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatisticsText, async (newValue) => {
-			this.objectInfo.autoCreateIncrementalStatistics = (newValue.toLowerCase() === 'true');
+			this.objectInfo.autoCreateIncrementalStatistics = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.autoCreateIncrementalStatistics)), true);
 		const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatisticsText, this.autoCreateIncrementalStatisticsInput);
 
 		this.autoCreateStatisticsInput = this.createDropdown(localizedConstants.AutoCreateStatisticsText, async (newValue) => {
-			this.objectInfo.autoCreateStatistics = (newValue.toLowerCase() === 'true');
+			this.objectInfo.autoCreateStatistics = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.autoCreateStatistics)), true);
 		const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatisticsText, this.autoCreateStatisticsInput);
 
 		this.autoShrinkInput = this.createDropdown(localizedConstants.AutoShrinkText, async (newValue) => {
-			this.objectInfo.autoShrink = (newValue.toLowerCase() === 'true');
+			this.objectInfo.autoShrink = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.autoShrink)), true);
 		const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrinkText, this.autoShrinkInput);
 
 		this.autoUpdateStatisticsInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsText, async (newValue) => {
-			this.objectInfo.autoUpdateStatistics = (newValue.toLowerCase() === 'true');
+			this.objectInfo.autoUpdateStatistics = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.autoUpdateStatistics)), true);
 		const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsText, this.autoUpdateStatisticsInput);
 
 		this.autoUpdateStatisticsAsynchronouslyInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, async (newValue) => {
-			this.objectInfo.autoUpdateStatisticsAsynchronously = (newValue.toLowerCase() === 'true');
+			this.objectInfo.autoUpdateStatisticsAsynchronously = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.autoUpdateStatisticsAsynchronously)), true);
 		const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, this.autoUpdateStatisticsAsynchronouslyInput);
 
-		this.automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		const automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
 			autoCreateIncrementalStatisticsContainer,
 			autoCreateStatisticsContainer,
 			autoShrinkContainer,
@@ -272,28 +268,26 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			autoUpdateStatisticsAsynchronouslyContainer
 		], true);
 
-		this.optionsTabSectionsContainer.push(this.automaticSection);
+		this.optionsTabSectionsContainer.push(automaticSection);
 	}
 
 	private initializeLedgerSection(): void {
 		this.isLedgerDatabaseInput = this.createDropdown(localizedConstants.IsLedgerDatabaseText, async (newValue) => {
-			this.objectInfo.isLedgerDatabase = (newValue.toLowerCase() === 'true');
+			this.objectInfo.isLedgerDatabase = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.isLedgerDatabase)), true);
 		const isLedgerDatabaseInputContainer = this.createLabelInputContainer(localizedConstants.IsLedgerDatabaseText, this.isLedgerDatabaseInput);
 
-		this.ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
+		const ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
 			isLedgerDatabaseInputContainer
 		], true);
 
-		this.optionsTabSectionsContainer.push(this.ledgerSection);
+		this.optionsTabSectionsContainer.push(ledgerSection);
 	}
 
 	private initializeRecoverySection(): void {
 		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
 			this.objectInfo.pageVerify = newValue;
-		}, Object.values(this.viewInfo.pageVerifyOptions)
-			, this.viewInfo.pageVerifyOptions[this.objectInfo.pageVerify[0].toLowerCase() + this.objectInfo.pageVerify.substring(1)]
-			, true);
+		}, Object.values(this.viewInfo.pageVerifyOptions), this.objectInfo.pageVerify, true);
 		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
 
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
@@ -301,12 +295,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true);
 		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
 
-		this.recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [
+		const recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [
 			pageVerifyContainer,
 			targetRecoveryTimeContainer
 		], true);
 
-		this.optionsTabSectionsContainer.push(this.recoverySection);
+		this.optionsTabSectionsContainer.push(recoverySection);
 	}
 
 	private initializeStateSection(): void {
@@ -315,7 +309,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Sql Managed instance does not support database read only property
 		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
 			this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
-				this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === 'true');
+				this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === localizedConstants.TrueText);
 			}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.databaseReadOnly)), true);
 			containers.push(this.createLabelInputContainer(localizedConstants.DatabaseReadOnlyText, this.databaseReadOnlyInput));
 		}
@@ -324,7 +318,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput));
 
 		this.encryptionEnabledInput = this.createDropdown(localizedConstants.EncryptionEnabledText, async (newValue) => {
-			this.objectInfo.encryptionEnabled = (newValue.toLowerCase() === 'true');
+			this.objectInfo.encryptionEnabled = (newValue.toLowerCase() === localizedConstants.TrueText);
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.encryptionEnabled)), true);
 		containers.push(this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput));
 
@@ -332,14 +326,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
 			this.restrictAccessInput = this.createDropdown(localizedConstants.UserAccessText, async (newValue) => {
 				this.objectInfo.userAccess = newValue;
-			}, Object.values(this.viewInfo.userAccessOptions)
-				, this.viewInfo.userAccessOptions[this.objectInfo.userAccess[0].toLowerCase() + this.objectInfo.userAccess.substring(1)]
-				, true);
+			}, Object.values(this.viewInfo.userAccessOptions), this.objectInfo.userAccess, true);
 			containers.push(this.createLabelInputContainer(localizedConstants.UserAccessText, this.restrictAccessInput));
-
 		}
-		this.stateSection = this.createGroup(localizedConstants.StateSectionHeader, containers, true);
-		this.optionsTabSectionsContainer.push(this.stateSection);
+
+		const stateSection = this.createGroup(localizedConstants.StateSectionHeader, containers, true);
+		this.optionsTabSectionsContainer.push(stateSection);
 	}
 	//#endregion
 
