@@ -178,6 +178,8 @@ export const DatabaseFileTypeLabel = localize('objectManagement.databaseFileType
 export const DatabaseFilePathLabel = localize('objectManagement.databaseFilePath', "Path");
 export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGroup', "File Group");
 export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
+export const AttachDatabaseDialogTitle = localize('objectManagement.attachDatabaseDialogTitle', "Attach Database (Preview)");
+export const NoDatabaseFilesError = localize('objectManagement.doDatabaseFilesError', "No database files were specified to attach to the server.");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

@@ -984,6 +984,15 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
+		/**
+		 * Attach a database.
+		 * @param connectionUri The URI of the server connection.
+		 * @param databaseName The name that the new database will be attached with.
+		 * @param databaseFilePaths A string array of the various paths to the database files that will be attached.
+		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
+		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
+		 */
+		attachDatabase(connectionUri: string, databaseName: string, databaseFilePaths: string[], generateScript: boolean): Thenable<string>;
 	}
 	// Object Management - End.
 }

@@ -1640,6 +1640,17 @@ export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
 }
 
+export interface AttachDatabaseRequestParams {
+	connectionUri: string;
+	databaseName: string;
+	databaseFilePaths: string[];
+	generateScript: boolean;
+}
+
+export namespace AttachDatabaseRequest {
+	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
