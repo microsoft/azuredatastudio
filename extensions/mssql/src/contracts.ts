@@ -1628,6 +1628,18 @@ export namespace SearchObjectRequest {
 	export const type = new RequestType<SearchObjectRequestParams, mssql.ObjectManagement.SearchResultItem[], void, void>('objectManagement/search');
 }
 
+export interface DetachDatabaseRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+	dropConnections: boolean;
+	updateStatistics: boolean;
+	generateScript: boolean;
+}
+
+export namespace DetachDatabaseRequest {
+	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------

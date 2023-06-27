@@ -65,6 +65,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.SearchObjectRequestParams = { contextId, searchText, objectTypes, schema };
 		return this.runWithErrorHandling(contracts.SearchObjectRequest.type, params);
 	}
+
+	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics, generateScript };
+		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
+	}
 }
 
 const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
@@ -230,6 +235,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 			items.push(...this.generateSearchResult(type, schema, 15));
 		});
 		return this.delayAndResolve(items);
+	}
+
+	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
 	}
 
 	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {
