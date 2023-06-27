@@ -9,7 +9,7 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
-import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
+import { ConfigDialogSetting } from '../../models/tdeModels'
 
 export class TdeConfigurationDialog {
 
@@ -24,8 +24,7 @@ export class TdeConfigurationDialog {
 	private _networkPathText!: azdata.InputBoxComponent;
 	private _onClosed: () => void;
 
-	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel,
-		onClosed: () => void) {
+	constructor(public migrationStateModel: MigrationStateModel, onClosed: () => void) {
 		this._onClosed = onClosed;
 	}
 
@@ -90,7 +89,6 @@ export class TdeConfigurationDialog {
 		return container;
 	}
 
-
 	private createMethodsContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const chooseMethodText = _view.modelBuilder.text().withProps({
 			value: constants.TDE_WIZARD_MIGRATION_CAPTION,
@@ -123,7 +121,7 @@ export class TdeConfigurationDialog {
 			.withProps({
 				name: buttonGroup,
 				label: constants.TDE_WIZARD_MIGRATION_OPTION_ADS,
-				checked: this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAds(),
+				checked: this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates,
 				CSSStyles: {
 					...styles.BODY_CSS
 				},
@@ -131,7 +129,7 @@ export class TdeConfigurationDialog {
 		this._disposables.push(
 			adsMethodButton.onDidChangeCheckedState(async checked => {
 				if (checked) {
-					this.migrationStateModel.tdeMigrationConfig.setTdeMigrationMethod(true);
+					this.migrationStateModel.tdeMigrationConfig.setPendingTdeMigrationMethod(ConfigDialogSetting.ExportCertificates);
 					await this.updateUI();
 				}
 			}));
@@ -156,14 +154,14 @@ export class TdeConfigurationDialog {
 			.withProps({
 				name: buttonGroup,
 				label: constants.TDE_WIZARD_MIGRATION_OPTION_MANUAL,
-				checked: this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodManual(),
+				checked: this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.DoNotExport,
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
 		this._disposables.push(
 			manualMethodButton.onDidChangeCheckedState(async checked => {
 				if (checked) {
-					this.migrationStateModel.tdeMigrationConfig.setTdeMigrationMethod(false);
+					this.migrationStateModel.tdeMigrationConfig.setPendingTdeMigrationMethod(ConfigDialogSetting.DoNotExport);
 					await this.updateUI();
 				}
 			}));
@@ -193,7 +191,8 @@ export class TdeConfigurationDialog {
 	private createAdsConfirmationContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'flex-direction': 'column'
+				'flex-direction': 'column',
+				'display': 'none'
 			}
 		}).component();
 
@@ -226,11 +225,15 @@ export class TdeConfigurationDialog {
 				required: true,
 				CSSStyles: { ...styles.BODY_CSS, 'margin-top': '-1em', 'margin-left': '45px' }
 			}).component();
+		this._disposables.push(
+			this._networkPathText.onTextChanged(async networkPath => {
+				this.migrationStateModel.tdeMigrationConfig.setPendingNetworkPath(networkPath);
+			}));
 
 		this._adsConfirmationCheckBox = _view.modelBuilder.checkBox()
 			.withProps({
 				label: constants.TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM,
-				checked: this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed(),
+				checked: this.migrationStateModel.tdeMigrationConfig.getAppliedExportCertUserConsent(),
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin': '10px 0 14px 15px'
@@ -238,9 +241,7 @@ export class TdeConfigurationDialog {
 			}).component();
 		this._disposables.push(
 			this._adsConfirmationCheckBox.onChanged(async checked => {
-				this.migrationStateModel.tdeMigrationConfig.setAdsConfirmation(
-					checked,
-					this._networkPathText.value ?? '');
+				this.migrationStateModel.tdeMigrationConfig.setPendingExportCertUserConsent(checked);
 				await this.updateUI();
 			}));
 
@@ -256,7 +257,8 @@ export class TdeConfigurationDialog {
 	private createManualWarningContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
-				'flex-direction': 'column'
+				'flex-direction': 'column',
+				'display': 'none'
 			}
 		}).component();
 
@@ -283,18 +285,15 @@ export class TdeConfigurationDialog {
 	}
 
 	private async updateUI(): Promise<void> {
-		const useAds = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAds();
+		let exportCertsUsingAds = this.migrationStateModel.tdeMigrationConfig.getPendingConfigDialogSetting() === ConfigDialogSetting.ExportCertificates;
+		this._networkPathText.value = this.migrationStateModel.tdeMigrationConfig.getPendingNetworkPath();
+		this._networkPathText.required = exportCertsUsingAds;
+		this._adsConfirmationCheckBox.checked = this.migrationStateModel.tdeMigrationConfig.getPendingExportCertUserConsent();
 
-		this._networkPathText.value = this.migrationStateModel.tdeMigrationConfig._networkPath;
-		this._adsConfirmationCheckBox.checked = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed();
-		await utils.updateControlDisplay(this._adsMethodConfirmationContainer, useAds);
+		await utils.updateControlDisplay(this._adsMethodConfirmationContainer, exportCertsUsingAds);
+		await utils.updateControlDisplay(this._manualMethodWarningContainer, this.migrationStateModel.tdeMigrationConfig.getPendingConfigDialogSetting() === ConfigDialogSetting.DoNotExport);
 
-		const useManual = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodManual();
-		await utils.updateControlDisplay(this._manualMethodWarningContainer, useManual);
-
-		this.dialog!.okButton.enabled = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodSet();
-
-		this._networkPathText.required = useAds;
+		this.dialog!.okButton.enabled = this.migrationStateModel.tdeMigrationConfig.isAnyChangeReadyToBeApplied()
 	}
 
 	public async openDialog(dialogName?: string,) {
@@ -309,15 +308,12 @@ export class TdeConfigurationDialog {
 				'narrow');
 
 			this.dialog.okButton.label = constants.APPLY;
+			this.dialog.okButton.enabled = false;
 			this._disposables.push(
 				this.dialog.okButton.onClick(
-					(eventArgs) => {
+					() => {
 						this._isOpen = false;
-						this.migrationStateModel.tdeMigrationConfig.setConfigurationCompleted();
-
-						if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()) {
-							this.migrationStateModel.tdeMigrationConfig._networkPath = this._networkPathText.value ?? '';
-						}
+						this.migrationStateModel.tdeMigrationConfig.applyConfigDialogSetting();
 						this._onClosed();
 					})
 			);
@@ -325,6 +321,7 @@ export class TdeConfigurationDialog {
 			this._disposables.push(
 				this.dialog.cancelButton.onClick(
 					() => {
+						this.migrationStateModel.tdeMigrationConfig.cancelConfigDialogSetting();
 						this._isOpen = false;
 						this._onClosed();
 					}));
