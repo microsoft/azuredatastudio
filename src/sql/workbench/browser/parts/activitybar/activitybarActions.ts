@@ -29,7 +29,8 @@ export class AccountsActionViewItem extends ActivityActionViewItem {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IKeybindingService keybindingService: IKeybindingService,
 	) {
-		super(action, { draggable: false, colors, icon: true, hoverOptions: hoverOptions }, themeService, hoverService, configurationService, keybindingService);
+		super(action, { draggable: false, colors, icon: true, hoverOptions: hoverOptions },
+			(/*badgesEnabledForCompositeId*/) => false, themeService, hoverService, configurationService, keybindingService);
 	}
 
 	override render(container: HTMLElement): void {

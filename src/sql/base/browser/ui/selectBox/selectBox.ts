@@ -18,6 +18,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { SelectBoxList } from 'vs/base/browser/ui/selectBox/selectBoxCustom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
+import { defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const $ = dom.$;
 
@@ -45,12 +46,12 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 	private _dialogOptions: SelectOptionItemSQL[];
 	private _selectedOption: string;
 	private _selectBoxOptions?: ISelectBoxOptions;
-	private enabledSelectBackground?: Color;
-	private enabledSelectForeground?: Color;
-	private enabledSelectBorder?: Color;
-	private disabledSelectBackground?: Color;
-	private disabledSelectForeground?: Color;
-	private disabledSelectBorder?: Color;
+	// private enabledSelectBackground?: Color;
+	// private enabledSelectForeground?: Color;
+	// private enabledSelectBorder?: Color;
+	// private disabledSelectBackground?: Color;
+	// private disabledSelectForeground?: Color;
+	// private disabledSelectBorder?: Color;
 	private contextViewProvider: IContextViewProvider;
 	private message?: IMessage;
 	private _onDidSelect: Emitter<ISelectData>;
@@ -70,7 +71,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 
 	constructor(options: SelectOptionItemSQL[] | string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions, id?: string) {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
-		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
+		super(optionItems, 0, contextViewProvider, defaultSelectBoxStyles, selectBoxOptions);
 
 		this._onDidSelect = new Emitter<ISelectData>();
 		this._onDidFocus = new Emitter<void>();
@@ -88,12 +89,13 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 			this._onDidSelect.fire(newSelect);
 		}));
 
-		this.enabledSelectBackground = this.selectBackground;
-		this.enabledSelectForeground = this.selectForeground;
-		this.enabledSelectBorder = this.selectBorder;
-		this.disabledSelectBackground = Color.transparent;
-		this.disabledSelectForeground = undefined;
-		this.disabledSelectBorder = undefined;
+		// {{SQL CARBON TODO}} - fix styles
+		// this.enabledSelectBackground = this.selectBackground;
+		// this.enabledSelectForeground = this.selectForeground;
+		// this.enabledSelectBorder = this.selectBorder;
+		// this.disabledSelectBackground = Color.transparent;
+		// this.disabledSelectForeground = undefined;
+		// this.disabledSelectBorder = undefined;
 		this.contextViewProvider = contextViewProvider;
 		if (container) {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
@@ -178,13 +180,12 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this._dialogOptions = options;
 	}
 
-	public override style(styles: ISelectBoxStyles): void {
-		super.style(styles);
-		this.enabledSelectBackground = this.selectBackground;
-		this.enabledSelectForeground = this.selectForeground;
-		this.enabledSelectBorder = this.selectBorder;
-		this.disabledSelectBackground = styles.disabledSelectBackground;
-		this.disabledSelectForeground = styles.disabledSelectForeground;
+	public style(styles: ISelectBoxStyles): void {
+		// this.enabledSelectBackground = this.selectBackground;
+		// this.enabledSelectForeground = this.selectForeground;
+		// this.enabledSelectBorder = this.selectBorder;
+		// this.disabledSelectBackground = styles.disabledSelectBackground;
+		// this.disabledSelectForeground = styles.disabledSelectForeground;
 		this.inputValidationInfoBorder = styles.inputValidationInfoBorder;
 		this.inputValidationInfoBackground = styles.inputValidationInfoBackground;
 		this.inputValidationInfoForeground = styles.inputinputValidationInfoForeground;
@@ -194,7 +195,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
 		this.inputValidationErrorForeground = styles.inputValidationErrorForeground;
-		this.applyStyles();
+		//this.applyStyles();
 	}
 
 	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true, forceSelectionEvent: boolean = false): void {
@@ -244,18 +245,18 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 
 	public enable(): void {
 		this.selectElement.disabled = false;
-		this.selectBackground = this.enabledSelectBackground;
-		this.selectForeground = this.enabledSelectForeground;
-		this.selectBorder = this.enabledSelectBorder;
-		this.applyStyles();
+		// this.selectBackground = this.enabledSelectBackground;
+		// this.selectForeground = this.enabledSelectForeground;
+		// this.selectBorder = this.enabledSelectBorder;
+		//this.applyStyles();
 	}
 
 	public disable(): void {
 		this.selectElement.disabled = true;
-		this.selectBackground = this.disabledSelectBackground;
-		this.selectForeground = this.disabledSelectForeground;
-		this.selectBorder = this.disabledSelectBorder;
-		this.applyStyles();
+		// this.selectBackground = this.disabledSelectBackground;
+		// this.selectForeground = this.disabledSelectForeground;
+		// this.selectBorder = this.disabledSelectBorder;
+		//this.applyStyles();
 	}
 
 	public getAriaLabel(): string {
@@ -343,7 +344,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		}
 
 		this._hideMessage();
-		this.applyStyles();
+		//this.applyStyles();
 
 		this.message = undefined;
 	}

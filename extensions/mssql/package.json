@@ -102,6 +102,11 @@
         "title": "%title.renameObject%"
       },
       {
+        "command": "mssql.detachDatabase",
+        "category": "MSSQL",
+        "title": "%title.detachDatabase%"
+      },
+      {
         "command": "mssql.enableGroupBySchema",
         "category": "MSSQL",
         "title": "%mssql.objectExplorer.enableGroupBySchema%",
@@ -541,6 +546,11 @@
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
           "group": "0_query@3"
+        },
+        {
+          "command": "mssql.detachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && config.workbench.enablePreviewFeatures",
+          "group": "0_query@4"
         },
         {
           "command": "mssql.enableGroupBySchema",

@@ -97,6 +97,14 @@ export const AADSTS70043 = 'AADSTS70043';
  */
 export const AADSTS50173 = 'AADSTS50173';
 
+/**
+ * multiple_matching_tokens error can occur in scenarios when users try to run ADS as different users, reference issue:
+ * https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5134
+ * Error message: multiple_matching_tokens The cache contains multiple tokens satisfying the requirements.
+ * Call AcquireToken again providing more requirements such as authority or account.
+ */
+export const multiple_matching_tokens_error = 'multiple_matching_tokens';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
 }

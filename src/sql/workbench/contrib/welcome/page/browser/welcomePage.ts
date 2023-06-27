@@ -9,22 +9,21 @@ import { URI } from 'vs/base/common/uri';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as arrays from 'vs/base/common/arrays';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { isCancellationError, onUnexpectedError } from 'vs/base/common/errors';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
-import { Action, WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
+import { WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Schemas } from 'vs/base/common/network';
-import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
+import { getInstalledExtensions, IExtensionStatus, isKeymapExtension, onExtensionChanged } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ILifecycleService, StartupKind } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { splitName } from 'vs/base/common/labels';
-import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -33,7 +32,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { ILabelService } from 'vs/platform/label/common/label';
+import { ILabelService, Verbosity } from 'vs/platform/label/common/label';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
@@ -47,15 +46,18 @@ import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/bro
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { MenuItemAction } from 'vs/platform/actions/common/actions';
+import { Action2, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IWorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackup';
 import { WalkThroughInput } from 'vs/workbench/contrib/welcomeWalkthrough/browser/walkThroughInput';
 import { IWindowOpenable } from 'vs/platform/window/common/window';
 import { ICommandAction } from 'vs/platform/action/common/action';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+import { splitRecentLabel } from 'vs/base/common/labels';
+
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -138,22 +140,23 @@ function isGuidedTourEnabled(configurationService: IConfigurationService): boole
 	return false;
 }
 
-export class WelcomePageAction extends Action {
-
-
+export class WelcomePageAction extends Action2 {
 	public static readonly ID = 'workbench.action.showWelcomePage';
+	public static readonly ORG_LABEL = 'Welcome';
 	public static readonly LABEL = localize('welcomePage', "Welcome");
 
-	constructor(
-		id: string,
-		label: string,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
-	) {
-		super(id, label);
+	constructor() {
+		super({
+			id: WelcomePageAction.ID,
+			title: { value: WelcomePageAction.LABEL, original: WelcomePageAction.ORG_LABEL },
+			category: Categories.Help,
+			f1: true
+		});
 	}
 
-	public override run(): Promise<void> {
-		return this.instantiationService.createInstance(WelcomePage)
+	run(accessor: ServicesAccessor): void {
+		const instantiationService = accessor.get(IInstantiationService);
+		instantiationService.createInstance(WelcomePage)
 			.openEditor()
 			.then(() => undefined);
 	}
@@ -251,8 +254,7 @@ class WelcomePage extends Disposable {
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@ICommandService private readonly commandService: ICommandService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService,
-		@IThemeService private themeService: IThemeService) {
+		@IContextKeyService private readonly contextKeyService: IContextKeyService) {
 		super();
 		this._register(lifecycleService.onWillShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -369,7 +371,7 @@ class WelcomePage extends Disposable {
 		const newButtonContainer = document.createElement('div');
 		newButtonContainer.classList.add('btn', 'btn-primary');
 		container.appendChild(newButtonContainer);
-		const newButton = this._register(new Button(newButtonContainer));
+		const newButton = this._register(new Button(newButtonContainer, defaultButtonStyles));
 		newButton.label = localize('welcomePage.new', "New");
 		const newButtonHtmlElement = newButton.element;
 		newButtonHtmlElement.setAttribute('aria-haspopup', 'true');
@@ -413,7 +415,7 @@ class WelcomePage extends Disposable {
 			const btnContainer = document.createElement('div');
 			btnContainer.classList.add('btn', 'btn-secondary');
 			container.appendChild(btnContainer);
-			const secondaryButton = this._register(new Button(btnContainer));
+			const secondaryButton = this._register(new Button(btnContainer, { secondary: true, ...defaultButtonStyles }));
 			secondaryButton.label = item.title;
 			secondaryButton.element.classList.add('btn-secondary');
 			secondaryButton.onDidClick(async () => {
@@ -431,7 +433,7 @@ class WelcomePage extends Disposable {
 		const icon = document.createElement('div');
 		const containerLeft = document.createElement('div');
 		const containerRight = document.createElement('div');
-		let startTourBtn = new Button(containerRight);
+		let startTourBtn = new Button(containerRight, defaultButtonStyles);
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
 		removeTourBtn.setAttribute('role', 'button');
@@ -478,7 +480,7 @@ class WelcomePage extends Disposable {
 
 	private async createListEntries(container: HTMLElement, fullPath: string, windowOpenable: IWindowOpenable): Promise<HTMLElement[]> {
 		let result: HTMLElement[] = [];
-		const { name, parentPath } = splitName(fullPath);
+		const { name, parentPath } = splitRecentLabel(fullPath);
 		const li = document.createElement('li');
 		const icon = document.createElement('i');
 		const a = document.createElement('a');
@@ -522,9 +524,9 @@ class WelcomePage extends Disposable {
 			let windowOpenable: IWindowOpenable;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
-				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
+				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: Verbosity.LONG });
 			} else {
-				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: Verbosity.LONG });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
 			const elements = await this.createListEntries(container, fullPath, windowOpenable);
@@ -575,9 +577,7 @@ class WelcomePage extends Disposable {
 		if (btnContainer) {
 			extensionPacks.forEach((extension) => {
 				const installText = localize('welcomePage.install', "Install");
-				let dropdownBtn = this._register(new Button(btnContainer));
-				this._register(attachButtonStyler(dropdownBtn, this.themeService));
-				dropdownBtn.label = installText;
+				this._register(new Button(btnContainer, { title: installText, supportIcons: true, ...defaultButtonStyles }));
 				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
 				getDropdownBtn.id = 'dropdown-btn';
@@ -602,11 +602,12 @@ class WelcomePage extends Disposable {
 				const header = container.querySelector('.extension-pack-header');
 
 				const installedText = localize('welcomePage.installed', "Installed");
-				let installedButton = new Button(btnContainer);
+				let installedButton = new Button(btnContainer, { title: installedText, supportIcons: true, ...defaultButtonStyles });
+				this._register(installedButton);
+
 				installedButton.label = installedText;
 				installedButton.enabled = false;
 				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
-				this._register(attachButtonStyler(installedButton, this.themeService));
 
 				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
 				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);

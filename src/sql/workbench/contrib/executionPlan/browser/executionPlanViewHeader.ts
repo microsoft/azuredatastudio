@@ -12,6 +12,7 @@ import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connect
 import { Button } from 'sql/base/browser/ui/button/button';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class ExecutionPlanViewHeader extends Disposable {
 
@@ -106,6 +107,7 @@ export class ExecutionPlanViewHeader extends Disposable {
 				const link = this._register(new Button(this._recommendationsContainer, {
 					title: r.displayString,
 					secondary: true,
+					...defaultButtonStyles
 				}));
 
 				link.label = r.displayString;

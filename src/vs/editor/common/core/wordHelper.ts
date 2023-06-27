@@ -62,7 +62,7 @@ export function ensureValidWordDefinition(wordDefinition?: RegExp | null): RegEx
 			if (wordDefinition.multiline) {
 				flags += 'm';
 			}
-			if ((wordDefinition as any).unicode) {
+			if (wordDefinition.unicode) {
 				flags += 'u';
 			}
 			result = new RegExp(wordDefinition.source, flags);
@@ -119,7 +119,7 @@ export function getWordAtText(column: number, wordDefinition: RegExp, text: stri
 	const pos = column - 1 - textOffset;
 
 	let prevRegexIndex = -1;
-	let match: RegExpMatchArray | null = null;
+	let match: RegExpExecArray | null = null;
 
 	for (let i = 1; ; i++) {
 		// check time budget
@@ -160,8 +160,8 @@ export function getWordAtText(column: number, wordDefinition: RegExp, text: stri
 	return null;
 }
 
-function _findRegexMatchEnclosingPosition(wordDefinition: RegExp, text: string, pos: number, stopPos: number): RegExpMatchArray | null {
-	let match: RegExpMatchArray | null;
+function _findRegexMatchEnclosingPosition(wordDefinition: RegExp, text: string, pos: number, stopPos: number): RegExpExecArray | null {
+	let match: RegExpExecArray | null;
 	while (match = wordDefinition.exec(text)) {
 		const matchIndex = match.index || 0;
 		if (matchIndex <= pos && wordDefinition.lastIndex >= pos) {

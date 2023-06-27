@@ -19,7 +19,8 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Emitter } from 'vs/base/common/event';
-import { CountBadge, ICountBadgetyles } from 'vs/base/browser/ui/countBadge/countBadge';
+import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
+import { defaultCountBadgeStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 
@@ -35,17 +36,17 @@ export interface ITableFilterOptions {
 	 */
 	disabledFilterMessage?: string;
 	/**
-	 * The columns are refreshed by default to add the filter menu button to the headers.
+	 * The columns are refreshed by default to add the filter menu button to the headers. The default value is true.
 	 * Set to false to prevent the grid from being re-drawn multiple times by different plugins.
 	 */
 	refreshColumns?: boolean;
+	/**
+	 * The button styles.
+	 */
+	buttonStyles: IButtonStyles;
 }
 
-const DefaultTableFilterOptions: ITableFilterOptions = {
-	refreshColumns: true
-};
-
-export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
+export interface ITableFilterStyles extends IInputBoxStyles, IListStyles {
 }
 
 interface NotificationProvider {
@@ -69,8 +70,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private okButton?: Button;
 	private clearButton?: Button;
 	private cancelButton?: Button;
-	private sortAscButton?: Button;
-	private sortDescButton?: Button;
+	// {{SQL CARBON TODO}} - disable
+	// private sortAscButton?: Button;
+	// private sortDescButton?: Button;
 	private selectAllCheckBox?: Checkbox;
 	private searchInputBox?: InputBox;
 	private countBadge?: CountBadge;
@@ -86,7 +88,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private previouslyFocusedElement: HTMLElement;
 	private listContainer?: HTMLElement;
 
-	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options: ITableFilterOptions = DefaultTableFilterOptions) {
+	constructor(private readonly options: ITableFilterOptions, private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider) {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -182,8 +184,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private createButtonMenuItem(title: string, command: HeaderFilterCommands, iconClass: string): Button {
 		const buttonContainer = append(this.menu, $('.slick-header-menu-image-button-container'));
-		const button = new Button(buttonContainer);
-		button.icon = { id: `slick-header-menuicon ${iconClass}` };
+		const button = new Button(buttonContainer, this.options.buttonStyles);
+		button.icon = `slick-header-menuicon ${iconClass}`;
 		button.label = title;
 		button.onDidClick(async () => {
 			await this.handleMenuItemClick(command, this.columnDef);
@@ -205,20 +207,21 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 
 		this.searchInputBox = new InputBox(append(searchRow, $('.search-input')), this.contextViewProvider, {
-			placeholder: localize('table.searchPlaceHolder', "Search")
+			placeholder: localize('table.searchPlaceHolder', "Search"),
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		const visibleCountContainer = append(searchRow, $('.visible-count'));
 		visibleCountContainer.setAttribute('aria-live', 'polite');
 		visibleCountContainer.setAttribute('aria-atomic', 'true');
 		this.visibleCountBadge = new CountBadge(visibleCountContainer, {
 			countFormat: localize({ key: 'tableFilter.visibleCount', comment: ['This tells the user how many items are shown in the list. Currently not visible, but read by screen readers.'] }, "{0} Results")
-		});
+		}, defaultCountBadgeStyles);
 
 		const selectedCountBadgeContainer = append(searchRow, $('.selected-count'));
 		selectedCountBadgeContainer.setAttribute('aria-live', 'polite');
 		this.countBadge = new CountBadge(selectedCountBadgeContainer, {
 			countFormat: localize({ key: 'tableFilter.selectedCount', comment: ['This tells the user how many items are selected in the list'] }, "{0} Selected")
-		});
+		}, defaultCountBadgeStyles);
 
 		this.searchInputBox.onDidChange(async (newString) => {
 			this.filteredListData = this.listData.filter(element => element.value?.toUpperCase().indexOf(newString.toUpperCase()) !== -1);
@@ -405,27 +408,31 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		// Make sure the menu can fit in the screen.
 		this.menu.style.height = `${Math.min(DefaultMenuHeight, window.innerHeight - MenuBarHeight) - MenuVerticalPadding}px`;
 
-		this.sortAscButton = this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
-		this.sortDescButton = this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		// {{SQL CARBON TODO}} - style buttons
+		// this.sortAscButton = this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		// this.sortDescButton = this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		this.createButtonMenuItem(localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		this.createButtonMenuItem(localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+
 		this.createSearchInputRow();
 		await this.createFilterList();
 
 		const buttonGroupContainer = append(this.menu, $('.filter-menu-button-container'));
-		this.okButton = this.createButton(buttonGroupContainer, 'filter-ok-button', localize('headerFilter.ok', "OK"));
+		this.okButton = this.createButton(buttonGroupContainer, 'filter-ok-button', localize('headerFilter.ok', "OK"), this.options.buttonStyles);
 		this.okButton.onDidClick(async () => {
 			this.columnDef.filterValues = this.listData.filter(element => element.checked).map(element => element.value);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
 			await this.handleApply(this.columnDef);
 		});
 
-		this.clearButton = this.createButton(buttonGroupContainer, 'filter-clear-button', localize('headerFilter.clear', "Clear"), { secondary: true });
+		this.clearButton = this.createButton(buttonGroupContainer, 'filter-clear-button', localize('headerFilter.clear', "Clear"), { secondary: true, ...this.options.buttonStyles });
 		this.clearButton.onDidClick(async () => {
 			this.columnDef.filterValues!.length = 0;
 			this.setButtonImage($menuButton, false);
 			await this.handleApply(this.columnDef);
 		});
 
-		this.cancelButton = this.createButton(buttonGroupContainer, 'filter-cancel-button', localize('headerFilter.cancel', "Cancel"), { secondary: true });
+		this.cancelButton = this.createButton(buttonGroupContainer, 'filter-cancel-button', localize('headerFilter.cancel', "Cancel"), { secondary: true, ...this.options.buttonStyles });
 		this.cancelButton.onDidClick(() => {
 			this.hideMenu();
 		});
@@ -441,15 +448,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private applyStyles() {
 		if (this.filterStyles) {
-			this.okButton?.style(this.filterStyles);
-			this.cancelButton?.style(this.filterStyles);
-			this.clearButton?.style(this.filterStyles);
-			this.sortAscButton?.style(this.filterStyles);
-			this.sortDescButton?.style(this.filterStyles);
-			this.searchInputBox?.style(this.filterStyles);
-			this.countBadge?.style(this.filterStyles);
-			this.visibleCountBadge?.style(this.filterStyles);
-			this.list?.style(this.filterStyles);
+			// {{SQL CARBON TODO}} - apply styles
+			// this.okButton?.style(this.filterStyles);
+			// this.cancelButton?.style(this.filterStyles);
+			// this.clearButton?.style(this.filterStyles);
+			// this.sortAscButton?.style(this.filterStyles);
+			// this.sortDescButton?.style(this.filterStyles);
+			// this.searchInputBox?.style(this.filterStyles);
+			// this.countBadge?.style(this.filterStyles);
+			// this.visibleCountBadge?.style(this.filterStyles);
+			// this.list?.style(this.filterStyles);
 		}
 	}
 

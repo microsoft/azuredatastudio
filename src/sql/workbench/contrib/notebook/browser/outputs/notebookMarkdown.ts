@@ -109,7 +109,7 @@ export class NotebookMarkdownRenderer {
 					uri.scheme === Schemas.data ||
 					uri.scheme === Schemas.attachment ||
 					uri.scheme === Schemas.vscodeFileResource)) {
-					uri = FileAccess.asBrowserUri(URI.file(href));
+					uri = FileAccess.uriToBrowserUri(URI.file(href));
 				}
 				attributes.push(`src="${uri.toString(true)}"`);
 			}

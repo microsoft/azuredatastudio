@@ -4,56 +4,72 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IContextMenuProvider } from 'vs/base/browser/contextmenu';
-import { addDisposableListener, EventHelper, EventType, IFocusTracker, removeTabIndexAndUpdateFocus, reset, trackFocus } from 'vs/base/browser/dom'; // {{SQL CARBON EDIT}} Add removeTabIndexAndUpdateFocus
+import { addDisposableListener, EventHelper, EventType, IFocusTracker, removeTabIndexAndUpdateFocus, reset, trackFocus } from 'vs/base/browser/dom';
+import { sanitize } from 'vs/base/browser/dompurify/dompurify';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { EventType as TouchEventType, Gesture } from 'vs/base/browser/touch';
+import { renderMarkdown, renderStringAsPlaintext } from 'vs/base/browser/markdownRenderer';
+import { Gesture, EventType as TouchEventType } from 'vs/base/browser/touch';
 import { renderLabelWithIcons } from 'vs/base/browser/ui/iconLabel/iconLabels';
 import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
-import { Codicon, CSSIcon } from 'vs/base/common/codicons';
+import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
-import { Emitter, Event as BaseEvent } from 'vs/base/common/event';
+import { Event as BaseEvent, Emitter } from 'vs/base/common/event';
+import { IMarkdownString, isMarkdownString, markdownStringEqual } from 'vs/base/common/htmlContent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { mixin } from 'vs/base/common/objects';
-import { localize } from 'vs/nls';
+import { ThemeIcon } from 'vs/base/common/themables';
 import 'vs/css!./button';
+import { localize } from 'vs/nls';
 
-export interface IButtonOptions extends IButtonStyles {
+export interface IButtonOptions extends Partial<IButtonStyles> {
 	readonly title?: boolean | string;
 	readonly supportIcons?: boolean;
+	readonly supportShortLabel?: boolean;
 	readonly secondary?: boolean;
 }
 
 export interface IButtonStyles {
-	buttonBackground?: Color;
-	buttonHoverBackground?: Color;
-	buttonForeground?: Color;
-	buttonSeparator?: Color;
-	buttonSecondaryBackground?: Color;
-	buttonSecondaryHoverBackground?: Color;
-	buttonSecondaryForeground?: Color;
-	buttonBorder?: Color;
-	// {{SQL CARBON EDIT}}
-	buttonSecondaryBorder?: Color;
-	buttonDisabledBackground?: Color;
-	buttonDisabledForeground?: Color;
-	buttonDisabledBorder?: Color;
+	readonly buttonBackground: string | undefined;
+	readonly buttonHoverBackground: string | undefined;
+	readonly buttonForeground: string | undefined;
+	readonly buttonSeparator: string | undefined;
+	readonly buttonSecondaryBackground: string | undefined;
+	readonly buttonSecondaryHoverBackground: string | undefined;
+	readonly buttonSecondaryForeground: string | undefined;
+	readonly buttonBorder: string | undefined;
+	// {{SQL CARBON EDIT}} - Start
+	readonly buttonSecondaryBorder: string | undefined;
+	readonly buttonDisabledBackground: string | undefined;
+	readonly buttonDisabledForeground: string | undefined;
+	readonly buttonDisabledBorder: string | undefined;
+	// {{SQL CARBON EDIT}} - End
 }
 
-const defaultOptions: IButtonStyles = {
-	buttonBackground: Color.fromHex('#0E639C'),
-	buttonHoverBackground: Color.fromHex('#006BB3'),
-	buttonSeparator: Color.white,
-	buttonForeground: Color.white
+export const unthemedButtonStyles: IButtonStyles = {
+	buttonBackground: '#0E639C',
+	buttonHoverBackground: '#006BB3',
+	buttonSeparator: Color.white.toString(),
+	buttonForeground: Color.white.toString(),
+	buttonBorder: undefined,
+	buttonSecondaryBackground: undefined,
+	buttonSecondaryForeground: undefined,
+	buttonSecondaryHoverBackground: undefined,
+	// {{SQL CARBON EDIT}} - Start
+	buttonSecondaryBorder: undefined,
+	buttonDisabledBackground: undefined,
+	buttonDisabledForeground: undefined,
+	buttonDisabledBorder: undefined
+	// {{SQL CARBON EDIT}} - End
 };
 
 export interface IButton extends IDisposable {
 	readonly element: HTMLElement;
 	readonly onDidClick: BaseEvent<Event | undefined>;
-	label: string;
-	icon: CSSIcon;
-	enabled: boolean;
-	style(styles: IButtonStyles): void;
+
+	set label(value: string | IMarkdownString);
+	set icon(value: ThemeIcon | string); // {{SQL CARBON EDIT}} - add string to the value type.
+	set enabled(value: boolean);
+
 	focus(): void;
 	hasFocus(): boolean;
 }
@@ -64,55 +80,47 @@ export interface IButtonWithDescription extends IButton {
 
 export class Button extends Disposable implements IButton {
 
-	protected _element: HTMLElement;
 	protected options: IButtonOptions;
-
-	private buttonBackground: Color | undefined;
-	private buttonHoverBackground: Color | undefined;
-	private buttonForeground: Color | undefined;
-	private buttonSecondaryBackground: Color | undefined;
-	private buttonSecondaryHoverBackground: Color | undefined;
-	private buttonSecondaryForeground: Color | undefined;
-	private buttonBorder: Color | undefined;
-	// {{SQL CARBON EDIT}}
-	private buttonSecondaryBorder: Color | undefined;
-	private buttonDisabledBackground: Color | undefined;
-	private buttonDisabledForeground: Color | undefined;
-	private buttonDisabledBorder: Color | undefined;
+	protected _element: HTMLElement;
+	protected _label: string | IMarkdownString = '';
+	protected _labelElement: HTMLElement | undefined;
+	protected _labelShortElement: HTMLElement | undefined;
+	// {{SQL CARBON EDIT}} - Start
 	private hasIcon: boolean = false;
-	// {{SQL CARBON EDIT}} - END
+	// {{SQL CARBON EDIT}} - End
 
 	private _onDidClick = this._register(new Emitter<Event>());
 	get onDidClick(): BaseEvent<Event> { return this._onDidClick.event; }
 
 	private focusTracker: IFocusTracker;
 
-	constructor(container: HTMLElement, options?: IButtonOptions) {
+	constructor(container: HTMLElement, options: IButtonOptions) {
 		super();
 
-		this.options = options || Object.create(null);
-		mixin(this.options, defaultOptions, false);
-
-		this.buttonForeground = this.options.buttonForeground;
-		this.buttonBackground = this.options.buttonBackground;
-		this.buttonHoverBackground = this.options.buttonHoverBackground;
-
-		this.buttonSecondaryForeground = this.options.buttonSecondaryForeground;
-		this.buttonSecondaryBackground = this.options.buttonSecondaryBackground;
-		this.buttonSecondaryHoverBackground = this.options.buttonSecondaryHoverBackground;
-
-		this.buttonBorder = this.options.buttonBorder;
-		// {{SQL CARBON EDIT}}
-		this.buttonSecondaryBorder = this.options.buttonSecondaryBorder;
-		this.buttonDisabledBackground = this.options.buttonDisabledBackground;
-		this.buttonDisabledForeground = this.options.buttonDisabledForeground;
-		this.buttonDisabledBorder = this.options.buttonDisabledBorder;
-
+		this.options = options;
 
 		this._element = document.createElement('a');
 		this._element.classList.add('monaco-button');
 		this._element.tabIndex = 0;
 		this._element.setAttribute('role', 'button');
+
+		const background = options.secondary ? options.buttonSecondaryBackground : options.buttonBackground;
+		const foreground = options.secondary ? options.buttonSecondaryForeground : options.buttonForeground;
+
+		this._element.style.color = foreground || '';
+		this._element.style.backgroundColor = background || '';
+
+		if (options.supportShortLabel) {
+			this._labelShortElement = document.createElement('div');
+			this._labelShortElement.classList.add('monaco-button-label-short');
+			this._element.appendChild(this._labelShortElement);
+
+			this._labelElement = document.createElement('div');
+			this._labelElement.classList.add('monaco-button-label');
+			this._element.appendChild(this._labelElement);
+
+			this._element.classList.add('monaco-text-button-with-short-label');
+		}
 
 		container.appendChild(this._element);
 
@@ -147,148 +155,176 @@ export class Button extends Disposable implements IButton {
 
 		this._register(addDisposableListener(this._element, EventType.MOUSE_OVER, e => {
 			if (!this._element.classList.contains('disabled')) {
-				this.setHoverBackground();
+				this.updateBackground(true);
 			}
 		}));
 
 		this._register(addDisposableListener(this._element, EventType.MOUSE_OUT, e => {
-			this.applyStyles(); // restore standard styles
+			this.updateBackground(false); // restore standard styles
 		}));
 
 		// Also set hover background when button is focused for feedback
 		this.focusTracker = this._register(trackFocus(this._element));
-		this._register(this.focusTracker.onDidFocus(() => { if (this.enabled) { this.setHoverBackground(); } }));
-		this._register(this.focusTracker.onDidBlur(() => { if (this.enabled) { this.applyStyles(); } }));
-
-		this.applyStyles();
+		this._register(this.focusTracker.onDidFocus(() => { if (this.enabled) { this.updateBackground(true); } }));
+		this._register(this.focusTracker.onDidBlur(() => { if (this.enabled) { this.updateBackground(false); } }));
+		// {{SQL CARBON EDIT}} - Start
+		this.updateStyles();
+		// {{SQL CARBON EDIT}} - End
 	}
 
-	protected setHoverBackground(): void { // {{SQL CARBON EDIT}} - mark as protected
-		// {{SQL CARBON EDIT}} - skip if this is an icon button
-		if (this.hasIcon) {
+	private getContentElements(content: string): HTMLElement[] {
+		const elements: HTMLSpanElement[] = [];
+		for (let segment of renderLabelWithIcons(content)) {
+			if (typeof (segment) === 'string') {
+				segment = segment.trim();
+
+				// Ignore empty segment
+				if (segment === '') {
+					continue;
+				}
+
+				// Convert string segments to <span> nodes
+				const node = document.createElement('span');
+				node.textContent = segment;
+				elements.push(node);
+			} else {
+				elements.push(segment);
+			}
+		}
+
+		return elements;
+	}
+
+	// {{ SQL CARBON EDIT}} - Mark as protected
+	protected updateBackground(hover: boolean): void {
+		// // {{SQL CARBON EDIT}} - Start
+		if (!this.enabled || this.hasIcon) {
 			return;
 		}
-		let hoverBackground;
+		// {{SQL CARBON EDIT}} - End
+		let background;
 		if (this.options.secondary) {
-			hoverBackground = this.buttonSecondaryHoverBackground ? this.buttonSecondaryHoverBackground.toString() : null;
+			background = hover ? this.options.buttonSecondaryHoverBackground : this.options.buttonSecondaryBackground;
 		} else {
-			hoverBackground = this.buttonHoverBackground ? this.buttonHoverBackground.toString() : null;
+			background = hover ? this.options.buttonHoverBackground : this.options.buttonBackground;
 		}
-		if (hoverBackground) {
-			this._element.style.backgroundColor = hoverBackground;
-		}
-	}
-
-	style(styles: IButtonStyles): void {
-		this.buttonForeground = styles.buttonForeground;
-		this.buttonBackground = styles.buttonBackground;
-		this.buttonHoverBackground = styles.buttonHoverBackground;
-		this.buttonSecondaryForeground = styles.buttonSecondaryForeground;
-		this.buttonSecondaryBackground = styles.buttonSecondaryBackground;
-		this.buttonSecondaryHoverBackground = styles.buttonSecondaryHoverBackground;
-		this.buttonBorder = styles.buttonBorder;
-
-		// {{SQL CARBON EDIT}}
-		this.buttonSecondaryBorder = styles.buttonSecondaryBorder;
-		this.buttonDisabledBackground = styles.buttonDisabledBackground;
-		this.buttonDisabledForeground = styles.buttonDisabledForeground;
-		this.buttonDisabledBorder = styles.buttonDisabledBorder;
-
-		this.applyStyles();
-	}
-
-	/**
-	// {{SQL CARBON EDIT}} -- removed 'private' access modifier @todo anthonydresser 4/12/19 things needs investigation whether we need this
-	applyStyles(): void {
-		if (this._element) {
-			let background, foreground;
-			if (this.options.secondary) {
-				foreground = this.buttonSecondaryForeground ? this.buttonSecondaryForeground.toString() : '';
-				background = this.buttonSecondaryBackground ? this.buttonSecondaryBackground.toString() : '';
-			} else {
-				foreground = this.buttonForeground ? this.buttonForeground.toString() : '';
-				background = this.buttonBackground ? this.buttonBackground.toString() : '';
-			}
-
-			const border = this.buttonBorder ? this.buttonBorder.toString() : '';
-
-			this._element.style.color = foreground;
+		if (background) {
 			this._element.style.backgroundColor = background;
-
-			this._element.style.borderWidth = border ? '1px' : '';
-			this._element.style.borderStyle = border ? 'solid' : '';
-			this._element.style.borderColor = border;
 		}
 	}
-	*/
 
-	// {{SQL CARBON EDIT}} - custom applyStyles
-	applyStyles(): void {
-		if (this._element) {
-			let background, foreground, border, fontWeight, fontSize;
-			if (this.hasIcon) {
-				background = border = 'transparent';
-				foreground = this.buttonSecondaryForeground;
-				fontWeight = fontSize = 'inherit';
-			} else {
-				if (this.enabled) {
-					if (this.options.secondary) {
-						foreground = this.buttonSecondaryForeground ? this.buttonSecondaryForeground.toString() : '';
-						background = this.buttonSecondaryBackground ? this.buttonSecondaryBackground.toString() : '';
-						border = this.buttonSecondaryBorder ? this.buttonSecondaryBorder.toString() : '';
-					} else {
-						foreground = this.buttonForeground ? this.buttonForeground.toString() : '';
-						background = this.buttonBackground ? this.buttonBackground.toString() : '';
-						border = this.buttonBorder ? this.buttonBorder.toString() : '';
-					}
+	// {{SQL CARBON EDIT}} - Start
+	protected updateStyles(): void {
+		let background, foreground, border, fontWeight, fontSize: string;
+		if (this.hasIcon) {
+			background = border = 'transparent';
+			foreground = this.options.buttonSecondaryForeground;
+			fontWeight = fontSize = 'inherit';
+		} else {
+			if (this.enabled) {
+				if (this.options.secondary) {
+					foreground = this.options.buttonSecondaryForeground;
+					background = this.options.buttonSecondaryBackground;
+					border = this.options.buttonSecondaryBorder;
+				} else {
+					foreground = this.options.buttonForeground;
+					background = this.options.buttonBackground;
+					border = this.options.buttonBorder;
 				}
-				else {
-					foreground = this.buttonDisabledForeground;
-					background = this.buttonDisabledBackground;
-					border = this.buttonDisabledBorder;
-				}
-				fontWeight = '600';
-				fontSize = '12px';
 			}
-
-			this._element.style.color = foreground;
-			this._element.style.backgroundColor = background;
-			this._element.style.borderWidth = border ? '1px' : '';
-			this._element.style.borderStyle = border ? 'solid' : '';
-			this._element.style.borderColor = border;
-			this._element.style.opacity = this.hasIcon ? '' : '1';
-			this._element.style.fontWeight = fontWeight;
-			this._element.style.fontSize = fontSize;
-			this._element.style.borderRadius = '2px';
+			else {
+				foreground = this.options.buttonDisabledForeground;
+				background = this.options.buttonDisabledBackground;
+				border = this.options.buttonDisabledBorder;
+			}
+			fontWeight = '600';
+			fontSize = '12px';
 		}
+		this._element.style.color = foreground || '';
+		this._element.style.backgroundColor = background || '';
+		this._element.style.borderWidth = border ? '1px' : '';
+		this._element.style.borderStyle = border ? 'solid' : '';
+		this._element.style.borderColor = border || '';
+		this._element.style.opacity = this.hasIcon ? '' : '1';
+		this._element.style.fontWeight = fontWeight;
+		this._element.style.fontSize = fontSize;
+		this._element.style.borderRadius = '2px';
 	}
-	// {{SQL CARBON EDIT}} - end custom applyStyles
+	// {{SQL CARBON EDIT}} - End
 
 	get element(): HTMLElement {
 		return this._element;
 	}
 
-	set label(value: string) {
-		this._element.classList.add('monaco-text-button');
-		if (this.options.supportIcons) {
-			reset(this._element, ...renderLabelWithIcons(value));
-		} else {
-			this._element.textContent = value;
+	set label(value: string | IMarkdownString) {
+		if (this._label === value) {
+			return;
 		}
-		this._element.setAttribute('aria-label', value); // {{SQL CARBON EDIT}}
+
+		if (isMarkdownString(this._label) && isMarkdownString(value) && markdownStringEqual(this._label, value)) {
+			return;
+		}
+
+		this._element.classList.add('monaco-text-button');
+		const labelElement = this.options.supportShortLabel ? this._labelElement! : this._element;
+
+		if (isMarkdownString(value)) {
+			const rendered = renderMarkdown(value, { inline: true });
+			rendered.dispose();
+
+			// Don't include outer `<p>`
+			const root = rendered.element.querySelector('p')?.innerHTML;
+			if (root) {
+				// Only allow a very limited set of inline html tags
+				const sanitized = sanitize(root, { ADD_TAGS: ['b', 'i', 'u', 'code', 'span'], ALLOWED_ATTR: ['class'], RETURN_TRUSTED_TYPE: true });
+				labelElement.innerHTML = sanitized as unknown as string;
+			} else {
+				reset(labelElement);
+			}
+		} else {
+			if (this.options.supportIcons) {
+				reset(labelElement, ...this.getContentElements(value));
+			} else {
+				labelElement.textContent = value;
+			}
+		}
+		this._element.setAttribute('aria-label', <any>value); // {{SQL CARBON EDIT}}
 		if (typeof this.options.title === 'string') {
 			this._element.title = this.options.title;
 		} else if (this.options.title) {
-			this._element.title = value;
+			this._element.title = renderStringAsPlaintext(value);
+		}
+
+		this._label = value;
+	}
+
+	get label(): string | IMarkdownString {
+		return this._label;
+	}
+
+	set labelShort(value: string) {
+		if (!this.options.supportShortLabel || !this._labelShortElement) {
+			return;
+		}
+
+		if (this.options.supportIcons) {
+			reset(this._labelShortElement, ...this.getContentElements(value));
+		} else {
+			this._labelShortElement.textContent = value;
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
-	set icon(icon: CSSIcon) {
+	// {{SQL CARBON EDIT}} - accept class name directly
+	set icon(icon: ThemeIcon | string) {
+		if (typeof icon === 'string') {
+			this._element.classList.add(...icon.split(' '));
+		} else {
+			this._element.classList.add(...ThemeIcon.asClassNameArray(icon));
+		}
 		this.hasIcon = icon !== undefined;
-		this._element.classList.add(...icon.id.split(' '));
-		this.applyStyles();
+		this.updateStyles();
 	}
+	// {{SQL CARBON EDIT}} - End
 
 	set enabled(value: boolean) {
 		if (value) {
@@ -300,7 +336,9 @@ export class Button extends Disposable implements IButton {
 			this._element.setAttribute('aria-disabled', String(true));
 			removeTabIndexAndUpdateFocus(this._element); // {{SQL CARBON EDIT}} - remove tabindex when disabled otherwise disabled control is still keyboard focusable.
 		}
-		this.applyStyles(); // {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} - Start
+		this.updateStyles();
+		// {{SQL CARBON EDIT}} - End
 	}
 
 	get enabled() {
@@ -344,7 +382,7 @@ export class ButtonWithDropdown extends Disposable implements IButton {
 
 		this.button = this._register(new Button(this.element, options));
 		this._register(this.button.onDidClick(e => this._onDidClick.fire(e)));
-		this.action = this._register(new Action('primaryAction', this.button.label, undefined, true, async () => this._onDidClick.fire(undefined)));
+		this.action = this._register(new Action('primaryAction', renderStringAsPlaintext(this.button.label), undefined, true, async () => this._onDidClick.fire(undefined)));
 
 		this.separatorContainer = document.createElement('div');
 		this.separatorContainer.classList.add('monaco-button-dropdown-separator');
@@ -352,6 +390,17 @@ export class ButtonWithDropdown extends Disposable implements IButton {
 		this.separator = document.createElement('div');
 		this.separatorContainer.appendChild(this.separator);
 		this.element.appendChild(this.separatorContainer);
+
+		// Separator styles
+		const border = options.buttonBorder;
+		if (border) {
+			this.separatorContainer.style.borderTop = '1px solid ' + border;
+			this.separatorContainer.style.borderBottom = '1px solid ' + border;
+		}
+
+		const buttonBackground = options.secondary ? options.buttonSecondaryBackground : options.buttonBackground;
+		this.separatorContainer.style.backgroundColor = buttonBackground ?? '';
+		this.separator.style.backgroundColor = options.buttonSeparator ?? '';
 
 		this.dropdownButton = this._register(new Button(this.element, { ...options, title: false, supportIcons: true }));
 		this.dropdownButton.element.title = localize("button dropdown more actions", 'More Actions...');
@@ -375,7 +424,7 @@ export class ButtonWithDropdown extends Disposable implements IButton {
 		this.action.label = value;
 	}
 
-	set icon(icon: CSSIcon) {
+	set icon(icon: ThemeIcon) {
 		this.button.icon = icon;
 	}
 
@@ -390,25 +439,6 @@ export class ButtonWithDropdown extends Disposable implements IButton {
 		return this.button.enabled;
 	}
 
-	style(styles: IButtonStyles): void {
-		this.button.style(styles);
-		this.dropdownButton.style(styles);
-
-		// Separator
-		const border = styles.buttonBorder ? styles.buttonBorder.toString() : '';
-
-		this.separatorContainer.style.borderTopWidth = border ? '1px' : '';
-		this.separatorContainer.style.borderTopStyle = border ? 'solid' : '';
-		this.separatorContainer.style.borderTopColor = border;
-
-		this.separatorContainer.style.borderBottomWidth = border ? '1px' : '';
-		this.separatorContainer.style.borderBottomStyle = border ? 'solid' : '';
-		this.separatorContainer.style.borderBottomColor = border;
-
-		this.separatorContainer.style.backgroundColor = styles.buttonBackground?.toString() ?? '';
-		this.separator.style.backgroundColor = styles.buttonSeparator?.toString() ?? '';
-	}
-
 	focus(): void {
 		this.button.focus();
 	}
@@ -418,37 +448,55 @@ export class ButtonWithDropdown extends Disposable implements IButton {
 	}
 }
 
-export class ButtonWithDescription extends Button implements IButtonWithDescription {
-
-	private _labelElement: HTMLElement;
+export class ButtonWithDescription implements IButtonWithDescription {
+	private _button: Button;
+	private _element: HTMLElement;
 	private _descriptionElement: HTMLElement;
 
-	constructor(container: HTMLElement, options?: IButtonOptions) {
-		super(container, options);
-
+	constructor(container: HTMLElement, private readonly options: IButtonOptions) {
+		this._element = document.createElement('div');
 		this._element.classList.add('monaco-description-button');
-
-		this._labelElement = document.createElement('div');
-		this._labelElement.classList.add('monaco-button-label');
-		this._element.appendChild(this._labelElement);
+		this._button = new Button(this._element, options);
 
 		this._descriptionElement = document.createElement('div');
 		this._descriptionElement.classList.add('monaco-button-description');
 		this._element.appendChild(this._descriptionElement);
+
+		container.appendChild(this._element);
 	}
 
-	override set label(value: string) {
-		this._element.classList.add('monaco-text-button');
-		if (this.options.supportIcons) {
-			reset(this._labelElement, ...renderLabelWithIcons(value));
-		} else {
-			this._labelElement.textContent = value;
-		}
-		if (typeof this.options.title === 'string') {
-			this._element.title = this.options.title;
-		} else if (this.options.title) {
-			this._element.title = value;
-		}
+	get onDidClick(): BaseEvent<Event | undefined> {
+		return this._button.onDidClick;
+	}
+
+	get element(): HTMLElement {
+		return this._element;
+	}
+
+	set label(value: string) {
+		this._button.label = value;
+	}
+
+	set icon(icon: ThemeIcon) {
+		this._button.icon = icon;
+	}
+
+	get enabled(): boolean {
+		return this._button.enabled;
+	}
+
+	set enabled(enabled: boolean) {
+		this._button.enabled = enabled;
+	}
+
+	focus(): void {
+		this._button.focus();
+	}
+	hasFocus(): boolean {
+		return this._button.hasFocus();
+	}
+	dispose(): void {
+		this._button.dispose();
 	}
 
 	set description(value: string) {
@@ -472,13 +520,13 @@ export class ButtonBar extends Disposable {
 		return this._buttons;
 	}
 
-	addButton(options?: IButtonOptions): IButton {
+	addButton(options: IButtonOptions): IButton {
 		const button = this._register(new Button(this.container, options));
 		this.pushButton(button);
 		return button;
 	}
 
-	addButtonWithDescription(options?: IButtonOptions): IButtonWithDescription {
+	addButtonWithDescription(options: IButtonOptions): IButtonWithDescription {
 		const button = this._register(new ButtonWithDescription(this.container, options));
 		this.pushButton(button);
 		return button;
@@ -514,7 +562,5 @@ export class ButtonBar extends Disposable {
 			}
 
 		}));
-
 	}
-
 }

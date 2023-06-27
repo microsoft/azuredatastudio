@@ -13,7 +13,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -24,6 +23,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const dialogWidth: string = '500px'; // Width is set manually here as there is no default width for normal dialogs.
 const okText: string = localize('passwordChangeDialog.ok', "OK");
@@ -86,8 +86,6 @@ export class PasswordChangeDialog extends Modal {
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(okText, async () => { await this.handleOkButtonClick(); });
 		this._cancelButton = this.addFooterButton(cancelText, () => { this.handleCancelButtonClick(); }, 'right', true);
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -100,12 +98,18 @@ export class PasswordChangeDialog extends Modal {
 		const contentElement = body.appendChild(DOM.$('.properties-content.components-grid'));
 		contentElement.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = newPasswordText;
 		const passwordInputContainer = contentElement.appendChild(DOM.$(''));
-		this._passwordValueText = new InputBox(passwordInputContainer, this.contextViewService, { type: 'password' });
+		this._passwordValueText = new InputBox(passwordInputContainer, this.contextViewService, {
+			type: 'password',
+			inputBoxStyles: defaultInputBoxStyles
+		});
 		this._register(attachInputBoxStyler(this._passwordValueText, this._themeService));
 
 		contentElement.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = confirmPasswordText;
 		const confirmInputContainer = contentElement.appendChild(DOM.$(''));
-		this._confirmValueText = new InputBox(confirmInputContainer, this.contextViewService, { type: 'password' });
+		this._confirmValueText = new InputBox(confirmInputContainer, this.contextViewService, {
+			type: 'password',
+			inputBoxStyles: defaultInputBoxStyles
+		});
 		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
 	}
 

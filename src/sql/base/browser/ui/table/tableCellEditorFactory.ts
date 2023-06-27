@@ -11,6 +11,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const InverseKeyCodeMap: { [k: string]: number } = Object.fromEntries(Object.entries(EVENT_KEY_CODE_MAP).map(([key, value]) => [value, Number(key)]));
 
@@ -64,7 +65,8 @@ export class TableCellEditorFactory {
 
 			public init(): void {
 				this._input = new InputBox(this._args.container, self._contextViewProvider, {
-					type: inputType
+					type: inputType,
+					inputBoxStyles: defaultInputBoxStyles
 				});
 				self._options.editorStyler(this._input);
 				this._input.element.style.height = '100%';

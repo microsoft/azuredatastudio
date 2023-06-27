@@ -13,12 +13,9 @@ import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensio
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 import { FileNoteBookEditorSerializer, NotebookEditorLanguageAssociation, UntitledNotebookEditorSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookEditorFactory';
-import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
 
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { NewNotebookAction, NewNotebookTask } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { GridOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/gridOutput.component';
 import { PlotlyOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component';
@@ -71,6 +68,7 @@ import { ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConne
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { Action2, MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -88,18 +86,8 @@ Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(NotebookThemingContribution, LifecyclePhase.Restored);
 
 // Global Actions
-const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionsExtensions.WorkbenchActions);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		NewNotebookAction,
-		NewNotebookAction.ID,
-		NewNotebookAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KeyN },
-
-	),
-	NewNotebookAction.LABEL
-);
+registerAction2(NewNotebookAction);
 
 // New Notebook
 new NewNotebookTask().registerTask();
@@ -154,7 +142,7 @@ CommandsRegistry.registerCommand({
 	id: OE_NEW_NOTEBOOK_COMMAND_ID,
 	handler: (accessor, actionContext: ObjectExplorerActionsContext) => {
 		const instantiationService = accessor.get(IInstantiationService);
-		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(actionContext);
+		return instantiationService.createInstance(NewNotebookAction).run(accessor, actionContext);
 	}
 });
 
@@ -172,7 +160,7 @@ const ExplorerNotebookActionID = 'explorer.notebook';
 CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
 	const instantiationService = accessor.get(IInstantiationService);
 	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
-	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
+	instantiationService.createInstance(NewNotebookAction).run(accessor, { connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -190,7 +178,7 @@ const toggleTabFocusAction = new ToggleTabFocusModeAction();
 CommandsRegistry.registerCommand({
 	id: TOGGLE_TAB_FOCUS_COMMAND_ID,
 	handler: (accessor) => {
-		toggleTabFocusAction.run(accessor, undefined);
+		toggleTabFocusAction.run(accessor);
 	}
 });
 
@@ -290,7 +278,7 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
-		title: toggleTabFocusAction.label,
+		title: ToggleTabFocusModeAction.LABEL,
 	},
 	when: ContextKeyExpr.and(ActiveEditorContext.isEqualTo(NotebookEditor.ID))
 });
