@@ -6,20 +6,20 @@
 
 import { ResourceServiceBase } from '../../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
-import { cosmosMongoDbQuery } from '../../queryStringConstants';
+import { cosmosPostgresDbQuery } from '../../queryStringConstants';
 import { DbServerGraphData } from '../../../interfaces';
-import { COSMOSDB_MONGO_PROVIDER_ID } from '../../../../constants';
+import { COSMOSDB_POSTGRES_PROVIDER_ID } from '../../../../constants';
 
-export interface AzureResourceMongoDatabaseServer extends azureResource.AzureResourceDatabaseServer {
+export interface AzureResourcePostgresDatabaseServer extends azureResource.AzureResourceDatabaseServer {
 	isServer: boolean;
 }
 
-export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData> {
-	public override queryFilter: string = cosmosMongoDbQuery;
+export class CosmosDbPostgresService extends ResourceServiceBase<DbServerGraphData> {
+	public override queryFilter: string = cosmosPostgresDbQuery;
 
-	public convertServerResource(resource: DbServerGraphData): AzureResourceMongoDatabaseServer | undefined {
+	public convertServerResource(resource: DbServerGraphData): AzureResourcePostgresDatabaseServer | undefined {
 		let host = resource.name;
-		const isServer = resource.type === azureResource.AzureResourceType.cosmosDbMongoCluster;
+		const isServer = resource.type === azureResource.AzureResourceType.cosmosDbPostgresCluster;
 		if (isServer) {
 			const url = new URL(resource.properties.connectionString);
 			host = url.hostname;
@@ -27,7 +27,7 @@ export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData>
 		return {
 			id: resource.id,
 			name: resource.name,
-			provider: COSMOSDB_MONGO_PROVIDER_ID,
+			provider: COSMOSDB_POSTGRES_PROVIDER_ID,
 			isServer: isServer,
 			fullName: host,
 			loginName: resource.properties.administratorLogin,
