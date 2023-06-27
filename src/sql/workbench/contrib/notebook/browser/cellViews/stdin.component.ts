@@ -24,6 +24,7 @@ import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
 import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const STDIN_SELECTOR: string = 'stdin-component';
 @Component({
@@ -52,7 +53,8 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 	ngAfterViewInit(): void {
 		let inputOptions: IInputOptions = {
 			placeholder: '',
-			ariaLabel: this.prompt
+			ariaLabel: this.prompt,
+			inputBoxStyles: defaultInputBoxStyles
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		if (this.password) {

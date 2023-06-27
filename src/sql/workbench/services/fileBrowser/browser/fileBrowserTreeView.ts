@@ -13,7 +13,7 @@ import nls = require('vs/nls');
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'sql/base/parts/tree/browser/treeDefaults';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';

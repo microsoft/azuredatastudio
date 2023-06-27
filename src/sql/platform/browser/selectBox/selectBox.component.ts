@@ -13,7 +13,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 @Component({

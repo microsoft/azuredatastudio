@@ -8,7 +8,7 @@ import * as errors from 'vs/base/common/errors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { ISelectionEvent, ITree } from 'sql/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
@@ -50,6 +50,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { FilterDialog } from 'sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -186,9 +187,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 		if (!this._connectionManagementService.hasRegisteredServers()) {
 			this._buttonSection = append(container, $('.button-section'));
-			const connectButton = new Button(this._buttonSection);
+			const connectButton = new Button(this._buttonSection, defaultButtonStyles);
 			connectButton.label = localize('serverTree.newConnection', "New Connection");
-			this._register(attachButtonStyler(connectButton, this._themeService));
 			this._register(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog(undefined, {
 					showDashboard: true,

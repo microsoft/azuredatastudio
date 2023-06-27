@@ -10,7 +10,8 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStatusbarEntry, ShowTooltipCommand } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
-import { IThemeService, ThemeColor } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ThemeColor } from 'vs/base/common/themables';
 import { isThemeColor } from 'vs/editor/common/editorCommon';
 import { addDisposableListener, EventType, hide, show, append, EventHelper } from 'vs/base/browser/dom';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -66,6 +67,7 @@ export class StatusbarEntryItem extends Disposable {
 		this.labelContainer = document.createElement('a');
 		this.labelContainer.tabIndex = -1; // allows screen readers to read title, but still prevents tab focus.
 		this.labelContainer.setAttribute('role', 'button');
+		this.labelContainer.className = 'statusbar-item-label';
 		this._register(Gesture.addTarget(this.labelContainer)); // enable touch
 
 		// Label (with support for progress)
@@ -248,7 +250,7 @@ class StatusBarCodiconLabel extends SimpleIconLabel {
 	private progressCodicon = renderIcon(syncing);
 
 	private currentText = '';
-	private currentShowProgress = false;
+	private currentShowProgress: boolean | 'syncing' | 'loading' = false;
 
 	constructor(
 		private readonly container: HTMLElement
@@ -258,7 +260,7 @@ class StatusBarCodiconLabel extends SimpleIconLabel {
 
 	set showProgress(showProgress: boolean | 'syncing' | 'loading') {
 		if (this.currentShowProgress !== showProgress) {
-			this.currentShowProgress = !!showProgress;
+			this.currentShowProgress = showProgress;
 			this.progressCodicon = renderIcon(showProgress === 'loading' ? spinningLoading : syncing);
 			this.text = this.currentText;
 		}

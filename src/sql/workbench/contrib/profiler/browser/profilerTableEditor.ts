@@ -82,7 +82,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._showStatusBarItem = true;
 	}
 
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets';

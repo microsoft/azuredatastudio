@@ -19,12 +19,11 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IThemable } from 'vs/base/common/styler';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { localize } from 'vs/nls';
 import { getFocusableElements } from 'sql/base/browser/dom';
 
-export class DialogPane extends Disposable implements IThemable {
+export class DialogPane extends Disposable {
 	private _tabbedPanel: TabbedPanel | undefined;
 	private _moduleRefs: NgModuleRef<{}>[] = [];
 

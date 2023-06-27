@@ -605,58 +605,58 @@ export class NodeStub implements Node {
 	replaceChild<T extends Node>(newChild: Node, oldChild: T): T {
 		throw new Error('Method not implemented.');
 	}
-	get ATTRIBUTE_NODE(): number {
+	get ATTRIBUTE_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get CDATA_SECTION_NODE(): number {
+	get CDATA_SECTION_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get COMMENT_NODE(): number {
+	get COMMENT_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_FRAGMENT_NODE(): number {
+	get DOCUMENT_FRAGMENT_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_NODE(): number {
+	get DOCUMENT_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_POSITION_CONTAINED_BY(): number {
+	get DOCUMENT_POSITION_CONTAINED_BY(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_POSITION_CONTAINS(): number {
+	get DOCUMENT_POSITION_CONTAINS(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_POSITION_DISCONNECTED(): number {
+	get DOCUMENT_POSITION_DISCONNECTED(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_POSITION_FOLLOWING(): number {
+	get DOCUMENT_POSITION_FOLLOWING(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC(): number {
+	get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_POSITION_PRECEDING(): number {
+	get DOCUMENT_POSITION_PRECEDING(): any {
 		throw new Error('Method not implemented.');
 	}
-	get DOCUMENT_TYPE_NODE(): number {
+	get DOCUMENT_TYPE_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get ELEMENT_NODE(): number {
+	get ELEMENT_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get ENTITY_NODE(): number {
+	get ENTITY_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get ENTITY_REFERENCE_NODE(): number {
+	get ENTITY_REFERENCE_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get NOTATION_NODE(): number {
+	get NOTATION_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get PROCESSING_INSTRUCTION_NODE(): number {
+	get PROCESSING_INSTRUCTION_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
-	get TEXT_NODE(): number {
+	get TEXT_NODE(): any {
 		throw new Error('Method not implemented.');
 	}
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
