@@ -81,8 +81,6 @@ const CLEAR_COLUMN_ID = 'clear';
 
 export class FilterDialog extends Modal {
 
-	private _okButton?: Button;
-
 	private filterTable: Table<Slick.SlickData>;
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _onStyleChangeEventEmitter = new Emitter<void>();
