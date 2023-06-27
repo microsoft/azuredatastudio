@@ -867,7 +867,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			TelemetryViews.TdeConfigurationDialog,
 			tdeTelemetryAction,
 			{
-				...getTelemetryProps(this.migrationStateModel)
+				...getTelemetryProps(this.migrationStateModel),
+				'numberOfDbsWithTde': this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
 			},
 			{}
 		);

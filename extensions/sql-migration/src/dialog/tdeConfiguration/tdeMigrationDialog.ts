@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
-import * as utils from '../../api/utils';
 import { logError, TelemetryAction, TelemetryViews, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
 import { EOL } from 'os';
 import { MigrationStateModel, OperationResult } from '../../models/stateMachine';
@@ -323,7 +322,8 @@ export class TdeMigrationDialog {
 					TelemetryViews.TdeMigrationDialog,
 					TelemetryAction.TdeMigrationSuccess,
 					{
-						...getTelemetryProps(this._model)
+						...getTelemetryProps(this._model),
+						'numberOfDbsWithTde': this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
 					},
 					{}
 				);
@@ -336,7 +336,7 @@ export class TdeMigrationDialog {
 					TelemetryAction.TdeMigrationFailures,
 					{
 						...getTelemetryProps(this._model),
-						'runningAsAdmin': (await utils.isAdmin()).toString()
+						'numberOfDbsWithTde': this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
 					},
 					{}
 				);
