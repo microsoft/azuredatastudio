@@ -134,6 +134,7 @@ export class FilterDialog extends Modal {
 	public open(): void {
 		this.render();
 		this.show();
+		this.filterTable.focus();
 	}
 
 	public override render() {
