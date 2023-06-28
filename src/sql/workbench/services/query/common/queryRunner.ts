@@ -465,15 +465,13 @@ export default class QueryRunner extends Disposable {
 	 * @param selections The selection range to copy
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
-	 * @param removeNewLines Whether to remove line breaks from values.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, includeHeaders?: boolean): Promise<void> {
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		await this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
-			removeNewLines: removeNewLines,
 			includeHeaders: includeHeaders,
 			selections: selections.map(selection => {
 				return {
@@ -592,7 +590,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		executeCopyWithNotification(this._notificationService, selections, async () => {
-			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldIncludeHeaders(includeHeaders));
+			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
 		});
 	}
 
@@ -613,6 +611,9 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 	getColumnHeaders(range: Slick.Range): string[] | undefined {
 		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
@@ -646,6 +647,12 @@ export function shouldRemoveNewLines(configurationService: IConfigurationService
 	// get config copyRemoveNewLine option from vscode config
 	let removeNewLines = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyRemoveNewLine;
 	return !!removeNewLines;
+}
+
+export function shouldSkipNewLineAfterTrailingLineBreak(configurationService: IConfigurationService): boolean {
+	// get config skipNewLineAfterTrailingLineBreak option from vscode config
+	let skipNewLineAfterTrailingLineBreak = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.skipNewLineAfterTrailingLineBreak;
+	return !!skipNewLineAfterTrailingLineBreak;
 }
 
 function isRangeOrUndefined(input: string | IRange | undefined): input is IRange | undefined {
