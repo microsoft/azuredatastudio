@@ -322,7 +322,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeRecoverySection(): void {
 		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
 			this.objectInfo.pageVerify = newValue;
-		}, Object.values(this.viewInfo.pageVerifyOptions), this.objectInfo.pageVerify, true);
+		}, this.viewInfo.pageVerifyOptions, this.objectInfo.pageVerify, true);
 		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
 
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
@@ -361,7 +361,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
 			this.restrictAccessInput = this.createDropdown(localizedConstants.UserAccessText, async (newValue) => {
 				this.objectInfo.userAccess = newValue;
-			}, Object.values(this.viewInfo.userAccessOptions), this.objectInfo.userAccess, true);
+			}, this.viewInfo.userAccessOptions, this.objectInfo.userAccess, true);
 			containers.push(this.createLabelInputContainer(localizedConstants.UserAccessText, this.restrictAccessInput));
 		}
 

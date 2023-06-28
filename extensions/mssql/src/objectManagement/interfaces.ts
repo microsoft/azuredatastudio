@@ -476,8 +476,8 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureServiceLevelObjectives: AzureEditionDetails[];
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
-	pageVerifyOptions: { [key: string]: string };
-	userAccessOptions: { [key: string]: string };
+	pageVerifyOptions: string[];
+	userAccessOptions: string[];
 }
 
 export interface AzureEditionDetails {
