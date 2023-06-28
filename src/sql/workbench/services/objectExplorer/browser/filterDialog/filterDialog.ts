@@ -67,7 +67,7 @@ const CLEAR_COLUMN_HEADER = localize('objectExplorer.clearColumnHeader', "Clear"
 const TRUE_SELECT_BOX = localize('objectExplorer.trueSelectBox', "True");
 const FALSE_SELECT_BOX = localize('objectExplorer.falseSelectBox', "False");
 
-function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Node Path: {0}", nodepath) }
+function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Path: {0}", nodepath) }
 
 const PROPERTY_COLUMN_ID = 'property';
 const OPERATOR_COLUMN_ID = 'operator';
