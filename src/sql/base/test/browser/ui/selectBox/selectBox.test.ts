@@ -50,7 +50,7 @@ suite('Select Box tests', () => {
 
 	test('values get auto populated', () => {
 		const newOptions = deepClone(options).map(s => { return { text: s.text, value: s.text }; });
-		const sb = new SelectBox(newOptions, undefined!, undefined!, undefined!, undefined!);
+		const sb = new SelectBox(newOptions, undefined!, <ISelectBoxStyles>{}, undefined!, undefined!, undefined!);
 
 		assert(equals(sb.values, newOptions.map(s => s.text)));
 	});
