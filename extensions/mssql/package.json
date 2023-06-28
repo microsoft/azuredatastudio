@@ -568,12 +568,7 @@
         {
           "command": "mssql.attachDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
-          "group": "0_query@4"
-        },
-        {
-          "command": "mssql.attachDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
-          "group": "0_query@4"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.enableGroupBySchema",
