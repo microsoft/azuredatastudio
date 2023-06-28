@@ -11,6 +11,8 @@ import { ITerminalCapabilityStore, TerminalCapability } from 'vs/platform/termin
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { writeP } from 'vs/workbench/contrib/terminal/browser/terminalTestHelpers';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';  // {{SQL CARBON EDIT}} - inject telemetry service
+import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils'; // {{SQL CARBON EDIT}} - inject telemetry service
 
 class TestShellIntegrationAddon extends ShellIntegrationAddon {
 	getCommandDetectionMock(terminal: Terminal): sinon.SinonMock {
@@ -34,6 +36,7 @@ suite('ShellIntegrationAddon', () => {
 		xterm = new Terminal({ allowProposedApi: true, cols: 80, rows: 30 });
 		const instantiationService = new TestInstantiationService();
 		instantiationService.stub(ILogService, NullLogService);
+		instantiationService.stub(ITelemetryService, NullTelemetryService); // {{SQL CARBON EDIT}} - inject telemetry service
 		shellIntegrationAddon = instantiationService.createInstance(TestShellIntegrationAddon, '', true);
 		xterm.loadAddon(shellIntegrationAddon);
 		capabilities = shellIntegrationAddon.capabilities;

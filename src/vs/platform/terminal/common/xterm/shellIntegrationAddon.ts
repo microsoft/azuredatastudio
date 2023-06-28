@@ -207,8 +207,8 @@ export class ShellIntegrationAddon extends Disposable implements IShellIntegrati
 
 	constructor(
 		private _nonce: string,
-		private readonly _disableTelemetry: boolean | undefined,
-		private readonly _telemetryService: ITelemetryService | undefined,
+		private readonly _disableTelemetry: boolean,
+		@ITelemetryService private readonly _telemetryService: ITelemetryService, // {{SQL CARBON EDIT}} - inject service to avoid type issue with instantiation service service
 		@ILogService private readonly _logService: ILogService
 	) {
 		super();
