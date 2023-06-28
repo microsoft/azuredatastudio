@@ -57,31 +57,6 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 	return attachStyler(themeService, { ...defaultTableStyles, ...(style || {}) }, widget);
 }
 
-export interface IInfoBoxStyleOverrides {
-	informationBackground: cr.ColorIdentifier,
-	warningBackground: cr.ColorIdentifier,
-	errorBackground: cr.ColorIdentifier,
-	successBackground: cr.ColorIdentifier
-}
-
-export const defaultInfoBoxStyles: IInfoBoxStyleOverrides = {
-	informationBackground: sqlcr.infoBoxInformationBackground,
-	warningBackground: sqlcr.infoBoxWarningBackground,
-	errorBackground: sqlcr.infoBoxErrorBackground,
-	successBackground: sqlcr.infoBoxSuccessBackground
-};
-
-export function attachInfoBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInfoBoxStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultInfoBoxStyles, ...style }, widget);
-}
-
-export interface IInfoButtonStyleOverrides {
-	buttonBackground: cr.ColorIdentifier,
-	buttonForeground: cr.ColorIdentifier,
-	buttonBorder: cr.ColorIdentifier,
-	buttonHoverBackground: cr.ColorIdentifier
-}
-
 export function attachDesignerStyler(widget: any, themeService: IThemeService): IDisposable {
 	function applyStyles(): void {
 		const colorTheme = themeService.getColorTheme();
