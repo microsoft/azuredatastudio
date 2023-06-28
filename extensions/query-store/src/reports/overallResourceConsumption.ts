@@ -11,22 +11,22 @@ import { QueryStoreView } from './queryStoreView';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
-	duration: QueryStoreView;
-	execution: QueryStoreView;
-	cpuTime: QueryStoreView;
-	logicalReads: QueryStoreView;
+	private duration: QueryStoreView;
+	private executionCount: QueryStoreView;
+	private cpuTime: QueryStoreView;
+	private logicalReads: QueryStoreView;
 
 	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), false, extensionContext);
-		this.duration = new QueryStoreView('Duration', 'chartreuse');
-		this.execution = new QueryStoreView('Execution Count', 'coral');
-		this.cpuTime = new QueryStoreView('CPU Time', 'darkturquoise');
-		this.logicalReads = new QueryStoreView('Logical Reads', 'forestgreen');
+		super(constants.overallResourceConsumption, constants.overallResourceConsumptionToolbarLabel(databaseName), /*resizeable*/ false, extensionContext);
+		this.duration = new QueryStoreView(constants.duration, 'chartreuse');
+		this.executionCount = new QueryStoreView(constants.executionCount, 'coral');
+		this.cpuTime = new QueryStoreView(constants.cpuTime, 'darkturquoise');
+		this.logicalReads = new QueryStoreView(constants.logicalReads, 'forestgreen');
 	}
 
 	public override async createViews(view: azdata.ModelView): Promise<azdata.FlexContainer[]> {
 		const durationContainer = await this.duration.createViewContainer(view);
-		const executionCountContainer = await this.execution.createViewContainer(view);
+		const executionCountContainer = await this.executionCount.createViewContainer(view);
 		const cpuTimeContainer = await this.cpuTime.createViewContainer(view);
 		const logicalReadsContainer = await this.logicalReads.createViewContainer(view);
 

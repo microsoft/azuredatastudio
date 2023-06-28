@@ -9,17 +9,16 @@ import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
 
-
 export class TopResourceConsumingQueries extends BaseQueryStoreReport {
-	queries: QueryStoreView;
-	planSummary: QueryStoreView;
-	plan: QueryStoreView;
+	private queries: QueryStoreView;
+	private planSummary: QueryStoreView;
+	private plan: QueryStoreView;
 
 	constructor(extensionContext: vscode.ExtensionContext, databaseName: string) {
-		super(constants.topResourceConsumingQueries, constants.topResourceConsumingQueriesToolbarLabel(databaseName), true, extensionContext);
-		this.queries = new QueryStoreView('Queries', 'chartreuse');
-		this.planSummary = new QueryStoreView('Plan summary for query x', 'coral');
-		this.plan = new QueryStoreView('Plan x', 'darkturquoise');
+		super(constants.topResourceConsumingQueries, constants.topResourceConsumingQueriesToolbarLabel(databaseName), /*resizeable*/ true, extensionContext);
+		this.queries = new QueryStoreView(constants.queries, 'chartreuse');
+		this.planSummary = new QueryStoreView(constants.planSummary('x'), 'coral'); // TODO: replace 'x' with actual query id
+		this.plan = new QueryStoreView(constants.plan('x'), 'darkturquoise');
 	}
 
 	public override async createViews(view: azdata.ModelView): Promise<azdata.FlexContainer[]> {

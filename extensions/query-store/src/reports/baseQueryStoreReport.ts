@@ -21,8 +21,7 @@ export abstract class BaseQueryStoreReport {
 		this.editor.registerContent(async (view) => {
 			this.flexModel = <azdata.FlexContainer>view.modelBuilder.flexContainer().component();
 
-			const toolbar = (await this.createToolbar(view)).component();
-			await toolbar.updateCssStyles({ 'padding': '5px' });
+			const toolbar = await this.createToolbar(view);
 			this.flexModel.addItem(toolbar, { flex: 'none' });
 
 			const views = await this.createViews(view);
@@ -72,8 +71,10 @@ export abstract class BaseQueryStoreReport {
 	 * Creates the toolbar for the overall report with the report title, time range, and configure button
 	 * @param view
 	 */
-	protected async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarBuilder> {
-		const toolBar = <azdata.ToolbarBuilder>view.modelBuilder.toolbarContainer();
+	protected async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
+		const toolBar = <azdata.ToolbarBuilder>view.modelBuilder.toolbarContainer().withProps({
+			CSSStyles: { 'padding': '5px' }
+		});
 
 		const reportTitle = view.modelBuilder.text().withProps({
 			value: this.reportTitle,
@@ -81,8 +82,9 @@ export abstract class BaseQueryStoreReport {
 			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
-		// TODO: get time from configuration
+		// TODO: get time from configuration dialog
 		const timePeriod = view.modelBuilder.text().withProps({
+			// placeholder times
 			value: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
 			title: 'Time period: 5/15/2023 11:58 AM - 5/23/2023 11:58 AM',
 			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
@@ -121,7 +123,7 @@ export abstract class BaseQueryStoreReport {
 			}
 		]);
 
-		return toolBar;
+		return toolBar.component();
 	}
 
 	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;

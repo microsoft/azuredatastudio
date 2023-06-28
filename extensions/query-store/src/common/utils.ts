@@ -7,11 +7,11 @@ import * as azdata from 'azdata';
 
 /**
  * Creates a flex container with the provided component and sets the background color
- * TODO: remove background color after chart components are hooked up
+ * TODO: Remove/redo this helper function after chart components are hooked up, when background color is no longer used
  * @param view
  * @param component
  * @param backgroundColor
- * @returns Flex container containing component
+ * @returns Flex container with the specified background color containing component
  */
 export async function createOneComponentFlexContainer(view: azdata.ModelView, component: azdata.Component, backgroundColor: string): Promise<azdata.FlexContainer> {
 	const flexContainer = view.modelBuilder.flexContainer().component();
@@ -21,7 +21,6 @@ export async function createOneComponentFlexContainer(view: azdata.ModelView, co
 	flexContainer.addItem(component);
 
 	flexContainer.setLayout({
-		flexFlow: 'row',
 		width: '100%',
 		height: '100%'
 	});
@@ -41,11 +40,9 @@ export async function createTwoComponentFlexContainer(view: azdata.ModelView, fi
 	const flexContainer = view.modelBuilder.flexContainer().component();
 
 	if (flexFlow === 'row') {
-		flexContainer.addItem(firstComponent, { CSSStyles: { 'width': '50%' } });
-		flexContainer.addItem(secondComponent, { CSSStyles: { 'width': '50%' } });
+		flexContainer.addItems([firstComponent, secondComponent], { CSSStyles: { 'width': '50%' } });
 	} else {
-		flexContainer.addItem(firstComponent, { CSSStyles: { 'height': '50%' } });
-		flexContainer.addItem(secondComponent, { CSSStyles: { 'height': '50%' } });
+		flexContainer.addItems([firstComponent, secondComponent], { CSSStyles: { 'height': '50%' } });
 	}
 
 	flexContainer.setLayout({

@@ -11,24 +11,23 @@ import { createOneComponentFlexContainer } from '../common/utils';
  */
 export class QueryStoreView {
 	// TODO: add toolbar support
-	component?: azdata.Component; // chart, query plan, text (query text?)
+	// TODO: add support for toggling between chart and table components (could potentially add a child class to support this).
+	public component?: azdata.Component; // chart, query plan, text (component to display whole query text)
 
 	/**
 	 *
 	 * @param title Title of view to display
 	 * @param backgroundColor TODO: remove this after chart components are supported
 	 */
-	constructor(private title: string, private backgroundColor: string) {
-
-	}
+	constructor(private title: string, private backgroundColor: string) { }
 
 	/**
-	 * Creates component and toolbar in a flex container
+	 * Creates component in a container with the background color. Eventually will create the component with a toolbar in a flex container
 	 * @param view
 	 * @returns
 	 */
 	public async createViewContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		// TODO: replace these text components with the actual chart components
+		// TODO: replace these text components with the actual chart/table/query plan components
 		this.component = view.modelBuilder.text().withProps({
 			value: this.title
 		}).component();
