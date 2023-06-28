@@ -10,7 +10,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { CONNECTIONS_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionSource } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
@@ -118,7 +117,6 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		//this._register(attachProgressBarStyler(this.filterProgressBar, this.themeService));
 		this.filterInput.element.style.margin = '5px';
 		this._register(this.filterInput);
-		this._register(attachInputBoxStyler(this.filterInput, this.themeService));
 		this._register(this.filterInput.onDidChange(async () => {
 			await this.applyFilter();
 		}));

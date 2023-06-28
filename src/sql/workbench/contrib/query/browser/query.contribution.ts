@@ -71,7 +71,7 @@ new NewQueryTask().registerTask();
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
@@ -82,7 +82,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // New Query
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")

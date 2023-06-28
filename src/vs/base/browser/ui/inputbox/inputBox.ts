@@ -57,6 +57,11 @@ export interface IInputBoxStyles {
 	readonly inputValidationErrorBorder: string | undefined;
 	readonly inputValidationErrorBackground: string | undefined;
 	readonly inputValidationErrorForeground: string | undefined;
+	// {{SQL CARBON EDIT}}
+	readonly disabledInputBackground: string | undefined;
+	readonly disabledInputForeground: string | undefined;
+	readonly disabledInputBorder: string | undefined;
+	// {{SQL CARBON EDIT}} - End
 }
 
 export interface IInputValidator {
@@ -97,7 +102,12 @@ export const unthemedInboxStyles: IInputBoxStyles = {
 	inputBorder: undefined,
 	inputValidationErrorForeground: undefined,
 	inputValidationInfoForeground: undefined,
-	inputValidationWarningForeground: undefined
+	inputValidationWarningForeground: undefined,
+	// {{SQL CARBON EDIT}}
+	disabledInputBackground: undefined,
+	disabledInputForeground: undefined,
+	disabledInputBorder: undefined
+	// {{SQL CARBON EDIT}} - End
 };
 
 export class InputBox extends Widget {
@@ -231,9 +241,6 @@ export class InputBox extends Widget {
 		}
 
 		this.applyStyles();
-	}
-
-	public style(styles: IInputBoxStyles): void { // {{SQL CARBON TODO}} - remove this method
 	}
 
 	protected onBlur(): void {

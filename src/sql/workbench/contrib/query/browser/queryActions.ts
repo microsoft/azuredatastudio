@@ -7,10 +7,9 @@ import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
@@ -26,7 +25,6 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -49,6 +47,7 @@ import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown'
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Codicon } from 'vs/base/common/codicons';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -650,7 +649,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, {
 			strictSelection: true,
 			placeholder: this._selectDatabaseString,
-			ariaLabel: this._selectDatabaseString
+			ariaLabel: this._selectDatabaseString,
+			...defaultEditableDropdownStyles
 		});
 
 		// Allows database selector to commit typed or pasted DB names without the need to click
@@ -666,10 +666,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		append(container, this._databaseListDropdown);
 	}
 
-	public style(styles) {
-		this._dropdown.style(styles);
-	}
-
 	public setActionContext(context: any): void {
 	}
 
@@ -683,10 +679,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	public blur(): void {
 		this._dropdown.blur();
-	}
-
-	public attachStyler(themeService: IThemeService): IDisposable {
-		return attachEditableDropdownStyler(this, themeService);
 	}
 
 	// EVENT HANDLERS FROM EDITOR //////////////////////////////////////////

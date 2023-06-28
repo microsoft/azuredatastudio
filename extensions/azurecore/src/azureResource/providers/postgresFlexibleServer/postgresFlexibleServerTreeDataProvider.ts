@@ -59,13 +59,13 @@ export class PostgresFlexibleServerTreeDataProvider extends ResourceTreeDataProv
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: PostgresFlexibleServerTreeDataProvider.containerId,
 			label: PostgresFlexibleServerTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

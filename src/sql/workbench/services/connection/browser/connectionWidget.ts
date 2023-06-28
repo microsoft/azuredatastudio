@@ -15,7 +15,6 @@ import { IConnectionProfile, ServiceOptionType } from 'sql/platform/connection/c
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
@@ -46,7 +45,7 @@ import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/br
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -144,7 +143,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (authTypeOption) {
 			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
-			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
+			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, defaultSelectBoxStyles, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 			this._register(this._authTypeSelectBox);
 		}
 		this._providerName = providerName;
@@ -177,7 +176,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	public createConnectionWidget(container: HTMLElement, authTypeChanged: boolean = false): void {
 		this._serverGroupOptions = [this.DefaultServerGroup];
-		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
+		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, defaultSelectBoxStyles, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 		this._register(this._serverGroupSelectBox);
 		this._previousGroupOption = this._serverGroupSelectBox.value;
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
@@ -299,9 +298,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 								return { text: v.displayName, value: v.value } as SelectOptionItemSQL;
 							});
 
-						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName }, option.name);
+						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, defaultSelectBoxStyles, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName }, option.name);
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
-						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
 					default:
 						this._customOptionWidgets[i] = new InputBox(customOptionsContainer, this._contextViewService, {
@@ -309,7 +307,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 							placeholder: option.placeholder,
 							inputBoxStyles: defaultInputBoxStyles
 						});
-						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
 						break;
 				}
 				this._register(this._customOptionWidgets[i]);
@@ -443,7 +440,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		// Azure account picker
 		let accountLabel = localize('connection.azureAccountDropdownLabel', "Account");
 		let accountDropdown = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
-		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdown, { ariaLabel: accountLabel });
+		this._azureAccountDropdown = new SelectBox([], undefined, defaultSelectBoxStyles, this._contextViewService, accountDropdown, { ariaLabel: accountLabel });
 		this._register(this._azureAccountDropdown);
 		DialogHelper.appendInputSelectBox(accountDropdown, this._azureAccountDropdown);
 		let refreshCredentials = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', ['azure-account-row', 'refresh-credentials-link']);
@@ -453,7 +450,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		// Azure tenant picker
 		let tenantLabel = localize('connection.azureTenantDropdownLabel', "Azure AD tenant");
 		let tenantDropdown = DialogHelper.appendRow(this._tableContainer, tenantLabel, 'connection-label', 'connection-input', ['azure-account-row', 'azure-tenant-row']);
-		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdown, { ariaLabel: tenantLabel });
+		this._azureTenantDropdown = new SelectBox([], undefined, defaultSelectBoxStyles, this._contextViewService, tenantDropdown, { ariaLabel: tenantLabel });
 		this._register(this._azureTenantDropdown);
 		DialogHelper.appendInputSelectBox(tenantDropdown, this._azureTenantDropdown);
 	}
@@ -468,7 +465,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				strictSelection: false,
 				placeholder: databaseOption.placeholder ?? this._defaultDatabaseName,
 				maxHeight: 125,
-				ariaLabel: databaseOption.displayName
+				ariaLabel: databaseOption.displayName,
+				...defaultEditableDropdownStyles
 			});
 			this._register(this._databaseNameInputBox);
 		}
@@ -540,20 +538,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	protected registerListeners(): void {
-		// Theme styler
-		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
-			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 			this._register(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
 				this.onGroupSelected(selectedGroup.selected);
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
 			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
@@ -581,13 +571,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}));
 		}
 
-		if (this._connectionStringInputBox) {
-			this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
-		}
-
 		if (this._authTypeSelectBox) {
-			// Theme styler
-			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
 			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected, true);
 				this.setConnectButton();
@@ -595,14 +579,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 
 		if (this._azureAccountDropdown) {
-			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 			this._register(this._azureAccountDropdown.onDidSelect(() => {
 				this.onAzureAccountSelected().catch(err => this._logService.error(`Unexpected error handling Azure Account dropdown click : ${err}`));
 			}));
 		}
 
 		if (this._azureTenantDropdown) {
-			this._register(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
 			this._register(this._azureTenantDropdown.onDidSelect((selectInfo) => {
 				this.onAzureTenantSelected(selectInfo.index);
 			}));

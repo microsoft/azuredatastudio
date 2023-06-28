@@ -20,7 +20,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -32,6 +31,7 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
@@ -95,7 +95,7 @@ export class FileBrowserDialog extends Modal {
 		});
 
 		let filterLabel = localize('fileFilter', "Files of type");
-		this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
+		this._fileFilterSelectBox = new SelectBox(['*'], '*', defaultSelectBoxStyles, this._contextViewService);
 		this._fileFilterSelectBox.setAriaLabel(filterLabel);
 		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
@@ -225,11 +225,6 @@ export class FileBrowserDialog extends Modal {
 		this._register(this._filePathInputBox.onLoseFocus((params: OnLoseFocusParams) => {
 			this.onFilePathBlur(params).catch(err => onUnexpectedError(err));
 		}));
-
-		// Theme styler
-		this._register(attachInputBoxStyler(this._filePathInputBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._fileFilterSelectBox, this._themeService));
-
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme()));
 	}
 
