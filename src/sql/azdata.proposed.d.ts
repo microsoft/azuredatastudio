@@ -863,14 +863,6 @@ declare module 'azdata' {
 		 */
 		includeHeaders: boolean
 		/**
-		 * Whether to remove line breaks from the cell value.
-		 */
-		removeNewLines: boolean;
-		/**
-		 * Whether to skip adding a line break between rows when copying results when the previous row already has a trailing line break.
-		 */
-		skipNewLineAfterTrailingLineBreak: boolean;
-		/**
 		 * The selected ranges to be copied.
 		 */
 		selections: SelectionRange[];

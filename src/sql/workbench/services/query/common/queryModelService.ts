@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
-import QueryRunner, { shouldRemoveNewLines, shouldSkipNewLineAfterTrailingLineBreak } from 'sql/workbench/services/query/common/queryRunner';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
@@ -21,7 +21,6 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange } from 'vs/editor/common/core/range';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const selectionSnippetMaxLen = 100;
 
@@ -84,7 +83,6 @@ export class QueryModelService implements IQueryModelService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
 		@ILogService private _logService: ILogService,
-		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -172,8 +170,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public async copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		if (this._queryInfoMap.has(uri)) {
-			const runner = this._queryInfoMap.get(uri)!.queryRunner;
-			return runner!.copyResults(selection, batchId, resultId, shouldRemoveNewLines(this._configurationService), shouldSkipNewLineAfterTrailingLineBreak(this._configurationService), includeHeaders);
+			return this._queryInfoMap.get(uri)!.queryRunner!.copyResults(selection, batchId, resultId, includeHeaders);
 		}
 	}
 

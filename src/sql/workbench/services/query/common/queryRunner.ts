@@ -465,17 +465,13 @@ export default class QueryRunner extends Disposable {
 	 * @param selections The selection range to copy
 	 * @param batchId The batch id of the result to copy from
 	 * @param resultId The result id of the result to copy from
-	 * @param removeNewLines Whether to remove line breaks from values.
-	 * @param skipNewLineAfterTrailingLineBreak Whether to skip adding a line break between rows when copying results when the previous row already has a trailing line break.
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, removeNewLines: boolean, skipNewLineAfterTrailingLineBreak: boolean, includeHeaders?: boolean): Promise<void> {
+	async copyResults(selections: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): Promise<void> {
 		await this.queryManagementService.copyResults({
 			ownerUri: this.uri,
 			batchIndex: batchId,
 			resultSetIndex: resultId,
-			removeNewLines: removeNewLines,
-			skipNewLineAfterTrailingLineBreak: skipNewLineAfterTrailingLineBreak,
 			includeHeaders: includeHeaders,
 			selections: selections.map(selection => {
 				return {
@@ -583,7 +579,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			const providerSupportCopyResults = this._capabilitiesService.getCapabilities(providerId).connection.supportCopyResultsToClipboard;
 			const preferProvidersCopyHandler = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.preferProvidersCopyHandler;
 			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
-				await this.handleCopyRequestByProvider(selections, includeHeaders);
+				await this.handleCopyRequestByProvider(selections);
 			} else {
 				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
 			}
@@ -594,7 +590,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		executeCopyWithNotification(this._notificationService, selections, async () => {
-			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldRemoveNewLines(), this.shouldSkipNewLineAfterTrailingLineBreak(), this.shouldIncludeHeaders(includeHeaders));
+			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
 		});
 	}
 
