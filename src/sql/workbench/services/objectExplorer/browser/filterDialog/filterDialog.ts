@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./../media/filterDialog';
-import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Modal } from 'sql/workbench/browser/modal/modal'
