@@ -545,6 +545,8 @@ export async function makeHttpRequest<B>(
 				headers: reqHeaders
 			});
 			break;
+		case HttpRequestMethod.PATCH:
+			response = await httpClient.sendPatchRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
 		default:
 			const error = new Error(`Unknown RequestType "${requestType}"`);
 			if (!ignoreErrors) {

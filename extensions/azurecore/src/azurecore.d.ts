@@ -274,7 +274,8 @@ declare module 'azurecore' {
 		GET,
 		PUT,
 		POST,
-		DELETE
+		DELETE,
+		PATCH
 	}
 
 	/**
