@@ -19,7 +19,7 @@ export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData>
 
 	public convertServerResource(resource: DbServerGraphData): AzureResourceMongoDatabaseServer | undefined {
 		let host = resource.name;
-		const isServer = resource.type === azureResource.AzureResourceType.cosmosDbCluster;
+		const isServer = resource.type === azureResource.AzureResourceType.cosmosDbMongoCluster;
 		if (isServer) {
 			const url = new URL(resource.properties.connectionString);
 			host = url.hostname;

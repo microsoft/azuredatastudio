@@ -7,7 +7,7 @@ import { nbformat } from 'sql/workbench/services/notebook/common/nbformat';
 import * as assert from 'assert';
 
 suite('nbformat', function (): void {
-	let sampleOutput: nbformat.IOutput = {
+	let sampleOutput: nbformat.IOutput = <any>{
 		data: undefined,
 		ename: '',
 		evalue: undefined,

@@ -16,7 +16,7 @@ import 'vs/css!./media/listView';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';

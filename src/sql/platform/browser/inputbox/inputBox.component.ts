@@ -10,10 +10,8 @@ import {
 
 import { InputBox as vsInputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-
-import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'input-box',
@@ -33,7 +31,6 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
@@ -45,7 +42,8 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 			max: this.max,
 			type: this.type,
 			placeholder: this.placeholder,
-			ariaLabel: this.ariaLabel
+			ariaLabel: this.ariaLabel,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		if (this.value) {
 			this._inputbox.value = this.value;
@@ -61,7 +59,6 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 					this.onDidChange.emit(e);
 			}
 		});
-		this._register(attachInputBoxStyler(this._inputbox, this.themeService));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {

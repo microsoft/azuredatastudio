@@ -52,7 +52,7 @@ export class Taskbar {
 					orientation: options.orientation,
 					ariaLabel: options.ariaLabel,
 					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
-						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action, {}) : undefined;
 					}
 				}
 			);
@@ -63,7 +63,7 @@ export class Taskbar {
 					orientation: options.orientation,
 					ariaLabel: options.ariaLabel,
 					actionViewItemProvider: (action: IAction): IActionViewItem | undefined => {
-						return options.actionViewItemProvider ? options.actionViewItemProvider(action) : undefined;
+						return options.actionViewItemProvider ? options.actionViewItemProvider(action, {}) : undefined;
 					}
 				}
 			);

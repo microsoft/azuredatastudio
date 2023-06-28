@@ -7,7 +7,6 @@ import 'vs/css!./media/infoBox';
 import * as azdata from 'azdata';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
-import { IThemable } from 'vs/base/common/styler';
 import { Color } from 'vs/base/common/color';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -16,6 +15,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export interface IInfoBoxStyles {
 	informationBackground?: Color;
@@ -35,7 +35,7 @@ export interface InfoBoxOptions {
 	clickableButtonAriaLabel?: string;
 }
 
-export class InfoBox extends Disposable implements IThemable {
+export class InfoBox extends Disposable {
 	private _imageElement: HTMLDivElement;
 	private _textElement: HTMLDivElement;
 	private _infoBoxElement: HTMLDivElement;
@@ -72,7 +72,7 @@ export class InfoBox extends Disposable implements IThemable {
 		this._infoBoxElement.appendChild(this._imageElement);
 		this._infoBoxElement.appendChild(this._textElement);
 		this._clickableIndicator = DOM.$('a');
-		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...Codicon.arrowRight.classNamesArray);
+		this._clickableIndicator.classList.add('infobox-clickable-arrow', ...ThemeIcon.asClassNameArray(Codicon.arrowRight));
 		this._infoBoxElement.appendChild(this._clickableIndicator);
 
 		if (options) {

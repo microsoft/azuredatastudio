@@ -10,7 +10,6 @@ import { localize } from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Codicon } from 'vs/base/common/codicons';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -21,6 +20,9 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const SELECT_EXPENSE_METRIC_TITLE = localize('executionPlanSelectExpenseMetricTitle', 'Select expense metric');
 
@@ -84,11 +86,10 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this.container.appendChild(this._expenseMetricSelectBoxContainer);
 
 		const selectBoxOptions = this.getSelectBoxOptionsFromExecutionPlanDiagram();
-		this.expenseMetricSelectBox = this._register(new SelectBox(selectBoxOptions, COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer));
+		this.expenseMetricSelectBox = this._register(new SelectBox(selectBoxOptions, COST_STRING, defaultSelectBoxStyles, this.contextViewService, this._expenseMetricSelectBoxContainer));
 		this.expenseMetricSelectBox.setAriaLabel(SELECT_EXPENSE_METRIC_TITLE);
 
 		this.expenseMetricSelectBox.render(this._expenseMetricSelectBoxContainer);
-		this._register(attachSelectBoxStyler(this.expenseMetricSelectBox, this.themeService));
 
 		this._expenseMetricSelectBoxContainer.style.width = '200px';
 		this._expenseMetricSelectBoxContainer.style.marginRight = '5px';
@@ -125,7 +126,8 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		const self = this;
 		const applyButton = this._register(new Button(this.container, {
-			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation')
+			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation'),
+			...defaultButtonStyles
 		}));
 
 		applyButton.label = localize('highlightExpensiveOperationApplyButton', 'Apply');
@@ -326,7 +328,7 @@ export class CancelHIghlightExpensiveOperationAction extends Action {
 	public static LABEL = localize('cancelExpensiveOperationAction', 'Close');
 
 	constructor() {
-		super(CancelHIghlightExpensiveOperationAction.ID, CancelHIghlightExpensiveOperationAction.LABEL, Codicon.chromeClose.classNames);
+		super(CancelHIghlightExpensiveOperationAction.ID, CancelHIghlightExpensiveOperationAction.LABEL, ThemeIcon.asClassName(Codicon.chromeClose));
 	}
 
 	public override async run(context: HighlightExpensiveOperationWidget): Promise<void> {

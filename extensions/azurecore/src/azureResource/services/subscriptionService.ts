@@ -15,6 +15,7 @@ import { Logger } from '../../utils/Logger';
 
 import * as nls from 'vscode-nls';
 import { TenantIgnoredError } from '../../utils/TenantIgnoredError';
+import { multiple_matching_tokens_error } from '../../constants';
 const localize = nls.loadMessageBundle();
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
@@ -52,8 +53,12 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 				}
 			} catch (error) {
 				if (!account.isStale && !(error instanceof TenantIgnoredError)) {
-					const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
-					Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
+					const msg = AzureResourceErrorMessageUtil.getErrorMessage(error);
+					let errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, msg);
+					if (msg.includes(multiple_matching_tokens_error)) {
+						errorMsg = errorMsg.concat(` To resolve this error, please clear token cache, and refresh account credentials.`);
+					}
+					Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${msg}`);
 					errors.push(error);
 					void vscode.window.showWarningMessage(errorMsg);
 				}

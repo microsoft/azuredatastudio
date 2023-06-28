@@ -6,7 +6,6 @@
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { DiffElementViewModelBase, SideBySideDiffElementViewModel } from 'vs/workbench/contrib/notebook/browser/diff/diffElementViewModel';
 import { DiffSide, INotebookTextDiffEditor } from 'vs/workbench/contrib/notebook/browser/diff/notebookDiffEditorBrowser';
 import { ICellOutputViewModel, IInsetRenderOutput, RenderOutputType } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
@@ -14,7 +13,7 @@ import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/no
 import { NotebookCellOutputsSplice } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { DiffNestedCellViewModel } from 'vs/workbench/contrib/notebook/browser/diff/diffNestedCellViewModel';
-import { ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { ThemeIcon } from 'vs/base/common/themables';
 import { mimetypeIcon } from 'vs/workbench/contrib/notebook/browser/notebookIcons';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -235,7 +234,6 @@ export class OutputContainer extends Disposable {
 		private _outputContainer: HTMLElement,
 		@INotebookService private _notebookService: INotebookService,
 		@IQuickInputService private readonly _quickInputService: IQuickInputService,
-		@IOpenerService readonly _openerService: IOpenerService
 	) {
 		super();
 		this._register(this._diffElementViewModel.onDidLayoutChange(() => {

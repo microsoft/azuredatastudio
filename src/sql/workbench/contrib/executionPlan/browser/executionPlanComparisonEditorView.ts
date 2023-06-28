@@ -15,7 +15,7 @@ import { Action } from 'vs/base/common/actions';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
@@ -26,15 +26,15 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { contrastBorder, editorWidgetBackground, errorForeground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ADD_EXECUTION_PLAN_STRING = localize('epCompare.addExecutionPlanLabel', 'Add execution plan');
 
@@ -126,7 +126,6 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 	constructor(
 		parentContainer: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IThemeService private themeService: IThemeService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
 		@IFileDialogService private _fileDialogService: IFileDialogService,
 		@IContextViewService readonly contextViewService: IContextViewService,
@@ -214,8 +213,7 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
 
-		this._placeholderButton = this._register(new Button(this._placeholderInfoboxContainer, { secondary: true }));
-		this._register(attachButtonStyler(this._placeholderButton, this.themeService));
+		this._placeholderButton = this._register(new Button(this._placeholderInfoboxContainer, { secondary: true, ...defaultButtonStyles }));
 		this._placeholderButton.label = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.ariaLabel = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.enabled = true;
@@ -236,7 +234,7 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 		this._topPlanContainer = DOM.$('.plan-container');
 		this.planSplitViewContainer.appendChild(this._topPlanContainer);
 		this._topPlanDropdownContainer = DOM.$('.dropdown-container');
-		this._topPlanDropdown = this._register(new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer));
+		this._topPlanDropdown = this._register(new SelectBox(['option 1', 'option2'], 'option1', defaultSelectBoxStyles, this.contextViewService, this._topPlanDropdownContainer));
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 
 		this._register(this._topPlanDropdown.onDidSelect(async (e) => {
@@ -254,7 +252,7 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 			await this.getSkeletonNodes();
 		}));
 
-		this._register(attachSelectBoxStyler(this._topPlanDropdown, this.themeService));
+
 		this._topPlanContainer.appendChild(this._topPlanDropdownContainer);
 		this._topPlanRecommendations = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, this._topPlanContainer, undefined));
 
@@ -263,7 +261,7 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 		this._bottomPlanContainer = DOM.$('.plan-container');
 		this.planSplitViewContainer.appendChild(this._bottomPlanContainer);
 		this._bottomPlanDropdownContainer = DOM.$('.dropdown-container');
-		this._bottomPlanDropdown = this._register(new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer));
+		this._bottomPlanDropdown = this._register(new SelectBox(['option 1', 'option2'], 'option1', defaultSelectBoxStyles, this.contextViewService, this._bottomPlanDropdownContainer));
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 
 		this._register(this._bottomPlanDropdown.onDidSelect(async (e) => {
@@ -280,8 +278,6 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 
 			await this.getSkeletonNodes();
 		}));
-
-		this._register(attachSelectBoxStyler(this._bottomPlanDropdown, this.themeService));
 
 		this._bottomPlanContainer.appendChild(this._bottomPlanDropdownContainer);
 		this._bottomPlanRecommendations = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, this._bottomPlanContainer, undefined));
