@@ -73,6 +73,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeDatabaseSection();
 
 			//Initilaize options Tab sections
+			this.initalizeOptionsGeneralSection();
 			this.initializeAutomaticSection();
 			// Managed Instance doesn't support ledger and recovery section properties
 			if (this.viewInfo.databaseEngineEdition !== localizedConstants.SqlManagedInstance) {
@@ -234,6 +235,40 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#endregion
 
 	//#region Database Properties - Options Tab
+	private initalizeOptionsGeneralSection(): void {
+		let containers: azdata.Component[] = [];
+		if (this.viewInfo.collationNames?.length > 0) {
+			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
+				this.objectInfo.collationName = newValue as string;
+			}, this.viewInfo.collationNames, this.objectInfo.collationName);
+			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
+		}
+
+		if (this.viewInfo.recoveryModels?.length > 0) {
+			let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async (newValue) => {
+				this.objectInfo.recoveryModel = newValue as string;
+			}, this.viewInfo.recoveryModels, this.objectInfo.recoveryModel);
+			containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
+		}
+
+		if (this.viewInfo.compatibilityLevels?.length > 0) {
+			let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async (newValue) => {
+				this.objectInfo.compatibilityLevel = newValue as string;
+			}, this.viewInfo.compatibilityLevels, this.objectInfo.compatibilityLevel);
+			containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
+		}
+
+		if (this.viewInfo.containmentTypes?.length > 0) {
+			let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async (newValue) => {
+				this.objectInfo.containmentType = newValue as string;
+			}, this.viewInfo.containmentTypes, this.objectInfo.containmentType);
+			containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
+		}
+
+		const optionsGeneralSection = this.createGroup('', containers, true, true);
+		this.optionsTabSectionsContainer.push(optionsGeneralSection);
+	}
+
 	private initializeAutomaticSection(): void {
 		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatisticsText, async (newValue) => {
 			this.objectInfo.autoCreateIncrementalStatistics = (newValue.toLowerCase() === localizedConstants.TrueText);
