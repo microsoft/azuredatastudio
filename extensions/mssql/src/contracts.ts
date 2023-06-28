@@ -1555,6 +1555,18 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
+// ------------------------------- < Metadata API > ------------------------------------
+
+export interface AllServerMetadataParams {
+	ownerUri: string;
+}
+
+export namespace AllServerMetadataRequest {
+	export const type = new RequestType<AllServerMetadataParams, azdata.metadata.AllServerMetadataResult, void, void>('metadata/allServerMetadata');
+}
+
+// ------------------------------- < Metadata API > ------------------------------------
+
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {
 	connectionUri: string;

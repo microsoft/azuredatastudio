@@ -1774,6 +1774,29 @@ declare module 'azdata' {
 		}
 	}
 
+	export namespace metadata {
+		export interface AllServerMetadataResult {
+			/**
+			 * The generated create scripts for all tables in every database for a single server.
+			 */
+			scripts: string;
+		}
+
+		export interface ServerMetadataProvider extends DataProvider {
+			// metadata service methods
+
+			/**
+			 * Gets create scripts for all tables in every database for a single server.
+			 * @param ownerUri Query editor the metadata will be retrieved for.
+			 */
+			GetServerMetadata(ownerUri: string): Thenable<AllServerMetadataResult>;
+		}
+	}
+
+	export namespace dataprotocol {
+		export function registerServerMetadataProvider(provider: metadata.ServerMetadataProvider): vscode.Disposable;
+	}
+
 	/**
 	 * Component to display text with an icon representing the severity
 	 */

@@ -1303,3 +1303,35 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 		});
 	}
 }
+
+/**
+ * All Server Metadata Service Feature
+ */
+export class AllServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.AllServerMetadataRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, AllServerMetadataServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		return azdata.dataprotocol.registerServerMetadataProvider({
+			providerId: client.providerId,
+
+		});
+	}
+}
