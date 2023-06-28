@@ -10,7 +10,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -266,9 +265,6 @@ export class FirewallRuleDialog extends Modal {
 		// Theme styler
 		this._register(this._createButton!);
 		this._register(this._closeButton!);
-		this._register(attachInputBoxStyler(this._ruleNameInpuBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._fromRangeinputBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._toRangeinputBox!, this._themeService));
 
 		// handler for firewall rule name change events
 		this._register(this._ruleNameInpuBox!.onDidChange(ruleName => {

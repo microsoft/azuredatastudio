@@ -57,6 +57,7 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	account: mockAccount,
 	subscription: mockSubscription,
 	tenantId: mockTenantId,
+	resourceProviderId: 'mock_resource_provider',
 	treeItem: {
 		id: 'mock_resource_root_node',
 		label: 'mock resource root node',
@@ -134,12 +135,9 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 	it('Should return container node when element is undefined.', async function (): Promise<void> {
 		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
 
-		const children = await treeDataProvider.getRootChildren();
+		const child = await treeDataProvider.getRootChild();
 
-		should(children).Array();
-		should(children.length).equal(1);
-
-		const child = children[0];
+		should(child).Object();
 		should(child.id).equal('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer');
 		should(child.label).equal('SQL servers');
 		should(child.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);

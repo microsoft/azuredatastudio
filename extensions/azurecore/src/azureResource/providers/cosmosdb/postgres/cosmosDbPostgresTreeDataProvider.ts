@@ -7,17 +7,17 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType, AzureResourcePrefixes, cosmosDBProvider } from '../../../constants';
-import { AzureResourceMongoDatabaseServer } from './cosmosDbMongoService';
+import { AzureResourceItemType, AzureResourcePrefixes, pgsqlProvider } from '../../../constants';
+import { AzureResourcePostgresDatabaseServer } from './cosmosDbPostgresService';
 import { generateGuid } from '../../../utils';
 import { DbServerGraphData, GraphData } from '../../../interfaces';
 import { ResourceTreeDataProviderBase } from '../../resourceTreeDataProviderBase';
 import { AzureAccountProperties, azureResource } from 'azurecore';
 import * as azdata from 'azdata';
 
-export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
-	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainer';
-	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "Azure CosmosDB for MongoDB");
+export class CosmosDbPostgresTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
+	private static readonly CONTAINER_ID = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainer';
+	private static readonly CONTAINER_LABEL = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbPostgresContainerLabel', "Azure CosmosDB for PostgreSQL Cluster");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -26,13 +26,13 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 		super(databaseServerService);
 	}
 
-	public getTreeItemForResource(databaseServer: AzureResourceMongoDatabaseServer, account: azdata.Account): azdata.TreeItem {
+	public getTreeItemForResource(databaseServer: AzureResourcePostgresDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
 			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
-			label: this.browseConnectionMode ? `${databaseServer.name} (${CosmosDbMongoTreeDataProvider.CONTAINER_LABEL}, ${databaseServer.subscription.name})` : `${databaseServer.name}`,
+			label: this.browseConnectionMode ? `${databaseServer.name} ${CosmosDbPostgresTreeDataProvider.CONTAINER_LABEL}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.None,
-			contextValue: AzureResourceItemType.cosmosDBMongoAccount,
+			contextValue: AzureResourceItemType.cosmosDBPostgresAccount,
 			payload: {
 				id: generateGuid(),
 				connectionName: databaseServer.name,
@@ -43,7 +43,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: cosmosDBProvider,
+				providerName: pgsqlProvider,
 				saveProfile: false,
 				options: {
 					isServer: databaseServer.isServer,
@@ -53,15 +53,15 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: (account.properties as AzureAccountProperties).providerSettings.settings.portalEndpoint
 			},
-			childProvider: cosmosDBProvider,
+			childProvider: pgsqlProvider,
 			type: azdata.ExtensionNodeType.Server
 		};
 	}
 
 	public async getRootChild(): Promise<azdata.TreeItem> {
 		return {
-			id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
-			label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
+			id: CosmosDbPostgresTreeDataProvider.CONTAINER_ID,
+			label: CosmosDbPostgresTreeDataProvider.CONTAINER_LABEL,
 			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
