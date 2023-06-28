@@ -478,7 +478,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async getTenantsMsal(token: string, tokenClaims: TokenClaims): Promise<Tenant[]> {
-		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2020-01-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
@@ -528,7 +528,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region tenant calls
 	public async getTenantsAdal(token: AccessToken): Promise<Tenant[]> {
-		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2020-01-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
