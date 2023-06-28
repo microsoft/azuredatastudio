@@ -11,7 +11,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachListBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -38,7 +38,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultListBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -311,7 +311,10 @@ export class BackupComponent extends AngularDisposable {
 		}));
 		this._register(this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value)));
 
-		this.pathListBox = this._register(new ListBox([], this.contextViewService));
+		this.pathListBox = this._register(new ListBox({
+			items: [],
+			...defaultListBoxStyles
+		}, this.contextViewService));
 		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
 		this._register(this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox!.selectedOptions.length > 0) {
@@ -607,7 +610,6 @@ export class BackupComponent extends AngularDisposable {
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachSelectBoxStyler(this.backupTypeSelectBox!, this.themeService));
-		this._register(attachListBoxStyler(this.pathListBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.compressionSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.algorithmSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.encryptorSelectBox!, this.themeService));
