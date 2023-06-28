@@ -32,8 +32,8 @@ import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { defaultInputBoxStyles, defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 // strings for filter dialog
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");

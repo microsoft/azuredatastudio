@@ -70,7 +70,7 @@ export const unthemedSelectBoxStyles: ISelectBoxStyles = {
 	decoratorRightForeground: undefined,
 	selectListBackground: undefined,
 	selectListBorder: undefined,
-	focusBorder: undefined,
+	focusBorder: undefined
 };
 
 export interface ISelectData {
