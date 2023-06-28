@@ -22,7 +22,7 @@ import {
 } from 'sql/workbench/contrib/jobManagement/browser/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/workbench/contrib/jobManagement/browser/jobStepsViewTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';

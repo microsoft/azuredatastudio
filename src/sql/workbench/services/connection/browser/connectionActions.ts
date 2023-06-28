@@ -17,11 +17,15 @@ import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { Action2 } from 'vs/platform/actions/common/actions';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { FileAccess } from 'vs/base/common/network';
 
 /**
  * Workbench action to clear the recent connnections list
  */
-export class ClearRecentConnectionsAction extends Action {
+// {{SQL CARBON TODO}} - remove old action that is used by ActionBar class
+export class ClearRecentConnectionsAction1 extends Action {
 
 	public static ID = 'clearRecentConnectionsAction';
 	public static LABEL = nls.localize('ClearRecentlyUsedLabel', "Clear List");
@@ -40,7 +44,7 @@ export class ClearRecentConnectionsAction extends Action {
 		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IDialogService private _dialogService: IDialogService,
 	) {
-		super(id, label, ClearRecentConnectionsAction.ICON);
+		super(id, label, ClearRecentConnectionsAction1.ICON);
 		this.enabled = true;
 	}
 
@@ -92,12 +96,104 @@ export class ClearRecentConnectionsAction extends Action {
 		let confirm: IConfirmation = {
 			message: nls.localize('clearRecentConnectionMessage', "Are you sure you want to delete all the connections from the list?"),
 			primaryButton: nls.localize('connectionDialog.yes', "Yes"),
-			secondaryButton: nls.localize('connectionDialog.no', "No"),
+			cancelButton: nls.localize('connectionDialog.no', "No"),
 			type: 'question'
 		};
 
 		return new Promise<IConfirmationResult>((resolve, reject) => {
 			this._dialogService.confirm(confirm).then((confirmed) => {
+				resolve(confirmed);
+			});
+		});
+	}
+}
+
+/**
+ * Workbench action to clear the recent connnections list
+ */
+export class ClearRecentConnectionsAction extends Action2 {
+
+	public static ID = 'clearRecentConnectionsAction';
+	public static LABEL_ORG = 'Clear List';
+	public static LABEL = nls.localize('ClearRecentlyUsedLabel', "Clear List");
+	public static ICON = 'search-action clear-search-results';
+
+	private _onRecentConnectionsRemoved = new Emitter<void>();
+	public onRecentConnectionsRemoved: Event<void> = this._onRecentConnectionsRemoved.event;
+
+	private _useConfirmationMessage = false;
+
+	constructor() {
+		super({
+			id: ClearRecentConnectionsAction.ID,
+			// {{SQL CARBON TODO}} - does this work for icons?
+			icon: {
+				light: FileAccess.asBrowserUri(`sql/workbench/services/connection/browser/media/clear-search-results.svg`),
+				dark: FileAccess.asBrowserUri(`sql/workbench/services/connection/browser/media/clear-search-results-dark.svg`)
+			},
+			title: { value: ClearRecentConnectionsAction.LABEL, original: ClearRecentConnectionsAction.LABEL_ORG },
+			f1: true
+		});
+	}
+
+	public set useConfirmationMessage(value: boolean) {
+		this._useConfirmationMessage = value;
+	}
+
+	public override run(accessor: ServicesAccessor): Promise<void> {
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+		const notificationService = accessor.get(INotificationService);
+		const quickInputService = accessor.get(IQuickInputService);
+		const dialogService = accessor.get(IDialogService);
+
+		if (this._useConfirmationMessage) {
+			return this.promptConfirmationMessage(dialogService).then(result => {
+				if (result.confirmed) {
+					connectionManagementService.clearRecentConnectionsList();
+					this._onRecentConnectionsRemoved.fire();
+				}
+			});
+		} else {
+			return this.promptQuickOpenService(quickInputService).then(result => {
+				if (result) {
+					connectionManagementService.clearRecentConnectionsList();
+
+					const actions: INotificationActions = { primary: [] };
+					notificationService.notify({
+						severity: Severity.Info,
+						message: nls.localize('ClearedRecentConnections', "Recent connections list cleared"),
+						actions
+					});
+					this._onRecentConnectionsRemoved.fire();
+				}
+			});
+		}
+	}
+
+	private promptQuickOpenService(quickInputService: IQuickInputService): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			let choices: { key, value }[] = [
+				{ key: nls.localize('connectionAction.yes', "Yes"), value: true },
+				{ key: nls.localize('connectionAction.no', "No"), value: false }
+			];
+
+			quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', "Clear List"), ignoreFocusLost: true }).then((choice) => {
+				let confirm = choices.find(x => x.key === choice);
+				resolve(confirm && confirm.value);
+			});
+		});
+	}
+
+	private promptConfirmationMessage(dialogService: IDialogService): Promise<IConfirmationResult> {
+		let confirm: IConfirmation = {
+			message: nls.localize('clearRecentConnectionMessage', "Are you sure you want to delete all the connections from the list?"),
+			primaryButton: nls.localize('connectionDialog.yes', "Yes"),
+			cancelButton: nls.localize('connectionDialog.no', "No"),
+			type: 'question'
+		};
+
+		return new Promise<IConfirmationResult>((resolve, reject) => {
+			dialogService.confirm(confirm).then((confirmed) => {
 				resolve(confirmed);
 			});
 		});
@@ -135,43 +231,46 @@ export class ClearSingleRecentConnectionAction extends Action {
 /**
  * Action to retrieve the current connection string
  */
-export class GetCurrentConnectionStringAction extends Action {
+export class GetCurrentConnectionStringAction extends Action2 {
 
 	public static ID = 'getCurrentConnectionStringAction';
+	public static LABEL_ORG = 'Get Current Connection String';
 	public static LABEL = nls.localize('connectionAction.GetCurrentConnectionString', "Get Current Connection String");
 
-	constructor(
-		id: string,
-		label: string,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorService private _editorService: IEditorService,
-		@INotificationService private readonly _notificationService: INotificationService,
-		@IClipboardService private _clipboardService: IClipboardService,
-	) {
-		super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
-		this.enabled = true;
+	constructor() {
+		//super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
+		super({
+			id: ClearRecentConnectionsAction.ID,
+			title: { value: ClearRecentConnectionsAction.LABEL, original: ClearRecentConnectionsAction.LABEL_ORG },
+			f1: true
+		});
 	}
 
-	public override run(): Promise<void> {
+	public override run(accessor: ServicesAccessor): Promise<void> {
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+		const editorService = accessor.get(IEditorService);
+		const notificationService = accessor.get(INotificationService);
+		const clipboardService = accessor.get(IClipboardService);
+
 		return new Promise<void>((resolve, reject) => {
-			let activeInput = this._editorService.activeEditor;
+			let activeInput = editorService.activeEditor;
 			if (activeInput && (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
-				&& this._connectionManagementService.isConnected(activeInput.uri)) {
+				&& connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;
-				let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);
-				this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword).then(result => {
+				let connectionProfile = connectionManagementService.getConnectionProfile(activeInput.uri);
+				connectionManagementService.getConnectionString(connectionProfile.id, includePassword).then(result => {
 
 					//Copy to clipboard
-					this._clipboardService.writeText(result);
+					clipboardService.writeText(result);
 
 					let message = result
 						? result
 						: nls.localize('connectionAction.connectionString', "Connection string not available");
-					this._notificationService.info(message);
+					notificationService.info(message);
 				});
 			} else {
 				let message = nls.localize('connectionAction.noConnection', "No active connection available");
-				this._notificationService.info(message);
+				notificationService.info(message);
 			}
 		});
 	}

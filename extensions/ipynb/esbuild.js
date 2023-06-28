@@ -18,7 +18,7 @@ if (outputRootIndex >= 0) {
 	outputRoot = args[outputRootIndex + 1];
 }
 
-const srcDir = path.join(__dirname, 'src');
+const srcDir = path.join(__dirname, 'notebook-src');
 const outDir = path.join(outputRoot, 'notebook-out');
 
 async function build() {
@@ -41,7 +41,11 @@ build().catch(() => process.exit(1));
 
 if (isWatch) {
 	const watcher = require('@parcel/watcher');
-	watcher.subscribe(srcDir, () => {
-		return build();
+	watcher.subscribe(srcDir, async () => {
+		try {
+			await build();
+		} catch (e) {
+			console.error(e);
+		}
 	});
 }

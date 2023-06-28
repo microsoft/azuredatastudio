@@ -11,7 +11,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachListBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -34,10 +34,11 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -236,7 +237,8 @@ export class BackupComponent extends AngularDisposable {
 
 		this.recoveryBox = this._register(new InputBox(this.recoveryModelElement!.nativeElement, this.contextViewService, {
 			placeholder: this.recoveryModel,
-			ariaLabel: LocalizedStrings.RECOVERY_MODEL
+			ariaLabel: LocalizedStrings.RECOVERY_MODEL,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 		// Set backup type
 		this.backupTypeSelectBox = this._register(new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE }));
@@ -244,6 +246,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Set copy-only check box
 		this.copyOnlyCheckBox = this._register(new Checkbox(this.copyOnlyElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.COPY_ONLY,
 			checked: false,
 			onChange: (viaKeyboard) => { },
@@ -252,6 +255,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Set to url check box
 		this.toUrlCheckBox = this._register(new Checkbox(this.toUrlElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.TO_URL,
 			checked: false,
 			onChange: () => this.onChangeToUrl(),
@@ -260,6 +264,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Encryption checkbox
 		this.encryptCheckBox = this._register(new Checkbox(this.encryptElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.ENCRYPTION,
 			checked: false,
 			onChange: () => this.onChangeEncrypt(),
@@ -268,6 +273,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Verify backup checkbox
 		this.verifyCheckBox = this._register(new Checkbox(this.verifyElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.VERIFY_CONTAINER,
 			checked: false,
 			onChange: () => { },
@@ -276,6 +282,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Perform checksum checkbox
 		this.checksumCheckBox = this._register(new Checkbox(this.checksumElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.CHECKSUM_CONTAINER,
 			checked: false,
 			onChange: () => { },
@@ -284,6 +291,7 @@ export class BackupComponent extends AngularDisposable {
 
 		// Continue on error checkbox
 		this.continueOnErrorCheckBox = this._register(new Checkbox(this.continueOnErrorElement!.nativeElement, {
+			...defaultCheckboxStyles,
 			label: LocalizedStrings.CONTINUE_ON_ERROR_CONTAINER,
 			checked: false,
 			onChange: () => { },
@@ -292,12 +300,14 @@ export class BackupComponent extends AngularDisposable {
 
 		// Set backup name
 		this.backupNameBox = this._register(new InputBox(this.backupNameElement!.nativeElement, this.contextViewService, {
-			ariaLabel: LocalizedStrings.BACKUP_NAME
+			ariaLabel: LocalizedStrings.BACKUP_NAME,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 
 		// Set backup path list
 		this.urlInputBox = this._register(new InputBox(this.urlPathElement!.nativeElement, this.contextViewService, {
-			ariaLabel: LocalizedStrings.BACKUP_URL
+			ariaLabel: LocalizedStrings.BACKUP_URL,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 		this._register(this.urlInputBox.onDidChange((value) => this.onUrlInputBoxChanged(value)));
 
@@ -324,13 +334,13 @@ export class BackupComponent extends AngularDisposable {
 		this.pathListBox.render(this.filePathElement!.nativeElement);
 
 		// Set backup path add/remove buttons
-		this.addUrlPathButton = this._register(new Button(this.addUrlPathElement!.nativeElement, { secondary: true }));
+		this.addUrlPathButton = this._register(new Button(this.addUrlPathElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.addUrlPathButton.label = localize('backupBrowseButton', "Browse");
 		this.addUrlPathButton.title = localize('addUrl', "Add URL");
-		this.addFilePathButton = this._register(new Button(this.addFilePathElement!.nativeElement, { secondary: true }));
+		this.addFilePathButton = this._register(new Button(this.addFilePathElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.addFilePathButton.label = '+';
 		this.addFilePathButton.title = localize('addFile', "Add File");
-		this.removeFilePathButton = this._register(new Button(this.removeFilePathElement!.nativeElement, { secondary: true }));
+		this.removeFilePathButton = this._register(new Button(this.removeFilePathElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.removeFilePathButton.label = '-';
 		this.removeFilePathButton.title = localize('removeFile', "Remove files");
 
@@ -351,12 +361,14 @@ export class BackupComponent extends AngularDisposable {
 				validationOptions: {
 					validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: LocalizedStrings.MEDIA_NAME_REQUIRED_ERROR }) : null
 				},
-				ariaLabel: LocalizedStrings.NEW_MEDIA_SET_NAME
+				ariaLabel: LocalizedStrings.NEW_MEDIA_SET_NAME,
+				inputBoxStyles: defaultInputBoxStyles
 			}
 		));
 
 		this.mediaDescriptionBox = this._register(new InputBox(this.mediaDescriptionElement!.nativeElement, this.contextViewService, {
-			ariaLabel: LocalizedStrings.NEW_MEDIA_SET_DESCRIPTION
+			ariaLabel: LocalizedStrings.NEW_MEDIA_SET_DESCRIPTION,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 
 		// Set backup retain days
@@ -376,7 +388,8 @@ export class BackupComponent extends AngularDisposable {
 						}
 					}
 				},
-				ariaLabel: LocalizedStrings.SET_BACKUP_RETAIN_DAYS
+				ariaLabel: LocalizedStrings.SET_BACKUP_RETAIN_DAYS,
+				inputBoxStyles: defaultInputBoxStyles
 			}));
 
 		// Disable elements
@@ -441,24 +454,24 @@ export class BackupComponent extends AngularDisposable {
 
 	private addFooterButtons(): void {
 		// Set script footer button
-		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true }));
+		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.scriptButton.label = localize('backupComponent.script', "Script");
 		this._register(this.scriptButton.onDidClick(() => this.onScript()));
-		this._register(attachButtonStyler(this.scriptButton, this.themeService));
+		this._register(this.scriptButton);
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
-		this.backupButton = this._register(new Button(this.backupButtonElement!.nativeElement));
+		this.backupButton = this._register(new Button(this.backupButtonElement!.nativeElement, defaultButtonStyles));
 		this.backupButton.label = localize('backupComponent.backup', "Backup");
 		this._register(this.backupButton.onDidClick(() => this.onOk()));
-		this._register(attachButtonStyler(this.backupButton, this.themeService));
+		this._register(this.backupButton);
 		this.backupEnabled = false;
 
 		// Set cancel footer button
-		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true }));
+		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true, ...defaultButtonStyles }));
 		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
 		this._register(this.cancelButton.onDidClick(() => this.onCancel()));
-		this._register(attachButtonStyler(this.cancelButton, this.themeService));
+		this._register(this.cancelButton);
 	}
 
 	private initialize(isMetadataPopulated: boolean): void {
@@ -586,33 +599,18 @@ export class BackupComponent extends AngularDisposable {
 		this.urlInputBox!.value = '';
 		this.pathListBox!.setValidation(true);
 
-		this.cancelButton!.applyStyles();
-		this.scriptButton!.applyStyles();
-		this.backupButton!.applyStyles();
+		// this.cancelButton!.applyStyles();
+		// this.scriptButton!.applyStyles();
+		// this.backupButton!.applyStyles();
 	}
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachInputBoxStyler(this.backupNameBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.recoveryBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.backupTypeSelectBox!, this.themeService));
 		this._register(attachListBoxStyler(this.pathListBox!, this.themeService));
-		this._register(attachButtonStyler(this.addUrlPathButton!, this.themeService));
-		this._register(attachButtonStyler(this.addFilePathButton!, this.themeService));
-		this._register(attachButtonStyler(this.removeFilePathButton!, this.themeService));
 		this._register(attachSelectBoxStyler(this.compressionSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.algorithmSelectBox!, this.themeService));
 		this._register(attachSelectBoxStyler(this.encryptorSelectBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.mediaNameBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.urlInputBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.mediaDescriptionBox!, this.themeService));
-		this._register(attachInputBoxStyler(this.backupRetainDaysBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.copyOnlyCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.toUrlCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.encryptCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.verifyCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.checksumCheckBox!, this.themeService));
-		this._register(attachCheckboxStyler(this.continueOnErrorCheckBox!, this.themeService));
 
 		this._register(this.backupTypeSelectBox!.onDidSelect(selected => this.onBackupTypeChanged()));
 		this._register(this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick()));

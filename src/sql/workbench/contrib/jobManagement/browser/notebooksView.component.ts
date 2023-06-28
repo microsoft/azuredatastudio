@@ -34,10 +34,10 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -187,8 +187,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<IItem>(this._contextViewService);
-		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
+		let filterPlugin = new HeaderFilter<IItem>(defaultTableFilterStyles, this._contextViewService);
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();

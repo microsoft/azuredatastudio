@@ -29,7 +29,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -46,6 +45,8 @@ import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -241,7 +242,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				},
 				ariaLabel: ConnectionStringText,
 				flexibleHeight: true,
-				flexibleMaxHeight: 100
+				flexibleMaxHeight: 100,
+				inputBoxStyles: defaultInputBoxStyles
 			});
 			this._register(this._connectionStringInputBox);
 			this._register(this._connectionStringInputBox.onDidChange(() => {
@@ -304,9 +306,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					default:
 						this._customOptionWidgets[i] = new InputBox(customOptionsContainer, this._contextViewService, {
 							ariaLabel: option.displayName,
-							placeholder: option.placeholder
+							placeholder: option.placeholder,
+							inputBoxStyles: defaultInputBoxStyles
 						});
-						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
 						break;
 				}
 				this._register(this._customOptionWidgets[i]);
@@ -401,7 +403,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 			},
 			ariaLabel: serverNameOption.displayName,
-			placeholder: serverNameOption.placeholder
+			placeholder: serverNameOption.placeholder,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		this._register(this._serverNameInputBox);
 	}
@@ -416,7 +419,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
 			ariaLabel: userNameOption.displayName,
-			placeholder: userNameOption.placeholder
+			placeholder: userNameOption.placeholder,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		this._register(this._userNameInputBox);
 		// Password
@@ -424,7 +428,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let password = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'password-row');
 		this._passwordInputBox = new InputBox(password, this._contextViewService, {
 			ariaLabel: passwordOption.displayName,
-			placeholder: passwordOption.placeholder
+			placeholder: passwordOption.placeholder,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		this._passwordInputBox.inputElement.type = 'password';
 		this._register(this._passwordInputBox);
@@ -462,7 +467,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				strictSelection: false,
 				placeholder: databaseOption.placeholder ?? this._defaultDatabaseName,
 				maxHeight: 125,
-				ariaLabel: databaseOption.displayName
+				ariaLabel: databaseOption.displayName,
+				...defaultEditableDropdownStyles
 			});
 			this._register(this._databaseNameInputBox);
 		}
@@ -483,7 +489,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder, this._contextViewService, {
 			ariaLabel: connectionNameOption.displayName,
-			placeholder: connectionNameOption.placeholder
+			placeholder: connectionNameOption.placeholder,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 		this._register(this._connectionNameInputBox);
 	}
@@ -494,7 +501,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		const buttonContainer = DOM.append(rowContainer, DOM.$('td'));
 		buttonContainer.setAttribute('align', 'right');
 		const divContainer = DOM.append(buttonContainer, DOM.$('div.advanced-button'));
-		this._advancedButton = new Button(divContainer, { secondary: true });
+		this._advancedButton = new Button(divContainer, { secondary: true, ...defaultButtonStyles });
 		this._register(this._advancedButton);
 		this._advancedButton.label = localize('advanced', "Advanced...");
 		this._register(this._advancedButton.onDidClick(() => {
@@ -529,17 +536,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let rowContainer = DOM.append(container, DOM.$(`tr.${rowContainerClass}`));
 		DOM.append(rowContainer, DOM.$('td'));
 		let checkboxContainer = DOM.append(rowContainer, DOM.$(`td.${cellContainerClass}`));
-		return new Checkbox(checkboxContainer, { label, checked: isChecked, ariaLabel: label });
+		return new Checkbox(checkboxContainer, { ...defaultCheckboxStyles, label, checked: isChecked, ariaLabel: label });
 	}
 
 	protected registerListeners(): void {
 		// Theme styler
-		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._register(attachButtonStyler(this._advancedButton, this._themeService));
-		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
 			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
@@ -548,7 +549,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
 			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
@@ -574,10 +574,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					this._databaseNameInputBox.value = s;
 				}
 			}));
-		}
-
-		if (this._connectionStringInputBox) {
-			this._register(styler.attachInputBoxStyler(this._connectionStringInputBox, this._themeService));
 		}
 
 		if (this._authTypeSelectBox) {

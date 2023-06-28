@@ -21,6 +21,7 @@ import { deepClone } from 'vs/base/common/objects';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -391,8 +392,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 								diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
 							} else {
 								diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-									? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
-									: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
+									? { iconClass: ThemeIcon.asClassName(Codicon.chevronRight), title: greaterThanTitle }
+									: { iconClass: ThemeIcon.asClassName(Codicon.chevronLeft), title: lessThanTitle };
 							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:

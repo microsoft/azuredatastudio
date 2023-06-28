@@ -10,13 +10,15 @@ import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { Codicon } from 'vs/base/common/codicons';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 const SELECT_PROPERTY_TITLE = localize('executionPlanSelectPropertyTitle', 'Select property');
 const SELECT_SEARCH_TYPE_TITLE = localize('executionPlanSelectSearchTypeTitle', 'Select search type');
@@ -123,10 +125,12 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		// search text input box
-		this._searchTextInputBox = this._register(new InputBox(this.container, this.contextViewService, {}));
+		this._searchTextInputBox = this._register(new InputBox(this.container, this.contextViewService,
+			{
+				inputBoxStyles: defaultInputBoxStyles
+			}));
 		this._searchTextInputBox.setAriaLabel(ENTER_SEARCH_VALUE_TITLE);
 		this._searchTextInputBox.element.style.marginLeft = '5px';
-		this._register(attachInputBoxStyler(this._searchTextInputBox, this.themeService));
 		this._register(this._searchTextInputBox.onDidChange(e => {
 			this._usePreviousSearchResult = false;
 		}));
@@ -204,7 +208,7 @@ export class GoToNextMatchAction extends Action {
 	public static LABEL = localize('nextSearchItemAction', "Next Match");
 
 	constructor() {
-		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, Codicon.arrowDown.classNames);
+		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, ThemeIcon.asClassName(Codicon.arrowDown));
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
@@ -217,7 +221,7 @@ export class GoToPreviousMatchAction extends Action {
 	public static LABEL = localize('previousSearchItemAction', "Previous Match");
 
 	constructor() {
-		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, Codicon.arrowUp.classNames);
+		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, ThemeIcon.asClassName(Codicon.arrowUp));
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {
@@ -230,7 +234,7 @@ export class CancelSearch extends Action {
 	public static LABEL = localize('cancelSearchAction', "Close");
 
 	constructor() {
-		super(CancelSearch.ID, CancelSearch.LABEL, Codicon.chromeClose.classNames);
+		super(CancelSearch.ID, CancelSearch.LABEL, ThemeIcon.asClassName(Codicon.chromeClose));
 	}
 
 	public override async run(context: NodeSearchWidget): Promise<void> {

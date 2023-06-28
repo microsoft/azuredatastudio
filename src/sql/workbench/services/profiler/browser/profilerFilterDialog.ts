@@ -7,7 +7,6 @@ import 'vs/css!./media/profilerFilterDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -16,7 +15,7 @@ import { localize } from 'vs/nls';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachButtonStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
@@ -29,6 +28,7 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import * as aria from 'vs/base/browser/ui/aria/aria';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
 const ApplyText: string = localize('profilerFilterDialog.apply', "Apply");
@@ -109,11 +109,11 @@ export class ProfilerFilterDialog extends Modal {
 		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession(), 'right', true);
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
 		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'), 'right', true);
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-		this._register(attachButtonStyler(this._applyButton, this._themeService));
-		this._register(attachButtonStyler(this._saveFilterButton, this._themeService));
-		this._register(attachButtonStyler(this._loadFilterButton, this._themeService));
+		this._register(this._okButton);
+		this._register(this._cancelButton);
+		this._register(this._applyButton);
+		this._register(this._saveFilterButton);
+		this._register(this._loadFilterButton);
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -246,8 +246,10 @@ export class ProfilerFilterDialog extends Modal {
 
 		const operatorDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), Operators, Operators[0], OperatorText);
 
-		const valueText = new InputBox(DOM.append(row, DOM.$('td')), this.contextViewService, { ariaLabel: ValueText });
-		this._register(attachInputBoxStyler(valueText, this._themeService));
+		const valueText = new InputBox(DOM.append(row, DOM.$('td')), this.contextViewService, {
+			ariaLabel: ValueText,
+			inputBoxStyles: defaultInputBoxStyles
+		});
 
 		const removeCell = DOM.append(row, DOM.$('td'));
 		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.codicon.remove', {

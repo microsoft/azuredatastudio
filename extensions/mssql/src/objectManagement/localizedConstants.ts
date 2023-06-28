@@ -46,6 +46,8 @@ export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', 
 export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
 export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
 export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
+export const AddFileAriaLabel = localize('objectManagement.addFileText', "Add database files");
+export const RemoveFileAriaLabel = localize('objectManagement.removeFileText', "Remove database file");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
@@ -187,6 +189,11 @@ export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGro
 export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
 export const AttachDatabaseDialogTitle = localize('objectManagement.attachDatabaseDialogTitle', "Attach Database (Preview)");
 export const NoDatabaseFilesError = localize('objectManagement.doDatabaseFilesError', "No database files were specified to attach to the server.");
+export const DatabasesToAttachLabel = localize('objectManagement.databasesToAttach', "Databases to Attach");
+export const AssociatedFilesLabel = localize('objectManagement.associatedDatabaseFiles', "Associated Database Files");
+export const MdfFileLocation = localize('objectManagement.mdfFileLocation', "MDF File Location");
+export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
+export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
