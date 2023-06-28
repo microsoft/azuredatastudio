@@ -13,18 +13,16 @@ import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 
 import { IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
+import { asCssVariable, inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
 import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { getInputBoxStyle } from 'vs/platform/theme/browser/defaultStyles';
 
 export const STDIN_SELECTOR: string = 'stdin-component';
 @Component({
@@ -44,7 +42,6 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 
 
 	constructor(
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
@@ -54,17 +51,16 @@ export class StdInComponent extends AngularDisposable implements AfterViewInit {
 		let inputOptions: IInputOptions = {
 			placeholder: '',
 			ariaLabel: this.prompt,
-			inputBoxStyles: defaultInputBoxStyles
+			inputBoxStyles: getInputBoxStyle({
+				inputValidationInfoBackground: asCssVariable(inputBackground),
+				inputValidationInfoBorder: asCssVariable(inputBorder)
+			})
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		if (this.password) {
 			this._input.inputElement.type = 'password';
 		}
 		this._register(this._input);
-		this._register(attachInputBoxStyler(this._input, this.themeService, {
-			inputValidationInfoBackground: inputBackground,
-			inputValidationInfoBorder: inputBorder,
-		}));
 		if (this.cellModel) {
 			this._register(this.cellModel.onExecutionStateChange((status) => this.handleExecutionChange(status)));
 		}
