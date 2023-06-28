@@ -595,7 +595,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	public async filterElementChildren(node: TreeNode): Promise<void> {
 		await FilterDialog.getFiltersForProperties(
 			node.filterProperties,
-			localize('objectExplorer.filterDialogTitle', "Filter Settings: {0}", node.getConnectionProfile().title),
+			localize('objectExplorer.filterDialogTitle', "Filter Settings"),
 			node.nodePath,
 			node.filters,
 			async (filters) => {
