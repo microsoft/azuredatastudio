@@ -579,7 +579,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			const providerSupportCopyResults = this._capabilitiesService.getCapabilities(providerId).connection.supportCopyResultsToClipboard;
 			const preferProvidersCopyHandler = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.preferProvidersCopyHandler;
 			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
-				await this.handleCopyRequestByProvider(selections);
+				await this.handleCopyRequestByProvider(selections, includeHeaders);
 			} else {
 				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
 			}

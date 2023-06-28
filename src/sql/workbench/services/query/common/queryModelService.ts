@@ -82,7 +82,7 @@ export class QueryModelService implements IQueryModelService {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
-		@ILogService private _logService: ILogService,
+		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();

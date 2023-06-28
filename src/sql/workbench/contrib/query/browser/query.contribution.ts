@@ -305,7 +305,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.skipNewLineAfterTrailingLineBreak', "Whether to skip adding a line break between rows when copying results when the previous row already has a trailing line break. The default value is false."),
+			'description': localize('queryEditor.results.skipNewLineAfterTrailingLineBreak', "Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false."),
 			'default': false
 		},
 		'queryEditor.results.preferProvidersCopyHandler': {
