@@ -6,6 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscodeMssql from 'vscode-mssql';
 import { DataSource } from './dataSources';
+import { DataSourceJson } from './dataSourceJson';
 import * as constants from '../../common/constants';
 
 /**

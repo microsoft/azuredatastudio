@@ -10,7 +10,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -22,7 +21,6 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -51,6 +49,8 @@ export class ErrorMessageDialog extends Modal {
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
 
+	protected _telemetryView: TelemetryKeys.TelemetryView | string = TelemetryKeys.TelemetryView.ErrorMessageDialog;
+
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -60,12 +60,12 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IOpenerService private readonly _openerService: IOpenerService,
-		protected _telemetryView: TelemetryKeys.TelemetryView | string = TelemetryKeys.TelemetryView.ErrorMessageDialog,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true, height: 340 });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
 		this._readMoreLabel = localize('errorMessageDialog.readMore', "Read More");
+
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -81,7 +81,6 @@ export class ErrorMessageDialog extends Modal {
 			this._actionButtons.unshift(this.createStandardButton(localize('errorMessageDialog.action', "Action"), () => this.onActionSelected(i)));
 		}
 		this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
-		this._register(attachButtonStyler(this._okButton, this._themeService));
 	}
 
 	private createCopyButton() {
@@ -91,16 +90,12 @@ export class ErrorMessageDialog extends Modal {
 				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
 			}
 		}, 'left', true);
-		this._copyButton!.icon = {
-			id: 'codicon scriptToClipboard'
-		};
+		this._copyButton!.icon = 'codicon scriptToClipboard';
 		this._copyButton!.element.title = copyButtonLabel;
-		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
 		let button = this.addFooterButton(label, onSelect, 'right', false);
-		this._register(attachButtonStyler(button, this._themeService));
 		return button;
 	}
 

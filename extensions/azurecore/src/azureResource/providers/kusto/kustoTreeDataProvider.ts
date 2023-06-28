@@ -56,13 +56,13 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<GraphDat
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: KustoTreeDataProvider.containerId,
 			label: KustoTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/dataExplorerClusterDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

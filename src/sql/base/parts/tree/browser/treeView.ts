@@ -20,11 +20,12 @@ import { HeightMap, IViewItem } from 'sql/base/parts/tree/browser/treeViewModel'
 import * as _ from 'sql/base/parts/tree/browser/tree';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DataTransfers, StaticDND, IDragAndDropData } from 'vs/base/browser/dnd';
+import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { DefaultTreestyler } from './treeDefaults';
 import { Delayer, timeout } from 'vs/base/common/async';
 import { MappedNavigator } from 'sql/base/common/navigator';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { StaticDND } from 'vs/base/browser/ui/list/listView';
 
 export interface IRow {
 	element: HTMLElement | null;

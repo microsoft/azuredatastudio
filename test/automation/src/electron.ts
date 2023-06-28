@@ -49,13 +49,22 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 		args.push('--disable-dev-shm-usage');
 	}
 
+	if (process.platform === 'darwin') {
+		// On macOS force software based rendering since we are seeing GPU process
+		// hangs when initializing GL context. This is very likely possible
+		// that there are new displays available in the CI hardware and
+		// the relevant drivers couldn't be loaded via the GPU sandbox.
+		// TODO(deepak1556): remove this switch with Electron update.
+		args.push('--use-gl=swiftshader');
+	}
+
 	if (remote) {
 		// Replace workspace path with URI
 		args[0] = `--${workspacePath.endsWith('.code-workspace') ? 'file' : 'folder'}-uri=vscode-remote://test+test/${URI.file(workspacePath).path}`;
 
 		if (codePath) {
 			// running against a build: copy the test resolver extension
-			await measureAndLog(copyExtension(root, extensionsPath, 'vscode-test-resolver'), 'copyExtension(vscode-test-resolver)', logger);
+			await measureAndLog(() => copyExtension(root, extensionsPath, 'vscode-test-resolver'), 'copyExtension(vscode-test-resolver)', logger);
 		}
 		args.push('--enable-proposed-api=vscode.vscode-test-resolver');
 		const remoteDataDir = `${userDataDir}-server`;

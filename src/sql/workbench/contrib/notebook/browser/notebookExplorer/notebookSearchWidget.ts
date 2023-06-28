@@ -11,18 +11,18 @@ import { IFocusTracker, append, $, trackFocus } from 'vs/base/browser/dom';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import * as Constants from 'sql/workbench/common/constants';
-import { IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
-import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActions';
-import { attachFindReplaceInputBoxStyler } from 'vs/platform/theme/common/styler';
+import { IInputBoxStyles, IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
+import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActionsBase';
 import { isMacintosh } from 'vs/base/common/platform';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextScopedFindInput } from 'vs/platform/history/browser/contextScopedHistoryWidget';
+import { IToggleStyles } from 'vs/base/browser/ui/toggle/toggle';
+import { defaultInputBoxStyles, defaultToggleStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export interface INotebookExplorerSearchOptions {
 	value?: string;
@@ -33,6 +33,8 @@ export interface INotebookExplorerSearchOptions {
 	replaceHistory?: string[];
 	preserveCase?: boolean;
 	showContextToggle?: boolean;
+	inputBoxStyles: IInputBoxStyles;
+	toggleStyles: IToggleStyles;
 }
 
 const ctrlKeyMod = (isMacintosh ? KeyMod.WinCtrl : KeyMod.CtrlCmd);
@@ -83,7 +85,6 @@ export class NotebookSearchWidget extends Widget {
 		container: HTMLElement,
 		options: INotebookExplorerSearchOptions,
 		@IContextViewService private readonly contextViewService: IContextViewService,
-		@IThemeService private readonly themeService: IThemeService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IKeybindingService private readonly keyBindingService: IKeybindingService,
 		@IClipboardService private readonly clipboardServce: IClipboardService,
@@ -133,16 +134,17 @@ export class NotebookSearchWidget extends Widget {
 			label: localize('label.Search', 'Search: Type Search Term and press Enter to search or Escape to cancel'),
 			validation: (value: string) => this.validateSearchInput(value),
 			placeholder: localize('search.placeHolder', "Search"),
-			appendCaseSensitiveLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleCaseSensitiveCommandId), this.keyBindingService),
-			appendWholeWordsLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleWholeWordCommandId), this.keyBindingService),
-			appendRegexLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleRegexCommandId), this.keyBindingService),
+			appendCaseSensitiveLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleCaseSensitiveCommandId)),
+			appendWholeWordsLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleWholeWordCommandId)),
+			appendRegexLabel: appendKeyBindingLabel('', this.keyBindingService.lookupKeybinding(Constants.ToggleRegexCommandId)),
 			history: options.searchHistory,
-			flexibleHeight: true
+			flexibleHeight: true,
+			inputBoxStyles: options.inputBoxStyles ?? defaultInputBoxStyles,
+			toggleStyles: options.toggleStyles ?? defaultToggleStyles
 		};
 
 		const searchInputContainer = append(parent, $('.search-container.input-box'));
-		this.searchInput = this._register(new ContextScopedFindInput(searchInputContainer, this.contextViewService, inputOptions, this.contextKeyService, true));
-		this._register(attachFindReplaceInputBoxStyler(this.searchInput, this.themeService));
+		this.searchInput = this._register(new ContextScopedFindInput(searchInputContainer, this.contextViewService, inputOptions, this.contextKeyService));
 		this.searchInput.onKeyDown((keyboardEvent: IKeyboardEvent) => this.onSearchInputKeyDown(keyboardEvent));
 		this.searchInput.setValue(options.value || '');
 		this.searchInput.setRegex(!!options.isRegex);

@@ -13,6 +13,8 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { ViewContainerLocation } from 'vs/workbench/common/views';
+import { Action2 } from 'vs/platform/actions/common/actions';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 function getScenarioID(scenarioType: string) {
 	return 'workbench.extensions.action.show' + scenarioType;
@@ -68,21 +70,23 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 	}
 }
 
-export class OpenExtensionAuthoringDocsAction extends Action {
+export class OpenExtensionAuthoringDocsAction extends Action2 {
 
 	static readonly ID = 'workbench.extensions.action.openExtensionAuthoringDocs';
+	static readonly LABEL_ORG = "Author an Extension...";
 	static readonly LABEL = localize('openExtensionAuthoringDocs', "Author an Extension...");
 	private static readonly extensionAuthoringDocsURI = 'https://docs.microsoft.com/sql/azure-data-studio/extension-authoring';
 
-	constructor(
-		id: string = OpenExtensionAuthoringDocsAction.ID,
-		label: string = OpenExtensionAuthoringDocsAction.LABEL,
-		@IOpenerService private readonly openerService: IOpenerService,
-	) {
-		super(id, label);
+	constructor() {
+		super({
+			id: OpenExtensionAuthoringDocsAction.ID,
+			title: { value: OpenExtensionAuthoringDocsAction.LABEL, original: OpenExtensionAuthoringDocsAction.LABEL_ORG },
+			f1: true,
+		});
 	}
 
-	override async run(): Promise<void> {
-		await this.openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
+	override async run(accessor: ServicesAccessor): Promise<void> {
+		const openerService = accessor.get(IOpenerService);
+		await openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
 	}
 }

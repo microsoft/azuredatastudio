@@ -11,7 +11,7 @@ import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
 import { filterIconClassNames, propertiesSearchDescription, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
-import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
@@ -28,6 +28,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export abstract class ExecutionPlanPropertiesViewBase extends Disposable implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -143,10 +145,10 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
 			ariaDescription: propertiesSearchDescription,
-			placeholder: searchPlaceholder
+			placeholder: searchPlaceholder,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 
-		this._register(attachInputBoxStyler(this._propertiesSearchInput, this._themeService));
 		this._propertiesSearchInput.element.classList.add('codicon', filterIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
 		this._register(this._propertiesSearchInput.onDidChange(e => {
@@ -403,7 +405,7 @@ export class ClosePropertyViewAction extends Action {
 	public static LABEL = localize('executionPlanPropertyViewClose', "Close");
 
 	constructor() {
-		super(ClosePropertyViewAction.ID, ClosePropertyViewAction.LABEL, Codicon.close.classNames);
+		super(ClosePropertyViewAction.ID, ClosePropertyViewAction.LABEL, ThemeIcon.asClassName(Codicon.close));
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
@@ -465,7 +467,7 @@ export class ExpandAllPropertiesAction extends Action {
 	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
 
 	constructor() {
-		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, Codicon.expandAll.classNames);
+		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, ThemeIcon.asClassName(Codicon.expandAll));
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
@@ -478,7 +480,7 @@ export class CollapseAllPropertiesAction extends Action {
 	public static LABEL = localize('executionPlanCollapseAllProperties', 'Collapse All');
 
 	constructor() {
-		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, Codicon.collapseAll.classNames);
+		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, ThemeIcon.asClassName(Codicon.collapseAll));
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {

@@ -498,8 +498,8 @@ suite.skip('NotebookService:', function (): void {
 		const methodName = 'removeContributedProvidersFromCache';
 		await notebookService.registrationComplete;
 		const providerId = 'providerId1';
-		extensionServiceMock.setup(x => x.getExtensions()).returns(() => {
-			return Promise.resolve([
+		extensionServiceMock.setup(x => x.extensions).returns(() => {
+			return [
 				<IExtensionDescription>{
 					name: 'testExtension',
 					publisher: 'Test',
@@ -521,7 +521,7 @@ suite.skip('NotebookService:', function (): void {
 					forceReload: true,
 					targetPlatform: undefined
 				}
-			]);
+			];
 		});
 		const extensionIdentifier = (<DidUninstallExtensionEvent>{
 			identifier: {
@@ -542,7 +542,7 @@ suite.skip('NotebookService:', function (): void {
 		};
 		errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
 		await notebookService.registrationComplete;
-		extensionServiceMock.setup(x => x.getExtensions()).returns(() => undefined);
+		extensionServiceMock.setup(x => x.extensions).returns(() => undefined);
 		const extensionIdentifier = (<DidUninstallExtensionEvent>{
 			identifier: {
 				id: 'id1'

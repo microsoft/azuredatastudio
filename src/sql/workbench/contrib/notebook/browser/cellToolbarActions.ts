@@ -397,22 +397,22 @@ export class CellToggleMoreActionViewItem extends DropdownMenuActionViewItem {
 		this.setActionContext(this._cellContext);
 		this._actions = [
 			instantiationService.createInstance(ConvertCellAction, 'convertCell', localize('convertCell', "Convert Cell")),
-			new Separator(),
+			<any>new Separator(),
 			instantiationService.createInstance(RunCellsAction, 'runAllAbove', localize('runAllAbove', "Run Cells Above"), false),
 			instantiationService.createInstance(RunCellsAction, 'runAllBelow', localize('runAllBelow', "Run Cells Below"), true),
-			new Separator(),
+			<any>new Separator(),
 			instantiationService.createInstance(AddCellFromContextAction, 'codeAbove', localize('codeAbove', "Insert Code Above"), CellTypes.Code, false),
 			instantiationService.createInstance(AddCellFromContextAction, 'codeBelow', localize('codeBelow', "Insert Code Below"), CellTypes.Code, true),
-			new Separator(),
+			<any>new Separator(),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownAbove', localize('markdownAbove', "Insert Text Above"), CellTypes.Markdown, false),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownBelow', localize('markdownBelow', "Insert Text Below"), CellTypes.Markdown, true),
-			new Separator(),
+			<any>new Separator(),
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
-			new Separator(),
+			<any>new Separator(),
 			instantiationService.createInstance(ParametersCellAction, 'makeParameterCell', localize('makeParameterCell', "Make parameter cell"), true),
 			instantiationService.createInstance(ParametersCellAction, 'removeParameterCell', localize('RemoveParameterCell', "Remove parameter cell"), false),
-			new Separator(),
+			<any>new Separator(),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
 		];
 	}

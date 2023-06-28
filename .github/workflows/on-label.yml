@@ -10,6 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Process Label Action
-        uses: hramos/label-actions@v1
+        uses: hramos/label-actions@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
