@@ -287,16 +287,15 @@ vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
 		await displayReloadAds(Constants.ProviderSettingsJsonSection);
 	}
 });
-if (providerSettingsJson && providerSettingsJson.length > 0 && providerSettingsJson[0] && providerSettingsJson[0].name !== '') {
+if (providerSettingsJson) {
 	try {
-		if (providerSettingsJson) {
-			for (let cloudProvider of providerSettingsJson) {
-				// build provider setting
-				let newSettings = buildProviderSettings(cloudProvider);
-				allSettings.push(newSettings)
-			}
-			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
+		for (let cloudProvider of providerSettingsJson) {
+			// build provider setting
+			let newSettings = buildProviderSettings(cloudProvider);
+			allSettings.push(newSettings)
 		}
+		void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
+
 	} catch (error) {
 		console.log(error);
 		void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load custom endpoints file'));

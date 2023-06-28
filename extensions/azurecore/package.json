@@ -135,33 +135,6 @@
             "scope": "resource",
             "items": {
               "type": "object",
-              "default": {
-                "name": "",
-                "settings": {
-                  "metadata": {
-                    "displayName": "",
-                    "id": "",
-                    "endpoints": {
-                      "host": "",
-                      "microsoftResource": "",
-                      "graphResource": "",
-                      "msGraphResource": "",
-                      "armResource": "",
-                      "sqlResource": "",
-                      "azureKeyVaultResource": "",
-                      "azureLogAnalyticsResource": "",
-                      "azureStorageResource": {
-                        "endpoint": "",
-                        "endpointSuffix": ""
-                      },
-                      "azureKustoResource": "",
-                      "powerBiResource": "",
-                      "scopes": "",
-                      "portalEndpoint": ""
-                    }
-                  }
-                }
-              },
               "properties":{
                 "name": {
                   "type": "string",
