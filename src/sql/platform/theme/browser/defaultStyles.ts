@@ -10,6 +10,7 @@ import { ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITableFilterStyles } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { disabledCheckboxForeground } from 'sql/platform/theme/common/colors';
+import { IInfoBoxStyles } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, defaultSelectBoxStyles as vsDefaultSelectBoxStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
@@ -77,3 +78,10 @@ export const defaultSelectBoxStyles: ISelectBoxStyles = {
 	inputValidationErrorBackground: cr.asCssVariable(cr.inputValidationErrorBackground),
 	...vsDefaultSelectBoxStyles
 }
+
+export const defaultInfoBoxStyles: IInfoBoxStyles = {
+	informationBackground: cr.asCssVariable(sqlcr.infoBoxInformationBackground),
+	warningBackground: cr.asCssVariable(sqlcr.infoBoxWarningBackground),
+	errorBackground: cr.asCssVariable(sqlcr.infoBoxErrorBackground),
+	successBackground: cr.asCssVariable(sqlcr.infoBoxSuccessBackground)
+};
