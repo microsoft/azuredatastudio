@@ -11,7 +11,6 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -38,7 +37,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles, defaultListBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultListBoxStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -241,7 +240,7 @@ export class BackupComponent extends AngularDisposable {
 			inputBoxStyles: defaultInputBoxStyles
 		}));
 		// Set backup type
-		this.backupTypeSelectBox = this._register(new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE }));
+		this.backupTypeSelectBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE }));
 		this.backupTypeSelectBox.render(this.backupTypeElement!.nativeElement);
 
 		// Set copy-only check box
@@ -348,13 +347,13 @@ export class BackupComponent extends AngularDisposable {
 		this.removeFilePathButton.title = localize('removeFile', "Remove files");
 
 		// Set compression
-		this.compressionSelectBox = this._register(new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION }));
+		this.compressionSelectBox = this._register(new SelectBox(this.compressionOptions, this.compressionOptions[0], defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION }));
 		this.compressionSelectBox.render(this.compressionElement!.nativeElement);
 
 		// Set encryption
-		this.algorithmSelectBox = this._register(new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.ALGORITHM }));
+		this.algorithmSelectBox = this._register(new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.localizedStrings.ALGORITHM }));
 		this.algorithmSelectBox.render(this.encryptionAlgorithmElement!.nativeElement);
-		this.encryptorSelectBox = this._register(new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.CERTIFICATE_OR_ASYMMETRIC_KEY }));
+		this.encryptorSelectBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.localizedStrings.CERTIFICATE_OR_ASYMMETRIC_KEY }));
 		this.encryptorSelectBox.render(this.encryptorElement!.nativeElement);
 
 		// Set media
@@ -608,12 +607,6 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private registerListeners(): void {
-		// Theme styler
-		this._register(attachSelectBoxStyler(this.backupTypeSelectBox!, this.themeService));
-		this._register(attachSelectBoxStyler(this.compressionSelectBox!, this.themeService));
-		this._register(attachSelectBoxStyler(this.algorithmSelectBox!, this.themeService));
-		this._register(attachSelectBoxStyler(this.encryptorSelectBox!, this.themeService));
-
 		this._register(this.backupTypeSelectBox!.onDidSelect(selected => this.onBackupTypeChanged()));
 		this._register(this.addUrlPathButton!.onDidClick(() => this.onAddUrlClick()));
 		this._register(this.addFilePathButton!.onDidClick(() => this.onAddFileClick()));

@@ -6,11 +6,12 @@ import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { IEditableDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListBoxStyles } from 'sql/base/browser/ui/listBox/listBox';
+import { ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITableFilterStyles } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { disabledCheckboxForeground } from 'sql/platform/theme/common/colors';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
-import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, defaultSelectBoxStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, defaultSelectBoxStyles as vsDefaultSelectBoxStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 
 
@@ -64,5 +65,15 @@ export const defaultListBoxStyles: IListBoxStyles = {
 	inputValidationWarningBackground: cr.asCssVariable(cr.inputValidationWarningBackground),
 	inputValidationErrorBorder: cr.asCssVariable(cr.inputValidationErrorBorder),
 	inputValidationErrorBackground: cr.asCssVariable(cr.inputValidationErrorBackground),
-	...defaultSelectBoxStyles
+	...vsDefaultSelectBoxStyles
+}
+
+export const defaultSelectBoxStyles: ISelectBoxStyles = {
+	inputValidationInfoBorder: cr.asCssVariable(cr.inputValidationInfoBorder),
+	inputValidationInfoBackground: cr.asCssVariable(cr.inputValidationInfoBackground),
+	inputValidationWarningBorder: cr.asCssVariable(cr.inputValidationWarningBorder),
+	inputValidationWarningBackground: cr.asCssVariable(cr.inputValidationWarningBackground),
+	inputValidationErrorBorder: cr.asCssVariable(cr.inputValidationErrorBorder),
+	inputValidationErrorBackground: cr.asCssVariable(cr.inputValidationErrorBackground),
+	...vsDefaultSelectBoxStyles
 }

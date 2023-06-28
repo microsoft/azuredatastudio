@@ -27,6 +27,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -55,7 +56,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		if (authTypeOption) {
 			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
-			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
+			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, defaultSelectBoxStyles, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 	}
 
