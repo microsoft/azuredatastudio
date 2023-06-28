@@ -19,7 +19,7 @@ import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { ISelectBoxStyles, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { localize } from 'vs/nls';
 import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEditorFactory';
@@ -53,14 +53,13 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultInputBoxStyles, defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
-import { defaultCheckboxStyles, defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
 	tableStyles?: ITableStyles;
-	selectBoxStyles?: ISelectBoxStyles;
 	paneSeparator?: Color;
 	groupHeaderBackground?: Color;
 }
@@ -222,7 +221,6 @@ export class Designer extends Disposable {
 			component.style(this._styles.tableStyles);
 		} else if (component instanceof Dropdown) {
 		} else {
-			component.style(this._styles.selectBoxStyles);
 		}
 	}
 
@@ -800,7 +798,7 @@ export class Designer extends Disposable {
 						}
 					});
 				} else {
-					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined, {
+					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, defaultSelectBoxStyles, this._contextViewProvider, undefined, {
 						ariaLabel: componentDefinition.componentProperties?.title,
 						ariaDescription: componentDefinition.description
 					});

@@ -14,9 +14,8 @@ import * as dom from 'vs/base/browser/dom';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 const $ = dom.$;
 
 /**
@@ -158,17 +157,14 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 	constructor(
 		private _editor: EditDataEditor,
 		public action: IAction,
-		@IContextViewService contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService) {
+		@IContextViewService contextViewService: IContextViewService) {
 		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
-		this.selectBox = new SelectBox(this._options, this._options[this._currentOptionsIndex], contextViewService);
+		this.selectBox = new SelectBox(this._options, this._options[this._currentOptionsIndex], defaultSelectBoxStyles, contextViewService);
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
-
-		this._register(attachSelectBoxStyler(this.selectBox, _themeService));
 	}
 
 	public render(container: HTMLElement): void {
@@ -213,7 +209,6 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
-		this._register(attachSelectBoxStyler(this.selectBox, this._themeService));
 	}
 }
 
