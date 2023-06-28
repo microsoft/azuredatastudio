@@ -154,7 +154,7 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		parent.classList.add('query-editor');
 
 		this.splitviewContainer = DOM.$('.query-editor-view');
@@ -202,8 +202,9 @@ export class QueryEditor extends EditorPane {
 		}));
 
 		// Create Actions for the toolbar
-		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction, this);
+
 		this._cancelQueryAction = this.instantiationService.createInstance(actions.CancelQueryAction, this);
+		this._runQueryAction = this.instantiationService.createInstance(actions.RunQueryAction, this);
 		this._toggleConnectDatabaseAction = this.instantiationService.createInstance(actions.ToggleConnectDatabaseAction, this, false);
 		this._changeConnectionAction = this.instantiationService.createInstance(actions.ConnectDatabaseAction, this, true);
 		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);
@@ -283,7 +284,6 @@ export class QueryEditor extends EditorPane {
 		if (action.id === actions.ListDatabasesAction.ID) {
 			if (!this._listDatabasesActionItem) {
 				this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this, action);
-				this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
 			}
 			return this._listDatabasesActionItem;
 		}
@@ -452,7 +452,7 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
-	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
+	protected override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		this.textFileEditor.setVisible(visible, group);
 		this.textResourceEditor.setVisible(visible, group);
 		this.resultsEditor.setVisible(visible, group);

@@ -10,7 +10,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import {
 	DisconnectConnectionAction, EditConnectionAction,
-	DeleteConnectionAction, RefreshAction, EditServerGroupAction, AddServerAction, FilterChildrenAction, RemoveFilterAction, DeleteRecentConnectionsAction
+	DeleteConnectionAction, RefreshAction, EditServerGroupAction, FilterChildrenAction, RemoveFilterAction, DeleteRecentConnectionsAction, AddServerAction1
 } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -27,8 +27,6 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 /**
  *  Provides actions for the server tree elements
@@ -45,7 +43,6 @@ export class ServerTreeActionProvider {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private _logService: ILogService,
-		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -225,7 +222,7 @@ export class ServerTreeActionProvider {
 	private getConnectionProfileGroupActions(element: ConnectionProfileGroup): IAction[] {
 		// TODO: Should look into using the MenuRegistry for this
 		return [
-			this._instantiationService.createInstance(AddServerAction, AddServerAction.ID, AddServerAction.LABEL),
+			this._instantiationService.createInstance(AddServerAction1, AddServerAction1.ID, AddServerAction1.LABEL),
 			this._instantiationService.createInstance(EditServerGroupAction, EditServerGroupAction.ID, EditServerGroupAction.LABEL, element),
 			this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_GROUP_LABEL, element)
 		];
@@ -252,7 +249,7 @@ export class ServerTreeActionProvider {
 		// Contribute refresh action for scriptable objects via contribution
 		if (!this.isScriptableObject(context)) {
 			// Adding filter action if the node has filter properties
-			if (treeNode?.filterProperties?.length > 0 && this._configurationService.getValue<boolean>(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
+			if (treeNode?.filterProperties?.length > 0) {
 				actions.push(this._instantiationService.createInstance(FilterChildrenAction, FilterChildrenAction.ID, FilterChildrenAction.LABEL, context.treeNode));
 			}
 			// Adding remove filter action if the node has filters applied to it and the action is not inline only.

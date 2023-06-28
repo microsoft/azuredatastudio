@@ -532,37 +532,42 @@
         {
           "command": "mssql.newObject",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@1",
+          "group": "z_objectManagement",
           "isDefault": true
         },
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
-          "group": "0_query@1"
+          "group": "z_objectManagement"
         },
         {
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@2"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "0_query@3"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
-          "group": "0_query@3"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.detachDatabase",
           "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement"
+        },
+        {
+          "command": "mssql.attachDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && !isCloud && config.workbench.enablePreviewFeatures",
           "group": "0_query@4"
         },
         {
@@ -618,27 +623,27 @@
         {
           "command": "mssql.newObject",
           "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@1"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@1"
+          "group": "z_objectManagement"
         },
         {
           "command": "mssql.deleteObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@2"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|Table|View|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "connection@3"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.renameObject",
           "when": "connectionProvider == MSSQL && nodeType == Column && config.workbench.enablePreviewFeatures && nodePath =~ /^.*\\/Tables\\/.*\\/Columns\\/.*$/",
-          "group": "connection@3"
+          "group": "1_objectManagement"
         },
         {
           "command": "mssql.enableGroupBySchema",

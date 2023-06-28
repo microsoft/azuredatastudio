@@ -14,18 +14,16 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { localize } from 'vs/nls';
 import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class ViewOptionsModal extends Modal {
 	private _submitButton: Button;
-	private _cancelButton: Button;
 	private _optionsMap: { [name: string]: InputBox | Checkbox } = {};
 	private _viewNameInput: InputBox;
 
@@ -81,7 +79,8 @@ export class ViewOptionsModal extends Modal {
 					return undefined;
 				}
 			},
-			ariaLabel: localize('viewOptionsModal.name', "View Name")
+			ariaLabel: localize('viewOptionsModal.name', "View Name"),
+			inputBoxStyles: defaultInputBoxStyles
 		});
 	}
 
@@ -97,11 +96,7 @@ export class ViewOptionsModal extends Modal {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('save', "Save"), () => this.onSubmitHandler());
-		this._cancelButton = this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
-
-		this._register(attachInputBoxStyler(this._viewNameInput!, this._themeService));
-		this._register(attachButtonStyler(this._submitButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
+		this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
 
 		this._register(this._viewNameInput.onDidChange(v => this.validate()));
 

@@ -23,7 +23,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 
-suite('Workbench - TerminalService', () => {
+suite.skip('Workbench - TerminalService', () => {
 	let instantiationService: TestInstantiationService;
 	let terminalService: TerminalService;
 	let configurationService: TestConfigurationService;

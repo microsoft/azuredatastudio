@@ -11,9 +11,7 @@ import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/boots
 import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { DialogModule } from 'sql/workbench/services/dialog/browser/dialog.module';
 import { Button } from 'vs/base/browser/ui/button/button';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -61,7 +59,7 @@ export class WizardModal extends Modal {
 		this._useDefaultMessageBoxLocation = false;
 	}
 
-	public layout(): void {
+	protected layout(): void {
 
 	}
 
@@ -71,7 +69,6 @@ export class WizardModal extends Modal {
 
 		if (this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
-			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
 		this._wizard.customButtons.forEach(button => {
@@ -122,7 +119,6 @@ export class WizardModal extends Modal {
 		button.onUpdate(() => {
 			this.updateButtonElement(buttonElement, button, requirePageValid);
 		});
-		attachButtonStyler(buttonElement, this._themeService);
 		this.updateButtonElement(buttonElement, button, requirePageValid);
 		return buttonElement;
 	}

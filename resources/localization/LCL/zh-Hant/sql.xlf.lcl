@@ -14388,6 +14388,30 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.scriptActionError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while executing the action: {0}.]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.scriptingAction.close" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.scriptingAction.inProgress" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Generating script...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在產生指令碼...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/actions.tableDesigner.publishTableChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish Changes...]]></Val>
@@ -14666,63 +14690,6 @@
           <Val><![CDATA[Yes (recommended)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[是 (建議)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.message" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data Studio 現在會針對所有 SQL Server 連線預設啟用加密。除非您變更特定加密相關連線屬性，否則這可能會導致現有的連線無法再使用。{0}建議您檢閱下列連結以了解更多詳細資料。]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.moreInfoLink" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[More information]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[詳細資訊]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Important Update]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[重要更新]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.message" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[使用 Azure Active Directory 驗證的連線現在將在登入期間從伺服器擷取租用戶資訊。連線到 Azure SQL 執行個體時，不再需要提供「Azure AD 租用戶」項目。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.moreInfoLink" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[More information]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[詳細資訊]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog.notifyHiddenTenant.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Important Update]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[重要更新]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16224,6 +16191,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[您確定要取消此連線嗎?]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.connTitleGroupSection" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[ (Group: {0})]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>

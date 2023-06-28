@@ -80,7 +80,7 @@ class TestParsedArgs implements NativeParsedArgs {
 	'install-source'?: string;
 	'list-extensions'?: boolean;
 	locale?: string;
-	log?: string;
+	log?: string[];
 	logExtensionHostCommunication?: boolean;
 	'max-memory'?: string;
 	'new-window'?: boolean;

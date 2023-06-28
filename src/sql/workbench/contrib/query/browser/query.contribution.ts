@@ -6,9 +6,8 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
-import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -32,7 +31,7 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQu
 import { FileQueryEditorSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorSerializer } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID, CATEGORIES, ParseSyntaxCommandId } from 'sql/workbench/contrib/query/browser/queryActions';
+import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
@@ -68,13 +67,11 @@ Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(EditorPaneDescriptor.create(QueryEditor, QueryEditor.ID, QueryEditor.LABEL), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
-const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
-
 new NewQueryTask().registerTask();
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
@@ -85,7 +82,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // New Query
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")
@@ -109,15 +106,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 });
 
 // Query Actions
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RunQueryKeyboardAction,
-		RunQueryKeyboardAction.ID,
-		RunQueryKeyboardAction.LABEL,
-		{ primary: KeyCode.F5 }
-	),
-	RunQueryKeyboardAction.LABEL
-);
+registerAction2(RunQueryKeyboardAction);
 
 // Only show Run Query if the active editor is a query editor.
 MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
@@ -126,120 +115,30 @@ MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
 	when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
 });
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RunCurrentQueryKeyboardAction,
-		RunCurrentQueryKeyboardAction.ID,
-		RunCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.F5 }
-	),
-	RunCurrentQueryKeyboardAction.LABEL
-);
+registerAction2(RunCurrentQueryKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		EstimatedExecutionPlanKeyboardAction,
-		EstimatedExecutionPlanKeyboardAction.ID,
-		EstimatedExecutionPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KeyL }
-	),
-	EstimatedExecutionPlanKeyboardAction.LABEL,
-	CATEGORIES.ExecutionPlan.value
-);
+registerAction2(EstimatedExecutionPlanKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ToggleActualPlanKeyboardAction,
-		ToggleActualPlanKeyboardAction.ID,
-		ToggleActualPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KeyM }
-	),
-	ToggleActualPlanKeyboardAction.LABEL,
-	CATEGORIES.ExecutionPlan.value
-);
+registerAction2(ToggleActualPlanKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		CopyQueryWithResultsKeyboardAction,
-		CopyQueryWithResultsKeyboardAction.ID,
-		CopyQueryWithResultsKeyboardAction.LABEL,
-		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyV) }
-	),
-	CopyQueryWithResultsKeyboardAction.LABEL
-);
+registerAction2(CopyQueryWithResultsKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		CancelQueryKeyboardAction,
-		CancelQueryKeyboardAction.ID,
-		CancelQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.Alt | KeyCode.PauseBreak }
-	),
-	CancelQueryKeyboardAction.LABEL
-);
+registerAction2(CancelQueryKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		RefreshIntellisenseKeyboardAction,
-		RefreshIntellisenseKeyboardAction.ID,
-		RefreshIntellisenseKeyboardAction.LABEL
-	),
-	RefreshIntellisenseKeyboardAction.LABEL
-);
+registerAction2(RefreshIntellisenseKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		FocusOnCurrentQueryKeyboardAction,
-		FocusOnCurrentQueryKeyboardAction.ID,
-		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyO }
-	),
-	FocusOnCurrentQueryKeyboardAction.LABEL
-);
+registerAction2(FocusOnCurrentQueryKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ParseSyntaxAction,
-		ParseSyntaxCommandId,
-		ParseSyntaxAction.LABEL,
-		{ primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KeyP }
-	),
-	ParseSyntaxAction.LABEL
-);
+registerAction2(ParseSyntaxAction);
 
 // Grid actions
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ToggleQueryResultsKeyboardAction,
-		ToggleQueryResultsKeyboardAction.ID,
-		ToggleQueryResultsKeyboardAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyR },
-		QueryEditorVisibleCondition
-	),
-	ToggleQueryResultsKeyboardAction.LABEL
-);
+registerAction2(ToggleQueryResultsKeyboardAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ToggleFocusBetweenQueryEditorAndResultsAction,
-		ToggleFocusBetweenQueryEditorAndResultsAction.ID,
-		ToggleFocusBetweenQueryEditorAndResultsAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyF },
-		QueryEditorVisibleCondition
-	),
-	ToggleFocusBetweenQueryEditorAndResultsAction.LABEL
-);
+registerAction2(ToggleFocusBetweenQueryEditorAndResultsAction);
 
 // Register Flavor Action
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ChangeFlavorAction,
-		ChangeFlavorAction.ID,
-		ChangeFlavorAction.LABEL
-	),
-	'Change Language Flavor'
-);
+registerAction2(ChangeFlavorAction);
 
 const GridKeyBindingWeight = 900;
 

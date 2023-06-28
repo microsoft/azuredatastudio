@@ -62,7 +62,7 @@ export class AzdataGraphView extends Disposable {
 		this.initializeGraphEvents();
 
 		configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.includes('executionPlan.tooltips.enableOnHoverTooltips')) {
+			if (e.affectedKeys.has('executionPlan.tooltips.enableOnHoverTooltips')) {
 				const enableHoverOnTooltip = configurationService.getValue<boolean>('executionPlan.tooltips.enableOnHoverTooltips');
 				if (this._diagram) {
 					this._diagram.setShowTooltipOnClick(!enableHoverOnTooltip);

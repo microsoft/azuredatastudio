@@ -56,13 +56,13 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<G
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: AzureMonitorTreeDataProvider.containerId,
 			label: AzureMonitorTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/logAnalyticsWorkspaces.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

@@ -157,12 +157,6 @@ export interface IAzureResourceCacheService {
 	update<T>(key: string, value: T): Promise<void>;
 }
 
-
-export interface IAzureResourceNodeWithProviderId {
-	resourceProviderId: string;
-	resourceNode: azureResource.IAzureResourceNode;
-}
-
 export interface IAzureResourceDbService<S extends GraphData, T extends GraphData> extends azureResource.IAzureResourceService {
 	convertDatabaseResource(resource: T, server?: S): azureResource.AzureResource | undefined;
 }

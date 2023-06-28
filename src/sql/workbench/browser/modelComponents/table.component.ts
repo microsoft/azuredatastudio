@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -41,6 +41,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { deepClone, equals } from 'vs/base/common/objects';
+import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -606,8 +607,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 	private registerFilterPlugin() {
-		const filterPlugin = new HeaderFilter<Slick.SlickData>(this.contextViewService);
-		this._register(attachTableFilterStyler(filterPlugin, this.themeService));
+		const filterPlugin = new HeaderFilter<Slick.SlickData>(defaultTableFilterStyles, this.contextViewService);
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = (<any>args).column.filterValues;

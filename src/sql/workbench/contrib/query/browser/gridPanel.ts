@@ -6,7 +6,7 @@
 import 'vs/css!./media/gridPanel';
 
 import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
@@ -60,6 +60,7 @@ import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegist
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { GridRange } from 'sql/base/common/gridRange';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -421,7 +422,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
@@ -491,7 +491,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		}
 		if (action) {
 			action.run(this.generateContext());
-			action.dispose();
 		}
 	}
 
@@ -619,11 +618,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			};
 			this.table.rerenderGrid();
 		}));
-		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+		this.filterPlugin = new HeaderFilter({
 			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
-		});
-		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
+			refreshColumns: !autoSizeOnRender, // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
+			...defaultTableFilterStyles
+		}, this.contextViewService, this.notificationService,);
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);
 			if (nullBackground) {
@@ -1113,7 +1112,6 @@ class GridTable<T> extends GridTableBase<T> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
@@ -1127,7 +1125,7 @@ class GridTable<T> extends GridTableBase<T> {
 			inMemoryDataProcessing: true,
 			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}
