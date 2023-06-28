@@ -10,7 +10,7 @@ import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { disabledCheckboxForeground } from 'sql/platform/theme/common/colors';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { asCssVariable, editorBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
+import { asCssVariable, editorBackground, inputBorder, inputForeground } from 'vs/platform/theme/common/colorRegistry';
 
 
 export const defaultCheckboxStyles: ICheckboxStyles = {
