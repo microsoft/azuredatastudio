@@ -12,7 +12,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { getEolString, shouldSkipNewLineAfterTrailingLineBreak, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -440,6 +440,9 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {
