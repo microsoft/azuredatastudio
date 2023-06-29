@@ -556,12 +556,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					// check if collector is still running
 					await this.migrationStateModel.refreshPerfDataCollection();
 					if (this.migrationStateModel._perfDataCollectionIsCollecting) {
-						// user started collecting data, and the collector is still running
-						const collectionStartTime = new Date(this.migrationStateModel._perfDataCollectionStartDate!);
-						const expectedRefreshTime = new Date(collectionStartTime.getTime() + this.migrationStateModel.refreshGetSkuRecommendationFrequency);
-						const timeLeft = Math.abs(new Date().getTime() - expectedRefreshTime.getTime());
-						await this.migrationStateModel.startSkuTimers(this, timeLeft);
-
+						// user started collecting data, ensure the collector is still running
+						await this.migrationStateModel.startSkuTimers(this);
+						await this.refreshSkuRecommendationComponents();
 					} else {
 						// user started collecting data, but collector is stopped
 						// set stop date to some date value

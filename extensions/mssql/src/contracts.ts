@@ -892,6 +892,11 @@ export interface AddSystemDatabaseReferenceParams extends AddDatabaseReferencePa
 	 * Type of system database
 	 */
 	systemDatabase: mssql.SystemDatabase;
+
+	/**
+	 * Type of reference - ArtifactReference or PackageReference
+	 */
+	referenceType: mssql.SystemDbReferenceType;
 }
 
 export interface AddUserDatabaseReferenceParams extends AddDatabaseReferenceParams {
@@ -1621,6 +1626,18 @@ export interface SearchObjectRequestParams {
 
 export namespace SearchObjectRequest {
 	export const type = new RequestType<SearchObjectRequestParams, mssql.ObjectManagement.SearchResultItem[], void, void>('objectManagement/search');
+}
+
+export interface DetachDatabaseRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+	dropConnections: boolean;
+	updateStatistics: boolean;
+	generateScript: boolean;
+}
+
+export namespace DetachDatabaseRequest {
+	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

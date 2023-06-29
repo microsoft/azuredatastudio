@@ -81,7 +81,7 @@ export class RemoveAccountAction extends Action {
 		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
 			primaryButton: localize('accountActions.yes', "Yes"),
-			secondaryButton: localize('accountActions.no', "No"),
+			cancelButton: localize('accountActions.no', "No"),
 			type: 'question'
 		};
 
@@ -123,7 +123,7 @@ export class ApplyFilterAction extends Action {
  */
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
-	public static LABEL = localize('refreshAccount', "Reenter your credentials");
+	public static LABEL = localize('refreshAccount', "Refresh your credentials");
 	public account?: azdata.Account;
 
 	constructor(

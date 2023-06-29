@@ -1,6 +1,19 @@
 {
 	"rules": {
-		"@typescript-eslint/explicit-function-return-type": ["off"],
-		"@typescript-eslint/await-thenable": ["off"]
+		"@typescript-eslint/naming-convention": [
+			"warn",
+			{
+				"selector": "default",
+				"modifiers": ["private"],
+				"format": null
+			},
+			{
+				"selector": "default",
+				"modifiers": ["public"],
+				"format": null
+			}
+		],
+		"@typescript-eslint/await-thenable": ["off"],
+		"@typescript-eslint/no-unsafe-assignment": "off"
 	}
 }

@@ -5,7 +5,10 @@
 
 export enum AzureResourceItemType {
 	account = 'azure.resource.itemType.account',
+	singleTenantAccount = 'azure.resource.itemType.singleTenantAccount',
+	multipleTenantAccount = 'azure.resource.itemType.multipleTenantAccount',
 	subscription = 'azure.resource.itemType.subscription',
+	tenant = 'azure.resource.itemType.tenant',
 	databaseContainer = 'azure.resource.itemType.databaseContainer',
 	database = 'azure.resource.itemType.database',
 	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
@@ -20,7 +23,10 @@ export enum AzureResourceItemType {
 	message = 'azure.resource.itemType.message',
 	azureMonitor = 'azure.resource.itemType.azureMonitor',
 	azureMonitorContainer = 'azure.resource.itemType.azureMonitorContainer',
-	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount'
+	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount',
+	cosmosDBMongoCluster = 'azure.resource.itemType.cosmosDBMongoCluster',
+	cosmosDBPostgresAccount = 'azure.resource.itemType.cosmosDBPostgresAccount',
+	cosmosDBPostgresCluster = 'azure.resource.itemType.cosmosDBPostgresCluster'
 }
 
 export enum AzureResourceServiceNames {
@@ -31,6 +37,7 @@ export enum AzureResourceServiceNames {
 	subscriptionService = 'AzureResourceSubscriptionService',
 	subscriptionFilterService = 'AzureResourceSubscriptionFilterService',
 	tenantService = 'AzureResourceTenantService',
+	tenantFilterService = 'AzureResourceTenantFilterService',
 	terminalService = 'AzureTerminalService',
 }
 

@@ -84,12 +84,15 @@ export class DashboardInput extends EditorInput {
 			return '';
 		}
 
-		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName;
-		if (this.connectionProfile.databaseName
+		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName
+
+		if (!this.connectionProfile.connectionName && this.connectionProfile.databaseName
 			&& !this.isMasterMssql()) {
 			// Only add DB name if this is a non-default, non-master connection
 			name = name + ':' + this.connectionProfile.databaseName;
 		}
+		// Append any differing options if needed.
+		name += this._connectionService.getEditorConnectionProfileTitle(this.connectionProfile, true, true)
 		return name;
 	}
 

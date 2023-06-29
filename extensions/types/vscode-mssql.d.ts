@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 
@@ -482,9 +482,10 @@ declare module 'vscode-mssql' {
 		 * @param projectUri Absolute path of the project, including .sqlproj
 		 * @param systemDatabase Type of system database
 		 * @param suppressMissingDependencies Whether to suppress missing dependencies
+		 * @param referenceType Type of reference - ArtifactReference or PackageReference
 		 * @param databaseLiteral Literal name used to reference another database in the same server, if not using SQLCMD variables
 		 */
-		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, databaseLiteral?: string): Promise<ResultStatus>;
+		addSystemDatabaseReference(projectUri: string, systemDatabase: SystemDatabase, suppressMissingDependencies: boolean, referenceType: SystemDbReferenceType, databaseLiteral?: string): Promise<ResultStatus>;
 
 		/**
 		 * Add a nuget package database reference to a project
@@ -1112,7 +1113,7 @@ declare module 'vscode-mssql' {
 		packageFilePath: string;
 		databaseName: string;
 		upgradeExisting: boolean;
-		sqlCommandVariableValues?: Map<string, string>;
+		sqlCommandVariableValues?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
@@ -1121,7 +1122,7 @@ declare module 'vscode-mssql' {
 	export interface GenerateDeployScriptParams {
 		packageFilePath: string;
 		databaseName: string;
-		sqlCommandVariableValues?: Map<string, string>;
+		sqlCommandVariableValues?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
@@ -1153,7 +1154,7 @@ declare module 'vscode-mssql' {
 		profilePath: string;
 		databaseName: string;
 		connectionString: string;
-		sqlCommandVariableValues?: Map<string, string>;
+		sqlCommandVariableValues?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
 	}
 
@@ -1209,6 +1210,11 @@ declare module 'vscode-mssql' {
 		 * Type of system database
 		 */
 		systemDatabase: SystemDatabase;
+
+		/**
+	 * Type of reference - ArtifactReference or PackageReference
+	 */
+		referenceType: SystemDbReferenceType;
 	}
 
 	export interface AddNugetPackageReferenceParams extends AddUserDatabaseReferenceParams {
@@ -1247,6 +1253,13 @@ declare module 'vscode-mssql' {
 		 * Path of the folder, typically relative to the .sqlproj file
 		 */
 		path: string;
+	}
+
+	export interface MoveFolderParams extends FolderParams {
+		/**
+		 * Path of the folder, typically relative to the .sqlproj file
+		 */
+		destinationPath: string;
 	}
 
 	export interface CreateSqlProjectParams extends SqlProjectParams {
@@ -1404,6 +1417,11 @@ declare module 'vscode-mssql' {
 	export const enum SystemDatabase {
 		Master = 0,
 		MSDB = 1
+	}
+
+	export const enum SystemDbReferenceType {
+		ArtifactReference = 0,
+		PackageReference = 1
 	}
 
 	export interface DatabaseReference {

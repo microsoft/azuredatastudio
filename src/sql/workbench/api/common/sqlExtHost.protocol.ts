@@ -21,7 +21,7 @@ import {
 	ISerializationManagerDetails,
 	IErrorDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { CheckboxUpdate, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
@@ -250,6 +250,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Requests saving of the results from a result set into a specific format (CSV, JSON, Excel)
 	 */
 	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
+
+	/**
+	 * Copies the selected data to clipboard.
+	 */
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> { throw ni(); }
 
 	/**
 	 * Commits all pending edits in an edit session
@@ -576,7 +581,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Open a new instance of table designer.
 	 */
-	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void { throw ni(); }
 
 	/**
 	 * Gets the generic execution plan graph for a plan file.
@@ -705,7 +710,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
-	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void;
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void;
 	/**
 	 * Callback when a session has completed initialization
 	 */
@@ -724,6 +729,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
+	$getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -805,6 +811,8 @@ export interface ExtHostModelViewTreeViewsShape {
 	$setVisible(treeViewId: string, visible: boolean): void;
 	$hasResolve(treeViewId: string): Promise<boolean>;
 	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined>;
+	$setFocus(treeViewId: string, treeItemHandle: string): void;
+	$changeCheckboxState(treeViewId: string, checkboxUpdates: CheckboxUpdate[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

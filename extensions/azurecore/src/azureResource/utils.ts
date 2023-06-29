@@ -14,7 +14,7 @@ import { EOL } from 'os';
 import { AppContext } from '../appContext';
 import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../localizedConstants';
 import { AzureResourceServiceNames } from './constants';
-import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
+import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService, IAzureResourceTenantFilterService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import providerSettings from '../account-provider/providerSettings';
@@ -50,6 +50,8 @@ import { AzureResourceSynapseWorkspaceService } from './providers/synapseWorkspa
 import { AzureResourceSynapseWorkspaceTreeDataProvider } from './providers/synapseWorkspace/synapseWorkspaceTreeDataProvider';
 import { PostgresFlexibleServerTreeDataProvider } from './providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider';
 import { PostgresFlexibleServerService } from './providers/postgresFlexibleServer/postgresFlexibleServerService';
+import { CosmosDbPostgresTreeDataProvider } from './providers/cosmosdb/postgres/cosmosDbPostgresTreeDataProvider';
+import { CosmosDbPostgresService } from './providers/cosmosdb/postgres/cosmosDbPostgresService';
 
 const localize = nls.loadMessageBundle();
 
@@ -266,6 +268,7 @@ export function getAllResourceProviders(extensionContext: vscode.ExtensionContex
 	const providers: azureResource.IAzureResourceProvider[] = [
 		new ResourceProvider(Constants.AZURE_MONITOR_PROVIDER_ID, new AzureMonitorTreeDataProvider(new AzureMonitorResourceService(), extensionContext)),
 		new ResourceProvider(Constants.COSMOSDB_MONGO_PROVIDER_ID, new CosmosDbMongoTreeDataProvider(new CosmosDbMongoService(), extensionContext)),
+		new ResourceProvider(Constants.COSMOSDB_POSTGRES_PROVIDER_ID, new CosmosDbPostgresTreeDataProvider(new CosmosDbPostgresService(), extensionContext)),
 		new ResourceProvider(Constants.DATABASE_PROVIDER_ID, new AzureResourceDatabaseTreeDataProvider(new AzureResourceDatabaseService(), extensionContext)),
 		new ResourceProvider(Constants.DATABASE_SERVER_PROVIDER_ID, new AzureResourceDatabaseServerTreeDataProvider(new AzureResourceDatabaseServerService(), extensionContext)),
 		new ResourceProvider(Constants.KUSTO_PROVIDER_ID, new KustoTreeDataProvider(new KustoResourceService(), extensionContext)),
@@ -418,8 +421,12 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	}
 
 	const subscriptionFilterService = appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
+	const tenantFilterService = appContext.getService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService);
 	try {
-		result.subscriptions.push(...await subscriptionFilterService.getSelectedSubscriptions(account));
+		const tenants = await tenantFilterService.getSelectedTenants(account);
+		for (const tenant of tenants) {
+			result.subscriptions.push(...await subscriptionFilterService.getSelectedSubscriptions(account, tenant));
+		}
 	} catch (err) {
 		const error = new Error(localize('azure.accounts.getSelectedSubscriptions.queryError', "Error fetching subscriptions for account {0} : {1}",
 			account.displayInfo.displayName,

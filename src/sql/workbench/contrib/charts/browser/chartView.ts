@@ -25,10 +25,10 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ChartOptions, ControlType, IChartOption } from './chartOptions';
 import { Insight } from './insight';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
@@ -88,7 +88,6 @@ export class ChartView extends Disposable implements IPanelView {
 	constructor(
 		private readonly _isQueryEditorChart: boolean,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService
@@ -346,7 +345,7 @@ export class ChartView extends Disposable implements IPanelView {
 				break;
 			case ControlType.combo:
 				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
-				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options!), undefined!, this._contextViewService);
+				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options!), undefined!, defaultSelectBoxStyles, this._contextViewService);
 				dropdown.setAriaLabel(option.label);
 				dropdown.select(option.options!.indexOf(value));
 				dropdown.render(optionInput);
@@ -363,11 +362,12 @@ export class ChartView extends Disposable implements IPanelView {
 						dropdown.select(option.options!.indexOf(val));
 					}
 				};
-				this.optionDisposables.push(attachSelectBoxStyler(dropdown, this._themeService));
 				break;
 			case ControlType.input:
-				let input = new InputBox(optionInput, this._contextViewService);
-				input.setAriaLabel(option.label);
+				let input = new InputBox(optionInput, this._contextViewService, {
+					ariaLabel: option.label,
+					inputBoxStyles: defaultInputBoxStyles
+				});
 				input.value = value || '';
 				input.onDidChange(e => {
 					if (this._options[entry] !== e) {
@@ -382,11 +382,13 @@ export class ChartView extends Disposable implements IPanelView {
 						input.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(input, this._themeService));
 				break;
 			case ControlType.numberInput:
-				let numberInput = new InputBox(optionInput, this._contextViewService, { type: 'number' });
-				numberInput.setAriaLabel(option.label);
+				let numberInput = new InputBox(optionInput, this._contextViewService, {
+					type: 'number',
+					ariaLabel: option.label,
+					inputBoxStyles: defaultInputBoxStyles
+				});
 				numberInput.value = value || '';
 				numberInput.onDidChange(e => {
 					if (this._options[entry] !== e) {
@@ -402,11 +404,14 @@ export class ChartView extends Disposable implements IPanelView {
 						numberInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
 			case ControlType.dateInput:
-				let dateInput = new InputBox(optionInput, this._contextViewService, { type: 'datetime-local' });
-				dateInput.setAriaLabel(option.label);
+				let dateInput = new InputBox(optionInput, this._contextViewService, {
+					type: 'datetime-local',
+					ariaLabel: option.label,
+					inputBoxStyles: defaultInputBoxStyles
+				});
+
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
 					if (this._options[entry] !== e) {
@@ -421,7 +426,6 @@ export class ChartView extends Disposable implements IPanelView {
 						dateInput.value = val;
 					}
 				};
-				this.optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
 				break;
 		}
 		this.optionMap[entry] = { element: optionContainer, set: setFunc };

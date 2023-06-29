@@ -241,9 +241,9 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 		if (value) {
 			const searchValue = value.toLowerCase();
 			if (useDisplayName) {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === searchValue);
+				selectedIndex = dropDown.values?.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === searchValue);
 			} else {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === searchValue);
+				selectedIndex = dropDown.values?.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === searchValue);
 			}
 		} else {
 			selectedIndex = -1;
@@ -302,10 +302,6 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 
 		descriptor[fnKey] = decorator(fn, key);
 	};
-}
-
-export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
-	return { 'SqlMigrationSessionId': sessionId };
 }
 
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
@@ -468,7 +464,7 @@ export function getAzureTenants(account?: Account): Tenant[] {
 	return account?.properties.tenants || [];
 }
 
-export async function getAzureSubscriptions(account?: Account): Promise<azureResource.AzureResourceSubscription[]> {
+export async function getAzureSubscriptions(account?: Account, tenantId?: string): Promise<azureResource.AzureResourceSubscription[]> {
 	let subscriptions: azureResource.AzureResourceSubscription[] = [];
 	try {
 		subscriptions = account && !isAccountTokenStale(account)
@@ -477,8 +473,9 @@ export async function getAzureSubscriptions(account?: Account): Promise<azureRes
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getAzureSubscriptions', e);
 	}
-	subscriptions.sort((a, b) => a.name.localeCompare(b.name));
-	return subscriptions;
+	const filtered = subscriptions.filter(subscription => subscription.tenant === tenantId);
+	filtered.sort((a, b) => a.name.localeCompare(b.name));
+	return filtered;
 }
 
 export async function getAzureSubscriptionsDropdownValues(subscriptions: azureResource.AzureResourceSubscription[]): Promise<CategoryValue[]> {
@@ -1166,4 +1163,9 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 	).withLayout({
 		flexFlow: 'column'
 	}).component();
+}
+
+export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
 }

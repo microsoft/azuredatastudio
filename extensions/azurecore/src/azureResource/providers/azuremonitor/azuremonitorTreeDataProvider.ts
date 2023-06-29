@@ -16,7 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, AzureMonitorGraphData> {
 	private static readonly containerId = 'azure.resource.providers.AzureMonitorContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Log Analytics workspace");
+	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Log Analytics workspaces");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -27,12 +27,9 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<G
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.logAnalytics}${account.key.accountId}${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.logAnalytics}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${AzureMonitorTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/azure_monitor_dark.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/azure_monitor_light.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/logAnalyticsWorkspaces.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.azureMonitor,
 			payload: {
@@ -59,16 +56,13 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<G
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: AzureMonitorTreeDataProvider.containerId,
 			label: AzureMonitorTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/logAnalyticsWorkspaces.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

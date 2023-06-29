@@ -99,7 +99,7 @@ describe('Azure Authentication', function () {
 			should(securityToken).be.undefined();
 		});
 		it('dont find correct resources', async function () {
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, TypeMoq.It.isAny(), -1);
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, TypeMoq.It.isAny(), <any>-1);
 			should(securityToken).be.undefined();
 		});
 		it('incorrect tenant', async function () {

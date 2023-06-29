@@ -22,6 +22,8 @@ import { ServerRoleDialog } from './ui/serverRoleDialog';
 import { DatabaseRoleDialog } from './ui/databaseRoleDialog';
 import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
+import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
+import { DetachDatabaseDialog } from './ui/detachDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
@@ -37,6 +39,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.detachDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleDetachDatabase(context, service);
 	}));
 }
 
@@ -106,15 +111,19 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const parentUrn = await getParentUrn(context);
+		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
+		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
+		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
+		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
 			database: context.connectionProfile!.databaseName!,
-			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
-			objectName: context.nodeInfo.label,
+			objectType: objectType,
+			objectName: objectName,
 			parentUrn: parentUrn,
-			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectUrn: objectUrn,
 			objectExplorerContext: context
 		};
 		const dialog = getDialog(service, options);
@@ -232,6 +241,35 @@ async function handleRenameObjectCommand(context: azdata.ObjectExplorerContext, 
 	});
 }
 
+async function handleDetachDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+	const connectionUri = await getConnectionUri(context);
+	if (!connectionUri) {
+		return;
+	}
+	try {
+		const parentUrn = await getParentUrn(context);
+		const options: ObjectManagementDialogOptions = {
+			connectionUri: connectionUri,
+			isNewObject: false,
+			database: context.connectionProfile!.databaseName!,
+			objectType: context.nodeInfo.nodeType as ObjectManagement.NodeType,
+			objectName: context.nodeInfo.label,
+			parentUrn: parentUrn,
+			objectUrn: context.nodeInfo!.metadata!.urn,
+			objectExplorerContext: context
+		};
+		const dialog = new DetachDatabaseDialog(service, options);
+		await dialog.open();
+	}
+	catch (err) {
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDetachDatabaseDialog, err).withAdditionalProperties({
+			objectType: context.nodeInfo!.nodeType
+		}).send();
+		console.error(err);
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenDetachDatabaseDialogError(getErrorMessage(err)));
+	}
+}
+
 function getDialog(service: IObjectManagementService, dialogOptions: ObjectManagementDialogOptions): ObjectManagementDialogBase<ObjectManagement.SqlObject, ObjectManagement.ObjectViewInfo<ObjectManagement.SqlObject>> {
 	switch (dialogOptions.objectType) {
 		case ObjectManagement.NodeType.ApplicationRole:
@@ -242,6 +280,8 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 			return new LoginDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.ServerLevelServerRole:
 			return new ServerRoleDialog(service, dialogOptions);
+		case ObjectManagement.NodeType.Server:
+			return new ServerPropertiesDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.User:
 			return new UserDialog(service, dialogOptions);
 		case ObjectManagement.NodeType.Database:

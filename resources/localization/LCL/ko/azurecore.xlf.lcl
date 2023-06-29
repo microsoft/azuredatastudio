@@ -19,12 +19,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ers.AzureMonitorContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Log Analytics workspace]]></Val>
+            <Val><![CDATA[Log Analytics workspaces]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Log Analytics 작업 영역]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Monitor Logs workspace]]></Val>
+              <Val><![CDATA[Log Analytics workspace]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -34,10 +34,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) viders.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Mongo용 CosmosDB]]></Val>
+              <Val><![CDATA[MongoDB용 Azure CosmosDB]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -46,12 +49,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) base.treeDataProvider.databaseContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL database]]></Val>
+            <Val><![CDATA[SQL databases]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[SQL 데이터베이스]]></Val>
+              <Val><![CDATA[SQL Database]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Databases]]></Val>
+              <Val><![CDATA[SQL database]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -61,12 +64,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.databaseServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL server]]></Val>
+            <Val><![CDATA[SQL servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[SQL 서버]]></Val>
+              <Val><![CDATA[SQL Server]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Servers]]></Val>
+              <Val><![CDATA[SQL server]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -76,10 +79,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) inerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Data Explorer Cluster]]></Val>
+            <Val><![CDATA[Azure Data Explorer Clusters]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure 데이터 탐색기 클러스터]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Azure Data Explorer Cluster]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -88,10 +94,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) esource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Database for MySQL Flexible server]]></Val>
+            <Val><![CDATA[Azure Database for MySQL flexible servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Azure Database for MySQL 유연한 서버]]></Val>
+              <Val><![CDATA[Azure Database for MySQL 유동 서버]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Azure Database for MySQL Flexible server]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -100,9 +109,24 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) rce.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            <Val><![CDATA[PostgreSQL servers – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[PostgreSQL 하이퍼스케일 - Azure Arc]]></Val>
+              <Val><![CDATA[PostgreSQL 서버 – Azure Arc]]></Val>
+            </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            </Prev>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider.a" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) zure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure Database for PostgreSQL flexible servers]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure Database for PostgreSQL 유연한 서버]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -112,12 +136,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+            <Val><![CDATA[Azure Database for PostgreSQL servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure Database for PostgreSQL 서버]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Database for PostgreSQL Servers]]></Val>
+              <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -127,12 +151,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) s.sqlInstanceContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure SQL DB managed instance]]></Val>
+            <Val><![CDATA[SQL managed instances]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Azure SQL DB 관리형 인스턴스]]></Val>
+              <Val><![CDATA[SQL Managed Instance]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Managed Instances]]></Val>
+              <Val><![CDATA[Azure SQL DB managed instance]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -142,10 +166,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.sqlInstanceArcContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            <Val><![CDATA[SQL managed instances - Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 관리형 인스턴스 - Azure Arc]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -181,18 +208,6 @@
             <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure에 로그인...]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noSubscriptionsL" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[No Subscriptions found.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[구독을 찾을 수 없습니다.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -234,13 +249,25 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.flatAccountTreeNode.noResourcesLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLab" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No Resources found.]]></Val>
+            <Val><![CDATA[No Tenants found.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[리소스를 찾을 수 없습니다.]]></Val>
+              <Val><![CDATA[테넌트를 찾을 수 없습니다.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode.azure.resource.tree.accountTreeNode.noSubscriptio" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nsLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Subscriptions found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[구독을 찾을 수 없습니다.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -253,6 +280,18 @@
             <Val><![CDATA[No Resources found.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[리소스를 찾을 수 없습니다.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/tenantTreeNode.azure.resource.tree.accountTreeNode.noSubscriptionsLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Subscriptions found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[구독을 찾을 수 없습니다.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -816,51 +855,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.unableToAccessSubscription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unable to access subscription {0} ({1}). Please [refresh the account]5D;(command:azure.resource.signin) to try again. {2}]]></Val>
+          <Val><![CDATA[No Tenants found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[구독 {0}({1})에 액세스할 수 없습니다. 다시 시도하려면 [계정을 새로 고침]5D;(command:azure.resource.signin)하세요. {2}]]></Val>
+            <Val><![CDATA[테넌트를 찾을 수 없습니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.throttleerror" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.title" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} ({1}/{2} subscriptions)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}({1}/{2}개 구독)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.titleLoading" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} - Loading...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} - 로드 중...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.loadresourceerror" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[An error occurred while loading Azure resources: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 리소스를 로드하는 동안 오류가 발생했습니다. {0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[An error occured while loading Azure resources: {0}]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1308,12 +1308,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresFlexibleServer" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Database for PostgreSQL flexible servers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database for PostgreSQL 유연한 서버]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          <Val><![CDATA[Azure Database for PostgreSQL servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database for PostgreSQL 서버]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1682,6 +1694,15 @@
           <Val><![CDATA[Select Subscriptions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[구독 선택]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/package.azure.resource.selecttenants.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Tenants]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[테넌트 선택]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

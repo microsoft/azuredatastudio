@@ -291,7 +291,7 @@ export function retryMessage(name: string, error: string) { return localize('ret
 //#region Add Database Reference dialog strings
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
-export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Referenced Database Type");
 export const projectLabel = localize('projectLocString', "Project");
 export const systemDatabase = localize('systemDatabase', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
@@ -319,10 +319,13 @@ export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 export const dacpacMustBeOnSameDrive = localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file.");
 export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
-export const referenceType = localize('referenceType', "Reference type");
+export const referencedDatabaseType = localize('referencedDatabaseType', "Referenced Database type");
 export const excludeFolderNotSupported = localize('excludeFolderNotSupported', "Excluding folders is not yet supported");
 export const unhandledDeleteType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during delete: '{0}", itemType); }
 export const unhandledExcludeType = (itemType: string): string => { return localize('unhandledDeleteType', "Unhandled item type during exclude: '{0}", itemType); }
+export const artifactReference = localize('artifactReference', "Artifact Reference");
+export const packageReference = localize('packageReference', "Package Reference");
+export const referenceTypeRadioButtonsGroupTitle = localize('referenceTypeRadioButtonsGroupTitle', "Reference Type");
 
 //#endregion
 

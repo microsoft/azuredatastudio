@@ -378,11 +378,17 @@ declare module 'azurecore' {
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
 			postgresServer = 'microsoft.dbforpostgresql/servers',
+			postgresServerv2 = 'microsoft.dbforpostgresql/serversv2',
+			postgresSingleServer = 'microsoft.dbforpostgresql/singleservers',
 			postgresFlexibleServer = 'microsoft.dbforpostgresql/flexibleservers',
+			postgresServerGroup = 'microsoft.dbforpostgresql/servergroups',
+			postgresServerGroupv2 = 'microsoft.dbforpostgresql/servergroupsv2',
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
 			logAnalytics = 'microsoft.operationalinsights/workspaces',
 			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts',
+			cosmosDbPostgresCluster = 'microsoft.documentdb/postgresclusters',
+			cosmosDbMongoCluster = 'microsoft.documentdb/mongoclusters',
 			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
@@ -405,9 +411,9 @@ declare module 'azurecore' {
 			getService(): azureResource.IAzureResourceService;
 			/**
 			 * Gets the root tree item nodes for this provider - these will be used as
-			 * direct children of the Account node in the Azure tree view.
+			 * direct children of the Tenant node in the Azure tree view.
 			 */
-			getRootChildren(): Promise<azdata.TreeItem[]>;
+			getRootChild(): Promise<azdata.TreeItem>;
 			/**
 			 * Gets the children for a given {@link IAzureResourceNode}
 			 * @param element The parent node to get the children for
@@ -426,6 +432,7 @@ declare module 'azurecore' {
 			readonly account: AzureAccount;
 			readonly subscription: AzureResourceSubscription;
 			readonly tenantId: string;
+			readonly resourceProviderId: string;
 			readonly treeItem: azdata.TreeItem;
 		}
 

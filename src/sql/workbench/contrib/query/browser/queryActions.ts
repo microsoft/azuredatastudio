@@ -7,10 +7,9 @@ import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
@@ -22,12 +21,10 @@ import {
 	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode,
-	IConnectionCompletionOptions,
-	IConnectableInput
+	IConnectionCompletionOptions
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -49,6 +46,8 @@ import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/co
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Codicon } from 'vs/base/common/codicons';
+import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -113,7 +112,7 @@ export abstract class QueryTaskbarAction extends Action {
 	}
 }
 
-export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initalContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
+export async function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initialContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const queryEditorService = accessor.get(IQueryEditorService);
 	const objectExplorerService = accessor.get(IObjectExplorerService);
@@ -121,20 +120,18 @@ export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionPr
 	if (!profile) {
 		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
 	}
-	return queryEditorService.newSqlEditor({ initalContent }, profile?.providerName).then((owner: IConnectableInput) => {
-		// Connect our editor to the input connection
-		let options: IConnectionCompletionOptions = {
-			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: owner },
-			saveTheConnection: false,
-			showDashboard: false,
-			showConnectionDialogOnError: true,
-			showFirewallRuleOnError: true
-		};
-		if (profile) {
-			return connectionManagementService.connect(profile, owner.uri, options).then();
-		}
-		return undefined;
-	});
+	const editorInput = await queryEditorService.newSqlEditor({ initialContent: initialContent }, profile?.providerName);
+	// Connect our editor to the input connection
+	let options: IConnectionCompletionOptions = {
+		params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: editorInput },
+		saveTheConnection: false,
+		showDashboard: false,
+		showConnectionDialogOnError: true,
+		showFirewallRuleOnError: true
+	};
+	if (profile) {
+		await connectionManagementService.connect(profile, editorInput.uri, options);
+	}
 }
 
 // --- actions
@@ -203,70 +200,54 @@ export class RunQueryAction extends QueryTaskbarAction {
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ICommandService private readonly commandService?: ICommandService
+		@ICommandService private readonly commandService: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
 	}
 
 	public override async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			const runQueryResult = await this.runQuery(this.editor);
-			if (!runQueryResult) {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
-			}
-		}
-		return;
+		await this.runQuery();
 	}
 
 	public async runCurrent(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			const runQueryResult = await this.runQuery(this.editor, true);
-			if (!runQueryResult) {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
-			}
-		}
-		return;
+		await this.runQuery(true);
 	}
 
-	private async runQuery(editor: QueryEditor, runCurrentStatement: boolean = false): Promise<boolean> {
-		if (!editor) {
-			editor = this.editor;
+	private async runQuery(runCurrentStatement: boolean = false): Promise<void> {
+		if (this.editor.isEditorEmpty()) {
+			return;
 		}
-
-		if (this.isConnected(editor)) {
+		if (this.isConnected(this.editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
 			this.commandService?.executeCommand('hideSuggestWidget');
 			// Do not execute when there are multiple selections in the editor until it can be properly handled.
 			// Otherwise only the first selection will be executed and cause unexpected issues.
-			if (editor.getSelections()?.length > 1) {
+			if (this.editor.getSelections()?.length > 1) {
 				this.notificationService.error(nls.localize('query.multiSelectionNotSupported', "Running query is not supported when the editor is in multiple selection mode."));
-				return true;
 			}
 
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let selection = editor.getSelection(false);
+			let selection = this.editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
-				editor.input.runQueryStatement(selection);
+				this.editor.input.runQueryStatement(selection);
 			} else {
-				if (editor.input.state.isActualExecutionPlanMode) {
-					selection = editor.getSelection();
-					editor.input.runQuery(selection, { displayActualQueryPlan: true });
+				if (this.editor.input.state.isActualExecutionPlanMode) {
+					selection = this.editor.getSelection();
+					this.editor.input.runQuery(selection, { displayActualQueryPlan: true });
 				}
 				else {
 					// get the selection again this time with trimming
-					selection = editor.getSelection();
-					editor.input.runQuery(selection);
+					selection = this.editor.getSelection();
+					this.editor.input.runQuery(selection);
 				}
 			}
-			return true;
+		} else {
+			// If we are not already connected, prompt for connection and run the query if the
+			// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
+			this.connectEditor(this.editor, runCurrentStatement ? RunQueryOnConnectionMode.executeCurrentQuery : RunQueryOnConnectionMode.executeQuery, this.editor.getSelection(!runCurrentStatement));
 		}
-		return false;
 	}
 
 	protected isCursorPosition(selection: IRange) {
@@ -322,7 +303,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 	}
 
 	public override async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
+		if (!this.editor.isEditorEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -412,7 +393,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 	}
 
 	public override async run(): Promise<void> {
-		if (!this.editor.isSelectionEmpty()) {
+		if (!this.editor.isEditorEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -460,7 +441,7 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
-		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
+		// determine if we need to disconnect, cancel an in-progress connection, or do nothing
 		this.connectionManagementService.disconnectEditor(this.editor.input);
 		return;
 	}
@@ -626,13 +607,13 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
 
 		// set query options
-		let queryoptions: QueryExecutionOptions = { options: {} };
-		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
+		let queryOptions: QueryExecutionOptions = { options: {} };
+		queryOptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
 			this.logService.error('editor input was null');
 			return;
 		}
-		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
+		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryOptions);
 
 		// set intellisense options
 		toSqlCmdState ? this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL') : this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL');
@@ -668,7 +649,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, {
 			strictSelection: true,
 			placeholder: this._selectDatabaseString,
-			ariaLabel: this._selectDatabaseString
+			ariaLabel: this._selectDatabaseString,
+			...defaultEditableDropdownStyles
 		});
 
 		// Allows database selector to commit typed or pasted DB names without the need to click
@@ -684,10 +666,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		append(container, this._databaseListDropdown);
 	}
 
-	public style(styles) {
-		this._dropdown.style(styles);
-	}
-
 	public setActionContext(context: any): void {
 	}
 
@@ -701,10 +679,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	public blur(): void {
 		this._dropdown.blur();
-	}
-
-	public attachStyler(themeService: IThemeService): IDisposable {
-		return attachEditableDropdownStyler(this, themeService);
 	}
 
 	// EVENT HANDLERS FROM EDITOR //////////////////////////////////////////
@@ -918,7 +892,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(connectionManagementService, editor, ExportAsNotebookAction.ID, Codicon.notebook.classNames);
+		super(connectionManagementService, editor, ExportAsNotebookAction.ID, ThemeIcon.asClassName(Codicon.notebook));
 		this.label = nls.localize('queryEditor.exportSqlAsNotebookLabel', "To Notebook");
 		this.tooltip = nls.localize('queryEditor.exportSqlAsNotebookTooltip', "Export as Notebook");
 	}
@@ -938,7 +912,7 @@ export const CATEGORIES = {
 export const ParseSyntaxCommandId = 'parseQueryAction';
 export class ParseSyntaxTaskbarAction extends Action {
 	constructor(@ICommandService private _commandService: ICommandService) {
-		super(ParseSyntaxCommandId, nls.localize('queryEditor.parse', "Parse"), Codicon.check.classNames);
+		super(ParseSyntaxCommandId, nls.localize('queryEditor.parse', "Parse"), ThemeIcon.asClassName(Codicon.check));
 	}
 
 	public override async run(): Promise<void> {

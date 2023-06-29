@@ -27,10 +27,13 @@ export interface IQueryEditorConfiguration {
 		readonly streaming: boolean;
 		readonly copyIncludeHeaders: boolean;
 		readonly copyRemoveNewLine: boolean;
+		readonly skipNewLineAfterTrailingLineBreak: boolean;
 		readonly optimizedTable: boolean;
 		readonly inMemoryDataProcessingThreshold: number;
 		readonly openAfterSave: boolean;
 		readonly showActionBar: boolean;
+		readonly preferProvidersCopyHandler: boolean;
+		readonly promptForLargeRowSelection: boolean;
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean;

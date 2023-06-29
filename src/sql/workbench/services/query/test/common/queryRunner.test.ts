@@ -59,7 +59,7 @@ suite('Query Runner', () => {
 		const getRowStub = sinon.stub().returns(Promise.resolve(rowResults));
 		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowStub);
 		const resultReturn = await runner.getQueryRows(0, 100, 0, 0);
-		assert(getRowStub.calledWithExactly({ ownerUri: uri, batchIndex: 0, resultSetIndex: 0, rowsStartIndex: 0, rowsCount: 100 }));
+		assert(getRowStub.calledWithExactly({ ownerUri: uri, batchIndex: 0, resultSetIndex: 0, rowsStartIndex: 0, rowsCount: 100 }, undefined, undefined));
 		assert.deepStrictEqual(resultReturn, rowResults);
 		// batch complete
 		const batchComplete: CompleteBatchSummary = { ...batch, executionEnd: 'endstring', executionElapsed: 'elapsedstring' };

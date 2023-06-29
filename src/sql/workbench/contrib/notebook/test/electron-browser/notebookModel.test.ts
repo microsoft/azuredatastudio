@@ -46,7 +46,8 @@ import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ILanguageService } from 'vs/editor/common/languages/language';
-import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{

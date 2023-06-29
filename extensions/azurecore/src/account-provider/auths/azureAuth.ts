@@ -194,7 +194,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
 		if (this._authLibrary === Constants.AuthLibrary.MSAL) {
-			const tenants = await this.getTenantsMsal(token.token);
+			const tenants = await this.getTenantsMsal(token.token, tokenClaims);
 			account = this.createAccount(tokenClaims, token.key, tenants);
 		} else { // fallback to ADAL as default
 			const tenants = await this.getTenantsAdal({ ...token });
@@ -332,46 +332,52 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// Resource endpoint must end with '/' to form a valid scope for MSAL token request.
 		const endpoint = resource.endpoint.endsWith('/') ? resource.endpoint : resource.endpoint + '/';
-
-		let account: AccountInfo | null = await this.getAccountFromMsalCache(accountId);
-		if (!account) {
-			Logger.error('Error: Could not fetch account when acquiring token');
-			throw new Error(localize('msal.accountNotFoundError', `Unable to find account info when acquiring token.`));
-		}
+		let account: AccountInfo | null;
 		let newScope;
-		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
-			newScope = [`${endpoint}user_impersonation`];
-		} else {
-			newScope = [`${endpoint}.default`];
-		}
 
-		// construct request
-		// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
-		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
-		// Even for full tenants, access token is often received expired - force refresh is necessary when token expires.
-		const tokenRequest = {
-			account: account,
-			authority: `${this.loginEndpointUrl}${tenantId}`,
-			scopes: newScope,
-			forceRefresh: true
-		};
 		try {
-			return await this.clientApplication.acquireTokenSilent(tokenRequest);
-		} catch (e) {
-			Logger.error('Failed to acquireTokenSilent', e);
-			if (e instanceof AuthError && this.accountNeedsRefresh(e)) {
-				// build refresh token request
-				const tenant: Tenant = {
-					id: tenantId,
-					displayName: ''
-				};
-				return this.handleInteractionRequiredMsal(tenant, resource);
-			} else {
-				if (e.name === 'ClientAuthError') {
-					Logger.verbose('[ClientAuthError] Failed to silently acquire token');
-				}
-				return errorToPromptFailedResult(e);
+			account = await this.getAccountFromMsalCache(accountId);
+			if (!account) {
+				Logger.error('Error: Could not fetch account when acquiring token');
+				throw new Error(localize('msal.accountNotFoundError', `Unable to find account info when acquiring token, please remove account and add again.`));
 			}
+			if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
+				newScope = [`${endpoint}user_impersonation`];
+			} else {
+				newScope = [`${endpoint}.default`];
+			}
+
+			// construct request
+			// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
+			// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
+			// Even for full tenants, access token is often received expired - force refresh is necessary when token expires.
+			const tokenRequest = {
+				account: account,
+				authority: `${this.loginEndpointUrl}${tenantId}`,
+				scopes: newScope,
+				forceRefresh: true
+			};
+			try {
+				return await this.clientApplication.acquireTokenSilent(tokenRequest);
+			} catch (e) {
+				Logger.error('Failed to acquireTokenSilent', e);
+				if (e instanceof AuthError && this.accountNeedsRefresh(e)) {
+					// build refresh token request
+					const tenant: Tenant = {
+						id: tenantId,
+						displayName: ''
+					};
+					return this.handleInteractionRequiredMsal(tenant, resource);
+				} else {
+					if (e.name === 'ClientAuthError') {
+						Logger.verbose('[ClientAuthError] Failed to silently acquire token');
+					}
+					return errorToPromptFailedResult(e);
+				}
+			}
+		} catch (error) {
+			Logger.error(`[ClientAuthError] Failed to find account: ${error}`);
+			return errorToPromptFailedResult(error);
 		}
 	}
 
@@ -471,7 +477,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return result;
 	}
 
-	public async getTenantsMsal(token: string): Promise<Tenant[]> {
+	public async getTenantsMsal(token: string, tokenClaims: TokenClaims): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
@@ -499,7 +505,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : tenantInfo.tenantId,
-					userId: token,
+					userId: tokenClaims.oid,
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
@@ -904,12 +910,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	private async deleteAccountCacheMsal(accountKey: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
-		let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(accountKey.accountId);
-		if (!msalAccount) {
-			Logger.error(`MSAL: Unable to find account ${accountKey.accountId} for removal`);
-			throw Error(`Unable to find account ${accountKey.accountId}`);
+		try {
+			let msalAccount: AccountInfo | null = await this.getAccountFromMsalCache(accountKey.accountId);
+			if (!msalAccount) {
+				Logger.error(`MSAL: Unable to find account ${accountKey.accountId} for removal`);
+				throw Error(`Unable to find account ${accountKey.accountId}`);
+			}
+			await tokenCache.removeAccount(msalAccount);
+		} catch (error) {
+			Logger.error(`[ClientAuthError] Failed to find account: ${error}`);
 		}
-		await tokenCache.removeAccount(msalAccount);
 		await this.msalCacheProvider.clearAccountFromLocalCache(accountKey.accountId);
 	}
 

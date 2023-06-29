@@ -13,7 +13,6 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -27,7 +26,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookViewsActionProvider } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookViewsActionProvider, AddCodeCellAction, AddTextCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -58,6 +57,8 @@ import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { debounce } from 'vs/base/common/decorators';
+import { ToggleAddCellDropdownAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -506,30 +507,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let kernelContainer = document.createElement('li');
 		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('li');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';
 
-		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
+		let toggleAddCellDropdownAction = this.instantiationService.createInstance(ToggleAddCellDropdownAction);
 
-		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
-		addCodeCellButton.cellType = CellTypes.Code;
+		let addCodeCellAction = this.instantiationService.createInstance(AddCodeCellAction);
+		addCodeCellAction.cellType = CellTypes.Code;
 
-		let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
-		addTextCellButton.cellType = CellTypes.Markdown;
+		let addTextCellAction = this.instantiationService.createInstance(AddTextCellAction);
+		addTextCellAction.cellType = CellTypes.Markdown;
 
 		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'masked-pseudo start-outline');
 
 		let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
-		let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', true);
+		let clearResultsAction = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', true);
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 		this._trustedAction.enabled = false;
@@ -544,8 +543,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let buttonDropdownContainer = DOM.$('li.action-item');
 		buttonDropdownContainer.setAttribute('role', 'presentation');
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-			addCellsButton,
-			[addCodeCellButton, addTextCellButton],
+			toggleAddCellDropdownAction,
+			[addCodeCellAction, addTextCellAction],
 			this.contextMenuService,
 			undefined,
 			this._actionBar.actionRunner,
@@ -589,7 +588,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ element: spacerElement },
 				{ element: viewsDropdownContainer },
 				{ action: collapseCellsAction },
-				{ action: clearResultsButton },
+				{ action: clearResultsAction },
 				{ action: this._trustedAction },
 				{ action: runParametersAction },
 			];
@@ -631,7 +630,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
-		let button = new Button(container);
+		let button = new Button(container, defaultButtonStyles);
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));
@@ -668,7 +667,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let secondary: IAction[] = [];
 			let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 			let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, g => g === '', (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			this._actionBar.clear();
 			this._actionBar.setContent(this._initialToolbarContent);

@@ -159,6 +159,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 					return Promise.resolve(self._serializationService.saveAs(requestParams.resultFormat, requestParams.filePath, undefined, true));
 				}
 			},
+			copyResults(requestParams: azdata.CopyResultsRequestParams): Promise<void> {
+				return Promise.resolve(self._proxy.$copyResults(handle, requestParams));
+			},
 			initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
 				return Promise.resolve(self._proxy.$initializeEdit(handle, ownerUri, schemaName, objectName, objectType, rowLimit, queryString));
 			},
@@ -665,8 +668,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Table Designer
-	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void {
-		this._tableDesignerService.openTableDesigner(providerId, tableInfo, telemetryInfo);
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo, telemetryInfo, objectExplorerContext);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {

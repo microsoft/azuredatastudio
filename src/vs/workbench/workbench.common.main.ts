@@ -55,6 +55,8 @@ import 'vs/workbench/browser/parts/views/viewsService';
 
 import 'vs/platform/actions/common/actions.contribution';
 import 'vs/platform/undoRedo/common/undoRedoService';
+import 'vs/workbench/services/workspaces/common/editSessionIdentityService';
+import 'vs/workbench/services/workspaces/common/canonicalUriService';
 import 'vs/workbench/services/extensions/browser/extensionUrlHandler';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
 import 'vs/workbench/services/decorations/browser/decorationsService';
@@ -84,9 +86,12 @@ import 'vs/workbench/services/extensionRecommendations/common/extensionIgnoredRe
 import 'vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig';
 import 'vs/workbench/services/notification/common/notificationService';
 import 'vs/workbench/services/userDataSync/common/userDataSyncUtil';
-import 'vs/workbench/services/userDataProfile/common/userDataProfileImportExportService';
+import 'vs/workbench/services/userDataProfile/browser/userDataProfileImportExportService';
 import 'vs/workbench/services/userDataProfile/browser/userDataProfileManagement';
+import 'vs/workbench/services/userDataProfile/common/remoteUserDataProfiles';
 import 'vs/workbench/services/remote/common/remoteExplorerService';
+import 'vs/workbench/services/remote/common/remoteExtensionsScanner';
+import 'vs/workbench/services/terminal/common/embedderTerminalService';
 import 'vs/workbench/services/workingCopy/common/workingCopyService';
 import 'vs/workbench/services/workingCopy/common/workingCopyFileService';
 import 'vs/workbench/services/workingCopy/common/workingCopyEditorService';
@@ -100,8 +105,13 @@ import 'vs/workbench/services/assignment/common/assignmentService';
 import 'vs/workbench/services/outline/browser/outlineService';
 import 'vs/workbench/services/languageDetection/browser/languageDetectionWorkerServiceImpl';
 import 'vs/editor/common/services/languageFeaturesService';
+import 'vs/editor/common/services/semanticTokensStylingService';
+import 'vs/editor/common/services/treeViewsDndService';
+import 'vs/workbench/services/textMate/browser/textMateTokenizationFeature.contribution';
+import 'vs/workbench/services/userActivity/common/userActivityService';
+import 'vs/workbench/services/userActivity/browser/userActivityBrowser';
 
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { GlobalExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionEnablementService';
 import { IExtensionGalleryService, IGlobalExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -126,23 +136,21 @@ import { IgnoredExtensionsManagementService, IIgnoredExtensionsManagementService
 import { ExtensionStorageService, IExtensionStorageService } from 'vs/platform/extensionManagement/common/extensionStorage';
 import { IUserDataSyncLogService } from 'vs/platform/userDataSync/common/userDataSync';
 import { UserDataSyncLogService } from 'vs/platform/userDataSync/common/userDataSyncLog';
-import { IExtensionsProfileScannerService, ExtensionsProfileScannerService } from 'vs/platform/extensionManagement/common/extensionsProfileScannerService';
 
-registerSingleton(IUserDataSyncLogService, UserDataSyncLogService);
-registerSingleton(IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService);
-registerSingleton(IGlobalExtensionEnablementService, GlobalExtensionEnablementService);
-registerSingleton(IExtensionStorageService, ExtensionStorageService);
-registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
-registerSingleton(IContextViewService, ContextViewService, true);
-registerSingleton(IListService, ListService, true);
-registerSingleton(IEditorWorkerService, EditorWorkerService);
-registerSingleton(IMarkerDecorationsService, MarkerDecorationsService);
-registerSingleton(IMarkerService, MarkerService, true);
-registerSingleton(IContextKeyService, ContextKeyService);
-registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService);
-registerSingleton(IDownloadService, DownloadService, true);
-registerSingleton(IOpenerService, OpenerService, true);
-registerSingleton(IExtensionsProfileScannerService, ExtensionsProfileScannerService);
+registerSingleton(IUserDataSyncLogService, UserDataSyncLogService, InstantiationType.Delayed);
+registerSingleton(IIgnoredExtensionsManagementService, IgnoredExtensionsManagementService, InstantiationType.Delayed);
+registerSingleton(IGlobalExtensionEnablementService, GlobalExtensionEnablementService, InstantiationType.Delayed);
+registerSingleton(IExtensionStorageService, ExtensionStorageService, InstantiationType.Delayed);
+registerSingleton(IExtensionGalleryService, ExtensionGalleryService, InstantiationType.Delayed);
+registerSingleton(IContextViewService, ContextViewService, InstantiationType.Delayed);
+registerSingleton(IListService, ListService, InstantiationType.Delayed);
+registerSingleton(IEditorWorkerService, EditorWorkerService, InstantiationType.Eager /* registers link detection and word based suggestions for any document */);
+registerSingleton(IMarkerDecorationsService, MarkerDecorationsService, InstantiationType.Delayed);
+registerSingleton(IMarkerService, MarkerService, InstantiationType.Delayed);
+registerSingleton(IContextKeyService, ContextKeyService, InstantiationType.Delayed);
+registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService, InstantiationType.Delayed);
+registerSingleton(IDownloadService, DownloadService, InstantiationType.Delayed);
+registerSingleton(IOpenerService, OpenerService, InstantiationType.Delayed);
 
 //#endregion
 
@@ -224,50 +232,51 @@ import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/com
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
-registerSingleton(IDashboardService, DashboardService);
-registerSingleton(IDashboardViewService, DashboardViewService);
-registerSingleton(IModelViewService, ModelViewService);
-registerSingleton(IAngularEventingService, AngularEventingService);
-registerSingleton(INewDashboardTabDialogService, NewDashboardTabDialogService);
-registerSingleton(IAccountManagementService, AccountManagementService);
-registerSingleton(ISerializationService, SerializationService);
-registerSingleton(IEditorDescriptorService, EditorDescriptorService);
-registerSingleton(ITaskService, TaskService);
-registerSingleton(IMetadataService, MetadataService);
-registerSingleton(IAdminService, AdminService);
-registerSingleton(IJobManagementService, JobManagementService);
-registerSingleton(IBackupService, BackupService);
-registerSingleton(IAzureBlobService, AzureBlobService);
-registerSingleton(IBackupUiService, BackupUiService);
-registerSingleton(IScriptingService, ScriptingService);
-registerSingleton(IRestoreService, RestoreService);
-registerSingleton(IRestoreDialogController, RestoreDialogController);
-registerSingleton(IFileBrowserService, FileBrowserService);
-registerSingleton(IFileBrowserDialogController, FileBrowserDialogController);
-registerSingleton(IBackupRestoreUrlBrowserDialogService, BackupRestoreUrlBrowserDialogService);
-registerSingleton(IInsightsDialogService, InsightsDialogService);
-registerSingleton(INotebookService, NotebookService);
-registerSingleton(IAccountPickerService, AccountPickerService);
-registerSingleton(IProfilerService, ProfilerService);
-registerSingleton(IConnectionManagementService, ConnectionManagementService as any);
-registerSingleton(ICapabilitiesService, CapabilitiesService);
-registerSingleton(IErrorMessageService, ErrorMessageService);
-registerSingleton(IConnectionDialogService, ConnectionDialogService);
-registerSingleton(IServerGroupController, ServerGroupController);
-registerSingleton(sqlICredentialsService, CredentialsService);
-registerSingleton(IResourceProviderService, ResourceProviderService);
-registerSingleton(IQueryManagementService, QueryManagementService);
-registerSingleton(IQueryModelService, QueryModelService);
-registerSingleton(IQueryEditorService, QueryEditorService);
-registerSingleton(IAdsTelemetryService, AdsTelemetryService);
-registerSingleton(IObjectExplorerService, ObjectExplorerService);
-registerSingleton(IOEShimService, OEShimService);
-registerSingleton(IAssessmentService, AssessmentService);
-registerSingleton(IDataGridProviderService, DataGridProviderService);
-registerSingleton(ITableDesignerService, TableDesignerService);
-registerSingleton(IExecutionPlanService, ExecutionPlanService);
-registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService);
-registerSingleton(IComponentContextService, ComponentContextService);
+// {{SQL CARBON TODO}} - delayed or eager
+registerSingleton(IDashboardService, DashboardService, InstantiationType.Eager);
+registerSingleton(IDashboardViewService, DashboardViewService, InstantiationType.Eager);
+registerSingleton(IModelViewService, ModelViewService, InstantiationType.Eager);
+registerSingleton(IAngularEventingService, AngularEventingService, InstantiationType.Eager);
+registerSingleton(INewDashboardTabDialogService, NewDashboardTabDialogService, InstantiationType.Eager);
+registerSingleton(IAccountManagementService, AccountManagementService, InstantiationType.Eager);
+registerSingleton(ISerializationService, SerializationService, InstantiationType.Eager);
+registerSingleton(IEditorDescriptorService, EditorDescriptorService, InstantiationType.Eager);
+registerSingleton(ITaskService, TaskService, InstantiationType.Eager);
+registerSingleton(IMetadataService, MetadataService, InstantiationType.Eager);
+registerSingleton(IAdminService, AdminService, InstantiationType.Eager);
+registerSingleton(IJobManagementService, JobManagementService, InstantiationType.Eager);
+registerSingleton(IBackupService, BackupService, InstantiationType.Eager);
+registerSingleton(IAzureBlobService, AzureBlobService, InstantiationType.Eager);
+registerSingleton(IBackupUiService, BackupUiService, InstantiationType.Eager);
+registerSingleton(IScriptingService, ScriptingService, InstantiationType.Eager);
+registerSingleton(IRestoreService, RestoreService, InstantiationType.Eager);
+registerSingleton(IRestoreDialogController, RestoreDialogController, InstantiationType.Eager);
+registerSingleton(IFileBrowserService, FileBrowserService, InstantiationType.Eager);
+registerSingleton(IFileBrowserDialogController, FileBrowserDialogController, InstantiationType.Eager);
+registerSingleton(IBackupRestoreUrlBrowserDialogService, BackupRestoreUrlBrowserDialogService, InstantiationType.Eager);
+registerSingleton(IInsightsDialogService, InsightsDialogService, InstantiationType.Eager);
+registerSingleton(INotebookService, NotebookService, InstantiationType.Eager);
+registerSingleton(IAccountPickerService, AccountPickerService, InstantiationType.Eager);
+registerSingleton(IProfilerService, ProfilerService, InstantiationType.Eager);
+registerSingleton(IConnectionManagementService, ConnectionManagementService, InstantiationType.Eager);
+registerSingleton(ICapabilitiesService, CapabilitiesService, InstantiationType.Eager);
+registerSingleton(IErrorMessageService, ErrorMessageService, InstantiationType.Eager);
+registerSingleton(IConnectionDialogService, ConnectionDialogService, InstantiationType.Eager);
+registerSingleton(IServerGroupController, ServerGroupController, InstantiationType.Eager);
+registerSingleton(sqlICredentialsService, CredentialsService, InstantiationType.Eager);
+registerSingleton(IResourceProviderService, ResourceProviderService, InstantiationType.Eager);
+registerSingleton(IQueryManagementService, QueryManagementService, InstantiationType.Eager);
+registerSingleton(IQueryModelService, QueryModelService, InstantiationType.Eager);
+registerSingleton(IQueryEditorService, QueryEditorService, InstantiationType.Eager);
+registerSingleton(IAdsTelemetryService, AdsTelemetryService, InstantiationType.Eager);
+registerSingleton(IObjectExplorerService, ObjectExplorerService, InstantiationType.Eager);
+registerSingleton(IOEShimService, OEShimService, InstantiationType.Eager);
+registerSingleton(IAssessmentService, AssessmentService, InstantiationType.Eager);
+registerSingleton(IDataGridProviderService, DataGridProviderService, InstantiationType.Eager);
+registerSingleton(ITableDesignerService, TableDesignerService, InstantiationType.Eager);
+registerSingleton(IExecutionPlanService, ExecutionPlanService, InstantiationType.Eager);
+registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService, InstantiationType.Eager);
+registerSingleton(IComponentContextService, ComponentContextService, InstantiationType.Eager);
 //#endregion
 
 
@@ -289,6 +298,9 @@ import 'vs/workbench/contrib/contextmenu/browser/contextmenu.contribution';
 
 // Notebook
 import 'vs/workbench/contrib/notebook/browser/notebook.contribution';
+
+import 'vs/workbench/contrib/chat/browser/chat.contribution';
+import 'vs/workbench/contrib/interactiveEditor/browser/interactiveEditor.contribution';
 
 // Interactive
 import 'vs/workbench/contrib/interactive/browser/interactive.contribution';
@@ -339,6 +351,9 @@ import 'vs/workbench/contrib/markers/browser/markers.contribution';
 // Merge Editor
 import 'vs/workbench/contrib/mergeEditor/browser/mergeEditor.contribution';
 
+// Commands
+import 'vs/workbench/contrib/commands/common/commands.contribution';
+
 // Comments
 import 'vs/workbench/contrib/comments/browser/comments.contribution';
 
@@ -359,15 +374,15 @@ import 'vs/workbench/contrib/extensions/browser/extensions.contribution';
 import 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
 
 // Output View
+import 'vs/workbench/contrib/output/common/outputChannelModelService';
 import 'vs/workbench/contrib/output/browser/output.contribution';
 import 'vs/workbench/contrib/output/browser/outputView';
 
 // Terminal
-import 'vs/workbench/contrib/terminal/common/environmentVariable.contribution';
-import 'vs/workbench/contrib/terminal/common/terminalExtensionPoints.contribution';
+import 'vs/workbench/contrib/terminal/terminal.all';
+
+// External terminal
 import 'vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution';
-import 'vs/workbench/contrib/terminal/browser/terminal.contribution';
-import 'vs/workbench/contrib/terminal/browser/terminalView';
 
 // Relauncher
 import 'vs/workbench/contrib/relauncher/browser/relauncher.contribution';
@@ -395,6 +410,12 @@ import 'vs/workbench/contrib/snippets/browser/snippets.contribution';
 // Formatter Help
 import 'vs/workbench/contrib/format/browser/format.contribution';
 
+// Folding
+import 'vs/workbench/contrib/folding/browser/folding.contribution';
+
+// Limit Indicator
+import 'vs/workbench/contrib/limitIndicator/browser/limitIndicator.contribution';
+
 // Inlay Hint Accessibility
 import 'vs/workbench/contrib/inlayHints/browser/inlayHintsAccessibilty';
 
@@ -404,19 +425,13 @@ import 'vs/workbench/contrib/themes/browser/themes.contribution';
 // Update
 import 'vs/workbench/contrib/update/browser/update.contribution';
 
-// Watermark
-import 'vs/workbench/contrib/watermark/browser/watermark';
-
 // Surveys
 import 'vs/workbench/contrib/surveys/browser/nps.contribution';
 import 'vs/workbench/contrib/surveys/browser/ces.contribution';
 import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 
 // Welcome
-import 'vs/workbench/contrib/welcomeOverlay/browser/welcomeOverlay';
 import 'sql/workbench/contrib/welcome/page/browser/welcomePage.contribution'; // {{SQL CARBON EDIT}} - add welcome page contribution
-import 'sql/workbench/contrib/welcome/notifyEncryption/notifyEncryption.contribution'; // {{SQL CARBON EDIT}} - add notifying Encrypt change contribution
-import 'sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenant.contribution'; // {{SQL CARBON EDIT}} - add notifying Hidden Tenant change contribution
 // import 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution'; // {{SQL CARBON EDIT}} - remove vscode getting started
 import 'vs/workbench/contrib/welcomeWalkthrough/browser/walkThrough.contribution';
 import 'vs/workbench/contrib/welcomeViews/common/viewsWelcome.contribution';
@@ -471,9 +486,8 @@ import 'vs/workbench/contrib/workspaces/browser/workspaces.contribution';
 // List
 import 'vs/workbench/contrib/list/browser/list.contribution';
 
-// {{SQL CARBON EDIT}} - disable audio cues
 // Audio Cues
-// import 'vs/workbench/contrib/audioCues/browser/audioCues.contribution';
+import 'vs/workbench/contrib/audioCues/browser/audioCues.contribution';
 
 //#endregion
 
@@ -585,5 +599,11 @@ import 'vs/workbench/contrib/deprecatedExtensionMigrator/browser/deprecatedExten
 
 // Bracket Pair Colorizer 2 Telemetry
 import 'vs/workbench/contrib/bracketPairColorizer2Telemetry/browser/bracketPairColorizer2Telemetry.contribution';
+
+// Accessibility
+import 'vs/workbench/contrib/accessibility/browser/accessibility.contribution';
+
+// Share
+import 'vs/workbench/contrib/share/browser/share.contribution';
 
 //#endregion

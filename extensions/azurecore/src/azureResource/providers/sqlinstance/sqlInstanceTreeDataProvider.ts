@@ -16,7 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, SqlInstanceGraphData> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "Azure SQL DB managed instance");
+	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceContainerLabel', "SQL managed instances");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -27,12 +27,9 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<Gr
 
 	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `${AzureResourcePrefixes.sqlInstance}${account.key.accountId}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
+			id: `${AzureResourcePrefixes.sqlInstance}${account.key.accountId}${databaseServer.tenant}${account.key.accountId}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${SqlInstanceTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlManagedInstance.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
@@ -59,16 +56,13 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<Gr
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: SqlInstanceTreeDataProvider.containerId,
 			label: SqlInstanceTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/sqlManagedInstance.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

@@ -205,7 +205,7 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 
 export function ensure(target: { [key: string]: any }, key: string): any {
 	if (target[key] === void 0) {
-		target[key] = {} as any;
+		target[key] = {};
 	}
 	return target[key];
 }
@@ -223,7 +223,7 @@ export function getErrorMessage(error: Error | any, removeHeader: boolean = fals
 	if (error instanceof Error) {
 		errorMessage = error.message;
 	} else if (error.responseText) {
-		errorMessage = error.responseText;
+		errorMessage = error.responseText as string;
 		if (error.status) {
 			errorMessage += ` (${error.status})`;
 		}
@@ -265,9 +265,9 @@ export function isValidNumber(maybeNumber: any) {
  * Helper to log messages to the developer console if enabled
  * @param msg Message to log to the console
  */
-export function logDebug(msg: any): void {
+export function logDebug(msg: unknown): void {
 	let config = vscode.workspace.getConfiguration(extensionConfigSectionName);
-	let logDebugInfo = config[configLogDebugInfo];
+	let logDebugInfo = !!config[configLogDebugInfo];
 	if (logDebugInfo === true) {
 		let currentTime = new Date().toLocaleTimeString();
 		let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';

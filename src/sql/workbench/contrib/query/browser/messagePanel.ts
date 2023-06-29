@@ -9,11 +9,11 @@ import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 
 import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
-import { isArray, isString } from 'vs/base/common/types';
+import { isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListener } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
@@ -213,7 +213,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		if (isArray(message)) {
+		if (Array.isArray(message)) {
 			this.model.messages.push(...message);
 		} else {
 			this.model.messages.push(message);

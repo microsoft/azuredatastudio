@@ -132,7 +132,7 @@ export class SqlToolsServer {
 	private async download(context: AppContext): Promise<string> {
 		const configDir = context.extensionContext.extensionPath;
 		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
-		this.config = JSON.parse(rawConfig.toString());
+		this.config = JSON.parse(rawConfig.toString()) as IConfig;
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy', '');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
@@ -219,7 +219,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 		synchronize: {
 			configurationSection: [
 				Constants.extensionConfigSectionName,
-				Constants.telemetryConfigSectionName
+				Constants.telemetryConfigSectionName,
+				Constants.queryEditorConfigSectionName,
 			]
 		},
 		providerId: Constants.providerId,

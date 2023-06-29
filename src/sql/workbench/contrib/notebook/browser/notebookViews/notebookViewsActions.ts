@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { ViewOptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
@@ -19,11 +19,12 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
 import * as types from 'vs/base/common/types';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { Separator } from 'sql/base/browser/ui/separator/separator';
-import { ToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { moreActionsLabel } from 'sql/workbench/contrib/notebook/common/notebookLoc';
+import { DropdownMenuActionViewItem } from 'vs/base/browser/ui/dropdown/dropdownActionViewItem';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 
 export class ViewSettingsAction extends Action {
 	private static readonly ID = 'notebookView.viewSettings';
@@ -216,27 +217,35 @@ export class ViewCellInNotebook extends CellActionBase {
 	}
 }
 
-export class ViewCellToggleMoreActions {
-	private _actions: (Action | CellActionBase)[] = [];
-	private _moreActions: ActionBar;
-	private _moreActionsElement: HTMLElement;
-	constructor(
-		@IInstantiationService private instantiationService: IInstantiationService
-	) {
-		this._actions.push(
-			instantiationService.createInstance(ViewCellInNotebook, 'viewCellInNotebook', localize('viewCellInNotebook', "View Cell In Notebook")),
-		);
-	}
+export class ViewCellToggleMoreAction extends Action {
+	public static readonly ID = 'notebook.viewToggleMore';
+	public static readonly LABEL = moreActionsLabel;
+	public static readonly ICON = 'codicon masked-icon more';
 
-	public onInit(elementRef: HTMLElement, context: CellContext) {
-		this._moreActionsElement = elementRef;
-		this._moreActionsElement.setAttribute('aria-haspopup', 'menu');
-		if (this._moreActionsElement.childNodes.length > 0) {
-			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
-		}
-		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: localize('moreActionsLabel', "More") });
-		this._moreActions.context = { target: this._moreActionsElement };
-		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
-		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
+	constructor() {
+		super(ViewCellToggleMoreAction.ID);
+		this.tooltip = ViewCellToggleMoreAction.LABEL;
+	}
+}
+
+export class ViewCellToggleMoreActionViewItem extends DropdownMenuActionViewItem {
+	constructor(
+		action: IAction,
+		actionRunner: IActionRunner,
+		private _cellContext: CellContext,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IInstantiationService instantiationService: IInstantiationService
+	) {
+		super(action,
+			[
+				instantiationService.createInstance(ViewCellInNotebook, 'viewCellInNotebook', localize('viewCellInNotebook', "View Cell In Notebook"))
+			],
+			contextMenuService,
+			{
+				actionRunner,
+				classNames: ViewCellToggleMoreAction.ICON,
+				anchorAlignmentProvider: () => AnchorAlignment.RIGHT
+			});
+		this.setActionContext(this._cellContext);
 	}
 }

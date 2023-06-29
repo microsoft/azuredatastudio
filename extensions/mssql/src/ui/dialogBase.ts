@@ -123,7 +123,7 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	protected createLabelInputContainer(label: string, component: azdata.Component, required: boolean = false): azdata.FlexContainer {
-		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required }).component();
+		const labelComponent = this.modelView.modelBuilder.text().withProps({ width: DefaultLabelWidth, value: label, requiredIndicator: required, CSSStyles: { 'padding-right': '10px' } }).component();
 		const container = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'horizontal', flexWrap: 'nowrap', alignItems: 'center' }).withItems([labelComponent], { flex: '0 0 auto' }).component();
 		container.addItem(component, { flex: '1 1 auto' });
 		return container;
@@ -163,6 +163,14 @@ export abstract class DialogBase<DialogResult> {
 			collapsible: collapsible,
 			collapsed: collapsed
 		}).withItems(items).component();
+	}
+
+	protected createTab(id: string, title: string, content?: azdata.Component): azdata.Tab {
+		return {
+			title: title,
+			content: content,
+			id: id
+		};
 	}
 
 	protected createTableList<T>(ariaLabel: string,
@@ -355,5 +363,9 @@ export abstract class DialogBase<DialogResult> {
 
 	protected getSectionItemLayout(): azdata.FlexItemLayout {
 		return { CSSStyles: { 'margin-block-end': '5px' } };
+	}
+
+	protected createHyperlink(label: string, url: string): azdata.HyperlinkComponent {
+		return this.modelView.modelBuilder.hyperlink().withProps({ label: label, ariaLabel: label, url: url, showLinkIcon: true }).component();
 	}
 }

@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<script>
-			performance.mark('code/didStartRenderer')
+			performance.mark('code/didStartRenderer');
 		</script>
 		<meta charset="utf-8" />
 
@@ -27,6 +27,7 @@
 		<!-- Workbench Icon/Manifest/CSS -->
 		<link rel="icon" href="{{WORKBENCH_WEB_BASE_URL}}/resources/server/favicon.ico" type="image/x-icon" />
 		<link rel="manifest" href="{{WORKBENCH_WEB_BASE_URL}}/resources/server/manifest.json" crossorigin="use-credentials" />
+
 	</head>
 
 	<body aria-label="">
@@ -70,9 +71,8 @@
 				'@angular/animations': `${window.location.origin}/static/remote/web/node_modules/@angular/animations/bundles/animations.umd.n.js`,
 				'angular2-grid': `${window.location.origin}/static/remote/web/node_modules/angular2-grid/bundles/NgGrid.umd.js`,
 				'angular2-slickgrid': `${window.location.origin}/static/remote/web/node_modules/angular2-slickgrid/out/bundles/angular2-slickgrid.umd.js`,
-				'chart.js':  `${window.location.origin}/static/remote/web/node_modules/chart.js/dist/Chart.bundle.min.js`,
+				'chart.js':  `${window.location.origin}/static/remote/web/node_modules/chart.js/dist/chart.umd.js`,
 				'html-to-image': `${window.location.origin}/static/remote/web/node_modules/html-to-image/dist/html-to-image.js`,
-				'ng2-charts': `${window.location.origin}/static/remote/web/node_modules/ng2-charts/bundles/ng2-charts.umd.js`,
 				'rxjs/Observable': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?0`,
 				'rxjs/observable/merge': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?1`,
 				'rxjs/operator/share': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?2`,
@@ -106,7 +106,7 @@
 				'plotly.js-dist-min': `${window.location.origin}/static/node_modules/plotly.js-dist-min/plotly.min.js`,
 				'azdataGraph': `${window.location.origin}/static/node_modules/azdataGraph/dist/build.js`
 			}
-		};
+		});
 	</script>
 	<script src="./static/remote/web/node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="./static/remote/web/node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>

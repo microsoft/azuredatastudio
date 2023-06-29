@@ -68,6 +68,12 @@ export interface ConnectionProviderProperties {
 	displayName: string;
 
 	/**
+	 * Enable to use all connection properties for URI generation (ServiceLayer requires the same options as well.)
+	 * If not specified, only IsIdentity options will be used instead (URI with basic info).
+	 */
+	useFullOptions?: boolean;
+
+	/**
 	 * Alias to be used for the kernel in notebooks
 	 */
 	notebookKernelAlias?: string;
@@ -108,6 +114,13 @@ export interface ConnectionProviderProperties {
 	 * Connection string options for the connection provider
 	 */
 	connectionStringOptions?: ConnectionStringOptions;
+
+	/**
+	 * Indicates whether the provider support copy results to clipboard. Default value is false.
+	 * If true, the copy results to clipboard will be delegated to the provider to avoid passing large amount of data using the RPC channel.
+	 * Otherwise ADS will handle the copy request on the UI side.
+	 */
+	supportCopyResultsToClipboard?: boolean;
 }
 
 export interface ProviderFeatures {

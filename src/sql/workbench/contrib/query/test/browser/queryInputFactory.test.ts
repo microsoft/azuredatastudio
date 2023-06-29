@@ -194,7 +194,7 @@ suite('Query Input Factory', () => {
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
-		assert(newsqlEditorStub.calledWithExactly({ resource: undefined, open: false, initalContent: '' }));
+		assert(newsqlEditorStub.calledWithExactly({ resource: undefined, open: false, initialContent: '' }));
 		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect only once for one URI');
 	});
 
@@ -325,7 +325,7 @@ suite('Query Input Factory', () => {
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
-		assert(newsqlEditorStub.calledWithExactly({ resource: input.resource, open: false, initalContent: '' }));
+		assert(newsqlEditorStub.calledWithExactly({ resource: input.resource, open: false, initialContent: '' }));
 	});
 
 });
