@@ -11,6 +11,7 @@ import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
+import * as utils from '../api/utils';
 
 export const EmptySettingValue = '-';
 
@@ -134,6 +135,33 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				return await vscode.commands.executeCommand(actionId, args);
 			}));
 		return newMigrationButton;
+	}
+
+	protected createImportMigrationButton(): azdata.ButtonComponent {
+		const importMigrationButton = this.view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: loc.DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL,
+				description: loc.DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION,
+				height: 24,
+				iconHeight: 24,
+				iconWidth: 24,
+				iconPath: IconPathHelper.addNew,
+			}).component();
+		this.disposables.push(
+			importMigrationButton.onDidClick(async () => {
+				const file = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
+				if (file) {
+					void vscode.window.showInformationMessage("Selected import file: " + file);
+				}
+				const actionId = MenuCommands.StartMigration;
+				const args = {
+					extensionId: SqlMigrationExtensionId,
+					issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
+				};
+				await vscode.commands.executeCommand(actionId, args);
+			}));
+		return importMigrationButton;
 	}
 
 	protected createNewSupportRequestButton(): azdata.ButtonComponent {
