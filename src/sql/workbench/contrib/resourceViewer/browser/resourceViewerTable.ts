@@ -6,10 +6,7 @@
 import 'vs/css!./media/resourceViewerTable';
 import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { HyperlinkCellValue, isHyperlinkCellValue, TextCellValue } from 'sql/base/browser/ui/table/formatters';
 import { HeaderFilter, CommandEventArgs } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -28,7 +25,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -39,7 +36,6 @@ export class ResourceViewerTable extends Disposable {
 	public onContextMenu = this._onContextMenu.event;
 
 	constructor(parent: HTMLElement,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ICommandService private _commandService: ICommandService,
 		@INotificationService private _notificationService: INotificationService,
@@ -53,7 +49,7 @@ export class ResourceViewerTable extends Disposable {
 		};
 
 		this._dataView = new TableDataView<azdata.DataGridItem>(undefined, undefined, undefined, filterFn);
-		this._resourceViewerTable = this._register(new Table(parent, this._accessibilityService, this._quickInputService, {
+		this._resourceViewerTable = this._register(new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			sorter: (args) => {
 				this._dataView.sort(args);
 			}
@@ -63,7 +59,6 @@ export class ResourceViewerTable extends Disposable {
 
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
 		let filterPlugin = new HeaderFilter<azdata.DataGridItem>(defaultTableFilterStyles, this._contextViewService);
-		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
 		this._register(this._resourceViewerTable.onContextMenu((e: ITableMouseEvent) => {
 			this._onContextMenu.fire({
