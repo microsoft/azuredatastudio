@@ -11,7 +11,7 @@ import { BookVersion } from './bookVersionHandler';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
-	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): boolean;
+	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): Promise<boolean>;
 }
 
 enum TrustBookOperation {
@@ -58,7 +58,7 @@ export class BookTrustManager implements IBookTrustManager {
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);
 	}
 
-	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): boolean {
+	async setBookAsTrusted(bookRootPath: string, isTrusted: boolean): Promise<boolean> {
 		if (isTrusted) {
 			return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Add);
 		}
@@ -72,11 +72,11 @@ export class BookTrustManager implements IBookTrustManager {
 		return trustedBookDirectories;
 	}
 
-	setTrustedBookPathsInConfig(bookPaths: string[]) {
+	async setTrustedBookPathsInConfig(bookPaths: string[]): Promise<void> {
 		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let storeInWorspace: boolean = this.hasWorkspaceFolders();
 
-		void config.update(constants.trustedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+		return config.update(constants.trustedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 	}
 
 	hasWorkspaceFolders(): boolean {
@@ -84,7 +84,7 @@ export class BookTrustManager implements IBookTrustManager {
 		return workspaceFolders && workspaceFolders.length > 0;
 	}
 
-	updateTrustedBooks(bookPath: string, operation: TrustBookOperation) {
+	async updateTrustedBooks(bookPath: string, operation: TrustBookOperation): Promise<boolean> {
 		let modifiedTrustedBooks = false;
 		let bookPathToChange: string = path.join(bookPath, path.sep);
 
@@ -110,7 +110,7 @@ export class BookTrustManager implements IBookTrustManager {
 			modifiedTrustedBooks = true;
 		}
 
-		this.setTrustedBookPathsInConfig(trustedBooks);
+		await this.setTrustedBookPathsInConfig(trustedBooks);
 
 		return modifiedTrustedBooks;
 	}
