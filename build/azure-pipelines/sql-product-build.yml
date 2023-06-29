@@ -161,7 +161,6 @@ stages:
     pool:
       vmImage: 'Ubuntu-20.04'
     dependsOn:
-      - macOS
       - Linux
       - Windows
     jobs:
