@@ -17,7 +17,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Link } from 'vs/platform/opener/browser/link';
 import { ThemeIcon } from 'vs/base/common/themables';
-import { defaultListStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { getListStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class DesignerIssuesTabPanelView extends Disposable implements IPanelView {
 	private _container: HTMLElement;
@@ -40,7 +40,10 @@ export class DesignerIssuesTabPanelView extends Disposable implements IPanelView
 			mouseSupport: true,
 			accessibilityProvider: new DesignerIssueListAccessibilityProvider()
 		});
-		this._issueList.style(defaultListStyles);
+		this._issueList.style(getListStyles({
+			listInactiveSelectionIconForeground: undefined,
+			listActiveSelectionIconForeground: undefined
+		}));
 		this._register(this._issueList.onDidChangeSelection((e) => {
 			if (e.elements && e.elements.length === 1) {
 				this._onIssueSelected.fire(e.elements[0].propertyPath);

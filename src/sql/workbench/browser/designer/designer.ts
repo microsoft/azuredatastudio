@@ -54,7 +54,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
-import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles, getTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown;
@@ -782,7 +782,15 @@ export class Designer extends Disposable {
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				const taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
-				const table = new Table(tableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles, {
+				const table = new Table(tableContainer, this._accessibilityService, this._quickInputService, getTableStyles({
+					listActiveSelectionBackground: undefined,
+					listActiveSelectionForeground: undefined,
+					listFocusAndSelectionBackground: undefined,
+					listFocusAndSelectionForeground: undefined,
+					listInactiveFocusBackground: undefined,
+					listInactiveSelectionBackground: undefined,
+					listInactiveSelectionForeground: undefined
+				}), {
 					dataProvider: new TableDataView()
 				}, {
 					editable: true,

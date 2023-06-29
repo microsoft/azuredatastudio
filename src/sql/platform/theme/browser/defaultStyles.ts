@@ -107,3 +107,7 @@ export const defaultTableStyles: ITableStyles = {
 	tableHeaderBackground: cr.asCssVariable(tableHeaderBackground),
 	tableHeaderForeground: cr.asCssVariable(tableHeaderForeground)
 };
+
+export function getTableStyles(styles: IStyleOverride<ITableStyles>): ITableStyles {
+	return overrideStyles(styles, defaultTableStyles);
+}
