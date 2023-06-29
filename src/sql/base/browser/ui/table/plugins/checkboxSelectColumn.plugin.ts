@@ -129,6 +129,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			this.toggleCellCheckbox(args.row);
 			e.stopPropagation();
 			e.preventDefault();
+			e.browserEvent.stopImmediatePropagation();
 		}
 	}
 

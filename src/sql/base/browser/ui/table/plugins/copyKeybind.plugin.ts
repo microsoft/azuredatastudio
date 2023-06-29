@@ -53,6 +53,7 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 		if (handled) {
 			e.preventDefault();
 			e.stopPropagation();
+			e.browserEvent.stopImmediatePropagation
 		}
 	}
 
