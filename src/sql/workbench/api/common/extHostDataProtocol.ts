@@ -210,6 +210,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerAllServerMetadataProvider(provider: azdata.metadata.AllServerMetadataProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
+		this._proxy.$registerMetadataProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
