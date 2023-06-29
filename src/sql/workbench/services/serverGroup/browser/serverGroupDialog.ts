@@ -11,7 +11,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -175,9 +174,6 @@ export class ServerGroupDialog extends Modal {
 
 	private registerListeners(): void {
 		const renderedDialog = this.withRenderedDialog;
-		// Theme styler
-		this._register(attachInputBoxStyler(renderedDialog.groupNameInputBox, this._themeService));
-		this._register(attachInputBoxStyler(renderedDialog.groupDescriptionInputBox, this._themeService));
 		this._register(renderedDialog.addServerButton);
 		this._register(renderedDialog.closeButton);
 
