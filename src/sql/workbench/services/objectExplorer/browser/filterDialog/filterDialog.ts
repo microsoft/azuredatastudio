@@ -66,7 +66,7 @@ const CLEAR_COLUMN_HEADER = localize('objectExplorer.clearColumnHeader', "Clear"
 const TRUE_SELECT_BOX = localize('objectExplorer.trueSelectBox', "True");
 const FALSE_SELECT_BOX = localize('objectExplorer.falseSelectBox', "False");
 
-function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Path: {0}", nodepath) }
+const SUBTITLE_LABEL = localize('objectExplorer.nodePath', "Path:");
 
 const PROPERTY_COLUMN_ID = 'property';
 const OPERATOR_COLUMN_ID = 'operator';
@@ -138,7 +138,12 @@ export class FilterDialog extends Modal {
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$('.filter-dialog-body'));
 		const subtitle = DOM.append(body, DOM.$('.filter-dialog-node-path'));
-		subtitle.innerText = nodePathDisplayString(this._filterDialogSubtitle);
+		const subtileLabel = DOM.append(subtitle, DOM.$('.filter-dialog-node-path-label'));
+		subtileLabel.innerText = SUBTITLE_LABEL;
+		const subtilteText = DOM.append(subtitle, DOM.$('.filter-dialog-node-path-text'));
+		const nodePathText = this._filterDialogSubtitle;
+		subtilteText.title = nodePathText;
+		subtilteText.innerText = nodePathText;
 		const clauseTableContainer = DOM.append(body, DOM.$('.filter-table-container'));
 		const filter = DOM.append(clauseTableContainer, DOM.$('.filter-table'));
 		this._tableCellEditorFactory = new TableCellEditorFactory(
