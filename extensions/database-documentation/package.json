@@ -13,9 +13,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:database-documentation.viewDocumentation",
-		"onCommand:database-documentation.regenerateDocumentation",
-		"onCommand:database-documentation.saveDocumentationToDatabase"
+		"onCommand:database-documentation.viewDocumentation"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -45,7 +43,7 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "database-documentation.viewDocumentation",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Database|Schema|Table)$/ && mssql:engineedition != 11",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Database|Schema|Table|View)$/ && mssql:engineedition != 11",
 					"group": "export"
 				}
 			],
