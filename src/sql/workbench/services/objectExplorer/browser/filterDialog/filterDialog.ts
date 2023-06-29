@@ -26,14 +26,13 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultEditableDropdownStyles, defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 // strings for filter dialog
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -356,7 +355,7 @@ export class FilterDialog extends Modal {
 			};
 		}
 
-		this.filterTable = new Table(filter, this._accessibilityService, this._quickInputService, {
+		this.filterTable = new Table(filter, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			dataProvider: dataProvider!,
 			columns: columns,
 		}, {
@@ -389,7 +388,6 @@ export class FilterDialog extends Modal {
 
 		this.filterTable.registerPlugin(clearValueColumn);
 		this.filterTable.layout(new DOM.Dimension(600, (tableData.length + 2) * TableRowHeight));
-		this._register(attachTableStyler(this.filterTable, this._themeService));
 
 		this._description = DOM.append(body, DOM.$('.filter-dialog-description'));
 		this._description.innerHTML = this._properties[0].description;

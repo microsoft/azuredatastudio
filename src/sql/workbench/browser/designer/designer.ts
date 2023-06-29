@@ -9,14 +9,13 @@ import {
 	DesignerEditProcessedEventArgs, DesignerStateChangedEventArgs, DesignerAction, ScriptProperty, DesignerRootObjectPath, CanBeDeletedProperty, DesignerUIArea
 }
 	from 'sql/workbench/browser/designer/interfaces';
-import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
+import { IPanelTab, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
-import { Emitter, Event } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
-import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -38,7 +37,7 @@ import { DesignerIssuesTabPanelView } from 'sql/workbench/browser/designer/desig
 import { DesignerScriptEditorTabPanelView } from 'sql/workbench/browser/designer/designerScriptEditorTabPanelView';
 import { DesignerPropertyPathValidator } from 'sql/workbench/browser/designer/designerPropertyPathValidator';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { listActiveSelectionBackground, listActiveSelectionForeground, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
+import { asCssVariable, listActiveSelectionBackground, listActiveSelectionForeground, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { layoutDesignerTable, TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
@@ -55,19 +54,17 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
-import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
-
-export interface IDesignerStyle {
-	tabbedPanelStyles?: ITabbedPanelStyles;
-	tableStyles?: ITableStyles;
-	paneSeparator?: Color;
-	groupHeaderBackground?: Color;
-}
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown;
 
 export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerPropertyPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
+
+export interface IDesignerStyles {
+	paneSeparator: Color;
+}
 
 interface DesignerTableCellContext {
 	view: DesignerUIArea;
@@ -90,7 +87,6 @@ export class Designer extends Disposable {
 	private _contentContainer: HTMLElement;
 	private _topContentContainer: HTMLElement;
 	private _propertiesPaneContainer: HTMLElement;
-	private _styles: IDesignerStyle = {};
 	private _supressEditProcessing: boolean = false;
 	private _componentMap = new Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>();
 	private _input: DesignerComponentInput;
@@ -98,12 +94,10 @@ export class Designer extends Disposable {
 	private _propertiesPane: DesignerPropertiesPane;
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
-	private _groupHeaders: HTMLElement[] = [];
 	private _issuesView: DesignerIssuesTabPanelView;
 	private _scriptEditorView: DesignerScriptEditorTabPanelView;
 	private _taskbars: Taskbar[] = [];
 	private _actionsMap: Map<Taskbar, DesignerTableAction[]> = new Map<Taskbar, DesignerTableAction[]>();
-	private _onStyleChangeEventEmitter = new Emitter<void>();
 
 	constructor(private readonly _container: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -205,54 +199,13 @@ export class Designer extends Disposable {
 
 
 		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, components, parentPath) => {
-			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, parentPath, 'PropertiesView');
+			return this.createComponents(container, components, this._propertiesPane.componentMap, parentPath, 'PropertiesView');
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
 		}, this._instantiationService);
 	}
 
-	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Dropdown): void {
-		if (component instanceof InputBox) {
-		} else if (component instanceof Checkbox) {
-		} else if (component instanceof TabbedPanel) {
-			component.style(this._styles.tabbedPanelStyles);
-		} else if (component instanceof Table) {
-			this.removeTableSelectionStyles();
-			component.style(this._styles.tableStyles);
-		} else if (component instanceof Dropdown) {
-		} else {
-		}
-	}
-
-	private removeTableSelectionStyles(): void {
-		this._styles.tableStyles.listActiveSelectionBackground = undefined;
-		this._styles.tableStyles.listActiveSelectionForeground = undefined;
-		this._styles.tableStyles.listFocusAndSelectionBackground = undefined;
-		this._styles.tableStyles.listFocusAndSelectionForeground = undefined;
-		this._styles.tableStyles.listInactiveFocusBackground = undefined;
-		this._styles.tableStyles.listInactiveFocusForeground = undefined;
-		this._styles.tableStyles.listInactiveSelectionBackground = undefined;
-		this._styles.tableStyles.listInactiveSelectionForeground = undefined;
-	}
-
-	private styleGroupHeader(header: HTMLElement): void {
-		if (this._styles.groupHeaderBackground) {
-			header.style.backgroundColor = this._styles.groupHeaderBackground.toString();
-		}
-	}
-
-	public style(styles: IDesignerStyle): void {
-		this._styles = styles;
-		this._componentMap.forEach((value, key, map) => {
-			if (value.component instanceof Table) {
-				if (value.component.style) {
-					this.styleComponent(value.component);
-				}
-			}
-		});
-		this._propertiesPane.componentMap.forEach((value) => {
-			this.styleComponent(value.component);
-		});
+	public style(styles: IDesignerStyles): void {
 		this._verticalSplitView.style({
 			separatorBorder: styles.paneSeparator
 		});
@@ -261,16 +214,7 @@ export class Designer extends Disposable {
 			separatorBorder: styles.paneSeparator
 		});
 
-		this._groupHeaders.forEach((header) => {
-			this.styleGroupHeader(header);
-		});
-
-		this._propertiesPane.groupHeaders.forEach((header) => {
-			this.styleGroupHeader(header);
-		});
-
 		this._propertiesPane.descriptionElement.style.borderColor = styles.paneSeparator.toString();
-		this._onStyleChangeEventEmitter.fire();
 	}
 
 	public layout(dimension: DOM.Dimension) {
@@ -336,14 +280,13 @@ export class Designer extends Disposable {
 		DOM.clearNode(this._topContentContainer);
 		this._contentTabbedPanel.clearTabs();
 		this._propertiesPane.clear();
-		this._groupHeaders = [];
 		this._taskbars.map(t => t.dispose());
 	}
 
 	private initializeDesigner(): void {
 		const view = this._input.view;
 		if (view.components) {
-			this.createComponents(this._topContentContainer, view.components, this._componentMap, this._groupHeaders, DesignerRootObjectPath, 'TopContentView');
+			this.createComponents(this._topContentContainer, view.components, this._componentMap, DesignerRootObjectPath, 'TopContentView');
 		}
 		view.tabs.forEach(tab => {
 			this._contentTabbedPanel.pushTab(this.createTabView(tab));
@@ -617,7 +560,7 @@ export class Designer extends Disposable {
 
 	private createTabView(tab: DesignerTab): IPanelTab {
 		const view = new DesignerTabPanelView(tab, (container, components, identifierGetter) => {
-			return this.createComponents(container, components, this._componentMap, this._groupHeaders, identifierGetter, 'TabsView');
+			return this.createComponents(container, components, this._componentMap, identifierGetter, 'TabsView');
 		});
 		return {
 			identifier: tab.title,
@@ -705,7 +648,6 @@ export class Designer extends Disposable {
 	private createComponents(container: HTMLElement,
 		components: DesignerDataPropertyInfo[],
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
-		groupHeaders: HTMLElement[],
 		parentPath: DesignerPropertyPath,
 		area: DesignerUIArea): DesignerUIComponent[] {
 		const uiComponents = [];
@@ -727,8 +669,7 @@ export class Designer extends Disposable {
 		} else {
 			groupNames.forEach(group => {
 				const groupHeader = container.appendChild(DOM.$('div.full-row.group-header'));
-				groupHeaders.push(groupHeader);
-				this.styleGroupHeader(groupHeader);
+				groupHeader.style.backgroundColor = asCssVariable(GroupHeaderBackground);
 				groupHeader.innerText = group;
 				componentsToCreate.forEach(component => {
 					if (component.group === group) {
@@ -841,7 +782,7 @@ export class Designer extends Disposable {
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				const taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
-				const table = new Table(tableContainer, this._accessibilityService, this._quickInputService, {
+				const table = new Table(tableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 					dataProvider: new TableDataView()
 				}, {
 					editable: true,
@@ -1030,8 +971,6 @@ export class Designer extends Disposable {
 			defintion: componentDefinition,
 			component: component
 		});
-
-		this.styleComponent(component);
 		return component;
 	}
 

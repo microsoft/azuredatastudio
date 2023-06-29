@@ -7,7 +7,6 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -53,6 +52,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -97,7 +97,7 @@ class InsightTableView extends ViewPane {
 	}
 
 	protected override renderBody(container: HTMLElement): void {
-		this._table = new Table(container, this._accessibilityService, this._quickInputService, {
+		this._table = new Table(container, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			columns: this.columns,
 			dataProvider: this.data
 		}, this.tableOptions);
@@ -304,9 +304,6 @@ export class InsightsDialogView extends Modal {
 
 		this._splitView.addView(topTableView, Sizing.Distribute);
 		this._splitView.addView(bottomTableView, Sizing.Distribute);
-
-		this._register(attachTableStyler(this._topTable, this._themeService));
-		this._register(attachTableStyler(this._bottomTable, this._themeService));
 
 		this._topTable.grid.onKeyDown.subscribe(e => {
 			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
