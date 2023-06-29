@@ -14,8 +14,7 @@ import * as vscode from 'vscode';
 import { BookModel } from '../../book/bookModel';
 import * as sinon from 'sinon';
 
-// {{SQL CARBON TODO}} - reenable this test suite https://github.com/microsoft/azuredatastudio/issues/23540
-describe.skip('BookTrustManagerTests', function () {
+describe('BookTrustManagerTests', function () {
 
 	describe('TrustingInWorkspaces', () => {
 		let bookTrustManager: IBookTrustManager;
@@ -223,9 +222,8 @@ describe.skip('BookTrustManagerTests', function () {
 		});
 	});
 
-
-
-	describe('TrustingInFolder', () => {
+	// {{SQL CARBON TODO}} - reenable this test suite https://github.com/microsoft/azuredatastudio/issues/23540
+	describe.skip('TrustingInFolder', () => {
 
 		let bookTrustManager: IBookTrustManager;
 		let books: BookModel[];
