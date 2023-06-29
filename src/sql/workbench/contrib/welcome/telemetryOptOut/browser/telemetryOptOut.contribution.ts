@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
+import { BrowserTelemetryOptOut } from 'sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { NativeTelemetryOptOut } from 'vs/workbench/contrib/welcome/telemetryOptOut/electron-sandbox/telemetryOptOut';
 
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(NativeTelemetryOptOut, LifecyclePhase.Eventually);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(BrowserTelemetryOptOut, LifecyclePhase.Eventually);
