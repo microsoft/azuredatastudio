@@ -15,7 +15,7 @@ import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { isArray, isBoolean } from 'vs/base/common/types';
+import { isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -72,13 +72,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		parent: HTMLElement,
 		accessibilityProvider: IAccessibilityProvider,
 		private _quickInputProvider: IQuickInputProvider,
+		styles: ITableStyles,
 		configuration?: ITableConfiguration<T>,
 		options?: Slick.GridOptions<T>) {
 		super();
-		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
+		if (!configuration || !configuration.dataProvider || Array.isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
 		} else {
-			this._data = configuration.dataProvider;
+			this._data = <any>configuration.dataProvider;
 		}
 
 		this._register(this._data);
@@ -141,6 +142,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+		this.style(styles);
 	}
 
 	public async resizeActiveColumn(): Promise<void> {

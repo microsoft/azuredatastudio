@@ -6,7 +6,6 @@
 import 'vs/css!./media/gridPanel';
 
 import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
@@ -24,7 +23,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { range } from 'vs/base/common/arrays';
@@ -60,6 +59,7 @@ import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegist
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { GridRange } from 'sql/base/common/gridRange';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -102,8 +102,7 @@ export class GridPanel extends Disposable {
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@ILogService private readonly logService: ILogService,
-		@IThemeService private readonly themeService: IThemeService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this.scrollableView = new ScrollableView(this.container);
@@ -257,7 +256,6 @@ export class GridPanel extends Disposable {
 					this.minimizeTables();
 				}
 			}));
-			this.tableDisposable.add(attachTableStyler(table, this.themeService));
 
 			tables.push(table);
 		}
@@ -421,7 +419,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
@@ -491,7 +488,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 		}
 		if (action) {
 			action.run(this.generateContext());
-			action.dispose();
 		}
 	}
 
@@ -590,7 +586,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
 			});
-		this.table = this._register(new Table(this.tableContainer, this.accessibilityService, this.quickInputService, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, this.accessibilityService, this.quickInputService, defaultTableStyles, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
@@ -619,11 +615,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView, IQue
 			};
 			this.table.rerenderGrid();
 		}));
-		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+		this.filterPlugin = new HeaderFilter({
 			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
-		});
-		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
+			refreshColumns: !autoSizeOnRender, // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
+			...defaultTableFilterStyles
+		}, this.contextViewService, this.notificationService,);
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const nullBackground = theme.getColor(queryEditorNullBackground);
 			if (nullBackground) {
@@ -1113,7 +1109,6 @@ class GridTable<T> extends GridTableBase<T> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
@@ -1127,7 +1122,7 @@ class GridTable<T> extends GridTableBase<T> {
 			inMemoryDataProcessing: true,
 			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}

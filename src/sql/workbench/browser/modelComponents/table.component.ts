@@ -15,8 +15,6 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
@@ -41,6 +39,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { deepClone, equals } from 'vs/base/common/objects';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -87,7 +86,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
@@ -282,12 +280,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				enableInGridTabNavigation: this.moveFocusOutWithTab
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this._tableData, columns: this._tableColumns }, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, defaultTableStyles, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 
 			this._register(this._table);
-			this._register(attachTableStyler(this._table, this.themeService));
 			this._register(this._table.onSelectedRowsChanged((e, data) => {
 				if (this.isCheckboxColumnsUsedForSelection()) {
 					return;
@@ -606,8 +603,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 	private registerFilterPlugin() {
-		const filterPlugin = new HeaderFilter<Slick.SlickData>(this.contextViewService);
-		this._register(attachTableFilterStyler(filterPlugin, this.themeService));
+		const filterPlugin = new HeaderFilter<Slick.SlickData>(defaultTableFilterStyles, this.contextViewService);
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = (<any>args).column.filterValues;

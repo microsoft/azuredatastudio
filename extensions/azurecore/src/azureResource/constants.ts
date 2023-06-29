@@ -24,7 +24,9 @@ export enum AzureResourceItemType {
 	azureMonitor = 'azure.resource.itemType.azureMonitor',
 	azureMonitorContainer = 'azure.resource.itemType.azureMonitorContainer',
 	cosmosDBMongoAccount = 'azure.resource.itemType.cosmosDBMongoAccount',
-	cosmosDBMongoCluster = 'azure.resource.itemType.cosmosDBMongoCluster'
+	cosmosDBMongoCluster = 'azure.resource.itemType.cosmosDBMongoCluster',
+	cosmosDBPostgresAccount = 'azure.resource.itemType.cosmosDBPostgresAccount',
+	cosmosDBPostgresCluster = 'azure.resource.itemType.cosmosDBPostgresCluster'
 }
 
 export enum AzureResourceServiceNames {

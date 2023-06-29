@@ -60,13 +60,13 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: PostgresServerArcTreeDataProvider.containerId,
 			label: PostgresServerArcTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/azureArcPostgresServer.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

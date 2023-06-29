@@ -120,7 +120,7 @@ export enum AlertType {
 }
 
 export enum FrequencyTypes {
-	Unknown,
+	Unknown = 0,
 	OneTime = 1 << 1,
 	Daily = 1 << 2,
 	Weekly = 1 << 3,
@@ -498,8 +498,10 @@ export enum NodeFilterOperator {
 	NotBetween = 7,
 	Contains = 8,
 	NotContains = 9,
-	IsNull = 10,
-	IsNotNull = 11
+	StartsWith = 10,
+	NotStartsWith = 11,
+	EndsWith = 12,
+	NotEndsWith = 13
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

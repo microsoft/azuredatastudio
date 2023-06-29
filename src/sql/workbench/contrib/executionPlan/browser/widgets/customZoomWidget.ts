@@ -5,7 +5,6 @@
 
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetBase';
 import * as DOM from 'vs/base/browser/dom';
 import { Action } from 'vs/base/common/actions';
@@ -18,6 +17,8 @@ import { zoomIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/
 import { Button } from 'sql/base/browser/ui/button/button';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
+import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 	private _actionBar: ActionBar;
@@ -38,9 +39,9 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 		this.customZoomInputBox = this._register(new InputBox(this.container, this.contextViewService, {
 			type: 'number',
 			ariaLabel: zoomValueLabel,
-			flexibleWidth: false
+			flexibleWidth: false,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
-		this._register(attachInputBoxStyler(this.customZoomInputBox, this.themeService));
 
 		const currentZoom = this.executionPlanDiagram.getZoomLevel();
 
@@ -58,7 +59,8 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		const applyButton = this._register(new Button(this.container, {
-			title: localize('customZoomApplyButtonTitle', "Apply Zoom")
+			title: localize('customZoomApplyButtonTitle', "Apply Zoom"),
+			...defaultButtonStyles
 		}));
 		applyButton.setWidth('60px');
 		applyButton.label = localize('customZoomApplyButton', "Apply");
@@ -105,12 +107,10 @@ export class CancelZoom extends Action {
 	public static LABEL = localize('cancelCustomZoomAction', "Close");
 
 	constructor() {
-		super(CancelZoom.ID, CancelZoom.LABEL, Codicon.chromeClose.classNames);
+		super(CancelZoom.ID, CancelZoom.LABEL, ThemeIcon.asClassName(Codicon.chromeClose));
 	}
 
 	public override async run(context: CustomZoomWidget): Promise<void> {
 		context.widgetController.removeWidget(context);
 	}
 }
-
-

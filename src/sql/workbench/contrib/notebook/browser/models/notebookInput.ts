@@ -42,6 +42,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 import { isEqual } from 'vs/base/common/resources';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
+import { IAttachedView } from 'vs/editor/common/model';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -239,7 +240,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
 	private _containerResolved: Deferred<void> = new Deferred<void>();
-
+	private _attachedView: IAttachedView;
 	private _notebookFindModel: NotebookFindModel;
 
 	constructor(private _title: string,
@@ -445,19 +446,19 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 			let textOrUntitledEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | TextResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
-					this._untitledEditorModel.textEditorModel.onBeforeAttached();
+					this._attachedView = this._untitledEditorModel.textEditorModel.onBeforeAttached();
 					textOrUntitledEditorModel = this._untitledEditorModel;
 				} else {
 					let resolvedInput = await this._textInput.resolve();
 					if (!(resolvedInput instanceof BinaryEditorModel)) {
-						(resolvedInput as ITextEditorModel).textEditorModel.onBeforeAttached();
+						this._attachedView = (resolvedInput as ITextEditorModel).textEditorModel.onBeforeAttached();
 					}
 					textOrUntitledEditorModel = resolvedInput as TextFileEditorModel | UntitledTextEditorModel | TextResourceEditorModel;
 				}
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
 				this._register(textEditorModelReference);
-				textEditorModelReference.object.textEditorModel.onBeforeAttached();
+				this._attachedView = textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				await textEditorModelReference.object.resolve();
 				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | TextResourceEditorModel;
 			}
@@ -509,8 +510,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public override dispose(): void {
-		if (this._model && this._model.editorModel && this._model.editorModel.textEditorModel) {
-			this._model.editorModel.textEditorModel.onBeforeDetached();
+		if (this._model && this._model.editorModel && this._model.editorModel.textEditorModel && this._attachedView) {
+			this._model.editorModel.textEditorModel.onBeforeDetached(this._attachedView);
 		}
 		this._disposeContainer();
 		super.dispose();

@@ -20,7 +20,7 @@ export interface IPointDataSet {
 export function customMixin(destination: any, source: any, overwrite?: boolean): any {
 	if (types.isObject(source)) {
 		mixin(destination, source, overwrite, customMixin);
-	} else if (types.isArray(source)) {
+	} else if (Array.isArray(source)) {
 		for (let i = 0; i < source.length; i++) {
 			if (destination[i]) {
 				mixin(destination[i], source[i], overwrite, customMixin);

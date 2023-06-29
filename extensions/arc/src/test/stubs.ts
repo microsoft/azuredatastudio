@@ -38,6 +38,7 @@ export class MockInputBox implements vscode.InputBox {
 	enabled: boolean = false;
 	busy: boolean = false;
 	ignoreFocusOut: boolean = false;
+	valueSelection: readonly [number, number] | undefined = undefined;
 	show(): void { }
 
 	hide(): void {
