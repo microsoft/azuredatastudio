@@ -244,7 +244,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async (newValue) => {
 			this.objectInfo.recoveryModel = newValue as string;
-		}, this.viewInfo.recoveryModels, this.objectInfo.recoveryModel);
+		}, this.viewInfo.databaseEngineEdition === localizedConstants.SqlManagedInstance ? [this.objectInfo.recoveryModel] : this.viewInfo.recoveryModels
+			, this.objectInfo.recoveryModel
+			, this.viewInfo.databaseEngineEdition === localizedConstants.SqlManagedInstance ? false : true);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 
 		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async (newValue) => {
@@ -254,7 +256,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async (newValue) => {
 			this.objectInfo.containmentType = newValue as string;
-		}, this.viewInfo.containmentTypes, this.objectInfo.containmentType);
+		}, this.viewInfo.databaseEngineEdition === localizedConstants.SqlManagedInstance ? [this.objectInfo.containmentType] : this.viewInfo.containmentTypes
+			, this.objectInfo.containmentType
+			, this.viewInfo.databaseEngineEdition === localizedConstants.SqlManagedInstance ? false : true);
 		containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
 
 		const optionsGeneralSection = this.createGroup('', containers, true, true);
