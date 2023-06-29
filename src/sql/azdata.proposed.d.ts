@@ -1782,19 +1782,19 @@ declare module 'azdata' {
 			scripts: string;
 		}
 
-		export interface ServerMetadataProvider extends DataProvider {
+		export interface AllServerMetadataProvider extends DataProvider {
 			// metadata service methods
 
 			/**
 			 * Gets create scripts for all tables in every database for a single server.
 			 * @param ownerUri Query editor the metadata will be retrieved for.
 			 */
-			GetServerMetadata(ownerUri: string): Thenable<AllServerMetadataResult>;
+			getAllServerMetadata(ownerUri: string): Thenable<AllServerMetadataResult>;
 		}
 	}
 
 	export namespace dataprotocol {
-		export function registerServerMetadataProvider(provider: metadata.ServerMetadataProvider): vscode.Disposable;
+		export function registerAllServerMetadataProvider(provider: metadata.AllServerMetadataProvider): vscode.Disposable;
 	}
 
 	/**

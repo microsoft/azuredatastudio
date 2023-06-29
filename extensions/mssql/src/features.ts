@@ -1329,9 +1329,23 @@ export class AllServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		return azdata.dataprotocol.registerServerMetadataProvider({
-			providerId: client.providerId,
+		const getAllServerMetadata = (ownerUri: string): Thenable<azdata.metadata.AllServerMetadataResult> => {
+			const params: contracts.AllServerMetadataParams = {
+				ownerUri: ownerUri
+			};
 
+			return client.sendRequest(contracts.AllServerMetadataRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.AllServerMetadataRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		return azdata.dataprotocol.registerAllServerMetadataProvider({
+			providerId: client.providerId,
+			getAllServerMetadata
 		});
 	}
 }
