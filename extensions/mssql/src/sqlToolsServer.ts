@@ -219,7 +219,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 		synchronize: {
 			configurationSection: [
 				Constants.extensionConfigSectionName,
-				Constants.telemetryConfigSectionName
+				Constants.telemetryConfigSectionName,
+				Constants.queryEditorConfigSectionName,
 			]
 		},
 		providerId: Constants.providerId,

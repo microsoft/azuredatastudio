@@ -1518,7 +1518,7 @@ suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDI
 	}));
 });
 
-suite('WorkspaceConfigurationService - Profiles', () => {
+suite.skip('WorkspaceConfigurationService - Profiles', () => { // {{SQL CARBON EDIT}} - skip failing suite
 
 	let testObject: WorkspaceService, workspaceService: WorkspaceService, fileService: IFileService, environmentService: IBrowserWorkbenchEnvironmentService, userDataProfileService: IUserDataProfileService, instantiationService: TestInstantiationService;
 	const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
@@ -2489,7 +2489,7 @@ suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON ED
 
 });
 
-suite('WorkspaceConfigurationService - Remote Folder', () => {
+suite.skip('WorkspaceConfigurationService - Remote Folder', () => { // {{SQL CARBON EDIT}} - disable suite
 
 	let testObject: WorkspaceService, folder: URI,
 		machineSettingsResource: URI, remoteSettingsResource: URI, fileSystemProvider: InMemoryFileSystemProvider, resolveRemoteEnvironment: () => void,

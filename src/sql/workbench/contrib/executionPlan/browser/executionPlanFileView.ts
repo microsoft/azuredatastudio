@@ -15,6 +15,7 @@ import { contrastBorder, editorWidgetBackground, foreground, listHoverBackground
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { defaultInfoBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class ExecutionPlanFileView extends Disposable {
 	private _parent: HTMLElement;
@@ -94,7 +95,7 @@ export class ExecutionPlanFileView extends Disposable {
 
 			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
 		} catch (e) {
-			this._loadingErrorInfoBox = this._register(this.instantiationService.createInstance(InfoBox, this._container, {
+			this._loadingErrorInfoBox = this._register(this.instantiationService.createInstance(InfoBox, this._container, defaultInfoBoxStyles, {
 				text: e.toString(),
 				style: 'error',
 				isClickable: false

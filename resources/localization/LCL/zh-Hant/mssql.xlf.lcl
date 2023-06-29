@@ -588,6 +588,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.databaseProperties.numberOfUsers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of Users]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用者數目]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -820,7 +823,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is HADR Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[為已啟用 HADR]]></Val>
+            <Val><![CDATA[已啟用 HADR]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -864,6 +867,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.lastDatabaseLogBackup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last Database Log Backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[上次資料庫記錄備份]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1041,6 +1047,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.maxServerMemoryText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum Server Memory (MB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[伺服器記憶體上限 (MB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1083,6 +1092,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.minServerMemoryText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Minimum Server Memory (MB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[伺服器記憶體下限 (MB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1353,6 +1365,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.reservedStorageSizeInMB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reserved Storage Size]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[保留儲存空間大小]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1440,6 +1455,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.storageSpaceUsageInGB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Storage Space Usage]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[儲存空間使用量]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
