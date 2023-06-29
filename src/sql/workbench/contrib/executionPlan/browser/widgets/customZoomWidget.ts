@@ -5,7 +5,6 @@
 
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetBase';
 import * as DOM from 'vs/base/browser/dom';
 import { Action } from 'vs/base/common/actions';
@@ -43,7 +42,6 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 			flexibleWidth: false,
 			inputBoxStyles: defaultInputBoxStyles
 		}));
-		this._register(attachInputBoxStyler(this.customZoomInputBox, this.themeService));
 
 		const currentZoom = this.executionPlanDiagram.getZoomLevel();
 

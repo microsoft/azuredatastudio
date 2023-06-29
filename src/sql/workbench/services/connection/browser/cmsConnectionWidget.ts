@@ -13,7 +13,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as styler from 'sql/platform/theme/common/styler';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
@@ -28,6 +27,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 /**
  * Connection Widget clas for CMS Connections
@@ -56,14 +56,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		if (authTypeOption) {
 			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
-			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
-		}
-	}
-
-	protected override registerListeners(): void {
-		super.registerListeners();
-		if (this._serverDescriptionInputBox) {
-			this._register(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
+			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, defaultSelectBoxStyles, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 	}
 

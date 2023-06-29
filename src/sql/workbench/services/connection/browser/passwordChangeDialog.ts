@@ -7,7 +7,6 @@ import 'vs/css!./media/passwordDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -102,7 +101,6 @@ export class PasswordChangeDialog extends Modal {
 			type: 'password',
 			inputBoxStyles: defaultInputBoxStyles
 		});
-		this._register(attachInputBoxStyler(this._passwordValueText, this._themeService));
 
 		contentElement.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = confirmPasswordText;
 		const confirmInputContainer = contentElement.appendChild(DOM.$(''));
@@ -110,7 +108,6 @@ export class PasswordChangeDialog extends Modal {
 			type: 'password',
 			inputBoxStyles: defaultInputBoxStyles
 		});
-		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
 	}
 
 	protected layout(height?: number): void {

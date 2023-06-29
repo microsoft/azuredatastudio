@@ -6,7 +6,7 @@
 import 'vs/css!./media/resourceViewerTable';
 import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -28,7 +28,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -62,8 +62,7 @@ export class ResourceViewerTable extends Disposable {
 		}));
 
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		let filterPlugin = new HeaderFilter<azdata.DataGridItem>({ buttonStyles: defaultButtonStyles }, this._contextViewService);
-		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
+		let filterPlugin = new HeaderFilter<azdata.DataGridItem>(defaultTableFilterStyles, this._contextViewService);
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
 		this._register(this._resourceViewerTable.onContextMenu((e: ITableMouseEvent) => {
