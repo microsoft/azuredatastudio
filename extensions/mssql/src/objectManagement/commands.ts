@@ -84,6 +84,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 
 	try {
 		const parentUrn = await getParentUrn(context);
+		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile!.id);
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: true,
@@ -91,7 +92,8 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 			objectType: objectType,
 			objectName: '',
 			parentUrn: parentUrn,
-			objectExplorerContext: context
+			objectExplorerContext: context,
+			serverInfo: serverInfo
 		};
 		const dialog = getDialog(service, options);
 		await dialog.open();
@@ -115,6 +117,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
 		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
 		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile!.id);
 
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
@@ -124,7 +127,8 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectName: objectName,
 			parentUrn: parentUrn,
 			objectUrn: objectUrn,
-			objectExplorerContext: context
+			objectExplorerContext: context,
+			serverInfo: serverInfo
 		};
 		const dialog = getDialog(service, options);
 		await dialog.open();

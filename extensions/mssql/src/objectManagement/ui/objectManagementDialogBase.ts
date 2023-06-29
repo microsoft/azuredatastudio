@@ -28,6 +28,7 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	objectUrn?: string;
 	objectExplorerContext?: azdata.ObjectExplorerContext;
 	objectName?: string;
+	serverInfo?: azdata.ServerInfo
 }
 
 export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends ScriptableDialogBase<ObjectManagementDialogOptions> {

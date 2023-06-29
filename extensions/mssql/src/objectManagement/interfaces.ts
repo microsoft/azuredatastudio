@@ -471,8 +471,6 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	containmentTypes: string[];
 	recoveryModels: string[];
 	files: DatabaseFile[];
-
-	databaseEngineEdition: string;
 	isAzureDB: boolean;
 	azureBackupRedundancyLevels: string[];
 	azureServiceLevelObjectives: AzureEditionDetails[];

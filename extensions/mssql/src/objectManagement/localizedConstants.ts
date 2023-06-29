@@ -169,8 +169,6 @@ export const CurrentSLOText = localize('objectManagement.currentSLOLabel', "Curr
 export const EditionText = localize('objectManagement.editionLabel', "Edition");
 export const MaxSizeText = localize('objectManagement.maxSizeLabel', "Max Size");
 export const AzurePricingLinkText = localize('objectManagement.azurePricingLink', "Azure SQL Database pricing calculator");
-export const SqlManagedInstance = localize('objectManagement.sqlManagedInstance', "SqlManagedInstance");
-export const ExpressEdition = localize('objectManagement.expressEdition', "Express");
 export const DetachDatabaseDialogTitle = (dbName: string) => localize('objectManagement.detachDatabaseDialogTitle', "Detach Database - {0} (Preview)", dbName);
 export const DetachDropConnections = localize('objectManagement.detachDropConnections', "Drop connnections");
 export const DetachUpdateStatistics = localize('objectManagement.detachUpdateStatistics', "Update statistics");
