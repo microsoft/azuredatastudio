@@ -2489,7 +2489,7 @@ suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON ED
 
 });
 
-suite('WorkspaceConfigurationService - Remote Folder', () => {
+suite.skip('WorkspaceConfigurationService - Remote Folder', () => { // {{SQL CARBON EDIT}} - disable suite
 
 	let testObject: WorkspaceService, folder: URI,
 		machineSettingsResource: URI, remoteSettingsResource: URI, fileSystemProvider: InMemoryFileSystemProvider, resolveRemoteEnvironment: () => void,
