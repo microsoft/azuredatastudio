@@ -32,8 +32,8 @@ import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { defaultInputBoxStyles, defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 // strings for filter dialog
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -67,7 +67,7 @@ const CLEAR_COLUMN_HEADER = localize('objectExplorer.clearColumnHeader', "Clear"
 const TRUE_SELECT_BOX = localize('objectExplorer.trueSelectBox', "True");
 const FALSE_SELECT_BOX = localize('objectExplorer.falseSelectBox', "False");
 
-function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Node Path: {0}", nodepath) }
+function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Path: {0}", nodepath) }
 
 const PROPERTY_COLUMN_ID = 'property';
 const OPERATOR_COLUMN_ID = 'operator';

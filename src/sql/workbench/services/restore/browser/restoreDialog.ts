@@ -30,7 +30,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
-import { attachTableStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -51,7 +51,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles, defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -520,7 +520,6 @@ export class RestoreDialog extends Modal {
 				break;
 			case ServiceOptionType.category:
 				propertyWidget = this.createSelectBoxHelper(container, option.description, option.categoryValues.map(c => c.displayName), DialogHelper.getCategoryDisplayName(option.categoryValues, option.defaultValue)!);
-				this._register(attachSelectBoxStyler(propertyWidget, this._themeService));
 				this._register(propertyWidget.onDidSelect(selectedDatabase => {
 					this.onCatagoryOptionChanged(optionName);
 				}));
@@ -567,7 +566,7 @@ export class RestoreDialog extends Modal {
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
 		const inputCellContainer = DOM.append(inputContainer, DOM.$('.dialog-input'));
-		const selectBox = this._register(new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label }));
+		const selectBox = this._register(new SelectBox(options, selectedOption, defaultSelectBoxStyles, this._contextViewService, inputCellContainer, { ariaLabel: label }));
 		selectBox.render(inputCellContainer);
 		return selectBox;
 	}
@@ -662,9 +661,6 @@ export class RestoreDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		// Theme styler
-		this._register(attachSelectBoxStyler(this._restoreFromSelectBox!, this._themeService));
-		this._register(attachSelectBoxStyler(this._sourceDatabaseSelectBox!, this._themeService));
 		this._register(this._browseFileButton!);
 		this._register(this._browseUrlButton!);
 		this._register(this._scriptButton!);
