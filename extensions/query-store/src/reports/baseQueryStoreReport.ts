@@ -55,7 +55,7 @@ export abstract class BaseQueryStoreReport {
 
 		switch (containers.length) {
 			case 1: {
-				mainContainer = view;
+				mainContainer = containers[0];
 				break;
 			}
 			case 2: {
