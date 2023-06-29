@@ -17,13 +17,28 @@
 }
 
 .filter-dialog-body .filter-dialog-node-path {
+	display: flex;
+	width: 100%;
+}
+
+.filter-dialog-body .filter-dialog-node-path-label {
 	padding: 10px 0px;
 	font-size: 13px;
 	font-weight: 600;
-	max-width: 100%;
-	text-overflow: ellipsis;
-	overflow: hidden;
 	white-space: nowrap;
+	display: inline-block;
+	width: 40px;
+	flex: 0 0 40px;
+}
+
+.filter-dialog-body .filter-dialog-node-path-text {
+	padding: 10px 0px;
+	font-size: 13px;
+	white-space: nowrap;
+	display: inline-block;
+	flex: 1;
+	white-space: initial;
+	overflow-wrap: anywhere;
 }
 
 .filter-table-container {
