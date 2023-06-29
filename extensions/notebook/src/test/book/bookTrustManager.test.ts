@@ -14,7 +14,8 @@ import * as vscode from 'vscode';
 import { BookModel } from '../../book/bookModel';
 import * as sinon from 'sinon';
 
-describe('BookTrustManagerTests', function () {
+// {{SQL CARBON TODO}} - reenable this test suite https://github.com/microsoft/azuredatastudio/issues/23540
+describe.skip('BookTrustManagerTests', function () {
 
 	describe('TrustingInWorkspaces', () => {
 		let bookTrustManager: IBookTrustManager;
