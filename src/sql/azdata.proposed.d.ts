@@ -863,10 +863,6 @@ declare module 'azdata' {
 		 */
 		includeHeaders: boolean
 		/**
-		 * Whether to remove line breaks from the cell value.
-		 */
-		removeNewLines: boolean;
-		/**
 		 * The selected ranges to be copied.
 		 */
 		selections: SelectionRange[];
@@ -1929,8 +1925,10 @@ declare module 'azdata' {
 		NotBetween = 7,
 		Contains = 8,
 		NotContains = 9,
-		IsNull = 10,
-		IsNotNull = 11
+		StartsWith = 10,
+		NotStartsWith = 11,
+		EndsWith = 12,
+		NotEndsWith = 13
 	}
 
 	export namespace window {

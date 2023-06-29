@@ -41,7 +41,6 @@ import { AssessmentType, TARGET_ICON_CLASS } from 'sql/workbench/contrib/assessm
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -50,8 +49,7 @@ import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultListStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -358,7 +356,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			this.initActionBar(databaseInvokeAsmt, databaseSelectAsmt);
 		}
 
-		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, { columns }, options));
+		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.registerPlugin(<any>this.rowDetail);
 		this._table.registerPlugin(filterPlugin);
@@ -596,12 +594,6 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private _updateStyles(theme: IColorTheme): void {
 		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(DASHBOARD_BORDER, true).toString();
-		// {{SQL CARBON TODO}} - do defaultListStyles work here?
-		let tableStyle: ITableStyles = {
-			tableHeaderBackground: theme.getColor(themeColors.PANEL_BACKGROUND),
-			...defaultListStyles
-		};
-		this._table.style(tableStyle);
 		const rowExclSelector = '.asmtview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row';
 		dom.removeCSSRulesContainingSelector(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Error]}`);
 		dom.createCSSRule(`${rowExclSelector} .${KIND_CLASS[AssessmentResultItemKind.Error]}`, `color: ${theme.getColor(themeColors.NOTIFICATIONS_ERROR_ICON_FOREGROUND).toString()}`);
