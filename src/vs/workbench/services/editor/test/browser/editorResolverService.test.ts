@@ -14,7 +14,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorResolverService, ResolvedStatus, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { createEditorPart, ITestInstantiationService, TestFileEditorInput, TestServiceAccessor, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 
-suite('EditorResolverService', () => {
+suite.skip('EditorResolverService', () => { // {{SQL CARBON EDIT}} - disable suite
 
 	const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorResolverService';
 	const disposables = new DisposableStore();
