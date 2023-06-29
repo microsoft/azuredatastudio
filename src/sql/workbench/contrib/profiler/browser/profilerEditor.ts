@@ -9,7 +9,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/browser/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from 'sql/workbench/contrib/profiler/browser/profilerTableEditor';
 import * as Actions from 'sql/workbench/contrib/profiler/browser/profilerActions';
@@ -56,7 +55,7 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -390,7 +389,7 @@ export class ProfilerEditor extends EditorPane {
 		detailTableContainer.style.width = '100%';
 		detailTableContainer.style.height = '100%';
 		this._detailTableData = new TableDataView<IDetailData>();
-		this._detailTable = new Table(detailTableContainer, this._accessibilityService, this._quickInputService, {
+		this._detailTable = new Table(detailTableContainer, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			dataProvider: this._detailTableData, columns: [
 				{
 					id: 'label',
@@ -442,11 +441,7 @@ export class ProfilerEditor extends EditorPane {
 		});
 
 		this._collapsedPanelAction = this._instantiationService.createInstance(Actions.ProfilerCollapsablePanelAction, Actions.ProfilerCollapsablePanelAction.ID, Actions.ProfilerCollapsablePanelAction.LABEL);
-
 		this._tabbedPanel.pushAction(this._collapsedPanelAction, { icon: true, label: false });
-
-		this._register(attachTableStyler(this._detailTable, this.themeService));
-
 		return tabbedPanelContainer;
 	}
 

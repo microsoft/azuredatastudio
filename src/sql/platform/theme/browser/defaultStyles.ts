@@ -7,9 +7,10 @@ import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { IEditableDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IListBoxStyles } from 'sql/base/browser/ui/listBox/listBox';
 import { ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
+import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { ITableFilterStyles } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { disabledCheckboxForeground } from 'sql/platform/theme/common/colors';
+import { disabledCheckboxForeground, listFocusAndSelectionBackground, tableHeaderBackground, tableHeaderForeground } from 'sql/platform/theme/common/colors';
 import { IInfoBoxStyles } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, defaultSelectBoxStyles as vsDefaultSelectBoxStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
@@ -85,3 +86,28 @@ export const defaultInfoBoxStyles: IInfoBoxStyles = {
 	errorBackground: cr.asCssVariable(sqlcr.infoBoxErrorBackground),
 	successBackground: cr.asCssVariable(sqlcr.infoBoxSuccessBackground)
 };
+
+export const defaultTableStyles: ITableStyles = {
+	listFocusBackground: cr.asCssVariable(cr.listFocusBackground),
+	listFocusForeground: cr.asCssVariable(cr.listFocusForeground),
+	listActiveSelectionBackground: cr.asCssVariable(cr.listActiveSelectionBackground),
+	listActiveSelectionForeground: cr.asCssVariable(cr.listActiveSelectionForeground),
+	listFocusAndSelectionBackground: cr.asCssVariable(listFocusAndSelectionBackground),
+	listFocusAndSelectionForeground: cr.asCssVariable(cr.listActiveSelectionForeground),
+	listInactiveFocusBackground: undefined,
+	listInactiveSelectionBackground: cr.asCssVariable(cr.listInactiveSelectionBackground),
+	listInactiveSelectionForeground: undefined,
+	listHoverBackground: cr.asCssVariable(cr.listHoverBackground),
+	listHoverForeground: cr.asCssVariable(cr.listHoverForeground),
+	listDropBackground: cr.asCssVariable(cr.listDropBackground),
+	listFocusOutline: cr.asCssVariable(cr.activeContrastBorder),
+	listSelectionOutline: cr.asCssVariable(cr.activeContrastBorder),
+	listHoverOutline: cr.asCssVariable(cr.activeContrastBorder),
+	listInactiveFocusOutline: cr.asCssVariable(cr.listInactiveFocusOutline),
+	tableHeaderBackground: cr.asCssVariable(tableHeaderBackground),
+	tableHeaderForeground: cr.asCssVariable(tableHeaderForeground)
+};
+
+export function getTableStyles(styles: IStyleOverride<ITableStyles>): ITableStyles {
+	return overrideStyles(styles, defaultTableStyles);
+}
