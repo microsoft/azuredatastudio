@@ -39,12 +39,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private autoShrinkInput: azdata.DropDownComponent;
 	private autoUpdateStatisticsInput: azdata.DropDownComponent;
 	private autoUpdateStatisticsAsynchronouslyInput: azdata.DropDownComponent;
-	private isLedgerDatabaseInput: azdata.DropDownComponent;
-	private pageVerifyInput: azdata.DropDownComponent;
-	private targetRecoveryTimeInSecInput: azdata.InputBoxComponent;
-	private databaseReadOnlyInput: azdata.DropDownComponent;
+	private isLedgerDatabaseInput!: azdata.DropDownComponent;
+	private pageVerifyInput!: azdata.DropDownComponent;
+	private targetRecoveryTimeInSecInput!: azdata.InputBoxComponent;
+	private databaseReadOnlyInput!: azdata.DropDownComponent;
 	private encryptionEnabledInput: azdata.DropDownComponent;
-	private restrictAccessInput: azdata.DropDownComponent;
+	private restrictAccessInput!: azdata.DropDownComponent;
 	private booleanOptionsArray: string[];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -67,7 +67,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		} else {
 			// Options of a boolean dropdown
 			this.booleanOptionsArray = Object.keys(BooleanDropdownOptions);
-
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
@@ -75,14 +74,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			//Initilaize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
-			// Managed Instance doesn't support ledger and recovery section properties
-			if (this.options.serverInfo.engineEditionId !== azdata.DatabaseEngineEdition.SqlManagedInstance) {
-
-				// Ledger is only supported in Sql Server 2022 (Sql160) version or higher
-				if (this.options.serverInfo.engineEditionId === azdata.DatabaseEngineEdition.Enterprise
-					&& this.options.serverInfo.serverMajorVersion >= 16) {
-					this.initializeLedgerSection();
-				}
+			if (this.objectInfo.isLedgerDatabase !== null) {
+				this.initializeLedgerSection();
+			}
+			if (this.objectInfo.pageVerify !== null && this.objectInfo.targetRecoveryTimeInSec !== null) {
 				this.initializeRecoverySection();
 			}
 			this.initializeStateSection();
@@ -244,11 +239,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.viewInfo.collationNames, this.objectInfo.collationName);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
-		let displayOptions = this.options.serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlManagedInstance ? [this.objectInfo.recoveryModel] : this.viewInfo.recoveryModels;
-		const isEnabled = this.options.serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlManagedInstance ? false : true;
+		let displayOptionsArray = this.viewInfo.recoveryModels.length === 0 ? [this.objectInfo.recoveryModel] : this.viewInfo.recoveryModels;
+		let isEnabled = this.viewInfo.recoveryModels.length === 0 ? false : true;
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async (newValue) => {
 			this.objectInfo.recoveryModel = newValue as string;
-		}, displayOptions, this.objectInfo.recoveryModel, isEnabled);
+		}, displayOptionsArray, this.objectInfo.recoveryModel, isEnabled);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 
 		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async (newValue) => {
@@ -256,10 +251,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.viewInfo.compatibilityLevels, this.objectInfo.compatibilityLevel);
 		containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
 
-		displayOptions = this.options.serverInfo.engineEditionId === azdata.DatabaseEngineEdition.SqlManagedInstance ? [this.objectInfo.containmentType] : this.viewInfo.containmentTypes;
+		displayOptionsArray = this.viewInfo.containmentTypes.length === 0 ? [this.objectInfo.containmentType] : this.viewInfo.containmentTypes;
+		isEnabled = this.viewInfo.containmentTypes.length === 0 ? false : true;
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async (newValue) => {
 			this.objectInfo.containmentType = newValue as string;
-		}, displayOptions, this.objectInfo.containmentType, isEnabled);
+		}, displayOptionsArray, this.objectInfo.containmentType, isEnabled);
 		containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
 
 		const optionsGeneralSection = this.createGroup('', containers, true, true);
@@ -338,8 +334,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeStateSection(): void {
 		let containers: azdata.Component[] = [];
 
-		// Sql Managed instance does not support database read only property
-		if (this.options.serverInfo.engineEditionId !== azdata.DatabaseEngineEdition.SqlManagedInstance) {
+		if (this.objectInfo.databaseReadOnly !== null) {
 			this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
 				this.objectInfo.databaseReadOnly = (newValue.toLowerCase() === localizedConstants.TrueText);
 			}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.databaseReadOnly)), true);
@@ -354,8 +349,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.booleanOptionsArray, toPascalCase(String(this.objectInfo.encryptionEnabled)), true);
 		containers.push(this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput));
 
-		// Sql Managed instance does not support user access property
-		if (this.options.serverInfo.engineEditionId !== azdata.DatabaseEngineEdition.SqlManagedInstance) {
+		if (this.objectInfo.userAccess !== null) {
 			this.restrictAccessInput = this.createDropdown(localizedConstants.UserAccessText, async (newValue) => {
 				this.objectInfo.userAccess = newValue;
 			}, this.viewInfo.userAccessOptions, this.objectInfo.userAccess, true);
