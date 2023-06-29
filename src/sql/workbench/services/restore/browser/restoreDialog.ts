@@ -30,7 +30,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
-import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -51,7 +51,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -265,7 +265,8 @@ export class RestoreDialog extends Modal {
 		this._databaseDropdown = this._register(new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
-				ariaLabel: LocalizedStrings.TARGETDATABASE
+				ariaLabel: LocalizedStrings.TARGETDATABASE,
+				...defaultEditableDropdownStyles
 			}
 		));
 		this._databaseDropdown.onValueChange(s => {
@@ -281,7 +282,6 @@ export class RestoreDialog extends Modal {
 		});
 
 		this._databaseDropdown.value = this.viewModel.targetDatabaseName!;
-		attachEditableDropdownStyler(this._databaseDropdown, this._themeService);
 
 		this._targetDatabaseInputElement = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
 		DOM.append(this._targetDatabaseInputElement, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
@@ -303,7 +303,8 @@ export class RestoreDialog extends Modal {
 
 		const restoreToLabel = localize('restoreTo', "Restore to");
 		const destinationRestoreToAriaOptions = {
-			ariaLabel: restoreToLabel
+			ariaLabel: restoreToLabel,
+			inputBoxStyles: defaultInputBoxStyles
 		};
 		this._destinationRestoreToContainer = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
 		DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-label')).innerText = restoreToLabel;
@@ -519,14 +520,12 @@ export class RestoreDialog extends Modal {
 				break;
 			case ServiceOptionType.category:
 				propertyWidget = this.createSelectBoxHelper(container, option.description, option.categoryValues.map(c => c.displayName), DialogHelper.getCategoryDisplayName(option.categoryValues, option.defaultValue)!);
-				this._register(attachSelectBoxStyler(propertyWidget, this._themeService));
 				this._register(propertyWidget.onDidSelect(selectedDatabase => {
 					this.onCatagoryOptionChanged(optionName);
 				}));
 				break;
 			case ServiceOptionType.string:
-				propertyWidget = this.createInputBoxHelper(container, option.description);
-				this._register(attachInputBoxStyler(propertyWidget, this._themeService));
+				propertyWidget = this.createInputBoxHelper(container, option.description, { inputBoxStyles: defaultInputBoxStyles });
 				this._register(propertyWidget.onLoseFocus(params => {
 					this.onStringOptionChanged(optionName, params);
 				}));
@@ -567,12 +566,12 @@ export class RestoreDialog extends Modal {
 		const inputContainer = DOM.append(container, DOM.$('.dialog-input-section'));
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = label;
 		const inputCellContainer = DOM.append(inputContainer, DOM.$('.dialog-input'));
-		const selectBox = this._register(new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer, { ariaLabel: label }));
+		const selectBox = this._register(new SelectBox(options, selectedOption, defaultSelectBoxStyles, this._contextViewService, inputCellContainer, { ariaLabel: label }));
 		selectBox.render(inputCellContainer);
 		return selectBox;
 	}
 
-	private createInputBoxHelper(container: HTMLElement, label: string, options?: IInputOptions): InputBox {
+	private createInputBoxHelper(container: HTMLElement, label: string, options: IInputOptions): InputBox {
 		const ariaOptions = {
 			ariaLabel: label
 		};
@@ -662,13 +661,6 @@ export class RestoreDialog extends Modal {
 	}
 
 	private registerListeners(): void {
-		// Theme styler
-		this._register(attachInputBoxStyler(this._targetDatabaseInputBox, this._themeService));
-		this._register(attachInputBoxStyler(this._urlInputBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._filePathInputBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._destinationRestoreToInputBox!, this._themeService));
-		this._register(attachSelectBoxStyler(this._restoreFromSelectBox!, this._themeService));
-		this._register(attachSelectBoxStyler(this._sourceDatabaseSelectBox!, this._themeService));
 		this._register(this._browseFileButton!);
 		this._register(this._browseUrlButton!);
 		this._register(this._scriptButton!);

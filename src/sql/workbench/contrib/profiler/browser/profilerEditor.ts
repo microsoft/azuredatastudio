@@ -30,7 +30,6 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import * as types from 'vs/base/common/types';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -57,6 +56,7 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -255,7 +255,7 @@ export class ProfilerEditor extends EditorPane {
 		this._clearFilterAction = this._instantiationService.createInstance(Actions.ProfilerClearSessionFilter, Actions.ProfilerClearSessionFilter.ID, Actions.ProfilerClearSessionFilter.LABEL);
 		this._clearFilterAction.enabled = true;
 		this._viewTemplates = this._profilerService.getViewTemplates();
-		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
+		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', defaultSelectBoxStyles, this._contextViewService);
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
@@ -268,7 +268,7 @@ export class ProfilerEditor extends EditorPane {
 		this._viewTemplateSelector.render(viewTemplateContainer);
 
 		this._sessionsList = [''];
-		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
+		this._sessionSelector = new SelectBox(this._sessionsList, '', defaultSelectBoxStyles, this._contextViewService);
 		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', "Select Session"));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
@@ -280,9 +280,6 @@ export class ProfilerEditor extends EditorPane {
 		sessionsContainer.style.maxWidth = '250px';
 		sessionsContainer.style.paddingRight = '5px';
 		this._sessionSelector.render(sessionsContainer);
-
-		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
-		this._register(attachSelectBoxStyler(this._sessionSelector, this.themeService));
 
 		this._actionBar.setContent([
 			{ action: this._createAction },

@@ -37,7 +37,7 @@ export class AzureResourceUniversalTreeDataProvider<S extends GraphData, D exten
 		return provider.getTreeItemForResource(resource, account);
 	}
 
-	public async getRootChildren(): Promise<azdata.TreeItem[]> {
+	public async getRootChild(): Promise<azdata.TreeItem> {
 		throw new Error('Method not supported');
 	}
 
@@ -48,6 +48,7 @@ export class AzureResourceUniversalTreeDataProvider<S extends GraphData, D exten
 				account: account,
 				subscription: resource.subscription,
 				tenantId: resource.tenant,
+				resourceProviderId: resource.provider,
 				treeItem: this.getTreeItemForResource(resource, account)
 			}).sort((a, b) => (<any>a.treeItem.label).localeCompare(b.treeItem.label));
 		} catch (error) {
