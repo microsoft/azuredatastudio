@@ -20,6 +20,10 @@
 	padding: 10px 0px;
 	font-size: 13px;
 	font-weight: 600;
+	max-width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .filter-table-container {
