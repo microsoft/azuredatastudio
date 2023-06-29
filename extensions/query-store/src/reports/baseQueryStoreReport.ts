@@ -56,6 +56,7 @@ export abstract class BaseQueryStoreReport {
 		switch (containers.length) {
 			case 1: {
 				mainContainer = view;
+				break;
 			}
 			case 2: {
 				// TODO: replace 800 to have the number be based on how big the window is
