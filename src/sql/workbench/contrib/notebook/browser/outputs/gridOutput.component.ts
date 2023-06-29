@@ -12,12 +12,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { getEolString, shouldSkipNewLineAfterTrailingLineBreak, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -79,7 +77,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
@@ -163,7 +160,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
-			this._register(attachTableStyler(this._table, this.themeService));
 			await this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
@@ -440,6 +436,9 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {

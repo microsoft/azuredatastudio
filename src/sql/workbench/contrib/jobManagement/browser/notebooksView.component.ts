@@ -37,7 +37,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
-import { defaultTableFilterStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
@@ -192,7 +192,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, { columns }, options));
+		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let notebook = self.getNotebook(args);
