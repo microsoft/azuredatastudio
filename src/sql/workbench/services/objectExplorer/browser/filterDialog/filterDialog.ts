@@ -553,12 +553,12 @@ export class FilterDialog extends Modal {
 				return [
 					CONTAINS_SELECT_BOX,
 					NOT_CONTAINS_SELECT_BOX,
+					EQUALS_SELECT_BOX,
+					NOT_EQUALS_SELECT_BOX,
 					STARTS_WITH_SELECT_BOX,
 					NOT_STARTS_WITH_SELECT_BOX,
 					ENDS_WITH_SELECT_BOX,
 					NOT_ENDS_WITH_SELECT_BOX,
-					EQUALS_SELECT_BOX,
-					NOT_EQUALS_SELECT_BOX
 				];
 			case NodeFilterPropertyDataType.Number:
 				return [
