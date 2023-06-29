@@ -19,77 +19,77 @@ stages:
       - template: sql-product-compile.yml
       timeoutInMinutes: 120
 
-  - stage: macOS
-    condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
-    pool:
-      vmImage: 'macos-latest'
-    dependsOn:
-      - Compile
-    jobs:
-      - job: macOS
-        variables:
-          NPM_CONFIG_ARCH: x64
-          VSCODE_ARCH: x64
-        steps:
-        - template: darwin/sql-product-build-darwin.yml
-        timeoutInMinutes: 90
+  # - stage: macOS
+  #   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
+  #   pool:
+  #     vmImage: 'macos-latest'
+  #   dependsOn:
+  #     - Compile
+  #   jobs:
+  #     - job: macOS
+  #       variables:
+  #         NPM_CONFIG_ARCH: x64
+  #         VSCODE_ARCH: x64
+  #       steps:
+  #       - template: darwin/sql-product-build-darwin.yml
+  #       timeoutInMinutes: 90
 
-      - job: macOS_Signing
-        variables:
-          VSCODE_ARCH: x64
-        condition: and(succeeded(), eq(variables['signed'], true))
-        dependsOn:
-        - macOS
-        steps:
-        - template: darwin/sql-product-build-darwin-signing.yml
-        timeoutInMinutes: 60
+  #     - job: macOS_Signing
+  #       variables:
+  #         VSCODE_ARCH: x64
+  #       condition: and(succeeded(), eq(variables['signed'], true))
+  #       dependsOn:
+  #       - macOS
+  #       steps:
+  #       - template: darwin/sql-product-build-darwin-signing.yml
+  #       timeoutInMinutes: 60
 
-      - job: macOS_ARM64
-        variables:
-          NPM_CONFIG_ARCH: arm64
-          VSCODE_ARCH: arm64
-          AZDATA_RUNTIME: OSX_ARM64
-          # Do not run tests for arm64 build
-          RUN_TESTS: false
-          RUN_SMOKE_TESTS: false
-        condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
-        steps:
-        - template: darwin/sql-product-build-darwin.yml
-        timeoutInMinutes: 90
+  #     - job: macOS_ARM64
+  #       variables:
+  #         NPM_CONFIG_ARCH: arm64
+  #         VSCODE_ARCH: arm64
+  #         AZDATA_RUNTIME: OSX_ARM64
+  #         # Do not run tests for arm64 build
+  #         RUN_TESTS: false
+  #         RUN_SMOKE_TESTS: false
+  #       condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
+  #       steps:
+  #       - template: darwin/sql-product-build-darwin.yml
+  #       timeoutInMinutes: 90
 
-      - job: macOS_Signing_ARM64
-        variables:
-          VSCODE_ARCH: arm64
-        condition: and(succeeded(), eq(variables['signed'], true))
-        dependsOn:
-        - macOS_ARM64
-        steps:
-        - template: darwin/sql-product-build-darwin-signing.yml
-        timeoutInMinutes: 60
+  #     - job: macOS_Signing_ARM64
+  #       variables:
+  #         VSCODE_ARCH: arm64
+  #       condition: and(succeeded(), eq(variables['signed'], true))
+  #       dependsOn:
+  #       - macOS_ARM64
+  #       steps:
+  #       - template: darwin/sql-product-build-darwin-signing.yml
+  #       timeoutInMinutes: 60
 
-      - job: macOS_Universal
-        variables:
-          NPM_CONFIG_ARCH: x64
-          VSCODE_ARCH: universal
-          # Do not run tests for universal build
-          RUN_TESTS: false
-          RUN_SMOKE_TESTS: false
-        dependsOn:
-        - macOS
-        - macOS_ARM64
-        steps:
-        - template: darwin/sql-product-build-darwin.yml
-        timeoutInMinutes: 90
+  #     - job: macOS_Universal
+  #       variables:
+  #         NPM_CONFIG_ARCH: x64
+  #         VSCODE_ARCH: universal
+  #         # Do not run tests for universal build
+  #         RUN_TESTS: false
+  #         RUN_SMOKE_TESTS: false
+  #       dependsOn:
+  #       - macOS
+  #       - macOS_ARM64
+  #       steps:
+  #       - template: darwin/sql-product-build-darwin.yml
+  #       timeoutInMinutes: 90
 
-      - job: macOS_Signing_Universal
-        variables:
-          VSCODE_ARCH: universal
-        condition: and(succeeded(), eq(variables['signed'], true))
-        dependsOn:
-        - macOS_Universal
-        steps:
-        - template: darwin/sql-product-build-darwin-signing.yml
-        timeoutInMinutes: 60
+  #     - job: macOS_Signing_Universal
+  #       variables:
+  #         VSCODE_ARCH: universal
+  #       condition: and(succeeded(), eq(variables['signed'], true))
+  #       dependsOn:
+  #       - macOS_Universal
+  #       steps:
+  #       - template: darwin/sql-product-build-darwin-signing.yml
+  #       timeoutInMinutes: 60
 
   - stage: Linux
     condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], true))
