@@ -324,7 +324,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
 			this.objectInfo.targetRecoveryTimeInSec = Number(newValue);
-		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true);
+		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number');
 		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
 
 		const recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [
