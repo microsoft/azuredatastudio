@@ -11,10 +11,9 @@ import * as azdata from 'azdata';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { attachInfoBoxStyler } from 'sql/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InfoBox, InfoBoxStyle } from 'sql/workbench/browser/ui/infoBox/infoBox';
+import { defaultInfoBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-infobox',
@@ -32,7 +31,6 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(ILogService) logService: ILogService) {
 		super(changeRef, el, logService);
@@ -41,8 +39,7 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 	ngAfterViewInit(): void {
 		this.baseInit();
 		if (this._container) {
-			this._infoBox = this._instantiationService.createInstance(InfoBox, this._container.nativeElement, undefined);
-			this._register(attachInfoBoxStyler(this._infoBox, this._themeService));
+			this._infoBox = this._instantiationService.createInstance(InfoBox, this._container.nativeElement, defaultInfoBoxStyles, undefined);
 			this._infoBox.onDidClick(e => {
 				this.fireEvent({
 					eventType: ComponentEventType.onDidClick,

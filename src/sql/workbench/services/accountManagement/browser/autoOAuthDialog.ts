@@ -6,7 +6,6 @@
 import 'vs/css!./media/autoOAuthDialog';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -112,8 +111,6 @@ export class AutoOAuthDialog extends Modal {
 		// Theme styler
 		this._register(this._copyAndOpenButton!);
 		this._register(this._closeButton!);
-		this._register(attachInputBoxStyler(this._userCodeInputBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._websiteInputBox!, this._themeService));
 
 	}
 

@@ -57,13 +57,13 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: MysqlFlexibleServerTreeDataProvider.CONTAINER_ID,
 			label: MysqlFlexibleServerTreeDataProvider.CONTAINER_LABEL,
 			iconPath: this._extensionContext.asAbsolutePath('resources/mysqlDatabase.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }
