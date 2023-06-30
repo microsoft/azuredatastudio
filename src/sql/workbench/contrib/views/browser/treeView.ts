@@ -193,6 +193,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('explorer.decorations')) {
+				// eslint-disable-next-line @typescript-eslint/no-floating-promises
 				this.doRefresh([this.root]); /** soft refresh **/
 			}
 		}));
@@ -276,6 +277,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 				}));
 			}
 			this.updateMessage();
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			this.refresh();
 		} else {
 			this._dataProvider = undefined;
@@ -476,6 +478,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 			}
 
 			if (this.isVisible && this.elementsToRefresh.length && this.dataProvider) {
+				// eslint-disable-next-line @typescript-eslint/no-floating-promises
 				this.doRefresh(this.elementsToRefresh);
 				this.elementsToRefresh = [];
 			}
