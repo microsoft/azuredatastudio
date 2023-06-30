@@ -38,7 +38,7 @@ export interface ITreeItem extends vsITreeItem {
 
 export interface ITreeView extends vsITreeView {
 	collapse(element: ITreeItem): boolean
-	readonly onDidChangeSelection: Event<ITreeItem[]>;
+	readonly onDidChangeSelection: Event<readonly ITreeItem[]>;
 }
 
 export type TreeViewItemHandleArg = {
