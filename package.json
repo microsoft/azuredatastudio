@@ -84,7 +84,7 @@
     "rxjs": "5.4.0",
     "sanitize-html": "^1.19.1",
     "semver-umd": "^5.5.7",
-    "slickgrid": "github:kburtram/SlickGrid#2.3.33",
+    "slickgrid": "github:Microsoft/SlickGrid.ADS#2.3.45",
     "spdlog": "^0.11.1",
     "sudo-prompt": "9.1.1",
     "tas-client": "^0.0.950",
