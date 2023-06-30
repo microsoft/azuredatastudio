@@ -3383,7 +3383,6 @@ SOFTWARE.
 ===================================ExcelDataReader (END)
 
 -------------------------------END OF THIRD-PARTY NOTICES-------------------------------------------
-
 =========================================
 END OF Microsoft.ProgramSynthesis.Detection NOTICES AND INFORMATION
 
