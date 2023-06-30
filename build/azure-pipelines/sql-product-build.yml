@@ -2,7 +2,7 @@ resources:
   containers:
   - container: linux-x64
     image: sqltoolscontainers.azurecr.io/linux-build-agent:7
-    options: '--name mycontainer -v /usr/bin/docker:/tmp/docker:ro'
+    options:  "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     endpoint: SqlToolsContainers
 
 stages:
@@ -11,10 +11,9 @@ stages:
     - job: Compile
       pool:
         vmImage: 'Ubuntu-20.04'
-      container:
-        image: sqltoolscontainers.azurecr.io/linux-build-agent:7
+      containers:
+        image: debian:bullseye
         options: '--name mycontainer -v /usr/bin/docker:/tmp/docker:ro'
-        endpoint: SqlToolsContainers
       steps:
       - script: |
           set -e
