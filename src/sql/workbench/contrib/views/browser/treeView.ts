@@ -1414,8 +1414,8 @@ class TreeMenus extends Disposable implements IDisposable {
 
 	getResourceActions(element: ITreeItem): IAction[] {
 		return this.mergeActions([  // tracked change
-			this.getActions(MenuId.ViewItemContext, element, true).primary,
-			this.getActions(MenuId.DataExplorerContext, element, true).primary
+			this.getActions(MenuId.ViewItemContext, element).primary,
+			this.getActions(MenuId.DataExplorerContext, element).primary
 		]);
 	}
 
@@ -1434,7 +1434,7 @@ class TreeMenus extends Disposable implements IDisposable {
 		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) === -1)), [] as IAction[]);
 	}
 
-	private getActions(menuId: MenuId, element: ITreeItem, listen: boolean = false): { menu?: IMenu; primary: IAction[]; secondary: IAction[] } {
+	private getActions(menuId: MenuId, element: ITreeItem): { menu?: IMenu; primary: IAction[]; secondary: IAction[] } {
 		if (!this.contextKeyService) {
 			return { primary: [], secondary: [] };
 		}
@@ -1449,11 +1449,9 @@ class TreeMenus extends Disposable implements IDisposable {
 		const secondary: IAction[] = [];
 		const result = { primary, secondary, menu };
 		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, 'inline');
-		if (listen) {
-			this._register(menu.onDidChange(() => this._onDidChange.fire(element)));
-		} else {
-			menu.dispose();
-		}
+		// tracked change - not registering to on did change event to prevent listener leak
+		// warning: REFUSES to accept new listeners because it exceeded its threshold by far
+		menu.dispose();
 		return result;
 	}
 
