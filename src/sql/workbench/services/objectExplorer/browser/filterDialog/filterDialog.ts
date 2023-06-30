@@ -26,14 +26,13 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { TableHeaderRowHeight, TableRowHeight } from 'sql/workbench/browser/designer/designerTableUtil';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import Severity from 'vs/base/common/severity';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { defaultInputBoxStyles, defaultSelectBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
-import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultEditableDropdownStyles, defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 // strings for filter dialog
 const OkButtonText = localize('objectExplorer.okButtonText', "OK");
@@ -52,9 +51,11 @@ const BETWEEN_SELECT_BOX = localize('objectExplorer.betweenSelectBox', "Between"
 const NOT_BETWEEN_SELECT_BOX = localize('objectExplorer.notBetweenSelectBox', "Not Between");
 const CONTAINS_SELECT_BOX = localize('objectExplorer.containsSelectBox', "Contains");
 const NOT_CONTAINS_SELECT_BOX = localize('objectExplorer.notContainsSelectBox', "Not Contains");
+const STARTS_WITH_SELECT_BOX = localize('objectExplorer.startsWithSelectBox', "Starts With");
+const NOT_STARTS_WITH_SELECT_BOX = localize('objectExplorer.notStartsWithSelectBox', "Not Starts With");
+const ENDS_WITH_SELECT_BOX = localize('objectExplorer.endsWithSelectBox', "Ends With");
+const NOT_ENDS_WITH_SELECT_BOX = localize('objectExplorer.notEndsWithSelectBox', "Not Ends With");
 const AND_SELECT_BOX = localize('objectExplorer.andSelectBox', "And");
-const IS_NULL_SELECT_BOX = localize('objectExplorer.isNullSelectBox', "Is Null");
-const IS_NOT_NULL_SELECT_BOX = localize('objectExplorer.isNotNullSelectBox', "Is Not Null");
 
 // strings for filter table column headers
 const PROPERTY_NAME_COLUMN_HEADER = localize('objectExplorer.propertyNameColumnHeader', "Property");
@@ -67,7 +68,7 @@ const CLEAR_COLUMN_HEADER = localize('objectExplorer.clearColumnHeader', "Clear"
 const TRUE_SELECT_BOX = localize('objectExplorer.trueSelectBox', "True");
 const FALSE_SELECT_BOX = localize('objectExplorer.falseSelectBox', "False");
 
-function nodePathDisplayString(nodepath: string): string { return localize('objectExplorer.nodePath', "Node Path: {0}", nodepath) }
+const SUBTITLE_LABEL = localize('objectExplorer.nodePath', "Path:");
 
 const PROPERTY_COLUMN_ID = 'property';
 const OPERATOR_COLUMN_ID = 'operator';
@@ -139,7 +140,12 @@ export class FilterDialog extends Modal {
 	protected renderBody(container: HTMLElement): void {
 		const body = DOM.append(container, DOM.$('.filter-dialog-body'));
 		const subtitle = DOM.append(body, DOM.$('.filter-dialog-node-path'));
-		subtitle.innerText = nodePathDisplayString(this._filterDialogSubtitle);
+		const subtileLabel = DOM.append(subtitle, DOM.$('.filter-dialog-node-path-label'));
+		subtileLabel.innerText = SUBTITLE_LABEL;
+		const subtilteText = DOM.append(subtitle, DOM.$('.filter-dialog-node-path-text'));
+		const nodePathText = this._filterDialogSubtitle;
+		subtilteText.title = nodePathText;
+		subtilteText.innerText = nodePathText;
 		const clauseTableContainer = DOM.append(body, DOM.$('.filter-table-container'));
 		const filter = DOM.append(clauseTableContainer, DOM.$('.filter-table'));
 		this._tableCellEditorFactory = new TableCellEditorFactory(
@@ -356,7 +362,7 @@ export class FilterDialog extends Modal {
 			};
 		}
 
-		this.filterTable = new Table(filter, this._accessibilityService, this._quickInputService, {
+		this.filterTable = new Table(filter, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			dataProvider: dataProvider!,
 			columns: columns,
 		}, {
@@ -389,7 +395,6 @@ export class FilterDialog extends Modal {
 
 		this.filterTable.registerPlugin(clearValueColumn);
 		this.filterTable.layout(new DOM.Dimension(600, (tableData.length + 2) * TableRowHeight));
-		this._register(attachTableStyler(this.filterTable, this._themeService));
 
 		this._description = DOM.append(body, DOM.$('.filter-dialog-description'));
 		this._description.innerHTML = this._properties[0].description;
@@ -552,7 +557,11 @@ export class FilterDialog extends Modal {
 					CONTAINS_SELECT_BOX,
 					NOT_CONTAINS_SELECT_BOX,
 					EQUALS_SELECT_BOX,
-					NOT_EQUALS_SELECT_BOX
+					NOT_EQUALS_SELECT_BOX,
+					STARTS_WITH_SELECT_BOX,
+					NOT_STARTS_WITH_SELECT_BOX,
+					ENDS_WITH_SELECT_BOX,
+					NOT_ENDS_WITH_SELECT_BOX,
 				];
 			case NodeFilterPropertyDataType.Number:
 				return [
@@ -595,6 +604,14 @@ export class FilterDialog extends Modal {
 				return CONTAINS_SELECT_BOX;
 			case NodeFilterOperator.NotContains:
 				return NOT_CONTAINS_SELECT_BOX;
+			case NodeFilterOperator.StartsWith:
+				return STARTS_WITH_SELECT_BOX;
+			case NodeFilterOperator.NotStartsWith:
+				return NOT_STARTS_WITH_SELECT_BOX;
+			case NodeFilterOperator.EndsWith:
+				return ENDS_WITH_SELECT_BOX;
+			case NodeFilterOperator.NotEndsWith:
+				return NOT_ENDS_WITH_SELECT_BOX;
 			case NodeFilterOperator.Equals:
 				return EQUALS_SELECT_BOX;
 			case NodeFilterOperator.NotEquals:
@@ -611,10 +628,6 @@ export class FilterDialog extends Modal {
 				return BETWEEN_SELECT_BOX;
 			case NodeFilterOperator.NotBetween:
 				return NOT_BETWEEN_SELECT_BOX;
-			case NodeFilterOperator.IsNull:
-				return IS_NULL_SELECT_BOX;
-			case NodeFilterOperator.IsNotNull:
-				return IS_NOT_NULL_SELECT_BOX;
 			default:
 				return '';
 		}
@@ -626,6 +639,14 @@ export class FilterDialog extends Modal {
 				return NodeFilterOperator.Contains;
 			case NOT_CONTAINS_SELECT_BOX:
 				return NodeFilterOperator.NotContains;
+			case STARTS_WITH_SELECT_BOX:
+				return NodeFilterOperator.StartsWith;
+			case NOT_STARTS_WITH_SELECT_BOX:
+				return NodeFilterOperator.NotStartsWith;
+			case ENDS_WITH_SELECT_BOX:
+				return NodeFilterOperator.EndsWith;
+			case NOT_ENDS_WITH_SELECT_BOX:
+				return NodeFilterOperator.NotEndsWith;
 			case EQUALS_SELECT_BOX:
 				return NodeFilterOperator.Equals;
 			case NOT_EQUALS_SELECT_BOX:

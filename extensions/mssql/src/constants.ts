@@ -8,6 +8,7 @@ export const providerId = 'MSSQL';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
 export const telemetryConfigSectionName = 'telemetry';
+export const queryEditorConfigSectionName = 'queryEditor';
 export const packageName = 'Microsoft.mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
