@@ -17,10 +17,8 @@ RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xv
 	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++ libgbm-dev wget
 
 # Adding Libssl for dotnet 5.0 and ESRP signing to work
-RUN wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-RUN apt install ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-RUN wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.16_amd64.deb
-RUN apt install ./openssl_1.1.1f-1ubuntu2.16_amd64.deb
+RUN wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
+RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
 
 #docker
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
