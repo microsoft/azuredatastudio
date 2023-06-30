@@ -1640,10 +1640,14 @@ export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
 }
 
-export interface AttachDatabaseRequestParams {
-	connectionUri: string;
+export interface DatabaseFileData {
 	databaseName: string;
 	databaseFilePaths: string[];
+}
+
+export interface AttachDatabaseRequestParams {
+	connectionUri: string;
+	databases: DatabaseFileData[];
 	generateScript: boolean;
 }
 

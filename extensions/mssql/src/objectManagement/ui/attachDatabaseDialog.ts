@@ -10,15 +10,10 @@ import { Database, DatabaseViewInfo } from '../interfaces';
 import { AttachDatabaseDocUrl } from '../constants';
 import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseFileGroupLabel, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
-import { EOL } from 'os';
-
-interface AttachDatabaseData {
-	databaseName: string;
-	filePaths: string[];
-}
+import { DatabaseFileData } from '../../contracts';
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
-	private _databasesToAttach: AttachDatabaseData[] = [];
+	private _databasesToAttach: DatabaseFileData[] = [];
 	private _databasesTable: azdata.TableComponent;
 	private _associatedFilesTable: azdata.TableComponent;
 
@@ -74,17 +69,10 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		for (let databaseData of this._databasesToAttach) {
-			await this.objectManagementService.attachDatabase(this.options.connectionUri, databaseData.databaseName, databaseData.filePaths, false);
-		}
+		await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		let scripts = [];
-		for (let databaseData of this._databasesToAttach) {
-			let script = await this.objectManagementService.attachDatabase(this.options.connectionUri, databaseData.databaseName, databaseData.filePaths, true);
-			scripts.push(script);
-		}
-		return scripts.join(EOL);
+		return await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, true);
 	}
 }

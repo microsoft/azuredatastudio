@@ -11,6 +11,7 @@ import { BaseService, ISqlOpsFeature, SqlOpsDataClient } from 'dataprotocol-clie
 import { ObjectManagement, IObjectManagementService } from 'mssql';
 import { ClientCapabilities } from 'vscode-languageclient';
 import { AppContext } from '../appContext';
+import { DatabaseFileData } from '../contracts';
 
 export class ObjectManagementService extends BaseService implements IObjectManagementService {
 	public static asFeature(context: AppContext): ISqlOpsFeature {
@@ -71,8 +72,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 
-	async attachDatabase(connectionUri: string, databaseName: string, databaseFilePaths: string[], generateScript: boolean): Promise<string> {
-		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databaseName, databaseFilePaths, generateScript };
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
 	}
 }
@@ -246,7 +247,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	async attachDatabase(connectionUri: string, databaseName: string, databaseFilePaths: string[], generateScript: boolean): Promise<string> {
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
