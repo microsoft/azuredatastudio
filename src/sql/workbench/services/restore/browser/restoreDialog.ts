@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/restoreDialog';
 
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
@@ -51,6 +50,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -450,8 +450,8 @@ export class RestoreDialog extends Modal {
 			}
 		}));
 
-		this._restorePlanTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._restorePlanTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				this._destinationRestoreToInputBox!.isEnabled() ? this._destinationRestoreToInputBox!.focus() : this._databaseDropdown!.focus();
 				e.stopImmediatePropagation();
@@ -461,8 +461,8 @@ export class RestoreDialog extends Modal {
 			}
 		});
 
-		this._fileListTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._fileListTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				if ((<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).isEnabled()) {
 					(<InputBox>this._optionsMap[this._relocatedLogFileFolderOption]).focus();

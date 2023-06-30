@@ -1,6 +1,6 @@
 {
 	"adminToolExtWin.displayName": "Database Administration Tool Extensions for Windows",
 	"adminToolExtWin.description": "Adds additional Windows-specific functionality to Azure Data Studio",
-	"adminToolExtWin.propertiesMenuItem": "Properties",
+	"adminToolExtWin.propertiesMenuItem": "Properties (Admin Tools)",
 	"adminToolExtWin.launchGswMenuItem": "Generate Scripts..."
 }
