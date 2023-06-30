@@ -11,7 +11,7 @@ stages:
     - job: Compile
       pool:
         vmImage: 'Ubuntu-20.04'
-      containers:
+      container:
         image: debian:bullseye
         options: '--name mycontainer -v /usr/bin/docker:/tmp/docker:ro'
       steps:
