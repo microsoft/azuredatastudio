@@ -75,7 +75,7 @@ export class WizardController {
 
 		const tdeMigrateButton = azdata.window.createButton(
 			loc.TDE_MIGRATE_BUTTON,
-			'right');
+			'left');
 		tdeMigrateButton.secondary = false;
 		tdeMigrateButton.hidden = true;
 
