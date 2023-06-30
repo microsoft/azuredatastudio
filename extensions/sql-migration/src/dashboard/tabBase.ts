@@ -12,6 +12,7 @@ import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
 import * as utils from '../api/utils';
+import * as fs from 'fs';
 
 export const EmptySettingValue = '-';
 
@@ -150,9 +151,15 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 			}).component();
 		this.disposables.push(
 			importMigrationButton.onDidClick(async () => {
-				const file = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
-				if (file) {
-					void vscode.window.showInformationMessage("Selected import file: " + file);
+				const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
+				if (filepath) {
+					try {
+						const jsonString = fs.readFileSync(filepath, 'utf-8');
+						const assessmentReport = JSON.parse(jsonString);
+						void vscode.window.showInformationMessage("Status: " + assessmentReport.Status);
+					} catch (err) {
+						void vscode.window.showInformationMessage("Selected invalid import file: " + filepath);
+					}
 				}
 				const actionId = MenuCommands.StartMigration;
 				const args = {
