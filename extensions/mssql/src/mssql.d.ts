@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DatabaseFileData } from './contracts';
-import * as azdata from 'azdata';
-
 declare module 'mssql' {
+	import * as azdata from 'azdata';
 
 	/**
 	 * Covers defining what the mssql extension exports to other extensions.
@@ -994,6 +992,11 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Thenable<string>;
+	}
+
+	export interface DatabaseFileData {
+		databaseName: string;
+		databaseFilePaths: string[];
 	}
 	// Object Management - End.
 }

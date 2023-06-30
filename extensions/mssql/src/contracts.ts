@@ -8,6 +8,7 @@ import * as telemetry from '@microsoft/ads-extension-telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 import * as mssql from 'mssql';
+import { DatabaseFileData } from 'mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -1638,11 +1639,6 @@ export interface DetachDatabaseRequestParams {
 
 export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
-}
-
-export interface DatabaseFileData {
-	databaseName: string;
-	databaseFilePaths: string[];
 }
 
 export interface AttachDatabaseRequestParams {
