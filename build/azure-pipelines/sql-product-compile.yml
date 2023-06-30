@@ -1,4 +1,10 @@
 steps:
+
+- script: |
+      /tmp/docker exec -t -u root sample mv /etc/sudoers /etc/sudoers.bak
+      /tmp/docker exec -t -u root sample apt install -y sudo
+      /tmp/docker exec -t -u root sample mv /etc/sudoers.bak /etc/sudoers
+
 - task: NodeTool@0
   inputs:
     versionSpec: "16.x"
@@ -13,11 +19,7 @@ steps:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: ado-secrets
 
-- script: |
-      docker exec -t -u root mycontainer mv /etc/sudoers /etc/sudoers.bak
-      docker exec -t -u root mycontainer apt-get -qq update
-      docker exec -t -u root mycontainer apt-get -qq install sudo
-      docker exec -t -u root mycontainer mv /etc/sudoers.bak /etc/sudoers
+
 - script: |
       apt-get install sudo -y
       apt-get update
