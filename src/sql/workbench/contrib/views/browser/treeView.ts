@@ -744,7 +744,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 		event.stopPropagation();
 
 		this.tree!.setFocus([node]);
-		const actions = treeMenus.getResourceContextActions(node);
+		const actions = treeMenus.getResourceContextActions(node).actions;
 		if (!actions.length) {
 			return;
 		}
@@ -1217,7 +1217,12 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 		}
 
 		templateData.actionBar.context = <TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle };
-		templateData.actionBar.push(this.menus.getResourceActions(node), { icon: true, label: false }); // tracked change
+
+		const menuActions = this.menus.getResourceActions(node);
+		if (menuActions.menus) {
+			menuActions.menus.map(menu => templateData.elementDisposable.add(menu));
+		}
+		templateData.actionBar.push(menuActions.actions, { icon: true, label: false });
 
 		if (this._actionRunner) {
 			templateData.actionBar.actionRunner = this._actionRunner;
@@ -1412,18 +1417,20 @@ class TreeMenus extends Disposable implements IDisposable {
 		super();
 	}
 
-	getResourceActions(element: ITreeItem): IAction[] {
-		return this.mergeActions([  // tracked change
-			this.getActions(MenuId.ViewItemContext, element).primary,
-			this.getActions(MenuId.DataExplorerContext, element).primary
-		]);
+	getResourceActions(element: ITreeItem): { menus?: IMenu[]; actions: IAction[] } {
+		const viewItemActions = this.getActions(MenuId.ViewItemContext, element, true);
+		const dataExplorerActions = this.getActions(MenuId.DataExplorerContext, element, true)
+		const actions = this.mergeActions([viewItemActions.primary, dataExplorerActions.primary]);
+		const menus = [viewItemActions.menu, dataExplorerActions.menu];
+		return { menus, actions };
 	}
 
-	getResourceContextActions(element: ITreeItem): IAction[] {
-		return this.mergeActions([  // tracked change
-			this.getActions(MenuId.ViewItemContext, element).secondary,
-			this.getActions(MenuId.DataExplorerContext, element).secondary
-		]);
+	getResourceContextActions(element: ITreeItem): { menus?: IMenu[]; actions: IAction[] } {
+		const viewItemActions = this.getActions(MenuId.ViewItemContext, element);
+		const dataExplorerActions = this.getActions(MenuId.DataExplorerContext, element)
+		const actions = this.mergeActions([viewItemActions.secondary, dataExplorerActions.secondary]);
+		const menus = [viewItemActions.menu, dataExplorerActions.menu];
+		return { menus, actions };
 	}
 
 	public setContextKeyService(service: IContextKeyService) {
@@ -1434,7 +1441,7 @@ class TreeMenus extends Disposable implements IDisposable {
 		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) === -1)), [] as IAction[]);
 	}
 
-	private getActions(menuId: MenuId, element: ITreeItem): { menu?: IMenu; primary: IAction[]; secondary: IAction[] } {
+	private getActions(menuId: MenuId, element: ITreeItem, listen: boolean = false): { menu?: IMenu; primary: IAction[]; secondary: IAction[] } {
 		if (!this.contextKeyService) {
 			return { primary: [], secondary: [] };
 		}
@@ -1449,9 +1456,11 @@ class TreeMenus extends Disposable implements IDisposable {
 		const secondary: IAction[] = [];
 		const result = { primary, secondary, menu };
 		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, 'inline');
-		// tracked change - not registering to on did change event to prevent listener leak
-		// warning: REFUSES to accept new listeners because it exceeded its threshold by far
-		menu.dispose();
+		if (listen) {
+			this._register(menu.onDidChange(() => this._onDidChange.fire(element)));
+		} else {
+			menu.dispose();
+		}
 		return result;
 	}
 
