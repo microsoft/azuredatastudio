@@ -4,8 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { TopResourceConsumingQueries } from './reports/topResourceConsumingQueries';
+import { OverallResourceConsumption } from './reports/overallResourceConsumption';
 
-export async function activate(_context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+	// TODO: get db name
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.topResourceConsumingQueriesOpen', async () => { await new TopResourceConsumingQueries(context, 'WideWorldImporters').open() }));
+	context.subscriptions.push(vscode.commands.registerCommand('queryStore.overallResourceConsumptionOpen', async () => { await new OverallResourceConsumption(context, 'WideWorldImporters').open() }));
 }
 
 export function deactivate(): void {

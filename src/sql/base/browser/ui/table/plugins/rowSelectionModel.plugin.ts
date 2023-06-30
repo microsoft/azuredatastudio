@@ -1,5 +1,8 @@
 // Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.rowselectionmodel.js
 // heavily modified
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 
 const defaultOptions: IRowSelectionModelOptions = {
@@ -26,7 +29,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 		this._grid = grid;
 		this._handler
 			.subscribe(this._grid.onActiveCellChanged, (e: Event, data: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e, data))
-			.subscribe(this._grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(e as KeyboardEvent))
+			.subscribe(this._grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(convertJQueryKeyDownEvent(e)))
 			.subscribe(this._grid.onClick, (e: DOMEvent) => this.handleClick(e as MouseEvent));
 	}
 
@@ -85,9 +88,9 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 		}
 	}
 
-	private handleKeyDown(e: KeyboardEvent): void {
+	private handleKeyDown(e: StandardKeyboardEvent): void {
 		const activeRow = this._grid.getActiveCell();
-		if (activeRow && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && (e.which === 38 || e.which === 40)) {
+		if (activeRow && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && (e.keyCode === KeyCode.UpArrow || e.keyCode === KeyCode.DownArrow)) {
 			let selectedRows = this.getSelectedRows();
 			selectedRows.sort((x, y) => x - y);
 
@@ -99,7 +102,7 @@ export class RowSelectionModel<T extends Slick.SlickData> implements Slick.Selec
 			let bottom = selectedRows[selectedRows.length - 1];
 			let active;
 
-			if (e.which === 40) {
+			if (e.keyCode === KeyCode.DownArrow) {
 				active = activeRow.row < bottom || top === bottom ? ++bottom : ++top;
 			} else {
 				active = activeRow.row < bottom ? --bottom : --top;

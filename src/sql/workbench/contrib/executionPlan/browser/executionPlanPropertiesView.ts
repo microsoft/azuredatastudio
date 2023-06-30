@@ -6,7 +6,6 @@
 import * as DOM from 'vs/base/browser/dom';
 import type * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
@@ -24,7 +23,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 
 	public constructor(
 		parentContainer: HTMLElement,
-		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IContextViewService contextViewService: IContextViewService,
@@ -32,7 +30,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		@IQuickInputService quickInputService: IQuickInputService,
 		@IComponentContextService componentContextService: IComponentContextService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService, componentContextService);
+		super(parentContainer, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService, componentContextService);
 		this._model = <ExecutionPlanPropertiesView>{};
 		this._operationName = DOM.$('h3');
 		this._operationName.classList.add('operation-name');
