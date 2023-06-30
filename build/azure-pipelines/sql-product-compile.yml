@@ -20,18 +20,19 @@ steps:
     KeyVaultName: ado-secrets
 
 - script: |
-      /tmp/docker exec -t -u 0 ci-container \
-      sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-  displayName: 'Install Sudo in container'
+      /tmp/docker exec -t -u root mycontainer mv /etc/sudoers /etc/sudoers.bak
+      /tmp/docker exec -t -u root mycontainer apt-get -qq update
+      /tmp/docker exec -t -u root mycontainer apt-get -qq install sudo
+      /tmp/docker exec -t -u root mycontainer mv /etc/sudoers.bak /etc/sudoers
 
 - script: |
-      apt-get install sudo -y
-      apt-get update
-      apt-get install -y wget
-      wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-      apt-get install ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-      wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.16_amd64.deb
-      apt-get install ./openssl_1.1.1f-1ubuntu2.16_amd64.deb
+      sudo apt-get install sudo -y
+      sudo apt-get update
+      sudo apt-get install -y wget
+      sudo wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+      sudo apt-get install ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+      sudo wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.16_amd64.deb
+      sudo apt-get install ./openssl_1.1.1f-1ubuntu2.16_amd64.deb
   displayName: 'Install SSL for dotnet 5 and ESRP'
 
 - script: |
