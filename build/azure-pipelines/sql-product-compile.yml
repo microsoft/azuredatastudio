@@ -13,13 +13,14 @@ steps:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: ado-secrets
 
-- bash: |
+- script: |
       set -e
-      sudo apt install -y wget
+      sudo apt-get update
+      sudo apt-get install -y wget
       wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
-      sudo apt install ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+      sudo apt-get install ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
       wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.16_amd64.deb
-      sudo apt install ./openssl_1.1.1f-1ubuntu2.16_amd64.deb
+      sudo apt-get install ./openssl_1.1.1f-1ubuntu2.16_amd64.deb
   displayName: 'Install SSL for dotnet 5 and ESRP'
 
 - script: |
