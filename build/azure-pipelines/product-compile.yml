@@ -21,6 +21,15 @@ steps:
     condition: and(succeeded(), ne(variables['NPM_REGISTRY'], 'none'))
     displayName: Setup NPM Registry
 
+  - bash: |
+      set -e
+      apt install -y wget
+      wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+      apt install ./libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+      wget -c http://security.ubuntu.com/ubuntu/pool/main/o/openssl/openssl_1.1.1f-1ubuntu2.16_amd64.deb
+      apt install ./openssl_1.1.1f-1ubuntu2.16_amd64.deb
+    displayName: 'Install SSL for dotnet 5 and ESRP'
+
   - script: mkdir -p .build && node build/azure-pipelines/common/computeNodeModulesCacheKey.js compile > .build/yarnlockhash
     displayName: Prepare node_modules cache key
 
