@@ -19,7 +19,7 @@ import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestSer
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
-suite('Experimental Prompts', () => {
+suite.skip('Experimental Prompts', () => { // {{SQL CARBON EDIT}} Tests are flaky, and have been removed in VS Code so disabling until we catch up
 	let instantiationService: TestInstantiationService;
 	let experimentService: TestExperimentService;
 	let experimentalPrompt: ExperimentalPrompts;
