@@ -14,6 +14,11 @@ steps:
     KeyVaultName: ado-secrets
 
 - script: |
+      /tmp/docker exec -t -u root mycontainer mv /etc/sudoers /etc/sudoers.bak
+      /tmp/docker exec -t -u root mycontainer apt-get -qq update
+      /tmp/docker exec -t -u root mycontainer apt-get -qq install sudo
+      /tmp/docker exec -t -u root mycontainer mv /etc/sudoers.bak /etc/sudoers
+- script: |
       apt-get install sudo -y
       apt-get update
       apt-get install -y wget
