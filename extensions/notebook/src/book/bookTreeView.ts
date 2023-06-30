@@ -110,10 +110,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		void this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
-	trustBook(bookTreeItem?: BookTreeItem): void {
+	async trustBook(bookTreeItem?: BookTreeItem): Promise<void> {
 		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
-			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust, true);
+			let trustChanged = await this._bookTrustManager.setBookAsTrusted(bookPathToTrust, true);
 			if (trustChanged) {
 				let notebookDocuments = azdata.nb.notebookDocuments;
 				if (notebookDocuments) {

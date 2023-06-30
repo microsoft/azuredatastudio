@@ -210,17 +210,15 @@ describe('BooksTreeViewTests', function () {
 				equalBookItems(notebook3, expectedNotebook3);
 			});
 
-			// {{SQL CARBON TODO}} - disable failing test
-			it.skip('should set notebooks trusted to true on trustBook', async () => {
+			it('should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = notebook1.tooltip;
 				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books);
 				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
-				bookTreeViewProvider.trustBook(notebook1);
+				await bookTreeViewProvider.trustBook(notebook1);
 				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
-
 			});
 
 			it('getNavigation should get previous and next urls correctly from the bookModel', async () => {
