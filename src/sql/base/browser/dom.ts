@@ -118,3 +118,10 @@ export function trapKeyboardNavigation(container: HTMLElement): IDisposable {
 		}
 	});
 }
+
+/**
+ * Convert the SlickGrid's keydown event to VSCode standard keyboard event.
+ */
+export function convertJQueryKeyDownEvent(e: DOMEvent): StandardKeyboardEvent {
+	return new StandardKeyboardEvent((<any>e as JQuery.KeyDownEvent).originalEvent);
+}

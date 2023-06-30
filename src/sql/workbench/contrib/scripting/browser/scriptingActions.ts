@@ -211,7 +211,7 @@ async function runScriptingAction(accessor: ServicesAccessor, args: ObjectExplor
 	const logService = accessor.get(ILogService);
 	const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
 	const notificationHandle = notificationService.notify({
-		message: localize('scriptingAction.inProgress', "Generating script..."),
+		message: localize('scriptingAction.inProgress', "Executing action..."),
 		severity: Severity.Info,
 		progress: {
 			infinite: true
