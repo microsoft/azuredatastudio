@@ -407,7 +407,6 @@ export function convertMarkdownToJSON(markdown: string): string {
 
 	console.log(objectNameCount + fieldsCount + overviewCount + relationshipsCount + expectedValue);
 
-	/*
 	if (objectNameCount !== expectedValue || fieldsCount !== expectedValue || overviewCount !== expectedValue || relationshipsCount !== expectedValue) {
 		throw new Error(`
 			Documentation is not formatted correctly.\n
@@ -428,7 +427,6 @@ export function convertMarkdownToJSON(markdown: string): string {
 			<Object Relationships Description>
 		`);
 	}
-	*/
 
 	return JSON.stringify(json);
 }
