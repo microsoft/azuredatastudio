@@ -38,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
         let document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
-        setContextVariables(context, connection, version, document);
+        await setContextVariables(context, connection, version, document);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');

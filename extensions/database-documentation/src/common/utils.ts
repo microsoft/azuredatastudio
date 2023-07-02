@@ -14,7 +14,7 @@ let context: azdata.ObjectExplorerContext;
 let version: number;
 let document: vscode.TextDocument;
 
-export function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnection: azdata.connection.ConnectionProfile, docsVersion: number, extensionDocument: vscode.TextDocument) {
+export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnection: azdata.connection.ConnectionProfile, docsVersion: number, extensionDocument: vscode.TextDocument) {
 	context = extensionContext;
 	connection = extensionConnection;
 	version = docsVersion;
@@ -63,7 +63,8 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		if (context.nodeInfo.nodeType !== 'Table') {
 			references += tableResult[1];
 		}
-		documentation += await getDocumentationText(tables[i], tableAttributes, 'table');
+		vscode.window.showInformationMessage("Getting documentation for " + tables[i]);
+		documentation += await getDocumentationText(tables[i], tableAttributes, 'Table');
 	}
 	for (let i = 0; i < views.length; i++) {
 		const tableAttributes = await tableToText(connection, databaseName, views[i]);
@@ -72,7 +73,8 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		if (context.nodeInfo.nodeType !== 'View') {
 			references += tableResult[1];
 		}
-		documentation += await getDocumentationText(views[i], tableAttributes, 'view');
+		vscode.window.showInformationMessage("Getting documentation for " + views[i]);
+		documentation += await getDocumentationText(views[i], tableAttributes, 'View');
 	}
 
 	diagram += references;
@@ -141,53 +143,44 @@ async function getDocumentationText(tableName: string, tableAttributes: [string,
 
 	const columnNames = tableAttributes.map(row => row[0]);
 
-	const overviewPrompt = localize("database-documentation.overviewPrompt",
-		`One sentence overview of this ${type}, based on table name. Max 25 words.  \n
-	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces instead.  \n
-	Table: ${tableName} Columns: `) + JSON.stringify(columnNames);
-
-	const fieldsPrompt = localize("database-documentation.fieldsPrompt",
-		`Give an description for each field below. If the datatype has a preceding +, the field is the primary key.  \n
-	Do not include the + in the datatype description. Include two spaces at the end of each description for  \n
-	formatting purposes.  \n
-	Format your answer exactly like so:  \n
-	 - <Field Name>: <Field Description, min 20 words>   - <Field Name>: <Field Description, min 20 words>
-	\nFields: Name, datatype, Table it references  \n`) + JSON.stringify(tableAttributes);
-
-	const relationshipsPrompt = localize("database-documentation.relationshipPrompt",
-		`Given the above ${tableName} ${type}, write a detailed description of the relationship it has with other tables,
-	ie. which tables it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.
-	Format your answer so that each line is at most 150 cols long. When you need to use a newline, use two spaces followed by \u000D instead.`)
+	const prompt = localize("database-documentation.prompt",
+		`One sentence overview of this ${type}, based on ${type} name. Max 25 words.\n
+		When you need to use a newline, use two spaces instead.\n
+		${type}: ${tableName} Columns: ${JSON.stringify(columnNames)}\n
+		\n
+		Give an description for each field below. If the datatype has a preceding +, the field is the primary key.\n
+		Do not include the + in the datatype description. Include two spaces at the end of each description for formatting purposes.\n
+		Format your answer exactly like so:\n
+		- <Field Name>: <Field Description, min 20 words>  \n
+		- <Field Name>: <Field Description, min 20 words>  \n
+		\n
+		Fields: Name, datatype, Table it references
+		${JSON.stringify(tableAttributes)}\n
+		\n
+		Given the above ${tableName} ${type}, write a detailed description of the relationship it has with other tables/views,\n
+		ie. which tables/views it has relationships with, the relationship type (one-to-one, one-to-many), which fields it references, etc.\n
+		If there are no relationships existing, as indicated by nulls, do not mention the nulls. Just say there are no existing relationships.\n
+		When you need to use a newline, use two spaces followed by \\n instead.\n
+		\n
+		Overall your resulting answer should be formatted like so. Give the answer in formatted markdown:
+		\n
+		**Overview**  \n<One sentence overview of the table>  \n
+		\n
+		**Fields**  \n- <Field Name>: <Field Description, min 20 words>  \n
+		- <Field Name>: <Field Description, min 20 words>  \n
+		\n
+		**Relationships**  \n<Relationships Description>`);
 
 	try {
-		const overviewResponse = await
+		vscode.window.showInformationMessage("Awaiting API response...");
+		const promptResponse = await
 			openai.createChatCompletion({
 				model: "gpt-3.5-turbo",
-				messages: [{ 'role': 'user', 'content': overviewPrompt }],
+				messages: [{ 'role': 'user', 'content': prompt }],
 				temperature: 0
 			})
-
-		const overviewResult = overviewResponse.data.choices[0].message.content;
-
-		const fieldsResponse = await
-			openai.createChatCompletion({
-				model: "gpt-3.5-turbo",
-				messages: [{ 'role': 'user', 'content': fieldsPrompt }],
-				temperature: 0
-			})
-
-		const fieldsResult = fieldsResponse.data.choices[0].message.content;
-
-		const relationshipsResponse = await
-			openai.createChatCompletion({
-				model: "gpt-3.5-turbo",
-				messages: [{ 'role': 'user', 'content': relationshipsPrompt }],
-				temperature: 0
-			})
-
-		const relationshipsResult = relationshipsResponse.data.choices[0].message.content;
-
-		return localize("database-documentation.generatedDocumentation", `### ${tableName}  \n**Overview**  \n${overviewResult}  \n\n**Fields**  \n${fieldsResult}  \n\n**Relationships**  \n${relationshipsResult}`);;
+		vscode.window.showInformationMessage("Got API response!");
+		return `### ${tableName}  \n` + promptResponse.data.choices[0].message.content + '  \n\n';
 	}
 	catch (error) {
 		vscode.window.showInformationMessage("Error:" + error.message);
@@ -256,12 +249,66 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 	// New version, markdown, and markdown JSON are all generated by this extension
 	const updateQuery = `
 	UPDATE [db_documentation].[DatabaseDocumentation]
-	SET [Version] = ${newVersion}, [Markdown] = '${markdown}', [JSONMarkdown] = '${markdownJSON}' WHERE [ObjectName] = '${validate(context.nodeInfo.metadata.name)}';
+	SET [Version] = ${newVersion}, [Markdown] = '${validate(markdown)}', [JSONMarkdown] = '${validate(markdownJSON)}' WHERE [ObjectName] = '${validate(context.nodeInfo.metadata.name)}';
 	`
+
 	// Update data in table
 	await queryProvider.runQueryString(connectionUri, updateQuery);
 
-	// Break it down:
+	const nodeType = context.nodeInfo.nodeType;
+
+	if (nodeType === 'Database' || nodeType === 'Schema') {
+		const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
+
+		let objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+
+		let objectNames = new Set([]);
+		if (objectNamesResult.rowCount) {
+			objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
+		}
+
+		const json = JSON.parse(markdownJSON);
+
+		const mermaid = json['Mermaid'];
+		const text = json['Text'];
+
+		const keys = Object.keys(text);
+
+		let insertQuery = '';
+		for (let i = 0; i < keys.length; i++) {
+			const tableName = keys[i]
+			if (!objectNames.has(tableName)) {
+				const regex = new RegExp(`\\tclass ${tableName}[\\s\\S]*?\\t}\\n`, 'g');
+				const matches = mermaid.match(regex);
+
+				const tableMermaid = '```mermaid\nclassDiagram\n' + matches[0] + '```  \n\n';
+
+				const fields = text[tableName]['Fields'];
+				let fieldsText = '';
+				for (const fieldName in fields) {
+					fieldsText += `- ${fieldName}: ${fields[fieldName]}  \n`;
+				}
+
+				const tableText = `### ${tableName}  \n**Overview**  \n${text[tableName]['Overview']}  \n\n**Fields**  \n${fieldsText}  \n**Relationships**  \n${text[tableName]['Relationships']}`;
+				const tableMarkdown = tableMermaid + tableText;
+
+				const tableJson: any = {
+					"Mermaid": tableMermaid,
+					"Text": {}
+				};
+				tableJson['Text'][tableName] = text[tableName];
+				const tableMarkdownJSON = JSON.stringify(tableJson);
+
+				insertQuery += `
+				INSERT INTO [db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
+				VALUES ('${validate(keys[i])}', ${1}, '${validate(tableMarkdown)}', '${validate(tableMarkdownJSON)}');\n
+				`
+			}
+		}
+
+		// Insert data into table
+		await queryProvider.runQueryString(connectionUri, insertQuery);
+	}
 }
 
 async function getOpenApiKey(): Promise<string> {
@@ -270,7 +317,7 @@ async function getOpenApiKey(): Promise<string> {
 
 	if (!apiKey || apiKey == '') {
 		apiKey = await vscode.window.showInputBox({
-			prompt: 'Please enter your OpenAI API key',
+			prompt: localize('database-documentation.apiKeyPrompt', 'Please enter your OpenAI API key'),
 			ignoreFocusOut: true,
 		});
 
@@ -288,12 +335,12 @@ async function getOpenApiKey(): Promise<string> {
 	return apiKey;
 }
 
-// TO DO, throw errors if not formatted correctly
+// TODO: Take in a numbe of objects to compare to
 export function convertMarkdownToJSON(markdown: string): string {
 	const lines = markdown.split('\n');
 	const json: any = {};
 
-	let regex = /```mermaid[\s\S]*?```/g;
+	let regex = /```mermaid[\s\S]*?```/g
 	let match = markdown.match(regex);
 	if (!match) {
 		throw new Error("Mermaid code isn't formatted correctly");
@@ -331,7 +378,7 @@ export function convertMarkdownToJSON(markdown: string): string {
 					break;
 				}
 				i++;
-				overview += nextLine.trim();
+				overview += nextLine;
 			}
 			// Get all lines until line **Fields**
 			json['Text'][currentKey].Overview = overview;
@@ -351,13 +398,16 @@ export function convertMarkdownToJSON(markdown: string): string {
 					break;
 				}
 				i++;
-				relationships += nextLine.trim();
+				relationships += nextLine;
 			}
 			json['Text'][currentKey].Relationships = relationships;
 			relationshipsCount++;
 		}
 	}
 
+	console.log(objectNameCount + fieldsCount + overviewCount + relationshipsCount + expectedValue);
+
+	/*
 	if (objectNameCount !== expectedValue || fieldsCount !== expectedValue || overviewCount !== expectedValue || relationshipsCount !== expectedValue) {
 		throw new Error(`
 			Documentation is not formatted correctly.\n
@@ -378,27 +428,28 @@ export function convertMarkdownToJSON(markdown: string): string {
 			<Object Relationships Description>
 		`);
 	}
+	*/
 
 	return JSON.stringify(json);
 }
 
 function validate(input: string): string {
-  // Escape single quotes by doubling them
-  const escapedQuotes = input.replace(/'/g, "''");
+	// Escape single quotes by doubling them
+	const escapedQuotes = input.replace(/'/g, "''");
 
-  // Escape brackets by doubling them
-  const escapedBrackets = escapedQuotes.replace(/\[/g, '[[').replace(/\]/g, ']]');
+	// Escape brackets by doubling them
+	const escapedBrackets = escapedQuotes.replace(/\[/g, '[[').replace(/\]/g, ']]');
 
-  // Remove semicolons
-  const sanitizedSemicolons = escapedBrackets.replace(/;/g, '');
+	// Remove semicolons
+	const sanitizedSemicolons = escapedBrackets.replace(/;/g, '');
 
-  // Remove SQL comments
-  const sanitizedComments = sanitizedSemicolons.replace(/--/g, '').replace(/\/\*/g, '').replace(/\*\//g, '');
+	// Remove SQL comments
+	const sanitizedComments = sanitizedSemicolons.replace(/--/g, '').replace(/\/\*/g, '').replace(/\*\//g, '');
 
-  // Remove potentially harmful SQL keywords
-  const sanitizedKeywords = sanitizedComments.replace(/\b(xp_)\w+\b/g, '');
+	// Remove potentially harmful SQL keywords
+	const sanitizedKeywords = sanitizedComments.replace(/\b(xp_)\w+\b/g, '');
 
-  return sanitizedKeywords;
+	return sanitizedKeywords;
 }
 
 
