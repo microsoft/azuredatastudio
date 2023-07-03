@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
+import * as stubs from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as dom from 'vs/base/browser/dom';
