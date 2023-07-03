@@ -34,7 +34,6 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 
 	private _data: azdata.ExecutionPlanData | undefined;
 	private _executionPlanFileView: ExecutionPlanFileView;
-	s
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -61,8 +60,6 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (properties.data) {
-
-
 			if (equals(this._data, properties.data) === false) {
 				this._data = properties.data;
 				this.clearExecutionPlan();
