@@ -32,7 +32,7 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 
 	@ViewChild('executionPlanContainer') private _container: ElementRef;
 
-	private _data: azdata.ExecutionPlanData;
+	private _data: azdata.ExecutionPlanData | undefined;
 	private _executionPlanFileView: ExecutionPlanFileView;
 	s
 	constructor(
@@ -68,8 +68,6 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 				this.clearExecutionPlan();
 				this.loadData(this._data);
 			}
-		} else {
-
 		}
 	}
 
