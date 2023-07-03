@@ -63,7 +63,7 @@ export class TestExperimentService extends ExperimentService {
 	}
 }
 
-suite.skip('Experiment Service', () => { // {{SQL CARBON EDIT}} - disable failing suite
+suite.skip('Experiment Service', () => {  // {{SQL CARBON EDIT}} Tests are flaky, and have been removed in VS Code so disabling until we catch up
 	let instantiationService: TestInstantiationService;
 	let testConfigurationService: TestConfigurationService;
 	let testObject: ExperimentService;
