@@ -27,7 +27,7 @@ export class ExecutionPlanFileView extends Disposable {
 	private _planCache: Map<string, azdata.executionPlan.ExecutionPlanGraph[]> = new Map();
 
 	constructor(
-		private _queryResultsView: QueryResultsView,
+		private _queryResultsView: QueryResultsView | undefined,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IExecutionPlanService private executionPlanService: IExecutionPlanService
 	) {
