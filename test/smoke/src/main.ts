@@ -329,28 +329,58 @@ async function ensureStableCode(): Promise<void> {
 
 	let stableCodePath = opts['stable-build'];
 	if (!stableCodePath) {
-		const { major, minor } = parseVersion(version!);
-		const majorMinorVersion = `${major}.${minor - 1}`;
-		const versionsReq = await fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } });
+		const current = parseVersion(version!);
+		const versionsReq = await retry(() => measureAndLog(() => fetch('https://update.code.visualstudio.com/api/releases/stable'), 'versionReq', logger), 1000, 20);
 
 		if (!versionsReq.ok) {
 			throw new Error('Could not fetch releases from update server');
 		}
 
-		const versions: { version: string }[] = await versionsReq.json();
-		const prefix = `${majorMinorVersion}.`;
-		const previousVersion = versions.find(v => v.version.startsWith(prefix));
+		const versions: string[] = await measureAndLog(() => versionsReq.json(), 'versionReq.json()', logger);
+		const stableVersion = versions.find(raw => {
+			const version = parseVersion(raw);
+			return version.major < current.major || (version.major === current.major && version.minor < current.minor);
+		});
 
-		if (!previousVersion) {
-			throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
+		if (!stableVersion) {
+			throw new Error(`Could not find suitable stable version for ${version}`);
 		}
 
-		console.log(`*** Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
+		logger.log(`Found VS Code v${version}, downloading previous VS Code version ${stableVersion}...`);
 
-		const stableCodeExecutable = await vscodetest.download({
-			cachePath: path.join(os.tmpdir(), 'vscode-test'),
-			version: previousVersion.version
-		});
+		let lastProgressMessage: string | undefined = undefined;
+		let lastProgressReportedAt = 0;
+		const stableCodeDestination = path.join(testDataPath, 's');
+		const stableCodeExecutable = await retry(() => measureAndLog(() => vscodetest.download({
+			cachePath: stableCodeDestination,
+			version: stableVersion,
+			extractSync: true,
+			reporter: {
+				report: report => {
+					let progressMessage = `download stable code progress: ${report.stage}`;
+					const now = Date.now();
+					if (progressMessage !== lastProgressMessage || now - lastProgressReportedAt > 10000) {
+						lastProgressMessage = progressMessage;
+						lastProgressReportedAt = now;
+
+						if (report.stage === 'downloading') {
+							progressMessage += ` (${report.bytesSoFar}/${report.totalBytes})`;
+						}
+
+						logger.log(progressMessage);
+					}
+				},
+				error: error => logger.log(`download stable code error: ${error}`)
+			}
+		}), 'download stable code', logger), 1000, 3, () => new Promise<void>((resolve, reject) => {
+			rimraf(stableCodeDestination, { maxBusyTries: 10 }, error => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		}));
 
 		if (process.platform === 'darwin') {
 			// Visual Studio Code.app/Contents/MacOS/Electron
@@ -365,7 +395,7 @@ async function ensureStableCode(): Promise<void> {
 		throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
 	}
 
-	console.log(`*** Using stable build ${stableCodePath} for migration tests`);
+	logger.log(`Using stable build ${stableCodePath} for migration tests`);
 
 	opts['stable-build'] = stableCodePath;
 }

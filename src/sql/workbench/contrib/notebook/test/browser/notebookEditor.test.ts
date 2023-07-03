@@ -28,7 +28,6 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
-import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -59,6 +58,20 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
 import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/browser/findState';
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
+import { CharCode } from 'vs/base/common/charCode';
+
+function getRandomInt(min: number, max: number): number {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomString(minLength: number, maxLength: number): string {
+	const length = getRandomInt(minLength, maxLength);
+	let r = '';
+	for (let i = 0; i < length; i++) {
+		r += String.fromCharCode(getRandomInt(CharCode.a, CharCode.z));
+	}
+	return r;
+}
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();

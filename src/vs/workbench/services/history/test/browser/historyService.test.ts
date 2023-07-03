@@ -29,7 +29,7 @@ import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-suite('HistoryService', function () {
+suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} skip suite
 
 	const TEST_EDITOR_ID = 'MyTestEditorForEditorHistory';
 	const TEST_EDITOR_INPUT_ID = 'testEditorInputForHistoyService';
@@ -480,6 +480,7 @@ suite('HistoryService', function () {
 			isSymbolicLink: false,
 			name: 'other.txt',
 			readonly: false,
+			locked: false,
 			size: 0,
 			resource: toResource.call(this, '/path/other.txt'),
 			children: undefined

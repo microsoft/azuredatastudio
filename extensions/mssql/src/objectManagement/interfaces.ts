@@ -451,6 +451,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels: string[];
 	containmentTypes: string[];
 	recoveryModels: string[];
+	files: DatabaseFile[];
 
 	isAzureDB: boolean;
 	azureBackupRedundancyLevels: string[];
@@ -462,4 +463,36 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	details: string[];
+}
+
+export interface Server extends ObjectManagement.SqlObject {
+	hardwareGeneration: string;
+	language: string;
+	memoryInMB: number;
+	operatingSystem: string;
+	platform: string;
+	processors: string;
+	version: string;
+	isClustered: boolean;
+	isHadrEnabled: boolean;
+	isPolyBaseInstalled: boolean;
+	isXTPSupported: boolean;
+	product: string;
+	reservedStorageSizeMB: number;
+	rootDirectory: string;
+	serverCollation: string;
+	serviceTier: string;
+	storageSpaceUsageInGB: number;
+	minServerMemory: number;
+	maxServerMemory: number;
+}
+
+export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+}
+
+export interface DatabaseFile {
+	name: string;
+	type: string;
+	path: string;
+	fileGroup: string;
 }

@@ -21,7 +21,7 @@ import {
 	ISerializationManagerDetails,
 	IErrorDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { CheckboxUpdate, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
@@ -811,6 +811,8 @@ export interface ExtHostModelViewTreeViewsShape {
 	$setVisible(treeViewId: string, visible: boolean): void;
 	$hasResolve(treeViewId: string): Promise<boolean>;
 	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined>;
+	$setFocus(treeViewId: string, treeItemHandle: string): void;
+	$changeCheckboxState(treeViewId: string, checkboxUpdates: CheckboxUpdate[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

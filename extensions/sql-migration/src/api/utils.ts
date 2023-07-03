@@ -304,10 +304,6 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 	};
 }
 
-export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
-	return { 'SqlMigrationSessionId': sessionId };
-}
-
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
 	const properties = migration.properties;
 	const migrationStatus = getMigrationStatus(migration) ?? '';

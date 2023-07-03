@@ -228,26 +228,7 @@ const networkRequestViaProxy = <T>(
 					 * there may be more than one ':' if the value of the header is supposed to be a JSON object
 					 */
 					const headerKeyValue = header.split(new RegExp(/:\s(.*)/s));
-					const headerKey = headerKeyValue[0];
-					let headerValue = headerKeyValue[1];
-
-					// check if the value of the header is supposed to be a JSON object
-					try {
-						// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						const object = JSON.parse(headerValue);
-
-						// if it is, then convert it from a string to a JSON object
-						if (object && (typeof object === 'object')) {
-							// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-							headerValue = object;
-						}
-					} catch (e) {
-						// otherwise, leave it as a string
-					}
-
-					entries.set(headerKey, headerValue);
+					entries.set(headerKeyValue[0], headerKeyValue[1]);
 				});
 
 				const parsedHeaders = Object.fromEntries(entries) as Record<string, string>;
@@ -256,7 +237,6 @@ const networkRequestViaProxy = <T>(
 					data: parseBody(httpStatusCode, statusMessage, parsedHeaders, body) as T,
 					status: httpStatusCode
 				};
-
 
 				if (((httpStatusCode < HttpStatus.SUCCESS_RANGE_START) || (httpStatusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow

@@ -98,7 +98,7 @@ suite('Advanced options helper tests', () => {
 			isArray: undefined
 		};
 
-		inputBox = TypeMoq.Mock.ofType(InputBox, TypeMoq.MockBehavior.Loose, $('div'), null, null);
+		inputBox = TypeMoq.Mock.ofType(InputBox, TypeMoq.MockBehavior.Loose, $('div'), null, {});
 		inputBox.callBase = true;
 		inputBox.setup(x => x.validate()).returns(() => isValid ? undefined : MessageType.ERROR);
 		inputBox.setup(x => x.value).returns(() => inputValue);

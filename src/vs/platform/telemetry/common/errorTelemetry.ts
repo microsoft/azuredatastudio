@@ -7,6 +7,7 @@ import { binarySearch } from 'vs/base/common/arrays';
 import { errorHandler, ErrorNoTelemetry } from 'vs/base/common/errors';
 import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
 import { safeStringify } from 'vs/base/common/objects';
+import { FileOperationError } from 'vs/platform/files/common/files';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 /*type ErrorEventFragment = { {{SQL CARBON EDIT}} comment out for no unused
@@ -85,7 +86,8 @@ export default abstract class BaseErrorTelemetry {
 		}
 
 		// If it's the no telemetry error it doesn't get logged
-		if (ErrorNoTelemetry.isErrorNoTelemetry(err)) {
+		// TOOD @lramos15 hacking in FileOperation error because it's too messy to adopt ErrorNoTelemetry. A better solution should be found
+		if (ErrorNoTelemetry.isErrorNoTelemetry(err) || err instanceof FileOperationError || err?.message?.includes('Unable to read file')) {
 			return;
 		}
 

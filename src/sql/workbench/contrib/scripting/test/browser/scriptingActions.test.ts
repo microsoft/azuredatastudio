@@ -58,7 +58,7 @@ const treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '
 const oeActionArgs: ObjectExplorerActionsContext = { connectionProfile: connection, isConnectionNode: false, nodeInfo: nodeInfo };
 
 let instantiationService: IInstantiationService;
-let logServiceMock: TypeMoq.Mock<ILogService>;
+let logServiceMock: TypeMoq.Mock<NullLogService>;
 let treeMock: TypeMoq.Mock<TestTree>;
 
 suite('Scripting Actions', () => {

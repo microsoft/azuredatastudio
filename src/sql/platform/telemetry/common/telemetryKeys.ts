@@ -45,8 +45,6 @@ export const enum TelemetryView {
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	LinkedAccounts = 'LinkedAccounts',
 	Notebook = 'Notebook',
-	NotifyEncryptionDialog = 'NotifyEncryptionDialog',
-	NotifyHiddenTenantDialog = 'NotifyHiddenTenantDialog',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',

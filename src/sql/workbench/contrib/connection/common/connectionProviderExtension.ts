@@ -13,7 +13,6 @@ import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import type { IDisposable } from 'vs/base/common/lifecycle';
-import { isArray } from 'vs/base/common/types';
 
 const ConnectionProviderContrib: IJSONSchema = {
 	type: 'object',
@@ -170,7 +169,7 @@ class ConnectionProviderHandler implements IWorkbenchContribution {
 
 			delta.added.forEach(added => {
 				resolveIconPath(added);
-				if (isArray(added.value)) {
+				if (Array.isArray(added.value)) {
 					for (const provider of added.value) {
 						this.disposables.set(provider, handleProvider(provider));
 					}
@@ -179,7 +178,7 @@ class ConnectionProviderHandler implements IWorkbenchContribution {
 				}
 			});
 			delta.removed.forEach(removed => {
-				if (isArray(removed.value)) {
+				if (Array.isArray(removed.value)) {
 					for (const provider of removed.value) {
 						this.disposables.get(provider)!.dispose();
 					}

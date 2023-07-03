@@ -10,9 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
-import { attachButtonStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
@@ -31,6 +29,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -116,7 +115,7 @@ export class FirewallRuleDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		this.backButton!.onDidClick(() => this.cancel());
-		this._register(attachButtonStyler(this.backButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
+		this._register(this.backButton!);
 		this._createButton = this.addFooterButton(LocalizedStrings.OK, () => this.createFirewallRule());
 		this._closeButton = this.addFooterButton(LocalizedStrings.Cancel, () => this.cancel(), 'right', true);
 		this.registerListeners();
@@ -139,7 +138,8 @@ export class FirewallRuleDialog extends Modal {
 		const descInputContainer = DOM.append(descriptionDiv, DOM.$('.dialog-input-section'));
 		DOM.append(descInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.RuleName;
 		this._ruleNameInpuBox = new InputBox(DOM.append(descInputContainer, DOM.$('.dialog-input')), this._contextViewService, {
-			ariaLabel: LocalizedStrings.RuleName
+			ariaLabel: LocalizedStrings.RuleName,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Single IP Address radio button
@@ -169,12 +169,14 @@ export class FirewallRuleDialog extends Modal {
 
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.FROM;
 		this._fromRangeinputBox = new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, {
-			ariaLabel: LocalizedStrings.FROM
+			ariaLabel: LocalizedStrings.FROM,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		DOM.append(inputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.TO;
 		this._toRangeinputBox = new InputBox(DOM.append(inputContainer, DOM.$('.dialog-input')), this._contextViewService, {
-			ariaLabel: LocalizedStrings.TO
+			ariaLabel: LocalizedStrings.TO,
+			inputBoxStyles: defaultInputBoxStyles
 		});
 
 		// Register events
@@ -261,11 +263,8 @@ export class FirewallRuleDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._createButton!, this._themeService));
-		this._register(attachButtonStyler(this._closeButton!, this._themeService));
-		this._register(attachInputBoxStyler(this._ruleNameInpuBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._fromRangeinputBox!, this._themeService));
-		this._register(attachInputBoxStyler(this._toRangeinputBox!, this._themeService));
+		this._register(this._createButton!);
+		this._register(this._closeButton!);
 
 		// handler for firewall rule name change events
 		this._register(this._ruleNameInpuBox!.onDidChange(ruleName => {

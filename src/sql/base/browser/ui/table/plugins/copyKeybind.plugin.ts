@@ -7,6 +7,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 /**
  * Implements the various additional navigation  keybindings we want out of slickgrid
@@ -20,18 +21,17 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
-		this.handler.subscribe(this.grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e as KeyboardEvent, args));
+		this.handler.subscribe(this.grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(convertJQueryKeyDownEvent(e), args));
 	}
 
 	public destroy() {
 		this.handler.unsubscribeAll();
 	}
 
-	private handleKeyDown(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
-		let event = new StandardKeyboardEvent(e);
+	private handleKeyDown(e: StandardKeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
 		let handled = false;
 
-		if (event.equals(KeyCode.KeyC | KeyMod.CtrlCmd)) {
+		if (e.equals(KeyCode.KeyC | KeyMod.CtrlCmd)) {
 			handled = true;
 			let selectionModel = this.grid.getSelectionModel();
 			let ranges: Slick.Range[];
@@ -53,7 +53,7 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 		if (handled) {
 			e.preventDefault();
 			e.stopPropagation();
-			e.stopImmediatePropagation();
+			e.browserEvent.stopImmediatePropagation
 		}
 	}
 

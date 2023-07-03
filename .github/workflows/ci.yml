@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: 16
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: "2.x"
 
@@ -37,7 +37,7 @@ jobs:
       #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
       # - name: Cache node_modules archive
       #   id: cacheNodeModules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: ".build/node_modules_cache"
       #     key: "${{ runner.os }}-cacheNodeModulesArchive-${{ steps.nodeModulesCacheKey.outputs.value }}"
@@ -50,7 +50,7 @@ jobs:
       #   run: echo "::set-output name=dir::$(yarn cache dir)"
       # - name: Cache yarn directory
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
       #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
@@ -90,7 +90,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2.2.0
+      - uses: actions/checkout@v3
 
       # TODO: rename azure-pipelines/linux/xvfb.init to github-actions
       - name: Setup Build Environment
@@ -111,7 +111,7 @@ jobs:
       #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
       # - name: Cache node modules
       #   id: cacheNodeModules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: "**/node_modules"
       #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
@@ -122,7 +122,7 @@ jobs:
       #   run: echo "::set-output name=dir::$(yarn cache dir)"
       # - name: Cache yarn directory
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
       #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
@@ -152,7 +152,7 @@ jobs:
       - name: Combine code coverage files
         run: node test/combineCoverage
       - name: Upload Code Coverage
-        uses: coverallsapp/github-action@v1.1.1
+        uses: coverallsapp/github-action@v2.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: "test/coverage/lcov.info"
@@ -173,7 +173,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2.2.0
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v2
         with:
@@ -185,7 +185,7 @@ jobs:
       #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
       # - name: Cache node modules
       #   id: cacheNodeModules
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: "**/node_modules"
       #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
@@ -196,7 +196,7 @@ jobs:
       #   run: echo "::set-output name=dir::$(yarn cache dir)"
       # - name: Cache yarn directory
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-      #   uses: actions/cache@v2
+      #   uses: actions/cache@v3
       #   with:
       #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
       #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
@@ -247,7 +247,7 @@ jobs:
         run: echo "::set-output name=value::$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)"
       - name: Cache node modules
         id: cacheNodeModules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-cacheNodeModules23-${{ steps.nodeModulesCacheKey.outputs.value }}
@@ -258,7 +258,7 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: Cache yarn directory
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.yarnCacheDirPath.outputs.dir }}
           key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}

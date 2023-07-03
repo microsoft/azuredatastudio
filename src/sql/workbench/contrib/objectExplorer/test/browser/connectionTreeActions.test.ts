@@ -16,13 +16,13 @@ import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/t
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import * as  LocalizedConstants from 'sql/workbench/services/connection/browser/localizedConstants';
-import { ObjectExplorerService, ObjectExplorerNodeEventArgs, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { ObjectExplorerService, ObjectExplorerNodeEventArgs, ServerTreeViewView, IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { Emitter, Event } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
-import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionResult, IConnectionParams, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { UNSAVED_GROUP_ID, mssqlProviderName, AuthenticationType } from 'sql/platform/connection/common/constants';
@@ -37,7 +37,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
+import { ConsoleLogger } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -45,6 +45,8 @@ import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogSer
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { workbenchTreeDataPreamble } from 'vs/platform/list/browser/listService';
+import { LogService } from 'vs/platform/log/common/logService';
+import { StaticServiceAccessor } from 'vs/editor/contrib/wordPartOperations/test/browser/utils';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -86,15 +88,20 @@ suite('SQL Connection Tree Action tests', () => {
 
 	/**
 	 * Creates a mock dialog service that and select the choice at the given index when show is called.
-	 * @param choiceIndex index of the button in the dialog to be selected starting from 0.
+	 * @param choice index of the button in the dialog to be selected starting from 0.
 	 * @returns
 	 */
-	function createDialogService(choiceIndex: number): TypeMoq.Mock<IDialogService> {
+	function createDialogService(choice: number | boolean): TypeMoq.Mock<IDialogService> {
 		let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
 		dialogService.callBase = true;
-		dialogService.setup(x => x.show(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			return Promise.resolve({
-				choice: choiceIndex
+		dialogService.setup(x => x.prompt(TypeMoq.It.isAny())).returns(() => {
+			return <any>Promise.resolve({
+				choice: choice
+			})
+		});
+		dialogService.setup(x => x.confirm(TypeMoq.It.isAny())).returns(() => {
+			return <any>Promise.resolve({
+				confirmed: choice
 			})
 		});
 		return dialogService;
@@ -287,9 +294,11 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 		connectionManagementService.setup(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(
 			() => new Promise<void>((resolve, reject) => resolve()));
-		let connectionTreeAction: AddServerAction = new AddServerAction(AddServerAction.ID, AddServerAction.LABEL, connectionManagementService.object);
+		let connectionTreeAction: AddServerAction = new AddServerAction();
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
-		await connectionTreeAction.run(conProfGroup);
+
+		const serviceAccessor = new StaticServiceAccessor().withService(IConnectionManagementService, connectionManagementService.object);
+		await connectionTreeAction.run(serviceAccessor, conProfGroup);
 		connectionManagementService.verify(x => x.showConnectionDialog(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -305,8 +314,10 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.view).returns(() => ServerTreeViewView.all);
 		const mockObjectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService);
 		mockObjectExplorerService.setup(x => x.getServerTreeView()).returns(() => serverTreeView.object);
-		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL, mockObjectExplorerService.object);
-		return connectionTreeAction.run().then((value) => {
+		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction();
+
+		const serviceAccessor = new StaticServiceAccessor().withService(IObjectExplorerService, mockObjectExplorerService.object);
+		return connectionTreeAction.run(serviceAccessor).then((value) => {
 			serverTreeView.verify(x => x.showFilteredTree(ServerTreeViewView.active), TypeMoq.Times.once());
 		});
 	});
@@ -323,8 +334,10 @@ suite('SQL Connection Tree Action tests', () => {
 		serverTreeView.setup(x => x.view).returns(() => ServerTreeViewView.active);
 		const mockObjectExplorerService = TypeMoq.Mock.ofType(ObjectExplorerService);
 		mockObjectExplorerService.setup(x => x.getServerTreeView()).returns(() => serverTreeView.object);
-		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL, mockObjectExplorerService.object);
-		return connectionTreeAction.run().then((value) => {
+
+		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction();
+		const serviceAccessor = new StaticServiceAccessor().withService(IObjectExplorerService, mockObjectExplorerService.object);
+		return connectionTreeAction.run(serviceAccessor).then((value) => {
 			serverTreeView.verify(x => x.refreshTree(), TypeMoq.Times.once());
 		});
 	});
@@ -351,7 +364,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createDialogService(0).object); // Select 'Yes' on the modal dialog
+			createDialogService(true).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
@@ -381,7 +394,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			connection,
 			connectionManagementService.object,
-			createDialogService(1).object); // Selecting 'No' on the modal dialog
+			createDialogService(false).object); // Selecting 'No' on the modal dialog
 
 		await connectionAction.run();
 		connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.never());
@@ -395,7 +408,7 @@ suite('SQL Connection Tree Action tests', () => {
 			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
 			conProfGroup,
 			connectionManagementService.object,
-			createDialogService(0).object); // Select 'Yes' on the modal dialog
+			createDialogService(true).object); // Select 'Yes' on the modal dialog
 
 		return connectionAction.run().then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
