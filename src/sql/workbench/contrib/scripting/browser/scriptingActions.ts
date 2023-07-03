@@ -204,14 +204,15 @@ export const OE_SCRIPT_AS_ALTER_COMMAND_ID = 'objectExplorer.scriptAsAlter';
 export const OE_EDIT_DATA_COMMAND_ID = 'objectExplorer.scriptAsEdit';
 export const OE_REFRESH_COMMAND_ID = 'objectExplorer.refreshNode';
 
-async function runScriptingAction(accessor: ServicesAccessor, args: ObjectExplorerActionsContext, createAction: (instantiationService: IInstantiationService) => Action): Promise<void> {
+
+async function runScriptingAction(actionDisplayName: string, accessor: ServicesAccessor, args: ObjectExplorerActionsContext, createAction: (instantiationService: IInstantiationService) => Action): Promise<void> {
 	const instantiationService = accessor.get(IInstantiationService);
 	const objectExplorerService = accessor.get(IObjectExplorerService);
 	const notificationService = accessor.get(INotificationService);
 	const logService = accessor.get(ILogService);
 	const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
 	const notificationHandle = notificationService.notify({
-		message: localize('scriptingAction.inProgress', "Executing action..."),
+		message: localize('scriptingAction.inProgress', "Executing action: {0}...", actionDisplayName),
 		severity: Severity.Info,
 		progress: {
 			infinite: true
@@ -227,7 +228,7 @@ async function runScriptingAction(accessor: ServicesAccessor, args: ObjectExplor
 		selectionHandler.onTreeActionStateChange(false);
 		notificationHandle.close();
 	} catch (error) {
-		const msg = localize('scriptActionError', "An error occurred while executing the action: {0}.", getErrorMessage(error));
+		const msg = localize('scriptActionError', "An error occurred while executing the action '{0}': {1}.", actionDisplayName, getErrorMessage(error));
 		logService.error(msg);
 		notificationHandle.updateSeverity(Severity.Error);
 		notificationHandle.updateMessage(msg);
@@ -249,8 +250,9 @@ async function runScriptingAction(accessor: ServicesAccessor, args: ObjectExplor
 CommandsRegistry.registerCommand({
 	id: OE_SCRIPT_AS_SELECT_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		return runScriptingAction(accessor, args, (instantiationService) => {
-			return instantiationService.createInstance(ScriptSelectAction, ScriptSelectAction.ID, ScriptSelectAction.LABEL);
+		const displayName = args.connectionProfile.providerName === 'KUSTO' || args.connectionProfile.providerName === 'LOGANALYTICS' ? ScriptSelectAction.KUSTOLABEL : ScriptSelectAction.LABEL;
+		return runScriptingAction(displayName, accessor, args, (instantiationService) => {
+			return instantiationService.createInstance(ScriptSelectAction, ScriptSelectAction.ID, displayName);
 		});
 	}
 });
@@ -259,7 +261,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_EDIT_DATA_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		return runScriptingAction(accessor, args, (instantiationService) => {
+		return runScriptingAction(EditDataAction.LABEL, accessor, args, (instantiationService) => {
 			return instantiationService.createInstance(EditDataAction, EditDataAction.ID, EditDataAction.LABEL);
 		});
 	}
@@ -269,7 +271,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_SCRIPT_AS_CREATE_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		return runScriptingAction(accessor, args, (instantiationService) => {
+		return runScriptingAction(ScriptCreateAction.LABEL, accessor, args, (instantiationService) => {
 			return instantiationService.createInstance(ScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL);
 		});
 	}
@@ -279,7 +281,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_SCRIPT_AS_EXECUTE_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		return runScriptingAction(accessor, args, (instantiationService) => {
+		return runScriptingAction(ScriptExecuteAction.LABEL, accessor, args, (instantiationService) => {
 			return instantiationService.createInstance(ScriptExecuteAction, ScriptExecuteAction.ID, ScriptExecuteAction.LABEL);
 		});
 	}
@@ -289,7 +291,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_SCRIPT_AS_ALTER_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		return runScriptingAction(accessor, args, (instantiationService) => {
+		return runScriptingAction(ScriptAlterAction.LABEL, accessor, args, (instantiationService) => {
 			return instantiationService.createInstance(ScriptAlterAction, ScriptAlterAction.ID, ScriptAlterAction.LABEL);
 		});
 	}
@@ -300,7 +302,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: OE_SCRIPT_AS_DELETE_COMMAND_ID,
 	handler: async (accessor, args: ObjectExplorerActionsContext) => {
-		return runScriptingAction(accessor, args, (instantiationService) => {
+		return runScriptingAction(ScriptDeleteAction.LABEL, accessor, args, (instantiationService) => {
 			return instantiationService.createInstance(ScriptDeleteAction, ScriptDeleteAction.ID, ScriptDeleteAction.LABEL);
 		});
 	}
