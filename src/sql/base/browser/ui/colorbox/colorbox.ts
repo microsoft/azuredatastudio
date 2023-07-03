@@ -40,11 +40,10 @@ export class Colorbox extends Widget {
 		this.radioButton.setAttribute('aria-label', opts.color);
 		this.labelNode = DOM.$('label.colorbox-label');
 		this.labelNode.setAttribute('for', this.radioButton.id);
-		this.labelNode.innerText = opts.color;
 
+		this.labelNode.appendChild(this.colorElement);
 		radiobuttonContainer.appendChild(this.radioButton);
 		radiobuttonContainer.appendChild(this.labelNode);
-		colorboxContainer.appendChild(this.colorElement);
 		colorboxContainer.appendChild(radiobuttonContainer);
 		container.appendChild(colorboxContainer);
 
