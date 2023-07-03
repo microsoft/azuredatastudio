@@ -9,7 +9,7 @@ import { setLanguageId } from 'sql/workbench/browser/parts/editor/editorStatusMo
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
 import { NotebookEditorLanguageAssociation } from 'sql/workbench/contrib/notebook/browser/models/notebookEditorFactory';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService } from 'sql/workbench/test/browser/workbenchTestServices';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
