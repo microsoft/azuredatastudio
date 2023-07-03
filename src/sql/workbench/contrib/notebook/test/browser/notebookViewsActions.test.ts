@@ -10,8 +10,8 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { DeleteViewAction, InsertCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
-import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/browser/emptySessionClasses';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICellModel, INotebookModelOptions, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
