@@ -32,7 +32,7 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 
 	@ViewChild('executionPlanContainer') private _container: ElementRef;
 
-	private _data: azdata.executionPlan.ExecutionPlanGraphInfo | azdata.executionPlan.ExecutionPlanGraph[];
+	private _data: azdata.ExecutionPlanData;
 	private _executionPlanFileView: ExecutionPlanFileView;
 	s
 	constructor(
@@ -82,7 +82,7 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 		}
 	}
 
-	public async loadData(data: azdata.executionPlan.ExecutionPlanGraphInfo | azdata.executionPlan.ExecutionPlanGraph[]): Promise<void> {
+	public async loadData(data: azdata.ExecutionPlanData): Promise<void> {
 
 		if (this._executionPlanFileView) {
 			if ((<azdata.executionPlan.ExecutionPlanGraphInfo>this._data).graphFileContent !== undefined) {
