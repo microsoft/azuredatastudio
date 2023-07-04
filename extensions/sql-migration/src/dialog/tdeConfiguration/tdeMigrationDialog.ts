@@ -54,10 +54,13 @@ export class TdeMigrationDialog {
 	};
 	private _valdiationErrors: string[] = [];
 	private _completedDatabasesCount: number = 0;
+	private _certMigrationEventEmitter;
 
 	constructor(
-		model: MigrationStateModel) {
+		model: MigrationStateModel,
+		certMigrationEventEmitter: vscode.EventEmitter<TdeMigrationResult>) {
 		this._model = model;
+		this._certMigrationEventEmitter = certMigrationEventEmitter;
 	}
 
 	public async openDialog(): Promise<void> {
@@ -213,8 +216,6 @@ export class TdeMigrationDialog {
 		});
 	}
 
-
-
 	private async _loadMigrationResults(): Promise<void> {
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
 		this._progressReportText.value = '';
@@ -317,6 +318,7 @@ export class TdeMigrationDialog {
 				};
 
 				this._model.tdeMigrationConfig.setTdeMigrationResult(this._tdeMigrationResult); // Set value on success.
+				this._certMigrationEventEmitter.fire(this._tdeMigrationResult);
 
 				sendSqlMigrationActionEvent(
 					TelemetryViews.TdeMigrationDialog,
@@ -330,6 +332,7 @@ export class TdeMigrationDialog {
 			}
 			else {
 				this._dialog!.okButton.enabled = false;
+				this._certMigrationEventEmitter.fire({ state: TdeMigrationState.Failed, dbList: [] });
 
 				sendSqlMigrationActionEvent(
 					TelemetryViews.TdeMigrationDialog,
@@ -430,8 +433,6 @@ export class TdeMigrationDialog {
 			})
 			.component();
 	}
-
-
 
 	private async _updateTableFromOperationResult(operationResult: OperationResult<TdeMigrationDbResult[]>): Promise<void> {
 		let anyRowUpdated = false;
