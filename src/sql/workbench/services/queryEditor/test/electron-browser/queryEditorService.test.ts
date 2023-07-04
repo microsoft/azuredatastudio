@@ -9,7 +9,7 @@ import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/q
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService } from 'sql/workbench/test/browser/workbenchTestServices';
 
 suite('Query Editor Service', () => {
 	test('does open input when requested', async () => {

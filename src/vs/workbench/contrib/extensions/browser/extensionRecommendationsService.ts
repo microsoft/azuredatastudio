@@ -12,7 +12,6 @@ import { distinct, shuffle } from 'vs/base/common/arrays';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { LifecyclePhase, ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { DynamicWorkspaceRecommendations } from 'vs/workbench/contrib/extensions/browser/dynamicWorkspaceRecommendations';
 import { ExeBasedRecommendations } from 'vs/workbench/contrib/extensions/browser/exeBasedRecommendations';
 import { ExperimentalRecommendations } from 'vs/workbench/contrib/extensions/browser/experimentalRecommendations';
 import { WorkspaceRecommendations } from 'vs/workbench/contrib/extensions/browser/workspaceRecommendations';
@@ -30,6 +29,7 @@ import { URI } from 'vs/base/common/uri';
 import { WebRecommendations } from 'vs/workbench/contrib/extensions/browser/webRecommendations';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { RemoteRecommendations } from 'vs/workbench/contrib/extensions/browser/remoteRecommendations';
 
 type IgnoreRecommendationClassification = {
 	owner: 'sandy081';
@@ -48,12 +48,12 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	private readonly experimentalRecommendations: ExperimentalRecommendations;
 	private readonly configBasedRecommendations: ConfigBasedRecommendations;
 	private readonly exeBasedRecommendations: ExeBasedRecommendations;
-	private readonly dynamicWorkspaceRecommendations: DynamicWorkspaceRecommendations;
 	private readonly keymapRecommendations: KeymapRecommendations;
 	private readonly staticRecommendations: StaticRecommendations; // {{SQL CARBON EDIT}} add ours
 	private readonly scenarioRecommendations: ScenarioRecommendations; // {{SQL CARBON EDIT}} add ours
 	private readonly webRecommendations: WebRecommendations;
 	private readonly languageRecommendations: LanguageRecommendations;
+	private readonly remoteRecommendations: RemoteRecommendations;
 
 	public readonly activationPromise: Promise<void>;
 	private sessionSeed: number;
@@ -79,10 +79,10 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.experimentalRecommendations = instantiationService.createInstance(ExperimentalRecommendations);
 		this.configBasedRecommendations = instantiationService.createInstance(ConfigBasedRecommendations);
 		this.exeBasedRecommendations = instantiationService.createInstance(ExeBasedRecommendations);
-		this.dynamicWorkspaceRecommendations = instantiationService.createInstance(DynamicWorkspaceRecommendations);
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations);
 		this.webRecommendations = instantiationService.createInstance(WebRecommendations);
 		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
+		this.remoteRecommendations = instantiationService.createInstance(RemoteRecommendations);
 		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations); // {{SQL CARBON EDIT}} add ours
 		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations); // {{SQL CARBON EDIT}} add ours
 
@@ -113,7 +113,8 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			this.staticRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.scenarioRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.languageRecommendations.activate(),
-			this.webRecommendations.activate()
+			this.webRecommendations.activate(),
+			this.remoteRecommendations.activate()
 		]);
 
 		this._register(Event.any(this.workspaceRecommendations.onDidChangeRecommendations, this.configBasedRecommendations.onDidChangeRecommendations, this.extensionRecommendationsManagementService.onDidChangeIgnoredRecommendations)(() => this._onDidChangeRecommendations.fire()));
@@ -134,7 +135,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	}
 
 	private async activateProactiveRecommendations(): Promise<void> {
-		await Promise.all([this.dynamicWorkspaceRecommendations.activate(), this.exeBasedRecommendations.activate(), this.configBasedRecommendations.activate()]);
+		await Promise.all([this.exeBasedRecommendations.activate(), this.configBasedRecommendations.activate()]);
 	}
 
 	getAllRecommendationsWithReason(): { [id: string]: { reasonId: ExtensionRecommendationReason; reasonText: string } } {
@@ -144,7 +145,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		const output: { [id: string]: { reasonId: ExtensionRecommendationReason; reasonText: string } } = Object.create(null);
 
 		const allRecommendations = [
-			...this.dynamicWorkspaceRecommendations.recommendations,
 			...this.configBasedRecommendations.recommendations,
 			...this.exeBasedRecommendations.recommendations,
 			...this.experimentalRecommendations.recommendations,
@@ -180,7 +180,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		const recommendations = [
 			...this.configBasedRecommendations.otherRecommendations,
 			...this.exeBasedRecommendations.otherRecommendations,
-			...this.dynamicWorkspaceRecommendations.recommendations,
 			...this.experimentalRecommendations.recommendations,
 			...this.webRecommendations.recommendations,
 			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}},
@@ -217,6 +216,10 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 
 	getLanguageRecommendations(): string[] {
 		return this.toExtensionRecommendations(this.languageRecommendations.recommendations);
+	}
+
+	getRemoteRecommendations(): string[] {
+		return this.toExtensionRecommendations(this.remoteRecommendations.recommendations);
 	}
 
 	async getWorkspaceRecommendations(): Promise<string[]> {

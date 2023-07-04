@@ -7,8 +7,7 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WelcomePageContribution, WelcomePageAction, WelcomeInputSerializer } from 'sql/workbench/contrib/welcome/page/browser/welcomePage';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions';
-import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
@@ -41,8 +40,7 @@ class WelcomeContributions {
 		Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 			.registerWorkbenchContribution(WelcomePageContribution, LifecyclePhase.Restored);
 
-		Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-			.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', CATEGORIES.Help.value);
+		registerAction2(WelcomePageAction);
 
 		Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);
 	}

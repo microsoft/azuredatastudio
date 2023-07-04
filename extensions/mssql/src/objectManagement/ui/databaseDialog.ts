@@ -7,37 +7,84 @@ import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
+import { convertNumToTwoDecimalStringinMB } from '../utils';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
-	private _nameInput: azdata.InputBoxComponent;
+	// Database Properties tabs
+	private generalTab: azdata.Tab;
+
+	//Database properties options
+	private nameInput: azdata.InputBoxComponent;
+	private backupSection: azdata.GroupContainer;
+	private lastDatabaseBackupInput: azdata.InputBoxComponent;
+	private lastDatabaseLogBackupInput: azdata.InputBoxComponent;
+	private databaseSection: azdata.GroupContainer;
+	private statusInput: azdata.InputBoxComponent;
+	private ownerInput: azdata.InputBoxComponent;
+	private dateCreatedInput: azdata.InputBoxComponent;
+	private sizeInput: azdata.InputBoxComponent;
+	private spaceAvailabeInput: azdata.InputBoxComponent;
+	private numberOfUsersInput: azdata.InputBoxComponent;
+	private memoryAllocatedInput: azdata.InputBoxComponent;
+	private memoryUsedInput: azdata.InputBoxComponent;
+	private collationInput: azdata.InputBoxComponent;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
 	}
 
 	protected override get helpUrl(): string {
-		return CreateDatabaseDocUrl;
+		return this.options.isNewObject ? CreateDatabaseDocUrl : DatabasePropertiesDocUrl;
 	}
 
 	protected async initializeUI(): Promise<void> {
-		let components = [];
-		components.push(this.initializeGeneralSection());
-		components.push(this.initializeOptionsSection());
-		if (this.viewInfo.isAzureDB) {
-			components.push(this.initializeConfigureSLOSection());
+		if (this.options.isNewObject) {
+			let components = [];
+			components.push(this.initializeGeneralSection());
+			components.push(this.initializeOptionsSection());
+			if (this.viewInfo.isAzureDB) {
+				components.push(this.initializeConfigureSLOSection());
+			}
+			this.formContainer.addItems(components);
+		} else {
+			// Initilaize general Tab sections
+			this.initializeBackupSection();
+			this.initializeDatabaseSection();
+
+			// Initilaize general Tab
+			this.generalTab = {
+				title: localizedConstants.GeneralSectionHeader,
+				id: 'generalId',
+				content: this.createGroup('', [
+					this.databaseSection,
+					this.backupSection
+				], false)
+			};
+
+			// Initilaize tab group with tabbed panel
+			const propertiesTabGroup = { title: '', tabs: [this.generalTab] };
+			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
+				.withTabs([propertiesTabGroup])
+				.withProps({
+					CSSStyles: {
+						'margin': '-10px 0px 0px -10px'
+					}
+				})
+				.component();
+			this.formContainer.addItem(propertiesTabbedPannel);
 		}
-		this.formContainer.addItems(components);
 	}
 
+	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this._nameInput = this.createInputBox(localizedConstants.NameText, async () => {
-			this.objectInfo.name = this._nameInput.value;
+		this.nameInput = this.createInputBox(localizedConstants.NameText, async () => {
+			this.objectInfo.name = this.nameInput.value;
 			await this.runValidation(false);
 		});
-		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this._nameInput));
+		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
 			this.objectInfo.owner = this.viewInfo.loginNames[0];
@@ -86,6 +133,67 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		return this.createGroup(localizedConstants.OptionsSectionHeader, containers, true, true);
 	}
+	//#endregion
+
+	//#region Database Properties - General Tab
+	private initializeBackupSection(): void {
+		this.lastDatabaseBackupInput = this.createInputBox(localizedConstants.LastDatabaseBackupText, async () => { }, this.objectInfo.lastDatabaseBackup, this.options.isNewObject);
+		const lastDatabaseBackupContainer = this.createLabelInputContainer(localizedConstants.LastDatabaseBackupText, this.lastDatabaseBackupInput);
+
+		this.lastDatabaseLogBackupInput = this.createInputBox(localizedConstants.LastDatabaseLogBackupText, async () => { }, this.objectInfo.lastDatabaseLogBackup, this.options.isNewObject);
+		const lastDatabaseLogBackupContainer = this.createLabelInputContainer(localizedConstants.LastDatabaseLogBackupText, this.lastDatabaseLogBackupInput);
+
+		this.backupSection = this.createGroup(localizedConstants.BackupSectionHeader, [
+			lastDatabaseBackupContainer,
+			lastDatabaseLogBackupContainer
+		], true);
+	}
+
+	private initializeDatabaseSection(): void {
+		this.nameInput = this.createInputBox(localizedConstants.NamePropertyText, async () => { }, this.objectInfo.name, this.options.isNewObject);
+		const nameContainer = this.createLabelInputContainer(localizedConstants.NamePropertyText, this.nameInput);
+
+		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
+		const statusContainer = this.createLabelInputContainer(localizedConstants.StatusText, this.statusInput);
+
+		this.ownerInput = this.createInputBox(localizedConstants.OwnerPropertyText, async () => { }, this.objectInfo.owner, this.options.isNewObject);
+		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerPropertyText, this.ownerInput);
+
+		this.dateCreatedInput = this.createInputBox(localizedConstants.DateCreatedText, async () => { }, this.objectInfo.dateCreated, this.options.isNewObject);
+		const dateCreatedContainer = this.createLabelInputContainer(localizedConstants.DateCreatedText, this.dateCreatedInput);
+
+		this.sizeInput = this.createInputBox(localizedConstants.SizeText, async () => { }, convertNumToTwoDecimalStringinMB(this.objectInfo.sizeInMb), this.options.isNewObject);
+		const sizeContainer = this.createLabelInputContainer(localizedConstants.SizeText, this.sizeInput);
+
+		this.spaceAvailabeInput = this.createInputBox(localizedConstants.SpaceAvailableText, async () => { }, convertNumToTwoDecimalStringinMB(this.objectInfo.spaceAvailableInMb), this.options.isNewObject);
+		const spaceAvailabeContainer = this.createLabelInputContainer(localizedConstants.SpaceAvailableText, this.spaceAvailabeInput);
+
+		this.numberOfUsersInput = this.createInputBox(localizedConstants.NumberOfUsersText, async () => { }, this.objectInfo.numberOfUsers.toString(), this.options.isNewObject);
+		const numberOfUsersContainer = this.createLabelInputContainer(localizedConstants.NumberOfUsersText, this.numberOfUsersInput);
+
+		this.memoryAllocatedInput = this.createInputBox(localizedConstants.MemoryAllocatedText, async () => { }, convertNumToTwoDecimalStringinMB(this.objectInfo.memoryAllocatedToMemoryOptimizedObjectsInMb), this.options.isNewObject);
+		const memoryAllocatedContainer = this.createLabelInputContainer(localizedConstants.MemoryAllocatedText, this.memoryAllocatedInput);
+
+		this.memoryUsedInput = this.createInputBox(localizedConstants.MemoryUsedText, async () => { }, convertNumToTwoDecimalStringinMB(this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb), this.options.isNewObject);
+		const memoryUsedContainer = this.createLabelInputContainer(localizedConstants.MemoryUsedText, this.memoryUsedInput);
+
+		this.collationInput = this.createInputBox(localizedConstants.CollationText, async () => { }, this.objectInfo.collationName, this.options.isNewObject);
+		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, this.collationInput);
+
+		this.databaseSection = this.createGroup(localizedConstants.DatabaseSectionHeader, [
+			nameContainer,
+			statusContainer,
+			ownerContainer,
+			collationContainer,
+			dateCreatedContainer,
+			sizeContainer,
+			spaceAvailabeContainer,
+			numberOfUsersContainer,
+			memoryAllocatedContainer,
+			memoryUsedContainer
+		], true);
+	}
+	//#endregion
 
 	private initializeConfigureSLOSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];

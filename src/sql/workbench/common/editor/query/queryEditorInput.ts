@@ -146,7 +146,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
-		@IConnectionManagementService protected readonly connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService
@@ -185,7 +185,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}));
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.indexOf('queryEditor') > -1) {
+			if (e.affectedKeys.has('queryEditor')) {
 				this._onDidChangeLabel.fire();
 			}
 		}));

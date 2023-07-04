@@ -20,6 +20,7 @@ export class Notebook {
 	async openNotebook() {
 		await this.quickAccess.openFileQuickAccessAndWait('notebook.ipynb', 1);
 		await this.quickInput.selectQuickInputElement(0);
+
 		await this.code.waitForElement(activeRowSelector);
 		await this.focusFirstCell();
 		await this.waitForActiveCellEditorContents('code()');

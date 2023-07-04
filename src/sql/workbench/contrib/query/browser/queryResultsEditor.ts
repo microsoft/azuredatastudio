@@ -107,7 +107,7 @@ export class QueryResultsEditor extends EditorPane {
 		this.styleSheet.innerHTML = content;
 	}
 
-	createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {

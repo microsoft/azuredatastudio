@@ -4181,10 +4181,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="objectExplorer.filterDialogTitle">
-      <source xml:lang="en">(Preview) Filter Settings: {0}</source>
-    </trans-unit>
-    <trans-unit id="objectExplorer.nodePath">
-      <source xml:lang="en">Node Path: {0}</source>
+      <source xml:lang="en">Filter Settings</source>
     </trans-unit>
     <trans-unit id="serverTree.newConnection">
       <source xml:lang="en">New Connection</source>
@@ -4203,6 +4200,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorerConfigurationTitle">
+      <source xml:lang="en">Object Explorer</source>
+    </trans-unit>
     <trans-unit id="serverGroup.autoExpand">
       <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
     </trans-unit>
@@ -4234,6 +4234,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="notebook">
       <source xml:lang="en">Notebook</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer">
+      <source xml:lang="en">Object Explorer</source>
     </trans-unit>
     <trans-unit id="profiler">
       <source xml:lang="en">Profiler</source>
@@ -4634,6 +4637,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.showActionBar">
       <source xml:lang="en">Whether to show the action bar in the query results view</source>
     </trans-unit>
+    <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
+      <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
+    </trans-unit>
     <trans-unit id="queryEditor.results.streaming">
       <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
     </trans-unit>
@@ -4925,6 +4931,15 @@ Error: {1}</source>
     <trans-unit id="refreshError">
       <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
     </trans-unit>
+    <trans-unit id="scriptActionError">
+      <source xml:lang="en">An error occurred while executing the action '{0}': {1}.</source>
+    </trans-unit>
+    <trans-unit id="scriptingAction.close">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="scriptingAction.inProgress">
+      <source xml:lang="en">Executing action: {0}...</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="tableDesigner.publishTableChanges">
@@ -4944,9 +4959,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tasks">
       <source xml:lang="en">Tasks</source>
-    </trans-unit>
-    <trans-unit id="viewCategory">
-      <source xml:lang="en">View</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasksActions" source-language="en" datatype="plaintext"><body>
@@ -5021,6 +5033,15 @@ Error: {1}</source>
     <trans-unit id="refresh">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
+    <trans-unit id="treeView.enableCollapseAll">
+      <source xml:lang="en">Whether the the tree view with id {0} enables collapse all.</source>
+    </trans-unit>
+    <trans-unit id="treeView.enableRefresh">
+      <source xml:lang="en">Whether the tree view with id {0} enables refresh.</source>
+    </trans-unit>
+    <trans-unit id="treeView.toggleCollapseAll">
+      <source xml:lang="en">Whether collapse all is toggled for the tree view with id {0}.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/webview/browser/webViewDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="webViewDialog.close">
@@ -5042,28 +5063,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="enablePreviewFeatures.yes">
       <source xml:lang="en">Yes (recommended)</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notifyEncryption.message">
-      <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-    </trans-unit>
-    <trans-unit id="notifyEncryption.moreInfoLink">
-      <source xml:lang="en">More information</source>
-    </trans-unit>
-    <trans-unit id="notifyEncryption.title">
-      <source xml:lang="en">Important Update</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/welcome/notifyHiddenTenant/notifyHiddenTenantDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notifyHiddenTenant.message">
-      <source xml:lang="en">Connections using Azure Active Directory authentication will now retrieve tenant information from the server during login. The 'Azure AD Tenant' entry no longer needs to be provided when connecting to Azure SQL instances.</source>
-    </trans-unit>
-    <trans-unit id="notifyHiddenTenant.moreInfoLink">
-      <source xml:lang="en">More information</source>
-    </trans-unit>
-    <trans-unit id="notifyHiddenTenant.title">
-      <source xml:lang="en">Important Update</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
@@ -5200,9 +5199,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="guidedTour">
       <source xml:lang="en">User Welcome Tour</source>
-    </trans-unit>
-    <trans-unit id="help">
-      <source xml:lang="en">Help</source>
     </trans-unit>
     <trans-unit id="hideGuidedTour">
       <source xml:lang="en">Hide Welcome Tour</source>
@@ -5364,6 +5360,17 @@ Error: {1}</source>
     <trans-unit id="workbench.startupEditor.welcomePageWithTour">
       <source xml:lang="en">Open the welcome page with Getting Started Tour (default)</source>
       <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="telemetryOptOut.optInNotice">
+      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+    </trans-unit>
+    <trans-unit id="telemetryOptOut.optOutNotice">
+      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+    </trans-unit>
+    <trans-unit id="telemetryOptOut.readMore">
+      <source xml:lang="en">Read More</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext"><body>
@@ -5639,6 +5646,9 @@ Error Message: {1}</source>
   <file original="src/sql/workbench/services/connection/browser/connectionManagementService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+    </trans-unit>
+    <trans-unit id="connection.connTitleGroupSection">
+      <source xml:lang="en"> (Group: {0})</source>
     </trans-unit>
     <trans-unit id="connection.duplicateEditErrorMessage">
       <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
@@ -6288,12 +6298,6 @@ Error Message: {1}</source>
     <trans-unit id="deleteConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
     </trans-unit>
-    <trans-unit id="deleteConnectionConfirmationNo">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-    <trans-unit id="deleteConnectionConfirmationYes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
     <trans-unit id="deleteConnectionGroup">
       <source xml:lang="en">Delete Group</source>
     </trans-unit>
@@ -6301,7 +6305,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
     </trans-unit>
     <trans-unit id="objectExplorer.filterChildren">
-      <source xml:lang="en">Filter (Preview)</source>
+      <source xml:lang="en">Filter</source>
     </trans-unit>
     <trans-unit id="objectExplorer.removeFilter">
       <source xml:lang="en">Remove Filter</source>
@@ -6350,6 +6354,9 @@ Error Message: {1}</source>
     <trans-unit id="objectExplorer.containsSelectBox">
       <source xml:lang="en">Contains</source>
     </trans-unit>
+    <trans-unit id="objectExplorer.endsWithSelectBox">
+      <source xml:lang="en">Ends With</source>
+    </trans-unit>
     <trans-unit id="objectExplorer.equalsSelectBox">
       <source xml:lang="en">Equals</source>
     </trans-unit>
@@ -6362,12 +6369,6 @@ Error Message: {1}</source>
     <trans-unit id="objectExplorer.greaterThanSelectBox">
       <source xml:lang="en">Greater Than</source>
     </trans-unit>
-    <trans-unit id="objectExplorer.isNotNullSelectBox">
-      <source xml:lang="en">Is Not Null</source>
-    </trans-unit>
-    <trans-unit id="objectExplorer.isNullSelectBox">
-      <source xml:lang="en">Is Null</source>
-    </trans-unit>
     <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
       <source xml:lang="en">Less Than Or Equals</source>
     </trans-unit>
@@ -6375,7 +6376,7 @@ Error Message: {1}</source>
       <source xml:lang="en">Less Than</source>
     </trans-unit>
     <trans-unit id="objectExplorer.nodePath">
-      <source xml:lang="en">Node Path: {0}</source>
+      <source xml:lang="en">Path:</source>
     </trans-unit>
     <trans-unit id="objectExplorer.notBetweenSelectBox">
       <source xml:lang="en">Not Between</source>
@@ -6383,8 +6384,14 @@ Error Message: {1}</source>
     <trans-unit id="objectExplorer.notContainsSelectBox">
       <source xml:lang="en">Not Contains</source>
     </trans-unit>
+    <trans-unit id="objectExplorer.notEndsWithSelectBox">
+      <source xml:lang="en">Not Ends With</source>
+    </trans-unit>
     <trans-unit id="objectExplorer.notEqualsSelectBox">
       <source xml:lang="en">Not Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notStartsWithSelectBox">
+      <source xml:lang="en">Not Starts With</source>
     </trans-unit>
     <trans-unit id="objectExplorer.okButtonText">
       <source xml:lang="en">OK</source>
@@ -6394,6 +6401,9 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="objectExplorer.propertyNameColumnHeader">
       <source xml:lang="en">Property</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.startsWithSelectBox">
+      <source xml:lang="en">Starts With</source>
     </trans-unit>
     <trans-unit id="objectExplorer.trueSelectBox">
       <source xml:lang="en">True</source>
@@ -7138,15 +7148,6 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="taskService.yes">
       <source xml:lang="en">Yes</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="miGettingStarted">
-      <source xml:lang="en">Getting &amp;&amp;Started</source>
-      <note>&amp;&amp; denotes a mnemonic</note>
-    </trans-unit>
-    <trans-unit id="showReleaseNotes">
-      <source xml:lang="en">Show Getting Started</source>
     </trans-unit>
 </body></file>
 </xliff>

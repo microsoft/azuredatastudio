@@ -6,7 +6,7 @@
 /**
  * JSON format for datasources.json
  */
-interface DataSourceFileJson {
+export interface DataSourceFileJson {
 	version: string;
 	datasources: DataSourceJson[];
 }
@@ -14,7 +14,7 @@ interface DataSourceFileJson {
 /**
  * JSON format for a datasource entry in datasources.json
  */
-interface DataSourceJson {
+export interface DataSourceJson {
 	name: string;
 	type: string;
 	version: string;

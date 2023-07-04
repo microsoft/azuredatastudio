@@ -56,13 +56,13 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: AzureResourceDatabaseServerTreeDataProvider.containerId,
 			label: AzureResourceDatabaseServerTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/sqlServer.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

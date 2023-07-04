@@ -111,13 +111,13 @@ function updateMainI18nFile(existingTranslationFilePath: string, originalFilePat
 export function modifyI18nPackFiles(existingTranslationFolder: string, resultingTranslationPaths: i18n.TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
 	let parsePromises: Promise<i18n.ParsedXLF[]>[] = [];
 	let mainPack: i18n.I18nPack = { version: i18n.i18nPackVersion, contents: {} };
-	let extensionsPacks: i18n.Map<i18n.I18nPack> = {};
+	let extensionsPacks: i18n.StringMap<i18n.I18nPack> = {};
 	let errors: any[] = [];
 	return es.through(function (this: es.ThroughStream, xlf: File) {
 		let rawResource = path.basename(xlf.relative, '.xlf');
 		let resource = rawResource.substring(0, rawResource.lastIndexOf('.'));
 		let contents = xlf.contents.toString();
-		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);
+		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.org_parse(contents);
 		parsePromises.push(parsePromise);
 		parsePromise.then(
 			resolvedFiles => {
