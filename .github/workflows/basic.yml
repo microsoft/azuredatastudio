@@ -134,9 +134,8 @@ jobs:
       - name: Run vscode-dts Compile Checks
         run: yarn vscode-dts-compile-check
 
-      # {{SQL CARBON TODO}} Disabled until issues can be fixed
-      # - name: Run Trusted Types Checks
-      #   run: yarn tsec-compile-check
+      - name: Run Trusted Types Checks
+        run: yarn tsec-compile-check
 
   # {{SQL CARBON TODO}} Update node modules caching to work with our cache keys
   # warm-cache:
