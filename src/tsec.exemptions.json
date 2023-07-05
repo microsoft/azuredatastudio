@@ -41,7 +41,9 @@
 	"ban-element-insertadjacenthtml": [
 		"**/*.ts"
 	],
+	// {{SQL CARBON EDIT}} Add our exemptions
 	"ban-element-innerhtml-assignments": [
+		// Unsure why this one file isn't being hit in VS Code, but VS Code has the same code so marking it as exempted
 		"vs/editor/contrib/stickyScroll/browser/stickyScrollWidget.ts",
 		"sql/workbench/browser/modal/modal.ts",
 		"sql/base/browser/ui/panel/panel.ts",
