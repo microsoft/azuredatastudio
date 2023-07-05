@@ -443,6 +443,17 @@ export interface Database extends ObjectManagement.SqlObject {
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
 	azureMaxSize?: string;
+	autoCreateIncrementalStatistics: boolean;
+	autoCreateStatistics: boolean;
+	autoShrink: boolean;
+	autoUpdateStatistics: boolean;
+	autoUpdateStatisticsAsynchronously: boolean;
+	isLedgerDatabase?: boolean;
+	pageVerify?: string;
+	targetRecoveryTimeInSec?: number;
+	databaseReadOnly?: boolean;
+	encryptionEnabled: boolean;
+	restrictAccess?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -451,12 +462,14 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels: string[];
 	containmentTypes: string[];
 	recoveryModels: string[];
-
+	files: DatabaseFile[];
 	isAzureDB: boolean;
 	azureBackupRedundancyLevels: string[];
 	azureServiceLevelObjectives: AzureEditionDetails[];
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
+	pageVerifyOptions: string[];
+	restrictAccessOptions: string[];
 }
 
 export interface AzureEditionDetails {
@@ -481,10 +494,23 @@ export interface Server extends ObjectManagement.SqlObject {
 	rootDirectory: string;
 	serverCollation: string;
 	serviceTier: string;
-	storageSpaceUsageInGB: number;
-	minServerMemory: number;
-	maxServerMemory: number;
+	storageSpaceUsageInMB: number;
+	minServerMemory: NumericServerProperty;
+	maxServerMemory: NumericServerProperty;
+}
+
+export interface NumericServerProperty {
+	maximumValue: number;
+	minimumValue: number;
+	value: number;
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+}
+
+export interface DatabaseFile {
+	name: string;
+	type: string;
+	path: string;
+	fileGroup: string;
 }

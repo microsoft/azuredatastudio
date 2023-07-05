@@ -172,7 +172,7 @@ steps:
       set -e
       unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-x64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-x64
       unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-arm64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-arm64
-      DEBUG=* node build/darwin/create-universal-app.js
+      DEBUG=* node build/darwin/create-universal-app.js $(agent.builddirectory)
     displayName: Create Universal App
     condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'universal'))
 

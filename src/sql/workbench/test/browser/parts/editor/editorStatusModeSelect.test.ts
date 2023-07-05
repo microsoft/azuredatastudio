@@ -9,7 +9,7 @@ import { setLanguageId } from 'sql/workbench/browser/parts/editor/editorStatusMo
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
 import { NotebookEditorLanguageAssociation } from 'sql/workbench/contrib/notebook/browser/models/notebookEditorFactory';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService } from 'sql/workbench/test/browser/workbenchTestServices';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -17,7 +17,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/browser/testQueryEditorService';
 import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';

@@ -359,8 +359,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			createSession(sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
 				return self._proxy.$createSession(handle, sessionId, createStatement, template);
 			},
-			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
-				return self._proxy.$startSession(handle, sessionId, sessionName);
+			startSession(sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> {
+				return self._proxy.$startSession(handle, sessionId, sessionName, sessionType);
 			},
 			stopSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$stopSession(handle, sessionId);

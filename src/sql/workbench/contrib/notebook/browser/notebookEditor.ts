@@ -152,7 +152,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	/**
 	 * @param parent Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets monaco-editor';
 		this._overlay.style.width = '100%';

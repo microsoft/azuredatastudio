@@ -132,39 +132,156 @@
           "azure.providerSettingsJson": {
             "type": "array",
             "description": "%config.providerSettingsJson%",
-            "default":
-              [
-                {
-                  "name": "",
-                  "settings": {
+            "scope": "resource",
+            "default": [
+              {
+                "name": "Default",
+                "settings": {
+                  "metadata": {
+                    "displayName": "",
+                    "id": "azure_defaultCloud",
+                    "endpoints": {
+                      "host": "https://login.microsoftonline.com/",
+                      "microsoftResource": "https://management.core.windows.net/",
+                      "graphResource": "https://graph.windows.net/",
+                      "msGraphResource": "https://graph.microsoft.com/",
+                      "armResource": "https://management.azure.com/",
+                      "sqlResource": "https://database.windows.net/",
+                      "azureKeyVaultResource": "https://vault.azure.net/",
+                      "azureLogAnalyticsResource": "https://api.loganalytics.io/",
+                      "azureStorageResource": {
+                        "endpoint": "",
+                        "endpointSuffix": ".core.windows.net/"
+                      },
+                      "azureKustoResource": "https://kusto.kusto.windows.net/",
+                      "powerBiResource": "https://analysis.windows.net/powerbi/api/",
+                      "scopes": "https://management.azure.com/user_impersonation",
+                      "portalEndpoint": "https://portal.azure.com"
+                    }
+                  }
+                }
+              }
+            ],
+            "items": {
+              "type": "object",
+              "description": "Provider Settings",
+              "required": ["name", "settings"],
+              "properties":{
+                "name": {
+                  "type": "string",
+                  "default": "Azure Public",
+                  "description": "Cloud Name"
+                },
+                "settings": {
+                  "type": "object",
+                  "description": "Cloud Settings",
+                  "required": ["metadata"],
+                  "properties": {
                     "metadata": {
-                      "displayName": "",
-                      "id": "",
-                      "endpoints": {
-                        "host": "",
-                        "microsoftResource": "",
-                        "graphResource": "",
-                        "msGraphResource": "",
-                        "armResource": "",
-                        "sqlResource": "",
-                        "azureKeyVaultResource": "",
-                        "azureLogAnalyticsResource": "",
-                        "azureStorageResource": {
-                          "endpoint": "",
-                          "endpointSuffix": ""
+                      "type": "object",
+                      "required": ["displayName", "id"],
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "default": "Azure Public Cloud",
+                          "description": "Cloud Display Name"
                         },
-                        "azureKustoResource": "",
-                        "powerBiResource": "",
-                        "scopes": "",
-                        "portalEndpoint": ""
+                        "id": {
+                          "type": "string",
+                          "default": "azure_publicCloud",
+                          "description": "Cloud ID"
+                        },
+                        "endpoints": {
+                          "type": "object",
+                          "required": ["host","scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource"],
+                          "properties": {
+                            "type": "object",
+                            "host": {
+                              "type": "string",
+                              "default": "https://login.microsoftonline.com/",
+                              "description": "Host Endpoint"
+                            },
+                            "microsoftResource": {
+                              "type": "string",
+                              "default": "https://management.core.windows.net/",
+                              "description": "Microsoft Resource Endpoint"
+                            },
+                            "graphResource": {
+                              "type": "string",
+                              "default": "https://graph.windows.net/",
+                              "description": "Graph Resource Endpoint"
+                            },
+                            "msGraphResource": {
+                              "type": "string",
+                              "default": "https://graph.microsoft.com/",
+                              "description": "Microsoft Graph Resource Endpoint"
+                            },
+                            "armResource": {
+                              "type": "string",
+                              "default": "https://management.azure.com/",
+                              "description": "ARM Resource Endpoint"
+                            },
+                            "sqlResource": {
+                              "type": "string",
+                              "default": "https://database.windows.net/",
+                              "description": "SQL Resource Endpoint"
+                            },
+                            "azureKeyVaultResource": {
+                              "type": "string",
+                              "default": "https://vault.azure.net/",
+                              "description": "Azure KeyVault Resource Endpoint"
+                            },
+                            "azureLogAnalyticsResource": {
+                              "type": "string",
+                              "default": "https://api.loganalytics.io/",
+                              "description": "Azure Log Analytics Endpoint"
+                            },
+                            "azureStorageResource": {
+                              "type": "object",
+                              "properties": {
+                                "endpoint": {
+                                  "type": "string",
+                                  "default": "",
+                                  "description": "Azure Storage Resource Endpoint"
+                                },
+                                "endpointSuffix": {
+                                  "type": "string",
+                                  "default": ".core.windows.net/",
+                                  "description": "Azure Storage Resource Endpoint Suffix"
+                                }
+                              }
+                            },
+                            "azureKustoResource": {
+                              "type": "string",
+                              "default": "https://kusto.kusto.windows.net/",
+                              "description": "Azure Kusto Resource Endpoint"
+                            },
+                            "powerBiResource": {
+                              "type": "string",
+                              "default": "https://analysis.windows.net/powerbi/api/",
+                              "description": "Power BI Resource Endpoint"
+                            },
+                            "scopes": {
+                              "type": "string",
+                              "default": "https://management.azure.com/user_impersonation",
+                              "description": ""
+                            },
+                            "portalEndpoint": {
+                              "type": "string",
+                              "default": "https://portal.azure.com",
+                              "description": "Azure Portal Endpoint"
+                            }
+                          }
+                        }
                       }
                     }
                   }
                 }
-              ]
+              }
             }
           }
         }
+      }
     ],
     "account-type": [
       {
@@ -415,7 +532,8 @@
       ],
       "dataGrid/item/context": [
         {
-          "command": "azure.dataGrid.openInAzurePortal"
+          "command": "azure.dataGrid.openInAzurePortal",
+          "group": "y_portal"
         }
       ]
     },

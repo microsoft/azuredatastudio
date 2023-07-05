@@ -7,11 +7,11 @@ import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
-import { EditorModel } from 'vs/workbench/common/editor/editorModel';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import * as azdata from 'azdata';
 import { ExecutionPlanEditor } from 'sql/workbench/contrib/executionPlan/browser/executionPlanEditor';
+import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export class ExecutionPlanInput extends EditorInput {
 
@@ -86,7 +86,7 @@ export class ExecutionPlanInput extends EditorInput {
 		return false;
 	}
 
-	public override async resolve(refresh?: boolean): Promise<EditorModel | undefined> {
+	public override async resolve(options?: IEditorOptions): Promise<IEditorModel | null> {
 		if (!this.executionPlanGraphinfo.graphFileContent) {
 			this.executionPlanGraphinfo.graphFileContent = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
 		}

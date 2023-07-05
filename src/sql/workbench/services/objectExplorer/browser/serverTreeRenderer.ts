@@ -231,11 +231,13 @@ export class ServerTreeRenderer implements IRenderer {
 
 		let iconPath = this.getIconPath(connection);
 		this.renderServerIcon(templateData.icon, iconPath, isConnected);
-		const treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
-		let label = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.title;
-		templateData.label.textContent = label;
-		templateData.root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.serverInfo;
-		templateData.connectionProfile = connection;
+		if (this._objectExplorerService) {
+			const treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
+			let label = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.title;
+			templateData.label.textContent = label;
+			templateData.root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.serverInfo;
+			templateData.connectionProfile = connection;
+		}
 	}
 
 	private renderConnectionProfileGroup(connectionProfileGroup: ConnectionProfileGroup, templateData: IConnectionProfileGroupTemplateData): void {

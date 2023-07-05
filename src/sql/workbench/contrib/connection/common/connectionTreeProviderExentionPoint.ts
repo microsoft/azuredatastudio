@@ -6,7 +6,7 @@
 import { IConnectionTreeDescriptor, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { isArray, isString } from 'vs/base/common/types';
+import { isString } from 'vs/base/common/types';
 import { localize } from 'vs/nls';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -44,7 +44,7 @@ class ConnectionTreeProviderHandle implements IWorkbenchContribution {
 
 			delta.added.forEach(added => {
 				// resolveIconPath(added);
-				if (!isArray(added.value)) {
+				if (!Array.isArray(added.value)) {
 					added.collector.error('Value must be array');
 					return;
 				}

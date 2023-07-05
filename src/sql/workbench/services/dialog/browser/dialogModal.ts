@@ -10,9 +10,7 @@ import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Button } from 'vs/base/browser/ui/button/button';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -50,7 +48,7 @@ export class DialogModal extends Modal {
 		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
-	public layout(): void {
+	protected layout(): void {
 		this._dialogPane.layout();
 	}
 
@@ -64,7 +62,6 @@ export class DialogModal extends Modal {
 
 		if (this._modalOptions.renderFooter && this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
-			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
 		if (this._modalOptions.renderFooter && this._dialog.customButtons) {
@@ -115,7 +112,6 @@ export class DialogModal extends Modal {
 		button.onUpdate(() => {
 			this.updateButtonElement(buttonElement, button, requireDialogValid);
 		});
-		attachButtonStyler(buttonElement, this._themeService);
 		this.updateButtonElement(buttonElement, button, requireDialogValid);
 		return buttonElement;
 	}

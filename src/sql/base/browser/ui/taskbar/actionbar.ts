@@ -227,7 +227,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			let item: IActionViewItem | undefined = undefined;
 
 			if (this._options.actionViewItemProvider) {
-				item = this._options.actionViewItemProvider(action);
+				item = this._options.actionViewItemProvider(action, {});
 			}
 
 			if (!item) {

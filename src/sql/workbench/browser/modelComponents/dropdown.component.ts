@@ -13,10 +13,6 @@ import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
@@ -26,6 +22,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { errorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -68,7 +65,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	@ViewChild('loadingBox', { read: ElementRef }) private _loadingBoxContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IConfigurationService) private readonly configurationService: IConfigurationService,
@@ -88,13 +84,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 				strictSelection: false,
 				placeholder: this.placeholder,
 				maxHeight: 125,
-				ariaLabel: ''
+				ariaLabel: '',
+				...defaultEditableDropdownStyles
 			};
-			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService,
-				dropdownOptions);
-
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, dropdownOptions);
 			this._register(this._editableDropdown);
-			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
 			this._register(this._editableDropdown.onValueChange(async e => {
 				if (this.editable) {
 					this.setSelectedValue(e);
@@ -109,10 +103,9 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._validations.push(() => !this.required || !this.editable || !!this._editableDropdown.value);
 		}
 		if (this._dropDownContainer) {
-			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), this.contextViewService, this._dropDownContainer.nativeElement);
+			this._selectBox = new SelectBox(this.getValues(), this.getSelectedValue(), defaultSelectBoxStyles, this.contextViewService, this._dropDownContainer.nativeElement);
 			this._selectBox.render(this._dropDownContainer.nativeElement);
 			this._register(this._selectBox);
-			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
 			this._register(this._selectBox.onDidSelect(async e => {
 				// also update the selected value here while in accessibility mode since the read-only selectbox
 				// is used even if the editable flag is true
@@ -205,10 +198,9 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		if (this.loading) {
 			// Lazily create the select box for the loading portion since many dropdowns won't use it
 			if (!this._loadingBox) {
-				this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), this.contextViewService, this._loadingBoxContainer.nativeElement);
+				this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), defaultSelectBoxStyles, this.contextViewService, this._loadingBoxContainer.nativeElement);
 				this._loadingBox.render(this._loadingBoxContainer.nativeElement);
 				this._register(this._loadingBox);
-				this._register(attachSelectBoxStyler(this._loadingBox, this.themeService));
 				this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
 			}
 			if (this.ariaLabel !== '') {

@@ -76,6 +76,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
 		?? Constants.DefaultAuthLibrary;
 
+	if (authLibrary !== Constants.DefaultAuthLibrary) {
+		void vscode.window.showWarningMessage(loc.deprecatedOption, loc.switchMsal, loc.dismiss).then(async (value) => {
+			if (value === loc.switchMsal) {
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.AuthenticationLibrarySection, Constants.DefaultAuthLibrary, vscode.ConfigurationTarget.Global);
+			}
+		});
+	}
 	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
 	if (piiLogging) {
 		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {
@@ -286,25 +293,11 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
 			void vscode.window.showInformationMessage(loc.deprecatedOption);
 		}
-		await displayReloadAds('authenticationLibrary');
+		await utils.displayReloadAds('authenticationLibrary');
 	}
 }
 
 function updatePiiLoggingLevel(): void {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
-}
-
-// Display notification with button to reload
-// return true if button clicked
-// return false if button not clicked
-export async function displayReloadAds(sectionName: string): Promise<boolean> {
-	const result = await vscode.window.showInformationMessage(loc.reloadPrompt(sectionName), loc.reloadChoice);
-	if (result === loc.reloadChoice) {
-		await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		return true;
-	} else {
-		return false;
-	}
-
 }
