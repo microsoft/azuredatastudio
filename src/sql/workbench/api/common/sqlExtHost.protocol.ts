@@ -385,7 +385,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session
@@ -709,6 +709,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionEventsAvailable(handle: number, response: azdata.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
+	//$onProfilerSessionStarted(handle: number, response: azdata.ProfilerSessionStartedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void;
 	/**

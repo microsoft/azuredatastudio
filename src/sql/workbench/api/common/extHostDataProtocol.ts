@@ -680,14 +680,19 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 * Create a new profiler session
 	 */
 	public override $createSession(handle: number, sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
+		// eslint-disable-next-line no-console
+		console.log('3. in actual impementation of createSession');
 		return this._resolveProvider<azdata.ProfilerProvider>(handle).createSession(sessionId, createStatement, template);
 	}
 
 	/**
 	 * Start a profiler session
 	 */
-	public override $startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> {
-		return this._resolveProvider<azdata.ProfilerProvider>(handle).startSession(sessionId, sessionName);
+	public override $startSession(handle: number, sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean> {
+		// eslint-disable-next-line no-console
+		console.log('3. in actual impementation of startSession');
+		//let sessionType: azdata.ProfilingSessionType = azdata.ProfilingSessionType.LocalFile;
+		return this._resolveProvider<azdata.ProfilerProvider>(handle).startSession(sessionId, sessionName, isSessionTypeLocalFile);
 	}
 
 	/**
@@ -738,6 +743,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	public $onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void {
 		this._proxy.$onProfilerSessionCreated(handle, response);
 	}
+
+	/**
+	 * Profiler session started notification
+	 */
+	/*public $onProfilerSessionStarted(handle: number, response: azdata.ProfilerSessionStartedParams): void {
+		this._proxy.$onProfilerSessionStarted(handle, response);
+	}*/
 
 
 	/**

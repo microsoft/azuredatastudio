@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+//import * as azdata from 'azdata';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
@@ -18,6 +19,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',
@@ -59,7 +61,7 @@ CommandsRegistry.registerCommand({
 			}
 
 			if (connectionProfile && connectionProfile.providerName === mssqlProviderName) {
-				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
+				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile, null);
 				editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => Promise.resolve(true));
 			}
 		});
@@ -93,9 +95,23 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			} else {
 				// clear data when profiler is started
 				profilerInput.data.clear();
-				return profilerService.startSession(profilerInput.id, profilerInput.sessionName);
+				return profilerService.startSession(profilerInput.id, profilerInput.sessionName, false);
 			}
 		}
 		return Promise.resolve(false);
+	}
+});
+
+CommandsRegistry.registerCommand({
+	id: 'profiler.openXELFile',
+	handler: (accessor: ServicesAccessor, ...args: any[]) => {
+		let editorService: IEditorService = accessor.get(IEditorService);
+		let fileDialogService: IFileDialogService = accessor.get(IFileDialogService);
+		let profilerService: IProfilerService = accessor.get(IProfilerService);
+		let instantiationService: IInstantiationService = accessor.get(IInstantiationService)
+
+		profilerService.openXELFile(fileDialogService, editorService, instantiationService);
+
+		return Promise.resolve(true);
 	}
 });

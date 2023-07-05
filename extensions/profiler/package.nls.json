@@ -1,9 +1,10 @@
 {
 	"displayName": "SQL Server Profiler",
 	"description": "SQL Server Profiler for Azure Data Studio",
-	"profiler.contributes.title.newProfler": "Launch Profiler",
+	"profiler.contributes.title.newProfiler": "Launch Profiler",
 	"profiler.contributes.title.start": "Start",
 	"profiler.contributes.title.stop": "Stop",
 	"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
-	"profiler.category": "Profiler"
+	"profiler.category": "Profiler",
+	"profiler.contributes.title.openXELFile": "Open XEL File"
 }

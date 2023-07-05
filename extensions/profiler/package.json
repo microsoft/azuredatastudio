@@ -34,7 +34,7 @@
     "commands": [
       {
         "command": "profiler.newProfiler",
-        "title": "%profiler.contributes.title.newProfler%",
+        "title": "%profiler.contributes.title.newProfiler%",
         "category": "%profiler.category%"
       },
       {
@@ -50,6 +50,11 @@
       {
         "command": "profiler.openCreateSessionDialog",
         "title": "profiler.contributes.title.openCreateSessionDialog",
+        "category": "%profiler.category%"
+      },
+      {
+        "command": "profiler.openXELFile",
+        "title": "%profiler.contributes.title.openXELFile%",
         "category": "%profiler.category%"
       }
     ],

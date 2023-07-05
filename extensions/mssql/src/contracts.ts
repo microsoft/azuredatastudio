@@ -1266,6 +1266,11 @@ export interface ConvertSqlToNotebookResult extends azdata.ResultStatus {
 
 // ------------------------------- < SQL Profiler > ------------------------------------
 
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
+}
+
 /**
  * Parameters to start a profiler session
  */
@@ -1298,9 +1303,14 @@ export interface StartProfilingParams {
 	ownerUri: string;
 
 	/**
-	 * Session name
+	 * Session name or full path of XEL file to open
 	 */
 	sessionName: string;
+
+	/**
+	 * Identifies which type of target session name identifies
+	 */
+	sessionType: ProfilingSessionType;
 }
 
 export interface StartProfilingResponse { }

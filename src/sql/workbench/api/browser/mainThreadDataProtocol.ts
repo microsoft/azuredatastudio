@@ -357,10 +357,15 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		const self = this;
 		this._profilerService.registerProvider(providerId, <azdata.ProfilerProvider>{
 			createSession(sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
+				// eslint-disable-next-line no-console
+				console.log('2. in actual impementation of createSession');
 				return self._proxy.$createSession(handle, sessionId, createStatement, template);
 			},
-			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
-				return self._proxy.$startSession(handle, sessionId, sessionName);
+			startSession(sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean> {
+				// eslint-disable-next-line no-console
+				console.log('2. in actual impementation of startSession');
+				//let sessionType = this. //azdata.ProfilingSessionType.LocalFile;
+				return self._proxy.$startSession(handle, sessionId, sessionName, isSessionTypeLocalFile);
 			},
 			stopSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$stopSession(handle, sessionId);
@@ -661,6 +666,10 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	public $onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void {
 		this._profilerService.onProfilerSessionCreated(response);
 	}
+
+	/*public $onProfilerSessionStarted(handle: number, response: azdata.ProfilerSessionStartedParams): void {
+		this._profilerService.onProfilerSessionStarted(response);
+	}*/
 
 	// SQL Server Agent handlers
 	public $onJobDataUpdated(handle: Number): void {

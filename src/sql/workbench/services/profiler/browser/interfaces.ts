@@ -6,9 +6,11 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { INewProfilerState } from 'sql/workbench/common/editor/profiler/profilerState';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -71,7 +73,7 @@ export interface IProfilerService {
 	/**
 	 * Starts the session specified by the id
 	 */
-	startSession(sessionId: ProfilerSessionID, sessionName: string): Thenable<boolean>;
+	startSession(sessionId: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean>;
 	/**
 	 * Pauses the session specified by the id
 	 */
@@ -96,6 +98,10 @@ export interface IProfilerService {
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
 	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams): void;
+	/**
+	 * Called by the service when a new profiler session is started by the open XEL dialog
+	 */
+	//onProfilerSessionStarted(events: azdata.ProfilerSessionStartedParams): void;
 	/**
 	 * Gets a list of the view templates that are specified in the settings
 	 * @param provider An optional string to limit the view templates to a specific provider
@@ -140,6 +146,7 @@ export interface IProfilerService {
 	 * @param filter filter object
 	 */
 	saveFilter(filter: ProfilerFilter): Promise<void>;
+	openXELFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<void>;
 }
 
 export interface IProfilerSettings {

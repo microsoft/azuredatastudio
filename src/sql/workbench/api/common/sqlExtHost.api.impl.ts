@@ -355,6 +355,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
 				});
 
+				/*provider.registerOnProfilerSessionStarted((response: azdata.ProfilerSessionStartedParams) => {
+					extHostDataProvider.$onProfilerSessionStarted(provider.handle, response);
+				});*/
+
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 
@@ -684,7 +688,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				designers: designers,
 				executionPlan: executionPlan,
 				diagnostics: diagnostics,
-				env
+				env,
+				ProfilingSessionType: sqlExtHostTypes.ProfilingSessionType
 			};
 		}
 	};

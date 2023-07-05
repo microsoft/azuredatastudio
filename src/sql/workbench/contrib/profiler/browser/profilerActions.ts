@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+//import * as azdata from 'azdata';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
@@ -73,7 +74,8 @@ export class ProfilerStart extends Action {
 
 	public override async run(input: ProfilerInput): Promise<void> {
 		input.data.clear();
-		await this._profilerService.startSession(input.id, input.sessionName);
+		//const isSessionTypeLocalFile: boolean = this._profilerService.
+		await this._profilerService.startSession(input.id, input.sessionName, true);
 	}
 }
 
@@ -275,7 +277,7 @@ export class NewProfilerAction extends Task {
 	}
 
 	public async runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
-		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
+		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile, null);
 		await accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
 		let options: IConnectionCompletionOptions = {
 			saveTheConnection: false,

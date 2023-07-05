@@ -10,6 +10,7 @@ import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInp
 import { ProfilerColumnEditorDialog } from 'sql/workbench/services/profiler/browser/profilerColumnEditorDialog';
 
 import * as azdata from 'azdata';
+import * as nls from 'vs/nls';
 
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -19,6 +20,8 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import { Memento } from 'vs/workbench/common/memento';
 import { ProfilerFilterDialog } from 'sql/workbench/services/profiler/browser/profilerFilterDialog';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -117,6 +120,9 @@ export class ProfilerService implements IProfilerService {
 		}
 	}
 
+	/*public onProfilerSessionStarted(params: azdata.ProfilerSessionStartedParams): void {
+	}*/
+
 	public async connectSession(id: ProfilerSessionID): Promise<boolean> {
 		if (this._idMap.has(id)) {
 			return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)!));
@@ -145,11 +151,15 @@ export class ProfilerService implements IProfilerService {
 		return false;
 	}
 
-	public async startSession(id: ProfilerSessionID, sessionName: string): Promise<boolean> {
+	public async startSession(id: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile: boolean = false): Promise<boolean> {
+		// eslint-disable-next-line no-console
+		console.log('1. in actual impementation of startSession');
+		//let profilingSessionType: azdata.ProfilingSessionType = azdata.ProfilingSessionType.RemoteSession
 		if (this._idMap.has(id)) {
 			this.updateMemento(id, { previousSessionName: sessionName });
 			try {
-				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName));
+				//let isSessionTypeLocalFile: boolean = this.fil
+				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, isSessionTypeLocalFile));
 				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 				return true;
 			} catch (reason) {
@@ -289,5 +299,30 @@ export class ProfilerService implements IProfilerService {
 	public async saveFilter(filter: ProfilerFilter): Promise<void> {
 		const config = [filter];
 		await this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
+	}
+
+	public async openXELFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<void> {
+		const xelFileURI = await fileDialogService.showOpenDialog({
+			filters: [
+				{
+					extensions: ['xel'],
+					name: nls.localize('FileFilterDescription', "XEL Files")
+				}
+			],
+			canSelectMany: false,
+			canSelectFiles: true
+		});
+
+		if (xelFileURI?.length === 1) {
+			const fileURI = xelFileURI[0];
+			// eslint-disable-next-line no-console
+			console.log('XEL File URI:', fileURI.fsPath);
+
+			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, null, fileURI);
+			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
+			await this.startSession(profilerInput.id, profilerInput.xelFileURI.fsPath, true/*, azdata.ProfilingSessionType.LocalFile*/);
+		}
+
+
 	}
 }

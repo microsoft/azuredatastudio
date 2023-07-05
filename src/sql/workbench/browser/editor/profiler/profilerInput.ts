@@ -43,8 +43,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	private _filter: ProfilerFilter = { clauses: [] };
 
+	public xelFileURI: URI;
+
 	constructor(
 		public connection: IConnectionProfile,
+		public fileURI: URI,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
@@ -58,6 +61,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			isRunning: false,
 			autoscroll: true
 		});
+
+		this.xelFileURI = fileURI;
 
 		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
@@ -227,6 +232,20 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			});
 		}
 	}
+
+	/*public onProfilerSessionStarted(params: azdata.ProfilerSessionStartedParams) {
+		if (types.isUndefinedOrNull(params.sessionName)) {
+			this._notificationService.error(nls.localize("profiler.sessionStartedError", "Error while starting new session"));
+		} else {
+			this._sessionName = params.sessionName;
+			this.state.change({
+				isConnected: false,
+				isStopped: false,
+				isPaused: false,
+				isRunning: true
+			});
+		}
+	}*/
 
 	public onSessionStateChanged(state: ProfilerState) {
 		this.state.change(state);
