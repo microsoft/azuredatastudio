@@ -230,7 +230,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}));
 
 		this._register(this._connectionManagementService.onDisconnect(async (connectionParams) => {
-			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
+			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri) && connectionParams?.connectionProfile) {
 				if (this._tree instanceof AsyncServerTree) {
 					await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
 				} else {
@@ -527,9 +527,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._connectionManagementService.deleteConnection(profile);
 			}
 			const connectionProfile = this.getConnectionInTreeInput(profile.id);
-
+			// If the connection is not found in the tree, it means it was already deleted from the tree
+			if (!connectionProfile) {
+				return;
+			}
 			// For the connection profile, we need to clear the password from the last session if the user doesn't want to save it
-			if (!connectionProfile.savePassword) {
+			if (!connectionProfile?.savePassword) {
 				connectionProfile.password = '';
 			}
 			// Delete the node from the tree
