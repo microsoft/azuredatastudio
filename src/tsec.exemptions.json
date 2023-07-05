@@ -42,7 +42,7 @@
 		"**/*.ts"
 	],
 	"ban-element-innerhtml-assignments": [
-		"vs/editor/contrib/stickyScroll/browser/stickyScrollWidget",
+		"vs/editor/contrib/stickyScroll/browser/stickyScrollWidget.ts",
 		"sql/workbench/browser/modal/modal.ts",
 		"sql/base/browser/ui/panel/panel.ts",
 		"sql/base/browser/ui/selectBox/selectBox.ts",
