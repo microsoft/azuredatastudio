@@ -461,7 +461,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	targetRecoveryTimeInSec?: number;
 	databaseReadOnly?: boolean;
 	encryptionEnabled: boolean;
-	userAccess?: string;
+	restrictAccess?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -477,7 +477,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
 	pageVerifyOptions: string[];
-	userAccessOptions: string[];
+	restrictAccessOptions: string[];
 }
 
 export interface AzureEditionDetails {

@@ -481,7 +481,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 				targetRecoveryTimeInSec: 60,
 				databaseReadOnly: true,
 				encryptionEnabled: false,
-				userAccess: 'SINGLE_USER',
+				restrictAccess: 'SINGLE_USER',
 			}
 		};
 	}

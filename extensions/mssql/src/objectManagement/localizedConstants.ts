@@ -258,10 +258,9 @@ export const ServerCollationText = localize('objectManagement.serverCollation', 
 export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
 export const StorageSpaceUsageInGBText = localize('objectManagement.storageSpaceUsageInGB', "Storage Space Usage");
 export const VersionText = localize('objectManagement.versionText', "Version");
-
-
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
@@ -292,8 +291,7 @@ export const TargetRecoveryTimeInSecondsText = localize('objectManagement.databa
 export const DatabaseReadOnlyText = localize('objectManagement.databaseProperties.databaseReadOnlyText', "Database Read-Only");
 export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
 export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
-export const UserAccessText = localize('objectManagement.databaseProperties.userAccessText', "Restrict Access");
-export const TrueText = localize('objectManagement.databaseProperties.trueText', "true");
+export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
 
 
 // Util functions

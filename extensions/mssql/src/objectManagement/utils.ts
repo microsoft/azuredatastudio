@@ -51,8 +51,8 @@ export function convertNumToTwoDecimalStringinMB(value: number): string {
 }
 
 /*
-* Converts string value coming from STS to pascal case, (first character to uppercase)
+* Converts first character of the string value coming from STS to UpperCase, (we are doing here camelCase to PascalCase)
 */
-export function toPascalCase(value: string): string {
+export function toUpperCaseFirstChar(value: string): string {
 	return value !== '' ? value[0].toUpperCase() + value.substring(1) : value;
 }
