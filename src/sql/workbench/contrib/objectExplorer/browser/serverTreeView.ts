@@ -230,7 +230,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}));
 
 		this._register(this._connectionManagementService.onDisconnect(async (connectionParams) => {
-			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri) && connectionParams?.connectionProfile) {
+			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
 				if (this._tree instanceof AsyncServerTree) {
 					await this.disconnectConnection(<ConnectionProfile>connectionParams.connectionProfile);
 				} else {
@@ -527,7 +527,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._connectionManagementService.deleteConnection(profile);
 			}
 			const connectionProfile = this.getConnectionInTreeInput(profile.id);
-			// If the connection is not found in the tree, it means it was already deleted from the tree
+			// If the connection is not found in the tree, it means it was already deleted from the tree and we don't need to disconnect it
 			if (!connectionProfile) {
 				return;
 			}
