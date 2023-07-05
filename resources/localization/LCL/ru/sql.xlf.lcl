@@ -14391,6 +14391,9 @@
       <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.scriptActionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while executing the action: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при выполнении действия: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14407,7 +14410,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Generating script...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Создание сценария…]]></Val>
+            <Val><![CDATA[Создание скрипта…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16197,6 +16200,9 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.connTitleGroupSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ (Group: {0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ (Группа: {0})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

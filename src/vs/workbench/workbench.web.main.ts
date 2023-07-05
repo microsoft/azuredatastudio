@@ -213,12 +213,12 @@ export {
 
 //#endregion
 
-//#region
+//#region {{SQL CARBON EDIT}} - SQL added contributions
 
 // Getting Started
 import 'sql/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution';
 
 // Telemetry Opt Out
-import 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.contribution';
+import 'sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.contribution';
 
 //#endregion

@@ -284,7 +284,13 @@ export class ExtensionsListView extends ViewPane {
 	}
 
 	count(): number {
-		return this.queryResult?.model.length ?? 0;
+		// {{SQL CARBON EDIT}} - try to use the list model before the queryResult model
+		// {{SQL CARBON EDIT}} - since there are code paths that call updateModel without updating queryResults
+		if (this.list?.model) {
+			return this.list.model.length;
+		} else {
+			return this.queryResult?.model.length ?? 0;
+		}
 	}
 
 	protected showEmptyModel(): Promise<IPagedModel<IExtension>> {

@@ -553,7 +553,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} MB]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} МБ]]></Val>
+            <Val><![CDATA[{0} МБ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -616,7 +616,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Space Available]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Доступно]]></Val>
+            <Val><![CDATA[Доступное место]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -814,7 +814,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is Clustered]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Является кластерным]]></Val>
+            <Val><![CDATA[Кластеризованный]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -823,7 +823,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is HADR Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[HADR включена]]></Val>
+            <Val><![CDATA[Подключение HADR]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -832,7 +832,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is PolyBase Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Установлена ли функция PolyBase ]]></Val>
+            <Val><![CDATA[Наличие PolyBase]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -841,7 +841,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is XTP Supported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Поддерживается ли XTP]]></Val>
+            <Val><![CDATA[Поддержка XTP]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -867,6 +867,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.lastDatabaseLogBackup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last Database Log Backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Последнее резервное копирование журналов базы данных]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1044,6 +1047,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.maxServerMemoryText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum Server Memory (MB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Максимальный объем памяти сервера (МБ)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1086,6 +1092,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.minServerMemoryText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Minimum Server Memory (MB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Минимальный объем памяти сервера (МБ)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1356,6 +1365,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.reservedStorageSizeInMB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reserved Storage Size]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Зарезервированный размер хранилища]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1443,6 +1455,9 @@
       <Item ItemId=";extensions/mssql/dist/objectManagement/localizedConstants.objectManagement.storageSpaceUsageInGB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Storage Space Usage]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Использование дискового пространства]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

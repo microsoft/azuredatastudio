@@ -528,13 +528,13 @@
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && config.workbench.enablePreviewFeatures",
-          "group": "z_objectManagement",
+          "group": "z_objectexplorer@3",
           "isDefault": true
         },
         {
           "command": "mssql.objectProperties",
           "when": "connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType =~ /^(Database|Server)$/ && mssql:engineedition != 11 && isDevelopment",
-          "group": "z_objectManagement"
+          "group": "z_objectexplorer@3"
         },
         {
           "command": "mssql.deleteObject",
@@ -558,7 +558,8 @@
         },
         {
           "command": "mssql.enableGroupBySchema",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema"
+          "when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && !config.mssql.objectExplorer.groupBySchema",
+          "group": "z_objectexplorer@0"
         },
         {
           "command": "mssql.disableGroupBySchema",

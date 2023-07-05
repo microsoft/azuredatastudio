@@ -53,6 +53,7 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -305,8 +306,8 @@ export class InsightsDialogView extends Modal {
 		this._splitView.addView(topTableView, Sizing.Distribute);
 		this._splitView.addView(bottomTableView, Sizing.Distribute);
 
-		this._topTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._topTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				topTableView.focus();
 				e.stopImmediatePropagation();
@@ -316,8 +317,8 @@ export class InsightsDialogView extends Modal {
 			}
 		});
 
-		this._bottomTable.grid.onKeyDown.subscribe(e => {
-			let event = new StandardKeyboardEvent(<unknown>e as KeyboardEvent);
+		this._bottomTable.grid.onKeyDown.subscribe((e: DOMEvent) => {
+			const event = convertJQueryKeyDownEvent(e);
 			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 				bottomTableView.focus();
 				e.stopImmediatePropagation();
