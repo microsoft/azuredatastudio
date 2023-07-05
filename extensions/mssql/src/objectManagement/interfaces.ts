@@ -286,14 +286,6 @@ export const enum UserType {
 }
 
 /**
- * Boolean options for boolean type dropdowns
- */
-export enum BooleanDropdownOptions {
-	True = 'True',
-	False = 'False'
-}
-
-/**
  * Database user.
  */
 export interface User extends SecurityPrincipalObject {

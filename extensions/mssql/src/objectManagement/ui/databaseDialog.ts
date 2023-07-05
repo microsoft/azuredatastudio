@@ -8,8 +8,8 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
-import { BooleanDropdownOptions, Database, DatabaseViewInfo } from '../interfaces';
-import { convertNumToTwoDecimalStringinMB, toUpperCaseFirstChar } from '../utils';
+import { Database, DatabaseViewInfo } from '../interfaces';
+import { convertNumToTwoDecimalStringinMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -35,18 +35,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private memoryUsedInput: azdata.InputBoxComponent;
 	private collationInput: azdata.InputBoxComponent;
 	// Options Tab
-	private autoCreateIncrementalStatisticsInput: azdata.DropDownComponent;
-	private autoCreateStatisticsInput: azdata.DropDownComponent;
-	private autoShrinkInput: azdata.DropDownComponent;
-	private autoUpdateStatisticsInput: azdata.DropDownComponent;
-	private autoUpdateStatisticsAsynchronouslyInput: azdata.DropDownComponent;
-	private isLedgerDatabaseInput!: azdata.DropDownComponent;
+	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
+	private autoCreateStatisticsInput: azdata.CheckBoxComponent;
+	private autoShrinkInput: azdata.CheckBoxComponent;
+	private autoUpdateStatisticsInput: azdata.CheckBoxComponent;
+	private autoUpdateStatisticsAsynchronouslyInput: azdata.CheckBoxComponent;
+	private isLedgerDatabaseInput!: azdata.CheckBoxComponent;
 	private pageVerifyInput!: azdata.DropDownComponent;
 	private targetRecoveryTimeInSecInput!: azdata.InputBoxComponent;
-	private databaseReadOnlyInput!: azdata.DropDownComponent;
-	private encryptionEnabledInput: azdata.DropDownComponent;
+	private databaseReadOnlyInput!: azdata.CheckBoxComponent;
+	private encryptionEnabledInput: azdata.CheckBoxComponent;
 	private restrictAccessInput!: azdata.DropDownComponent;
-	private booleanOptionsArray: string[];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -66,8 +65,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			this.formContainer.addItems(components);
 		} else {
-			// Options of a boolean dropdown
-			this.booleanOptionsArray = Object.keys(BooleanDropdownOptions);
 			// Initilaize general Tab sections
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
@@ -264,50 +261,76 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeAutomaticSection(): void {
-		this.autoCreateIncrementalStatisticsInput = this.createDropdown(localizedConstants.AutoCreateIncrementalStatisticsText, async (newValue) => {
-			this.objectInfo.autoCreateIncrementalStatistics = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.autoCreateIncrementalStatistics)), true);
-		const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatisticsText, this.autoCreateIncrementalStatisticsInput);
+		// this.autoCreateIncrementalStatisticsInput = this.createCheckbox('', async (checked) => {
+		// 	this.objectInfo.autoCreateIncrementalStatistics = checked;
+		// }, this.objectInfo.autoCreateIncrementalStatistics);
+		// const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatisticsText, this.autoCreateIncrementalStatisticsInput);
 
-		this.autoCreateStatisticsInput = this.createDropdown(localizedConstants.AutoCreateStatisticsText, async (newValue) => {
-			this.objectInfo.autoCreateStatistics = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.autoCreateStatistics)), true);
-		const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatisticsText, this.autoCreateStatisticsInput);
+		// this.autoCreateStatisticsInput = this.createCheckbox('', async (checked) => {
+		// 	this.objectInfo.autoCreateStatistics = checked;
+		// }, this.objectInfo.autoCreateStatistics);
+		// const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatisticsText, this.autoCreateStatisticsInput);
 
-		this.autoShrinkInput = this.createDropdown(localizedConstants.AutoShrinkText, async (newValue) => {
-			this.objectInfo.autoShrink = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.autoShrink)), true);
-		const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrinkText, this.autoShrinkInput);
+		// this.autoShrinkInput = this.createCheckbox('', async (checked) => {
+		// 	this.objectInfo.autoShrink = checked;
+		// }, this.objectInfo.autoShrink);
+		// const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrinkText, this.autoShrinkInput);
 
-		this.autoUpdateStatisticsInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsText, async (newValue) => {
-			this.objectInfo.autoUpdateStatistics = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.autoUpdateStatistics)), true);
-		const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsText, this.autoUpdateStatisticsInput);
+		// this.autoUpdateStatisticsInput = this.createCheckbox('', async (checked) => {
+		// 	this.objectInfo.autoUpdateStatistics = checked;
+		// }, this.objectInfo.autoUpdateStatistics);
+		// const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsText, this.autoUpdateStatisticsInput);
 
-		this.autoUpdateStatisticsAsynchronouslyInput = this.createDropdown(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, async (newValue) => {
-			this.objectInfo.autoUpdateStatisticsAsynchronously = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.autoUpdateStatisticsAsynchronously)), true);
-		const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, this.autoUpdateStatisticsAsynchronouslyInput);
+		// this.autoUpdateStatisticsAsynchronouslyInput = this.createCheckbox('', async (checked) => {
+		// 	this.objectInfo.autoUpdateStatisticsAsynchronously = checked;
+		// }, this.objectInfo.autoUpdateStatisticsAsynchronously);
+		// const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, this.autoUpdateStatisticsAsynchronouslyInput);
+		// const automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
+		// 	autoCreateIncrementalStatisticsContainer,
+		// 	autoCreateStatisticsContainer,
+		// 	autoShrinkContainer,
+		// 	autoUpdateStatisticsContainer,
+		// 	autoUpdateStatisticsAsynchronouslyContainer
+		// ], true);
 
+
+		this.autoCreateIncrementalStatisticsInput = this.createCheckbox(localizedConstants.AutoCreateIncrementalStatisticsText, async (checked) => {
+			this.objectInfo.autoCreateIncrementalStatistics = checked;
+		}, this.objectInfo.autoCreateIncrementalStatistics);
+
+		this.autoCreateStatisticsInput = this.createCheckbox(localizedConstants.AutoCreateStatisticsText, async (checked) => {
+			this.objectInfo.autoCreateStatistics = checked;
+		}, this.objectInfo.autoCreateStatistics);
+
+		this.autoShrinkInput = this.createCheckbox(localizedConstants.AutoShrinkText, async (checked) => {
+			this.objectInfo.autoShrink = checked;
+		}, this.objectInfo.autoShrink);
+
+		this.autoUpdateStatisticsInput = this.createCheckbox(localizedConstants.AutoUpdateStatisticsText, async (checked) => {
+			this.objectInfo.autoUpdateStatistics = checked;
+		}, this.objectInfo.autoUpdateStatistics);
+
+		this.autoUpdateStatisticsAsynchronouslyInput = this.createCheckbox(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, async (checked) => {
+			this.objectInfo.autoUpdateStatisticsAsynchronously = checked;
+		}, this.objectInfo.autoUpdateStatisticsAsynchronously);
 		const automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
-			autoCreateIncrementalStatisticsContainer,
-			autoCreateStatisticsContainer,
-			autoShrinkContainer,
-			autoUpdateStatisticsContainer,
-			autoUpdateStatisticsAsynchronouslyContainer
+			this.autoCreateIncrementalStatisticsInput,
+			this.autoCreateStatisticsInput,
+			this.autoShrinkInput,
+			this.autoUpdateStatisticsInput,
+			this.autoUpdateStatisticsAsynchronouslyInput
 		], true);
 
 		this.optionsTabSectionsContainer.push(automaticSection);
 	}
 
 	private initializeLedgerSection(): void {
-		this.isLedgerDatabaseInput = this.createDropdown(localizedConstants.IsLedgerDatabaseText, async (newValue) => {
-			this.objectInfo.isLedgerDatabase = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.isLedgerDatabase)), true);
-		const isLedgerDatabaseInputContainer = this.createLabelInputContainer(localizedConstants.IsLedgerDatabaseText, this.isLedgerDatabaseInput);
+		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async (checked) => {
+			this.objectInfo.isLedgerDatabase = checked;
+		}, this.objectInfo.isLedgerDatabase);
 
 		const ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
-			isLedgerDatabaseInputContainer
+			this.isLedgerDatabaseInput
 		], true);
 
 		this.optionsTabSectionsContainer.push(ledgerSection);
@@ -336,19 +359,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		let containers: azdata.Component[] = [];
 
 		if (!isUndefinedOrNull(this.objectInfo.databaseReadOnly)) {
-			this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
-				this.objectInfo.databaseReadOnly = Boolean(newValue);
-			}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.databaseReadOnly)), true);
-			containers.push(this.createLabelInputContainer(localizedConstants.DatabaseReadOnlyText, this.databaseReadOnlyInput));
+			this.databaseReadOnlyInput = this.createCheckbox(localizedConstants.DatabaseReadOnlyText, async (checked) => {
+				this.objectInfo.databaseReadOnly = checked;
+			}, this.objectInfo.databaseReadOnly);
+			containers.push(this.databaseReadOnlyInput);
 		}
 
 		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput));
 
-		this.encryptionEnabledInput = this.createDropdown(localizedConstants.EncryptionEnabledText, async (newValue) => {
-			this.objectInfo.encryptionEnabled = Boolean(newValue);
-		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.encryptionEnabled)), true);
-		containers.push(this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput));
+		this.encryptionEnabledInput = this.createCheckbox(localizedConstants.EncryptionEnabledText, async (checked) => {
+			this.objectInfo.encryptionEnabled = checked;
+		}, this.objectInfo.encryptionEnabled);
+		containers.push(this.encryptionEnabledInput);
 
 		if (!isUndefinedOrNull(this.objectInfo.restrictAccess)) {
 			this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
