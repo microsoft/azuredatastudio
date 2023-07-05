@@ -497,6 +497,14 @@ export class AzdataGraphView extends Disposable {
 	public disableNodeCollapse(disable: boolean): void {
 		this._diagram.disableNodeCollapse(disable);
 	}
+
+	public override dispose(): void {
+		super.dispose();
+		if (this._diagram) {
+			this._diagram.graph.destroy();
+			this._diagram = null;
+		}
+	}
 }
 
 export interface InternalExecutionPlanEdge extends azdata.executionPlan.ExecutionPlanEdge {

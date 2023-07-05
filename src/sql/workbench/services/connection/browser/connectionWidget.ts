@@ -39,7 +39,7 @@ import { filterAccounts } from 'sql/workbench/services/accountManagement/browser
 import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName, mssqlCmsProviderName } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
-import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
+import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/common/utils';
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
@@ -991,22 +991,27 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					await this.onAzureAccountSelected();
 
 					let tenantId = connectionInfo.azureTenantId;
-					if (account && tenantId && account.properties.tenants && account.properties.tenants.length > 1) {
-						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
-						if (tenant) {
-							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
+					if (account && account.properties.tenants) {
+						if (account.properties.tenants.length > 1) {
+							if (tenantId) {
+								let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
+								if (tenant) {
+									this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
+								}
+								else {
+									// This should ideally never ever happen!
+									this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
+								}
+								if (this._azureTenantDropdown.value) {
+									this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
+								}
+							}
+							// else don't do anything if tenant Id is not set.
 						}
-						else {
-							// This should ideally never ever happen!
-							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
+						else if (account.properties.tenants.length === 1) {
+							this._azureTenantId = account.properties.tenants[0].id;
+							this.onAzureTenantSelected(0);
 						}
-						if (this._azureTenantDropdown.value) {
-							this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
-						}
-					}
-					else if (account && account.properties.tenants && account.properties.tenants.length === 1) {
-						this._azureTenantId = account.properties.tenants[0].id;
-						this.onAzureTenantSelected(0);
 					}
 					else if (accountName) {
 						this._logService.error(`fillInConnectionInputs : Could not find any tenants for account ${accountName}`);
