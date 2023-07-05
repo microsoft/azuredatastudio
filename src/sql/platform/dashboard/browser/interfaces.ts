@@ -150,5 +150,6 @@ export enum ModelComponentTypes {
 	Separator,
 	PropertiesContainer,
 	InfoBox,
-	Slider
+	Slider,
+	ExecutionPlan
 }
