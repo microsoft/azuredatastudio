@@ -92,12 +92,10 @@
 	],
 	"extensionEnabledApiProposals": {
 		"GitHub.copilot": [
-			"inlineCompletionsAdditions",
-			"interactive"
+			"inlineCompletionsAdditions"
 		],
 		"GitHub.copilot-nightly": [
-			"inlineCompletionsAdditions",
-			"interactive"
+			"inlineCompletionsAdditions"
 		],
 		"GitHub.copilot-chat": [
 			"handleIssueUri",
