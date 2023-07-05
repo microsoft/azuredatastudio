@@ -39,7 +39,7 @@ import { filterAccounts } from 'sql/workbench/services/accountManagement/browser
 import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName, mssqlCmsProviderName } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
-import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
+import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/common/utils';
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';

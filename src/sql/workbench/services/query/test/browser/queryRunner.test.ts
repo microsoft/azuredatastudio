@@ -8,7 +8,7 @@ import * as sinon from 'sinon';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { BatchSummary, ResultSetSummary, IResultMessage, ResultSetSubset, CompleteBatchSummary } from 'sql/workbench/services/query/common/query';
 import { URI } from 'vs/base/common/uri';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
+import { workbenchInstantiationService } from 'sql/workbench/test/browser/workbenchTestServices';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { Event } from 'vs/base/common/event';

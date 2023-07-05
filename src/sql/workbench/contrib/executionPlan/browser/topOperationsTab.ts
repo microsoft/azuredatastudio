@@ -178,7 +178,6 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 		const headerSearchBarContainer = DOM.$('.top-operations-header-search-bar');
 		headerContainer.appendChild(headerSearchBarContainer);
-		headerContainer.classList.add('codicon', filterIconClassNames);
 
 		const topOperationsSearchInput = this._register(new InputBox(headerSearchBarContainer, this._contextViewService, {
 			ariaDescription: topOperationsSearchDescription,
