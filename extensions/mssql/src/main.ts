@@ -160,9 +160,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	return createMssqlApi(appContext, server);
 }
 
-// Display notification with button to reload
-// return true if button clicked
-// return false if button not clicked
+/**
+ * Display notification with action to reload ADS
+ * @returns true if button is clicked, false otherwise.
+ */
 async function displayReloadAds(): Promise<boolean> {
 	const reloadPrompt = localize('mssql.reloadPrompt', "This setting requires Azure Data Studio to be reloaded to take into effect.");
 	const reloadChoice = localize('mssql.reloadChoice', "Reload Azure Data Studio");

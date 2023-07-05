@@ -144,6 +144,10 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:parallelMessageProcessing` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
@@ -163,6 +167,10 @@ export function getAzureAuthenticationLibraryConfig(): string {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:enableSqlAuthenticationProvider` from settings file.
+ * @returns true if setting is enabled in ADS, false otherwise.
+ */
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
@@ -173,6 +181,10 @@ export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:enableConnectionPooling` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
 export function getEnableConnectionPoolingConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
