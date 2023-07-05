@@ -13,7 +13,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -33,6 +32,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Deferred } from 'sql/base/common/promise';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 /**
  * This function adds one year to the current date and returns it in the UTC format.
@@ -120,7 +120,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		tableContainer.setAttribute('role', 'presentation');
 
 		let azureAccountLabel = localize('backupRestoreUrlBrowserDialog.account', "Azure Account");
-		this._accountSelectorBox = this._register(new SelectBox([''], '', this._contextViewService, null, { ariaLabel: azureAccountLabel }));
+		this._accountSelectorBox = this._register(new SelectBox([''], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: azureAccountLabel }));
 		this._accountSelectorBox.disable();
 		let accountSelector = DialogHelper.appendRow(tableContainer, azureAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(accountSelector, this._accountSelectorBox);
@@ -151,25 +151,25 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		linkAccountButton.appendChild(linkAccount.el);
 
 		let tenantLabel = localize('backupRestoreUrlBrowserDialog.tenant', "Azure AD Tenant");
-		this._tenantSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: tenantLabel }));
+		this._tenantSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: tenantLabel }));
 		this._tenantSelectorBox.disable();
 		let tenantSelector = DialogHelper.appendRow(tableContainer, tenantLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(tenantSelector, this._tenantSelectorBox);
 
 		let subscriptionLabel = localize('backupRestoreUrlBrowserDialog.subscription', "Azure subscription");
-		this._subscriptionSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: subscriptionLabel }));
+		this._subscriptionSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: subscriptionLabel }));
 		this._subscriptionSelectorBox.disable();
 		let subscriptionSelector = DialogHelper.appendRow(tableContainer, subscriptionLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(subscriptionSelector, this._subscriptionSelectorBox);
 
 		let storageAccountLabel = localize('backupRestoreUrlBrowserDialog.storageAccount', "Storage account");
-		this._storageAccountSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: storageAccountLabel }));
+		this._storageAccountSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: storageAccountLabel }));
 		this._storageAccountSelectorBox.disable();
 		let storageAccountSelector = DialogHelper.appendRow(tableContainer, storageAccountLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(storageAccountSelector, this._storageAccountSelectorBox);
 
 		let blobContainerLabel = localize('backupRestoreUrlBrowserDialog.blobContainer', "Blob container");
-		this._blobContainerSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: blobContainerLabel }));
+		this._blobContainerSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: blobContainerLabel }));
 		this._blobContainerSelectorBox.disable();
 		let blobContainerSelector = DialogHelper.appendRow(tableContainer, blobContainerLabel, 'url-input-label', 'url-input-box', null, true);
 		DialogHelper.appendInputSelectBox(blobContainerSelector, this._blobContainerSelectorBox);
@@ -194,7 +194,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		let backupFileLabel = localize('backupRestoreUrlBrowserDialog.backupFile', "Backup file");
 
 		if (this._restoreDialog) {
-			this._backupFileSelectorBox = this._register(new SelectBox([], '', this._contextViewService, null, { ariaLabel: backupFileLabel }));
+			this._backupFileSelectorBox = this._register(new SelectBox([], '', defaultSelectBoxStyles, this._contextViewService, null, { ariaLabel: backupFileLabel }));
 			let backupFileSelector = DialogHelper.appendRow(tableContainer, backupFileLabel, 'url-input-label', 'url-input-box', null, true);
 			DialogHelper.appendInputSelectBox(backupFileSelector, this._backupFileSelectorBox);
 			this._backupFileSelectorBox.setOptions([]);
@@ -440,15 +440,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 
 
 	private registerThemeStylers(): void {
-		this._register(attachSelectBoxStyler(this._tenantSelectorBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._accountSelectorBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._subscriptionSelectorBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._storageAccountSelectorBox, this._themeService));
-		this._register(attachSelectBoxStyler(this._blobContainerSelectorBox, this._themeService));
-		if (this._backupFileSelectorBox) {
-			this._register(attachSelectBoxStyler(this._backupFileSelectorBox, this._themeService));
-		}
-
 		this._register(this._sasButton);
 		this._register(this._okButton);
 		this._register(this._cancelButton);

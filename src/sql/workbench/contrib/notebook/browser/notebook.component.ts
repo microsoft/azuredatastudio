@@ -13,7 +13,6 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -508,13 +507,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let kernelContainer = document.createElement('li');
 		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('li');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';

@@ -44,6 +44,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Action2 } from 'vs/platform/actions/common/actions';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -600,7 +601,7 @@ export class KernelsDropdown extends SelectBox {
 	private _showAllKernels: boolean = false;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService,
 	) {
-		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel, id: kernelDropdownElementId } as ISelectBoxOptionsWithLabel);
+		super([msgLoading], msgLoading, defaultSelectBoxStyles, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel, id: kernelDropdownElementId } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
 			modelReady
@@ -691,7 +692,7 @@ export class AttachToDropdown extends SelectBox {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IConfigurationService private _configurationService: IConfigurationService
 	) {
-		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel, id: attachToDropdownElementId } as ISelectBoxOptionsWithLabel);
+		super([msgLoadingContexts], msgLoadingContexts, defaultSelectBoxStyles, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel, id: attachToDropdownElementId } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
 			modelReady
 				.then(model => {

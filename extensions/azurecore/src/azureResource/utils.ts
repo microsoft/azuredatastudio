@@ -446,8 +446,8 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
  * @param account The azure account used to acquire access token
  * @param subscription The subscription under azure account where the service will perform operations.
  * @param path The path for the service starting from '/subscription/..'. See https://docs.microsoft.com/rest/api/azure/.
- * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
- * @param requestBody Optional request body to be used in PUT and POST requests.
+ * @param requestType Http request method. Currently GET, PUT, POST, DELETE, and PATCH methods are supported.
+ * @param requestBody Optional request body to be used in PUT, POST, AND PATCH requests.
  * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
  * @param host Use this to override the host. The default host is https://management.azure.com
  * @param requestHeaders Provide additional request headers
@@ -544,6 +544,9 @@ export async function makeHttpRequest<B>(
 			response = await httpClient.sendDeleteRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, {
 				headers: reqHeaders
 			});
+			break;
+		case HttpRequestMethod.PATCH:
+			response = await httpClient.sendPatchRequestAsync<B | ErrorResponseBodyWithError>(requestUrl, networkRequestOptions);
 			break;
 		default:
 			const error = new Error(`Unknown RequestType "${requestType}"`);

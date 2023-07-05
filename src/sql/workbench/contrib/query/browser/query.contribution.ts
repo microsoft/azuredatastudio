@@ -71,7 +71,7 @@ new NewQueryTask().registerTask();
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
@@ -82,7 +82,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // New Query
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")
@@ -302,6 +302,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
+		},
+		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.skipNewLineAfterTrailingLineBreak', "Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false."),
+			'default': false
 		},
 		'queryEditor.results.preferProvidersCopyHandler': {
 			'type': 'boolean',

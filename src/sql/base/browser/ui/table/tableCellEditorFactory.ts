@@ -12,7 +12,7 @@ import { Dropdown, IEditableDropdownStyles } from 'sql/base/browser/ui/editableD
 import { Disposable } from 'vs/base/common/lifecycle';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { IInputBoxStyles } from 'vs/base/browser/ui/inputbox/inputBox';
-import { ISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
 
 const InverseKeyCodeMap: { [k: string]: number } = Object.fromEntries(Object.entries(EVENT_KEY_CODE_MAP).map(([key, value]) => [value, Number(key)]));
 
@@ -169,7 +169,7 @@ export class TableCellEditorFactory {
 						await this.commitEdit();
 					});
 				} else {
-					this._component = new SelectBox([], undefined, self._contextViewProvider);
+					this._component = new SelectBox([], undefined, self._options.selectBoxStyles, self._contextViewProvider);
 					this._component.render(container);
 					this._component.selectElem.style.height = '100%';
 					this._component.onDidSelect(async () => {

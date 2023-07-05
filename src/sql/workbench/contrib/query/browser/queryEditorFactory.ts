@@ -67,7 +67,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		if (activeEditor instanceof FileEditorInput) {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
-			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput, undefined);
+			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
 			return undefined;
 		}
@@ -146,7 +146,7 @@ export class UntitledQueryEditorSerializer implements IEditorSerializer {
 		const factory = editorFactoryRegistry.getEditorSerializer(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.resource.toString());
-		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput, undefined);
+		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput);
 	}
 
 	canSerialize(): boolean { // we can always serialize query inputs

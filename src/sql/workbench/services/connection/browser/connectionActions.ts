@@ -238,10 +238,9 @@ export class GetCurrentConnectionStringAction extends Action2 {
 	public static LABEL = nls.localize('connectionAction.GetCurrentConnectionString', "Get Current Connection String");
 
 	constructor() {
-		//super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
 		super({
-			id: ClearRecentConnectionsAction.ID,
-			title: { value: ClearRecentConnectionsAction.LABEL, original: ClearRecentConnectionsAction.LABEL_ORG },
+			id: GetCurrentConnectionStringAction.ID,
+			title: { value: GetCurrentConnectionStringAction.LABEL, original: GetCurrentConnectionStringAction.LABEL_ORG },
 			f1: true
 		});
 	}

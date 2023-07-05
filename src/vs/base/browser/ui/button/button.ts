@@ -218,7 +218,7 @@ export class Button extends Disposable implements IButton {
 		let background, foreground, border, fontWeight, fontSize: string;
 		if (this.hasIcon) {
 			background = border = 'transparent';
-			foreground = this.options.buttonSecondaryForeground;
+			foreground = 'inherit';
 			fontWeight = fontSize = 'inherit';
 			this._element.style.backgroundRepeat = 'no-repeat';
 		} else {

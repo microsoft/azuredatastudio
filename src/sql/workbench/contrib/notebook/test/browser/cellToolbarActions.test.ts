@@ -29,7 +29,7 @@ import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/mod
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { nb } from 'azdata';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';

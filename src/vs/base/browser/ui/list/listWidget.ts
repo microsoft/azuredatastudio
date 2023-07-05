@@ -1006,7 +1006,6 @@ export interface IListStyles {
 	listInactiveFocusOutline: string | undefined;
 	listSelectionOutline: string | undefined;
 	listHoverOutline: string | undefined;
-	listMatchesShadow?: Color; // {{SQL CARBON EDIT}}
 	treeIndentGuidesStroke: string | undefined;
 	treeInactiveIndentGuidesStroke: string | undefined;
 	tableColumnsBorder: string | undefined;

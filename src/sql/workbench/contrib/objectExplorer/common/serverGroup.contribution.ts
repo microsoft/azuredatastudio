@@ -15,12 +15,21 @@ const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Con
 export const SERVER_GROUP_AUTOEXPAND_CONFIG = 'autoExpand';
 
 const serverGroupConfig: IConfigurationNode = {
-	id: 'Server Groups',
+	id: 'serverGroup',
 	type: 'object',
+	title: localize('objectExplorerConfigurationTitle', "Object Explorer"),
+	order: 2,
 	properties: {
-		[SERVER_GROUP_CONFIG + '.' + SERVER_GROUP_COLORS_CONFIG]: <IJSONSchema>{
+		[`${SERVER_GROUP_CONFIG}.${SERVER_GROUP_AUTOEXPAND_CONFIG}`]: {
+			'order': 2,
+			'type': 'boolean',
+			'description': localize('serverGroup.autoExpand', "Auto-expand Server Groups in the Object Explorer viewlet."),
+			'default': 'true'
+		},
+		[`${SERVER_GROUP_CONFIG}.${SERVER_GROUP_COLORS_CONFIG}`]: <IJSONSchema>{
 			type: 'array',
 			items: 'string',
+			order: 3,
 			'description': localize('serverGroup.colors', "Server Group color palette used in the Object Explorer viewlet."),
 			default: [
 				'#A1634D',
@@ -33,11 +42,6 @@ const serverGroupConfig: IConfigurationNode = {
 				DefaultServerGroupColor
 			]
 		},
-		[SERVER_GROUP_CONFIG + '.' + SERVER_GROUP_AUTOEXPAND_CONFIG]: {
-			'type': 'boolean',
-			'description': localize('serverGroup.autoExpand', "Auto-expand Server Groups in the Object Explorer viewlet."),
-			'default': 'true'
-		},
 	}
 };
 
@@ -46,8 +50,9 @@ const serverTreeConfig: IConfigurationNode = {
 	'id': 'serverTree',
 	'title': localize('serverTree.configuration.title', "Server Tree"),
 	'type': 'object',
+	'order': 1,
 	'properties': {
-		'serverTree.useAsyncServerTree': {
+		[`serverTree.useAsyncServerTree`]: {
 			'type': 'boolean',
 			'default': true,
 			'description': localize('serverTree.useAsyncServerTree', "Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.")
@@ -55,5 +60,5 @@ const serverTreeConfig: IConfigurationNode = {
 	}
 };
 
-configurationRegistry.registerConfiguration(serverGroupConfig);
 configurationRegistry.registerConfiguration(serverTreeConfig);
+configurationRegistry.registerConfiguration(serverGroupConfig);

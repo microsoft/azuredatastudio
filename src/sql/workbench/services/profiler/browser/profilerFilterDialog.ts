@@ -15,7 +15,6 @@ import { localize } from 'vs/nls';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
@@ -29,6 +28,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
 const ApplyText: string = localize('profilerFilterDialog.apply', "Apply");
@@ -187,9 +187,8 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private createSelectBox(container: HTMLElement, options: string[], selectedOption: string, ariaLabel: string): SelectBox {
-		const dropdown = new SelectBox(options, selectedOption, this.contextViewService, undefined, { ariaLabel: ariaLabel });
+		const dropdown = new SelectBox(options, selectedOption, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: ariaLabel });
 		dropdown.render(container);
-		this._register(attachSelectBoxStyler(dropdown, this._themeService));
 		return dropdown;
 	}
 

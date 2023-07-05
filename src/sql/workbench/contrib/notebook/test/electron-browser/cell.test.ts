@@ -11,8 +11,8 @@ import * as objects from 'vs/base/common/objects';
 
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
-import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
+import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
+import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/browser/emptySessionClasses';
 import { CellEditModes, ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';

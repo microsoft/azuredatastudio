@@ -6,17 +6,16 @@
 import { IInsight } from './interfaces';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 import { $, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class TableInsight extends Disposable implements IInsight {
 	public static readonly types = [InsightType.Table];
@@ -28,7 +27,6 @@ export class TableInsight extends Disposable implements IInsight {
 	public options: IInsightOptions = { type: InsightType.Table };
 
 	constructor(container: HTMLElement, options: any,
-		@IThemeService themeService: IThemeService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IQuickInputService quickInputService: IQuickInputService,
 		@IComponentContextService private componentContextService: IComponentContextService
@@ -39,9 +37,8 @@ export class TableInsight extends Disposable implements IInsight {
 		tableContainer.style.height = '100%';
 		container.appendChild(tableContainer);
 		this.dataView = new TableDataView();
-		this.table = new Table(tableContainer, accessibilityService, quickInputService, { dataProvider: this.dataView }, { showRowNumber: true });
+		this.table = new Table(tableContainer, accessibilityService, quickInputService, defaultTableStyles, { dataProvider: this.dataView }, { showRowNumber: true });
 		this.table.setSelectionModel(new CellSelectionModel());
-		this._register(attachTableStyler(this.table, themeService));
 		this._register(this.componentContextService.registerTable(this.table));
 	}
 

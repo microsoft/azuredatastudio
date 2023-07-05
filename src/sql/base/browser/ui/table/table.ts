@@ -23,7 +23,6 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
 import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 import { localize } from 'vs/nls';
-import { IThemable } from 'sql/platform/theme/common/vsstyler';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -33,7 +32,7 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IDisposable, IThemable {
+export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
 	protected styleElement: HTMLStyleElement;
 	protected idPrefix: string;
 
@@ -73,6 +72,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		parent: HTMLElement,
 		accessibilityProvider: IAccessibilityProvider,
 		private _quickInputProvider: IQuickInputProvider,
+		styles: ITableStyles,
 		configuration?: ITableConfiguration<T>,
 		options?: Slick.GridOptions<T>) {
 		super();
@@ -142,6 +142,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+		this.style(styles);
 	}
 
 	public async resizeActiveColumn(): Promise<void> {

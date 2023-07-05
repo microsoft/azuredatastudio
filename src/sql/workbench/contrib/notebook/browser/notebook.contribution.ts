@@ -126,7 +126,7 @@ CommandsRegistry.registerCommand({
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 3,
+	order: 1,
 	command: {
 		id: DE_NEW_NOTEBOOK_COMMAND_ID,
 		title: localize('newNotebook', "New Notebook")
@@ -148,7 +148,7 @@ CommandsRegistry.registerCommand({
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 3,
+	order: 1,
 	command: {
 		id: OE_NEW_NOTEBOOK_COMMAND_ID,
 		title: localize('newQuery', "New Notebook")

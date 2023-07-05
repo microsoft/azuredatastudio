@@ -222,7 +222,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			}
 			let isOpenOk = await this.confirmConnect(args);
 			if (!isOpenOk) {
-				return false;
+				// returning true will ensure the request won't be looped (since urlService opens url with shouldStop = false)
+				return true;
 			}
 
 			const connectionProfile = this.readProfileFromArgs(args);

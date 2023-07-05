@@ -168,6 +168,10 @@ import 'vs/workbench/contrib/mergeEditor/electron-sandbox/mergeEditor.contributi
 // Remote Tunnel
 import 'vs/workbench/contrib/remoteTunnel/electron-sandbox/remoteTunnel.contribution';
 
+// {{SQL CARBON EDIT}} - SQL added contributions
+// Telemetry Opt Out
+import 'sql/workbench/contrib/welcome/telemetryOptOut/electron-sandbox/telemetryOptOut.contribution';
+
 //#endregion
 
 export { main } from 'vs/workbench/electron-sandbox/desktop.main';

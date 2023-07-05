@@ -13,8 +13,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { attachSelectBoxStyler } from 'sql/platform/theme/common/vsstyler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'select-box',
@@ -34,14 +33,13 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
 	}
 
 	ngOnInit(): void {
-		this._selectbox = new sqlSelectBox(this.options, this.selectedOption, this.contextViewService, undefined, { ariaLabel: this.ariaLabel });
+		this._selectbox = new sqlSelectBox(this.options, this.selectedOption, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.ariaLabel });
 		this._selectbox.render(this._el.nativeElement);
 		this._selectbox.onDidSelect(e => {
 			if (this.onlyEmitOnChange) {
@@ -53,7 +51,6 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 				this.onDidSelect.emit(e);
 			}
 		});
-		this._register(attachSelectBoxStyler(this._selectbox, this.themeService));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {

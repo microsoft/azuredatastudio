@@ -5,13 +5,12 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
 import { filterIconClassNames, propertiesSearchDescription, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
@@ -30,6 +29,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export abstract class ExecutionPlanPropertiesViewBase extends Disposable implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -69,7 +69,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 	constructor(
 		public _parentContainer: HTMLElement,
-		private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -163,7 +162,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 		this._selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		this._tableComponent = this._register(new TreeGrid(table, accessibilityService, quickInputService, {
+		this._tableComponent = this._register(new TreeGrid(table, accessibilityService, quickInputService, defaultTableStyles, {
 			columns: []
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
@@ -173,7 +172,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 			autoEdit: false
 		}));
 
-		this._register(attachTableStyler(this._tableComponent, this._themeService));
 		this._tableComponent.setSelectionModel(this._selectionModel);
 
 		const contextMenuAction = [

@@ -11,13 +11,13 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { IListAccessibilityProvider, List } from 'vs/base/browser/ui/list/listWidget';
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { localize } from 'vs/nls';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { problemsErrorIconForeground, problemsInfoIconForeground, problemsWarningIconForeground } from 'vs/platform/theme/common/colorRegistry';
 import { Codicon } from 'vs/base/common/codicons';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Link } from 'vs/platform/opener/browser/link';
 import { ThemeIcon } from 'vs/base/common/themables';
+import { getListStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export class DesignerIssuesTabPanelView extends Disposable implements IPanelView {
 	private _container: HTMLElement;
@@ -27,7 +27,6 @@ export class DesignerIssuesTabPanelView extends Disposable implements IPanelView
 	public readonly onIssueSelected: Event<DesignerPropertyPath> = this._onIssueSelected.event;
 
 	constructor(
-		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
@@ -41,12 +40,15 @@ export class DesignerIssuesTabPanelView extends Disposable implements IPanelView
 			mouseSupport: true,
 			accessibilityProvider: new DesignerIssueListAccessibilityProvider()
 		});
+		this._issueList.style(getListStyles({
+			listInactiveSelectionIconForeground: undefined,
+			listActiveSelectionIconForeground: undefined
+		}));
 		this._register(this._issueList.onDidChangeSelection((e) => {
 			if (e.elements && e.elements.length === 1) {
 				this._onIssueSelected.fire(e.elements[0].propertyPath);
 			}
 		}));
-		this._register(attachListStyler(this._issueList, this._themeService));
 	}
 
 	layout(dimension: DOM.Dimension): void {

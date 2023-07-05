@@ -47,6 +47,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -191,7 +192,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
-		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this.contextViewService, undefined, { ariaLabel: connectTypeLabel });
+		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
 		const recentConnectionTab = DOM.$('.connection-recent-tab');
 		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
@@ -279,8 +280,6 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private registerListeners(): void {
-		// Theme styler
-		this._register(styler.attachSelectBoxStyler(this._providerTypeSelectBox, this._themeService));
 		this._register(this._providerTypeSelectBox.onDidSelect(selectedProviderType => {
 			this.onProviderTypeSelected(selectedProviderType.selected);
 		}));
