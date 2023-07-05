@@ -61,21 +61,27 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	let objectType: ObjectManagement.NodeType;
 	switch (context.nodeInfo!.objectType) {
 		case FolderType.ApplicationRoles:
+		case ObjectManagement.NodeType.ApplicationRole:
 			objectType = ObjectManagement.NodeType.ApplicationRole;
 			break;
 		case FolderType.DatabaseRoles:
+		case ObjectManagement.NodeType.DatabaseRole:
 			objectType = ObjectManagement.NodeType.DatabaseRole;
 			break;
 		case FolderType.ServerLevelLogins:
+		case ObjectManagement.NodeType.ServerLevelLogin:
 			objectType = ObjectManagement.NodeType.ServerLevelLogin;
 			break;
 		case FolderType.ServerLevelServerRoles:
+		case ObjectManagement.NodeType.ServerLevelServerRole:
 			objectType = ObjectManagement.NodeType.ServerLevelServerRole;
 			break;
 		case FolderType.Users:
+		case ObjectManagement.NodeType.User:
 			objectType = ObjectManagement.NodeType.User;
 			break;
 		case FolderType.Databases:
+		case ObjectManagement.NodeType.Database:
 			objectType = ObjectManagement.NodeType.Database;
 			break;
 		default:
