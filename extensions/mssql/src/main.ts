@@ -134,6 +134,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				}
 			});
 		}
+		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)
+			|| e.affectsConfiguration(Constants.configEnableSqlAuthenticationProviderName)
+			|| e.affectsConfiguration(Constants.configEnableConnectionPoolingName)) {
+			if (Utils.getParallelMessageProcessingConfig()) {
+				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureAsyncParallelProcessing);
+			}
+			if (Utils.getEnableSqlAuthenticationProviderConfig()) {
+				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureSqlAuthenticationProvider);
+			}
+			if (Utils.getEnableConnectionPoolingConfig()) {
+				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureConnectionPooling);
+			}
+			await displayReloadAds();
+		}
 	}));
 
 	registerTableDesignerCommands(appContext);
@@ -144,6 +158,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(TelemetryReporter);
 
 	return createMssqlApi(appContext, server);
+}
+
+// Display notification with button to reload
+// return true if button clicked
+// return false if button not clicked
+async function displayReloadAds(): Promise<boolean> {
+	const reloadPrompt = localize('mssql.reloadPrompt', "This setting requires Azure Data Studio to be reloaded to take into effect.");
+	const reloadChoice = localize('mssql.reloadChoice', "Reload Azure Data Studio");
+	const result = await vscode.window.showInformationMessage(reloadPrompt, reloadChoice);
+	if (result === reloadChoice) {
+		await vscode.commands.executeCommand('workbench.action.reloadWindow');
+		return true;
+	} else {
+		return false;
+	}
 }
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];

@@ -20,6 +20,7 @@ const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
+const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
 const azureExtensionConfigName = 'azure';
@@ -169,6 +170,17 @@ export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	}
 	else {
 		return true;
+	}
+}
+
+export function getEnableConnectionPoolingConfig(): boolean {
+	const config = getConfiguration();
+	if (config) {
+		const setting = config.inspect(enableConnectionPoolingConfig);
+		return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[enableConnectionPoolingConfig];
+	}
+	else {
+		return false; // disabled by default
 	}
 }
 
