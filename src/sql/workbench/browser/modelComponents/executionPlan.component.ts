@@ -77,8 +77,7 @@ export default class ExecutionPlanComponent extends ContainerBase<any, azdata.Ex
 		}
 	}
 
-	public async loadData(data: azdata.ExecutionPlanData): Promise<void> {
-
+	public loadData(data: azdata.ExecutionPlanData): void {
 		if (this._executionPlanFileView) {
 			if ((<azdata.executionPlan.ExecutionPlanGraphInfo>this._data).graphFileContent !== undefined) {
 				this._executionPlanFileView.loadGraphFile(<azdata.executionPlan.ExecutionPlanGraphInfo>this._data);
