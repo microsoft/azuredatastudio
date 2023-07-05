@@ -252,16 +252,22 @@ export const IsHadrEnabledText = localize('objectManagement.isHadrEnabled', "Is 
 export const IsPolyBaseInstalledText = localize('objectManagement.isPolyBaseInstalled', "Is PolyBase Installed");
 export const IsXTPSupportedText = localize('objectManagement.isXTPSupported', "Is XTP Supported");
 export const ProductText = localize('objectManagement.product', "Product");
-export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size");
+export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size (MB)");
 export const RootDirectoryText = localize('objectManagement.rootDirectory', "Root Directory");
 export const ServerCollationText = localize('objectManagement.serverCollation', "Server Collation");
 export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
-export const StorageSpaceUsageInGBText = localize('objectManagement.storageSpaceUsageInGB', "Storage Space Usage");
+export const StorageSpaceUsageInMBText = localize('objectManagement.storageSpaceUsageInMB', "Storage Space Usage (MB)");
 export const VersionText = localize('objectManagement.versionText', "Version");
-
-
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+export const autoSetProcessorAffinityMaskForAllText = localize('objectManagement.autoSetProcessorAffinityMaskForAll', "Automatically set processor affinity mask for all processors");
+export const autoSetProcessorAffinityIOMaskForAllText = localize('objectManagement.autoSetProcessorAffinityIOMaskForAll', "Automatically set I/O affinity mask for all processors");
+export const processorColumnText = localize('objectManagement.processorColumn', "Processor");
+export const processorAffinityColumnText = localize('objectManagement.processorAffinityColumn', "Processor Affinity");
+export const processorIOAffinityColumnText = localize('objectManagement.processorIOAffinityColumn', "I/O Affinity");
+export const enableProcessorText = localize('objectManagement.enableProcessorText', "Enable processors");
+export const processorLabel = localize('objectManagement.processorLabel', "Processor Affinity Table");
+
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");

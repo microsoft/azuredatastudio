@@ -3,10 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AzureSQLMI, ViewServerPropertiesDocUrl } from '../constants';
+import { ViewServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -36,6 +37,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private memorySection: azdata.GroupContainer;
 	private minServerMemoryInput: azdata.InputBoxComponent;
 	private maxServerMemoryInput: azdata.InputBoxComponent;
+	private engineEdition: azdata.DatabaseEngineEdition;
+
+	private processorsTab: azdata.Tab;
+	private processorsSection: azdata.GroupContainer;
+	private autoSetProcessorAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
+	private autoSetProcessorIOAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -45,10 +53,17 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		return ViewServerPropertiesDocUrl;
 	}
 
+	protected override get isDirty(): boolean {
+		return true;
+	}
+
 	protected async initializeUI(): Promise<void> {
+		const serverInfo = await azdata.connection.getServerInfo(this.options.objectExplorerContext.connectionProfile.id);
+		this.engineEdition = serverInfo.engineEditionId;
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
+		this.initializeProcessorsSection();
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({
@@ -110,8 +125,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.serviceTierInput = this.createInputBox(localizedConstants.ServiceTierText, async () => { }, this.objectInfo.serviceTier, this.options.isNewObject);
 		const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
 
-		this.storageSpaceUsageInGBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInGBText, async () => { }, this.objectInfo.storageSpaceUsageInGB.toString().concat(' GB'), this.options.isNewObject);
-		const storageSpaceUsageInGbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInGBText, this.storageSpaceUsageInGBInput);
+		this.storageSpaceUsageInGBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInMBText, async () => { }, this.objectInfo.storageSpaceUsageInGB.toString().concat(' GB'), this.options.isNewObject);
+		const storageSpaceUsageInGbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInGBInput);
 
 		this.versionInput = this.createInputBox(localizedConstants.VersionText, async () => { }, this.objectInfo.version, this.options.isNewObject);
 		const versionContainer = this.createLabelInputContainer(localizedConstants.VersionText, this.versionInput);
@@ -136,7 +151,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			versionContainer
 		];
 
-		if (this.objectInfo.platform === AzureSQLMI) {
+		if (this.engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
 			platformItems.unshift(hardwareGenerationContainer);
 			sqlServerItems.push(reservedStorageSizeInMBContainer, serviceTierContainer, storageSpaceUsageInGbContainer);
 			// remove isXTPSupported
@@ -152,14 +167,15 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeMemorySection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
 			this.objectInfo.minServerMemory = +newValue;
-		}, this.objectInfo.minServerMemory.toString(), true, 'number');
+		}, this.objectInfo.minServerMemory.toString(), isEnabled, 'number');
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
 			this.objectInfo.maxServerMemory = +newValue;
-		}, this.objectInfo.maxServerMemory.toString(), true, 'number');
+		}, this.objectInfo.maxServerMemory.toString(), isEnabled, 'number');
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [
@@ -168,5 +184,69 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		], false);
 
 		this.memoryTab = this.createTab('memoryId', localizedConstants.MemoryText, this.memorySection);
+	}
+
+	private initializeProcessorsSection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
+		const cssClass = 'no-borders';
+		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
+			this.objectInfo.autoSetProcessorAffinityMaskForAll = newValue;
+		}, this.objectInfo.autoSetProcessorAffinityMaskForAll, isEnabled);
+		const autoProcessorAffinityContainer = this.createLabelInputContainer(localizedConstants.autoSetProcessorAffinityMaskForAllText, this.autoSetProcessorAffinityMaskForAllCheckbox);
+
+		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
+			this.objectInfo.autoSetProcessorAffinityIOMaskForAll = newValue;
+		}, this.objectInfo.autoSetProcessorAffinityIOMaskForAll, isEnabled);
+		const autoProcessorIOAffinityContainer = this.createLabelInputContainer(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, this.autoSetProcessorIOAffinityMaskForAllCheckbox);
+		let tableData = this.objectInfo.processorList.map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
+		let processorTable = this.createTable(localizedConstants.processorLabel,
+			[
+				<azdata.TableColumn>{
+					name: localizedConstants.processorColumnText,
+					value: localizedConstants.processorColumnText,
+					type: azdata.ColumnType.text,
+					resizable: false,
+					width: 100,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				},
+				<azdata.TableColumn>{
+					name: localizedConstants.processorAffinityColumnText,
+					value: localizedConstants.processorAffinityColumnText,
+					type: azdata.ColumnType.checkBox,
+					resizable: false,
+					width: 100,
+					action: azdata.ActionOnCellCheckboxCheck.selectRow,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				},
+				<azdata.TableColumn>{
+					name: localizedConstants.processorIOAffinityColumnText,
+					value: localizedConstants.processorIOAffinityColumnText,
+					type: azdata.ColumnType.checkBox,
+					resizable: false,
+					width: 100,
+					action: azdata.ActionOnCellCheckboxCheck.selectRow,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				}
+			], tableData);
+
+		this._disposables.push(processorTable.onRowSelected(async () => {
+			if (processorTable.selectedRows.length > 0) {
+				const result = processorTable.data;
+				this.onFormFieldChange();
+			}
+		}));
+
+		let tableGroup = this.createGroup('', [processorTable], false);
+
+		this.processorsSection = this.createGroup(localizedConstants.enableProcessorText, [
+			autoProcessorAffinityContainer,
+			autoProcessorIOAffinityContainer,
+			tableGroup
+		], false);
+
+		this.processorsTab = this.createTab('processorsId', localizedConstants.ProcessorsText, this.processorsSection);
 	}
 }

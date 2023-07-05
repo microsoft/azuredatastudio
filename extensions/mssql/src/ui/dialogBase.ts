@@ -232,7 +232,7 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
-	protected createTable(ariaLabel: string, columns: string[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.TableComponent {
+	protected createTable(ariaLabel: string, columns: string[] | azdata.TableColumn[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.TableComponent {
 		const table = this.modelView.modelBuilder.table().withProps(
 			{
 				ariaLabel: ariaLabel,

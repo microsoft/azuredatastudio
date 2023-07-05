@@ -465,6 +465,12 @@ export interface AzureEditionDetails {
 	details: string[];
 }
 
+export interface ProcessorDetails {
+	processor: string;
+	processorAffinity: boolean;
+	processorIOAffinity: boolean;
+}
+
 export interface Server extends ObjectManagement.SqlObject {
 	hardwareGeneration: string;
 	language: string;
@@ -485,9 +491,14 @@ export interface Server extends ObjectManagement.SqlObject {
 	storageSpaceUsageInGB: number;
 	minServerMemory: number;
 	maxServerMemory: number;
+	autoSetProcessorAffinityMaskForAll: boolean;
+	autoSetProcessorAffinityIOMaskForAll: boolean;
+	processorList: ProcessorDetails[];
 }
 
+
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+	processorList: ProcessorDetails[];
 }
 
 export interface DatabaseFile {
