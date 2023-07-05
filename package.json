@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.45.0",
-  "distro": "5b5e4db7e6626e7ef71996bed02cd46a060ca0c2",
+  "distro": "68d0c9ce66941b734b19080ad335cb69d3ae2e4a",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -178,7 +178,7 @@
     "cssnano": "^4.1.11",
     "debounce": "^1.0.0",
     "deemon": "^1.8.0",
-    "electron": "22.3.10",
+    "electron": "22.3.14",
     "eslint": "8.36.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-jsdoc": "^39.3.2",
