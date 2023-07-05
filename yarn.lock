@@ -2149,9 +2149,9 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.58":
-  version "0.0.58"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/45c88554e98ed3b41cd283a672bd497af08c7ac3"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.59":
+  version "0.0.59"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/d8eebd0e0af55fae332a5922971c52772df7792d"
 
 bach@^1.0.0:
   version "1.2.0"
