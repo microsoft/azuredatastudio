@@ -43,16 +43,16 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
 
-/*
-* Converts number to two decimal placed string
-*/
+/**
+ * Converts number to two decimal placed string
+ */
 export function convertNumToTwoDecimalStringinMB(value: number): string {
 	return localizedConstants.StringValueInMB(value?.toFixed(2));
 }
 
-/*
-* Converts first character of the string value coming from STS to UpperCase, (we are doing here camelCase to PascalCase)
-*/
+/**
+ *  Converts first character of the string value coming from STS to UpperCase, (we are doing here camelCase to PascalCase)
+ */
 export function toUpperCaseFirstChar(value: string): string {
 	return value !== '' ? value[0].toUpperCase() + value.substring(1) : value;
 }

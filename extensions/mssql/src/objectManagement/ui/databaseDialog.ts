@@ -10,6 +10,7 @@ import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
 import { BooleanDropdownOptions, Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringinMB, toUpperCaseFirstChar } from '../utils';
+import { isUndefinedOrNull } from '../../types';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -74,10 +75,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			//Initilaize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
-			if (this.objectInfo.isLedgerDatabase !== null) {
+			if (!isUndefinedOrNull(this.objectInfo.isLedgerDatabase)) {
 				this.initializeLedgerSection();
 			}
-			if (this.objectInfo.pageVerify !== null && this.objectInfo.targetRecoveryTimeInSec !== null) {
+			if (!isUndefinedOrNull(this.objectInfo.pageVerify) && !isUndefinedOrNull(this.objectInfo.targetRecoveryTimeInSec)) {
 				this.initializeRecoverySection();
 			}
 			this.initializeStateSection();
@@ -85,7 +86,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
-				id: 'generalId',
+				id: 'general',
 				content: this.createGroup('', [
 					this.databaseSection,
 					this.backupSection
@@ -95,7 +96,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize Options Tab
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
-				id: 'optionsId',
+				id: 'options',
 				content: this.createGroup('', this.optionsTabSectionsContainer, false)
 			};
 
@@ -334,7 +335,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeStateSection(): void {
 		let containers: azdata.Component[] = [];
 
-		if (this.objectInfo.databaseReadOnly !== null) {
+		if (!isUndefinedOrNull(this.objectInfo.databaseReadOnly)) {
 			this.databaseReadOnlyInput = this.createDropdown(localizedConstants.DatabaseReadOnlyText, async (newValue) => {
 				this.objectInfo.databaseReadOnly = Boolean(newValue);
 			}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.databaseReadOnly)), true);
@@ -349,7 +350,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.booleanOptionsArray, toUpperCaseFirstChar(String(this.objectInfo.encryptionEnabled)), true);
 		containers.push(this.createLabelInputContainer(localizedConstants.EncryptionEnabledText, this.encryptionEnabledInput));
 
-		if (this.objectInfo.restrictAccess !== null) {
+		if (!isUndefinedOrNull(this.objectInfo.restrictAccess)) {
 			this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
 				this.objectInfo.restrictAccess = newValue;
 			}, this.viewInfo.restrictAccessOptions, this.objectInfo.restrictAccess, true);
