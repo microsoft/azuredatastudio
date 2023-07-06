@@ -147,7 +147,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		if (this.engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
 			platformItems.unshift(hardwareGenerationContainer);
-			sqlServerItems.push(reservedStorageSizeInMBContainer, serviceTierContainer, storageSpaceUsageInGbContainer);
+			sqlServerItems.push(reservedStorageSizeInMBContainer, serviceTierContainer, storageSpaceUsageInMbContainer);
 			// remove isXTPSupported
 			sqlServerItems.splice(3, 1);
 		}
