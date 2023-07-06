@@ -46,6 +46,6 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 /**
  * Converts number to two decimal placed string
  */
-export function convertNumToTwoDecimalStringinMB(value: number): string {
+export function convertNumToTwoDecimalStringInMB(value: number): string {
 	return localizedConstants.StringValueInMB(value?.toFixed(2));
 }
