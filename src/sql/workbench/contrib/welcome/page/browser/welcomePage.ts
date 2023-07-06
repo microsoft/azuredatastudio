@@ -850,7 +850,6 @@ registerThemingParticipant((theme, collector) => {
 	const tileBackgroundColor = theme.getColor(inputBackground);
 	if (tileBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tile:not(.extension):not(.extension-pack) { background-color: ${tileBackgroundColor};  }`);
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button { background-color: ${tileBackgroundColor} !important;  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .tool-tip .tool-tip-text { background-color: ${tileBackgroundColor};  }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .modal-content { background-color: ${tileBackgroundColor};  }`);
 	}
@@ -886,22 +885,7 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonHoverBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background-color: ${buttonHoverBackgroundColor}}`);
 	}
-	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
-	if (buttonSecondaryBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { background-color: ${buttonSecondaryBackgroundColor}}`);
-	}
-	const buttonSecondaryBorderColor = theme.getColor(buttonSecondaryBorder);
-	if (buttonSecondaryBorderColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button{ border: 1px solid ${buttonSecondaryBorderColor}}`);
-	}
-	const buttonSecondaryColor = theme.getColor(buttonSecondaryForeground);
-	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
-	}
-	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverBackground);
-	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { background-color: ${buttonSecondaryHover};}`);
-	}
+
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .dropdown-content { background: ${selectBackgroundColor};}`);
