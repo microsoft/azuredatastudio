@@ -58,15 +58,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		this._certMigrationEventEmitter = new vscode.EventEmitter();
 
-		this._certMigrationEventEmitter.event(async (e) => {
-			if (e.state === TdeMigrationState.Succeeded) {
-				this.wizard.pages[this.wizard.currentPage + 1].enabled = true;
-				this.wizard.nextButton.enabled = true;
-			} else {
-				this.wizard.pages[this.wizard.currentPage + 1].enabled = false;
-				this.wizard.nextButton.enabled = false;
-			}
-		});
+		this._certMigrationEventEmitter.event(() => this._updateNextButton());
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -109,16 +101,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].hidden = !this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates();
-		if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates()
-			&& this.migrationStateModel.tdeMigrationConfig.lastTdeMigrationResult().state !== TdeMigrationState.Succeeded
-		) {
-			this.wizard.pages[this.wizard.currentPage + 1].enabled = false;
-			this.wizard.nextButton.enabled = false;
-		} else {
-			this.wizard.pages[this.wizard.currentPage + 1].enabled = true;
-			this.wizard.nextButton.enabled = true;
-		}
-
+		this._updateNextButton();
 		this._updateTdeMigrationButtonStatus();
 
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
@@ -808,6 +791,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					}
 				}
 
+				this._resetTdeMigrationResult();
+
 				this.migrationStateModel._sqlMigrationServices = undefined!;
 				if (isSqlDbTarget) {
 					await this._resetTargetMapping();
@@ -1228,14 +1213,30 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			sourceDatabaseCollation.toLocaleLowerCase() === targetDatabaseCollation.toLocaleLowerCase();
 	}
 
+	private _updateNextButton() {
+		if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
+			this.migrationStateModel.tdeMigrationConfig.lastTdeMigrationResult().state !== TdeMigrationState.Succeeded) {
+			this.wizard.pages[this.wizard.currentPage + 1].enabled = false;
+			this.wizard.nextButton.enabled = false;
+		} else {
+			this.wizard.pages[this.wizard.currentPage + 1].enabled = true;
+			this.wizard.nextButton.enabled = true;
+		}
+	}
+
 	private _updateTdeMigrationButtonStatus() {
 		this.wizard.customButtons[TDE_MIGRATION_BUTTON_INDEX].enabled =
 			this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
 			this.migrationStateModel._targetManagedInstances.length > 0;
 	}
 
-	private async _startTdeMigration(): Promise<void> {
+	private _resetTdeMigrationResult() {
 		this.migrationStateModel.tdeMigrationConfig.resetTdeMigrationResult();
+		this._updateNextButton();
+	}
+
+	private async _startTdeMigration(): Promise<void> {
+		this._resetTdeMigrationResult();
 		const dialog = new TdeMigrationDialog(this.migrationStateModel, this._certMigrationEventEmitter);
 		await dialog.openDialog();
 	}
