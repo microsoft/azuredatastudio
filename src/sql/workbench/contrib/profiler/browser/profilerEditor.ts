@@ -556,8 +556,9 @@ export class ProfilerEditor extends EditorPane {
 
 				// Launch the create session dialog if openning a new window.
 				let uiState = this._profilerService.getSessionViewState(this.input.id);
+				const isXELFileSession: boolean = this.input.xelFileURI === null ? false : true;
 				let previousSessionName = uiState && uiState.previousSessionName;
-				if (!this.input.sessionName && !previousSessionName) {
+				if (!this.input.sessionName && !previousSessionName && !isXELFileSession) {
 					this._profilerService.launchCreateSessionDialog(this.input);
 				}
 

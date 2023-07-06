@@ -662,10 +662,6 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		this._profilerService.onProfilerSessionCreated(response);
 	}
 
-	/*public $onProfilerSessionStarted(handle: number, response: azdata.ProfilerSessionStartedParams): void {
-		this._profilerService.onProfilerSessionStarted(response);
-	}*/
-
 	// SQL Server Agent handlers
 	public $onJobDataUpdated(handle: Number): void {
 		this._jobManagementService.fireOnDidChange();

@@ -65,6 +65,7 @@ export class ProfilerService implements IProfilerService {
 	private _editColumnDialog?: ProfilerColumnEditorDialog;
 	private _memento: any;
 	private _context: Memento;
+	private _isXELFileSession: boolean = false;
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
@@ -108,6 +109,9 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public onSessionStopped(params: azdata.ProfilerSessionStoppedParams): void {
+		if (this._isXELFileSession) {		// Do nothing if XEL file reading session completes
+			return;
+		}
 		if (this._idMap.reverseHas(params.ownerUri)) {
 			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onSessionStopped(params);
 		}
@@ -153,7 +157,10 @@ export class ProfilerService implements IProfilerService {
 			this.updateMemento(id, { previousSessionName: sessionName });
 			try {
 				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, isSessionTypeLocalFile));
-				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+				if (!isSessionTypeLocalFile) {		// Do nothing for XEL file read
+					this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+				}
+
 				return true;
 			} catch (reason) {
 				this._notificationService.error(reason.message);
@@ -308,6 +315,7 @@ export class ProfilerService implements IProfilerService {
 
 		if (xelFileURI?.length === 1) {
 			const fileURI = xelFileURI[0];
+			this._isXELFileSession = true;
 
 			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, null, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
