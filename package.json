@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.45.0",
-  "distro": "68d0c9ce66941b734b19080ad335cb69d3ae2e4a",
+  "distro": "72f281cdcc5d92e168d3ce089814978e9701a67e",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -39,7 +39,7 @@
     "download-builtin-extensions-cg": "node build/lib/builtInExtensionsCG.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
-    "tsec-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
+    "tsec-compile-check": "node --max_old_space_size=8191 node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
     "vscode-dts-compile-check": "tsc -p src/tsconfig.vscode-dts.json && tsc -p src/tsconfig.vscode-proposed-dts.json",
     "valid-layers-check": "node --max_old_space_size=8192 build/lib/layersChecker.js",
     "update-distro": "node build/npm/update-distro.mjs",
@@ -240,7 +240,7 @@
     "temp-write": "^3.4.0",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
-    "tsec": "0.1.4",
+    "tsec": "0.2.7",
     "typemoq": "^0.3.2",
     "typescript": "^5.2.0-dev.20230524",
     "typescript-formatter": "7.1.0",
