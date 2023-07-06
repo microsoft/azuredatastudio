@@ -134,15 +134,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 				}
 			});
 		}
-		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)
-			|| e.affectsConfiguration(Constants.configEnableSqlAuthenticationProviderName)
-			|| e.affectsConfiguration(Constants.configEnableConnectionPoolingName)) {
+		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)) {
 			if (Utils.getParallelMessageProcessingConfig()) {
 				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureAsyncParallelProcessing);
 			}
+			await displayReloadAds();
+		}
+		if (e.affectsConfiguration(Constants.configEnableSqlAuthenticationProviderName)) {
 			if (Utils.getEnableSqlAuthenticationProviderConfig()) {
 				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureSqlAuthenticationProvider);
 			}
+			await displayReloadAds();
+		}
+		if (e.affectsConfiguration(Constants.configEnableConnectionPoolingName)) {
 			if (Utils.getEnableConnectionPoolingConfig()) {
 				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureConnectionPooling);
 			}
