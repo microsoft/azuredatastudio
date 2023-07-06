@@ -15,7 +15,7 @@ import * as uiLoc from '../ui/localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as constants from '../constants';
-import { refreshParentNode, doubleEscapeSingleQuotes } from './utils';
+import { refreshParentNode, escapeSingleQuotes } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
 import { ServerRoleDialog } from './ui/serverRoleDialog';
@@ -114,7 +114,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
 		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
 		const objectName = context.nodeInfo ? context.nodeInfo.label : (context.connectionProfile.databaseName === '' ? context.connectionProfile.serverName : context.connectionProfile.databaseName);
-		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? 'Server' : `Server/Database[@Name='${doubleEscapeSingleQuotes(context.connectionProfile.databaseName)}']`);
+		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? 'Server' : `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`);
 
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
