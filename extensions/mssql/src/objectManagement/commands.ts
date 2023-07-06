@@ -101,7 +101,7 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 				objectType = ObjectManagement.NodeType.Database;
 				break;
 			default:
-				throw new Error(`Could not find a supported dialog for node type '${context.nodeInfo!.nodeType}' and object type '${context.nodeInfo!.objectType}'.`);
+				throw new Error(objectManagementLoc.NoDialogFoundError(context.nodeInfo!.nodeType, context.nodeInfo!.objectType));
 		}
 	}
 
