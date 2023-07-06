@@ -482,7 +482,7 @@ export interface Server extends ObjectManagement.SqlObject {
 	rootDirectory: string;
 	serverCollation: string;
 	serviceTier: string;
-	storageSpaceUsageInGB: number;
+	storageSpaceUsageInMB: number;
 	minServerMemory: number;
 	maxServerMemory: number;
 }

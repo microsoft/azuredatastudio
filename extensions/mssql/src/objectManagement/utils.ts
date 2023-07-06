@@ -47,3 +47,8 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 export function convertNumToTwoDecimalStringinMB(value: number): string {
 	return localizedConstants.StringValueInMB(value?.toFixed(2));
 }
+
+// Escape single quotes
+export function escapeSingleQuotes(value: string): string {
+	return value.replace(/'/g, "\'");
+}
