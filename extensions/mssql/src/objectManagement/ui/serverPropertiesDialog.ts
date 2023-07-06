@@ -107,7 +107,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.productInput = this.createInputBox(localizedConstants.ProductText, async () => { }, this.objectInfo.product, this.options.isNewObject);
 		const productContainer = this.createLabelInputContainer(localizedConstants.ProductText, this.productInput);
 
-		this.reservedStorageSizeInMBInput = this.createInputBox(localizedConstants.ReservedStorageSizeInMBText, async () => { }, this.objectInfo.reservedStorageSizeMB.toString().concat(' MB'), this.options.isNewObject);
+		this.reservedStorageSizeInMBInput = this.createInputBox(localizedConstants.ReservedStorageSizeInMBText, async () => { }, localizedConstants.StringValueInMB(this.objectInfo.reservedStorageSizeMB.toString()), this.options.isNewObject);
 		const reservedStorageSizeInMBContainer = this.createLabelInputContainer(localizedConstants.ReservedStorageSizeInMBText, this.reservedStorageSizeInMBInput);
 
 		this.rootDirectoryInput = this.createInputBox(localizedConstants.RootDirectoryText, async () => { }, this.objectInfo.rootDirectory, this.options.isNewObject);
@@ -119,7 +119,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.serviceTierInput = this.createInputBox(localizedConstants.ServiceTierText, async () => { }, this.objectInfo.serviceTier, this.options.isNewObject);
 		const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
 
-		this.storageSpaceUsageInMBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInMBText, async () => { }, this.objectInfo.storageSpaceUsageInMB.toString().concat(' MB'), this.options.isNewObject);
+		this.storageSpaceUsageInMBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInMBText, async () => { }, localizedConstants.StringValueInMB(this.objectInfo.storageSpaceUsageInMB.toString()), this.options.isNewObject);
 		const storageSpaceUsageInMbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
 
 		this.versionInput = this.createInputBox(localizedConstants.VersionText, async () => { }, this.objectInfo.version, this.options.isNewObject);

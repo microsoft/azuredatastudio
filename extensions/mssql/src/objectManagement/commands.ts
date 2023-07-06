@@ -111,17 +111,11 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const connectedToLocalhost = context.connectionProfile.serverName === 'localhost';
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
-		let objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : ObjectManagement.NodeType.Server;
-		let objectName = context.nodeInfo ? context.nodeInfo.label : context.connectionProfile.serverName;
-		let objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
-		// TODO: fix connectionProfile not returning the actual server name when is localhost
-		if (!connectedToLocalhost && context.nodeInfo === undefined) {
-			objectType = context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database;
-			objectName = context.connectionProfile.databaseName === '' ? context.connectionProfile.serverName : context.connectionProfile.databaseName;
-			objectUrn = context.connectionProfile.databaseName === '' ? `Server[@Name='${context.connectionProfile.serverName}']` : `Server[@Name='${context.connectionProfile.serverName}']/Database[@Name='${context.connectionProfile.databaseName}']`;
-		}
+		let objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
+		let objectName = context.nodeInfo ? context.nodeInfo.label : (context.connectionProfile.databaseName === '' ? context.connectionProfile.serverName : context.connectionProfile.databaseName);
+		let objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? `Server[@Name='${context.connectionProfile.serverName}']` : `Server/Database[@Name='${context.connectionProfile.databaseName}']`);
+
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
