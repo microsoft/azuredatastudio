@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { AzureSQLMI, ViewServerPropertiesDocUrl } from '../constants';
+import { ViewServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -29,23 +29,32 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private rootDirectoryInput: azdata.InputBoxComponent;
 	private serverCollationInput: azdata.InputBoxComponent;
 	private serviceTierInput: azdata.InputBoxComponent;
-	private storageSpaceUsageInGBInput: azdata.InputBoxComponent;
+	private storageSpaceUsageInMBInput: azdata.InputBoxComponent;
 	private versionInput: azdata.InputBoxComponent;
 
 	private memoryTab: azdata.Tab;
 	private memorySection: azdata.GroupContainer;
 	private minServerMemoryInput: azdata.InputBoxComponent;
 	private maxServerMemoryInput: azdata.InputBoxComponent;
+	private engineEdition: azdata.DatabaseEngineEdition;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
+		this.dialogObject.customButtons[1].enabled = false;
 	}
 
 	protected override get helpUrl(): string {
 		return ViewServerPropertiesDocUrl;
 	}
 
+	protected override onFormFieldChange(): void {
+		this.dialogObject.customButtons[1].enabled = false;
+		this.dialogObject.okButton.enabled = this.isDirty;
+	}
+
 	protected async initializeUI(): Promise<void> {
+		const serverInfo = await azdata.connection.getServerInfo(this.options.objectExplorerContext.connectionProfile.id);
+		this.engineEdition = serverInfo.engineEditionId;
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
 		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
@@ -110,8 +119,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.serviceTierInput = this.createInputBox(localizedConstants.ServiceTierText, async () => { }, this.objectInfo.serviceTier, this.options.isNewObject);
 		const serviceTierContainer = this.createLabelInputContainer(localizedConstants.ServiceTierText, this.serviceTierInput);
 
-		this.storageSpaceUsageInGBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInGBText, async () => { }, this.objectInfo.storageSpaceUsageInGB.toString().concat(' GB'), this.options.isNewObject);
-		const storageSpaceUsageInGbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInGBText, this.storageSpaceUsageInGBInput);
+		this.storageSpaceUsageInMBInput = this.createInputBox(localizedConstants.StorageSpaceUsageInMBText, async () => { }, this.objectInfo.storageSpaceUsageInGB.toString().concat(' MB'), this.options.isNewObject);
+		const storageSpaceUsageInGbContainer = this.createLabelInputContainer(localizedConstants.StorageSpaceUsageInMBText, this.storageSpaceUsageInMBInput);
 
 		this.versionInput = this.createInputBox(localizedConstants.VersionText, async () => { }, this.objectInfo.version, this.options.isNewObject);
 		const versionContainer = this.createLabelInputContainer(localizedConstants.VersionText, this.versionInput);
@@ -136,7 +145,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			versionContainer
 		];
 
-		if (this.objectInfo.platform === AzureSQLMI) {
+		if (this.engineEdition === azdata.DatabaseEngineEdition.SqlManagedInstance) {
 			platformItems.unshift(hardwareGenerationContainer);
 			sqlServerItems.push(reservedStorageSizeInMBContainer, serviceTierContainer, storageSpaceUsageInGbContainer);
 			// remove isXTPSupported
@@ -152,14 +161,15 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeMemorySection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
 			this.objectInfo.minServerMemory = +newValue;
-		}, this.objectInfo.minServerMemory.toString(), true, 'number');
+		}, this.objectInfo.minServerMemory.toString(), isEnabled, 'number');
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
 			this.objectInfo.maxServerMemory = +newValue;
-		}, this.objectInfo.maxServerMemory.toString(), true, 'number');
+		}, this.objectInfo.maxServerMemory.toString(), isEnabled, 'number');
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [

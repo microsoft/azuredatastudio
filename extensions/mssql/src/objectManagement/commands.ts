@@ -111,11 +111,23 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
+		const connectedToLocalhost = context.connectionProfile.serverName === 'localhost';
 		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
-		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
-		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
-		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
-
+		let objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : ObjectManagement.NodeType.Server;
+		let objectName = context.nodeInfo ? context.nodeInfo.label : context.connectionProfile.serverName;
+		let objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+		// TODO: fix connectionProfile not returning the actual server name when is localhost
+		if (!connectedToLocalhost && context.nodeInfo === undefined) {
+			objectType = context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database;
+			objectName = context.connectionProfile.databaseName === '' ? context.connectionProfile.serverName : context.connectionProfile.databaseName;
+			objectUrn = context.connectionProfile.databaseName === '' ? `Server[@Name='${context.connectionProfile.serverName}']/Database[@Name='${context.connectionProfile.databaseName}']` : `Server[@Name='${context.connectionProfile.serverName}']`;
+		}
+		//objecname
+		console.log(objectName);
+		//servername
+		console.log(context.connectionProfile.serverName);
+		console.log(context.connectionProfile);
+		console.log(objectUrn);
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
@@ -126,6 +138,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectUrn: objectUrn,
 			objectExplorerContext: context
 		};
+		console.log(options);
 		const dialog = getDialog(service, options);
 		await dialog.open();
 	}
@@ -154,7 +167,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
 	let confirmMessage = objectManagementLoc.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
 	if (additionalConfirmationMessage) {
-		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
+		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage} `;
 	}
 	const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, uiLoc.YesText);
 	if (confirmResult !== uiLoc.YesText) {
@@ -287,7 +300,7 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.Database:
 			return new DatabaseDialog(service, dialogOptions);
 		default:
-			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
+			throw new Error(`Unsupported object type: ${dialogOptions.objectType} `);
 	}
 }
 

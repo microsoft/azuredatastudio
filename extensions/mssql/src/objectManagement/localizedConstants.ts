@@ -252,11 +252,11 @@ export const IsHadrEnabledText = localize('objectManagement.isHadrEnabled', "Is 
 export const IsPolyBaseInstalledText = localize('objectManagement.isPolyBaseInstalled', "Is PolyBase Installed");
 export const IsXTPSupportedText = localize('objectManagement.isXTPSupported', "Is XTP Supported");
 export const ProductText = localize('objectManagement.product', "Product");
-export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size");
+export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size (MB)");
 export const RootDirectoryText = localize('objectManagement.rootDirectory', "Root Directory");
 export const ServerCollationText = localize('objectManagement.serverCollation', "Server Collation");
 export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
-export const StorageSpaceUsageInGBText = localize('objectManagement.storageSpaceUsageInGB', "Storage Space Usage");
+export const StorageSpaceUsageInMBText = localize('objectManagement.storageSpaceUsageInMB', "Storage Space Usage (MB)");
 export const VersionText = localize('objectManagement.versionText', "Version");
 
 
