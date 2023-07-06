@@ -851,12 +851,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		let tdeTelemetryAction: TelemetryAction;
 
-		switch (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates) {
-			case true:
+		switch (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting()) {
+			case ConfigDialogSetting.ExportCertificates:
 				tdeTelemetryAction = TelemetryAction.TdeConfigurationUseADS;
 				break;
-			case false:
+			case ConfigDialogSetting.DoNotExport:
 				tdeTelemetryAction = TelemetryAction.TdeConfigurationAlreadyMigrated;
+				break;
+			case ConfigDialogSetting.NoSelection:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
 				break;
 			default:
 				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;

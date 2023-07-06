@@ -258,6 +258,7 @@ export class TdeMigrationDialog {
 	}
 
 	private async _retryTdeMigration(): Promise<void> {
+		this._model.tdeMigrationConfig.resetTdeMigrationResult();
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
 		tdeMigrationResult.dbList = this._model.tdeMigrationConfig.getTdeEnabledDatabases().map<TdeMigrationDbState>(
 			db => ({
