@@ -8,12 +8,14 @@ import 'mocha';
 import * as should from 'should';
 
 describe('escapeSingleQuotes Method Tests', () => {
+
 	it('Should return original string if no single quotes', function (): void {
 		const dbName = "My Database";
 		const testString: string = "Server/Database[@Name='My Database']";
 		const ret = `Server/Database[@Name='${escapeSingleQuotes(dbName)}']`;
 		should(ret).equal(testString);
 	});
+
 	it('Should return original string if it contains single quotes', function (): void {
 		const dbName = "My'Database";
 		const testString: string = "Server/Database[@Name='My'Database']";
