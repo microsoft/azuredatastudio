@@ -122,12 +122,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectName = context.connectionProfile.databaseName === '' ? context.connectionProfile.serverName : context.connectionProfile.databaseName;
 			objectUrn = context.connectionProfile.databaseName === '' ? `Server[@Name='${context.connectionProfile.serverName}']/Database[@Name='${context.connectionProfile.databaseName}']` : `Server[@Name='${context.connectionProfile.serverName}']`;
 		}
-		//objecname
-		console.log(objectName);
-		//servername
-		console.log(context.connectionProfile.serverName);
-		console.log(context.connectionProfile);
-		console.log(objectUrn);
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
 			isNewObject: false,
