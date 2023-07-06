@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//import * as azdata from 'azdata';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
@@ -74,8 +73,7 @@ export class ProfilerStart extends Action {
 
 	public override async run(input: ProfilerInput): Promise<void> {
 		input.data.clear();
-		//const isSessionTypeLocalFile: boolean = this._profilerService.
-		await this._profilerService.startSession(input.id, input.sessionName, true);
+		await this._profilerService.startSession(input.id, input.sessionName);
 	}
 }
 

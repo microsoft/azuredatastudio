@@ -73,7 +73,7 @@ export interface IProfilerService {
 	/**
 	 * Starts the session specified by the id
 	 */
-	startSession(sessionId: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean>;
+	startSession(sessionId: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile?: boolean): Thenable<boolean>;
 	/**
 	 * Pauses the session specified by the id
 	 */
@@ -98,10 +98,6 @@ export interface IProfilerService {
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
 	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams): void;
-	/**
-	 * Called by the service when a new profiler session is started by the open XEL dialog
-	 */
-	//onProfilerSessionStarted(events: azdata.ProfilerSessionStartedParams): void;
 	/**
 	 * Gets a list of the view templates that are specified in the settings
 	 * @param provider An optional string to limit the view templates to a specific provider

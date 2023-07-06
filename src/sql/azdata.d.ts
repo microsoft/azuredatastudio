@@ -2184,7 +2184,7 @@ declare module 'azdata' {
 
 	export interface ProfilerProvider extends DataProvider {
 		createSession(sessionId: string, sessionName: string, template: ProfilerSessionTemplate): Thenable<boolean>;
-		startSession(sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean>;
+		startSession(sessionId: string, sessionName: string, isSessionTypeLocalFile?: boolean): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
 		getXEventSessions(sessionId: string): Thenable<string[]>;
@@ -2194,7 +2194,6 @@ declare module 'azdata' {
 		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
 		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
 		registerOnProfilerSessionCreated(handler: (response: ProfilerSessionCreatedParams) => any): void;
-		//registerOnProfilerSessionStarted(handler: (response: ProfilerSessionStartedParams) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -2269,15 +2268,6 @@ declare module 'azdata' {
 		ownerUri: string;
 		sessionName: string;
 		templateName: string;
-	}
-
-	export interface ProfilerSessionStartedParams {
-		sessionName: string;
-	}
-
-	export enum ProfilingSessionType {
-		RemoteSession = 0,
-		LocalFile = 1
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------

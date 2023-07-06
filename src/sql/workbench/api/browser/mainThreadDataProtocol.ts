@@ -357,14 +357,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		const self = this;
 		this._profilerService.registerProvider(providerId, <azdata.ProfilerProvider>{
 			createSession(sessionId: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> {
-				// eslint-disable-next-line no-console
-				console.log('2. in actual impementation of createSession');
 				return self._proxy.$createSession(handle, sessionId, createStatement, template);
 			},
 			startSession(sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean> {
-				// eslint-disable-next-line no-console
-				console.log('2. in actual impementation of startSession');
-				//let sessionType = this. //azdata.ProfilingSessionType.LocalFile;
 				return self._proxy.$startSession(handle, sessionId, sessionName, isSessionTypeLocalFile);
 			},
 			stopSession(sessionId: string): Thenable<boolean> {

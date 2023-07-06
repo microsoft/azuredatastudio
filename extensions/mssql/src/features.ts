@@ -1002,12 +1002,7 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 		};
 
 		let startSession = (ownerUri: string, sessionName: string, isSessionTypeLocalFile: boolean = false): Thenable<boolean> => {
-			let sessionType: contracts.ProfilingSessionType;
-			if (isSessionTypeLocalFile) {
-				sessionType = contracts.ProfilingSessionType.LocalFile;
-			} else {
-				sessionType = contracts.ProfilingSessionType.RemoteSession;
-			}
+			const sessionType: contracts.ProfilingSessionType = isSessionTypeLocalFile ? contracts.ProfilingSessionType.LocalFile : contracts.ProfilingSessionType.RemoteSession;
 
 			let params: contracts.StartProfilingParams = {
 				ownerUri,
@@ -1113,16 +1108,6 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			});
 		};
 
-		/*let registerOnProfilerSessionStarted = (handler: (response: azdata.ProfilerSessionCreatedParams) => any): void => { //TODO update it to session started notification
-			client.onNotification(contracts.ProfilerSessionCreatedNotification.type, (params: contracts.ProfilerSessionCreatedParams) => {
-				handler(<azdata.ProfilerSessionCreatedParams>{
-					ownerUri: params.ownerUri,
-					sessionName: params.sessionName,
-					templateName: params.templateName
-				});
-			});
-		};*/
-
 
 		return azdata.dataprotocol.registerProfilerProvider({
 			providerId: client.providerId,
@@ -1131,7 +1116,6 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			registerOnSessionEventsAvailable,
 			registerOnSessionStopped,
 			registerOnProfilerSessionCreated,
-			//registerOnProfilerSessionStarted,
 			createSession,
 			startSession,
 			stopSession,

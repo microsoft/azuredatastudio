@@ -709,7 +709,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionEventsAvailable(handle: number, response: azdata.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
-	//$onProfilerSessionStarted(handle: number, response: azdata.ProfilerSessionStartedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void;
 	/**

@@ -233,20 +233,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		}
 	}
 
-	/*public onProfilerSessionStarted(params: azdata.ProfilerSessionStartedParams) {
-		if (types.isUndefinedOrNull(params.sessionName)) {
-			this._notificationService.error(nls.localize("profiler.sessionStartedError", "Error while starting new session"));
-		} else {
-			this._sessionName = params.sessionName;
-			this.state.change({
-				isConnected: false,
-				isStopped: false,
-				isPaused: false,
-				isRunning: true
-			});
-		}
-	}*/
-
 	public onSessionStateChanged(state: ProfilerState) {
 		this.state.change(state);
 	}

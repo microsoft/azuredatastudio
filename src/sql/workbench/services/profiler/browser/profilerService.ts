@@ -120,9 +120,6 @@ export class ProfilerService implements IProfilerService {
 		}
 	}
 
-	/*public onProfilerSessionStarted(params: azdata.ProfilerSessionStartedParams): void {
-	}*/
-
 	public async connectSession(id: ProfilerSessionID): Promise<boolean> {
 		if (this._idMap.has(id)) {
 			return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)!));
@@ -152,13 +149,9 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public async startSession(id: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile: boolean = false): Promise<boolean> {
-		// eslint-disable-next-line no-console
-		console.log('1. in actual impementation of startSession');
-		//let profilingSessionType: azdata.ProfilingSessionType = azdata.ProfilingSessionType.RemoteSession
 		if (this._idMap.has(id)) {
 			this.updateMemento(id, { previousSessionName: sessionName });
 			try {
-				//let isSessionTypeLocalFile: boolean = this.fil
 				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, isSessionTypeLocalFile));
 				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 				return true;
@@ -315,12 +308,10 @@ export class ProfilerService implements IProfilerService {
 
 		if (xelFileURI?.length === 1) {
 			const fileURI = xelFileURI[0];
-			// eslint-disable-next-line no-console
-			console.log('XEL File URI:', fileURI.fsPath);
 
 			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, null, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
-			await this.startSession(profilerInput.id, profilerInput.xelFileURI.fsPath, true/*, azdata.ProfilingSessionType.LocalFile*/);
+			await this.startSession(profilerInput.id, profilerInput.xelFileURI.fsPath, true);
 		}
 
 
