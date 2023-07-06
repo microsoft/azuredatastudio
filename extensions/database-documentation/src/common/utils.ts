@@ -184,8 +184,20 @@ async function getDocumentationText(tableName: string, tableAttributes: [string,
 		return `### ${tableName}  \n` + promptResponse.data.choices[0].message.content + '  \n\n';
 	}
 	catch (error) {
-		vscode.window.showInformationMessage("Error:" + error.message);
-		return error.message;
+		const status = error.message.slice(-3);
+		if (status === "401") {
+			return localize("database-documentation.401", "OpenAI request failed because of invalid authentication. Ensure your API Key is current and correct.");
+		}
+		else if (status === "429") {
+			return localize("database-documentation.429", "OpenAI request failed because of rate limiting. Make sure your plan allows at least 15 request per minute.");
+		}
+		else if (status === "500") {
+			return localize("database-documentation.500", "OpenAI request failed due to a server error on their side. Try again some other time.");
+		}
+		else if (status === "503") {
+			return localize("database-documentation.503", "OpenAI request failed because their servers are overloaded. Try again some other time.");
+		}
+		return localize("database-documentation.miscAPIError", JSON.stringify(error.message));
 	}
 }
 
