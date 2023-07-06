@@ -83,22 +83,12 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 	if (!objectType) {
 		switch (context.nodeInfo!.nodeType) {
 			case ObjectManagement.NodeType.ApplicationRole:
-				objectType = ObjectManagement.NodeType.ApplicationRole;
-				break;
 			case ObjectManagement.NodeType.DatabaseRole:
-				objectType = ObjectManagement.NodeType.DatabaseRole;
-				break;
 			case ObjectManagement.NodeType.ServerLevelLogin:
-				objectType = ObjectManagement.NodeType.ServerLevelLogin;
-				break;
 			case ObjectManagement.NodeType.ServerLevelServerRole:
-				objectType = ObjectManagement.NodeType.ServerLevelServerRole;
-				break;
 			case ObjectManagement.NodeType.User:
-				objectType = ObjectManagement.NodeType.User;
-				break;
 			case ObjectManagement.NodeType.Database:
-				objectType = ObjectManagement.NodeType.Database;
+				objectType = context.nodeInfo!.nodeType as ObjectManagement.NodeType;
 				break;
 			default:
 				throw new Error(objectManagementLoc.NoDialogFoundError(context.nodeInfo!.nodeType, context.nodeInfo!.objectType));
