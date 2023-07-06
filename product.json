@@ -92,11 +92,16 @@
 	],
 	"extensionEnabledApiProposals": {
 		"GitHub.copilot": [
-			"inlineCompletionsAdditions",
-			"terminalDataWriteEvent"
+			"inlineCompletionsAdditions"
 		],
 		"GitHub.copilot-nightly": [
-			"inlineCompletionsAdditions",
+			"inlineCompletionsAdditions"
+		],
+		"GitHub.copilot-chat": [
+			"handleIssueUri",
+			"interactive",
+			"interactiveUserActions",
+			"semanticSimilarity",
 			"terminalDataWriteEvent"
 		]
 	},

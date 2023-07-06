@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.45.0",
-  "distro": "8edcf26f189f3a51a08760d4ba37474efd402fa4",
+  "distro": "68d0c9ce66941b734b19080ad335cb69d3ae2e4a",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -84,7 +84,7 @@
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
     "applicationinsights": "1.4.2",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.58",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.59",
     "chart.js": "^4.3.0",
     "chartjs-adapter-moment": "^1.0.1",
     "chokidar": "3.5.1",
@@ -178,7 +178,7 @@
     "cssnano": "^4.1.11",
     "debounce": "^1.0.0",
     "deemon": "^1.8.0",
-    "electron": "22.3.10",
+    "electron": "22.3.14",
     "eslint": "8.36.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-jsdoc": "^39.3.2",
