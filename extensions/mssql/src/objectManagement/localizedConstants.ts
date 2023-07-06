@@ -258,14 +258,17 @@ export const ServerCollationText = localize('objectManagement.serverCollation', 
 export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
 export const StorageSpaceUsageInMBText = localize('objectManagement.storageSpaceUsageInMB', "Storage Space Usage (MB)");
 export const VersionText = localize('objectManagement.versionText', "Version");
-
-
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
 export const BackupSectionHeader = localize('objectManagement.databaseProperties.backupSectionHeader', "Backup");
+export const AutomaticSectionHeader = localize('objectManagement.databaseProperties.automaticSectionHeader', "Automatic");
+export const LedgerSectionHeader = localize('objectManagement.databaseProperties.ledgerSectionHeader', "Ledger");
+export const RecoverySectionHeader = localize('objectManagement.databaseProperties.recoverySectionHeader', "Recovery");
+export const StateSectionHeader = localize('objectManagement.databaseProperties.stateSectionHeader', "State");
 export const DatabaseSectionHeader = localize('objectManagement.databaseProperties.databaseSectionHeader', "Database");
 export const NamePropertyText = localize('objectManagement.databaseProperties.name', "Name");
 export const StatusText = localize('objectManagement.databaseProperties.status', "Status");
@@ -277,6 +280,19 @@ export const NumberOfUsersText = localize('objectManagement.databaseProperties.n
 export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
 export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
 export const StringValueInMB = (value: string) => localize('objectManagement.databaseProperties.mbUnitText', "{0} MB", value);
+export const AutoCreateIncrementalStatisticsText = localize('objectManagement.databaseProperties.autoCreateIncrementalStatisticsText', "Auto Create Incremental Statistics");
+export const AutoCreateStatisticsText = localize('objectManagement.databaseProperties.AutoCreateStatisticsText', "Auto Create Statistics");
+export const AutoShrinkText = localize('objectManagement.databaseProperties.autoShrinkText', "Auto Shrink");
+export const AutoUpdateStatisticsText = localize('objectManagement.databaseProperties.autoUpdateStatisticsText', "Auto Update Statistics");
+export const AutoUpdateStatisticsAsynchronouslyText = localize('objectManagement.databaseProperties.autoUpdateStatisticsAsynchronouslyText', "Auto Update Statistics Asynchronously");
+export const IsLedgerDatabaseText = localize('objectManagement.databaseProperties.isLedgerDatabaseText', "Is Ledger Database");
+export const PageVerifyText = localize('objectManagement.databaseProperties.pageVerifyText', "Page Verify");
+export const TargetRecoveryTimeInSecondsText = localize('objectManagement.databaseProperties.targetRecoveryTimeInSecondsText', "Target Recovery Time (Seconds)");
+export const DatabaseReadOnlyText = localize('objectManagement.databaseProperties.databaseReadOnlyText', "Database Read-Only");
+export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
+export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
+export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
+
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
