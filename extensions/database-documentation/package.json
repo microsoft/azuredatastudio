@@ -13,7 +13,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:database-documentation.viewDocumentation"
+		"onCommand:database-documentation.viewDocumentation",
+	    "onLanguage:sql"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

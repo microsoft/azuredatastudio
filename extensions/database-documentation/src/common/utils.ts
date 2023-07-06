@@ -25,7 +25,6 @@ export function getContextVariables(): [azdata.ObjectExplorerContext, azdata.con
 	return [context, connection, version, document];
 }
 
-
 export async function generateMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
 	const databaseName = context.connectionProfile!.databaseName;
 
@@ -56,6 +55,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	let diagram = '```mermaid\nclassDiagram\n';
 	let references = ``;
 	let documentation = ``;
+	// Tables
 	for (let i = 0; i < tables.length; i++) {
 		const tableAttributes = await tableToText(connection, databaseName, tables[i]);
 		const tableResult = getMermaidDiagramForTable(tables[i], tableAttributes);
@@ -66,6 +66,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		vscode.window.showInformationMessage("Getting documentation for " + tables[i]);
 		documentation += await getDocumentationText(tables[i], tableAttributes, 'Table');
 	}
+	// Views
 	for (let i = 0; i < views.length; i++) {
 		const tableAttributes = await tableToText(connection, databaseName, views[i]);
 		const tableResult = getMermaidDiagramForTable(views[i], tableAttributes);
@@ -257,14 +258,17 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 
 	const nodeType = context.nodeInfo.nodeType;
 
+	// If documentation contains multiple other objects, extract them and save them into the database
 	if (nodeType === 'Database' || nodeType === 'Schema') {
 		const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
-
-		let objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
 
 		let objectNames = new Set([]);
 		if (objectNamesResult.rowCount) {
 			objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
+		}
+		else {
+			return;
 		}
 
 		const json = JSON.parse(markdownJSON);
@@ -335,7 +339,6 @@ async function getOpenApiKey(): Promise<string> {
 	return apiKey;
 }
 
-// TODO: Take in a numbe of objects to compare to
 export function convertMarkdownToJSON(markdown: string): string {
 	const lines = markdown.split('\n');
 	const json: any = {};
@@ -450,4 +453,34 @@ function validate(input: string): string {
 	return sanitizedKeywords;
 }
 
+export async function getHoverContent(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover> {
+	const connection = (await azdata.connection.getCurrentConnection());
+
+	if (!connection) {
+		vscode.window.showInformationMessage(localize('database-documentation.connectionError', 'No active connection found.'));
+		throw new Error('No active connection found.');
+	}
+
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+
+	const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
+	const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+
+	if (objectNamesResult.rowCount) {
+		const objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
+		const range = document.getWordRangeAtPosition(position);
+		const word = document.getText(range);
+		if (objectNames.has(word)) {
+			const markdownQuery = `SELECT [Markdown] FROM [master].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(word)}';`;
+			const markdownResult = await queryProvider.runQueryAndReturn(connectionUri, markdownQuery);
+
+			return new vscode.Hover(new vscode.MarkdownString(markdownResult.rows[0][0].displayValue));;
+		}
+		return null;
+	}
+	else {
+		return null;
+	}
+}
 

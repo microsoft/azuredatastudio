@@ -5,26 +5,28 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { convertMarkdownToJSON, generateMarkdown, getContextVariables, saveMarkdown, setContextVariables, setupGeneration } from './common/utils';
+import { convertMarkdownToJSON, generateMarkdown, getContextVariables, getHoverContent, saveMarkdown, setContextVariables, setupGeneration } from './common/utils';
 import * as nls from 'vscode-nls';
 
 export async function activate(context: vscode.ExtensionContext) {
 
     const localize = nls.loadMessageBundle();
 
+    vscode.window.showInformationMessage("Activated Extension");
+
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.viewDocumentation', async (context: azdata.ObjectExplorerContext) => {
         // The code you place here will be executed every time your command is executed
-        let connection = (await azdata.connection.getCurrentConnection());
+        const connection = (await azdata.connection.getCurrentConnection());
 
         if (!connection) {
             vscode.window.showInformationMessage(localize('database-documentation.connectionError', 'No active connection found.'));
             throw new Error('No active connection found.');
         }
 
-        let result = await setupGeneration(context, connection);
+        const result = await setupGeneration(context, connection);
         const version = result[0];
         let md = result[1];
 
@@ -35,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         // Show generated docs
-        let document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
+        const document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
         await setContextVariables(context, connection, version, document);
@@ -56,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
             const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
             if (choice === yes) {
-                await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase', context, connection, version);
+                await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
             }
         })
 
@@ -75,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
         await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 
         // Show generated docs
-        let document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
+        const document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
         setContextVariables(context, connection, version, document);
@@ -114,6 +116,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
         vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved markdown to master database!"));
     }));
+
+    
+    vscode.languages.registerHoverProvider('sql', {
+        provideHover(document, position) {
+           return getHoverContent(document, position);
+        }
+    });
 }
 
 // this method is called when your extension is deactivated
