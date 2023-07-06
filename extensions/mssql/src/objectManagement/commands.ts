@@ -160,7 +160,7 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
 	let confirmMessage = objectManagementLoc.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
 	if (additionalConfirmationMessage) {
-		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage} `;
+		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
 	}
 	const confirmResult = await vscode.window.showWarningMessage(confirmMessage, { modal: true }, uiLoc.YesText);
 	if (confirmResult !== uiLoc.YesText) {
@@ -293,7 +293,7 @@ function getDialog(service: IObjectManagementService, dialogOptions: ObjectManag
 		case ObjectManagement.NodeType.Database:
 			return new DatabaseDialog(service, dialogOptions);
 		default:
-			throw new Error(`Unsupported object type: ${dialogOptions.objectType} `);
+			throw new Error(`Unsupported object type: ${dialogOptions.objectType}`);
 	}
 }
 
