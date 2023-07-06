@@ -35,16 +35,9 @@ bootstrap.enableASARSupport();
 
 // Enable sandbox globally unless disabled via `--no-sandbox` argument
 const args = parseCLIArgs();
-// if (args['sandbox']) {  // {{SQL CARBON EDIT}} - disable sandbox
-//	app.enableSandbox();
-// }
-
-if (args['nogpu']) { // {{SQL CARBON EDIT}}
-	app.disableHardwareAcceleration(); // {{SQL CARBON EDIT}}
-	app.commandLine.appendSwitch('headless'); // {{SQL CARBON EDIT}}
-	app.commandLine.appendSwitch('disable-gpu'); // {{SQL CARBON EDIT}}
-} // {{SQL CARBON EDIT}}
-
+if (args['sandbox']) {
+	app.enableSandbox();
+}
 
 // Set userData path before app 'ready' event
 const userDataPath = getUserDataPath(args, product.nameShort ?? 'azuredatastudio-oss-dev'); // {{SQL CARBON EDIT}} - change app name
@@ -477,7 +470,7 @@ function parseCLIArgs() {
 			'crash-reporter-directory'
 		],
 		default: {
-			'sandbox': false // {{SQL CARBON EDIT} - set sandbox to false
+			'sandbox': true
 		},
 		alias: {
 			'no-sandbox': 'sandbox'
