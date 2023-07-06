@@ -171,9 +171,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	//#region Database Properties - General Tab
 	private initializeBackupSection(): void {
+		// Last Database Backup
 		this.lastDatabaseBackupInput = this.createInputBox(localizedConstants.LastDatabaseBackupText, async () => { }, this.objectInfo.lastDatabaseBackup, this.options.isNewObject);
 		const lastDatabaseBackupContainer = this.createLabelInputContainer(localizedConstants.LastDatabaseBackupText, this.lastDatabaseBackupInput);
 
+		// Last Database Log Backup
 		this.lastDatabaseLogBackupInput = this.createInputBox(localizedConstants.LastDatabaseLogBackupText, async () => { }, this.objectInfo.lastDatabaseLogBackup, this.options.isNewObject);
 		const lastDatabaseLogBackupContainer = this.createLabelInputContainer(localizedConstants.LastDatabaseLogBackupText, this.lastDatabaseLogBackupInput);
 
@@ -184,33 +186,43 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeDatabaseSection(): void {
+		// Database Name
 		this.nameInput = this.createInputBox(localizedConstants.NamePropertyText, async () => { }, this.objectInfo.name, this.options.isNewObject);
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NamePropertyText, this.nameInput);
 
+		// Database Status
 		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
 		const statusContainer = this.createLabelInputContainer(localizedConstants.StatusText, this.statusInput);
 
+		// Database Owner
 		this.ownerInput = this.createInputBox(localizedConstants.OwnerPropertyText, async () => { }, this.objectInfo.owner, this.options.isNewObject);
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerPropertyText, this.ownerInput);
 
+		// Created Date
 		this.dateCreatedInput = this.createInputBox(localizedConstants.DateCreatedText, async () => { }, this.objectInfo.dateCreated, this.options.isNewObject);
 		const dateCreatedContainer = this.createLabelInputContainer(localizedConstants.DateCreatedText, this.dateCreatedInput);
 
+		// Size
 		this.sizeInput = this.createInputBox(localizedConstants.SizeText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.sizeInMb), this.options.isNewObject);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.SizeText, this.sizeInput);
 
+		// Space Available
 		this.spaceAvailabeInput = this.createInputBox(localizedConstants.SpaceAvailableText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.spaceAvailableInMb), this.options.isNewObject);
 		const spaceAvailabeContainer = this.createLabelInputContainer(localizedConstants.SpaceAvailableText, this.spaceAvailabeInput);
 
+		// Number of Users
 		this.numberOfUsersInput = this.createInputBox(localizedConstants.NumberOfUsersText, async () => { }, this.objectInfo.numberOfUsers.toString(), this.options.isNewObject);
 		const numberOfUsersContainer = this.createLabelInputContainer(localizedConstants.NumberOfUsersText, this.numberOfUsersInput);
 
+		// Memory Allocated To Memory Optimized Objects
 		this.memoryAllocatedInput = this.createInputBox(localizedConstants.MemoryAllocatedText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.memoryAllocatedToMemoryOptimizedObjectsInMb), this.options.isNewObject);
 		const memoryAllocatedContainer = this.createLabelInputContainer(localizedConstants.MemoryAllocatedText, this.memoryAllocatedInput);
 
+		// Memory Used By Memory Optimized Objects
 		this.memoryUsedInput = this.createInputBox(localizedConstants.MemoryUsedText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb), this.options.isNewObject);
 		const memoryUsedContainer = this.createLabelInputContainer(localizedConstants.MemoryUsedText, this.memoryUsedInput);
 
+		// Collation
 		this.collationInput = this.createInputBox(localizedConstants.CollationText, async () => { }, this.objectInfo.collationName, this.options.isNewObject);
 		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, this.collationInput);
 
@@ -232,11 +244,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Database Properties - Options Tab
 	private initializeOptionsGeneralSection(): void {
 		let containers: azdata.Component[] = [];
+		// Collation
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
 			this.objectInfo.collationName = newValue as string;
 		}, this.viewInfo.collationNames, this.objectInfo.collationName);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
+		// Recovery Model
 		let displayOptionsArray = this.viewInfo.recoveryModels.length === 0 ? [this.objectInfo.recoveryModel] : this.viewInfo.recoveryModels;
 		let isEnabled = this.viewInfo.recoveryModels.length === 0 ? false : true;
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async (newValue) => {
@@ -244,11 +258,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, displayOptionsArray, this.objectInfo.recoveryModel, isEnabled);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 
+		// Compatibility Level
 		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async (newValue) => {
 			this.objectInfo.compatibilityLevel = newValue as string;
 		}, this.viewInfo.compatibilityLevels, this.objectInfo.compatibilityLevel);
 		containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
 
+		// Containment Type
 		displayOptionsArray = this.viewInfo.containmentTypes.length === 0 ? [this.objectInfo.containmentType] : this.viewInfo.containmentTypes;
 		isEnabled = this.viewInfo.containmentTypes.length === 0 ? false : true;
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async (newValue) => {
@@ -261,55 +277,27 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeAutomaticSection(): void {
-		// this.autoCreateIncrementalStatisticsInput = this.createCheckbox('', async (checked) => {
-		// 	this.objectInfo.autoCreateIncrementalStatistics = checked;
-		// }, this.objectInfo.autoCreateIncrementalStatistics);
-		// const autoCreateIncrementalStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateIncrementalStatisticsText, this.autoCreateIncrementalStatisticsInput);
-
-		// this.autoCreateStatisticsInput = this.createCheckbox('', async (checked) => {
-		// 	this.objectInfo.autoCreateStatistics = checked;
-		// }, this.objectInfo.autoCreateStatistics);
-		// const autoCreateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoCreateStatisticsText, this.autoCreateStatisticsInput);
-
-		// this.autoShrinkInput = this.createCheckbox('', async (checked) => {
-		// 	this.objectInfo.autoShrink = checked;
-		// }, this.objectInfo.autoShrink);
-		// const autoShrinkContainer = this.createLabelInputContainer(localizedConstants.AutoShrinkText, this.autoShrinkInput);
-
-		// this.autoUpdateStatisticsInput = this.createCheckbox('', async (checked) => {
-		// 	this.objectInfo.autoUpdateStatistics = checked;
-		// }, this.objectInfo.autoUpdateStatistics);
-		// const autoUpdateStatisticsContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsText, this.autoUpdateStatisticsInput);
-
-		// this.autoUpdateStatisticsAsynchronouslyInput = this.createCheckbox('', async (checked) => {
-		// 	this.objectInfo.autoUpdateStatisticsAsynchronously = checked;
-		// }, this.objectInfo.autoUpdateStatisticsAsynchronously);
-		// const autoUpdateStatisticsAsynchronouslyContainer = this.createLabelInputContainer(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, this.autoUpdateStatisticsAsynchronouslyInput);
-		// const automaticSection = this.createGroup(localizedConstants.AutomaticSectionHeader, [
-		// 	autoCreateIncrementalStatisticsContainer,
-		// 	autoCreateStatisticsContainer,
-		// 	autoShrinkContainer,
-		// 	autoUpdateStatisticsContainer,
-		// 	autoUpdateStatisticsAsynchronouslyContainer
-		// ], true);
-
-
+		// Auto Create Incremental Statistics
 		this.autoCreateIncrementalStatisticsInput = this.createCheckbox(localizedConstants.AutoCreateIncrementalStatisticsText, async (checked) => {
 			this.objectInfo.autoCreateIncrementalStatistics = checked;
 		}, this.objectInfo.autoCreateIncrementalStatistics);
 
+		// Auto Create Statistics
 		this.autoCreateStatisticsInput = this.createCheckbox(localizedConstants.AutoCreateStatisticsText, async (checked) => {
 			this.objectInfo.autoCreateStatistics = checked;
 		}, this.objectInfo.autoCreateStatistics);
 
+		// Auto Shrink
 		this.autoShrinkInput = this.createCheckbox(localizedConstants.AutoShrinkText, async (checked) => {
 			this.objectInfo.autoShrink = checked;
 		}, this.objectInfo.autoShrink);
 
+		// Auto Update Statistics
 		this.autoUpdateStatisticsInput = this.createCheckbox(localizedConstants.AutoUpdateStatisticsText, async (checked) => {
 			this.objectInfo.autoUpdateStatistics = checked;
 		}, this.objectInfo.autoUpdateStatistics);
 
+		//Auto Update Statistics Asynchronously
 		this.autoUpdateStatisticsAsynchronouslyInput = this.createCheckbox(localizedConstants.AutoUpdateStatisticsAsynchronouslyText, async (checked) => {
 			this.objectInfo.autoUpdateStatisticsAsynchronously = checked;
 		}, this.objectInfo.autoUpdateStatisticsAsynchronously);
@@ -325,6 +313,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeLedgerSection(): void {
+		// Ledger Database
 		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async (checked) => {
 			this.objectInfo.isLedgerDatabase = checked;
 		}, this.objectInfo.isLedgerDatabase);
@@ -337,11 +326,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeRecoverySection(): void {
+		// Page Verify
 		this.pageVerifyInput = this.createDropdown(localizedConstants.PageVerifyText, async (newValue) => {
 			this.objectInfo.pageVerify = newValue;
 		}, this.viewInfo.pageVerifyOptions, this.objectInfo.pageVerify, true);
 		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
 
+		// Recovery Time In Seconds
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
 			this.objectInfo.targetRecoveryTimeInSec = Number(newValue);
 		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number');
@@ -357,7 +348,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	private initializeStateSection(): void {
 		let containers: azdata.Component[] = [];
-
+		// Database Read-Only
 		if (!isUndefinedOrNull(this.objectInfo.databaseReadOnly)) {
 			this.databaseReadOnlyInput = this.createCheckbox(localizedConstants.DatabaseReadOnlyText, async (checked) => {
 				this.objectInfo.databaseReadOnly = checked;
@@ -365,14 +356,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			containers.push(this.databaseReadOnlyInput);
 		}
 
+		// Database Status
 		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput));
 
+		// Encryption Enabled
 		this.encryptionEnabledInput = this.createCheckbox(localizedConstants.EncryptionEnabledText, async (checked) => {
 			this.objectInfo.encryptionEnabled = checked;
 		}, this.objectInfo.encryptionEnabled);
 		containers.push(this.encryptionEnabledInput);
 
+		// Restrict Access
 		if (!isUndefinedOrNull(this.objectInfo.restrictAccess)) {
 			this.restrictAccessInput = this.createDropdown(localizedConstants.RestrictAccessText, async (newValue) => {
 				this.objectInfo.restrictAccess = newValue;
