@@ -132,7 +132,6 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 			objectUrn: objectUrn,
 			objectExplorerContext: context
 		};
-		console.log(options);
 		const dialog = getDialog(service, options);
 		await dialog.open();
 	}
