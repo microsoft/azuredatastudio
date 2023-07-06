@@ -120,7 +120,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		if (!connectedToLocalhost && context.nodeInfo === undefined) {
 			objectType = context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database;
 			objectName = context.connectionProfile.databaseName === '' ? context.connectionProfile.serverName : context.connectionProfile.databaseName;
-			objectUrn = context.connectionProfile.databaseName === '' ? `Server[@Name='${context.connectionProfile.serverName}']/Database[@Name='${context.connectionProfile.databaseName}']` : `Server[@Name='${context.connectionProfile.serverName}']`;
+			objectUrn = context.connectionProfile.databaseName === '' ? `Server[@Name='${context.connectionProfile.serverName}']` : `Server[@Name='${context.connectionProfile.serverName}']/Database[@Name='${context.connectionProfile.databaseName}']`;
 		}
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,
