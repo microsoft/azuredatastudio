@@ -105,6 +105,7 @@ export interface IConnectionManagementService {
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
 	onConnectionChanged: Event<IConnectionParams>;
+	onDatabaseChanged: Event<void>;
 	onLanguageFlavorChanged: Event<azdata.DidChangeLanguageFlavorParams>;
 
 	// Event Emitters for async tree
@@ -278,6 +279,10 @@ export interface IConnectionManagementService {
 	 * Changes the database for an active connection
 	 */
 	changeDatabase(connectionUri: string, databaseName: string): Thenable<boolean>;
+	/**
+	 * Sends a notification that the database connection has changed.
+	 */
+	notifyDatabaseChanged(): void;
 
 	/**
 	 * Cancels the connection for the editor

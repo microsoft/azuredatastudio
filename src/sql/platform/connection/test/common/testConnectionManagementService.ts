@@ -46,6 +46,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return Event.None;
 	}
 
+	public get onDatabaseChanged(): Event<any> {
+		return Event.None;
+	}
+
 	public get onConnectionChanged(): Event<any> {
 		return Event.None;
 	}
@@ -241,6 +245,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	changeDatabase(connectionUri: string, databaseName: string): Thenable<boolean> {
 		return new Promise(() => true);
+	}
+
+	notifyDatabaseChanged(): void {
+
 	}
 
 	editGroup(group: ConnectionProfileGroup): Promise<void> {

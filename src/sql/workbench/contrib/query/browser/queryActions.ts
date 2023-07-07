@@ -733,6 +733,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 						});
 					} else {
 						this._dropdown.options.strictSelection = true;
+						this.connectionManagementService.notifyDatabaseChanged();
 					}
 				},
 				error => {

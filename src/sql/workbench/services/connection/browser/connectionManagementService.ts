@@ -71,6 +71,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onDeleteConnectionProfile = new Emitter<void>();
 	private _onConnect = new Emitter<IConnectionParams>();
 	private _onDisconnect = new Emitter<IConnectionParams>();
+	private _onDatabaseChanged = new Emitter<void>();
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
@@ -191,6 +192,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public get onDisconnect(): Event<IConnectionParams> {
 		return this._onDisconnect.event;
+	}
+
+	public get onDatabaseChanged(): Event<void> {
+		return this._onDatabaseChanged.event;
 	}
 
 	public get onConnectionChanged(): Event<IConnectionParams> {
@@ -1807,6 +1812,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 		}
 		return Promise.resolve(false);
+	}
+
+	public notifyDatabaseChanged(): void {
+		this._onDatabaseChanged.fire();
 	}
 
 	public editGroup(group: ConnectionProfileGroup): Promise<void> {

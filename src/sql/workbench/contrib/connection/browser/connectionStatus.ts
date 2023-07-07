@@ -43,6 +43,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		this._register(this.connectionManagementService.onConnect(() => this._updateStatus()));
 		this._register(this.connectionManagementService.onConnectionChanged(() => this._updateStatus()));
 		this._register(this.connectionManagementService.onDisconnect(() => this._updateStatus()));
+		this._register(this.connectionManagementService.onDatabaseChanged(() => this._updateStatus()));
 		this._register(this.editorService.onDidActiveEditorChange(() => this._updateStatus()));
 		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
 	}
