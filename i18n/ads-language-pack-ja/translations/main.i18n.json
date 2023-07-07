@@ -13173,6 +13173,9 @@
 			"backup.isPreviewFeature": "バックアップを使用するにはプレビュー機能を有効にする必要があります",
 			"backupAction.backup": "バックアップ"
 		},
+		"sql/workbench/contrib/backup/browser/backupUiService": {
+			"backupDialogTitle": "データベースのバックアップ - {0}:{1}"
+		},
 		"sql/workbench/contrib/backup/common/constants": {
 			"backup.asymmetricKey": "非対称キー",
 			"backup.compressBackup": "バックアップの圧縮",
@@ -14251,6 +14254,9 @@
 		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
 			"plotlyError": "Plotly グラフの表示エラー: {0}"
 		},
+		"sql/workbench/contrib/notebook/common/notebookLoc": {
+			"moreActionsLabel": "その他"
+		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"objectExplorer.filterDialogTitle": "フィルター設定",
 			"serverTree.newConnection": "新しい接続",
@@ -14599,6 +14605,10 @@
 			"enablePreviewFeatures.notice": "プレビュー機能により、新機能と機能改善にフル アクセスできることで、Azure Data Studio のエクスペリエンスが拡張されます。プレビュー機能の詳細については、[ここ] ({0}) を参照してください。プレビュー機能を有効にしますか?",
 			"enablePreviewFeatures.yes": "はい (推奨)"
 		},
+		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
+			"miGettingStarted": "Getting &&Started",
+			"showReleaseNotes": "Show Getting Started"
+		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "接続の作成",
 			"welcomePage.createConnectionBody": "接続ダイアログを使用してデータベース インスタンスに接続します。",
@@ -14700,6 +14710,11 @@
 			"workbench.startupEditor.welcomePage": "[ようこそ] ページを開き、Azure Data Studio と拡張機能の使用を開始するのに役立つコンテンツを表示します。",
 			"workbench.startupEditor.welcomePageInEmptyWorkbench": "空のワークベンチを開くとき、ウェルカム ページを開きます。",
 			"workbench.startupEditor.welcomePageWithTour": "はじめに ツアーでウェルカム ページを開く (既定)"
+		},
+		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
+			"telemetryOptOut.optInNotice": "Microsoft による利用状況のデータ収集を許可することで Azure Data Studio の改善に役立てることができます。[プライバシーに関する声明]({0}) を読んで [オプトアウト]({1}) の方法をご確認ください。",
+			"telemetryOptOut.optOutNotice": "Microsoft による利用状況のデータ収集を許可することで Azure Data Studio の改善に役立てることができます。[プライバシーに関する声明]({0}) を読んで [オプトアウト]({1}) の方法をご確認ください。",
+			"telemetryOptOut.readMore": "詳細を読む"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "アカウントを追加する",
@@ -15085,6 +15100,39 @@
 			"registeredServers.clearRecentConnections": "削除",
 			"showAllConnections": "すべての接続を表示"
 		},
+		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
+			"filterDialog.errorDateRange": "開始日の値は終了日の値を超えることはできません。",
+			"filterDialog.errorEndDate": "終了日が指定されていません。",
+			"filterDialog.errorEndNumber": "終了番号が指定されていません。",
+			"filterDialog.errorNumberRange": "開始番号を終了番号より大きくすることはできません。",
+			"filterDialog.errorStartDate": "開始日が指定されていません。",
+			"filterDialog.errorStartNumber": "開始番号が指定されていません。",
+			"objectExplorer.andSelectBox": "および",
+			"objectExplorer.betweenSelectBox": "指定範囲内",
+			"objectExplorer.cancelButtonText": "取り消す",
+			"objectExplorer.clearAllButtonText": "すべてクリア",
+			"objectExplorer.clearColumnHeader": "クリア",
+			"objectExplorer.containsSelectBox": "指定値を含む",
+			"objectExplorer.endsWithSelectBox": "次で終わる",
+			"objectExplorer.equalsSelectBox": "指定値に等しい",
+			"objectExplorer.falseSelectBox": "False",
+			"objectExplorer.greaterThanOrEqualsSelectBox": "指定値以上",
+			"objectExplorer.greaterThanSelectBox": "指定値より大きい",
+			"objectExplorer.lessThanOrEqualsSelectBox": "指定値以下",
+			"objectExplorer.lessThanSelectBox": "指定値より小さい",
+			"objectExplorer.nodePath": "パス:",
+			"objectExplorer.notBetweenSelectBox": "指定範囲外",
+			"objectExplorer.notContainsSelectBox": "含まない",
+			"objectExplorer.notEndsWithSelectBox": "次で終わらない",
+			"objectExplorer.notEqualsSelectBox": "指定値に等しくない",
+			"objectExplorer.notStartsWithSelectBox": "次で始まらない",
+			"objectExplorer.okButtonText": "OK",
+			"objectExplorer.operatorColumnHeader": "演算子",
+			"objectExplorer.propertyNameColumnHeader": "プロパティ",
+			"objectExplorer.startsWithSelectBox": "次で始まる",
+			"objectExplorer.trueSelectBox": "True",
+			"objectExplorer.valueColumnHeader": "値"
+		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "オブジェクト エクスプローラー セッションを作成できませんでした",
 			"nodeExpansionError": "複数のエラー:",
@@ -15134,6 +15182,13 @@
 			"profilerFilterDialog.startsWithOperator": "次で始まる",
 			"profilerFilterDialog.title": "フィルター",
 			"profilerFilterDialog.valueColumn": "値"
+		},
+		"sql/workbench/services/query/common/gridDataProvider": {
+			"gridDataProvider.cancelCopyResults": "取り消す",
+			"gridDataProvider.closeNotification": "閉じる",
+			"gridDataProvider.copyResultsCompleted": "選択したデータがクリップボードにコピーされました。行数: {0}です。",
+			"gridDataProvider.copying": "コピー中...",
+			"gridDataProvider.loadingRowsInProgress": "コピーする行を読み込んでいます ({0}/{1})..."
 		},
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "URI のクエリ ランナーが見つかりませんでした:{0}",
@@ -15224,6 +15279,9 @@
 			"taillogBackup": "ログ末尾のバックアップ",
 			"targetDatabase": "ターゲット データベース",
 			"targetDatabaseTooltip": "ターゲット データベース名を入力してください"
+		},
+		"sql/workbench/services/restore/browser/restoreServiceImpl": {
+			"restoreDialogTitle": "データベースの復元 - {0}:{1}"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "すべてのファイル",
@@ -15350,64 +15408,6 @@
 			"InProgressWarning": "1 つ以上のタスクを実行中です。終了してもよろしいですか?",
 			"taskService.no": "いいえ",
 			"taskService.yes": "はい"
-		},
-		"sql/workbench/contrib/backup/browser/backupUiService": {
-			"backupDialogTitle": "データベースのバックアップ - {0}:{1}"
-		},
-		"sql/workbench/contrib/notebook/common/notebookLoc": {
-			"moreActionsLabel": "その他"
-		},
-		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
-		},
-		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
-			"telemetryOptOut.optInNotice": "Microsoft による利用状況のデータ収集を許可することで Azure Data Studio の改善に役立てることができます。[プライバシーに関する声明]({0}) を読んで [オプトアウト]({1}) の方法をご確認ください。",
-			"telemetryOptOut.optOutNotice": "Microsoft による利用状況のデータ収集を許可することで Azure Data Studio の改善に役立てることができます。[プライバシーに関する声明]({0}) を読んで [オプトアウト]({1}) の方法をご確認ください。",
-			"telemetryOptOut.readMore": "詳細を読む"
-		},
-		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
-			"filterDialog.errorDateRange": "開始日の値は終了日の値を超えることはできません。",
-			"filterDialog.errorEndDate": "終了日が指定されていません。",
-			"filterDialog.errorEndNumber": "終了番号が指定されていません。",
-			"filterDialog.errorNumberRange": "開始番号を終了番号より大きくすることはできません。",
-			"filterDialog.errorStartDate": "開始日が指定されていません。",
-			"filterDialog.errorStartNumber": "開始番号が指定されていません。",
-			"objectExplorer.andSelectBox": "および",
-			"objectExplorer.betweenSelectBox": "指定範囲内",
-			"objectExplorer.cancelButtonText": "取り消す",
-			"objectExplorer.clearAllButtonText": "すべてクリア",
-			"objectExplorer.clearColumnHeader": "クリア",
-			"objectExplorer.containsSelectBox": "指定値を含む",
-			"objectExplorer.endsWithSelectBox": "次で終わる",
-			"objectExplorer.equalsSelectBox": "指定値に等しい",
-			"objectExplorer.falseSelectBox": "False",
-			"objectExplorer.greaterThanOrEqualsSelectBox": "指定値以上",
-			"objectExplorer.greaterThanSelectBox": "指定値より大きい",
-			"objectExplorer.lessThanOrEqualsSelectBox": "指定値以下",
-			"objectExplorer.lessThanSelectBox": "指定値より小さい",
-			"objectExplorer.nodePath": "パス:",
-			"objectExplorer.notBetweenSelectBox": "指定範囲外",
-			"objectExplorer.notContainsSelectBox": "含まない",
-			"objectExplorer.notEndsWithSelectBox": "次で終わらない",
-			"objectExplorer.notEqualsSelectBox": "指定値に等しくない",
-			"objectExplorer.notStartsWithSelectBox": "次で始まらない",
-			"objectExplorer.okButtonText": "OK",
-			"objectExplorer.operatorColumnHeader": "演算子",
-			"objectExplorer.propertyNameColumnHeader": "プロパティ",
-			"objectExplorer.startsWithSelectBox": "次で始まる",
-			"objectExplorer.trueSelectBox": "True",
-			"objectExplorer.valueColumnHeader": "値"
-		},
-		"sql/workbench/services/query/common/gridDataProvider": {
-			"gridDataProvider.cancelCopyResults": "取り消す",
-			"gridDataProvider.closeNotification": "閉じる",
-			"gridDataProvider.copyResultsCompleted": "選択したデータがクリップボードにコピーされました。行数: {0}です。",
-			"gridDataProvider.copying": "コピー中...",
-			"gridDataProvider.loadingRowsInProgress": "コピーする行を読み込んでいます ({0}/{1})..."
-		},
-		"sql/workbench/services/restore/browser/restoreServiceImpl": {
-			"restoreDialogTitle": "データベースの復元 - {0}:{1}"
 		}
 	}
 }

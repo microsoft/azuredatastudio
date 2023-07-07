@@ -13173,6 +13173,9 @@
 			"backup.isPreviewFeature": "您必須啟用預覽功能才能使用備份",
 			"backupAction.backup": "備份"
 		},
+		"sql/workbench/contrib/backup/browser/backupUiService": {
+			"backupDialogTitle": "備份資料庫 - {0}:{1}"
+		},
 		"sql/workbench/contrib/backup/common/constants": {
 			"backup.asymmetricKey": "非對稱金鑰",
 			"backup.compressBackup": "壓縮備份",
@@ -14251,6 +14254,9 @@
 		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
 			"plotlyError": "顯示 Plotly 圖表時發生錯誤: {0}"
 		},
+		"sql/workbench/contrib/notebook/common/notebookLoc": {
+			"moreActionsLabel": "更多"
+		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"objectExplorer.filterDialogTitle": "篩選設定",
 			"serverTree.newConnection": "新增連線",
@@ -14599,6 +14605,10 @@
 			"enablePreviewFeatures.notice": "預覽功能可讓您完整存取新功能及改善的功能，增強您在 Azure Data Studio 的體驗。您可以參閱[這裡]({0})深入了解預覽功能。是否要啟用預覽功能?",
 			"enablePreviewFeatures.yes": "是 (建議)"
 		},
+		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
+			"miGettingStarted": "Getting &&Started",
+			"showReleaseNotes": "Show Getting Started"
+		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "建立連線",
 			"welcomePage.createConnectionBody": "透過連線對話方塊連線到資料庫執行個體。",
@@ -14700,6 +14710,11 @@
 			"workbench.startupEditor.welcomePage": "開啟包含協助開始使用 Azure Data Studio 和延伸模組內容的歡迎頁面。",
 			"workbench.startupEditor.welcomePageInEmptyWorkbench": "在開啟空的工作台時開啟歡迎頁面。",
 			"workbench.startupEditor.welcomePageWithTour": "使用使用者入門導覽 (預設) 開啟歡迎頁面"
+		},
+		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
+			"telemetryOptOut.optInNotice": "允許 Microsoft 收集使用率資料來協助改進 Azure Data Studio。閱讀我們的 [隱私權聲明]({0}) 以及學習如何 [選擇參加]({1})。",
+			"telemetryOptOut.optOutNotice": "允許 Microsoft 收集使用率資料來協助改進 Azure Data Studio。閱讀我們的 [隱私權聲明]({0}) 以及學習如何 [選擇退出]({1})。",
+			"telemetryOptOut.readMore": "深入了解"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "新增帳戶",
@@ -15085,6 +15100,39 @@
 			"registeredServers.clearRecentConnections": "刪除",
 			"showAllConnections": "顯示所有連線"
 		},
+		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
+			"filterDialog.errorDateRange": "開始日期不能大於結束日期。",
+			"filterDialog.errorEndDate": "未指定結束日期。",
+			"filterDialog.errorEndNumber": "未指定結束號碼。",
+			"filterDialog.errorNumberRange": "起始號碼不能大於結束號碼。",
+			"filterDialog.errorStartDate": "未指定開始日期。",
+			"filterDialog.errorStartNumber": "未指定開始號碼。",
+			"objectExplorer.andSelectBox": "且",
+			"objectExplorer.betweenSelectBox": "介於",
+			"objectExplorer.cancelButtonText": "取消",
+			"objectExplorer.clearAllButtonText": "全部清除",
+			"objectExplorer.clearColumnHeader": "清除",
+			"objectExplorer.containsSelectBox": "包含",
+			"objectExplorer.endsWithSelectBox": "結束於",
+			"objectExplorer.equalsSelectBox": "等於",
+			"objectExplorer.falseSelectBox": "False",
+			"objectExplorer.greaterThanOrEqualsSelectBox": "大於或等於",
+			"objectExplorer.greaterThanSelectBox": "大於",
+			"objectExplorer.lessThanOrEqualsSelectBox": "小於或等於",
+			"objectExplorer.lessThanSelectBox": "小於",
+			"objectExplorer.nodePath": "路徑:",
+			"objectExplorer.notBetweenSelectBox": "不介於",
+			"objectExplorer.notContainsSelectBox": "不包含",
+			"objectExplorer.notEndsWithSelectBox": "結尾不是",
+			"objectExplorer.notEqualsSelectBox": "不等於",
+			"objectExplorer.notStartsWithSelectBox": "開頭不是",
+			"objectExplorer.okButtonText": "確定",
+			"objectExplorer.operatorColumnHeader": "運算子",
+			"objectExplorer.propertyNameColumnHeader": "屬性",
+			"objectExplorer.startsWithSelectBox": "開始於",
+			"objectExplorer.trueSelectBox": "True",
+			"objectExplorer.valueColumnHeader": "值"
+		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "建立物件總管工作階段失敗",
 			"nodeExpansionError": "多個錯誤:",
@@ -15134,6 +15182,13 @@
 			"profilerFilterDialog.startsWithOperator": "開頭是",
 			"profilerFilterDialog.title": "篩選",
 			"profilerFilterDialog.valueColumn": "值"
+		},
+		"sql/workbench/services/query/common/gridDataProvider": {
+			"gridDataProvider.cancelCopyResults": "取消",
+			"gridDataProvider.closeNotification": "關閉",
+			"gridDataProvider.copyResultsCompleted": "選取的資料已複製到剪貼簿。資料列計數: {0}。",
+			"gridDataProvider.copying": "正在複製...",
+			"gridDataProvider.loadingRowsInProgress": "正在載入要複製的資料列 ({0}/{1})..."
 		},
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "找不到 URI: {0} 的查詢執行器",
@@ -15224,6 +15279,9 @@
 			"taillogBackup": "結尾記錄備份",
 			"targetDatabase": "目標資料庫",
 			"targetDatabaseTooltip": "請輸入目標資料庫名稱"
+		},
+		"sql/workbench/services/restore/browser/restoreServiceImpl": {
+			"restoreDialogTitle": "還原資料庫 - {0}:{1}"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "所有檔案",
@@ -15350,64 +15408,6 @@
 			"InProgressWarning": "1 個或更多的工作正在進行中。是否確實要退出?",
 			"taskService.no": "否",
 			"taskService.yes": "是"
-		},
-		"sql/workbench/contrib/backup/browser/backupUiService": {
-			"backupDialogTitle": "備份資料庫 - {0}:{1}"
-		},
-		"sql/workbench/contrib/notebook/common/notebookLoc": {
-			"moreActionsLabel": "更多"
-		},
-		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
-		},
-		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
-			"telemetryOptOut.optInNotice": "允許 Microsoft 收集使用率資料來協助改進 Azure Data Studio。閱讀我們的 [隱私權聲明]({0}) 以及學習如何 [選擇參加]({1})。",
-			"telemetryOptOut.optOutNotice": "允許 Microsoft 收集使用率資料來協助改進 Azure Data Studio。閱讀我們的 [隱私權聲明]({0}) 以及學習如何 [選擇退出]({1})。",
-			"telemetryOptOut.readMore": "深入了解"
-		},
-		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
-			"filterDialog.errorDateRange": "開始日期不能大於結束日期。",
-			"filterDialog.errorEndDate": "未指定結束日期。",
-			"filterDialog.errorEndNumber": "未指定結束號碼。",
-			"filterDialog.errorNumberRange": "起始號碼不能大於結束號碼。",
-			"filterDialog.errorStartDate": "未指定開始日期。",
-			"filterDialog.errorStartNumber": "未指定開始號碼。",
-			"objectExplorer.andSelectBox": "且",
-			"objectExplorer.betweenSelectBox": "介於",
-			"objectExplorer.cancelButtonText": "取消",
-			"objectExplorer.clearAllButtonText": "全部清除",
-			"objectExplorer.clearColumnHeader": "清除",
-			"objectExplorer.containsSelectBox": "包含",
-			"objectExplorer.endsWithSelectBox": "結束於",
-			"objectExplorer.equalsSelectBox": "等於",
-			"objectExplorer.falseSelectBox": "False",
-			"objectExplorer.greaterThanOrEqualsSelectBox": "大於或等於",
-			"objectExplorer.greaterThanSelectBox": "大於",
-			"objectExplorer.lessThanOrEqualsSelectBox": "小於或等於",
-			"objectExplorer.lessThanSelectBox": "小於",
-			"objectExplorer.nodePath": "路徑:",
-			"objectExplorer.notBetweenSelectBox": "不介於",
-			"objectExplorer.notContainsSelectBox": "不包含",
-			"objectExplorer.notEndsWithSelectBox": "結尾不是",
-			"objectExplorer.notEqualsSelectBox": "不等於",
-			"objectExplorer.notStartsWithSelectBox": "開頭不是",
-			"objectExplorer.okButtonText": "確定",
-			"objectExplorer.operatorColumnHeader": "運算子",
-			"objectExplorer.propertyNameColumnHeader": "屬性",
-			"objectExplorer.startsWithSelectBox": "開始於",
-			"objectExplorer.trueSelectBox": "True",
-			"objectExplorer.valueColumnHeader": "值"
-		},
-		"sql/workbench/services/query/common/gridDataProvider": {
-			"gridDataProvider.cancelCopyResults": "取消",
-			"gridDataProvider.closeNotification": "關閉",
-			"gridDataProvider.copyResultsCompleted": "選取的資料已複製到剪貼簿。資料列計數: {0}。",
-			"gridDataProvider.copying": "正在複製...",
-			"gridDataProvider.loadingRowsInProgress": "正在載入要複製的資料列 ({0}/{1})..."
-		},
-		"sql/workbench/services/restore/browser/restoreServiceImpl": {
-			"restoreDialogTitle": "還原資料庫 - {0}:{1}"
 		}
 	}
 }

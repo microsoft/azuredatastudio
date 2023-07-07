@@ -84,6 +84,10 @@
 						"path": "./translations/extensions/vscode.markdown-math.i18n.json"
 					},
 					{
+						"id": "vscode.markdown",
+						"path": "./translations/extensions/vscode.markdown.i18n.json"
+					},
+					{
 						"id": "vscode.media-preview",
 						"path": "./translations/extensions/vscode.media-preview.i18n.json"
 					},

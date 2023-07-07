@@ -13173,6 +13173,9 @@
 			"backup.isPreviewFeature": "Для использования резервного копирования необходимо включить предварительные версии функции",
 			"backupAction.backup": "Резервное копирование"
 		},
+		"sql/workbench/contrib/backup/browser/backupUiService": {
+			"backupDialogTitle": "Резервное копирование базы данных — {0}:{1}"
+		},
 		"sql/workbench/contrib/backup/common/constants": {
 			"backup.asymmetricKey": "Асимметричный ключ",
 			"backup.compressBackup": "Сжимать резервные копии",
@@ -14251,6 +14254,9 @@
 		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
 			"plotlyError": "Не удалось отобразить диаграмму Plotly: {0}"
 		},
+		"sql/workbench/contrib/notebook/common/notebookLoc": {
+			"moreActionsLabel": "Еще"
+		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"objectExplorer.filterDialogTitle": "Параметры фильтра",
 			"serverTree.newConnection": "Новое подключение",
@@ -14599,6 +14605,10 @@
 			"enablePreviewFeatures.notice": "Предварительные версии функций расширяют возможности Azure Data Studio, предоставляя полный доступ к новым функциям и улучшениям. Дополнительные сведения о предварительных версиях функций см. [здесь]({0}). Вы хотите включить предварительные версии функций?",
 			"enablePreviewFeatures.yes": "Да (рекомендуется)"
 		},
+		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
+			"miGettingStarted": "Getting &&Started",
+			"showReleaseNotes": "Show Getting Started"
+		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "Создать подключение",
 			"welcomePage.createConnectionBody": "Подключение к экземпляру базы данных с помощью диалогового окна подключения.",
@@ -14700,6 +14710,11 @@
 			"workbench.startupEditor.welcomePage": "Откройте домашнюю страницу с содержимым, которое поможет начать работу с Azure Data Studio и расширениями.",
 			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Открывать страницу приветствия при открытии пустой рабочей области.",
 			"workbench.startupEditor.welcomePageWithTour": "Открытие страницы приветствия с туром \"Приступая к работе\" (по умолчанию)"
+		},
+		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
+			"telemetryOptOut.optInNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно согласиться на его использование]({1}).",
+			"telemetryOptOut.optOutNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно отказаться от него]({1}).",
+			"telemetryOptOut.readMore": "Дополнительные сведения"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "Добавить учетную запись",
@@ -15085,6 +15100,39 @@
 			"registeredServers.clearRecentConnections": "Удалить",
 			"showAllConnections": "Показать все подключения"
 		},
+		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
+			"filterDialog.errorDateRange": "Дата начала не может быть установлена позже даты окончания.",
+			"filterDialog.errorEndDate": "Дата окончания не указана.",
+			"filterDialog.errorEndNumber": "Конечный номер не указан.",
+			"filterDialog.errorNumberRange": "Начальный номер не может быть больше конечного.",
+			"filterDialog.errorStartDate": "Дата начала не указана.",
+			"filterDialog.errorStartNumber": "Начальный номер не указан.",
+			"objectExplorer.andSelectBox": "И",
+			"objectExplorer.betweenSelectBox": "Между",
+			"objectExplorer.cancelButtonText": "Отмена",
+			"objectExplorer.clearAllButtonText": "Очистить все",
+			"objectExplorer.clearColumnHeader": "Очистка",
+			"objectExplorer.containsSelectBox": "Содержит",
+			"objectExplorer.endsWithSelectBox": "Заканчивается на",
+			"objectExplorer.equalsSelectBox": "Равно",
+			"objectExplorer.falseSelectBox": "False",
+			"objectExplorer.greaterThanOrEqualsSelectBox": "Больше или равно",
+			"objectExplorer.greaterThanSelectBox": "Больше",
+			"objectExplorer.lessThanOrEqualsSelectBox": "Меньше или равно",
+			"objectExplorer.lessThanSelectBox": "Меньше",
+			"objectExplorer.nodePath": "Путь:",
+			"objectExplorer.notBetweenSelectBox": "Вне диапазона",
+			"objectExplorer.notContainsSelectBox": "Не содержит",
+			"objectExplorer.notEndsWithSelectBox": "Не заканчивается на",
+			"objectExplorer.notEqualsSelectBox": "Не равно",
+			"objectExplorer.notStartsWithSelectBox": "Не начинается с",
+			"objectExplorer.okButtonText": "ОК",
+			"objectExplorer.operatorColumnHeader": "Оператор",
+			"objectExplorer.propertyNameColumnHeader": "Свойство",
+			"objectExplorer.startsWithSelectBox": "Начинается с",
+			"objectExplorer.trueSelectBox": "True",
+			"objectExplorer.valueColumnHeader": "Значение"
+		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Не удалось создать сеанс обозревателя объектов",
 			"nodeExpansionError": "Несколько ошибок:",
@@ -15134,6 +15182,13 @@
 			"profilerFilterDialog.startsWithOperator": "Начинается с",
 			"profilerFilterDialog.title": "Фильтры",
 			"profilerFilterDialog.valueColumn": "Значение"
+		},
+		"sql/workbench/services/query/common/gridDataProvider": {
+			"gridDataProvider.cancelCopyResults": "Отмена",
+			"gridDataProvider.closeNotification": "Закрыть",
+			"gridDataProvider.copyResultsCompleted": "Выбранные данные скопированы в буфер обмена. Число строк: {0}.",
+			"gridDataProvider.copying": "Копирование...",
+			"gridDataProvider.loadingRowsInProgress": "Загрузка строк для копирования ({0}/{1})..."
 		},
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "Не найдено средство выполнения запросов для URI: {0}",
@@ -15224,6 +15279,9 @@
 			"taillogBackup": "Резервная копия заключительного фрагмента журнала",
 			"targetDatabase": "Целевая база данных",
 			"targetDatabaseTooltip": "Введите имя целевой базы данных"
+		},
+		"sql/workbench/services/restore/browser/restoreServiceImpl": {
+			"restoreDialogTitle": "Восстановление базы данных — {0}:{1}"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "Все файлы",
@@ -15350,64 +15408,6 @@
 			"InProgressWarning": "Выполняется одна или несколько задач. Вы действительно хотите выйти?",
 			"taskService.no": "Нет",
 			"taskService.yes": "Да"
-		},
-		"sql/workbench/contrib/backup/browser/backupUiService": {
-			"backupDialogTitle": "Резервное копирование базы данных — {0}:{1}"
-		},
-		"sql/workbench/contrib/notebook/common/notebookLoc": {
-			"moreActionsLabel": "Еще"
-		},
-		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
-		},
-		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
-			"telemetryOptOut.optInNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно согласиться на его использование]({1}).",
-			"telemetryOptOut.optOutNotice": "Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно отказаться от него]({1}).",
-			"telemetryOptOut.readMore": "Дополнительные сведения"
-		},
-		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
-			"filterDialog.errorDateRange": "Дата начала не может быть установлена позже даты окончания.",
-			"filterDialog.errorEndDate": "Дата окончания не указана.",
-			"filterDialog.errorEndNumber": "Конечный номер не указан.",
-			"filterDialog.errorNumberRange": "Начальный номер не может быть больше конечного.",
-			"filterDialog.errorStartDate": "Дата начала не указана.",
-			"filterDialog.errorStartNumber": "Начальный номер не указан.",
-			"objectExplorer.andSelectBox": "И",
-			"objectExplorer.betweenSelectBox": "Между",
-			"objectExplorer.cancelButtonText": "Отмена",
-			"objectExplorer.clearAllButtonText": "Очистить все",
-			"objectExplorer.clearColumnHeader": "Очистка",
-			"objectExplorer.containsSelectBox": "Содержит",
-			"objectExplorer.endsWithSelectBox": "Заканчивается на",
-			"objectExplorer.equalsSelectBox": "Равно",
-			"objectExplorer.falseSelectBox": "False",
-			"objectExplorer.greaterThanOrEqualsSelectBox": "Больше или равно",
-			"objectExplorer.greaterThanSelectBox": "Больше",
-			"objectExplorer.lessThanOrEqualsSelectBox": "Меньше или равно",
-			"objectExplorer.lessThanSelectBox": "Меньше",
-			"objectExplorer.nodePath": "Путь:",
-			"objectExplorer.notBetweenSelectBox": "Вне диапазона",
-			"objectExplorer.notContainsSelectBox": "Не содержит",
-			"objectExplorer.notEndsWithSelectBox": "Не заканчивается на",
-			"objectExplorer.notEqualsSelectBox": "Не равно",
-			"objectExplorer.notStartsWithSelectBox": "Не начинается с",
-			"objectExplorer.okButtonText": "ОК",
-			"objectExplorer.operatorColumnHeader": "Оператор",
-			"objectExplorer.propertyNameColumnHeader": "Свойство",
-			"objectExplorer.startsWithSelectBox": "Начинается с",
-			"objectExplorer.trueSelectBox": "True",
-			"objectExplorer.valueColumnHeader": "Значение"
-		},
-		"sql/workbench/services/query/common/gridDataProvider": {
-			"gridDataProvider.cancelCopyResults": "Отмена",
-			"gridDataProvider.closeNotification": "Закрыть",
-			"gridDataProvider.copyResultsCompleted": "Выбранные данные скопированы в буфер обмена. Число строк: {0}.",
-			"gridDataProvider.copying": "Копирование...",
-			"gridDataProvider.loadingRowsInProgress": "Загрузка строк для копирования ({0}/{1})..."
-		},
-		"sql/workbench/services/restore/browser/restoreServiceImpl": {
-			"restoreDialogTitle": "Восстановление базы данных — {0}:{1}"
 		}
 	}
 }

@@ -13173,6 +13173,9 @@
 			"backup.isPreviewFeature": "Você precisa habilitar as versões prévias dos recursos para poder utilizar o backup",
 			"backupAction.backup": "Backup"
 		},
+		"sql/workbench/contrib/backup/browser/backupUiService": {
+			"backupDialogTitle": "Banco de dados de backup - {0}:{1}"
+		},
 		"sql/workbench/contrib/backup/common/constants": {
 			"backup.asymmetricKey": "Chave Assimétrica",
 			"backup.compressBackup": "Compactar backup",
@@ -14251,6 +14254,9 @@
 		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
 			"plotlyError": "Erro ao exibir o gráfico Plotly: {0}"
 		},
+		"sql/workbench/contrib/notebook/common/notebookLoc": {
+			"moreActionsLabel": "Mais"
+		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
 			"objectExplorer.filterDialogTitle": "Configurações do Filtro",
 			"serverTree.newConnection": "Nova Conexão",
@@ -14599,6 +14605,10 @@
 			"enablePreviewFeatures.notice": "Os recursos de versão prévia aprimoram a sua experiência no Azure Data Studio oferecendo a você acesso completo a novos recursos e melhorias. Saiba mais sobre os recursos de versão prévia [aqui]({0}). Deseja habilitar os recursos de versão prévia?",
 			"enablePreviewFeatures.yes": "Sim (recomendado)"
 		},
+		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
+			"miGettingStarted": "Getting &&Started",
+			"showReleaseNotes": "Show Getting Started"
+		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "Criar uma conexão",
 			"welcomePage.createConnectionBody": "Conectar a uma instância do banco de dados por meio da caixa de diálogo de conexão.",
@@ -14700,6 +14710,11 @@
 			"workbench.startupEditor.welcomePage": "Abra a página de boas-vindas, com conteúdo para ajudar na introdução ao Azure Data Studio e extensões.",
 			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Abrir a página inicial ao abrir um workbench vazio.",
 			"workbench.startupEditor.welcomePageWithTour": "Abrir a página de boas-vindas com Ponto de Partida Tour (padrão)"
+		},
+		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
+			"telemetryOptOut.optInNotice": "Ajude a melhorar o Azure Data Studio permitindo que a Microsoft colete dados de uso. Leia nossa [declaração de privacidade]({0}) e saiba como [optar por participar]({1}).",
+			"telemetryOptOut.optOutNotice": "Ajude a melhorar o Azure Data Studio permitindo que a Microsoft colete dados de uso. Leia nossa [declaração de privacidade]({0}) e saiba como [desativar]({1}).",
+			"telemetryOptOut.readMore": "Leia Mais"
 		},
 		"sql/workbench/services/accountManagement/browser/accountDialog": {
 			"accountDialog.addConnection": "Adicionar uma conta",
@@ -15085,6 +15100,39 @@
 			"registeredServers.clearRecentConnections": "Excluir",
 			"showAllConnections": "Mostrar Todas as Conexões"
 		},
+		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
+			"filterDialog.errorDateRange": "A data de início não pode ser posterior à data de término.",
+			"filterDialog.errorEndDate": "A data final não é especificada.",
+			"filterDialog.errorEndNumber": "O número final não é especificado.",
+			"filterDialog.errorNumberRange": "O número inicial não pode ser maior que o número final.",
+			"filterDialog.errorStartDate": "A data de início não é especificada.",
+			"filterDialog.errorStartNumber": "O número inicial não é especificado.",
+			"objectExplorer.andSelectBox": "E",
+			"objectExplorer.betweenSelectBox": "Entre",
+			"objectExplorer.cancelButtonText": "Cancelar",
+			"objectExplorer.clearAllButtonText": "Limpar Tudo",
+			"objectExplorer.clearColumnHeader": "Claro",
+			"objectExplorer.containsSelectBox": "Contém",
+			"objectExplorer.endsWithSelectBox": "Termina com",
+			"objectExplorer.equalsSelectBox": "É igual a",
+			"objectExplorer.falseSelectBox": "False",
+			"objectExplorer.greaterThanOrEqualsSelectBox": "Maior Que ou Igual",
+			"objectExplorer.greaterThanSelectBox": "Maior Que",
+			"objectExplorer.lessThanOrEqualsSelectBox": "Menor ou Igual",
+			"objectExplorer.lessThanSelectBox": "Menor Que",
+			"objectExplorer.nodePath": "Caminho:",
+			"objectExplorer.notBetweenSelectBox": "Não está Entre",
+			"objectExplorer.notContainsSelectBox": "Não Contém",
+			"objectExplorer.notEndsWithSelectBox": "Não Termina com",
+			"objectExplorer.notEqualsSelectBox": "Diferente",
+			"objectExplorer.notStartsWithSelectBox": "Não Começa Com",
+			"objectExplorer.okButtonText": "OK",
+			"objectExplorer.operatorColumnHeader": "Operador",
+			"objectExplorer.propertyNameColumnHeader": "Propriedade",
+			"objectExplorer.startsWithSelectBox": "Começa Com",
+			"objectExplorer.trueSelectBox": "True",
+			"objectExplorer.valueColumnHeader": "Valor"
+		},
 		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
 			"OeSessionFailedError": "Falha ao criar a sessão do Pesquisador de Objetos",
 			"nodeExpansionError": "Múltiplos erros:",
@@ -15134,6 +15182,13 @@
 			"profilerFilterDialog.startsWithOperator": "Começa Com",
 			"profilerFilterDialog.title": "Filtros",
 			"profilerFilterDialog.valueColumn": "Valor"
+		},
+		"sql/workbench/services/query/common/gridDataProvider": {
+			"gridDataProvider.cancelCopyResults": "Cancelar",
+			"gridDataProvider.closeNotification": "Fechar",
+			"gridDataProvider.copyResultsCompleted": "Os dados selecionados foram copiados para a área de transferência. Contagem de linhas: {0}.",
+			"gridDataProvider.copying": "Copiando...",
+			"gridDataProvider.loadingRowsInProgress": "Carregando as linhas a serem copiadas ({0}/{1})..."
 		},
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "Não foi possível localizar o Executor de Consulta para o uri: {0}",
@@ -15224,6 +15279,9 @@
 			"taillogBackup": "Backup da parte final do log",
 			"targetDatabase": "Banco de dados de destino",
 			"targetDatabaseTooltip": "Insira o nome do banco de dados alvo"
+		},
+		"sql/workbench/services/restore/browser/restoreServiceImpl": {
+			"restoreDialogTitle": "Restaurar banco de dados - {0}:{1}"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "Todos os Arquivos",
@@ -15350,64 +15408,6 @@
 			"InProgressWarning": "1 ou mais tarefas estão em andamento. Tem certeza de que deseja sair?",
 			"taskService.no": "Não",
 			"taskService.yes": "Sim"
-		},
-		"sql/workbench/contrib/backup/browser/backupUiService": {
-			"backupDialogTitle": "Banco de dados de backup - {0}:{1}"
-		},
-		"sql/workbench/contrib/notebook/common/notebookLoc": {
-			"moreActionsLabel": "Mais"
-		},
-		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
-		},
-		"sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut": {
-			"telemetryOptOut.optInNotice": "Ajude a melhorar o Azure Data Studio permitindo que a Microsoft colete dados de uso. Leia nossa [declaração de privacidade]({0}) e saiba como [optar por participar]({1}).",
-			"telemetryOptOut.optOutNotice": "Ajude a melhorar o Azure Data Studio permitindo que a Microsoft colete dados de uso. Leia nossa [declaração de privacidade]({0}) e saiba como [desativar]({1}).",
-			"telemetryOptOut.readMore": "Leia Mais"
-		},
-		"sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog": {
-			"filterDialog.errorDateRange": "A data de início não pode ser posterior à data de término.",
-			"filterDialog.errorEndDate": "A data final não é especificada.",
-			"filterDialog.errorEndNumber": "O número final não é especificado.",
-			"filterDialog.errorNumberRange": "O número inicial não pode ser maior que o número final.",
-			"filterDialog.errorStartDate": "A data de início não é especificada.",
-			"filterDialog.errorStartNumber": "O número inicial não é especificado.",
-			"objectExplorer.andSelectBox": "E",
-			"objectExplorer.betweenSelectBox": "Entre",
-			"objectExplorer.cancelButtonText": "Cancelar",
-			"objectExplorer.clearAllButtonText": "Limpar Tudo",
-			"objectExplorer.clearColumnHeader": "Claro",
-			"objectExplorer.containsSelectBox": "Contém",
-			"objectExplorer.endsWithSelectBox": "Termina com",
-			"objectExplorer.equalsSelectBox": "É igual a",
-			"objectExplorer.falseSelectBox": "False",
-			"objectExplorer.greaterThanOrEqualsSelectBox": "Maior Que ou Igual",
-			"objectExplorer.greaterThanSelectBox": "Maior Que",
-			"objectExplorer.lessThanOrEqualsSelectBox": "Menor ou Igual",
-			"objectExplorer.lessThanSelectBox": "Menor Que",
-			"objectExplorer.nodePath": "Caminho:",
-			"objectExplorer.notBetweenSelectBox": "Não está Entre",
-			"objectExplorer.notContainsSelectBox": "Não Contém",
-			"objectExplorer.notEndsWithSelectBox": "Não Termina com",
-			"objectExplorer.notEqualsSelectBox": "Diferente",
-			"objectExplorer.notStartsWithSelectBox": "Não Começa Com",
-			"objectExplorer.okButtonText": "OK",
-			"objectExplorer.operatorColumnHeader": "Operador",
-			"objectExplorer.propertyNameColumnHeader": "Propriedade",
-			"objectExplorer.startsWithSelectBox": "Começa Com",
-			"objectExplorer.trueSelectBox": "True",
-			"objectExplorer.valueColumnHeader": "Valor"
-		},
-		"sql/workbench/services/query/common/gridDataProvider": {
-			"gridDataProvider.cancelCopyResults": "Cancelar",
-			"gridDataProvider.closeNotification": "Fechar",
-			"gridDataProvider.copyResultsCompleted": "Os dados selecionados foram copiados para a área de transferência. Contagem de linhas: {0}.",
-			"gridDataProvider.copying": "Copiando...",
-			"gridDataProvider.loadingRowsInProgress": "Carregando as linhas a serem copiadas ({0}/{1})..."
-		},
-		"sql/workbench/services/restore/browser/restoreServiceImpl": {
-			"restoreDialogTitle": "Restaurar banco de dados - {0}:{1}"
 		}
 	}
 }

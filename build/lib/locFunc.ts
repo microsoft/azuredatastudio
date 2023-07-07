@@ -183,7 +183,7 @@ const textFields = {
 //list of extensions from vscode that are to be included with ADS.
 const VSCODEExtensions = [
 	"bat",
-	"builtin-notebook-renderers",
+	"builtin-notebook-renderers", // notebook renderers
 	"configuration-editing",
 	"docker",
 	"git",
@@ -194,7 +194,7 @@ const VSCODEExtensions = [
 	"ipynb",
 	"json",
 	"json-language-features",
-	"markdown-basics",
+	"markdown", // markdown-basics
 	"markdown-language-features",
 	"markdown-math",
 	"media-preview",
@@ -213,7 +213,7 @@ const VSCODEExtensions = [
 	"theme-monokai-dimmed",
 	"theme-quietlight",
 	"theme-red",
-	"vscode-theme-seti",
+	"vscode-theme-seti", // theme-seti
 	"theme-solarized-dark",
 	"theme-solarized-light",
 	"theme-tomorrow-night-blue",
