@@ -167,27 +167,21 @@ const textFields = {
 const VSCODEExtensions = [
     "bat",
     "configuration-editing",
-    "csharp",
-    "dart",
     "docker",
-    "fsharp",
     "git",
     "git-base",
     "github",
     "github-authentication",
-    "html",
     "image-preview",
     "ipynb",
-    "javascript",
     "json",
     "json-language-features",
-    "julia",
     "markdown-basics",
     "markdown-language-features",
     "markdown-math",
+    "media-preview",
     "merge-conflict",
     "microsoft-authentication",
-    "notebook-renderers",
     "powershell",
     "python",
     "r",
@@ -201,7 +195,7 @@ const VSCODEExtensions = [
     "theme-monokai-dimmed",
     "theme-quietlight",
     "theme-red",
-    "theme-seti",
+    "vscode-theme-seti",
     "theme-solarized-dark",
     "theme-solarized-light",
     "theme-tomorrow-night-blue",
@@ -303,10 +297,6 @@ function refreshLangpacks() {
                     let nonExistantExtensions = [];
                     for (let curr of localization.translations) {
                         try {
-                            if (curr.id === 'vscode.theme-seti') {
-                                //handle edge case where 'theme-seti' has a different id.
-                                curr.id = 'vscode.vscode-theme-seti';
-                            }
                             fs.statSync(path.join(translationDataFolder, curr.path.replace('./translations', '')));
                         }
                         catch {
@@ -376,9 +366,10 @@ function renameVscodeLangpacks() {
         if (fs.existsSync(translationDataFolder)) {
             let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
             for (let extensionTag in totalExtensions) {
-                let extensionFileName = totalExtensions[extensionTag];
-                let xlfPath = path.join(xlfFolder, `${langId}`, extensionFileName.replace('.i18n.json', '.xlf'));
-                if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(extensionFileName.replace('.i18n.json', '')) !== -1)) {
+            	let extensionFileName = totalExtensions[extensionTag];
+            	let shortExtensionFileName = extensionFileName.replace('ms-vscode.', 'vscode.').replace('vscode.', '');
+            	let xlfPath = path.join(xlfFolder, `${langId}`, shortExtensionFileName.replace('.i18n.json', '.xlf'));
+            	if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(shortExtensionFileName.replace('.i18n.json', '')) !== -1)) {
                     let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
                     rimraf.sync(filePath);
                 }
