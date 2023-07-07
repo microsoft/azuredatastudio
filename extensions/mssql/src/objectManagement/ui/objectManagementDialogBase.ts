@@ -81,10 +81,8 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 							if (this.options.isNewObject) {
 								await refreshNode(this.options.objectExplorerContext);
 							} else {
-								if (this.options.objectType) {
-									// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
-									await refreshParentNode(this.options.objectExplorerContext);
-								}
+								// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
+								await refreshParentNode(this.options.objectExplorerContext);
 							}
 						}
 
