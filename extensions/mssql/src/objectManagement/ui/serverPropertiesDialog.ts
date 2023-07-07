@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewServerPropertiesDocUrl } from '../constants';
@@ -163,13 +164,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private initializeMemorySection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
-			this.objectInfo.minServerMemory = +newValue;
-		}, this.objectInfo.minServerMemory.toString(), isEnabled, 'number');
+			this.objectInfo.minServerMemory.value = +newValue;
+		}, this.objectInfo.minServerMemory.value.toString(), isEnabled, 'number', DefaultInputWidth, this.objectInfo.minServerMemory.minimumValue, this.objectInfo.minServerMemory.maximumValue);
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
-			this.objectInfo.maxServerMemory = +newValue;
-		}, this.objectInfo.maxServerMemory.toString(), isEnabled, 'number');
+			this.objectInfo.maxServerMemory.value = +newValue;
+		}, this.objectInfo.maxServerMemory.value.toString(), isEnabled, 'number', DefaultInputWidth, this.objectInfo.maxServerMemory.minimumValue, this.objectInfo.maxServerMemory.maximumValue);
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [
@@ -178,5 +179,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		], false);
 
 		this.memoryTab = this.createTab('memoryId', localizedConstants.MemoryText, this.memorySection);
+	}
+
+	protected override async validateInput(): Promise<string[]> {
+		const errors = await super.validateInput();
+		if (this.objectInfo.maxServerMemory.value < this.objectInfo.minServerMemory.value) {
+			errors.push(localizedConstants.serverMemoryMaxLowerThanMinInputError);
+		}
+		return errors;
 	}
 }

@@ -495,8 +495,14 @@ export interface Server extends ObjectManagement.SqlObject {
 	serverCollation: string;
 	serviceTier: string;
 	storageSpaceUsageInMB: number;
-	minServerMemory: number;
-	maxServerMemory: number;
+	minServerMemory: NumericServerProperty;
+	maxServerMemory: NumericServerProperty;
+}
+
+export interface NumericServerProperty {
+	maximumValue: number;
+	minimumValue: number;
+	value: number;
 }
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
