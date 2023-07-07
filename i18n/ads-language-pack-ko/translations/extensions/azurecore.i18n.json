@@ -77,28 +77,31 @@
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 작업 영역"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Mongo용 CosmosDB"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "MongoDB용 Azure CosmosDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 데이터베이스"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL Database"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL 서버"
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 데이터 탐색기 클러스터"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL 유연한 서버"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL 유동 서버"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 하이퍼스케일 - Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 서버 – Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Azure Database for PostgreSQL 유연한 서버"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 서버"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 관리형 인스턴스"
+			"azure.resource.providers.sqlInstanceContainerLabel": "SQL Managed Instance"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 관리형 인스턴스 - Azure Arc"
@@ -108,6 +111,10 @@
 		},
 		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
 			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "인식할 수 없는 공급자 리소스: {0}",
+			"azurecore.unregisteredProviderType": "인식할 수 없는 공급자 리소스 종류: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "리소스를 찾을 수 없음"
@@ -129,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Azure에 로그인..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "구독을 찾을 수 없습니다.",
-			"azure.unableToAccessSubscription": "구독 {0}({1})에 액세스할 수 없습니다. 다시 시도하려면 [계정을 새로 고침](command:azure.resource.signin)하세요. {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "테넌트를 찾을 수 없습니다."
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "일부 Azure 계정을 로드하지 못했습니다. {0}",
@@ -138,14 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure 계정 표시"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.flatAccountTreeNode.noResourcesLabel": "리소스를 찾을 수 없습니다.",
-			"azure.resource.throttleerror": "이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.",
-			"azure.resource.tree.accountTreeNode.title": "{0}({1}/{2}개 구독)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 로드 중...",
-			"azure.resource.tree.loadresourceerror": "Azure 리소스를 로드하는 동안 오류가 발생했습니다. {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "테넌트를 찾을 수 없습니다."
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "구독을 찾을 수 없습니다."
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "리소스를 찾을 수 없습니다."
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "구독을 찾을 수 없습니다."
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "로드하는 중..."
@@ -201,6 +209,7 @@
 			"azurecore.norwayeast": "노르웨이 동부",
 			"azurecore.norwaywest": "노르웨이 서부",
 			"azurecore.piiLogging.warning": "경고: Azure PII 로깅이 활성화되어 있습니다. 이 옵션을 활성화하면 개인 식별 정보가 기록될 수 있으며 디버깅 용도로만 사용해야 합니다.",
+			"azurecore.postgresFlexibleServer": "Azure Database for PostgreSQL 유연한 서버",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 서버",
 			"azurecore.reload": "다시 로드",
 			"azurecore.reloadChoice": "Azure 데이터 스튜디오 다시 로드",
@@ -245,6 +254,7 @@
 			"azure.resource.refresh.title": "새로 고침",
 			"azure.resource.refreshall.title": "Azure: 모든 계정 새로 고침",
 			"azure.resource.selectsubscriptions.title": "구독 선택",
+			"azure.resource.selecttenants.title": "테넌트 선택",
 			"azure.resource.signin.title": "Azure: 로그인",
 			"azure.resource.startterminal.title": "Cloud Shell 시작",
 			"azure.resource.view.title": "Azure(미리 보기)",

@@ -183,7 +183,7 @@ const textFields = {
 //list of extensions from vscode that are to be included with ADS.
 const VSCODEExtensions = [
 	"bat",
-	"builtin-notebook-renderer",
+	"builtin-notebook-renderers",
 	"configuration-editing",
 	"docker",
 	"git",

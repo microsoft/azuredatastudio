@@ -77,7 +77,7 @@
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作區"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Mongo 的 CosmosDB"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "適用於 MongoDB 的 Azure CosmosDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
 			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 資料庫"
@@ -89,16 +89,19 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure 資料總管叢集"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "適用於 MySQL 的 Azure 資料庫彈性伺服器"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "適用於 MySQL 彈性伺服器的 Azure 資料庫"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大規模資料庫 - Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 伺服器 –Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "適用於 PostgreSQL 的 Azure 資料庫彈性伺服器"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "適用於 PostgreSQL 的 Azure 資料庫伺服器"
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "適用於 PostgreSQL 伺服器的 Azure 資料庫"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 受控執行個體"
+			"azure.resource.providers.sqlInstanceContainerLabel": "SQL 受控執行個體"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 受控執行個體 - Azure Arc"
@@ -108,6 +111,10 @@
 		},
 		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
 			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "無法辨識的提供者資源: {0}",
+			"azurecore.unregisteredProviderType": "無法辨識的提供者資源類型: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "找不到任何資源"
@@ -129,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登入 Azure…"
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "找不到訂用帳戶。",
-			"azure.unableToAccessSubscription": "無法存取訂用帳戶 {0} ({1})。請 [重新整理帳戶](command:azure.resource.signin) 再試一次。{2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "找不到任何租用戶。"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "無法載入某些 Azure 帳戶。{0}",
@@ -138,14 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "顯示 Azure 帳戶"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.flatAccountTreeNode.noResourcesLabel": "找不到資源。",
-			"azure.resource.throttleerror": "已節流來自此帳戶的要求。若要重試，請選取較少的訂閱數目。",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 個訂閱)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在載入...",
-			"azure.resource.tree.loadresourceerror": "載入 Azure 資源時發生錯誤: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "找不到任何租用戶。"
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "找不到訂用帳戶。"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "找不到資源。"
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "找不到任何訂用帳戶。"
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "正在載入..."
@@ -201,7 +209,8 @@
 			"azurecore.norwayeast": "挪威東部",
 			"azurecore.norwaywest": "挪威西部",
 			"azurecore.piiLogging.warning": "警告: Azure PII 記錄已啟用。啟用此選項後即可記錄個人識別資訊，且只能用於偵錯用途。",
-			"azurecore.postgresServer": "適用於 PostgreSQL 的 Azure 資料庫伺服器",
+			"azurecore.postgresFlexibleServer": "適用於 PostgreSQL 的 Azure 資料庫彈性伺服器",
+			"azurecore.postgresServer": "適用於 PostgreSQL 伺服器的 Azure 資料庫",
 			"azurecore.reload": "重新載入",
 			"azurecore.reloadChoice": "重新載入 Azure Data Studio",
 			"azurecore.reloadPrompt": "驗證程式庫已更新，請重新載入 Azure Data Studio。",
@@ -245,6 +254,7 @@
 			"azure.resource.refresh.title": "重新整理",
 			"azure.resource.refreshall.title": "Azure: 重新整理所有帳戶",
 			"azure.resource.selectsubscriptions.title": "選取訂用帳戶",
+			"azure.resource.selecttenants.title": "選取租用戶",
 			"azure.resource.signin.title": "Azure: 登入",
 			"azure.resource.startterminal.title": "啟動 Cloud Shell",
 			"azure.resource.view.title": "Azure (預覽)",
