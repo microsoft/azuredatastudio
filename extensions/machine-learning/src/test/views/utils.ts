@@ -264,7 +264,8 @@ export function createViewContext(): ViewTestContext {
 			separator: undefined!,
 			propertiesContainer: undefined!,
 			infoBox: undefined!,
-			slider: undefined!
+			slider: undefined!,
+			executionPlan: undefined!,
 		}
 	};
 	let tab: azdata.window.DialogTab = {
