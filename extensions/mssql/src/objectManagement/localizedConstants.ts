@@ -258,10 +258,10 @@ export const ServerCollationText = localize('objectManagement.serverCollation', 
 export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
 export const StorageSpaceUsageInMBText = localize('objectManagement.storageSpaceUsageInMB', "Storage Space Usage (MB)");
 export const VersionText = localize('objectManagement.versionText', "Version");
-
-
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower that server minimum memory")
+
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");

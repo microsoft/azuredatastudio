@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo, ServerProperty } from '../interfaces';
-import { vscode } from 'vscode';
+import { Server, ServerViewInfo } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -164,15 +164,13 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private initializeMemorySection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
-			let isValid = await this.validateMemory(+newValue, this.objectInfo.minServerMemory);
-			isValid ? this.objectInfo.minServerMemory.value = +newValue : undefined;
-		}, this.objectInfo.minServerMemory.toString(), isEnabled, 'number');
+			this.objectInfo.minServerMemory.value = +newValue;
+		}, this.objectInfo.minServerMemory.value.toString(), isEnabled, 'number', DefaultInputWidth, this.objectInfo.minServerMemory.minimumValue, this.objectInfo.minServerMemory.maximumValue);
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
-			let isValid = await this.validateMemory(+newValue, this.objectInfo.maxServerMemory);
-			isValid ? this.objectInfo.maxServerMemory.value = +newValue : undefined;
-		}, this.objectInfo.maxServerMemory.toString(), isEnabled, 'number');
+			this.objectInfo.maxServerMemory.value = +newValue;
+		}, this.objectInfo.maxServerMemory.value.toString(), isEnabled, 'number', DefaultInputWidth, this.objectInfo.maxServerMemory.minimumValue, this.objectInfo.maxServerMemory.maximumValue);
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
 		this.memorySection = this.createGroup('', [
@@ -183,20 +181,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.memoryTab = this.createTab('memoryId', localizedConstants.MemoryText, this.memorySection);
 	}
 
-	private async validateMemory(newValue: number, oldValue: ServerProperty): Promise<bool> {
-		let showErrorMessage = false;
-		if (oldValue.maximumValue < newValue) {
-			showErrorMessage = true;
+	protected override async validateInput(): Promise<string[]> {
+		const errors = await super.validateInput();
+		if (this.objectInfo.maxServerMemory.value < this.objectInfo.minServerMemory.value) {
+			errors.push(localizedConstants.serverMemoryMaxLowerThanMinInputError);
 		}
-		if (oldValue.minimumValue > newValue) {
-			showErrorMessage = true;
-		}
-
-		if (showErrorMessage) {
-			vscode.showErrorMessage('Invalid input value');
-		}
-		return showErrorMessage;
+		return errors;
 	}
-
-
 }
