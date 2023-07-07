@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { escapeSingleQuotes } from '../../objectManagement/utils';
+import { convertNumToTwoDecimalStringInMB, escapeSingleQuotes } from '../../objectManagement/utils';
 import 'mocha';
 import * as should from 'should';
 
@@ -28,5 +28,11 @@ describe('escapeSingleQuotes Method Tests', () => {
 		const testString: string = "Server/Database[@Name='My Database\'WithEscapedSingleQuote']";
 		const ret = `Server/Database[@Name='${escapeSingleQuotes(dbName)}']`;
 		should(ret).equal(testString);
+	});
+
+	it('convertNumToTwoDecimalStringInMB function should convert and return the passed integer value to string with two decimals and in MB units', () => {
+		should(convertNumToTwoDecimalStringInMB(0)).equals('0.00 MB', 'should return string value In MB with two decimals');
+		should(convertNumToTwoDecimalStringInMB(10)).equals('10.00 MB', 'should return string value In MB with two decimals');
+		should(convertNumToTwoDecimalStringInMB(10.23)).equals('10.23 MB', 'should return string value In MB with two decimals');
 	});
 });
