@@ -77,10 +77,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					if (this.isDirty) {
 						const startTime = Date.now();
 						await this.saveChanges(this._contextId, this.objectInfo);
-						if (this.options.objectExplorerContext && !this.options.rootNode) {
+						if (this.options.objectExplorerContext) {
 							if (this.options.isNewObject) {
 								await refreshNode(this.options.objectExplorerContext);
-							} else {
+							} else if (!this.options.rootNode) {
 								// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
 								await refreshParentNode(this.options.objectExplorerContext);
 							}
