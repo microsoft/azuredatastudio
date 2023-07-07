@@ -36,7 +36,7 @@ export async function createOneComponentFlexContainer(view: azdata.ModelView, co
  * @param flexFlow row or column
  * @returns Flex container containing the two components
  */
-export async function createTwoComponentFlexContainer(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, flexFlow: string): Promise<azdata.FlexContainer> {
+export function createTwoComponentFlexContainer(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, flexFlow: string): azdata.FlexContainer {
 	const flexContainer = view.modelBuilder.flexContainer().component();
 
 	if (flexFlow === 'row') {
@@ -73,6 +73,30 @@ export function createVerticalSplitView(view: azdata.ModelView, topComponent: az
 		orientation: 'vertical',
 		splitViewHeight: splitViewHeight
 	});
+
+	return splitview;
+}
+
+/**
+ * Creates a horizontal splitview
+ * @param view
+ * @param leftComponent
+ * @param rightComponent
+ * @param splitViewHeight
+ * @returns Horizontal SplitViewContainer with the left and right components
+ */
+export function createHorizontalSplitView(view: azdata.ModelView, leftComponent: azdata.Component, rightComponent: azdata.Component, splitViewHeight: number): azdata.SplitViewContainer {
+	// TODO: figure out why the horizontal spliview isn't working
+
+	const splitview = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().component();
+
+	splitview.setLayout({
+		orientation: 'horizontal',
+		splitViewHeight: splitViewHeight
+	});
+
+	splitview.addItem(leftComponent);
+	splitview.addItem(rightComponent);
 
 	return splitview;
 }

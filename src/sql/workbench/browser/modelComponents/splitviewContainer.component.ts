@@ -103,6 +103,17 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		this._position = layout.position ? layout.position : '';
 		this._height = convertSize(layout.height);
 		this._width = convertSize(layout.width);
+		this._splitViewHeight = convertSizeToNumber(layout.splitViewHeight);
+
+		const layoutOrientation = layout.orientation.toLowerCase() === 'vertical' ? Orientation.VERTICAL : Orientation.HORIZONTAL;
+
+		// have to recreate the splitview if the orientation changed
+		if (this._orientation !== layoutOrientation) {
+			this._splitView.el.style.width = '0px';
+			this._splitView.el.style.height = '0px';
+
+			this._splitView = this._register(new SplitView(this._el.nativeElement, { orientation: layoutOrientation }));
+		}
 		this._orientation = layout.orientation.toLowerCase() === 'vertical' ? Orientation.VERTICAL : Orientation.HORIZONTAL;
 		this._splitViewHeight = convertSizeToNumber(layout.splitViewHeight);
 
