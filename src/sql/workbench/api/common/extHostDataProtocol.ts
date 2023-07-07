@@ -686,8 +686,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	public override $startSession(handle: number, sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean> {
-		return this._resolveProvider<azdata.ProfilerProvider>(handle).startSession(sessionId, sessionName, isSessionTypeLocalFile);
+	public override $startSession(handle: number, sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> {
+		return this._resolveProvider<azdata.ProfilerProvider>(handle).startSession(sessionId, sessionName, sessionType);
 	}
 
 	/**

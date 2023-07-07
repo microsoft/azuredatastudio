@@ -33,7 +33,7 @@ export interface IProfilerSession {
 	/**
 	 * Called by the service when the session is closed unexpectedly
 	 */
-	onSessionStopped(events: azdata.ProfilerSessionStoppedParams): void;
+	onSessionStopped(events: azdata.ProfilerSessionStoppedParams, isFileSession?: boolean): void;
 	/**
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
@@ -71,9 +71,9 @@ export interface IProfilerService {
 	 */
 	createSession(id: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean>;
 	/**
-	 * Starts the session specified by the id
+	 * Starts the session specified by the id or a session for opening file
 	 */
-	startSession(sessionId: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile?: boolean): Thenable<boolean>;
+	startSession(sessionId: ProfilerSessionID, sessionName: string, sessionType?: ProfilingSessionType): Thenable<boolean>;
 	/**
 	 * Pauses the session specified by the id
 	 */
@@ -142,7 +142,18 @@ export interface IProfilerService {
 	 * @param filter filter object
 	 */
 	saveFilter(filter: ProfilerFilter): Promise<void>;
-	openXELFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<void>;
+	/**
+	 * Launches the dialog for picking a file to open in Profiler extension
+	 * @param fileDialogService service to open file dialog
+	 * @param editorService service to open profiler editor
+	 * @param instantiationService service to create profiler instance
+	 */
+	openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<boolean>;
+}
+
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
 }
 
 export interface IProfilerSettings {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from './interfaces';
+import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS, ProfilingSessionType } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/workbench/services/profiler/browser/profilerColumnEditorDialog';
@@ -109,11 +109,8 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public onSessionStopped(params: azdata.ProfilerSessionStoppedParams): void {
-		if (this._isXELFileSession) {		// Do nothing if XEL file reading session completes
-			return;
-		}
 		if (this._idMap.reverseHas(params.ownerUri)) {
-			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onSessionStopped(params);
+			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onSessionStopped(params, this._isXELFileSession);
 		}
 	}
 
@@ -152,14 +149,20 @@ export class ProfilerService implements IProfilerService {
 		return false;
 	}
 
-	public async startSession(id: ProfilerSessionID, sessionName: string, isSessionTypeLocalFile: boolean = false): Promise<boolean> {
+	/**
+	 * Starts the session specified by the id or a session for opening file
+	 * @param id session ID
+	 * @param sessionName session name or file path to start session with
+	 * @param sessionType distinguisher between remote session and local file
+	 * @returns state of the run as success or failure
+	 */
+	public async startSession(id: ProfilerSessionID, sessionName: string, sessionType: ProfilingSessionType): Promise<boolean> {
 		if (this._idMap.has(id)) {
 			this.updateMemento(id, { previousSessionName: sessionName });
 			try {
-				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, isSessionTypeLocalFile));
-				if (!isSessionTypeLocalFile) {		// Do nothing for XEL file read
-					this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
-				}
+				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, sessionType));
+				let isRunning = sessionType === ProfilingSessionType.RemoteSession ? true : false;		// Reading session stops when the file reading completes
+				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: isRunning, isStopped: false, isPaused: false });
 
 				return true;
 			} catch (reason) {
@@ -301,27 +304,27 @@ export class ProfilerService implements IProfilerService {
 		await this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
 	}
 
-	public async openXELFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<void> {
-		const xelFileURI = await fileDialogService.showOpenDialog({
+	public async openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<boolean> {
+		const fileURIs = await fileDialogService.showOpenDialog({
 			filters: [
 				{
 					extensions: ['xel'],
 					name: nls.localize('FileFilterDescription', "XEL Files")
 				}
 			],
-			canSelectMany: false,
-			canSelectFiles: true
+			canSelectMany: false
 		});
 
-		if (xelFileURI?.length === 1) {
-			const fileURI = xelFileURI[0];
+		if (fileURIs?.length === 1) {
+			const fileURI = fileURIs[0];
 			this._isXELFileSession = true;
 
-			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, null, fileURI);
+			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, undefined, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
-			await this.startSession(profilerInput.id, profilerInput.xelFileURI.fsPath, true);
+			const result = await this.startSession(profilerInput.id, profilerInput.fileURI.fsPath, ProfilingSessionType.LocalFile);
+			return result;
 		}
 
-
+		return true;
 	}
 }

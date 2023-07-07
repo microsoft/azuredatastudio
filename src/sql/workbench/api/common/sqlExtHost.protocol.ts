@@ -385,7 +385,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string, sessionName: string, isSessionTypeLocalFile: boolean): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session

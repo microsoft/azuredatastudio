@@ -34,7 +34,7 @@
     "commands": [
       {
         "command": "profiler.newProfiler",
-        "title": "%profiler.contributes.title.newProfiler%",
+        "title": "%profiler.contributes.title.newProfler%",
         "category": "%profiler.category%"
       },
       {
@@ -53,7 +53,7 @@
         "category": "%profiler.category%"
       },
       {
-        "command": "profiler.openXELFile",
+        "command": "profiler.openFile",
         "title": "%profiler.contributes.title.openXELFile%",
         "category": "%profiler.category%"
       }

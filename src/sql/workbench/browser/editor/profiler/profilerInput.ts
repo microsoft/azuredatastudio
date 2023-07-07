@@ -43,11 +43,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	private _filter: ProfilerFilter = { clauses: [] };
 
-	public xelFileURI: URI;
-
 	constructor(
-		public connection: IConnectionProfile,
-		public fileURI: URI,
+		public connection: IConnectionProfile | undefined,
+		public fileURI: URI | undefined,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
@@ -62,7 +60,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-		this.xelFileURI = fileURI;
 
 		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
@@ -161,6 +158,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		}
 	}
 
+	public get isXELFileSession(): boolean {
+		return !this.fileURI ? false : true
+	}
+
 	public setColumns(columns: Array<string>) {
 		this._columns = columns;
 		this._onColumnsChanged.fire(this.columns);
@@ -197,8 +198,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._filter;
 	}
 
-	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams) {
-		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
+	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams, isFileSession: boolean = false) {
+		if (!isFileSession) {	// File session do not have serverName, so ignore notification error based off of server
+			this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
+		}
 
 		this.state.change({
 			isStopped: true,

@@ -1001,9 +1001,7 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let startSession = (ownerUri: string, sessionName: string, isSessionTypeLocalFile: boolean = false): Thenable<boolean> => {
-			const sessionType: contracts.ProfilingSessionType = isSessionTypeLocalFile ? contracts.ProfilingSessionType.LocalFile : contracts.ProfilingSessionType.RemoteSession;
-
+		let startSession = (ownerUri: string, sessionName: string, sessionType: contracts.ProfilingSessionType = contracts.ProfilingSessionType.RemoteSession): Thenable<boolean> => {
 			let params: contracts.StartProfilingParams = {
 				ownerUri,
 				sessionName,
