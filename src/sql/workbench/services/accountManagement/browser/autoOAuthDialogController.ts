@@ -75,7 +75,7 @@ export class AutoOAuthDialogController {
 	private async handleOnAddAccount(): Promise<void> {
 		if (this._userCode && this._uri) {
 			if (!this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri)) {
-				const selfHelpMessage = localize('selfHelpMessage', "Browser cannot be launched in this environment, please launch browser and enter code manually in the URI above.");
+				const selfHelpMessage = localize('selfHelpMessage', "A web browser cannot be launched in this environment, please launch a browser, navigate to the URL above and enter code manually.");
 				// URI could not be opened, prompt user to open themselves
 				this._autoOAuthDialog.hideCopyButton();
 				this._autoOAuthDialog.updateSelfHelpMessage(selfHelpMessage);
