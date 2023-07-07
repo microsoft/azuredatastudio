@@ -28,6 +28,7 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	objectUrn?: string;
 	objectExplorerContext?: azdata.ObjectExplorerContext;
 	objectName?: string;
+	rootNode?: boolean;
 }
 
 export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends ScriptableDialogBase<ObjectManagementDialogOptions> {
@@ -76,12 +77,14 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 					if (this.isDirty) {
 						const startTime = Date.now();
 						await this.saveChanges(this._contextId, this.objectInfo);
-						if (this.options.objectExplorerContext) {
+						if (this.options.objectExplorerContext && !this.options.rootNode) {
 							if (this.options.isNewObject) {
 								await refreshNode(this.options.objectExplorerContext);
 							} else {
-								// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
-								await refreshParentNode(this.options.objectExplorerContext);
+								if (this.options.objectType) {
+									// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
+									await refreshParentNode(this.options.objectExplorerContext);
+								}
 							}
 						}
 
