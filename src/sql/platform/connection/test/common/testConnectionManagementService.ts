@@ -248,7 +248,6 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	notifyDatabaseChanged(): void {
-
 	}
 
 	editGroup(group: ConnectionProfileGroup): Promise<void> {
