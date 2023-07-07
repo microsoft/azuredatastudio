@@ -406,10 +406,18 @@ export function renameVscodeLangpacks(): Promise<void> {
 		//Get list of md files in ADS langpack, to copy to vscode langpack prior to renaming.
 		let globMDArray = glob.sync(path.join(locADSFolder, '*.md'));
 
-		//Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
+		//Copy MD files to vscode langpack.
 		globMDArray.forEach(element => {
 			fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
 		});
+
+		//Copy yarn.lock (required for packaging task)
+		let yarnLockPath = path.join(locADSFolder, 'yarn.lock');
+		if (fs.existsSync(yarnLockPath)) {
+			fs.copyFileSync(yarnLockPath, path.join(locVSCODEFolder, 'yarn.lock'));
+		}
+
+		//remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
 		rimraf.sync(locADSFolder);
 		fs.renameSync(locVSCODEFolder, locADSFolder);
 	}
