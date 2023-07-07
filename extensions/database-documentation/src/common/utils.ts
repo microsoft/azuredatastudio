@@ -52,6 +52,8 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		views = (await queryProvider.runQueryAndReturn(connectionUri, viewQuery)).rows.map(row => row[0].displayValue);
 	}
 
+	const isDatabaseOrSchema = (context.nodeInfo.nodeType === 'Database' || context.nodeInfo.nodeType === 'Schema');
+
 	let diagram = '```mermaid\nclassDiagram\n';
 	let references = ``;
 	let documentation = ``;
@@ -60,10 +62,9 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		const tableAttributes = await tableToText(connection, databaseName, tables[i]);
 		const tableResult = getMermaidDiagramForTable(tables[i], tableAttributes);
 		diagram += tableResult[0] + `\n`;
-		if (context.nodeInfo.nodeType !== 'Table') {
+		if (isDatabaseOrSchema) {
 			references += tableResult[1];
 		}
-		vscode.window.showInformationMessage("Getting documentation for " + tables[i]);
 		documentation += await getDocumentationText(tables[i], tableAttributes, 'Table');
 	}
 	// Views
@@ -71,11 +72,14 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		const tableAttributes = await tableToText(connection, databaseName, views[i]);
 		const tableResult = getMermaidDiagramForTable(views[i], tableAttributes);
 		diagram += tableResult[0] + `\n`;
-		if (context.nodeInfo.nodeType !== 'View') {
+		if (isDatabaseOrSchema) {
 			references += tableResult[1];
 		}
-		vscode.window.showInformationMessage("Getting documentation for " + views[i]);
 		documentation += await getDocumentationText(views[i], tableAttributes, 'View');
+	}
+
+	if (isDatabaseOrSchema) {
+		documentation = await getObjectOverviewText(context.nodeInfo.metadata.name, tables.concat(views), context.nodeInfo.nodeType) + documentation;
 	}
 
 	diagram += references;
@@ -133,6 +137,27 @@ function getMermaidDiagramForTable(tableName: string, tableAttributes: [string, 
 	return [diagram, references];
 }
 
+async function getObjectOverviewText(objectName: string, objectsList: string[], type: string): Promise<string> {
+	let key = await getOpenApiKey();
+
+	const configuration = new Configuration({
+		apiKey: key, // Replace with actual key/ set up some config for it
+	});
+
+	const openai = new OpenAIApi(configuration);
+	const prompt = localize("database-documentation.objectOverviewPrompt",
+		` Give a brief, couple sentence overview of this ${type}, which stores these tables and views: ${JSON.stringify(objectsList)}`)
+
+	const promptResponse = await
+		openai.createChatCompletion({
+			model: "gpt-3.5-turbo",
+			messages: [{ 'role': 'user', 'content': prompt }],
+			temperature: 0
+		})
+
+	return `## ${objectName}  \n` + promptResponse.data.choices[0].message.content + `  \n\n`;
+}
+
 async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][], type: string): Promise<string> {
 	let key = await getOpenApiKey();
 
@@ -173,14 +198,12 @@ async function getDocumentationText(tableName: string, tableAttributes: [string,
 		**Relationships**  \n<Relationships Description>`);
 
 	try {
-		vscode.window.showInformationMessage("Awaiting API response...");
 		const promptResponse = await
 			openai.createChatCompletion({
 				model: "gpt-3.5-turbo",
 				messages: [{ 'role': 'user', 'content': prompt }],
 				temperature: 0
 			})
-		vscode.window.showInformationMessage("Got API response!");
 		return `### ${tableName}  \n` + promptResponse.data.choices[0].message.content + '  \n\n';
 	}
 	catch (error) {
