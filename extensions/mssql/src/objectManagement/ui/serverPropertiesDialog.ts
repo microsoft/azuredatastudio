@@ -7,7 +7,8 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo } from '../interfaces';
+import { Server, ServerViewInfo, ServerProperty } from '../interfaces';
+import { vscode } from 'vscode';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -163,12 +164,14 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private initializeMemorySection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
 		this.minServerMemoryInput = this.createInputBox(localizedConstants.minServerMemoryText, async (newValue) => {
-			this.objectInfo.minServerMemory = +newValue;
+			let isValid = await this.validateMemory(+newValue, this.objectInfo.minServerMemory);
+			isValid ? this.objectInfo.minServerMemory.value = +newValue : undefined;
 		}, this.objectInfo.minServerMemory.toString(), isEnabled, 'number');
 		const minMemoryContainer = this.createLabelInputContainer(localizedConstants.minServerMemoryText, this.minServerMemoryInput);
 
 		this.maxServerMemoryInput = this.createInputBox(localizedConstants.maxServerMemoryText, async (newValue) => {
-			this.objectInfo.maxServerMemory = +newValue;
+			let isValid = await this.validateMemory(+newValue, this.objectInfo.maxServerMemory);
+			isValid ? this.objectInfo.maxServerMemory.value = +newValue : undefined;
 		}, this.objectInfo.maxServerMemory.toString(), isEnabled, 'number');
 		const maxMemoryContainer = this.createLabelInputContainer(localizedConstants.maxServerMemoryText, this.maxServerMemoryInput);
 
@@ -179,4 +182,21 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 		this.memoryTab = this.createTab('memoryId', localizedConstants.MemoryText, this.memorySection);
 	}
+
+	private async validateMemory(newValue: number, oldValue: ServerProperty): Promise<bool> {
+		let showErrorMessage = false;
+		if (oldValue.maximumValue < newValue) {
+			showErrorMessage = true;
+		}
+		if (oldValue.minimumValue > newValue) {
+			showErrorMessage = true;
+		}
+
+		if (showErrorMessage) {
+			vscode.showErrorMessage('Invalid input value');
+		}
+		return showErrorMessage;
+	}
+
+
 }
