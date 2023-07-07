@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { mixin } from 'sql/base/common/objects';
 import { escape } from 'sql/base/common/strings';
@@ -102,7 +103,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		this._grid = grid;
 		this._handler
 			.subscribe(this._grid.onClick, (e: Event, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
-			.subscribe(this._grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e as KeyboardEvent, args))
+			.subscribe(this._grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(convertJQueryKeyDownEvent(e), args))
 			.subscribe(this._grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args))
 			.subscribe(grid.onActiveCellChanged, (e: DOMEvent, args: Slick.OnActiveCellChangedEventArgs<T>) => { this.handleActiveCellChanged(args); });
 		if (this.isCheckAllHeaderCheckboxShown()) {
@@ -120,16 +121,15 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		e.preventDefault();
 	}
 
-	private handleKeyDown(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
-		const event = new StandardKeyboardEvent(e);
+	private handleKeyDown(e: StandardKeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
 		if (args.cell !== this.index) {
 			return;
 		}
-		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+		if (e.equals(KeyCode.Enter) || e.equals(KeyCode.Space)) {
 			this.toggleCellCheckbox(args.row);
 			e.stopPropagation();
-			e.stopImmediatePropagation();
 			e.preventDefault();
+			e.browserEvent.stopImmediatePropagation();
 		}
 	}
 

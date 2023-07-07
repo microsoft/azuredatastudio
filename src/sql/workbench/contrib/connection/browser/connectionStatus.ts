@@ -68,21 +68,30 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
-		let text: string = connectionProfile.serverName;
-		if (text) {
-			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
-				text = text + ' : ' + connectionProfile.databaseName;
-			} else {
-				text = text + ' : ' + '<default>';
+		let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
+		let text: string = '';
+		let tooltip: string = '';
+		if (distinguishedTitle === '') {
+			text = connectionProfile.serverName;
+			if (text) {
+				if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
+					text = text + ' : ' + connectionProfile.databaseName;
+				} else {
+					text = text + ' : ' + '<default>';
+				}
+			}
+
+
+			tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
+				'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
+
+			if (connectionProfile.userName && connectionProfile.userName !== '') {
+				tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
 			}
 		}
-
-		let tooltip: string =
-			'Server: ' + connectionProfile.serverName + '\r\n' +
-			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
-
-		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+		else {
+			text = distinguishedTitle;
+			tooltip = (connectionProfile as any).serverInfo;
 		}
 
 		this.statusItem.update({

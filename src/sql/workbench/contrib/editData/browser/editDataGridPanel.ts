@@ -37,6 +37,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
 
@@ -938,7 +939,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			};
 
 			if (dataSet.columnDefinitions) {
-				this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, this.quickInputService, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+				this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, this.quickInputService, defaultTableStyles, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 				for (let plugin of this.plugins) {
 					this.table.registerPlugin(plugin);
 				}
@@ -948,7 +949,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		else {
-			this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, this.quickInputService);
+			this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, this.quickInputService, defaultTableStyles);
 		}
 	}
 

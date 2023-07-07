@@ -29,7 +29,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 	public getTreeItemForResource(databaseServer: AzureResourceMongoDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		return {
 			id: `${AzureResourcePrefixes.cosmosdb}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
-			label: `${databaseServer.name} (CosmosDB Mongo API)`,
+			label: this.browseConnectionMode ? `${databaseServer.name} (${CosmosDbMongoTreeDataProvider.CONTAINER_LABEL}, ${databaseServer.subscription.name})` : `${databaseServer.name}`,
 			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.None,
 			contextValue: AzureResourceItemType.cosmosDBMongoAccount,
@@ -58,13 +58,13 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 		};
 	}
 
-	public async getRootChildren(): Promise<azdata.TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<azdata.TreeItem> {
+		return {
 			id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
 			label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
 			iconPath: this._extensionContext.asAbsolutePath('resources/cosmosDb.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

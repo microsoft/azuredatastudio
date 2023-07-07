@@ -46,6 +46,7 @@ configurationRegistry.registerConfiguration({
 	'id': 'startupConfig',
 	'title': localize('startupConfig', "Startup Configuration"),
 	'type': 'object',
+	'order': 0,
 	'properties': {
 		'startup.alwaysShowServersView': {
 			'type': 'boolean',

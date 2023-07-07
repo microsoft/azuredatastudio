@@ -21,7 +21,7 @@ import {
 	ISerializationManagerDetails,
 	IErrorDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { CheckboxUpdate, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
@@ -729,6 +729,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
+	$getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -810,6 +811,8 @@ export interface ExtHostModelViewTreeViewsShape {
 	$setVisible(treeViewId: string, visible: boolean): void;
 	$hasResolve(treeViewId: string): Promise<boolean>;
 	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined>;
+	$setFocus(treeViewId: string, treeItemHandle: string): void;
+	$changeCheckboxState(treeViewId: string, checkboxUpdates: CheckboxUpdate[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

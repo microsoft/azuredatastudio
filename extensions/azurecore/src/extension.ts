@@ -76,6 +76,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
 		?? Constants.DefaultAuthLibrary;
 
+	if (authLibrary !== Constants.DefaultAuthLibrary) {
+		void vscode.window.showWarningMessage(loc.deprecatedOption, loc.switchMsal, loc.dismiss).then(async (value) => {
+			if (value === loc.switchMsal) {
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.AuthenticationLibrarySection, Constants.DefaultAuthLibrary, vscode.ConfigurationTarget.Global);
+			}
+		});
+	}
 	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
 	if (piiLogging) {
 		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {

@@ -39,7 +39,7 @@ export class ExecutionPlanEditor extends EditorPane {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		this._parentContainer = parent;
 		//Enable scrollbars when drawing area is larger than viewport
 		parent.style.overflow = 'auto';

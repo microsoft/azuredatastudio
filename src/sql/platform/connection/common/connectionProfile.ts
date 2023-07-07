@@ -39,6 +39,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public isDisconnecting: boolean = false;
 
+	// title from ProviderConnectionInfo cannot be changed, in order to show different dynamic options appended, we must override the title with our own.
+	private _title?: string;
+
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined) {
@@ -199,6 +202,21 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return (this._groupName === ConnectionProfile.RootGroupName);
 	}
 
+	public override get title(): string {
+		if (this._title) {
+			return this._title;
+		}
+		return this.getOriginalTitle();
+	}
+
+	public getOriginalTitle(): string {
+		return super.title;
+	}
+
+	public override set title(value: string) {
+		this._title = value;
+	}
+
 	public override clone(): ConnectionProfile {
 		let instance = new ConnectionProfile(this.capabilitiesService, this);
 		return instance;
@@ -227,24 +245,39 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
+	 * and all the other properties (except empty ones) if useFullOptions is enabled for the provider.
 	 * This key uniquely identifies a connection in a group
-	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (original format): "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example (new format): "providerName:MSSQL|databaseName:database|serverName:server3|userName:user|groupId:testid"
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
-	public override getOptionsKey(): string {
-		let id = super.getOptionsKey();
+	public override getOptionsKey(getOriginalOptions?: boolean): string {
+		let id = super.getOptionsKey(getOriginalOptions);
 		let databaseDisplayName: string = this.options['databaseDisplayName'];
 		if (databaseDisplayName) {
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
 		}
 
-		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
+		let groupProp = 'group'
+		if (!getOriginalOptions && this.serverCapabilities && this.serverCapabilities.useFullOptions) {
+			groupProp = 'groupId'
+		}
+
+		return id + ProviderConnectionInfo.idSeparator + groupProp + ProviderConnectionInfo.nameValueSeparator + this.groupId;
 	}
 
 	/**
-	 * Returns the unique id for the connection that doesn't include the group name
+	 * Returns the unique id for the connection that doesn't include the group name.
+	 * Used primarily for retrieving shared passwords among different connections in default state.
+	 * @param getOriginalOptions will return the original URI format regardless if useFullOptions was set or not. (used for retrieving passwords)
 	 */
-	public getConnectionInfoId(): string {
-		return super.getOptionsKey();
+	public getConnectionInfoId(getOriginalOptions = true): string {
+		let id = super.getOptionsKey(getOriginalOptions);
+		let databaseDisplayName: string = this.options['databaseDisplayName'];
+		if (databaseDisplayName && !getOriginalOptions && this.serverCapabilities?.useFullOptions) {
+			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
+		}
+		return id;
 	}
 
 	public toIConnectionProfile(): interfaces.IConnectionProfile {

@@ -57,13 +57,13 @@ export class AzureResourceSynapseSqlPoolTreeDataProvider extends ResourceTreeDat
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: AzureResourceSynapseSqlPoolTreeDataProvider.containerId,
 			label: AzureResourceSynapseSqlPoolTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/sqlPools.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseSqlPoolContainer
-		}];
+		};
 	}
 }

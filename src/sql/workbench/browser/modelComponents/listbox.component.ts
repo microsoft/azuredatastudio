@@ -13,13 +13,12 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
-import { attachListBoxStyler } from 'sql/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
+import { defaultListBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-listBox',
@@ -35,7 +34,6 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -46,7 +44,10 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._input = new ListBox([], this.contextViewService);
+			this._input = new ListBox({
+				items: [],
+				...defaultListBoxStyles
+			}, this.contextViewService);
 			this._input.onKeyDown(e => {
 				if (this._input.selectedOptions.length > 0) {
 					const key = e.keyCode;
@@ -68,7 +69,6 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 			this._input.render(this._inputContainer.nativeElement);
 
 			this._register(this._input);
-			this._register(attachListBoxStyler(this._input, this.themeService));
 			this._register(this._input.onDidSelect(e => {
 				this.selectedRow = e.index;
 				this.fireEvent({

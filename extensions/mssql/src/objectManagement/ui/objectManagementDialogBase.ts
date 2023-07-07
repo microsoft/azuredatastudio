@@ -35,12 +35,16 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
 
-	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
-		super(options.isNewObject ? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true)) :
-			localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName),
-			getDialogName(options.objectType, options.isNewObject),
-			options
-		);
+	constructor(protected readonly objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions, dialogTitle?: string, dialogName?: string) {
+		if (!dialogTitle) {
+			dialogTitle = options.isNewObject
+				? localizedConstants.NewObjectDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true))
+				: localizedConstants.ObjectPropertiesDialogTitle(localizedConstants.getNodeTypeDisplayName(options.objectType, true), options.objectName);
+		}
+		if (!dialogName) {
+			dialogName = getDialogName(options.objectType, options.isNewObject);
+		}
+		super(dialogTitle, dialogName, options);
 		this._contextId = generateUuid();
 	}
 
@@ -52,6 +56,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			errors.push(localizedConstants.NameCannotBeEmptyError);
 		}
 		return errors;
+	}
+
+	protected async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+		await this.objectManagementService.save(this._contextId, this.objectInfo);
 	}
 
 	protected override async initialize(): Promise<void> {
@@ -67,7 +75,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				try {
 					if (this.isDirty) {
 						const startTime = Date.now();
-						await this.objectManagementService.save(this._contextId, this.objectInfo);
+						await this.saveChanges(this._contextId, this.objectInfo);
 						if (this.options.objectExplorerContext) {
 							if (this.options.isNewObject) {
 								await refreshNode(this.options.objectExplorerContext);

@@ -67,6 +67,7 @@ export class ConnectionStore {
 		}
 
 		cred.push(CRED_ITEMTYPE_PREFIX.concat(itemType));
+		// Use basic info for credentials so that passwords can be shared among similar profiles for now.
 		cred.push(CRED_ID_PREFIX.concat(connectionProfileInstance.getConnectionInfoId()));
 		return cred.join(CRED_SEPARATOR);
 	}
@@ -248,7 +249,8 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.connectionName === savedProfile.connectionName;
+			equal = equal && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -266,7 +268,8 @@ export class ConnectionStore {
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
-			let equal = value && value.getConnectionInfoId() === savedProfile.getConnectionInfoId();
+			let equal = value && value.connectionName === savedProfile.connectionName;
+			equal = equal && value.getConnectionInfoId(false) === savedProfile.getConnectionInfoId(false);
 			if (equal && savedProfile.saveProfile) {
 				equal = value.groupId === savedProfile.groupId ||
 					ConnectionProfileGroup.sameGroupName(value.groupFullName, savedProfile.groupFullName);
@@ -301,6 +304,8 @@ export class ConnectionStore {
 
 	private doSavePassword(conn: IConnectionProfile): Promise<boolean> {
 		if (conn.password) {
+			// Credentials are currently shared between profiles with the same basic details.
+			// Credentials are currently not cleared upon deletion of a profile.
 			const credentialId = this.formatCredentialId(conn);
 			return this.credentialService.saveCredential(credentialId, conn.password);
 		} else {
@@ -319,6 +324,12 @@ export class ConnectionStore {
 		const groups = this.connectionConfig.getAllGroups();
 
 		return this.convertToConnectionGroup(groups, profilesInConfiguration);
+	}
+
+	public getAllConnectionsFromConfig(): ConnectionProfile[] {
+		let profilesInConfiguration: ConnectionProfile[] | undefined;
+		profilesInConfiguration = this.connectionConfig.getConnections(true);
+		return profilesInConfiguration;
 	}
 
 	private convertToConnectionGroup(groups: IConnectionProfileGroup[], connections?: ConnectionProfile[], parent?: ConnectionProfileGroup): ConnectionProfileGroup[] {
