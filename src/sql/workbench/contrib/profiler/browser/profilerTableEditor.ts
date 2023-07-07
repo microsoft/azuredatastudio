@@ -6,7 +6,6 @@
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS, PROFILER_MAX_MATCHES } from 'sql/workbench/contrib/profiler/browser/profilerFindWidget';
@@ -36,6 +35,7 @@ import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contri
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -82,7 +82,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._showStatusBarItem = true;
 	}
 
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets';
@@ -90,7 +90,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, {
+		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			sorter: (args) => {
 				let input = this.input as ProfilerInput;
 				if (input && input.data) {
@@ -116,7 +116,6 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 			});
 		});
 		this._profilerTable.registerPlugin(copyKeybind);
-		attachTableStyler(this._profilerTable, this._themeService);
 		this._register(this._componentContextService.registerTable(this._profilerTable));
 
 		this._findState = new FindReplaceState();

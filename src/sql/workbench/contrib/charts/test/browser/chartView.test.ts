@@ -43,5 +43,5 @@ function createChartView(isQueryEditorChart: boolean): ChartView {
 	const notificationService = new TestNotificationService();
 	const configurationService = new TestConfigurationService();
 	instantiationService.stub(IThemeService, themeService);
-	return new ChartView(isQueryEditorChart, contextViewService, themeService, instantiationService, notificationService, configurationService);
+	return new ChartView(isQueryEditorChart, contextViewService, instantiationService, notificationService, configurationService);
 }

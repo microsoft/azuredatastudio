@@ -33,7 +33,7 @@ export class ModelViewEditor extends EditorPane {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 		this._editorFrame = parent;
 		this._content = document.createElement('div');
 		parent.appendChild(this._content);

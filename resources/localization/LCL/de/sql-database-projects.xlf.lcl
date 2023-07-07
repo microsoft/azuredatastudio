@@ -256,6 +256,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.artifactReference" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Artifact Reference]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Artefaktverweis]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2533,8 +2536,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.referenceRadioButtonsGroupTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Referenced Database Type]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Typ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Typ der referenzierten Datenbank]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Type]]></Val>
@@ -2546,7 +2549,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Reference Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Reference Type]]></Val>
+            <Val><![CDATA[Verweistyp]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as chartjs from 'chart.js';
+import 'chartjs-adapter-moment'; // Importing this library as datetime adapters are not included in the main chart.js bundle.
 
 import { mixin } from 'sql/base/common/objects';
 import { localize } from 'vs/nls';
@@ -11,8 +12,8 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
-import { IInsight, IPointDataSet, customMixin } from './interfaces';
-import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsight, customMixin } from './interfaces';
+import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType, ChartTypeToChartJsType, LegendPositionToChartJsPosition } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
@@ -20,7 +21,7 @@ const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
 const timeSeriesScales: chartjs.ChartOptions = {
 	scales: {
-		xAxes: [{
+		x: {
 			type: 'time',
 			display: true,
 			ticks: {
@@ -28,11 +29,10 @@ const timeSeriesScales: chartjs.ChartOptions = {
 				maxRotation: 45,
 				minRotation: 45
 			}
-		}],
-
-		yAxes: [{
+		},
+		y: {
 			display: true,
-		}]
+		}
 	}
 };
 
@@ -44,7 +44,7 @@ const defaultOptions: IInsightOptions = {
 export class Graph implements IInsight {
 	private _options: IInsightOptions = { type: ChartType.Bar };
 	private canvas: HTMLCanvasElement;
-	private chartjs?: chartjs;
+	private chartjs?: chartjs.Chart<chartjs.ChartType>;
 	private _data?: IInsightData;
 
 	private originalType?: ChartType;
@@ -58,6 +58,10 @@ export class Graph implements IInsight {
 		container: HTMLElement, options: IInsightOptions = defaultOptions,
 		@IThemeService themeService: IThemeService
 	) {
+
+		chartjs.Chart.register(
+			...chartjs.registerables,
+		);
 		this._theme = themeService.getColorTheme();
 		themeService.onDidColorThemeChange(e => {
 			this._theme = e;
@@ -94,8 +98,8 @@ export class Graph implements IInsight {
 			return;
 		}
 		this._data = data;
-		let labels: Array<string>;
-		let chartData: Array<Chart.ChartDataSets>;
+		let labels: string[];
+		let chartData: chartjs.ChartDataset[];
 
 		if (this.options.dataDirection === DataDirection.Horizontal) {
 			if (this.options.labelFirstColumn) {
@@ -108,14 +112,16 @@ export class Graph implements IInsight {
 		}
 
 		if (this.originalType === ChartType.TimeSeries) {
-			let dataSetMap: { [label: string]: IPointDataSet } = {};
+			let dataSetMap: { [label: string]: chartjs.ChartDataset<'line', any[]> } = {};
 			this._data.rows.map(row => {
 				if (row && row.length >= 3) {
 					let legend = row[0];
+					const dataPoint = { x: row[1], y: Number(row[2]) };
 					if (!dataSetMap[legend]) {
-						dataSetMap[legend] = { label: legend, data: [], fill: false };
+						dataSetMap[legend] = { label: legend, data: [dataPoint] };
+					} else {
+						dataSetMap[legend].data.push((dataPoint));
 					}
-					dataSetMap[legend].data.push({ x: row[1], y: Number(row[2]) });
 				}
 			});
 			chartData = values(dataSetMap);
@@ -159,13 +165,18 @@ export class Graph implements IInsight {
 			return mixin(c, getColors(this.options.type, i, c.data!.length), false);
 		});
 
+		if (this.options.type === 'horizontalBar') {
+			this.options.type = ChartType.Bar;
+			this.options.indexAxis = 'y';
+		}
 		if (this.chartjs) {
 			this.chartjs.data.datasets = chartData;
-			this.chartjs.config.type = this.options.type;
+			(<chartjs.ChartConfiguration>this.chartjs.config).type = ChartTypeToChartJsType[this.options.type]
 			// we don't want to include lables for timeSeries
 			this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels;
 			this.chartjs.options = this.transformOptions(this.options);
-			this.chartjs.update({ duration: 0 });
+
+			this.chartjs.update();
 		} else {
 			this.chartjs = new chartjs.Chart(this.canvas.getContext('2d')!, {
 				data: {
@@ -173,14 +184,14 @@ export class Graph implements IInsight {
 					labels: this.originalType === 'timeSeries' ? [] : labels,
 					datasets: chartData
 				},
-				type: this.options.type,
+				type: ChartTypeToChartJsType[this.options.type],
 				options: this.transformOptions(this.options)
 			});
 		}
 	}
 
-	private transformOptions(options: IInsightOptions): Chart.ChartOptions {
-		let retval: Chart.ChartOptions = {};
+	private transformOptions(options: IInsightOptions): chartjs.ChartOptions {
+		let retval: chartjs.ChartOptions = {};
 		retval.maintainAspectRatio = false;
 
 		let foregroundColor = this._theme.getColor(colors.editorForeground);
@@ -194,19 +205,19 @@ export class Graph implements IInsight {
 			retval.scales = {};
 			// we only want to include axis if it is a axis based graph type
 			if (!noneLineGraphs.find(x => x === options.type as ChartType)) {
-				retval.scales.xAxes = [{
-					scaleLabel: {
-						fontColor: foreground,
-						labelString: options.xAxisLabel,
-						display: options.xAxisLabel ? true : false
-					},
+				retval.scales.x = {
 					ticks: {
-						fontColor: foreground
+						color: foreground,
 					},
-					gridLines: {
+					grid: {
 						color: gridLines
+					},
+					title: {
+						color: foreground,
+						text: options.xAxisLabel,
+						display: options.xAxisLabel ? true : false
 					}
-				}];
+				};
 
 				if (options.xAxisMax !== undefined) {
 					retval.scales = mixin(retval.scales, { xAxes: [{ ticks: { max: options.xAxisMax } }] }, true, customMixin);
@@ -216,19 +227,19 @@ export class Graph implements IInsight {
 					retval.scales = mixin(retval.scales, { xAxes: [{ ticks: { min: options.xAxisMin } }] }, true, customMixin);
 				}
 
-				retval.scales!.yAxes = [{
-					scaleLabel: {
-						fontColor: foreground,
-						labelString: options.yAxisLabel,
-						display: options.yAxisLabel ? true : false
-					},
+				retval.scales.y = {
 					ticks: {
-						fontColor: foreground
+						color: foreground
 					},
-					gridLines: {
+					grid: {
 						color: gridLines
+					},
+					title: {
+						color: foreground,
+						text: options.yAxisLabel,
+						display: options.yAxisLabel ? true : false
 					}
-				}];
+				};
 
 				if (options.yAxisMax !== undefined) {
 					retval.scales = mixin(retval.scales, { yAxes: [{ ticks: { max: options.yAxisMax } }] }, true, customMixin);
@@ -266,13 +277,19 @@ export class Graph implements IInsight {
 				}
 			}
 
-			retval.legend = <Chart.ChartLegendOptions>{
-				position: options.legendPosition as Chart.PositionType,
-				display: options.legendPosition !== LegendPosition.None,
-				labels: {
-					fontColor: foreground
+			retval.plugins = {
+				legend: {
+					position: LegendPositionToChartJsPosition[options.legendPosition],
+					display: options.legendPosition !== LegendPosition.None,
+					labels: {
+						color: foreground
+					}
 				}
 			};
+
+			if (options.indexAxis === 'y') {
+				retval.indexAxis = 'y';
+			}
 		}
 
 		// these are custom options that will throw compile errors

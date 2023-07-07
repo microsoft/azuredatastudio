@@ -13,7 +13,6 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -59,6 +58,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { debounce } from 'vs/base/common/decorators';
 import { ToggleAddCellDropdownAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -507,13 +507,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let kernelContainer = document.createElement('li');
 		let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
-		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('li');
 		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 		attachToDropdown.render(attachToContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';
@@ -632,7 +630,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
-		let button = new Button(container);
+		let button = new Button(container, defaultButtonStyles);
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));
@@ -669,7 +667,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let secondary: IAction[] = [];
 			let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 			let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, g => g === '', (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			this._actionBar.clear();
 			this._actionBar.setContent(this._initialToolbarContent);

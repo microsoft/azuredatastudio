@@ -5,12 +5,12 @@
 
 import LineChart, { ILineConfig } from './lineChart.component';
 import { defaultChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
+import * as chartjs from 'chart.js';
 
 import { mixin, deepClone } from 'vs/base/common/objects';
 import { Color } from 'vs/base/common/color';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IPointDataSet } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -32,42 +32,41 @@ export default class TimeSeriesChart extends LineChart {
 		const xLabel = this._config.xAxisLabel || this.getLabels()[1] || 'x';
 		const yLabel = this._config.yAxisLabel || this.getLabels()[2] || 'y';
 
-		const options = {
+		const options: chartjs.ChartOptions = {
 			scales: {
-				xAxes: [{
+				x: {
 					type: 'time',
 					display: true,
-					scaleLabel: {
+					title: {
 						display: true,
-						labelString: xLabel
+						text: xLabel
 					},
 					ticks: {
 						autoSkip: false,
 						maxRotation: 45,
 						minRotation: 45
 					}
-				}],
-
-				yAxes: [{
+				},
+				y: {
 					display: true,
-					scaleLabel: {
+					title: {
 						display: true,
-						labelString: yLabel
+						text: yLabel
 					}
-				}]
+				}
 			}
 		};
 
 		this.options = Object.assign({}, mixin(this.options, options));
 	}
 
-	protected override getDataAsPoint(): Array<IPointDataSet> {
-		const dataSetMap: { [label: string]: IPointDataSet } = {};
+	protected override getDataAsPoint(): chartjs.ChartDataset[] {
+		const dataSetMap: { [label: string]: chartjs.ChartDataset<'line', any[]> } = {};
 		this._data.rows.map(row => {
 			if (row && row.length >= 3) {
 				const legend = row[0];
 				if (!dataSetMap[legend]) {
-					dataSetMap[legend] = { label: legend, data: [], fill: false };
+					dataSetMap[legend] = { label: legend, data: [] };
 				}
 				dataSetMap[legend].data.push({ x: row[1], y: Number(row[2]) });
 

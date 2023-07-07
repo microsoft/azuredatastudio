@@ -146,7 +146,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
-		@IConnectionManagementService protected readonly connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService
@@ -185,7 +185,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}));
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.indexOf('queryEditor') > -1) {
+			if (e.affectedKeys.has('queryEditor')) {
 				this._onDidChangeLabel.fire();
 			}
 		}));
@@ -243,11 +243,17 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				title = this._description + ' ';
 			}
 			if (profile) {
-				title += `${profile.serverName}`;
-				if (profile.databaseName) {
-					title += `.${profile.databaseName}`;
+				let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(profile);
+				if (distinguishedTitle !== '') {
+					title += distinguishedTitle;
 				}
-				title += ` (${profile.userName || profile.authenticationType})`;
+				else {
+					title += `${profile.serverName}`;
+					if (profile.databaseName) {
+						title += `.${profile.databaseName}`;
+					}
+					title += ` (${profile.userName || profile.authenticationType})`;
+				}
 			} else {
 				title += localize('disconnected', "disconnected");
 			}

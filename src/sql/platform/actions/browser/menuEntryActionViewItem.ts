@@ -10,10 +10,11 @@ import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ICommandAction } from 'vs/platform/action/common/action';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { ThemeIcon } from 'vs/base/common/themables';
 
 const ids = new IdGenerator('menu-item-action-item-icon-');
 
@@ -39,7 +40,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		super(_action, undefined, labeledkeybindingService, _notificationService, _contextKeyService, _themeService, _contextMenuService);
 	}
 
-	override updateLabel(): void {
+	protected override updateLabel(): void {
 		if (this.label) {
 			this.label.innerText = this._commandAction.label;
 		}
@@ -114,7 +115,7 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		super(action, undefined, keybindingService, notificationService, contextKeyService, _themeService, _contextMenuService);
 	}
 
-	override updateLabel(): void {
+	protected override updateLabel(): void {
 		if (this.label) {
 			this.label.innerText = this._commandAction.label;
 		}

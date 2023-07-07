@@ -381,7 +381,8 @@
       ],
       "dataGrid/item/context": [
         {
-          "command": "azure.dataGrid.openInAzurePortal"
+          "command": "azure.dataGrid.openInAzurePortal",
+          "group": "y_portal"
         }
       ]
     },

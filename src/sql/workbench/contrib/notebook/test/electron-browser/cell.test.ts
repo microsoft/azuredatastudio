@@ -11,8 +11,8 @@ import * as objects from 'vs/base/common/objects';
 
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
-import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
+import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
+import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/browser/emptySessionClasses';
 import { CellEditModes, ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
@@ -21,13 +21,14 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { mock } from 'vs/base/test/common/mock';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 let instantiationService: TestInstantiationService;
 

@@ -16,8 +16,8 @@ export const Extensions = {
 };
 
 export interface IInsightData {
-	columns: Array<string>;
-	rows: Array<Array<string>>;
+	columns: string[];
+	rows: string[][];
 }
 
 export interface IInsightsView {

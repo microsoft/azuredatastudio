@@ -7,9 +7,9 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { Deferred } from 'sql/base/common/promise';
-import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
-import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
+import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/common/nbTestQueryManagementService';
+import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
+import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/browser/testCommon';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey, ISerializationProvider, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -498,8 +498,8 @@ suite.skip('NotebookService:', function (): void {
 		const methodName = 'removeContributedProvidersFromCache';
 		await notebookService.registrationComplete;
 		const providerId = 'providerId1';
-		extensionServiceMock.setup(x => x.getExtensions()).returns(() => {
-			return Promise.resolve([
+		extensionServiceMock.setup(x => x.extensions).returns(() => {
+			return [
 				<IExtensionDescription>{
 					name: 'testExtension',
 					publisher: 'Test',
@@ -521,7 +521,7 @@ suite.skip('NotebookService:', function (): void {
 					forceReload: true,
 					targetPlatform: undefined
 				}
-			]);
+			];
 		});
 		const extensionIdentifier = (<DidUninstallExtensionEvent>{
 			identifier: {
@@ -542,7 +542,7 @@ suite.skip('NotebookService:', function (): void {
 		};
 		errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
 		await notebookService.registrationComplete;
-		extensionServiceMock.setup(x => x.getExtensions()).returns(() => undefined);
+		extensionServiceMock.setup(x => x.extensions).returns(() => undefined);
 		const extensionIdentifier = (<DidUninstallExtensionEvent>{
 			identifier: {
 				id: 'id1'

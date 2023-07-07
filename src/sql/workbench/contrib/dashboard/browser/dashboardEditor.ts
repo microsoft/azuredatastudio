@@ -52,7 +52,7 @@ export class DashboardEditor extends EditorPane {
 	/**
 	 * Called to create the editor in the parent element.
 	 */
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 	}
 
 	/**
