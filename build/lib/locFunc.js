@@ -366,10 +366,10 @@ function renameVscodeLangpacks() {
         if (fs.existsSync(translationDataFolder)) {
             let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
             for (let extensionTag in totalExtensions) {
-            	let extensionFileName = totalExtensions[extensionTag];
-            	let shortExtensionFileName = extensionFileName.replace('ms-vscode.', 'vscode.').replace('vscode.', '');
-            	let xlfPath = path.join(xlfFolder, `${langId}`, shortExtensionFileName.replace('.i18n.json', '.xlf'));
-            	if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(shortExtensionFileName.replace('.i18n.json', '')) !== -1)) {
+                let extensionFileName = totalExtensions[extensionTag];
+                let shortExtensionFileName = extensionFileName.replace('ms-vscode.', 'vscode.').replace('vscode.', '');
+                let xlfPath = path.join(xlfFolder, `${langId}`, shortExtensionFileName.replace('.i18n.json', '.xlf'));
+                if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(shortExtensionFileName.replace('.i18n.json', '')) !== -1)) {
                     let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
                     rimraf.sync(filePath);
                 }

@@ -395,8 +395,8 @@ export function renameVscodeLangpacks(): Promise<void> {
 				let extensionFileName = totalExtensions[extensionTag];
 				let shortExtensionFileName = extensionFileName.replace('ms-vscode.', 'vscode.').replace('vscode.', '');
 				let xlfPath = path.join(xlfFolder, `${langId}`, shortExtensionFileName.replace('.i18n.json', '.xlf'));
-				let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
 				if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(shortExtensionFileName.replace('.i18n.json', '')) !== -1)) {
+					let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
 					rimraf.sync(filePath);
 				}
 			}
