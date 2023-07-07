@@ -109,8 +109,8 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 
 		// have to recreate the splitview if the orientation changed
 		if (this._orientation !== layoutOrientation) {
-			this._splitView.el.style.width = '0px';
-			this._splitView.el.style.height = '0px';
+			this._splitView.el.remove();
+			this._splitView.dispose();
 
 			this._splitView = this._register(new SplitView(this._el.nativeElement, { orientation: layoutOrientation }));
 		}
