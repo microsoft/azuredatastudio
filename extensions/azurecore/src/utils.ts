@@ -5,6 +5,7 @@
 
 import * as loc from './localizedConstants';
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import * as constants from './constants';
 
 import { AzureRegion, azureResource } from 'azurecore';
@@ -13,7 +14,10 @@ import { HttpClient } from './account-provider/auths/httpClient';
 import { parse } from 'url';
 import { getProxyAgentOptions } from './proxy';
 import { HttpsProxyAgentOptions } from 'https-proxy-agent';
+import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
+import { AzureResource } from 'azdata';
 
+const localize = nls.loadMessageBundle();
 const configProxy = 'proxy';
 const configProxyStrictSSL = 'proxyStrictSSL';
 const configProxyAuthorization = 'proxyAuthorization';
@@ -161,6 +165,105 @@ export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promis
 	await configuration.update(constants.Filter, tenantIgnoreList, vscode.ConfigurationTarget.Global);
 }
 
+export function updateProviderSettings(defaultSettings: ProviderSettings[]): ProviderSettings[] {
+	let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(constants.AzureSection).get(constants.ProviderSettingsJson) as ProviderSettingsJson[];
+	vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
+		const impactProvider = changeEvent.affectsConfiguration(constants.ProviderSettingsJsonSection);
+		if (impactProvider === true) {
+			await displayReloadAds(constants.ProviderSettingsJsonSection);
+		}
+	});
+	if (providerSettingsJson) {
+		try {
+			for (let cloudProvider of providerSettingsJson) {
+				// build provider setting
+				let newSettings = buildProviderSettings(cloudProvider);
+				defaultSettings.push(newSettings)
+			}
+			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
+
+		} catch (error) {
+			console.log(error);
+			void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load custom endpoints file'));
+			throw Error(error.message);
+		}
+	}
+	return defaultSettings;
+}
+
+function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
+	// build provider setting
+	let newSettings = {
+		configKey: 'enable' + cloudProvider.settings.metadata.id,
+		metadata: {
+			displayName: cloudProvider.settings.metadata.displayName,
+			id: cloudProvider.settings.metadata.id,
+			settings: {
+				host: cloudProvider.settings.metadata.endpoints.host,
+				clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+				microsoftResource: {
+					id: SettingIds.marm,
+					endpoint: cloudProvider.settings.metadata.endpoints.microsoftResource,
+					azureResourceId: AzureResource.MicrosoftResourceManagement
+				},
+				graphResource: {
+					id: SettingIds.graph,
+					endpoint: cloudProvider.settings.metadata.endpoints.graphResource,
+					azureResourceId: AzureResource.Graph
+				},
+				msGraphResource: {
+					id: SettingIds.msgraph,
+					endpoint: cloudProvider.settings.metadata.endpoints.msGraphResource,
+					azureResourceId: AzureResource.MsGraph
+				},
+				armResource: {
+					id: SettingIds.arm,
+					endpoint: cloudProvider.settings.metadata.endpoints.armResource,
+					azureResourceId: AzureResource.ResourceManagement
+				},
+				sqlResource: {
+					id: SettingIds.sql,
+					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
+					azureResourceId: AzureResource.Sql
+				},
+				azureKeyVaultResource: {
+					id: SettingIds.vault,
+					endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
+					azureResourceId: AzureResource.AzureKeyVault
+				},
+				azureLogAnalyticsResource: {
+					id: SettingIds.ala,
+					endpoint: cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
+					azureResourceId: AzureResource.AzureLogAnalytics,
+				},
+				azureStorageResource: {
+					id: SettingIds.storage,
+					endpoint: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpoint,
+					endpointSuffix: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
+					azureResourceId: AzureResource.AzureStorage
+				},
+				azureKustoResource: {
+					id: SettingIds.kusto,
+					endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
+					azureResourceId: AzureResource.AzureKusto,
+				},
+				powerBiResource: {
+					id: SettingIds.powerbi,
+					endpoint: cloudProvider.settings.metadata.endpoints.powerBiResource,
+					azureResourceId: AzureResource.PowerBi
+				},
+				redirectUri: 'http://localhost',
+				scopes: [
+					'openid', 'email', 'profile', 'offline_access',
+					cloudProvider.settings.metadata.endpoints.scopes
+				],
+				portalEndpoint: cloudProvider.settings.metadata.endpoints.portalEndpoint
+			}
+		}
+	};
+	return newSettings;
+}
+
 export function getResourceTypeIcon(appContext: AppContext, type: string): string {
 	switch (type) {
 		case azureResource.AzureResourceType.sqlServer:
@@ -199,4 +302,19 @@ export function getProxyEnabledHttpClient(): HttpClient {
 	}
 
 	return new HttpClient(proxy, agentOptions);
+}
+
+/**
+ * Display notification with button to reload
+ * @param sectionName Name of section to reload
+ * @returns true if reload clicked, false otherwise.
+ */
+export async function displayReloadAds(sectionName: string): Promise<boolean> {
+	const result = await vscode.window.showInformationMessage(loc.reloadPrompt(sectionName), loc.reloadChoice);
+	if (result === loc.reloadChoice) {
+		await vscode.commands.executeCommand('workbench.action.reloadWindow');
+		return true;
+	} else {
+		return false;
+	}
 }
