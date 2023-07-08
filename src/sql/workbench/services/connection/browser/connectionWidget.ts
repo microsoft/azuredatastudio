@@ -1261,11 +1261,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 				model.savePassword = this._rememberPasswordCheckBox.checked;
 				model.databaseName = this.databaseName;
-				if (this._customOptionWidgets) {
-					this._customOptionWidgets.forEach((widget, i) => {
-						model.options[this._customOptions[i].name] = widget.value;
-					});
-				}
+			}
+			if (this._customOptionWidgets) {
+				this._customOptionWidgets.forEach((widget, i) => {
+					model.options[this._customOptions[i].name] = widget.value;
+				});
 			}
 			// Fix Application Name for MSSQL/MSSQL-CMS Providers, to handle special case as we need to apply custom application name in ADS Core connection profile.
 			if ((model.providerName === mssqlProviderName || model.providerName === mssqlCmsProviderName)

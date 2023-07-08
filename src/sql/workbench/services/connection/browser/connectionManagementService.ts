@@ -592,7 +592,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			callbacks.onConnectStart();
 		}
 		let tokenFillSuccess = await this.fillInOrClearToken(connection);
-		if (!tokenFillSuccess) {
+		// When connection string contains 'Active Directory Interactive' mode, token will not be acquired here.
+		if (!tokenFillSuccess && !isMssqlAuthProviderEnabled) {
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
 		if (options.saveTheConnection) {
@@ -1266,6 +1267,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					return true;
 				}
 			} else {
+				if (!accountId) {
+					// If connection profile doesn't contain account Id - let STS handle AAD authentication.
+					return true;
+				}
 				this._logService.info(`Could not find Azure account with name ${accountId}`);
 			}
 		} else {
