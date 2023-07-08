@@ -104,10 +104,10 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 CommandsRegistry.registerCommand({
 	id: 'profiler.openFile',
 	handler: async (accessor: ServicesAccessor, ...args: any[]) => {
-		let editorService: IEditorService = accessor.get(IEditorService);
-		let fileDialogService: IFileDialogService = accessor.get(IFileDialogService);
-		let profilerService: IProfilerService = accessor.get(IProfilerService);
-		let instantiationService: IInstantiationService = accessor.get(IInstantiationService)
+		const editorService: IEditorService = accessor.get(IEditorService);
+		const fileDialogService: IFileDialogService = accessor.get(IFileDialogService);
+		const profilerService: IProfilerService = accessor.get(IProfilerService);
+		const instantiationService: IInstantiationService = accessor.get(IInstantiationService)
 
 		const result = await profilerService.openFile(fileDialogService, editorService, instantiationService);
 

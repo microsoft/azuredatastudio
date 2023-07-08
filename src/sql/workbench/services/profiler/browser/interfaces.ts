@@ -33,7 +33,7 @@ export interface IProfilerSession {
 	/**
 	 * Called by the service when the session is closed unexpectedly
 	 */
-	onSessionStopped(events: azdata.ProfilerSessionStoppedParams, isFileSession?: boolean): void;
+	onSessionStopped(events: azdata.ProfilerSessionStoppedParams): void;
 	/**
 	 * Called by the service when a new profiler session is created by the dialog
 	 */

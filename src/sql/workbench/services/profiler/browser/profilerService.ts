@@ -65,7 +65,6 @@ export class ProfilerService implements IProfilerService {
 	private _editColumnDialog?: ProfilerColumnEditorDialog;
 	private _memento: any;
 	private _context: Memento;
-	private _isXELFileSession: boolean = false;
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
@@ -110,7 +109,7 @@ export class ProfilerService implements IProfilerService {
 
 	public onSessionStopped(params: azdata.ProfilerSessionStoppedParams): void {
 		if (this._idMap.reverseHas(params.ownerUri)) {
-			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onSessionStopped(params, this._isXELFileSession);
+			this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)!)!.onSessionStopped(params);
 		}
 	}
 
@@ -317,10 +316,10 @@ export class ProfilerService implements IProfilerService {
 
 		if (fileURIs?.length === 1) {
 			const fileURI = fileURIs[0];
-			this._isXELFileSession = true;
 
 			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, undefined, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
+			profilerInput.setConnectionState(false);		// Reset connection to be not connected for File session, so that "Start" is not enabled.
 			const result = await this.startSession(profilerInput.id, profilerInput.fileURI.fsPath, ProfilingSessionType.LocalFile);
 			return result;
 		}

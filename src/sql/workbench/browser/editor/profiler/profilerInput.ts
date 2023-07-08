@@ -60,11 +60,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-
 		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
+
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
@@ -158,8 +158,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		}
 	}
 
-	public get isXELFileSession(): boolean {
-		return !this.fileURI ? false : true
+	public get isFileSession(): boolean {
+		return !!this.fileURI;
+	}
+
+	public setConnectionState(isConnected: boolean): void {
+		this.state.change({
+			isConnected: isConnected
+		});
 	}
 
 	public setColumns(columns: Array<string>) {
@@ -198,8 +204,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._filter;
 	}
 
-	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams, isFileSession: boolean = false) {
-		if (!isFileSession) {	// File session do not have serverName, so ignore notification error based off of server
+	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams) {
+		if (!this.isFileSession) {	// File session do not have serverName, so ignore notification error based off of server
 			this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
 		}
 

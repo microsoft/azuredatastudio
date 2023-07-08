@@ -549,7 +549,7 @@ export class ProfilerEditor extends EditorPane {
 				// Launch the create session dialog if openning a new window.
 				let uiState = this._profilerService.getSessionViewState(this.input.id);
 				let previousSessionName = uiState && uiState.previousSessionName;
-				if (!this.input.sessionName && !previousSessionName && !this.input.isXELFileSession) {
+				if (!this.input.sessionName && !previousSessionName && !this.input.isFileSession) {
 					this._profilerService.launchCreateSessionDialog(this.input);
 				}
 
@@ -581,7 +581,7 @@ export class ProfilerEditor extends EditorPane {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				if (!this.input.isXELFileSession) {		// skip updating session selector for File sessions
+				if (!this.input.isFileSession) {		// skip updating session selector for File sessions
 					this._updateSessionSelector();
 				}
 			}
@@ -613,6 +613,9 @@ export class ProfilerEditor extends EditorPane {
 	}
 
 	private _updateToolbar(): void {
+		console.log("this.input.state.isRunning:", this.input.state.isRunning);
+		console.log("!this.input.state.isPaused:", this.input.state.isPaused);
+		console.log("this.input.state.isConnected", this.input.state.isConnected);
 		this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
 		this._createAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
 		this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused) && this.input.state.isConnected;
