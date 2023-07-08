@@ -66,6 +66,10 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">Добавить элемент</target>
       </trans-unit>
+      <trans-unit id="addSqlCmdVariableWithoutDefaultValue">
+        <source xml:lang="en">Add SQLCMD variable '{0}' to project without default value?</source>
+        <target state="translated">Добавить переменную SQLCMD "{0}" в проект без значения по умолчанию?</target>
+      </trans-unit>
       <trans-unit id="advancedOptionsButton">
         <source xml:lang="en">Advanced...</source>
         <target state="translated">Дополнительно…</target>
@@ -89,6 +93,10 @@
       <trans-unit id="applySuccess">
         <source xml:lang="en">Project was successfully updated.</source>
         <target state="translated">Проект успешно обновлен.</target>
+      </trans-unit>
+      <trans-unit id="artifactReference">
+        <source xml:lang="en">Artifact Reference</source>
+        <target state="translated">Ссылка на артефакт</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -442,13 +450,13 @@
         <source xml:lang="en">Downloading</source>
         <target state="translated">Выполняется скачивание</target>
       </trans-unit>
-      <trans-unit id="downloadingDacFxDlls">
-        <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
-        <target state="translated">Скачивание nuget Microsoft.Build.Sql для получения библиотек DLL сборки</target>
-      </trans-unit>
       <trans-unit id="downloadingFromTo">
         <source xml:lang="en">Downloading from {0} to {1}</source>
         <target state="translated">Идет скачивание из {0} в {1}</target>
+      </trans-unit>
+      <trans-unit id="downloadingNuget">
+        <source xml:lang="en">Downloading {0} nuget to get build DLLs </source>
+        <target state="translated">Скачивание {0} nuget для получения библиотек DLL сборки </target>
       </trans-unit>
       <trans-unit id="edgeEulaAgreementTitle">
         <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
@@ -904,6 +912,10 @@
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">Элементы с абсолютным путем вне папки проекта не поддерживаются. Убедитесь, что пути в файле проекта указаны относительно папки проекта.</target>
       </trans-unit>
+      <trans-unit id="packageReference">
+        <source xml:lang="en">Package Reference</source>
+        <target state="translated">Ссылка на пакет</target>
+      </trans-unit>
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
         <target state="translated">Не удается получить доступ к предоставленному родительскому элементу дерева</target>
@@ -1016,6 +1028,10 @@
         <source xml:lang="en">Publish profile elements</source>
         <target state="translated">Элементы профиля публикации</target>
       </trans-unit>
+      <trans-unit id="publishProfileFriendlyName">
+        <source xml:lang="en">Publish Profile</source>
+        <target state="translated">Профиль публикации</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">Проект базы данных успешно опубликован</target>
@@ -1061,12 +1077,16 @@
         <target state="translated">Публикация проекта в контейнере...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Тип</target>
+        <source xml:lang="en">Referenced Database Type</source>
+        <target state="translated">Тип базы данных, на которую указывает ссылка</target>
       </trans-unit>
-      <trans-unit id="referenceType">
-        <source xml:lang="en">Reference type</source>
-        <target state="translated">Тип ссылки</target>
+      <trans-unit id="referenceTypeRadioButtonsGroupTitle">
+        <source xml:lang="en">Reference Type</source>
+        <target state="translated">Ссылочный тип</target>
+      </trans-unit>
+      <trans-unit id="referencedDatabaseType">
+        <source xml:lang="en">Referenced Database type</source>
+        <target state="translated">Тип базы данных, на которую указывает ссылка</target>
       </trans-unit>
       <trans-unit id="reloadProject">
         <source xml:lang="en">Would you like to reload your database project?</source>
@@ -1124,9 +1144,13 @@
         <source xml:lang="en">Save</source>
         <target state="translated">Сохранить</target>
       </trans-unit>
+      <trans-unit id="saveProfile">
+        <source xml:lang="en">Would you like to save the settings in a profile (.publish.xml)?</source>
+        <target state="translated">Сохранить параметры в профиле (.publish.xml)?</target>
+      </trans-unit>
       <trans-unit id="saveProfileAsButtonText">
         <source xml:lang="en">Save As...</source>
-        <target state="translated">Сохранить как...</target>
+        <target state="translated">Сохранить как…</target>
       </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
@@ -1357,8 +1381,8 @@
         <target state="translated">Не удалось найти переменную SQLCMD "{0}"</target>
       </trans-unit>
       <trans-unit id="unableToPerformAction">
-        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
-        <target state="translated">Не удалось найти "{0}", цель: "{1}"</target>
+        <source xml:lang="en">Unable to locate '{0}' target: '{1}'. {2}</source>
+        <target state="translated">Не удается найти "{0}", цель: "{1}". {2}</target>
       </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
@@ -1600,6 +1624,10 @@
         <source xml:lang="en">Add Pre-Deployment Script</source>
         <target state="translated">Добавить сценарий, выполняемый перед развертыванием</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPublishProfile">
+        <source xml:lang="en">Add Publish Profile</source>
+        <target state="translated">Добавить профиль публикации</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newScript">
         <source xml:lang="en">Add Script</source>
         <target state="translated">Добавить сценарий</target>
@@ -1631,6 +1659,10 @@
       <trans-unit id="sqlDatabaseProjects.openInDesigner">
         <source xml:lang="en">Open in Designer</source>
         <target state="translated">Открыть в конструкторе</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openReferencedSqlProject">
+        <source xml:lang="en">Open project</source>
+        <target state="translated">Открыть проект</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>
