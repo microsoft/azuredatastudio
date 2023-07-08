@@ -106,6 +106,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">database</source>
         <target state="translated">база данных</target>
       </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayNameInTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">База данных</target>
+      </trans-unit>
       <trans-unit id="objectManagement.DatabaseRoleTypeDisplayName">
         <source xml:lang="en">database role</source>
         <target state="translated">роль базы данных</target>
@@ -122,9 +126,33 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Login</source>
         <target state="translated">Вход</target>
       </trans-unit>
-      <trans-unit id="objectManagement.OkText">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema">
+        <source xml:lang="en">All objects belonging to a schema</source>
+        <target state="translated">Все объекты, принадлежащие схеме</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes">
+        <source xml:lang="en">All objects of certain types</source>
+        <target state="translated">Все объекты определенных типов</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">Схема</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SpecificObjects">
+        <source xml:lang="en">Specific objects…</source>
+        <target state="translated">Определенные объекты...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_TypeLabel">
+        <source xml:lang="en">How do you want to add objects?</source>
+        <target state="translated">Как вы хотите добавить объекты?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.SearchTextLabel">
+        <source xml:lang="en">Search Text</source>
+        <target state="translated">Текст поиска</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ServerDisplayName">
+        <source xml:lang="en">Server</source>
+        <target state="translated">Сервер</target>
       </trans-unit>
       <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
         <source xml:lang="en">server role</source>
@@ -150,17 +178,25 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">view</source>
         <target state="translated">представление</target>
       </trans-unit>
-      <trans-unit id="objectManagement.addMemberText">
-        <source xml:lang="en">Add a member</source>
-        <target state="translated">Добавить участника</target>
+      <trans-unit id="objectManagement.addMembersText">
+        <source xml:lang="en">Add members</source>
+        <target state="translated">Добавить участников</target>
       </trans-unit>
-      <trans-unit id="objectManagement.addText">
-        <source xml:lang="en">Add…</source>
-        <target state="translated">Добавить...</target>
+      <trans-unit id="objectManagement.addSecurablesText">
+        <source xml:lang="en">Add securables</source>
+        <target state="translated">Добавить защищаемые объекты</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
         <target state="translated">Дополнительно</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.azurePricingLink">
+        <source xml:lang="en">Azure SQL Database pricing calculator</source>
+        <target state="translated">Калькулятор цен на базу данных SQL Azure</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupRedundancyLabel">
+        <source xml:lang="en">Backup Storage Redundancy</source>
+        <target state="translated">Избыточность хранилища резервных копий</target>
       </trans-unit>
       <trans-unit id="objectManagement.blankPasswordConfirmation">
         <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
@@ -174,14 +210,86 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Browse…</source>
         <target state="translated">Обзор…</target>
       </trans-unit>
+      <trans-unit id="objectManagement.collationLabel">
+        <source xml:lang="en">Collation</source>
+        <target state="translated">Параметры сортировки</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.compatibilityLevelLabel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">Уровень совместимости</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.configureSLOSectionHeader">
+        <source xml:lang="en">Configure SLO</source>
+        <target state="translated">Настройка целевого уровня обслуживания</target>
+      </trans-unit>
       <trans-unit id="objectManagement.confirmPasswordLabel">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">Подтверждение пароля</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.containmentTypeLabel">
+        <source xml:lang="en">Containment Type</source>
+        <target state="translated">Тип автономности</target>
       </trans-unit>
       <trans-unit id="objectManagement.createObjectOperationName">
         <source xml:lang="en">Create {0}</source>
         <note>{0} object type</note>
         <target state="translated">Создать {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.currentSLOLabel">
+        <source xml:lang="en">Current Service Level Objective</source>
+        <target state="translated">Текущая цель уровня обслуживания</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseExistsError">
+        <source xml:lang="en">Database '{0}' already exists. Choose a different database name.</source>
+        <target state="translated">База данных \"{0}\" уже существует. Выберите другое имя базы данных.</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
+        <source xml:lang="en">Backup</source>
+        <target state="translated">Резервное копирование</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.databaseSectionHeader">
+        <source xml:lang="en">Database</source>
+        <target state="translated">База данных</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.dateCreated">
+        <source xml:lang="en">Date Created</source>
+        <target state="translated">Дата создания</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.mbUnitText">
+        <source xml:lang="en">{0} MB</source>
+        <target state="translated">{0} МБ</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.memoryAllocated">
+        <source xml:lang="en">Memory Allocated To Memory Optimized Objects</source>
+        <target state="translated">Память, выделенная для оптимизированных для обработки в памяти объектов</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.memoryUsed">
+        <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
+        <target state="translated">Память, используемая оптимизированными для обработки в памяти объектами</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Имя</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.numberOfUsers">
+        <source xml:lang="en">Number of Users</source>
+        <target state="translated">Число пользователей</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">Владелец</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.size">
+        <source xml:lang="en">Size</source>
+        <target state="translated">Размер</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
+        <source xml:lang="en">Space Available</source>
+        <target state="translated">Доступное место</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">Состояние</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
         <source xml:lang="en">Select Database Role Members</source>
@@ -210,13 +318,37 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">Удаление: {0} "{1}"</target>
       </trans-unit>
+      <trans-unit id="objectManagement.denyColumnHeader">
+        <source xml:lang="en">Deny</source>
+        <target state="translated">Запретить</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.editionLabel">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">Выпуск</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.effectivePermissionsTableLabel">
+        <source xml:lang="en">Effective permissions for selected securable</source>
+        <target state="translated">Действующие разрешения для выбранного защищаемого объекта</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.effectivePermissionsTableLabelSelected">
+        <source xml:lang="en">Effective permissions for: {0}</source>
+        <target state="translated">Действующие разрешения для: {0}</target>
+      </trans-unit>
       <trans-unit id="objectManagement.enabledLabel">
         <source xml:lang="en">Enabled</source>
         <target state="translated">Включено</target>
       </trans-unit>
-      <trans-unit id="objectManagement.filterText">
-        <source xml:lang="en">Filter</source>
-        <target state="translated">Фильтр</target>
+      <trans-unit id="objectManagement.explicitPermissionsTableLabel">
+        <source xml:lang="en">Explicit permissions for selected securable</source>
+        <target state="translated">Явные разрешения для выбранного защищаемого объекта</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.explicitPermissionsTableLabelSelected">
+        <source xml:lang="en">Explicit permissions for: {0}</source>
+        <target state="translated">Явные разрешения для: {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.filterSectionTitle">
+        <source xml:lang="en">Filters</source>
+        <target state="translated">Фильтры</target>
       </trans-unit>
       <trans-unit id="objectManagement.findText">
         <source xml:lang="en">Find</source>
@@ -226,17 +358,49 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">General</source>
         <target state="translated">Общие</target>
       </trans-unit>
-      <trans-unit id="objectManagement.helpText">
-        <source xml:lang="en">Help</source>
-        <target state="translated">Справка</target>
+      <trans-unit id="objectManagement.grantColumnHeader">
+        <source xml:lang="en">Grant</source>
+        <target state="translated">Предоставить</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.grantorColumnHeader">
+        <source xml:lang="en">Grantor</source>
+        <target state="translated">Разрешение предоставил</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.hardwareGeneration">
+        <source xml:lang="en">Hardware Generation</source>
+        <target state="translated">Поколение оборудования</target>
       </trans-unit>
       <trans-unit id="objectManagement.invalidPasswordError">
         <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
         <target state="translated">Пароль не соответствует требованиям сложности. Для получения дополнительных сведений: https://docs.microsoft.com/sql/relational-databases/security/password-policy.</target>
       </trans-unit>
-      <trans-unit id="objectManagement.loadingDialog">
-        <source xml:lang="en">Loading dialog...</source>
-        <target state="translated">Загрузка диалогового окна...</target>
+      <trans-unit id="objectManagement.isClustered">
+        <source xml:lang="en">Is Clustered</source>
+        <target state="translated">Кластеризованный</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.isHadrEnabled">
+        <source xml:lang="en">Is HADR Enabled</source>
+        <target state="translated">Подключение HADR</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.isPolyBaseInstalled">
+        <source xml:lang="en">Is PolyBase Installed</source>
+        <target state="translated">Наличие PolyBase</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.isXTPSupported">
+        <source xml:lang="en">Is XTP Supported</source>
+        <target state="translated">Поддержка XTP</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.language">
+        <source xml:lang="en">Language</source>
+        <target state="translated">Язык</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.lastDatabaseBackup">
+        <source xml:lang="en">Last Database Backup</source>
+        <target state="translated">Последнее резервное копирование базы данных</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.lastDatabaseLogBackup">
+        <source xml:lang="en">Last Database Log Backup</source>
+        <target state="translated">Последнее резервное копирование журналов базы данных</target>
       </trans-unit>
       <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
         <source xml:lang="en">Loading objects completed, {0} objects found</source>
@@ -314,6 +478,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Login is not selected.</source>
         <target state="translated">Имя для входа не выбрано.</target>
       </trans-unit>
+      <trans-unit id="objectManagement.maxServerMemoryText">
+        <source xml:lang="en">Maximum Server Memory (MB)</source>
+        <target state="translated">Максимальный объем памяти сервера (МБ)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.maxSizeLabel">
+        <source xml:lang="en">Max Size</source>
+        <target state="translated">Максимальный размер</target>
+      </trans-unit>
       <trans-unit id="objectManagement.membersLabel">
         <source xml:lang="en">Members</source>
         <target state="translated">Участники</target>
@@ -321,6 +493,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.membershipLabel">
         <source xml:lang="en">Membership</source>
         <target state="translated">Участие</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.memory">
+        <source xml:lang="en">Memory</source>
+        <target state="translated">Память</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.minServerMemoryText">
+        <source xml:lang="en">Minimum Server Memory (MB)</source>
+        <target state="translated">Минимальный объем памяти сервера (МБ)</target>
       </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
@@ -335,10 +515,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type.</note>
         <target state="translated">{0} — предварительная версия</target>
       </trans-unit>
-      <trans-unit id="objectManagement.noActionScriptedMessage">
-        <source xml:lang="en">There is no action to be scripted.</source>
-        <target state="translated">Нет действий для включения в скрипт.</target>
-      </trans-unit>
       <trans-unit id="objectManagement.noConnectionUriError">
         <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
         <target state="translated">Не удалось получить сведения о подключении. Восстановите подключение и повторите попытку.</target>
@@ -348,9 +524,17 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">{0} - {1} (предварительная версия)</target>
       </trans-unit>
+      <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
+        <source xml:lang="en">Add Objects</source>
+        <target state="translated">Добавление объектов</target>
+      </trans-unit>
       <trans-unit id="objectManagement.objectTypeLabel">
         <source xml:lang="en">Object Type</source>
         <target state="translated">Тип объекта</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectTypesLabel">
+        <source xml:lang="en">Object Types</source>
+        <target state="translated">Типы объектов</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectsLabel">
         <source xml:lang="en">Objects</source>
@@ -365,6 +549,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
         <note>{0} object type, {1}: object name, {2}: error message.</note>
         <target state="translated">Произошла ошибка при открытии диалогового окно свойств для {0}: {1}. {2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.operatingSystem">
+        <source xml:lang="en">Operating System</source>
+        <target state="translated">Операционная система</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.optionsSectionHeader">
+        <source xml:lang="en">Options</source>
+        <target state="translated">Параметры</target>
       </trans-unit>
       <trans-unit id="objectManagement.ownerText">
         <source xml:lang="en">Owner</source>
@@ -382,8 +574,32 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Password must match the confirm password.</source>
         <target state="translated">Пароль должен совпадать с паролем подтверждения.</target>
       </trans-unit>
+      <trans-unit id="objectManagement.permissionColumnHeader">
+        <source xml:lang="en">Permission</source>
+        <target state="translated">Разрешение</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.platform">
+        <source xml:lang="en">Platform</source>
+        <target state="translated">Платформа</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.processors">
+        <source xml:lang="en">Processors</source>
+        <target state="translated">Процессоры</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.product">
+        <source xml:lang="en">Product</source>
+        <target state="translated">Продукт</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">Свойства</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.recoveryModelLabel">
+        <source xml:lang="en">Recovery Model</source>
+        <target state="translated">Модель восстановления</target>
+      </trans-unit>
       <trans-unit id="objectManagement.refreshOEError">
-        <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+        <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">Произошла ошибка при обновлении обозревателя объектов. {0}</target>
       </trans-unit>
@@ -391,9 +607,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Remove selected member</source>
         <target state="translated">Удалить выбранный элемент</target>
       </trans-unit>
-      <trans-unit id="objectManagement.removeText">
-        <source xml:lang="en">Remove</source>
-        <target state="translated">Удалить</target>
+      <trans-unit id="objectManagement.removeSecurablesText">
+        <source xml:lang="en">Remove selected securable</source>
+        <target state="translated">Удалить выбранный защищаемый объект</target>
       </trans-unit>
       <trans-unit id="objectManagement.renameObjectDialogTitle">
         <source xml:lang="en">Enter new name</source>
@@ -409,29 +625,33 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: original name, {2}: new name</note>
         <target state="translated">Переименовать {0} "{1}" на "{2}"</target>
       </trans-unit>
+      <trans-unit id="objectManagement.reservedStorageSizeInMB">
+        <source xml:lang="en">Reserved Storage Size</source>
+        <target state="translated">Зарезервированный размер хранилища</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.rootDirectory">
+        <source xml:lang="en">Root Directory</source>
+        <target state="translated">Корневой каталог</target>
+      </trans-unit>
       <trans-unit id="objectManagement.schemaLabel">
         <source xml:lang="en">Schema</source>
         <target state="translated">Схема</target>
       </trans-unit>
-      <trans-unit id="objectManagement.scriptError">
-        <source xml:lang="en">An error occurred while generating script. {0}</source>
-        <target state="translated">Во время создания сценария произошла ошибка. {0}</target>
+      <trans-unit id="objectManagement.securablesText">
+        <source xml:lang="en">Securables</source>
+        <target state="translated">Защищаемые объекты</target>
       </trans-unit>
-      <trans-unit id="objectManagement.scriptGenerated">
-        <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
-        <target state="translated">Сценарий успешно создан. Вы можете закрыть диалоговое окно, чтобы просмотреть его в открывшемся редакторе.</target>
-      </trans-unit>
-      <trans-unit id="objectManagement.scriptText">
-        <source xml:lang="en">Script</source>
-        <target state="translated">Сценарий</target>
+      <trans-unit id="objectManagement.selectSecurablesDialogTitle">
+        <source xml:lang="en">Select Securables</source>
+        <target state="translated">Выберите защищаемые объекты</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectText">
         <source xml:lang="en">Select</source>
         <target state="translated">Выберите</target>
       </trans-unit>
-      <trans-unit id="objectManagement.selectedLabel">
-        <source xml:lang="en">Selected</source>
-        <target state="translated">Выбрано</target>
+      <trans-unit id="objectManagement.serverCollation">
+        <source xml:lang="en">Server Collation</source>
+        <target state="translated">Параметры сортировки сервера</target>
       </trans-unit>
       <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
         <source xml:lang="en">Select Server Role Members</source>
@@ -440,6 +660,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
         <source xml:lang="en">Select Server Role Owner</source>
         <target state="translated">Выбор владельца роли сервера</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.serviceTier">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">Уровень служб</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.storageSpaceUsageInGB">
+        <source xml:lang="en">Storage Space Usage</source>
+        <target state="translated">Использование дискового пространства</target>
       </trans-unit>
       <trans-unit id="objectManagement.updateObjectOperationName">
         <source xml:lang="en">Update {0} '{1}'</source>
@@ -482,9 +710,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Mapped to a Windows user/group</source>
         <target state="translated">Сопоставлено с пользователем или группой Windows</target>
       </trans-unit>
-      <trans-unit id="objectManagement.yesText">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Да</target>
+      <trans-unit id="objectManagement.versionText">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Версия</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.withGrantColumnHeader">
+        <source xml:lang="en">With Grant</source>
+        <target state="translated">С предоставлением разрешения</target>
       </trans-unit>
     </body>
   </file>
@@ -569,6 +801,62 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="viewKnownIssuesText">
         <source xml:lang="en">View Known Issues</source>
         <target state="translated">Просмотреть известные проблемы</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/ui/localizedConstants" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="mssql.ui.OkText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.generatingScript">
+        <source xml:lang="en">Generating script...</source>
+        <target state="translated">Создание сценария…</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.generatingScriptCompleted">
+        <source xml:lang="en">Script generated</source>
+        <target state="translated">Сценарий создан</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.helpText">
+        <source xml:lang="en">Help</source>
+        <target state="translated">Справка</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.loadingDialog">
+        <source xml:lang="en">Loading dialog...</source>
+        <target state="translated">Загрузка диалогового окна...</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.noActionScriptedMessage">
+        <source xml:lang="en">There is no action to be scripted.</source>
+        <target state="translated">Нет действий для включения в скрипт.</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.scriptError">
+        <source xml:lang="en">An error occurred while generating the script. {0}</source>
+        <target state="translated">Произошла ошибка при создании сценария. {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.scriptGenerated">
+        <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
+        <target state="translated">Сценарий успешно создан. Вы можете закрыть диалоговое окно, чтобы просмотреть его в открывшемся редакторе.</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.scriptText">
+        <source xml:lang="en">Script</source>
+        <target state="translated">Сценарий</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.yesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addText">
+        <source xml:lang="en">Add…</source>
+        <target state="translated">Добавить...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.removeText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">Удалить</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectLabel">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Выбрать</target>
       </trans-unit>
     </body>
   </file>
@@ -1233,6 +1521,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
         <target state="translated">Установить параметр SET XACT_ABORT ON</target>
+      </trans-unit>
+      <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
+        <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
+        <target state="translated">Разрешить ли конструктору таблиц отключать и повторно включать триггеры DDL во время публикации</target>
       </trans-unit>
       <trans-unit id="mssql.tableDesigner.preloadDatabaseModel">
         <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>

@@ -241,80 +241,88 @@ Você deseja continuar?</target>
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Log Analytics workspace</source>
-        <target state="translated">Espaço de trabalho do Log Analytics</target>
+        <source xml:lang="en">Log Analytics workspaces</source>
+        <target state="translated">Workspaces do Log Analytics</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel">
-        <source xml:lang="en">CosmosDB for Mongo</source>
-        <target state="translated">CosmosDB para Mongo</target>
+        <source xml:lang="en">Azure CosmosDB for MongoDB</source>
+        <target state="translated">Azure CosmosDB para MongoDB</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL database</source>
-        <target state="translated">Banco de dados SQL</target>
+        <source xml:lang="en">SQL databases</source>
+        <target state="translated">Bancos de dados SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL server</source>
-        <target state="translated">SQL Server</target>
+        <source xml:lang="en">SQL servers</source>
+        <target state="translated">SQL servers</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
-        <source xml:lang="en">Azure Data Explorer Cluster</source>
-        <target state="translated">Cluster do Azure Data Explorer</target>
+        <source xml:lang="en">Azure Data Explorer Clusters</source>
+        <target state="translated">Clusters do Azure Data Explorer</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
-        <source xml:lang="en">Azure Database for MySQL Flexible server</source>
-        <target state="translated">Banco de dados do Azure para o servidor MySQL Flexível</target>
+        <source xml:lang="en">Azure Database for MySQL flexible servers</source>
+        <target state="translated">Servidores flexíveis do Banco de Dados do Azure para MySQL</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
-        <target state="translated">Hiperescala do PostgreSQL – Azure Arc</target>
+        <source xml:lang="en">PostgreSQL servers – Azure Arc</source>
+        <target state="translated">Servidores PostgreSQL – Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL flexible servers</source>
+        <target state="translated">Servidores flexíveis do Banco de Dados do Azure para PostgreSQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
-        <target state="translated">Servidor do Banco de Dados do Azure para PostgreSQL</target>
+        <source xml:lang="en">Azure Database for PostgreSQL servers</source>
+        <target state="translated">Servidores do Banco de Dados do Azure para PostgreSQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
-        <source xml:lang="en">Azure SQL DB managed instance</source>
-        <target state="translated">Instância gerenciada do BD SQL do Azure</target>
+        <source xml:lang="en">SQL managed instances</source>
+        <target state="translated">Instâncias gerenciadas SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
-        <source xml:lang="en">SQL managed instance – Azure Arc</source>
-        <target state="translated">Instância gerenciada de SQL – Azure Arc</target>
+        <source xml:lang="en">SQL managed instances - Azure Arc</source>
+        <target state="translated">Instâncias gerenciadas do SQL – Azure Arc</target>
       </trans-unit>
     </body>
   </file>
@@ -331,6 +339,18 @@ Você deseja continuar?</target>
       <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
         <source xml:lang="en">Azure Synapse Analytics</source>
         <target state="translated">Azure Synapse Analytics</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/universal/universalService" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azurecore.unregisteredProvider">
+        <source xml:lang="en">Unrecognized Provider resource: {0}</source>
+        <target state="translated">Recurso de Provedor não reconhecido: {0}</target>
+      </trans-unit>
+      <trans-unit id="azurecore.unregisteredProviderType">
+        <source xml:lang="en">Unrecognized Provider resource type: {0}</source>
+        <target state="translated">Tipo de recurso de Provedor não reconhecido: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -398,13 +418,9 @@ Você deseja continuar?</target>
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
-        <source xml:lang="en">No Subscriptions found.</source>
-        <target state="translated">Não foi encontrada nenhuma assinatura.</target>
-      </trans-unit>
-      <trans-unit id="azure.unableToAccessSubscription">
-        <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
-        <target state="translated">Não é possível acessar a assinatura {0}({1}). [atualize a conta](command:azure.resource.signin) para tentar novamente. {2}</target>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+        <source xml:lang="en">No Tenants found.</source>
+        <target state="translated">Nenhum Locatário encontrado.</target>
       </trans-unit>
     </body>
   </file>
@@ -426,28 +442,17 @@ Você deseja continuar?</target>
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found.</source>
-        <target state="translated">Nenhum Recurso encontrado.</target>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+        <source xml:lang="en">No Tenants found.</source>
+        <target state="translated">Nenhum Locatário encontrado.</target>
       </trans-unit>
-      <trans-unit id="azure.resource.throttleerror">
-        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
-        <target state="translated">Solicitações desta conta foram limitadas. Para tentar novamente, selecione um número menor de assinaturas.</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.title">
-        <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
-        <note>{0} is the display name of the azure account
-{1} is the number of selected subscriptions in this account
-{2} is the number of total subscriptions in this account</note>
-        <target state="translated">{0} ({1}/{2} assinaturas)</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
-        <source xml:lang="en">{0} - Loading...</source>
-        <target state="translated">{0} – Carregando...</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.loadresourceerror">
-        <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
-        <target state="translated">Ocorreu um erro ao carregar recursos do Azure: {0}</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">Não foi encontrada nenhuma assinatura.</target>
       </trans-unit>
     </body>
   </file>
@@ -456,6 +461,14 @@ Você deseja continuar?</target>
       <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found.</source>
         <target state="translated">Nenhum recurso encontrado.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/tenantTreeNode" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">Nenhuma Assinatura encontrada.</target>
       </trans-unit>
     </body>
   </file>
@@ -665,9 +678,13 @@ Você deseja continuar?</target>
         <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
         <target state="translated">Aviso: o Log de PII do Azure está habilitado. Habilitar essa opção permite que informações de identificação pessoal sejam registradas em log e só devem ser usadas para fins de depuração.</target>
       </trans-unit>
+      <trans-unit id="azurecore.postgresFlexibleServer">
+        <source xml:lang="en">Azure Database for PostgreSQL flexible servers</source>
+        <target state="translated">Servidores flexíveis do Banco de Dados do Azure para PostgreSQL</target>
+      </trans-unit>
       <trans-unit id="azurecore.postgresServer">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
-        <target state="translated">Servidor do Banco de Dados do Azure para PostgreSQL</target>
+        <source xml:lang="en">Azure Database for PostgreSQL servers</source>
+        <target state="translated">Servidores do Banco de Dados do Azure para PostgreSQL</target>
       </trans-unit>
       <trans-unit id="azurecore.reload">
         <source xml:lang="en">Reload</source>
@@ -836,6 +853,10 @@ Você deseja continuar?</target>
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
         <target state="translated">Selecionar Assinaturas</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.selecttenants.title">
+        <source xml:lang="en">Select Tenants</source>
+        <target state="translated">Selecionar Locatários</target>
       </trans-unit>
       <trans-unit id="azure.resource.signin.title">
         <source xml:lang="en">Azure: Sign In</source>
