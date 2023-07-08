@@ -119,7 +119,7 @@ steps:
 
   - script: |
       set -e
-      xvfb-run DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
+      xvfb-run ./scripts/test.sh --tfs "Unit Tests"
     displayName: Run core unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
