@@ -613,9 +613,6 @@ export class ProfilerEditor extends EditorPane {
 	}
 
 	private _updateToolbar(): void {
-		console.log("this.input.state.isRunning:", this.input.state.isRunning);
-		console.log("!this.input.state.isPaused:", this.input.state.isPaused);
-		console.log("this.input.state.isConnected", this.input.state.isConnected);
 		this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
 		this._createAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
 		this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused) && this.input.state.isConnected;
