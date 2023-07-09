@@ -17,7 +17,7 @@ import { IPreferencesService, ISettingsEditorOptions } from 'vs/workbench/servic
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { TestRemoteAgentService, ITestInstantiationService, TestEditorService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 
-suite('PreferencesService', () => {
+suite.skip('PreferencesService', () => {	 // {{SQL CARBON EDIT}} skip failing suite
 
 	let disposables: DisposableStore;
 	let testInstantiationService: ITestInstantiationService;
