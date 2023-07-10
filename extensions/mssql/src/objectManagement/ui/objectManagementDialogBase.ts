@@ -58,8 +58,47 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return errors;
 	}
 
-	protected async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+	/**
+	 * Initializes the validating and saving of object.
+	 * @returns Whether the dialog changes saved successfully or error occured.
+	 */
+	protected async validateAndSaveChanges(): Promise<boolean> {
+		const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
+		if (this.isDirty) {
+			try {
+				await this.saveChanges(actionName);
+				// When the object is saved successfully, we need to update the original object info to the current object info.
+				this._originalObjectInfo = deepClone(this.objectInfo);
+				return true;
+			} catch (err) {
+				// When error occurs, add the error message to the dialog error object
+				this.dialogObject.message = {
+					text: err.message,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected async saveChanges(actionName: TelemetryActions): Promise<void> {
+		const startTime = Date.now();
 		await this.objectManagementService.save(this._contextId, this.objectInfo);
+		if (this.options.objectExplorerContext) {
+			if (this.options.isNewObject) {
+				await refreshNode(this.options.objectExplorerContext);
+			} else {
+				// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
+				await refreshParentNode(this.options.objectExplorerContext);
+			}
+		}
+
+		TelemetryReporter.sendTelemetryEvent(actionName, {
+			objectType: this.options.objectType
+		}, {
+			elapsedTimeMs: Date.now() - startTime
+		});
 	}
 
 	protected override async initialize(): Promise<void> {
@@ -74,24 +113,9 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 				try {
 					if (this.isDirty) {
-						const startTime = Date.now();
-						await this.saveChanges(this._contextId, this.objectInfo);
-						if (this.options.objectExplorerContext) {
-							if (this.options.isNewObject) {
-								await refreshNode(this.options.objectExplorerContext);
-							} else {
-								// For edit mode, the node context is the object itself, we need to refresh the parent node to reflect the changes.
-								await refreshParentNode(this.options.objectExplorerContext);
-							}
-						}
-
-						TelemetryReporter.sendTelemetryEvent(actionName, {
-							objectType: this.options.objectType
-						}, {
-							elapsedTimeMs: Date.now() - startTime
-						});
-						operation.updateStatus(azdata.TaskStatus.Succeeded);
+						await this.saveChanges(actionName);
 					}
+					operation.updateStatus(azdata.TaskStatus.Succeeded);
 				}
 				catch (err) {
 					operation.updateStatus(azdata.TaskStatus.Failed, getErrorMessage(err));

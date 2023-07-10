@@ -11,6 +11,7 @@ import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
+import * as uiLoc from '../../ui/localizedConstants';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -109,6 +110,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				.component();
 			this.formContainer.addItem(propertiesTabbedPannel);
 		}
+	}
+
+	/**
+	 * Validate and Save the changes
+	 * @returns true if the dialog should be closed, false otherwise
+	 */
+	protected override async onConfirmation(): Promise<boolean> {
+		this.updateLoadingStatus(true, uiLoc.ValidateAndSaveChangesText);
+		const confirmed = await this.validateAndSaveChanges();
+		this.dialogObject.okButton.label = this.options.isNewObject ? uiLoc.ApplyText : uiLoc.OkText;
+		this.updateLoadingStatus(false);
+
+		return confirmed;
 	}
 
 	//#region Create Database
