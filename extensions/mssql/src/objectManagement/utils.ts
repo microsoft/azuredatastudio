@@ -43,7 +43,14 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
 
-// Converts number to two decimal placed string
-export function convertNumToTwoDecimalStringinMB(value: number): string {
+/**
+ * Converts number to two decimal placed string
+ */
+export function convertNumToTwoDecimalStringInMB(value: number): string {
 	return localizedConstants.StringValueInMB(value?.toFixed(2));
+}
+
+// Escape single quotes
+export function escapeSingleQuotes(value: string): string {
+	return value.replace(/'/g, "\'");
 }

@@ -5065,6 +5065,15 @@ Error: {1}</source>
       <source xml:lang="en">Yes (recommended)</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="miGettingStarted">
+      <source xml:lang="en">Getting &amp;&amp;Started</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
     <trans-unit id="welcomePage.createConnection">
       <source xml:lang="en">Create a connection</source>

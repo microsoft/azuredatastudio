@@ -703,6 +703,25 @@ declare module 'azdata' {
 		headerFilter?: boolean,
 	}
 
+	export type ExecutionPlanData = executionPlan.ExecutionPlanGraphInfo | executionPlan.ExecutionPlanGraph[];
+
+	export interface ExecutionPlanComponentProperties extends ComponentProperties {
+		/**
+		 * Provide the execution plan file to be displayed. In case of execution plan graph info, the file type will determine the provider to be used to generate execution plan graphs
+		 */
+		data?: ExecutionPlanData;
+	}
+
+	/**
+	 * Defines the executionPlan component
+	 */
+	export interface ExecutionPlanComponent extends Component, ExecutionPlanComponentProperties {
+	}
+
+	export interface ModelBuilder {
+		executionPlan(): ComponentBuilder<ExecutionPlanComponent, ExecutionPlanComponentProperties>;
+	}
+
 	export interface ListViewOption {
 		/**
 		 * The optional accessibility label for the column. Default is the label for the list view option.
@@ -2008,5 +2027,14 @@ declare module 'azdata' {
 		 * Set active cell.
 		 */
 		setActiveCell(row: number, column: number): void;
+	}
+
+	export interface ProfilerProvider {
+		startSession(sessionId: string, sessionName: string, sessionType?: ProfilingSessionType): Thenable<boolean>;
+	}
+
+	export enum ProfilingSessionType {
+		RemoteSession = 0,
+		LocalFile = 1
 	}
 }
