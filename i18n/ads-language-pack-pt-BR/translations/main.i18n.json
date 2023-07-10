@@ -14606,8 +14606,8 @@
 			"enablePreviewFeatures.yes": "Sim (recomendado)"
 		},
 		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
+			"miGettingStarted": "I&&ntrodução",
+			"showReleaseNotes": "Mostrar Introdução"
 		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "Criar uma conexão",

@@ -14606,8 +14606,8 @@
 			"enablePreviewFeatures.yes": "예(추천)"
 		},
 		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
+			"miGettingStarted": "시작(&&S)",
+			"showReleaseNotes": "시작 표시"
 		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "연결 만들기",

@@ -14606,8 +14606,8 @@
 			"enablePreviewFeatures.yes": "Да (рекомендуется)"
 		},
 		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
+			"miGettingStarted": "&&Начало работы",
+			"showReleaseNotes": "Показать раздел \"Начало работы\""
 		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "Создать подключение",
