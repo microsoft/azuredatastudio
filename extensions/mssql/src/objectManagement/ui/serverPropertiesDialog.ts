@@ -47,7 +47,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
 		this.dialogObject.customButtons[1].enabled = false;
-		this.dialogObject.okButton.label = 'Apply';
 	}
 
 	protected override get helpUrl(): string {
