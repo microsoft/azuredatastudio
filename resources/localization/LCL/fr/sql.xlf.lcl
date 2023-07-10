@@ -14755,7 +14755,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Show Getting Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Afficher la prise en main]]></Val>
+            <Val><![CDATA[Afficher la mise en route]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
