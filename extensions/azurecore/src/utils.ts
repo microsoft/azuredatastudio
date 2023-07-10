@@ -174,7 +174,7 @@ export function updateProviderSettings(defaultSettings: ProviderSettings[]): Pro
 			await displayReloadAds(constants.ProviderSettingsJsonSection);
 		}
 	});
-	if (providerSettingsJson) {
+	if (providerSettingsJson && providerSettingsJson.length > 0) {
 		try {
 			for (let cloudProvider of providerSettingsJson) {
 				// build provider setting
