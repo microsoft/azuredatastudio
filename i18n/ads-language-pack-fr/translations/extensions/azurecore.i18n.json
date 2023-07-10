@@ -74,40 +74,47 @@
 			"azure.subscriptionError": "Échec de l’obtention des abonnements pour le compte {0}. Actualisez le compte."
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Espace de travail Log Analytics"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Espaces de travail Log Analytics"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "CosmosDB pour Mongo"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure Cosmos DB pour MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "Base de données SQL"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "Bases de données SQL"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "Serveur SQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "Serveurs SQL"
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
-			"azure.resource.providers.KustoContainerLabel": "Cluster Azure Data Explorer"
+			"azure.resource.providers.KustoContainerLabel": "Clusters Azure Data Explorer"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Serveur flexible Azure Database pour MySQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Serveurs flexibles Azure Database pour MySQL"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Serveurs PostgreSQL - Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Serveurs flexibles Azure Database pour PostgreSQL"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Serveur Azure Database pour PostgreSQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Serveurs Azure Database pour PostgreSQL"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Instance managée Azure SQL DB"
+			"azure.resource.providers.sqlInstanceContainerLabel": "Instances managées SQL"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "Instance managée SQL - Azure Arc"
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "Instances managées SQL - Azure Arc"
 		},
 		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
 			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Pools SQL dédiés"
 		},
 		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
 			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "Ressource de fournisseur non reconnue : {0}",
+			"azurecore.unregisteredProviderType": "Type de ressource de fournisseur non reconnu : {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Aucune ressource"
@@ -129,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Connectez-vous à Azure..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Aucun abonnement.",
-			"azure.unableToAccessSubscription": "Impossible d’accéder à l’abonnement{0} ({1}). Veuillez [actualiser le compte](command:azure.resource.signin) pour réessayer. {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Aucun locataire trouvé."
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Le chargement de certains comptes Azure a échoué. {0}",
@@ -138,14 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Afficher les comptes Azure"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.flatAccountTreeNode.noResourcesLabel": "Aucune ressource trouvée.",
-			"azure.resource.throttleerror": "Les demandes de ce compte ont été limitées. Pour réessayer, sélectionnez un nombre plus petit d’abonnements.",
-			"azure.resource.tree.accountTreeNode.title": "{0} (abonnements {1}/{2})",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - Chargement...",
-			"azure.resource.tree.loadresourceerror": "Une erreur s’est produite lors du chargement des ressources Azure : {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Aucun locataire trouvé."
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Aucun abonnement."
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Aucune ressource."
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Aucun abonnement."
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "Chargement..."
@@ -201,7 +209,8 @@
 			"azurecore.norwayeast": "Norvège Est",
 			"azurecore.norwaywest": "Norvège Ouest",
 			"azurecore.piiLogging.warning": "Avertissement : la journalisation des informations personnelles (PII) Azure est activée. L’activation de cette option permet de consigner les informations d’identification personnelles et ne doit être utilisée qu’à des fins de débogage.",
-			"azurecore.postgresServer": "Serveur Azure Database pour PostgreSQL",
+			"azurecore.postgresFlexibleServer": "Serveurs flexibles Azure Database pour PostgreSQL",
+			"azurecore.postgresServer": "Serveurs Azure Database pour PostgreSQL",
 			"azurecore.reload": "Recharger",
 			"azurecore.reloadChoice": "Recharger Azure Data Studio",
 			"azurecore.reloadPrompt": "La bibliothèque d'authentification a changé, veuillez recharger Azure Data Studio.",
@@ -245,6 +254,7 @@
 			"azure.resource.refresh.title": "Actualiser",
 			"azure.resource.refreshall.title": "Azure : Actualiser tous les comptes",
 			"azure.resource.selectsubscriptions.title": "Sélectionner des abonnements",
+			"azure.resource.selecttenants.title": "Sélectionner des locataires",
 			"azure.resource.signin.title": "Azure : Se connecter",
 			"azure.resource.startterminal.title": "Démarrer Cloud Shell",
 			"azure.resource.view.title": "Azure (préversion)",

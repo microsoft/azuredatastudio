@@ -78,8 +78,21 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		case FolderType.Databases:
 			objectType = ObjectManagement.NodeType.Database;
 			break;
-		default:
-			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
+	}
+	// Fall back to node type in case the user right clicked on an object instead of a folder
+	if (!objectType) {
+		switch (context.nodeInfo!.nodeType) {
+			case ObjectManagement.NodeType.ApplicationRole:
+			case ObjectManagement.NodeType.DatabaseRole:
+			case ObjectManagement.NodeType.ServerLevelLogin:
+			case ObjectManagement.NodeType.ServerLevelServerRole:
+			case ObjectManagement.NodeType.User:
+			case ObjectManagement.NodeType.Database:
+				objectType = context.nodeInfo!.nodeType as ObjectManagement.NodeType;
+				break;
+			default:
+				throw new Error(objectManagementLoc.NoDialogFoundError(context.nodeInfo!.nodeType, context.nodeInfo!.objectType));
+		}
 	}
 
 	try {

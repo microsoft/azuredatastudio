@@ -623,8 +623,8 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
         <target state="translated">Möchten Sie "{0}" entfernen?</target>
       </trans-unit>
       <trans-unit id="refreshAccount">
-        <source xml:lang="en">Reenter your credentials</source>
-        <target state="translated">Anmeldeinformationen erneut eingeben</target>
+        <source xml:lang="en">Refresh your credentials</source>
+        <target state="translated">Aktualisieren Sie Ihre Anmeldeinformationen</target>
       </trans-unit>
       <trans-unit id="removeAccount">
         <source xml:lang="en">Remove account</source>
@@ -2025,6 +2025,14 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/backup/browser/backupUiService" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="backupDialogTitle">
+        <source xml:lang="en">Backup database - {0}:{1}</source>
+        <target state="translated">Datenbank sichern – {0}:{1}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="backup.asymmetricKey">
@@ -2311,6 +2319,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
   </file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="commandline.propertiesFormatError">
+        <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
+        <target state="translated">Erweiterte Verbindungseigenschaften konnten nicht als JSON analysiert werden. Fehler: {0} Wert der empfangenen Eigenschaften: {1}</target>
+      </trans-unit>
       <trans-unit id="confirmConnect">
         <source xml:lang="en">Are you sure you want to connect?</source>
         <target state="translated">Möchten Sie die Verbindung herstellen?</target>
@@ -2366,6 +2378,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
       <trans-unit id="connection.showUnsupportedServerVersionWarning">
         <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
         <target state="translated">Gibt an, ob die Warnmeldung angezeigt werden soll, wenn ein Benutzer eine Verbindung mit einer Serverversion herstellt, die von Azure Data Studio nicht unterstützt wird.</target>
+      </trans-unit>
+      <trans-unit id="registeredServers.collapseAll">
+        <source xml:lang="en">Collapse All Connections</source>
+        <target state="translated">Alle Verbindungen reduzieren</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -4101,6 +4117,10 @@ Die folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn 
         <source xml:lang="en">Enter search value</source>
         <target state="translated">Suchwert eingeben</target>
       </trans-unit>
+      <trans-unit id="executionPlanFindNodeLabel">
+        <source xml:lang="en">Find nodes</source>
+        <target state="translated">Knoten suchen</target>
+      </trans-unit>
       <trans-unit id="executionPlanSearchTypeContains">
         <source xml:lang="en">Contains</source>
         <target state="translated">Enthält</target>
@@ -4755,6 +4775,10 @@ Fehler: {1}</target>
         <source xml:lang="en">Remove parameter cell</source>
         <target state="translated">Parameterzelle entfernen</target>
       </trans-unit>
+      <trans-unit id="addCellLabel">
+        <source xml:lang="en">Add cell</source>
+        <target state="translated">Zelle hinzufügen</target>
+      </trans-unit>
       <trans-unit id="clear">
         <source xml:lang="en">Clear Result</source>
         <target state="translated">Ergebnis löschen</target>
@@ -4799,10 +4823,6 @@ Fehler: {1}</target>
         <source xml:lang="en">Insert Text Below</source>
         <target state="translated">Text unterhalb einfügen</target>
       </trans-unit>
-      <trans-unit id="moreActionsLabel">
-        <source xml:lang="en">More</source>
-        <target state="translated">Mehr</target>
-      </trans-unit>
       <trans-unit id="runAllAbove">
         <source xml:lang="en">Run Cells Above</source>
         <target state="translated">Alle Zellen oberhalb ausführen</target>
@@ -4831,14 +4851,6 @@ Fehler: {1}</target>
         <source xml:lang="en">Move cell up</source>
         <target state="translated">Zelle nach oben verschieben</target>
       </trans-unit>
-      <trans-unit id="codeCellsPreview">
-        <source xml:lang="en">Add cell</source>
-        <target state="translated">Zelle hinzufügen</target>
-      </trans-unit>
-      <trans-unit id="codePreview">
-        <source xml:lang="en">Code cell</source>
-        <target state="translated">Codezelle</target>
-      </trans-unit>
       <trans-unit id="optionCodeCell">
         <source xml:lang="en">Code cell</source>
         <target state="translated">Codezelle</target>
@@ -4850,10 +4862,6 @@ Fehler: {1}</target>
       <trans-unit id="splitCell">
         <source xml:lang="en">Split cell</source>
         <target state="translated">Zelle teilen</target>
-      </trans-unit>
-      <trans-unit id="textPreview">
-        <source xml:lang="en">Text cell</source>
-        <target state="translated">Textzelle</target>
       </trans-unit>
     </body>
   </file>
@@ -5123,14 +5131,6 @@ Fehler: {1}</target>
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">Fehler beim Ausführen von Zellen: Weitere Informationen finden Sie im Fehler in der Ausgabe der aktuell ausgewählten Zelle.</target>
       </trans-unit>
-      <trans-unit id="codeCellsPreview">
-        <source xml:lang="en">Add cell</source>
-        <target state="translated">Zelle hinzufügen</target>
-      </trans-unit>
-      <trans-unit id="codePreview">
-        <source xml:lang="en">Code cell</source>
-        <target state="translated">Codezelle</target>
-      </trans-unit>
       <trans-unit id="createFile">
         <source xml:lang="en">Create File</source>
         <target state="translated">Datei erstellen</target>
@@ -5154,10 +5154,6 @@ Fehler: {1}</target>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
         <target state="translated">Alle ausführen</target>
-      </trans-unit>
-      <trans-unit id="textPreview">
-        <source xml:lang="en">Text cell</source>
-        <target state="translated">Textzelle</target>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
@@ -5451,6 +5447,10 @@ Fehler: {1}</target>
         <source xml:lang="en">Clear Results</source>
         <target state="translated">Ergebnisse löschen</target>
       </trans-unit>
+      <trans-unit id="codePreview">
+        <source xml:lang="en">Code cell</source>
+        <target state="translated">Codezelle</target>
+      </trans-unit>
       <trans-unit id="collapseAllCells">
         <source xml:lang="en">Collapse Cells</source>
         <target state="translated">Zellen reduzieren</target>
@@ -5522,6 +5522,10 @@ Fehler: {1}</target>
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select Connection</source>
         <target state="translated">Verbindung auswählen</target>
+      </trans-unit>
+      <trans-unit id="textPreview">
+        <source xml:lang="en">Text cell</source>
+        <target state="translated">Textzelle</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -5743,10 +5747,6 @@ Fehler: {1}</target>
         <source xml:lang="en">Insert Cells</source>
         <target state="translated">Zellen einfügen</target>
       </trans-unit>
-      <trans-unit id="moreActionsLabel">
-        <source xml:lang="en">More</source>
-        <target state="translated">Mehr</target>
-      </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
         <target state="translated">Zelle ausführen</target>
@@ -5816,7 +5816,7 @@ Fehler: {1}</target>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
+        <source xml:lang="en">Copy failed with error: {0}</source>
         <target state="translated">Fehler beim Kopieren: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
@@ -5849,8 +5849,20 @@ Fehler: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/notebook/common/notebookLoc" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="moreActionsLabel">
+        <source xml:lang="en">More</source>
+        <target state="translated">Mehr</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="objectExplorer.filterDialogTitle">
+        <source xml:lang="en">Filter Settings</source>
+        <target state="translated">Filtereinstellungen</target>
+      </trans-unit>
       <trans-unit id="serverTree.newConnection">
         <source xml:lang="en">New Connection</source>
         <target state="translated">Neue Verbindung</target>
@@ -5875,6 +5887,10 @@ Fehler: {1}</target>
   </file>
   <file original="src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="objectExplorerConfigurationTitle">
+        <source xml:lang="en">Object Explorer</source>
+        <target state="translated">Objekt-Explorer</target>
+      </trans-unit>
       <trans-unit id="serverGroup.autoExpand">
         <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
         <target state="translated">Servergruppen im Objekt-Explorer-Viewlet automatisch erweitern</target>
@@ -5886,10 +5902,6 @@ Fehler: {1}</target>
       <trans-unit id="serverTree.configuration.title">
         <source xml:lang="en">Server Tree</source>
         <target state="translated">Serverstruktur</target>
-      </trans-unit>
-      <trans-unit id="serverTree.nodeExpansionTimeout">
-        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
-        <target state="translated">Timeout in Sekunden für das Erweitern eines Knotens in der Serveransicht</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
@@ -5922,6 +5934,10 @@ Fehler: {1}</target>
       <trans-unit id="notebook">
         <source xml:lang="en">Notebook</source>
         <target state="translated">Notebook</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer">
+        <source xml:lang="en">Object Explorer</source>
+        <target state="translated">Objekt-Explorer</target>
       </trans-unit>
       <trans-unit id="profiler">
         <source xml:lang="en">Profiler</source>
@@ -6147,6 +6163,10 @@ Fehler: {1}</target>
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">Mit Headern kopieren</target>
       </trans-unit>
+      <trans-unit id="excelLimitExceededError">
+        <source xml:lang="en">The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.</source>
+        <target state="translated">Die Anzahl der Zeilen oder Spalten in der Tabelle hat die Excel-Grenzwerte überschritten. Versuchen Sie es stattdessen mit einem anderen Format.</target>
+      </trans-unit>
       <trans-unit id="jsonEncoding">
         <source xml:lang="en">Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created.</source>
         <target state="translated">Die Ergebniscodierung wird beim Exportieren in JSON nicht gespeichert. Nachdem die Datei erstellt wurde, speichern Sie sie mit der gewünschten Codierung.</target>
@@ -6154,6 +6174,10 @@ Fehler: {1}</target>
       <trans-unit id="maximize">
         <source xml:lang="en">Maximize</source>
         <target state="translated">Maximieren</target>
+      </trans-unit>
+      <trans-unit id="openExcelSpecs">
+        <source xml:lang="en">View Excel specifications</source>
+        <target state="translated">Excel-Spezifikationen anzeigen</target>
       </trans-unit>
       <trans-unit id="restore">
         <source xml:lang="en">Restore</source>
@@ -6242,6 +6266,34 @@ Fehler: {1}</target>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>
         <target state="translated">Ergebnisraster</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Abbrechen</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.cancelLargeRowSelection">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Abbrechen</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.confirmLargeRowSelection">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Ja</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.donotShowLargeRowSelectionPromptAgain">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">Nicht mehr anzeigen</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.largeRowSelectionPrompt.">
+        <source xml:lang="en">You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?</source>
+        <target state="translated">Sie haben {0} Zeilen ausgewählt. Das Laden der Daten und die Berechnung der Zusammenfassung kann einige Zeit in Anspruch nehmen. Möchten Sie den Vorgang fortsetzen?</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.loadingData">
+        <source xml:lang="en">Loading selected rows for calculation...</source>
+        <target state="translated">Ausgewählte Zeilen werden zur Berechnung geladen...</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.loadingDataWithProgress">
+        <source xml:lang="en">Loading selected rows for calculation ({0}/{1})...</source>
+        <target state="translated">Ausgewählte Zeilen werden zur Berechnung geladen ({0}/{1})...</target>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
@@ -6335,6 +6387,10 @@ Fehler: {1}</target>
         <source xml:lang="en">Message Panel</source>
         <target state="translated">Meldungspanel</target>
       </trans-unit>
+      <trans-unit id="messagePanel.message">
+        <source xml:lang="en">Timestamp: {0}, Message: {1}</source>
+        <target state="translated">Zeitstempel: {0}, Meldung: {1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/query.contribution" source-language="en" datatype="plaintext" target-language="de">
@@ -6374,6 +6430,14 @@ Fehler: {1}</target>
       <trans-unit id="queryEditor.results.openAfterSave">
         <source xml:lang="en">Whether to open the file in Azure Data Studio after the result is saved.</source>
         <target state="translated">Gibt an, ob die Datei in Azure Data Studio geöffnet werden soll, nachdem das Ergebnis gespeichert wurde.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.preferProvidersCopyHandler">
+        <source xml:lang="en">Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.</source>
+        <target state="translated">Gibt an, ob die Kopierergebnisanforderung vom Abfrageanbieter verarbeitet werden soll, wenn sie unterstützt wird. Der Standardwert ist TRUE. Legen Sie diesen Wert auf FALSE fest, um zu erzwingen, dass alle Kopiervorgänge von Azure Data Studio ausgeführt werden.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.promptForLargeRowSelection">
+        <source xml:lang="en">When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.</source>
+        <target state="translated">Wenn Zellen im Ergebnisraster ausgewählt werden, berechnet ADS die Zusammenfassung für sie. Mit dieser Einstellung wird gesteuert, ob eine Bestätigung angezeigt wird, wenn die Anzahl der ausgewählten Zeilen größer als der in der Einstellung "inMemoryDataProcessingThreshold" angegebene Wert ist. Der Standardwert ist TRUE.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.saveAsCsv.delimiter">
         <source xml:lang="en">The custom delimiter to use between values when saving as CSV</source>
@@ -6422,6 +6486,10 @@ Fehler: {1}</target>
       <trans-unit id="queryEditor.results.showActionBar">
         <source xml:lang="en">Whether to show the action bar in the query results view</source>
         <target state="translated">Gibt an, ob die Aktionsleiste in der Abfrageergebnisansicht angezeigt werden soll.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
+        <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
+        <target state="translated">Gibt an, ob das Hinzufügen eines Zeilenumbruchs zwischen Zeilen beim Kopieren von Ergebnissen übersprungen werden soll, wenn die vorherige Zeile bereits einen nachgestellten Zeilenumbruch aufweist. Der Standardwert ist FALSE.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
@@ -6551,6 +6619,10 @@ Fehler: {1}</target>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/queryEditor" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="queryActions.selectDatabase.label">
+        <source xml:lang="en">Database:</source>
+        <target state="translated">Datenbank:</target>
+      </trans-unit>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">Abfrage-Editor</target>
@@ -6827,6 +6899,18 @@ Fehler: {1}</target>
         <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
         <target state="translated">Fehler beim Aktualisieren des Knotens "{0}": {1}</target>
       </trans-unit>
+      <trans-unit id="scriptActionError">
+        <source xml:lang="en">An error occurred while executing the action '{0}': {1}.</source>
+        <target state="translated">Fehler beim Ausführen der Aktion "{0}": {1}.</target>
+      </trans-unit>
+      <trans-unit id="scriptingAction.close">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Schließen</target>
+      </trans-unit>
+      <trans-unit id="scriptingAction.inProgress">
+        <source xml:lang="en">Executing action: {0}...</source>
+        <target state="translated">Aktion wird ausgeführt: {0}...</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="de">
@@ -6855,10 +6939,6 @@ Fehler: {1}</target>
       <trans-unit id="tasks">
         <source xml:lang="en">Tasks</source>
         <target state="translated">Aufgaben</target>
-      </trans-unit>
-      <trans-unit id="viewCategory">
-        <source xml:lang="en">View</source>
-        <target state="translated">Sicht</target>
       </trans-unit>
     </body>
   </file>
@@ -6965,6 +7045,18 @@ Fehler: {1}</target>
         <source xml:lang="en">Refresh</source>
         <target state="translated">Aktualisieren</target>
       </trans-unit>
+      <trans-unit id="treeView.enableCollapseAll">
+        <source xml:lang="en">Whether the the tree view with id {0} enables collapse all.</source>
+        <target state="translated">Gibt an, ob in der Strukturansicht mit der ID {0} alle Elemente reduziert werden können.</target>
+      </trans-unit>
+      <trans-unit id="treeView.enableRefresh">
+        <source xml:lang="en">Whether the tree view with id {0} enables refresh.</source>
+        <target state="translated">Gibt an, ob in der Strukturansicht mit der ID {0} eine Aktualisierung möglich ist.</target>
+      </trans-unit>
+      <trans-unit id="treeView.toggleCollapseAll">
+        <source xml:lang="en">Whether collapse all is toggled for the tree view with id {0}.</source>
+        <target state="translated">Gibt an, ob für die Strukturansicht mit der ID {0} das Reduzieren aller Elemente umgeschaltet werden kann.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/webview/browser/webViewDialog" source-language="en" datatype="plaintext" target-language="de">
@@ -6999,19 +7091,16 @@ Fehler: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext" target-language="de">
+  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="notifyEncryption.message">
-        <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-        <target state="translated">Für Azure Data Studio ist jetzt die Verschlüsselung für alle SQL Server-Verbindungen standardmäßig aktiviert. Dies kann dazu führen, dass Ihre vorhandenen Verbindungen nicht mehr funktionieren, es sei denn, bestimmte Verbindungseigenschaften im Zusammenhang mit der Verschlüsselung werden geändert.{0}Wir empfehlen Ihnen, die weiteren Informationen unter folgendem Link zu überprüfen.</target>
+      <trans-unit id="miGettingStarted">
+        <source xml:lang="en">Getting &amp;&amp;Started</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="new">Getting &amp;&amp;Started</target>
       </trans-unit>
-      <trans-unit id="notifyEncryption.moreInfoLink">
-        <source xml:lang="en">More information</source>
-        <target state="translated">Weitere Informationen</target>
-      </trans-unit>
-      <trans-unit id="notifyEncryption.title">
-        <source xml:lang="en">Important Update</source>
-        <target state="translated">Wichtiges Update</target>
+      <trans-unit id="showReleaseNotes">
+        <source xml:lang="en">Show Getting Started</source>
+        <target state="new">Show Getting Started</target>
       </trans-unit>
     </body>
   </file>
@@ -7196,10 +7285,6 @@ Fehler: {1}</target>
       <trans-unit id="guidedTour">
         <source xml:lang="en">User Welcome Tour</source>
         <target state="translated">Einführungstour für Benutzer</target>
-      </trans-unit>
-      <trans-unit id="help">
-        <source xml:lang="en">Help</source>
-        <target state="translated">Hilfe</target>
       </trans-unit>
       <trans-unit id="hideGuidedTour">
         <source xml:lang="en">Hide Welcome Tour</source>
@@ -7415,6 +7500,22 @@ Fehler: {1}</target>
         <source xml:lang="en">Open the welcome page with Getting Started Tour (default)</source>
         <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
         <target state="translated">Öffnen Sie die Willkommensseite mit der Erste Schritte-Tour (Standard)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="telemetryOptOut.optInNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+        <target state="translated">Helfen Sie, Azure Data Studio zu verbessern, indem Sie Microsoft erlauben, Nutzungsdaten zu sammeln. Lesen Sie unsere [Datenschutzerklärung]({0}) und erfahren Sie, wie Sie dies [aktivieren]({1}).</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.optOutNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+        <target state="translated">Helfen Sie, Azure Data Studio zu verbessern, indem Sie Microsoft erlauben, Nutzungsdaten zu sammeln. Lesen Sie unsere [Datenschutzerklärung]({0}) und erfahren Sie, wie Sie dies [deaktivieren]({1}).</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.readMore">
+        <source xml:lang="en">Read More</source>
+        <target state="translated">Weitere Informationen</target>
       </trans-unit>
     </body>
   </file>
@@ -7808,6 +7909,18 @@ Fehlermeldung: {1}</target>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">Möchten Sie diese Verbindung abbrechen?</target>
       </trans-unit>
+      <trans-unit id="connection.connTitleGroupSection">
+        <source xml:lang="en"> (Group: {0})</source>
+        <target state="translated"> (Gruppe: {0})</target>
+      </trans-unit>
+      <trans-unit id="connection.duplicateEditErrorMessage">
+        <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
+
+ {0}{1}</source>
+        <target state="translated">Das Profil kann nicht gespeichert werden. Die ausgewählte Verbindung stimmt mit einem vorhandenen Profil mit den gleichen Serverinformationen in derselben Gruppe überein: 
+
+ {0}{1}</target>
+      </trans-unit>
       <trans-unit id="connection.extensionNotInstalled">
         <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
         <target state="translated">Die Erweiterung „{0}“ ist erforderlich, um eine Verbindung mit dieser Ressource herzustellen. Möchten Sie diese installieren?</target>
@@ -7907,6 +8020,18 @@ Fehlermeldung: {1}</target>
       <trans-unit id="connectionWidget.connectionString">
         <source xml:lang="en">Connection string</source>
         <target state="translated">Verbindungszeichenfolge</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputType.connectionString">
+        <source xml:lang="en">Connection String</source>
+        <target state="translated">Verbindungszeichenfolge</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputType.parameters">
+        <source xml:lang="en">Parameters</source>
+        <target state="translated">Parameter</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputTypeLabel">
+        <source xml:lang="en">Input type</source>
+        <target state="translated">Eingabetyp</target>
       </trans-unit>
       <trans-unit id="connectionWidget.invalidAzureAccount">
         <source xml:lang="en">You must select an account</source>
@@ -8666,6 +8791,14 @@ Fehlermeldung: {1}</target>
         <source xml:lang="en">Show Active Connections</source>
         <target state="translated">Aktive Verbindungen anzeigen</target>
       </trans-unit>
+      <trans-unit id="connectionDeleted">
+        <source xml:lang="en">Connection {0} deleted</source>
+        <target state="translated">Verbindung {0} gelöscht</target>
+      </trans-unit>
+      <trans-unit id="connectionGroupDeleted">
+        <source xml:lang="en">Connection group {0} deleted</source>
+        <target state="translated">Verbindungsgruppe {0} gelöscht</target>
+      </trans-unit>
       <trans-unit id="connectionTree.addConnection">
         <source xml:lang="en">New Connection</source>
         <target state="translated">Neue Verbindung</target>
@@ -8694,14 +8827,6 @@ Fehlermeldung: {1}</target>
         <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
         <target state="translated">Möchten Sie die Verbindung "{0}" wirklich löschen?</target>
       </trans-unit>
-      <trans-unit id="deleteConnectionConfirmationNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">Nein</target>
-      </trans-unit>
-      <trans-unit id="deleteConnectionConfirmationYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Ja</target>
-      </trans-unit>
       <trans-unit id="deleteConnectionGroup">
         <source xml:lang="en">Delete Group</source>
         <target state="translated">Gruppe löschen</target>
@@ -8710,9 +8835,149 @@ Fehlermeldung: {1}</target>
         <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
         <target state="translated">Möchten Sie die Verbindungsgruppe "{0}" wirklich löschen?</target>
       </trans-unit>
+      <trans-unit id="objectExplorer.filterChildren">
+        <source xml:lang="en">Filter</source>
+        <target state="translated">Filter</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.removeFilter">
+        <source xml:lang="en">Remove Filter</source>
+        <target state="translated">Filter entfernen</target>
+      </trans-unit>
+      <trans-unit id="registeredServers.clearRecentConnections">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Löschen</target>
+      </trans-unit>
       <trans-unit id="showAllConnections">
         <source xml:lang="en">Show All Connections</source>
         <target state="translated">Alle Verbindungen anzeigen</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="filterDialog.errorDateRange">
+        <source xml:lang="en">Start date cannot be greater than end date.</source>
+        <target state="translated">Das Startdatum darf nicht weiter als das Enddatum sein.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorEndDate">
+        <source xml:lang="en">End date is not specified.</source>
+        <target state="translated">Das Enddatum ist nicht angegeben.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorEndNumber">
+        <source xml:lang="en">End number is not specified.</source>
+        <target state="translated">Die Endzahl ist nicht angegeben.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorNumberRange">
+        <source xml:lang="en">Start number cannot be greater than end number.</source>
+        <target state="translated">Die Startzahl darf nicht größer als die Endzahl sein.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorStartDate">
+        <source xml:lang="en">Start date is not specified.</source>
+        <target state="translated">Das Startdatum ist nicht angegeben.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorStartNumber">
+        <source xml:lang="en">Start number is not specified.</source>
+        <target state="translated">Die Startzahl ist nicht angegeben.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.andSelectBox">
+        <source xml:lang="en">And</source>
+        <target state="translated">Und</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.betweenSelectBox">
+        <source xml:lang="en">Between</source>
+        <target state="translated">Zwischen</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Abbrechen</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.clearAllButtonText">
+        <source xml:lang="en">Clear All</source>
+        <target state="translated">Alle löschen</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.clearColumnHeader">
+        <source xml:lang="en">Clear</source>
+        <target state="translated">Löschen</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.containsSelectBox">
+        <source xml:lang="en">Contains</source>
+        <target state="translated">Enthält</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.endsWithSelectBox">
+        <source xml:lang="en">Ends With</source>
+        <target state="translated">Endet mit</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.equalsSelectBox">
+        <source xml:lang="en">Equals</source>
+        <target state="translated">Ist gleich</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.falseSelectBox">
+        <source xml:lang="en">False</source>
+        <target state="translated">FALSE</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.greaterThanOrEqualsSelectBox">
+        <source xml:lang="en">Greater Than Or Equals</source>
+        <target state="translated">Größer als oder gleich</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.greaterThanSelectBox">
+        <source xml:lang="en">Greater Than</source>
+        <target state="translated">Größer als</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
+        <source xml:lang="en">Less Than Or Equals</source>
+        <target state="translated">Kleiner als oder gleich</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.lessThanSelectBox">
+        <source xml:lang="en">Less Than</source>
+        <target state="translated">Kleiner als</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.nodePath">
+        <source xml:lang="en">Path:</source>
+        <target state="translated">Pfad:</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notBetweenSelectBox">
+        <source xml:lang="en">Not Between</source>
+        <target state="translated">Nicht zwischen</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notContainsSelectBox">
+        <source xml:lang="en">Not Contains</source>
+        <target state="translated">Enthält nicht</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notEndsWithSelectBox">
+        <source xml:lang="en">Not Ends With</source>
+        <target state="translated">Endet nicht mit</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notEqualsSelectBox">
+        <source xml:lang="en">Not Equals</source>
+        <target state="translated">Ungleich</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notStartsWithSelectBox">
+        <source xml:lang="en">Not Starts With</source>
+        <target state="translated">Beginnt nicht mit</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.okButtonText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.operatorColumnHeader">
+        <source xml:lang="en">Operator</source>
+        <target state="translated">Operator</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.propertyNameColumnHeader">
+        <source xml:lang="en">Property</source>
+        <target state="translated">Eigenschaft</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.startsWithSelectBox">
+        <source xml:lang="en">Starts With</source>
+        <target state="translated">Beginnt mit</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.trueSelectBox">
+        <source xml:lang="en">True</source>
+        <target state="translated">TRUE</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.valueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">Wert</target>
       </trans-unit>
     </body>
   </file>
@@ -8725,18 +8990,6 @@ Fehlermeldung: {1}</target>
       <trans-unit id="nodeExpansionError">
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">Mehrere Fehler:</target>
-      </trans-unit>
-      <trans-unit id="nodeExpansionTimeout">
-        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
-        <target state="translated">Timeout bei der Knotenerweiterung für Knoten {0} für Anbieter {1}</target>
-      </trans-unit>
-      <trans-unit id="objectExplorerMissingConnectionForSession">
-        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
-        <target state="translated">Timeout beim Warten auf die Erstellung der Sitzung {0} für die Verbindung „{1}". Dies ist wahrscheinlich darauf zurückzuführen, dass der OE-Dienst keine Antwort auf createNewSession vom Anbieter für die Verbindung „{1}“</target>
-      </trans-unit>
-      <trans-unit id="objectExplorerMissingSession">
-        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
-        <target state="translated">Timeout beim Warten auf die Erstellung der Sitzung {0}. Dies ist wahrscheinlich darauf zurückzuführen, dass der OE-Dienst keine Antwort für createNewSession vom Anbieter erhalten hat.</target>
       </trans-unit>
       <trans-unit id="objectExplorerSessionIdMissing">
         <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
@@ -8786,9 +9039,9 @@ Fehlermeldung: {1}</target>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="objectExplorerTimeout">
-        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
-        <target state="translated">Timeout bei Objekt-Explorer Erweiterung für „{0}“</target>
+      <trans-unit id="connectionFailedError">
+        <source xml:lang="en">Failed to connect, please try again.</source>
+        <target state="translated">Fehler beim Herstellen einer Verbindung. Versuchen Sie es noch mal.</target>
       </trans-unit>
     </body>
   </file>
@@ -8900,6 +9153,30 @@ Fehlermeldung: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="gridDataProvider.cancelCopyResults">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Abbrechen</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.closeNotification">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Schließen</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.copyResultsCompleted">
+        <source xml:lang="en">Selected data has been copied to the clipboard. Row count: {0}.</source>
+        <target state="translated">Die ausgewählten Daten wurden in die Zwischenablage kopiert. Zeilenanzahl: {0}.</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.copying">
+        <source xml:lang="en">Copying...</source>
+        <target state="translated">Wird kopiert...</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.loadingRowsInProgress">
+        <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
+        <target state="translated">Die zu kopierenden Zeilen werden geladen ({0}/{1})...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="queryManagement.noQueryRunnerForUri">
@@ -8947,7 +9224,7 @@ Fehlermeldung: {1}</target>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
+        <source xml:lang="en">Copy failed with error: {0}</source>
         <target state="translated">Fehler beim Kopieren: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
@@ -9229,6 +9506,14 @@ Fehlermeldung: {1}</target>
       <trans-unit id="targetDatabaseTooltip">
         <source xml:lang="en">Please enter target database name</source>
         <target state="translated">Zieldatenbanknamen eingeben</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/restore/browser/restoreServiceImpl" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="restoreDialogTitle">
+        <source xml:lang="en">Restore database - {0}:{1}</source>
+        <target state="translated">Datenbank wiederherstellen – {0}:{1}</target>
       </trans-unit>
     </body>
   </file>
@@ -9642,6 +9927,11 @@ Fehlermeldung: {1}</target>
         <source xml:lang="en">The changes have been successfully published.</source>
         <target state="translated">Die Änderungen wurden erfolgreich veröffentlicht.</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.refreshOEError">
+        <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">Fehler beim Aktualisieren des Objekt-Explorers. {0}</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.savingChanges">
         <source xml:lang="en">Publishing table designer changes...</source>
         <target state="translated">Änderungen am Tabellen-Designer werden veröffentlicht...</target>
@@ -9702,19 +9992,6 @@ Fehlermeldung: {1}</target>
       <trans-unit id="taskService.yes">
         <source xml:lang="en">Yes</source>
         <target state="translated">Ja</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="de">
-    <body>
-      <trans-unit id="miGettingStarted">
-        <source xml:lang="en">Getting &amp;&amp;Started</source>
-        <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="translated">Erste &amp;&amp;Schritte</target>
-      </trans-unit>
-      <trans-unit id="showReleaseNotes">
-        <source xml:lang="en">Show Getting Started</source>
-        <target state="translated">"Erste Schritte" anzeigen</target>
       </trans-unit>
     </body>
   </file>

@@ -30,6 +30,7 @@ export class AutoOAuthDialog extends Modal {
 	private _userCodeInputBox?: InputBox;
 	private _websiteInputBox?: InputBox;
 	private _descriptionElement?: HTMLElement;
+	private _selfHelpElement?: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onHandleAddAccount = new Emitter<void>();
@@ -38,6 +39,13 @@ export class AutoOAuthDialog extends Modal {
 	private _onCancel = new Emitter<void>();
 	public get onCancel(): Event<void> { return this._onCancel.event; }
 
+	public hideCopyButton(): void {
+		this._copyAndOpenButton.element.hidden = true;
+	}
+
+	public updateSelfHelpMessage(message: string): void {
+		this._selfHelpElement.innerText = message;
+	}
 
 	private _onCloseEvent = new Emitter<void>();
 	public get onCloseEvent(): Event<void> { return this._onCloseEvent.event; }
@@ -53,7 +61,7 @@ export class AutoOAuthDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
-			'',
+			localize('deviceCodeAuthDialogTitle', 'Azure Auth: Device Code'),
 			TelemetryKeys.ModalDialogName.AutoOAuth,
 			telemetryService,
 			layoutService,
@@ -63,8 +71,8 @@ export class AutoOAuthDialog extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				dialogStyle: 'flyout',
-				hasBackButton: true,
+				dialogStyle: 'normal',
+				height: 340,
 				hasSpinner: true
 			}
 		);
@@ -73,9 +81,6 @@ export class AutoOAuthDialog extends Modal {
 	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this.backButton!.onDidClick(() => this.cancel());
-		this._register(this.backButton);
-
 		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', "Copy & Open"), () => this.addAccount());
 		this._closeButton = this.addFooterButton(localize('oauthDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
 		this.registerListeners();
@@ -90,10 +95,10 @@ export class AutoOAuthDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = append(container, $('.auto-oauth-dialog'));
 		this._descriptionElement = append(body, $('.auto-oauth-description-section.new-section'));
-
 		const addAccountSection = append(body, $('.auto-oauth-info-section.new-section'));
 		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', "User code"));
 		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', "Website"));
+		this._selfHelpElement = append(body, $('.auto-oauth-selfhelp-section.new-section'));
 	}
 
 	private createInputBoxHelper(container: HTMLElement, label: string): InputBox {

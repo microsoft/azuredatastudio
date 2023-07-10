@@ -9,7 +9,7 @@ import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/commo
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
+import { IProfilerService, ProfilingSessionType } from 'sql/workbench/services/profiler/browser/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProfilerEditor } from 'sql/workbench/contrib/profiler/browser/profilerEditor';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -18,6 +18,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',
@@ -59,7 +60,7 @@ CommandsRegistry.registerCommand({
 			}
 
 			if (connectionProfile && connectionProfile.providerName === mssqlProviderName) {
-				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
+				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile, undefined);
 				editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => Promise.resolve(true));
 			}
 		});
@@ -93,9 +94,23 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			} else {
 				// clear data when profiler is started
 				profilerInput.data.clear();
-				return profilerService.startSession(profilerInput.id, profilerInput.sessionName);
+				return profilerService.startSession(profilerInput.id, profilerInput.sessionName, ProfilingSessionType.RemoteSession);
 			}
 		}
 		return Promise.resolve(false);
+	}
+});
+
+CommandsRegistry.registerCommand({
+	id: 'profiler.openFile',
+	handler: async (accessor: ServicesAccessor, ...args: any[]) => {
+		const editorService: IEditorService = accessor.get(IEditorService);
+		const fileDialogService: IFileDialogService = accessor.get(IFileDialogService);
+		const profilerService: IProfilerService = accessor.get(IProfilerService);
+		const instantiationService: IInstantiationService = accessor.get(IInstantiationService)
+
+		const result = await profilerService.openFile(fileDialogService, editorService, instantiationService);
+
+		return result;
 	}
 });

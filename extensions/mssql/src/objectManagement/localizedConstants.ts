@@ -26,6 +26,7 @@ export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectMan
 export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
 export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
 export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
+export function NoDialogFoundError(nodeType: string, objectType: string): string { return localize('objectManagement.noDialogFoundError', "Could not find a supported dialog for node type '{0}' and object type '{1}'.", nodeType, objectType); }
 
 // Shared Strings
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
@@ -260,6 +261,7 @@ export const StorageSpaceUsageInMBText = localize('objectManagement.storageSpace
 export const VersionText = localize('objectManagement.versionText', "Version");
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower than minimum server memory")
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");

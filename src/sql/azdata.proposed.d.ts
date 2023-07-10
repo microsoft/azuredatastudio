@@ -2028,4 +2028,13 @@ declare module 'azdata' {
 		 */
 		setActiveCell(row: number, column: number): void;
 	}
+
+	export interface ProfilerProvider {
+		startSession(sessionId: string, sessionName: string, sessionType?: ProfilingSessionType): Thenable<boolean>;
+	}
+
+	export enum ProfilingSessionType {
+		RemoteSession = 0,
+		LocalFile = 1
+	}
 }
