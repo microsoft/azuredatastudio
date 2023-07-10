@@ -376,12 +376,7 @@ export class ConnectionConfig {
 	}
 
 	private checkIfAuthenticationOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
-		if ((profileStore.options.authenticationType === undefined || profileStore.options.authenticationType === '') && (profile.options.authenticationType === undefined || profile.options.authenticationType === '')) {
-			return true;
-		}
-		else {
-			return profileStore.options.authenticationType === profile.options.authenticationType;
-		}
+		return ((profileStore.options.authenticationType === undefined || profileStore.options.authenticationType === '') && (profile.options.authenticationType === undefined || profile.options.authenticationType === '')) || profileStore.options.authenticationType === profile.options.authenticationType;
 	}
 
 	/**
