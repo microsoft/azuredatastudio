@@ -165,7 +165,7 @@
             "items": {
               "type": "object",
               "properties":{
-                "required": ["name"],
+                "required": ["name", "settings"],
                 "name": {
                   "type": "string",
                   "default": "Azure Public",
