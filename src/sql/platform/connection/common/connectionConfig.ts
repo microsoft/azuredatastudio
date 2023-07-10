@@ -359,10 +359,10 @@ export class ConnectionConfig {
 		let profiles = this.getIConnectionProfileStores(true);
 		let existingProfile = profiles.find(p =>
 			p.providerName === profile.providerName &&
-			p.options.authenticationType === profile.options.authenticationType &&
-			p.options.database === profile.options.database &&
-			p.options.server === profile.options.server &&
-			p.options.user === profile.options.user &&
+			this.checkIfAuthenticationOptionsMatch(p, profile) &&
+			p.options.databaseName === profile.options.databaseName &&
+			p.options.serverName === profile.options.serverName &&
+			p.options.userName === profile.options.userName &&
 			p.options.connectionName === profile.options.connectionName &&
 			p.groupId === newGroupID &&
 			this.checkIfNonDefaultOptionsMatch(p, profile));
@@ -373,6 +373,15 @@ export class ConnectionConfig {
 		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
 		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
 		return result;
+	}
+
+	private checkIfAuthenticationOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		if ((profileStore.options.authenticationType === undefined || profileStore.options.authenticationType === '') && (profile.options.authenticationType === undefined || profile.options.authenticationType === '')) {
+			return true;
+		}
+		else {
+			return profileStore.options.authenticationType === profile.options.authenticationType;
+		}
 	}
 
 	/**
