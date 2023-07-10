@@ -1298,9 +1298,14 @@ export interface StartProfilingParams {
 	ownerUri: string;
 
 	/**
-	 * Session name
+	 * Session name or full path of XEL file to open
 	 */
 	sessionName: string;
+
+	/**
+	 * Identifies which type of target session name identifies
+	 */
+	sessionType: azdata.ProfilingSessionType;
 }
 
 export interface StartProfilingResponse { }

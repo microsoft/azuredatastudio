@@ -219,6 +219,11 @@ export enum StepCompletionAction {
 	GoToStep = 4
 }
 
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
+}
+
 export interface CheckBoxInfo {
 	row: number;
 	columnName: string;
