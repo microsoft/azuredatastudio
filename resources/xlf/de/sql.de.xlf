@@ -7096,11 +7096,11 @@ Fehler: {1}</target>
       <trans-unit id="miGettingStarted">
         <source xml:lang="en">Getting &amp;&amp;Started</source>
         <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="new">Getting &amp;&amp;Started</target>
+        <target state="translated">Erste &amp;&amp;Schritte</target>
       </trans-unit>
       <trans-unit id="showReleaseNotes">
         <source xml:lang="en">Show Getting Started</source>
-        <target state="new">Show Getting Started</target>
+        <target state="translated">"Erste Schritte" anzeigen</target>
       </trans-unit>
     </body>
   </file>
