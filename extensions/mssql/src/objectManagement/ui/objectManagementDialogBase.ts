@@ -58,6 +58,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return errors;
 	}
 
+	protected async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
+		await this.objectManagementService.save(this._contextId, this.objectInfo);
+	}
+
 	/**
 	 * Initializes the validating and saving of object.
 	 * @returns Whether the dialog changes saved successfully or error occured.
@@ -66,7 +70,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 		if (this.isDirty) {
 			try {
-				await this.saveChanges(actionName);
+				await this.saveChangesAndRefreshNode(actionName);
 				// When the object is saved successfully, we need to update the original object info to the current object info.
 				this._originalObjectInfo = deepClone(this.objectInfo);
 				return true;
@@ -82,9 +86,9 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return true;
 	}
 
-	protected async saveChanges(actionName: TelemetryActions): Promise<void> {
+	protected async saveChangesAndRefreshNode(actionName: TelemetryActions): Promise<void> {
 		const startTime = Date.now();
-		await this.objectManagementService.save(this._contextId, this.objectInfo);
+		await this.saveChanges(this._contextId, this.objectInfo);
 		if (this.options.objectExplorerContext) {
 			if (this.options.isNewObject) {
 				await refreshNode(this.options.objectExplorerContext);
@@ -113,7 +117,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 				const actionName = this.options.isNewObject ? TelemetryActions.CreateObject : TelemetryActions.UpdateObject;
 				try {
 					if (this.isDirty) {
-						await this.saveChanges(actionName);
+						await this.saveChangesAndRefreshNode(actionName);
 					}
 					operation.updateStatus(azdata.TaskStatus.Succeeded);
 				}
