@@ -32,7 +32,7 @@ export const ViewGeneralServerPropertiesDocUrl = 'https://learn.microsoft.com/sq
 export const ViewMemoryServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-memory-page?view=sql-server-ver16';
 export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
-export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page?view=sql-server-ver16'
+export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
