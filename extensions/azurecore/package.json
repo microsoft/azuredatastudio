@@ -138,86 +138,105 @@
               "properties":{
                 "name": {
                   "type": "string",
-                  "default": ""
+                  "default": "Azure Public",
+                  "description": "Cloud Name"
                 },
                 "settings": {
                   "type": "object",
+                  "description": "Cloud Settings",
                   "properties": {
                     "metadata": {
                       "type": "object",
                       "properties": {
                         "displayName": {
                           "type": "string",
-                          "default": ""
+                          "default": "Azure Public Cloud",
+                          "description": "Cloud Display Name"
                         },
                         "id": {
                           "type": "string",
-                          "default": ""
+                          "default": "azure_publicCloud",
+                          "description": "Cloud ID"
                         },
                         "endpoints": {
                           "type": "object",
+                          "required": ["host","scopes", "sqlResource", "microsoftResource"],
                           "properties": {
                             "type": "object",
                             "host": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://login.microsoftonline.com/",
+                              "description": "Host Endpoint"
                             },
                             "microsoftResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://management.core.windows.net/",
+                              "description": "Microsoft Resource Endpoint"
                             },
                             "graphResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://graph.windows.net/",
+                              "description": "Graph Resource Endpoint"
                             },
                             "msGraphResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://graph.microsoft.com/",
+                              "description": "Microsoft Graph Resource Endpoint"
                             },
                             "armResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://management.azure.com/",
+                              "description": "ARM Resource Endpoint"
                             },
                             "sqlResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://database.windows.net/",
+                              "description": "SQL Resource Endpoint"
                             },
                             "azureKeyVaultResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://vault.azure.net/",
+                              "description": "Azure KeyVault Resource Endpoint"
                             },
                             "azureLogAnalyticsResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://api.loganalytics.io/",
+                              "description": "Azure Log Analytics Endpoint"
                             },
                             "azureStorageResource": {
                               "type": "object",
                               "properties": {
                                 "endpoint": {
                                   "type": "string",
-                                  "default": ""
+                                  "default": "",
+                                  "description": "Azure Storage Resource Endpoint"
                                 },
                                 "endpointSuffix": {
                                   "type": "string",
-                                  "default": ""
+                                  "default": ".core.windows.net/",
+                                  "description": "Azure Storage Resource Endpoint Suffix"
                                 }
                               }
                             },
                             "azureKustoResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://kusto.kusto.windows.net/",
+                              "description": "Azure Kusto Resource Endpoint"
                             },
                             "powerBiResource": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://analysis.windows.net/powerbi/api/",
+                              "description": "Power BI Resource Endpoint"
                             },
                             "scopes": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://management.azure.com/user_impersonation",
+                              "description": ""
                             },
                             "portalEndpoint": {
                               "type": "string",
-                              "default": ""
+                              "default": "https://portal.azure.com",
+                              "description": "Azure Portal Endpoint"
                             }
                           }
                         }

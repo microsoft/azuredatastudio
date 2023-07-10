@@ -16,6 +16,7 @@ import { getProxyAgentOptions } from './proxy';
 import { HttpsProxyAgentOptions } from 'https-proxy-agent';
 import { ProviderSettings, ProviderSettingsJson, SettingIds } from './account-provider/interfaces';
 import { AzureResource } from 'azdata';
+import { Logger } from './utils/Logger';
 
 const localize = nls.loadMessageBundle();
 const configProxy = 'proxy';
@@ -179,12 +180,12 @@ export function updateProviderSettings(defaultSettings: ProviderSettings[]): Pro
 				// build provider setting
 				let newSettings = buildProviderSettings(cloudProvider);
 				defaultSettings.push(newSettings)
+				Logger.info(`Custom provider settings loaded for ${cloudProvider.settings.metadata.displayName}`);
 			}
-			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints file'));
+			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints from settings'));
 
 		} catch (error) {
-			console.log(error);
-			void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load custom endpoints file'));
+			void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load endpoints from settings'));
 			throw Error(error.message);
 		}
 	}
