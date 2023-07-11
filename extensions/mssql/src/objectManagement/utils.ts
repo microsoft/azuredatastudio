@@ -8,8 +8,8 @@ import * as vscode from 'vscode';
 import { getErrorMessage } from '../utils';
 import * as localizedConstants from './localizedConstants';
 
-export async function refreshParentNode(context: azdata.ObjectExplorerContext, isRootNode?: boolean): Promise<void> {
-	if (context && !isRootNode) {
+export async function refreshParentNode(context: azdata.ObjectExplorerContext): Promise<void> {
+	if (context && !context.isConnectionNode) {
 		try {
 			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo!.nodePath);
 			const parentNode = await node?.getParent();
