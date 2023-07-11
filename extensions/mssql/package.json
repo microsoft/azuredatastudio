@@ -84,6 +84,12 @@
         "icon": "$(add)"
       },
       {
+        "command": "mssql.newDatabase",
+        "category": "MSSQL",
+        "title": "%title.newDatabase%",
+        "icon": "$(add)"
+      },
+      {
         "command": "mssql.objectProperties",
         "category": "MSSQL",
         "title": "%title.objectProperties%",
@@ -491,6 +497,10 @@
           "when": "false"
         },
         {
+          "command": "mssql.newDatabase",
+          "when": "false"
+        },
+        {
           "command": "mssql.objectProperties",
           "when": "false"
         },
@@ -526,12 +536,22 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(Databases)$/ && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {
@@ -613,12 +633,22 @@
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles|Databases)$/ && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(ServerLevelLogins|Users|ServerLevelServerRoles|ApplicationRoles|DatabaseRoles)$/ && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {
           "command": "mssql.newObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType =~ /^(Databases)$/ && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@0"
+        },
+        {
+          "command": "mssql.newDatabase",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@0"
         },
         {

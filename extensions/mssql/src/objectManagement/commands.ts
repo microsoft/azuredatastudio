@@ -31,6 +31,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
 		await handleObjectPropertiesDialogCommand(context, service);
 	}));
