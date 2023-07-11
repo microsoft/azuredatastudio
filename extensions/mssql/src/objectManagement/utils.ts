@@ -24,7 +24,7 @@ export async function refreshParentNode(context: azdata.ObjectExplorerContext): 
 export async function refreshNode(context: azdata.ObjectExplorerContext): Promise<void> {
 	if (context) {
 		try {
-			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo!.nodePath);
+			const node = await azdata.objectexplorer.getNode(context.connectionProfile!.id, context.nodeInfo?.nodePath);
 			await node?.refresh();
 		}
 		catch (err) {
