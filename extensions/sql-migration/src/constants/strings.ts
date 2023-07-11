@@ -141,7 +141,7 @@ export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 export const ASSESSMENT_FAILED = (serverName: string): string => {
 	return localize('sql.migration.assessment.failed', "The assessment of your SQL Server instance '{0}' failed.", serverName);
 };
-export function ASSESSMENT_TILE(serverName: string): string {
+export function ASSESSMENT_TITLE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
 export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
