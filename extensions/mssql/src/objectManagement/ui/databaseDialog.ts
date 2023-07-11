@@ -51,6 +51,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private restrictAccessInput!: azdata.DropDownComponent;
 
 	private activeTabId: string;
+	private toDispose: vscode.Disposable[] = [];
+
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -58,6 +60,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateDatabaseDocUrl : this.getDatabasePropertiesDocUrl();
+	}
+
+	protected disposeTabIds(): void {
+		this.toDispose.forEach(disposable => disposable.dispose());
 	}
 
 	private getDatabasePropertiesDocUrl(): string {
@@ -117,7 +123,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			};
 
 			// Initilaize tab group with tabbed panel
-			const disposables: vscode.Disposable[] = [];
 			const propertiesTabGroup = { title: '', tabs: [this.generalTab, this.optionsTab] };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
@@ -127,11 +132,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					}
 				})
 				.component();
-			disposables.push(
+			this.toDispose.push(
 				propertiesTabbedPannel.onTabChanged(async tabId => {
 					this.activeTabId = tabId;
 				}));
 			this.formContainer.addItem(propertiesTabbedPannel);
+			this.dialogObject.onClosed(() => {
+				this.disposeTabIds();
+			});
 		}
 	}
 
