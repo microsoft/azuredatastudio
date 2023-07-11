@@ -1518,7 +1518,7 @@ suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDI
 	}));
 });
 
-suite.skip('WorkspaceConfigurationService - Profiles', () => { // {{SQL CARBON EDIT}} - skip failing suite
+suite('WorkspaceConfigurationService - Profiles', () => {
 
 	let testObject: WorkspaceService, workspaceService: WorkspaceService, fileService: IFileService, environmentService: IBrowserWorkbenchEnvironmentService, userDataProfileService: IUserDataProfileService, instantiationService: TestInstantiationService;
 	const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
