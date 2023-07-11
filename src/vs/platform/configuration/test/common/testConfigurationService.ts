@@ -18,6 +18,22 @@ export class TestConfigurationService implements IConfigurationService {
 	readonly onDidChangeConfiguration = this.onDidChangeConfigurationEmitter.event;
 
 	constructor(configuration?: any) {
+		// {{SQL CAROB EDIT}} - START
+		// Ensures that all configuration services use the DOM renderer.
+		if (configuration) {
+			if (configuration.integrated) {
+				configuration.integrated.gpuAcceleration = 'off';
+			}
+			else {
+				configuration.integrated = { gpuAcceleration: 'off' };
+			}
+
+		}
+		else {
+			configuration = { integrated: { gpuAcceleration: 'off' } };
+		}
+		// {{SQL CAROB EDIT}} - END
+
 		this.configuration = configuration || Object.create(null);
 	}
 
