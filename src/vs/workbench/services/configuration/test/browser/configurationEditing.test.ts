@@ -56,7 +56,7 @@ class ConfigurationCache implements IConfigurationCache {
 	async remove(): Promise<void> { }
 }
 
-suite.skip('ConfigurationEditing', () => { // {{SQL CARBON EDIT}} skip suite
+suite('ConfigurationEditing', () => {
 
 	let instantiationService: TestInstantiationService;
 	let userDataProfileService: IUserDataProfileService;
