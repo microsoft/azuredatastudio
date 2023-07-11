@@ -49,19 +49,19 @@ export type ProviderSettingsJson = {
 				host: string,
 				microsoftResource: string,
 				graphResource: string,
-				msGraphResource: string,
+				msGraphResource?: string,
 				armResource: string,
 				sqlResource: string,
 				azureKeyVaultResource: string,
-				azureLogAnalyticsResource: string,
+				azureLogAnalyticsResource?: string,
 				azureStorageResource: {
 					endpoint: string,
 					endpointSuffix: string
 				}
-				azureKustoResource: string,
-				powerBiResource: string,
+				azureKustoResource?: string,
+				powerBiResource?: string,
 				scopes: string,
-				portalEndpoint: string
+				portalEndpoint?: string
 			}
 		}
 	}

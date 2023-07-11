@@ -194,7 +194,7 @@ export function updateProviderSettings(defaultSettings: ProviderSettings[]): Pro
 
 function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
 	// build provider setting
-	let newSettings = {
+	let newSettings: ProviderSettings = {
 		configKey: 'enable' + cloudProvider.settings.metadata.id,
 		metadata: {
 			displayName: cloudProvider.settings.metadata.displayName,
@@ -207,35 +207,15 @@ function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSet
 					endpoint: cloudProvider.settings.metadata.endpoints.microsoftResource,
 					azureResourceId: AzureResource.MicrosoftResourceManagement
 				},
-				graphResource: {
-					id: SettingIds.graph,
-					endpoint: cloudProvider.settings.metadata.endpoints.graphResource,
-					azureResourceId: AzureResource.Graph
-				},
-				msGraphResource: {
-					id: SettingIds.msgraph,
-					endpoint: cloudProvider.settings.metadata.endpoints.msGraphResource,
-					azureResourceId: AzureResource.MsGraph
-				},
 				armResource: {
 					id: SettingIds.arm,
 					endpoint: cloudProvider.settings.metadata.endpoints.armResource,
 					azureResourceId: AzureResource.ResourceManagement
 				},
-				sqlResource: {
-					id: SettingIds.sql,
-					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
-					azureResourceId: AzureResource.Sql
-				},
-				azureKeyVaultResource: {
-					id: SettingIds.vault,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
-					azureResourceId: AzureResource.AzureKeyVault
-				},
-				azureLogAnalyticsResource: {
-					id: SettingIds.ala,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
-					azureResourceId: AzureResource.AzureLogAnalytics,
+				graphResource: {
+					id: SettingIds.graph,
+					endpoint: cloudProvider.settings.metadata.endpoints.graphResource,
+					azureResourceId: AzureResource.Graph
 				},
 				azureStorageResource: {
 					id: SettingIds.storage,
@@ -243,25 +223,55 @@ function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSet
 					endpointSuffix: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
 					azureResourceId: AzureResource.AzureStorage
 				},
-				azureKustoResource: {
-					id: SettingIds.kusto,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
-					azureResourceId: AzureResource.AzureKusto,
+				azureKeyVaultResource: {
+					id: SettingIds.vault,
+					endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
+					azureResourceId: AzureResource.AzureKeyVault
 				},
-				powerBiResource: {
-					id: SettingIds.powerbi,
-					endpoint: cloudProvider.settings.metadata.endpoints.powerBiResource,
-					azureResourceId: AzureResource.PowerBi
+				sqlResource: {
+					id: SettingIds.sql,
+					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
+					azureResourceId: AzureResource.Sql
 				},
 				redirectUri: 'http://localhost',
 				scopes: [
 					'openid', 'email', 'profile', 'offline_access',
 					cloudProvider.settings.metadata.endpoints.scopes
 				],
-				portalEndpoint: cloudProvider.settings.metadata.endpoints.portalEndpoint
 			}
 		}
 	};
+	if (cloudProvider.settings.metadata.endpoints.msGraphResource) {
+		newSettings.metadata.settings.msGraphResource = {
+			id: SettingIds.msgraph,
+			endpoint: cloudProvider.settings.metadata.endpoints.msGraphResource,
+			azureResourceId: AzureResource.MsGraph
+		};
+	}
+	if (cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource) {
+		newSettings.metadata.settings.azureLogAnalyticsResource = {
+			id: SettingIds.ala,
+			endpoint: cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
+			azureResourceId: AzureResource.AzureLogAnalytics
+		};
+	}
+	if (cloudProvider.settings.metadata.endpoints.azureKustoResource) {
+		newSettings.metadata.settings.azureKustoResource = {
+			id: SettingIds.kusto,
+			endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
+			azureResourceId: AzureResource.AzureKusto
+		};
+	}
+	if (cloudProvider.settings.metadata.endpoints.powerBiResource) {
+		newSettings.metadata.settings.powerBiResource = {
+			id: SettingIds.powerbi,
+			endpoint: cloudProvider.settings.metadata.endpoints.powerBiResource,
+			azureResourceId: AzureResource.PowerBi
+		};
+	}
+	if (cloudProvider.settings.metadata.endpoints.portalEndpoint) {
+		newSettings.metadata.settings.portalEndpoint = cloudProvider.settings.metadata.endpoints.portalEndpoint;
+	}
 	return newSettings;
 }
 
