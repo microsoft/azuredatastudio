@@ -9,7 +9,6 @@ import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo } from '../interfaces';
-import * as vscode from 'vscode';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -43,7 +42,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private engineEdition: azdata.DatabaseEngineEdition;
 
 	private activeTabId: string;
-	private toDispose: vscode.Disposable[] = [];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -69,10 +67,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
 
-	protected disposeTabIds(): void {
-		this.toDispose.forEach(disposable => disposable.dispose());
-	}
-
 	protected async initializeUI(): Promise<void> {
 		const serverInfo = await azdata.connection.getServerInfo(this.options.objectExplorerContext.connectionProfile.id);
 		this.engineEdition = serverInfo.engineEditionId;
@@ -86,14 +80,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					'margin': '-10px 0px 0px -10px'
 				}
 			}).component();
-		this.toDispose.push(
+		this.disposables.push(
 			serverPropertiesTabbedPannel.onTabChanged(async tabId => {
 				this.activeTabId = tabId;
 			}));
 		this.formContainer.addItem(serverPropertiesTabbedPannel);
-		this.dialogObject.onClosed(() => {
-			this.disposeTabIds();
-		});
 	}
 
 	private initializeGeneralSection(): void {

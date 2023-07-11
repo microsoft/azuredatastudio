@@ -11,7 +11,6 @@ import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsP
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
-import * as vscode from 'vscode';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -51,8 +50,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private restrictAccessInput!: azdata.DropDownComponent;
 
 	private activeTabId: string;
-	private toDispose: vscode.Disposable[] = [];
-
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -60,10 +57,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	protected override get helpUrl(): string {
 		return this.options.isNewObject ? CreateDatabaseDocUrl : this.getDatabasePropertiesDocUrl();
-	}
-
-	protected disposeTabIds(): void {
-		this.toDispose.forEach(disposable => disposable.dispose());
 	}
 
 	private getDatabasePropertiesDocUrl(): string {
@@ -132,14 +125,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					}
 				})
 				.component();
-			this.toDispose.push(
+			this.disposables.push(
 				propertiesTabbedPannel.onTabChanged(async tabId => {
 					this.activeTabId = tabId;
 				}));
 			this.formContainer.addItem(propertiesTabbedPannel);
-			this.dialogObject.onClosed(() => {
-				this.disposeTabIds();
-			});
 		}
 	}
 
