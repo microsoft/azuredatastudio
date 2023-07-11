@@ -27,7 +27,6 @@ export class TestConfigurationService implements IConfigurationService {
 			else {
 				configuration.integrated = { gpuAcceleration: 'off' };
 			}
-
 		}
 		else {
 			configuration = { integrated: { gpuAcceleration: 'off' } };
