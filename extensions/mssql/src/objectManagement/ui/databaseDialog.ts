@@ -109,7 +109,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				})
 				.component();
 			this.formContainer.addItem(propertiesTabbedPannel);
-			this.dialogObject.okButton.label = uiLoc.SaveText;
 		}
 	}
 
@@ -118,10 +117,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns true if the dialog should be closed, false otherwise
 	 */
 	protected override async onConfirmation(): Promise<boolean> {
-		this.updateLoadingStatus(true, uiLoc.ValidateAndSaveChangesText);
+		this.updateLoadingStatus(true, this.options.isNewObject ? uiLoc.ValidateAndCreateDatabaseText : uiLoc.ValidateAndSaveChangesText);
 		const confirmed = await this.validateAndSaveChanges();
-		this.dialogObject.okButton.label = this.options.isNewObject ? uiLoc.OkText : uiLoc.SaveText;
 		this.updateLoadingStatus(false);
+		this.dialogObject.okButton.label = uiLoc.OkText;
 
 		return confirmed;
 	}
