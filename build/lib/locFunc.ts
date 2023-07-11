@@ -183,7 +183,7 @@ const textFields = {
 //list of extensions from vscode that are to be included with ADS.
 const VSCODEExtensions = [
 	"bat",
-	"builtin-notebook-renderer",
+	"builtin-notebook-renderers", // notebook renderers
 	"configuration-editing",
 	"docker",
 	"git",
@@ -194,7 +194,7 @@ const VSCODEExtensions = [
 	"ipynb",
 	"json",
 	"json-language-features",
-	"markdown-basics",
+	"markdown", // markdown-basics
 	"markdown-language-features",
 	"markdown-math",
 	"media-preview",
@@ -213,7 +213,7 @@ const VSCODEExtensions = [
 	"theme-monokai-dimmed",
 	"theme-quietlight",
 	"theme-red",
-	"vscode-theme-seti",
+	"vscode-theme-seti", // theme-seti
 	"theme-solarized-dark",
 	"theme-solarized-light",
 	"theme-tomorrow-night-blue",
@@ -406,10 +406,18 @@ export function renameVscodeLangpacks(): Promise<void> {
 		//Get list of md files in ADS langpack, to copy to vscode langpack prior to renaming.
 		let globMDArray = glob.sync(path.join(locADSFolder, '*.md'));
 
-		//Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
+		//Copy MD files to vscode langpack.
 		globMDArray.forEach(element => {
 			fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
 		});
+
+		//Copy yarn.lock (required for packaging task)
+		let yarnLockPath = path.join(locADSFolder, 'yarn.lock');
+		if (fs.existsSync(yarnLockPath)) {
+			fs.copyFileSync(yarnLockPath, path.join(locVSCODEFolder, 'yarn.lock'));
+		}
+
+		//remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
 		rimraf.sync(locADSFolder);
 		fs.renameSync(locVSCODEFolder, locADSFolder);
 	}

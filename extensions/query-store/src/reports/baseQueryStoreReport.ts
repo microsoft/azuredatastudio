@@ -61,18 +61,18 @@ export abstract class BaseQueryStoreReport {
 			case 2: {
 				// TODO: replace 800 to have the number be based on how big the window is
 				// one container on top, one on the bottom
-				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, containers[0], containers[1], 800) : await utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'column');
+				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, containers[0], containers[1], 800) : utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'column');
 				break;
 			} case 3: {
 				// 2 containers on top, one on the bottom
 				// TODO: support portrait and landscape view. Right now it's landscape view only
-				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, await utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), containers[2], 800)
-					: await utils.createTwoComponentFlexContainer(view, await utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), containers[2], 'column');
+				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), containers[2], 800)
+					: utils.createTwoComponentFlexContainer(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), containers[2], 'column');
 				break;
 			} case 4: {
 				// 2 containers on top, 2 on the bottom
-				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, await utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), await utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 800)
-					: await utils.createTwoComponentFlexContainer(view, await utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), await utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 'column');
+				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 800)
+					: utils.createTwoComponentFlexContainer(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 'column');
 				break;
 			} default: {
 				throw new Error(`{views.length} number of views in a QDS report is not supported`);

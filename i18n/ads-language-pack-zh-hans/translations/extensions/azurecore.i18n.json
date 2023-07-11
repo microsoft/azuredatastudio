@@ -77,7 +77,7 @@
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作区"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "适用于 Mongo 的 CosmosDB"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure CosmosDB for MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
 			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 数据库"
@@ -91,14 +91,17 @@
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL 灵活服务器"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大规模 – Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 服务器 –Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Azure Database for PostgreSQL 灵活服务器"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 服务器"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 托管实例"
+			"azure.resource.providers.sqlInstanceContainerLabel": "SQL 托管实例"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 托管实例 - Azure Arc"
@@ -108,6 +111,10 @@
 		},
 		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
 			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "无法识别的提供程序资源:{0}",
+			"azurecore.unregisteredProviderType": "无法识别的提供程序资源类型:{0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "未找到资源"
@@ -129,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登录到 Azure…"
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "未找到订阅。",
-			"azure.unableToAccessSubscription": "无法访问订阅 {0} ({1})。请[刷新帐户](command: azure.resource.signin)重试。{2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "找不到租户。"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "未能加载部分 Azure 存储帐户。{0}",
@@ -138,14 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "显示 Azure 帐户"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.flatAccountTreeNode.noResourcesLabel": "未找到资源。",
-			"azure.resource.throttleerror": "已限制来自此帐户的请求。要重试，请选择少量订阅。",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 个订阅)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在加载...",
-			"azure.resource.tree.loadresourceerror": "加载 Azure 资源时出错: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "找不到租户。"
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "未找到订阅。"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "未找到资源。"
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "未找到订阅。"
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "正在加载…"
@@ -201,6 +209,7 @@
 			"azurecore.norwayeast": "挪威东部",
 			"azurecore.norwaywest": "挪威西部",
 			"azurecore.piiLogging.warning": "警告: 已启用 Azure PII 日志记录。启用此选项可允许记录个人身份信息，并且只能用于调试目的。",
+			"azurecore.postgresFlexibleServer": "Azure Database for PostgreSQL 灵活服务器",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 服务器",
 			"azurecore.reload": "重载",
 			"azurecore.reloadChoice": "重新加载 Azure Data Studio",
@@ -245,6 +254,7 @@
 			"azure.resource.refresh.title": "刷新",
 			"azure.resource.refreshall.title": "Azure: 刷新所有帐户",
 			"azure.resource.selectsubscriptions.title": "选择订阅",
+			"azure.resource.selecttenants.title": "选择租户",
 			"azure.resource.signin.title": "Azure: 登录",
 			"azure.resource.startterminal.title": "启动 Cloud Shell",
 			"azure.resource.view.title": "Azure (预览)",

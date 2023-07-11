@@ -147,8 +147,8 @@ export abstract class DialogBase<DialogResult> {
 		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
 	}
 
-	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, min?: number, max?: number): azdata.InputBoxComponent {
-		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, min: min, max: max }).component();
+	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number): azdata.InputBoxComponent {
+		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, required: required, min: min, max: max }).component();
 		this.disposables.push(inputbox.onTextChanged(async () => {
 			await textChangeHandler(inputbox.value!);
 			this.onFormFieldChange();
