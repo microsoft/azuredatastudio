@@ -18,8 +18,10 @@ export class TestConfigurationService implements IConfigurationService {
 	readonly onDidChangeConfiguration = this.onDidChangeConfigurationEmitter.event;
 
 	constructor(configuration?: any) {
-		// {{SQL CAROB EDIT}} - START
-		// Ensures that all configuration services use the DOM renderer.
+		// {{SQL CARBON EDIT}} - START
+		// Ensures that all configuration services use the DOM renderer. There's an issue
+		// with GPU rendering that is causing unit tests to be flaky and obscuring true failing tests.
+		// This is a temporary fix and should be removed once xterm GPU rendering is working again.
 		if (configuration) {
 			if (configuration.integrated) {
 				configuration.integrated.gpuAcceleration = 'off';
@@ -31,7 +33,7 @@ export class TestConfigurationService implements IConfigurationService {
 		else {
 			configuration = { integrated: { gpuAcceleration: 'off' } };
 		}
-		// {{SQL CAROB EDIT}} - END
+		// {{SQL CARBON EDIT}} - END
 
 		this.configuration = configuration || Object.create(null);
 	}
