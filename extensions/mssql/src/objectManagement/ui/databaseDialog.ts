@@ -120,8 +120,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.updateLoadingStatus(true, this.options.isNewObject ? uiLoc.ValidateAndCreateDatabaseText : uiLoc.ValidateAndSaveChangesText);
 		const confirmed = await this.validateAndSaveChanges();
 		this.updateLoadingStatus(false);
-		this.dialogObject.okButton.label = uiLoc.OkText;
-
 		return confirmed;
 	}
 
