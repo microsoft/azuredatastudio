@@ -164,6 +164,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					if (targetMi && targetMi.properties?.state.toLowerCase() !== 'Ready'.toLowerCase()) {
 						errors.push(constants.MI_NOT_READY_ERROR(targetMi.name, targetMi.properties?.state));
 					}
+					if (this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates() &&
+						this.migrationStateModel.tdeMigrationConfig.lastTdeMigrationResult().state !== TdeMigrationState.Succeeded) {
+						errors.push(constants.TDE_MIGRATE_REQUIRED);
+					}
 					break;
 				case MigrationTargetType.SQLVM:
 					const targetVm = this.migrationStateModel._targetServerInstance as SqlVMServer;

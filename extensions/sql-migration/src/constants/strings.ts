@@ -1553,7 +1553,7 @@ export const TDE_MIGRATEDIALOG_TITLE = localize('sql.migration.validation.dialog
 export const TDE_MIGRATE_DONE_BUTTON = localize('sql.migration.tde.migrate.done.button', "Done");
 export const TDE_MIGRATE_HEADING = localize('sql.migration.tde.migrate.heading', "Migrating the certificates from the following databases:");
 
-
+export const TDE_MIGRATE_REQUIRED = localize('sql.migration.tde.migrate.required', "TDE certificate migration must be successful before continuing.");
 export const TDE_MIGRATE_COLUMN_DATABASES = localize('sql.migration.tde.migrate.column.databases', "Databases");
 export const TDE_MIGRATE_COLUMN_STATUS = localize('sql.migration.tde.migrate.column.status', "Status");
 export const TDE_MIGRATE_RETRY_VALIDATION = localize('sql.migration.tde.migrate.start.validation', "Retry migration");
