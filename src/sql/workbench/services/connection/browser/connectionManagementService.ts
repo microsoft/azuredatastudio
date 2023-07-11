@@ -1368,7 +1368,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
-
+		if (this._providers.get(connection.providerName) === undefined) {
+			throw new Error(nls.localize('connection.providerNotFound', "Connection provider not found"));
+		}
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
 			this._onConnectRequestSent.fire();
@@ -1644,7 +1646,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 
 			// send connection request
-			self.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
+			self.sendConnectRequest(connection, uri).catch((e) => {
+				this._logService.error(e);
+				reject(e);
+			});
 		});
 	}
 
