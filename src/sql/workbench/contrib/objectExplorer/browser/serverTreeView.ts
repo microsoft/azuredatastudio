@@ -979,7 +979,17 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		let treeInput = this._tree.getInput();
 		let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], this._connectionManagementService, false);
 		treeInput = treeArray[0];
-		await this._tree!.setInput(treeInput);
+		// In case of async server tree, we just need to rerender the connection nodes to update the titles.
+		// Setting the input will cause the entire tree to refresh and we don't want that.
+		if (this._tree instanceof AsyncServerTree) {
+			const connections = ConnectionProfileGroup.getConnectionsInGroup(treeInput);
+			connections.forEach(con => {
+				(<AsyncServerTree>this._tree).rerender(con);
+			});
+		}
+		else {
+			await this._tree!.setInput(treeInput);
+		}
 	}
 
 	public collapseAllConnections(): void {
