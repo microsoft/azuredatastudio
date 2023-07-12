@@ -31,6 +31,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
 		await handleObjectPropertiesDialogCommand(context, service);
 	}));
@@ -124,7 +127,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
+		const parentUrn = context.isConnectionNode ? undefined : await getParentUrn(context);
 		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
 		const objectName = context.nodeInfo ? context.nodeInfo.label : (!context.connectionProfile.databaseName ? context.connectionProfile.serverName : context.connectionProfile.databaseName);
 		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? 'Server' : `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`);
