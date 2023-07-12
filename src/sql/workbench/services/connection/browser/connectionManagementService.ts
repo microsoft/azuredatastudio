@@ -1368,16 +1368,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
-
+		if (this._providers.get(connection.providerName) === undefined) {
+			await this.handleUnsupportedProvider(connection.providerName);
+			throw new Error(nls.localize('connection.providerNotFound', "Connection provider '{0}' not found", connection.providerName));
+		}
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
 			this._onConnectRequestSent.fire();
 			// Connections are made per URI so while there may possibly be multiple editors with
 			// that URI they all share the same state
-			const editor = this._editorService.findEditors(URI.parse(uri))[0]?.editor;
-			// TODO make this generic enough to handle non-SQL languages too
-			const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
-			this.doChangeLanguageFlavor(uri, language, connection.providerName);
+			const editors = this._editorService.findEditors(URI.parse(uri));
+			if (editors && editors[0]?.editor) {
+				const editor = editors[0].editor;
+				// TODO make this generic enough to handle non-SQL languages too
+				const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
+				this.doChangeLanguageFlavor(uri, language, connection.providerName);
+			}
 			return true;
 		});
 	}
@@ -1644,7 +1650,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 
 			// send connection request
-			self.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
+			self.sendConnectRequest(connection, uri).catch((e) => {
+				this._logService.error(e);
+				this._connectionStatusManager.removeConnection(uri);
+				reject(e);
+			});
 		});
 	}
 
