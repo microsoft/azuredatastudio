@@ -417,9 +417,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
 
-		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLMI);
-		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLVM);
-		const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLDB);
+		const assessmentTitle = constants.ASSESSMENT_TITLE(this._serverName);
+		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLMI);
+		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLVM);
+		const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLDB);
 
 		this._disposables.push(button.onDidClick(async (e) => {
 			switch (this._rbg.selectedCardId) {
