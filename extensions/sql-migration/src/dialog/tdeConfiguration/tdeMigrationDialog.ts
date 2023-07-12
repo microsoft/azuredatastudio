@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
-import * as utils from '../../api/utils';
 import { logError, TelemetryAction, TelemetryViews, sendSqlMigrationActionEvent, getTelemetryProps } from '../../telemetry';
 import { EOL } from 'os';
 import { MigrationStateModel, OperationResult } from '../../models/stateMachine';
@@ -55,10 +54,13 @@ export class TdeMigrationDialog {
 	};
 	private _valdiationErrors: string[] = [];
 	private _completedDatabasesCount: number = 0;
+	private _certMigrationEventEmitter;
 
 	constructor(
-		model: MigrationStateModel) {
+		model: MigrationStateModel,
+		certMigrationEventEmitter: vscode.EventEmitter<TdeMigrationResult>) {
 		this._model = model;
+		this._certMigrationEventEmitter = certMigrationEventEmitter;
 	}
 
 	public async openDialog(): Promise<void> {
@@ -214,8 +216,6 @@ export class TdeMigrationDialog {
 		});
 	}
 
-
-
 	private async _loadMigrationResults(): Promise<void> {
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
 		this._progressReportText.value = '';
@@ -258,6 +258,7 @@ export class TdeMigrationDialog {
 	}
 
 	private async _retryTdeMigration(): Promise<void> {
+		this._model.tdeMigrationConfig.resetTdeMigrationResult();
 		const tdeMigrationResult = this._model.tdeMigrationConfig.lastTdeMigrationResult();
 		tdeMigrationResult.dbList = this._model.tdeMigrationConfig.getTdeEnabledDatabases().map<TdeMigrationDbState>(
 			db => ({
@@ -318,25 +319,28 @@ export class TdeMigrationDialog {
 				};
 
 				this._model.tdeMigrationConfig.setTdeMigrationResult(this._tdeMigrationResult); // Set value on success.
+				this._certMigrationEventEmitter.fire(this._tdeMigrationResult);
 
 				sendSqlMigrationActionEvent(
 					TelemetryViews.TdeMigrationDialog,
 					TelemetryAction.TdeMigrationSuccess,
 					{
-						...getTelemetryProps(this._model)
+						...getTelemetryProps(this._model),
+						'numberOfDbsWithTde': this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
 					},
 					{}
 				);
 			}
 			else {
 				this._dialog!.okButton.enabled = false;
+				this._certMigrationEventEmitter.fire({ state: TdeMigrationState.Failed, dbList: [] });
 
 				sendSqlMigrationActionEvent(
 					TelemetryViews.TdeMigrationDialog,
 					TelemetryAction.TdeMigrationFailures,
 					{
 						...getTelemetryProps(this._model),
-						'runningAsAdmin': (await utils.isAdmin()).toString()
+						'numberOfDbsWithTde': this._model.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
 					},
 					{}
 				);
@@ -430,8 +434,6 @@ export class TdeMigrationDialog {
 			})
 			.component();
 	}
-
-
 
 	private async _updateTableFromOperationResult(operationResult: OperationResult<TdeMigrationDbResult[]>): Promise<void> {
 		let anyRowUpdated = false;

@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl } from '../constants';
@@ -347,10 +348,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeLedgerSection(): void {
-		// Ledger Database
-		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async (checked) => {
-			this.objectInfo.isLedgerDatabase = checked;
-		}, this.objectInfo.isLedgerDatabase);
+		// Ledger Database - ReadOnly (This can only be set during creation and not changed afterwards)
+		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async () => { }, this.objectInfo.isLedgerDatabase, false);
 
 		const ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
 			this.isLedgerDatabaseInput
@@ -369,7 +368,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Recovery Time In Seconds
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
 			this.objectInfo.targetRecoveryTimeInSec = Number(newValue);
-		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number');
+		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number', DefaultInputWidth, true, 0);
 		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
 
 		const recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [

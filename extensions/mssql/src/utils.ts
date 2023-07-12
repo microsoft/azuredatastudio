@@ -192,7 +192,7 @@ export function getEnableConnectionPoolingConfig(): boolean {
 		return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[enableConnectionPoolingConfig];
 	}
 	else {
-		return false; // disabled by default
+		return true; // enabled by default
 	}
 }
 

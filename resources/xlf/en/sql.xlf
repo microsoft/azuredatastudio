@@ -5455,6 +5455,9 @@ Error Message: {1}</source>
     <trans-unit id="copyAndOpen">
       <source xml:lang="en">Copy &amp; Open</source>
     </trans-unit>
+    <trans-unit id="deviceCodeAuthDialogTitle">
+      <source xml:lang="en">Azure Auth: Device Code</source>
+    </trans-unit>
     <trans-unit id="oauthDialog.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -5468,6 +5471,9 @@ Error Message: {1}</source>
   <file original="src/sql/workbench/services/accountManagement/browser/autoOAuthDialogController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="oauthFlyoutIsAlreadyOpen">
       <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+    </trans-unit>
+    <trans-unit id="selfHelpMessage">
+      <source xml:lang="en">A web browser cannot be launched in this environment, please launch a browser, navigate to the URL above and enter code manually.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/admin/common/adminService" source-language="en" datatype="plaintext"><body>
@@ -6541,6 +6547,11 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.valueColumn">
       <source xml:lang="en">Value</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/profiler/browser/profilerService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="FileFilterDescription">
+      <source xml:lang="en">XEL Files</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext"><body>
