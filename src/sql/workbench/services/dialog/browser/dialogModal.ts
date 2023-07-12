@@ -142,11 +142,6 @@ export class DialogModal extends Modal {
 				this._doneButton.label = ''
 				this._doneButton.element.classList.add('validating');
 			}, 100);
-			await new Promise<void>(resolve => {
-				setTimeout(() => {
-					resolve();
-				}, 3000);
-			})
 			if (await this._dialog.validateClose()) {
 				this._onDone.fire();
 				this.dispose();
