@@ -687,7 +687,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				designers: designers,
 				executionPlan: executionPlan,
 				diagnostics: diagnostics,
-				env
+				env,
+				ProfilingSessionType: sqlExtHostTypes.ProfilingSessionType
 			};
 		}
 	};

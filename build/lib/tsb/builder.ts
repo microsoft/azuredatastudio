@@ -216,8 +216,12 @@ export function createTypeScriptBuilder(config: IConfiguration, projectFile: str
 
 										[tsSMC, inputSMC].forEach((consumer) => {
 											(<SourceMapConsumer & { sources: string[] }>consumer).sources.forEach((sourceFile: any) => {
-												(<any>smg)._sources.add(sourceFile);
 												const sourceContent = consumer.sourceContentFor(sourceFile);
+												// {{SQL CARBON EDIT}} For some reason our paths on Windows machines come out with mixed
+												// path separators, which ends up causing duplicate entries to end up in the sourcemap.
+												// To fix this we normalize the filepath before adding it to the set
+												sourceFile = normalize(sourceFile);
+												(<any>smg)._sources.add(sourceFile);
 												if (sourceContent !== null) {
 													smg.setSourceContent(sourceFile, sourceContent);
 												}

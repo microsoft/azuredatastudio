@@ -111,7 +111,7 @@ export class TestExtensionEnablementService extends ExtensionEnablementService {
 	}
 }
 
-suite.skip('ExtensionEnablementService Test', () => {
+suite('ExtensionEnablementService Test', () => {
 
 	let instantiationService: TestInstantiationService;
 	let testObject: IWorkbenchExtensionEnablementService;

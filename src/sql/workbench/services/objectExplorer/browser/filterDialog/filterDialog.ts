@@ -397,7 +397,7 @@ export class FilterDialog extends Modal {
 		this.filterTable.layout(new DOM.Dimension(600, (tableData.length + 2) * TableRowHeight));
 
 		this._description = DOM.append(body, DOM.$('.filter-dialog-description'));
-		this._description.innerHTML = this._properties[0].description;
+		this._description.innerText = this._properties[0].description;
 	}
 
 	protected layout(height?: number): void {

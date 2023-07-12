@@ -51,7 +51,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource: string) => bookTreeViewProvider.openMarkdown(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource: string) => bookTreeViewProvider.openExternalLink(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => providedBookTreeViewProvider.saveJupyterBooks()));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.trustBook', (item: BookTreeItem) => bookTreeViewProvider.trustBook(item)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.trustBook', async (item: BookTreeItem) => await bookTreeViewProvider.trustBook(item)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', (item: BookTreeItem) => bookTreeViewProvider.searchJupyterBooks(item)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchProvidedBook', () => providedBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));

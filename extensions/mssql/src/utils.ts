@@ -20,6 +20,7 @@ const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
+const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
 const azureExtensionConfigName = 'azure';
@@ -143,6 +144,10 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:parallelMessageProcessing` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
@@ -162,6 +167,10 @@ export function getAzureAuthenticationLibraryConfig(): string {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:enableSqlAuthenticationProvider` from settings file.
+ * @returns true if setting is enabled in ADS, false otherwise.
+ */
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
@@ -169,6 +178,21 @@ export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	}
 	else {
 		return true;
+	}
+}
+
+/**
+ * Retrieves configuration `mssql:enableConnectionPooling` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
+export function getEnableConnectionPoolingConfig(): boolean {
+	const config = getConfiguration();
+	if (config) {
+		const setting = config.inspect(enableConnectionPoolingConfig);
+		return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[enableConnectionPoolingConfig];
+	}
+	else {
+		return false; // disabled by default
 	}
 }
 

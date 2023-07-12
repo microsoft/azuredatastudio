@@ -36,7 +36,7 @@ export async function createOneComponentFlexContainer(view: azdata.ModelView, co
  * @param flexFlow row or column
  * @returns Flex container containing the two components
  */
-export async function createTwoComponentFlexContainer(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, flexFlow: string): Promise<azdata.FlexContainer> {
+export function createTwoComponentFlexContainer(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, flexFlow: string): azdata.FlexContainer {
 	const flexContainer = view.modelBuilder.flexContainer().component();
 
 	if (flexFlow === 'row') {

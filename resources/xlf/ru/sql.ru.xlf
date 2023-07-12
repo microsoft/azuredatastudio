@@ -623,8 +623,8 @@ Default Skipped Commands:
         <target state="translated">Вы действительно хотите удалить "{0}"?</target>
       </trans-unit>
       <trans-unit id="refreshAccount">
-        <source xml:lang="en">Reenter your credentials</source>
-        <target state="translated">Повторно введите учетные данные</target>
+        <source xml:lang="en">Refresh your credentials</source>
+        <target state="translated">Обновление учетных данных</target>
       </trans-unit>
       <trans-unit id="removeAccount">
         <source xml:lang="en">Remove account</source>
@@ -2025,6 +2025,14 @@ Default Skipped Commands:
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/backup/browser/backupUiService" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="backupDialogTitle">
+        <source xml:lang="en">Backup database - {0}:{1}</source>
+        <target state="translated">Резервное копирование базы данных — {0}:{1}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="backup.asymmetricKey">
@@ -2311,6 +2319,10 @@ Default Skipped Commands:
   </file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="commandline.propertiesFormatError">
+        <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
+        <target state="translated">Не удалось проанализировать дополнительные свойства подключения как JSON. Произошла ошибка: {0}. Значение полученных свойств: {1}</target>
+      </trans-unit>
       <trans-unit id="confirmConnect">
         <source xml:lang="en">Are you sure you want to connect?</source>
         <target state="translated">Вы действительно хотите выполнить подключение?</target>
@@ -2366,6 +2378,10 @@ Default Skipped Commands:
       <trans-unit id="connection.showUnsupportedServerVersionWarning">
         <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
         <target state="translated">Надо ли показывать предупреждающее сообщение при подключении пользователя к версии сервера, которую не поддерживает Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="registeredServers.collapseAll">
+        <source xml:lang="en">Collapse All Connections</source>
+        <target state="translated">Свернуть все подключения</target>
       </trans-unit>
       <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -4101,6 +4117,10 @@ Default Skipped Commands:
         <source xml:lang="en">Enter search value</source>
         <target state="translated">Введите значение поиска</target>
       </trans-unit>
+      <trans-unit id="executionPlanFindNodeLabel">
+        <source xml:lang="en">Find nodes</source>
+        <target state="translated">Найти узлы</target>
+      </trans-unit>
       <trans-unit id="executionPlanSearchTypeContains">
         <source xml:lang="en">Contains</source>
         <target state="translated">Содержит</target>
@@ -4755,6 +4775,10 @@ Error: {1}</source>
         <source xml:lang="en">Remove parameter cell</source>
         <target state="translated">Удалить ячейку параметра</target>
       </trans-unit>
+      <trans-unit id="addCellLabel">
+        <source xml:lang="en">Add cell</source>
+        <target state="translated">Добавить ячейку</target>
+      </trans-unit>
       <trans-unit id="clear">
         <source xml:lang="en">Clear Result</source>
         <target state="translated">Очистить результат</target>
@@ -4799,10 +4823,6 @@ Error: {1}</source>
         <source xml:lang="en">Insert Text Below</source>
         <target state="translated">Вставить текст ниже</target>
       </trans-unit>
-      <trans-unit id="moreActionsLabel">
-        <source xml:lang="en">More</source>
-        <target state="translated">Еще</target>
-      </trans-unit>
       <trans-unit id="runAllAbove">
         <source xml:lang="en">Run Cells Above</source>
         <target state="translated">Запустить ячейки выше</target>
@@ -4831,14 +4851,6 @@ Error: {1}</source>
         <source xml:lang="en">Move cell up</source>
         <target state="translated">Переместить ячейку вверх</target>
       </trans-unit>
-      <trans-unit id="codeCellsPreview">
-        <source xml:lang="en">Add cell</source>
-        <target state="translated">Добавить ячейку</target>
-      </trans-unit>
-      <trans-unit id="codePreview">
-        <source xml:lang="en">Code cell</source>
-        <target state="translated">Ячейка кода</target>
-      </trans-unit>
       <trans-unit id="optionCodeCell">
         <source xml:lang="en">Code cell</source>
         <target state="translated">Ячейка кода</target>
@@ -4850,10 +4862,6 @@ Error: {1}</source>
       <trans-unit id="splitCell">
         <source xml:lang="en">Split cell</source>
         <target state="translated">Разбить ячейку</target>
-      </trans-unit>
-      <trans-unit id="textPreview">
-        <source xml:lang="en">Text cell</source>
-        <target state="translated">Текстовая ячейка</target>
       </trans-unit>
     </body>
   </file>
@@ -5123,14 +5131,6 @@ Error: {1}</source>
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">Не удалось выполнить ячейки. Дополнительные сведения об ошибке см. в выходных данных текущей выбранной ячейки.</target>
       </trans-unit>
-      <trans-unit id="codeCellsPreview">
-        <source xml:lang="en">Add cell</source>
-        <target state="translated">Добавить ячейку</target>
-      </trans-unit>
-      <trans-unit id="codePreview">
-        <source xml:lang="en">Code cell</source>
-        <target state="translated">Ячейка кода</target>
-      </trans-unit>
       <trans-unit id="createFile">
         <source xml:lang="en">Create File</source>
         <target state="translated">Создать файл</target>
@@ -5154,10 +5154,6 @@ Error: {1}</source>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
         <target state="translated">Выполнить все</target>
-      </trans-unit>
-      <trans-unit id="textPreview">
-        <source xml:lang="en">Text cell</source>
-        <target state="translated">Текстовая ячейка</target>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
@@ -5451,6 +5447,10 @@ Error: {1}</source>
         <source xml:lang="en">Clear Results</source>
         <target state="translated">Очистить результаты</target>
       </trans-unit>
+      <trans-unit id="codePreview">
+        <source xml:lang="en">Code cell</source>
+        <target state="translated">Ячейка кода</target>
+      </trans-unit>
       <trans-unit id="collapseAllCells">
         <source xml:lang="en">Collapse Cells</source>
         <target state="translated">Свернуть ячейки</target>
@@ -5522,6 +5522,10 @@ Error: {1}</source>
       <trans-unit id="selectConnection">
         <source xml:lang="en">Select Connection</source>
         <target state="translated">Выберите подключение</target>
+      </trans-unit>
+      <trans-unit id="textPreview">
+        <source xml:lang="en">Text cell</source>
+        <target state="translated">Текстовая ячейка</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -5743,10 +5747,6 @@ Error: {1}</source>
         <source xml:lang="en">Insert Cells</source>
         <target state="translated">Вставить ячейки</target>
       </trans-unit>
-      <trans-unit id="moreActionsLabel">
-        <source xml:lang="en">More</source>
-        <target state="translated">Еще</target>
-      </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
         <target state="translated">Запустить ячейку</target>
@@ -5816,8 +5816,8 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">Не удалось выполнить копирование. Ошибка: {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">Не удалось копировать. Ошибка: {0}</target>
       </trans-unit>
       <trans-unit id="notebook.showChart">
         <source xml:lang="en">Show chart</source>
@@ -5849,8 +5849,20 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/notebook/common/notebookLoc" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="moreActionsLabel">
+        <source xml:lang="en">More</source>
+        <target state="translated">Еще</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="objectExplorer.filterDialogTitle">
+        <source xml:lang="en">Filter Settings</source>
+        <target state="translated">Параметры фильтра</target>
+      </trans-unit>
       <trans-unit id="serverTree.newConnection">
         <source xml:lang="en">New Connection</source>
         <target state="translated">Новое подключение</target>
@@ -5875,6 +5887,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="objectExplorerConfigurationTitle">
+        <source xml:lang="en">Object Explorer</source>
+        <target state="translated">Обозреватель объектов</target>
+      </trans-unit>
       <trans-unit id="serverGroup.autoExpand">
         <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
         <target state="translated">Автоматически разворачивать группы серверов во вьюлете обозревателя объектов.</target>
@@ -5886,10 +5902,6 @@ Error: {1}</source>
       <trans-unit id="serverTree.configuration.title">
         <source xml:lang="en">Server Tree</source>
         <target state="translated">Дерево сервера</target>
-      </trans-unit>
-      <trans-unit id="serverTree.nodeExpansionTimeout">
-        <source xml:lang="en">The timeout in seconds for expanding a node in the Servers view</source>
-        <target state="translated">Время ожидания в секундах для расширения узла в представлении "Серверы".</target>
       </trans-unit>
       <trans-unit id="serverTree.useAsyncServerTree">
         <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
@@ -5922,6 +5934,10 @@ Error: {1}</source>
       <trans-unit id="notebook">
         <source xml:lang="en">Notebook</source>
         <target state="translated">Записная книжка</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer">
+        <source xml:lang="en">Object Explorer</source>
+        <target state="translated">Обозреватель объектов</target>
       </trans-unit>
       <trans-unit id="profiler">
         <source xml:lang="en">Profiler</source>
@@ -6147,6 +6163,10 @@ Error: {1}</source>
         <source xml:lang="en">Copy With Headers</source>
         <target state="translated">Копировать с заголовками</target>
       </trans-unit>
+      <trans-unit id="excelLimitExceededError">
+        <source xml:lang="en">The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.</source>
+        <target state="translated">Число строк или столбцов в таблице превысило ограничения Excel. Попробуйте использовать другой формат.</target>
+      </trans-unit>
       <trans-unit id="jsonEncoding">
         <source xml:lang="en">Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created.</source>
         <target state="translated">Кодировка результатов не будет сохранена при экспорте в JSON; не забудьте выполнить сохранение с требуемой кодировкой после создания файла.</target>
@@ -6154,6 +6174,10 @@ Error: {1}</source>
       <trans-unit id="maximize">
         <source xml:lang="en">Maximize</source>
         <target state="translated">Развернуть</target>
+      </trans-unit>
+      <trans-unit id="openExcelSpecs">
+        <source xml:lang="en">View Excel specifications</source>
+        <target state="translated">Просмотр спецификаций Excel</target>
       </trans-unit>
       <trans-unit id="restore">
         <source xml:lang="en">Restore</source>
@@ -6242,6 +6266,34 @@ Error: {1}</source>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>
         <target state="translated">Сетка результатов</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.cancelLargeRowSelection">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.confirmLargeRowSelection">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.donotShowLargeRowSelectionPromptAgain">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">Больше не показывать</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.largeRowSelectionPrompt.">
+        <source xml:lang="en">You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?</source>
+        <target state="translated">Вы выбрали {0} строк. Загрузка данных и расчет сводки может занять некоторое время. Вы хотите продолжить?</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.loadingData">
+        <source xml:lang="en">Loading selected rows for calculation...</source>
+        <target state="translated">Загрузка выбранных строк для вычисления...</target>
+      </trans-unit>
+      <trans-unit id="resultsGrid.loadingDataWithProgress">
+        <source xml:lang="en">Loading selected rows for calculation ({0}/{1})...</source>
+        <target state="translated">Загрузка выбранных строк для вычисления ({0}/{1})...</target>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
@@ -6335,6 +6387,10 @@ Error: {1}</source>
         <source xml:lang="en">Message Panel</source>
         <target state="translated">Панель сообщений</target>
       </trans-unit>
+      <trans-unit id="messagePanel.message">
+        <source xml:lang="en">Timestamp: {0}, Message: {1}</source>
+        <target state="translated">Метка времени: {0}, сообщение: {1}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/query.contribution" source-language="en" datatype="plaintext" target-language="ru">
@@ -6374,6 +6430,14 @@ Error: {1}</source>
       <trans-unit id="queryEditor.results.openAfterSave">
         <source xml:lang="en">Whether to open the file in Azure Data Studio after the result is saved.</source>
         <target state="translated">Следует ли открывать файл в Azure Data Studio после сохранения результата.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.preferProvidersCopyHandler">
+        <source xml:lang="en">Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.</source>
+        <target state="translated">Должен ли поставщик запросов обрабатывать запрос на копирование результатов, если это поддерживается. Значение по умолчанию — ИСТИНА. Установите для этого параметра значение ЛОЖЬ для принудительной обработки копирования с помощью Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.promptForLargeRowSelection">
+        <source xml:lang="en">When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.</source>
+        <target state="translated">При выборе ячеек в сетке результатов ADS вычисляет для них сводку. Этот параметр определяет, следует ли показывать подтверждение, если число выбранных строк превышает значение, указанное в параметре "inMemoryDataProcessingThreshold". Значение по умолчанию — ИСТИНА.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.saveAsCsv.delimiter">
         <source xml:lang="en">The custom delimiter to use between values when saving as CSV</source>
@@ -6422,6 +6486,10 @@ Error: {1}</source>
       <trans-unit id="queryEditor.results.showActionBar">
         <source xml:lang="en">Whether to show the action bar in the query results view</source>
         <target state="translated">Отображать ли панель действий в представлении результатов запроса</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
+        <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
+        <target state="translated">Следует ли пропустить добавление разрыва строки между строками при копировании результатов, если предыдущая строка уже имеет конечный разрыв строки. Значение по умолчанию — false.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.streaming">
         <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
@@ -6551,6 +6619,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/queryEditor" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="queryActions.selectDatabase.label">
+        <source xml:lang="en">Database:</source>
+        <target state="translated">База данных:</target>
+      </trans-unit>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">Редактор запросов</target>
@@ -6827,6 +6899,18 @@ Error: {1}</source>
         <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
         <target state="translated">Произошла ошибка при обновлении узла "{0}": {1}</target>
       </trans-unit>
+      <trans-unit id="scriptActionError">
+        <source xml:lang="en">An error occurred while executing the action '{0}': {1}.</source>
+        <target state="translated">Произошла ошибка при выполнении действия "{0}": {1}.</target>
+      </trans-unit>
+      <trans-unit id="scriptingAction.close">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Закрыть</target>
+      </trans-unit>
+      <trans-unit id="scriptingAction.inProgress">
+        <source xml:lang="en">Executing action: {0}...</source>
+        <target state="translated">Выполняется действие: {0}…</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="ru">
@@ -6855,10 +6939,6 @@ Error: {1}</source>
       <trans-unit id="tasks">
         <source xml:lang="en">Tasks</source>
         <target state="translated">Задачи</target>
-      </trans-unit>
-      <trans-unit id="viewCategory">
-        <source xml:lang="en">View</source>
-        <target state="translated">Вид</target>
       </trans-unit>
     </body>
   </file>
@@ -6965,6 +7045,18 @@ Error: {1}</source>
         <source xml:lang="en">Refresh</source>
         <target state="translated">Обновить</target>
       </trans-unit>
+      <trans-unit id="treeView.enableCollapseAll">
+        <source xml:lang="en">Whether the the tree view with id {0} enables collapse all.</source>
+        <target state="translated">Разрешена ли операция "Свернуть все" в представлении в виде дерева с идентификатором {0}.</target>
+      </trans-unit>
+      <trans-unit id="treeView.enableRefresh">
+        <source xml:lang="en">Whether the tree view with id {0} enables refresh.</source>
+        <target state="translated">Разрешено ли обновление в представлении в виде дерева с идентификатором {0}.</target>
+      </trans-unit>
+      <trans-unit id="treeView.toggleCollapseAll">
+        <source xml:lang="en">Whether collapse all is toggled for the tree view with id {0}.</source>
+        <target state="translated">Включена ли операция "Свернуть все" в представлении в виде дерева с идентификатором {0}.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/webview/browser/webViewDialog" source-language="en" datatype="plaintext" target-language="ru">
@@ -6999,19 +7091,16 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext" target-language="ru">
+  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="notifyEncryption.message">
-        <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
-        <target state="translated">В среде Azure Data Studio теперь включено шифрование по умолчанию для всех подключений SQL Server. Это может привести к тому, что существующие подключения больше не будут работать, если не будут изменены определенные свойства соединения, связанные с шифрованием.{0}Мы рекомендуем вам ознакомиться со ссылкой ниже для получения более подробной информации.</target>
+      <trans-unit id="miGettingStarted">
+        <source xml:lang="en">Getting &amp;&amp;Started</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">&amp;&amp;Начало работы</target>
       </trans-unit>
-      <trans-unit id="notifyEncryption.moreInfoLink">
-        <source xml:lang="en">More information</source>
-        <target state="translated">Дополнительные сведения</target>
-      </trans-unit>
-      <trans-unit id="notifyEncryption.title">
-        <source xml:lang="en">Important Update</source>
-        <target state="translated">Важное обновление</target>
+      <trans-unit id="showReleaseNotes">
+        <source xml:lang="en">Show Getting Started</source>
+        <target state="translated">Показать раздел "Начало работы"</target>
       </trans-unit>
     </body>
   </file>
@@ -7196,10 +7285,6 @@ Error: {1}</source>
       <trans-unit id="guidedTour">
         <source xml:lang="en">User Welcome Tour</source>
         <target state="translated">Приветственный обзор</target>
-      </trans-unit>
-      <trans-unit id="help">
-        <source xml:lang="en">Help</source>
-        <target state="translated">Справка</target>
       </trans-unit>
       <trans-unit id="hideGuidedTour">
         <source xml:lang="en">Hide Welcome Tour</source>
@@ -7415,6 +7500,22 @@ Error: {1}</source>
         <source xml:lang="en">Open the welcome page with Getting Started Tour (default)</source>
         <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
         <target state="translated">Открытие страницы приветствия с туром "Приступая к работе" (по умолчанию)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="telemetryOptOut.optInNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+        <target state="translated">Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно согласиться на его использование]({1}).</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.optOutNotice">
+        <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+        <target state="translated">Помогите улучшить Azure Data Studio, разрешив корпорации Майкрософт сбор данных об использовании. Прочтите наше [заявление о конфиденциальности]({0}) и узнайте, как [явно отказаться от него]({1}).</target>
+      </trans-unit>
+      <trans-unit id="telemetryOptOut.readMore">
+        <source xml:lang="en">Read More</source>
+        <target state="translated">Дополнительные сведения</target>
       </trans-unit>
     </body>
   </file>
@@ -7808,6 +7909,18 @@ Error Message: {1}</source>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">Вы действительно хотите отменить это подключение?</target>
       </trans-unit>
+      <trans-unit id="connection.connTitleGroupSection">
+        <source xml:lang="en"> (Group: {0})</source>
+        <target state="translated"> (Группа: {0})</target>
+      </trans-unit>
+      <trans-unit id="connection.duplicateEditErrorMessage">
+        <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
+
+ {0}{1}</source>
+        <target state="translated">Не удается сохранить профиль. Выбранное подключение соответствует существующему профилю с теми же сведениями о сервере в той же группе: 
+
+ {0}{1}</target>
+      </trans-unit>
       <trans-unit id="connection.extensionNotInstalled">
         <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
         <target state="translated">Для подключения к этому ресурсу требуется расширение "{0}". Вы хотите установить его?</target>
@@ -7907,6 +8020,18 @@ Error Message: {1}</source>
       <trans-unit id="connectionWidget.connectionString">
         <source xml:lang="en">Connection string</source>
         <target state="translated">Строка подключения</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputType.connectionString">
+        <source xml:lang="en">Connection String</source>
+        <target state="translated">Строка подключения</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputType.parameters">
+        <source xml:lang="en">Parameters</source>
+        <target state="translated">Параметры</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.inputTypeLabel">
+        <source xml:lang="en">Input type</source>
+        <target state="translated">Тип входных данных</target>
       </trans-unit>
       <trans-unit id="connectionWidget.invalidAzureAccount">
         <source xml:lang="en">You must select an account</source>
@@ -8666,6 +8791,14 @@ Error Message: {1}</source>
         <source xml:lang="en">Show Active Connections</source>
         <target state="translated">Показать активные подключения</target>
       </trans-unit>
+      <trans-unit id="connectionDeleted">
+        <source xml:lang="en">Connection {0} deleted</source>
+        <target state="translated">Подключение {0} удалено</target>
+      </trans-unit>
+      <trans-unit id="connectionGroupDeleted">
+        <source xml:lang="en">Connection group {0} deleted</source>
+        <target state="translated">Группа подключений {0} удалена</target>
+      </trans-unit>
       <trans-unit id="connectionTree.addConnection">
         <source xml:lang="en">New Connection</source>
         <target state="translated">Новое подключение</target>
@@ -8694,14 +8827,6 @@ Error Message: {1}</source>
         <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
         <target state="translated">Вы действительно хотите удалить подключение: "{0}"?</target>
       </trans-unit>
-      <trans-unit id="deleteConnectionConfirmationNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">Нет</target>
-      </trans-unit>
-      <trans-unit id="deleteConnectionConfirmationYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Да</target>
-      </trans-unit>
       <trans-unit id="deleteConnectionGroup">
         <source xml:lang="en">Delete Group</source>
         <target state="translated">Удалить группу</target>
@@ -8710,9 +8835,149 @@ Error Message: {1}</source>
         <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
         <target state="translated">Вы действительно хотите удалить группу подключений: "{0}"?</target>
       </trans-unit>
+      <trans-unit id="objectExplorer.filterChildren">
+        <source xml:lang="en">Filter</source>
+        <target state="translated">Фильтр</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.removeFilter">
+        <source xml:lang="en">Remove Filter</source>
+        <target state="translated">Удалить фильтр</target>
+      </trans-unit>
+      <trans-unit id="registeredServers.clearRecentConnections">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Удалить</target>
+      </trans-unit>
       <trans-unit id="showAllConnections">
         <source xml:lang="en">Show All Connections</source>
         <target state="translated">Показать все подключения</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="filterDialog.errorDateRange">
+        <source xml:lang="en">Start date cannot be greater than end date.</source>
+        <target state="translated">Дата начала не может быть установлена позже даты окончания.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorEndDate">
+        <source xml:lang="en">End date is not specified.</source>
+        <target state="translated">Дата окончания не указана.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorEndNumber">
+        <source xml:lang="en">End number is not specified.</source>
+        <target state="translated">Конечный номер не указан.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorNumberRange">
+        <source xml:lang="en">Start number cannot be greater than end number.</source>
+        <target state="translated">Начальный номер не может быть больше конечного.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorStartDate">
+        <source xml:lang="en">Start date is not specified.</source>
+        <target state="translated">Дата начала не указана.</target>
+      </trans-unit>
+      <trans-unit id="filterDialog.errorStartNumber">
+        <source xml:lang="en">Start number is not specified.</source>
+        <target state="translated">Начальный номер не указан.</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.andSelectBox">
+        <source xml:lang="en">And</source>
+        <target state="translated">И</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.betweenSelectBox">
+        <source xml:lang="en">Between</source>
+        <target state="translated">Между</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.clearAllButtonText">
+        <source xml:lang="en">Clear All</source>
+        <target state="translated">Очистить все</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.clearColumnHeader">
+        <source xml:lang="en">Clear</source>
+        <target state="translated">Очистка</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.containsSelectBox">
+        <source xml:lang="en">Contains</source>
+        <target state="translated">Содержит</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.endsWithSelectBox">
+        <source xml:lang="en">Ends With</source>
+        <target state="translated">Заканчивается на</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.equalsSelectBox">
+        <source xml:lang="en">Equals</source>
+        <target state="translated">Равно</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.falseSelectBox">
+        <source xml:lang="en">False</source>
+        <target state="translated">False</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.greaterThanOrEqualsSelectBox">
+        <source xml:lang="en">Greater Than Or Equals</source>
+        <target state="translated">Больше или равно</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.greaterThanSelectBox">
+        <source xml:lang="en">Greater Than</source>
+        <target state="translated">Больше</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
+        <source xml:lang="en">Less Than Or Equals</source>
+        <target state="translated">Меньше или равно</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.lessThanSelectBox">
+        <source xml:lang="en">Less Than</source>
+        <target state="translated">Меньше</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.nodePath">
+        <source xml:lang="en">Path:</source>
+        <target state="translated">Путь:</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notBetweenSelectBox">
+        <source xml:lang="en">Not Between</source>
+        <target state="translated">Вне диапазона</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notContainsSelectBox">
+        <source xml:lang="en">Not Contains</source>
+        <target state="translated">Не содержит</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notEndsWithSelectBox">
+        <source xml:lang="en">Not Ends With</source>
+        <target state="translated">Не заканчивается на</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notEqualsSelectBox">
+        <source xml:lang="en">Not Equals</source>
+        <target state="translated">Не равно</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.notStartsWithSelectBox">
+        <source xml:lang="en">Not Starts With</source>
+        <target state="translated">Не начинается с</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.okButtonText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">ОК</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.operatorColumnHeader">
+        <source xml:lang="en">Operator</source>
+        <target state="translated">Оператор</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.propertyNameColumnHeader">
+        <source xml:lang="en">Property</source>
+        <target state="translated">Свойство</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.startsWithSelectBox">
+        <source xml:lang="en">Starts With</source>
+        <target state="translated">Начинается с</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.trueSelectBox">
+        <source xml:lang="en">True</source>
+        <target state="translated">True</target>
+      </trans-unit>
+      <trans-unit id="objectExplorer.valueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">Значение</target>
       </trans-unit>
     </body>
   </file>
@@ -8725,18 +8990,6 @@ Error Message: {1}</source>
       <trans-unit id="nodeExpansionError">
         <source xml:lang="en">Multiple errors:</source>
         <target state="translated">Несколько ошибок:</target>
-      </trans-unit>
-      <trans-unit id="nodeExpansionTimeout">
-        <source xml:lang="en">Node expansion timed out for node {0} for providers {1}</source>
-        <target state="translated">Истекло время ожидания расширения узла {0} для поставщиков {1}.</target>
-      </trans-unit>
-      <trans-unit id="objectExplorerMissingConnectionForSession">
-        <source xml:lang="en">Timeout waiting for session {0} to be created for connection "{1}". This has probably happened because OE service did not recieve a response for createNewSession from the provider for connection "{1}"</source>
-        <target state="translated">Истекло время ожидания создания сеанса {0} для подключения "{1}". Это могло произойти из-за того, что служба OE не получила отклик на createNewSession от поставщика для подключения "{1}"</target>
-      </trans-unit>
-      <trans-unit id="objectExplorerMissingSession">
-        <source xml:lang="en">Timed out waiting for session {0} to be created. This has probably happened because OE service did not recieve a response for createNewSession from the provider.</source>
-        <target state="translated">Истекло время ожидания создания сеанса {0}. Это могло произойти из-за того, что служба OE не получила от поставщика отклик на createNewSession.</target>
       </trans-unit>
       <trans-unit id="objectExplorerSessionIdMissing">
         <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
@@ -8786,9 +9039,9 @@ Error Message: {1}</source>
   </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="objectExplorerTimeout">
-        <source xml:lang="en">Object Explorer expansion timed out for '{0}'</source>
-        <target state="translated">Истекло время ожидания расширения обозревателя объектов для "{0}"</target>
+      <trans-unit id="connectionFailedError">
+        <source xml:lang="en">Failed to connect, please try again.</source>
+        <target state="translated">Не удалось подключиться. Повторите попытку.</target>
       </trans-unit>
     </body>
   </file>
@@ -8900,6 +9153,30 @@ Error Message: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="gridDataProvider.cancelCopyResults">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.closeNotification">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Закрыть</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.copyResultsCompleted">
+        <source xml:lang="en">Selected data has been copied to the clipboard. Row count: {0}.</source>
+        <target state="translated">Выбранные данные скопированы в буфер обмена. Число строк: {0}.</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.copying">
+        <source xml:lang="en">Copying...</source>
+        <target state="translated">Копирование...</target>
+      </trans-unit>
+      <trans-unit id="gridDataProvider.loadingRowsInProgress">
+        <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
+        <target state="translated">Загрузка строк для копирования ({0}/{1})...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="queryManagement.noQueryRunnerForUri">
@@ -8947,8 +9224,8 @@ Error Message: {1}</source>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="copyFailed">
-        <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="translated">Не удалось выполнить копирование. Ошибка: {0}</target>
+        <source xml:lang="en">Copy failed with error: {0}</source>
+        <target state="translated">Не удалось копировать. Ошибка: {0}</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>
@@ -9229,6 +9506,14 @@ Error Message: {1}</source>
       <trans-unit id="targetDatabaseTooltip">
         <source xml:lang="en">Please enter target database name</source>
         <target state="translated">Введите имя целевой базы данных</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/restore/browser/restoreServiceImpl" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="restoreDialogTitle">
+        <source xml:lang="en">Restore database - {0}:{1}</source>
+        <target state="translated">Восстановление базы данных — {0}:{1}</target>
       </trans-unit>
     </body>
   </file>
@@ -9642,6 +9927,11 @@ Error Message: {1}</source>
         <source xml:lang="en">The changes have been successfully published.</source>
         <target state="translated">Изменения опубликованы.</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.refreshOEError">
+        <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
+        <note>{0}: error message.</note>
+        <target state="translated">Произошла ошибка при обновлении обозревателя объектов. {0}</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.savingChanges">
         <source xml:lang="en">Publishing table designer changes...</source>
         <target state="translated">Публикация изменений конструктора таблиц...</target>
@@ -9702,19 +9992,6 @@ Error Message: {1}</source>
       <trans-unit id="taskService.yes">
         <source xml:lang="en">Yes</source>
         <target state="translated">Да</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext" target-language="ru">
-    <body>
-      <trans-unit id="miGettingStarted">
-        <source xml:lang="en">Getting &amp;&amp;Started</source>
-        <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="translated">Начало р&amp;&amp;аботы</target>
-      </trans-unit>
-      <trans-unit id="showReleaseNotes">
-        <source xml:lang="en">Show Getting Started</source>
-        <target state="translated">Показать раздел "Начало работы"</target>
       </trans-unit>
     </body>
   </file>

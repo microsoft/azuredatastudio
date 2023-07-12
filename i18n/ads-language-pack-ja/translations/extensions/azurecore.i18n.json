@@ -77,10 +77,10 @@
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics ワークスペース"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Mongo 版 CosmosDB"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure CosmosDB for MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL Database"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL データベース"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
@@ -89,16 +89,19 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer クラスター"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL のフレキシブル サーバー"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL フレキシブル サーバー"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL サーバー - Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Azure Database for PostgreSQL のフレキシブル サーバー"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL サーバー"
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB マネージド インスタンス"
+			"azure.resource.providers.sqlInstanceContainerLabel": "SQL マネージド インスタンス"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL マネージド インスタンス - Azure Arc"
@@ -108,6 +111,10 @@
 		},
 		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
 			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "プロバイダー リソースを認識できません: {0}",
+			"azurecore.unregisteredProviderType": "プロバイダー リソースの種類を認識できません: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "リソースは見つかりませんでした"
@@ -129,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Azure にサインイン..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。",
-			"azure.unableToAccessSubscription": "サブスクリプション {0} ({1}) にアクセスできません。再試行するには、[アカウントの更新] してください。(コマンド: azure.resource.signin) {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "テナントが見つかりません。"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Azure アカウントを読み込めませんでした。{0} ",
@@ -138,14 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure アカウントの表示"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.flatAccountTreeNode.noResourcesLabel": "リソースは見つかりませんでした。",
-			"azure.resource.throttleerror": "このアカウントからの要求は抑えられています。再試行するには、より小さいサブスクリプション数を選択してください。",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} サブスクリプション)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 読み込んでいます...",
-			"azure.resource.tree.loadresourceerror": "Azure リソースの読み込み中にエラーが発生しました: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "テナントが見つかりません。"
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "リソースは見つかりませんでした。"
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。"
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "読み込み中..."
@@ -201,7 +209,8 @@
 			"azurecore.norwayeast": "ノルウェー東部",
 			"azurecore.norwaywest": "ノルウェー西部",
 			"azurecore.piiLogging.warning": "警告: Azure PII ログが有効になっています。このオプションを有効にすると、個人を特定できる情報をログに記録でき、デバッグ目的でのみ使用する必要があります。",
-			"azurecore.postgresServer": "Azure Database for PostgreSQL サーバー",
+			"azurecore.postgresFlexibleServer": "Azure Database for PostgreSQL のフレキシブル サーバー",
+			"azurecore.postgresServer": "Azure Database for PostgreSQL",
 			"azurecore.reload": "再読み込み",
 			"azurecore.reloadChoice": "Azure Data Studio の再読み込み",
 			"azurecore.reloadPrompt": "認証ライブラリが変更されました。Azure Data Studio を再読み込みしてください。",
@@ -245,6 +254,7 @@
 			"azure.resource.refresh.title": "最新の情報に更新",
 			"azure.resource.refreshall.title": "Azure: すべてのアカウントを更新する",
 			"azure.resource.selectsubscriptions.title": "サブスクリプションの選択",
+			"azure.resource.selecttenants.title": "テナントの選択",
 			"azure.resource.signin.title": "Azure: サインイン",
 			"azure.resource.startterminal.title": "Cloud Shell の開始",
 			"azure.resource.view.title": "Azure (プレビュー)",
