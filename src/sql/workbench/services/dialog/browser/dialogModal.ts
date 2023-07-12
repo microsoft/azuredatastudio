@@ -138,6 +138,7 @@ export class DialogModal extends Modal {
 		if (this._doneButton.enabled) {
 			let buttonSpinnerHandler = setTimeout(() => {
 				this._doneButton.enabled = false;
+				// Temporarily set the label to empty since we're showing a spinner instead
 				this._doneButton.label = ''
 				this._doneButton.element.classList.add('validating');
 			}, 100);
