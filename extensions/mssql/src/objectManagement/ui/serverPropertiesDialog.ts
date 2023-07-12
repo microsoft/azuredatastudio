@@ -230,15 +230,14 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			this.objectInfo.autoSetProcessorAffinityIOMaskForAll = newValue;
 		}, this.objectInfo.autoSetProcessorAffinityIOMaskForAll, isEnabled);
 		const autoProcessorIOAffinityContainer = this.createLabelInputContainer(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, this.autoSetProcessorIOAffinityMaskForAllCheckbox);
-		let tableData = this.objectInfo.processorList.map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
+		//let tableData = this.objectInfo.processorList.map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
+		let tableData = [{ processor: 'Test', processorAffinity: 'false', processorIOAffinity: 'true' }, { processor: 'Test2', processorAffinity: 'true', processorIOAffinity: 'true' }].map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
 		let processorTable = this.createTable(localizedConstants.processorLabel,
 			[
 				<azdata.TableColumn>{
 					name: localizedConstants.processorColumnText,
 					value: localizedConstants.processorColumnText,
 					type: azdata.ColumnType.text,
-					resizable: false,
-					width: 100,
 					cssClass: cssClass,
 					headerCssClass: cssClass,
 				},
@@ -246,8 +245,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					name: localizedConstants.processorAffinityColumnText,
 					value: localizedConstants.processorAffinityColumnText,
 					type: azdata.ColumnType.checkBox,
-					resizable: false,
-					width: 100,
+					width: DefaultInputWidth / 2,
 					action: azdata.ActionOnCellCheckboxCheck.selectRow,
 					cssClass: cssClass,
 					headerCssClass: cssClass,
@@ -256,8 +254,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					name: localizedConstants.processorIOAffinityColumnText,
 					value: localizedConstants.processorIOAffinityColumnText,
 					type: azdata.ColumnType.checkBox,
-					resizable: false,
-					width: 100,
+					width: DefaultInputWidth / 2,
 					action: azdata.ActionOnCellCheckboxCheck.selectRow,
 					cssClass: cssClass,
 					headerCssClass: cssClass,
@@ -267,13 +264,16 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this._disposables.push(processorTable.onRowSelected(async () => {
 			if (processorTable.selectedRows.length > 0) {
 				const result = processorTable.data;
+				if (result) {
+
+				}
 				this.onFormFieldChange();
 			}
 		}));
 
 		let tableGroup = this.createGroup('', [processorTable], false);
 
-		this.processorsSection = this.createGroup(localizedConstants.enableProcessorText, [
+		this.processorsSection = this.createGroup('', [
 			autoProcessorAffinityContainer,
 			autoProcessorIOAffinityContainer,
 			tableGroup

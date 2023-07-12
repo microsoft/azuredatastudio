@@ -266,7 +266,6 @@ export const autoSetProcessorAffinityIOMaskForAllText = localize('objectManageme
 export const processorColumnText = localize('objectManagement.processorColumn', "Processor");
 export const processorAffinityColumnText = localize('objectManagement.processorAffinityColumn', "Processor Affinity");
 export const processorIOAffinityColumnText = localize('objectManagement.processorIOAffinityColumn', "I/O Affinity");
-export const enableProcessorText = localize('objectManagement.enableProcessorText', "Enable processors");
 export const processorLabel = localize('objectManagement.processorLabel', "Processor Affinity Table");
 export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower than minimum server memory")
 
