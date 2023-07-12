@@ -18,6 +18,12 @@ export enum TdeDatabaseMigrationState {
 	Canceled = 'Canceled',
 }
 
+export enum ConfigDialogSetting {
+	NoSelection = 'NoSelection',
+	ExportCertificates = 'ExportCertificates',
+	DoNotExport = 'DoNotExport',
+}
+
 export interface TdeMigrationDbState {
 	name: string;
 	dbState: TdeDatabaseMigrationState;
@@ -29,17 +35,24 @@ export interface TdeMigrationResult {
 	state: TdeMigrationState;
 }
 
-
 export interface TdeMigrationDbResult {
 	name: string;
 	success: boolean;
 	message: string;
 }
 
-
 export class TdeMigrationModel {
-	private _exportUsingADS?: boolean | undefined;
-	private _adsExportConfirmation: boolean;
+
+	// Settings for which the user has clicked the apply button
+	private _appliedConfigDialogSetting: ConfigDialogSetting;
+	private _appliedExportCertUserConsent: boolean;
+	private _appliedNetworkPath: string;
+
+	// Settings that are pending but user has not clicked the apply button
+	private _pendingConfigDialogSetting: ConfigDialogSetting;
+	private _pendingExportCertUserConsent: boolean;
+	private _pendingNetworkPath: string;
+
 	private _configurationCompleted: boolean;
 	private _shownBefore: boolean;
 	private _encryptedDbs: string[];
@@ -49,18 +62,21 @@ export class TdeMigrationModel {
 		dbList: []
 	};
 
-	public _networkPath: string;
-
 	constructor(
 	) {
-		this._exportUsingADS = true;
-		this._adsExportConfirmation = false;
 		this._configurationCompleted = false;
 		this._shownBefore = false;
 		this._encryptedDbs = [];
 
-		this._networkPath = '';
+		this._appliedConfigDialogSetting = ConfigDialogSetting.NoSelection;
+		this._pendingConfigDialogSetting = ConfigDialogSetting.NoSelection;
+		this._appliedNetworkPath = '';
+		this._pendingNetworkPath = '';
+		this._appliedExportCertUserConsent = false;
+		this._pendingExportCertUserConsent = false;
 		this._tdeMigrationCompleted = false;
+
+		this._tdeMigrationCompleted = this._tdeMigrationCompleted;
 	}
 
 	// If the configuration dialog was shown already.
@@ -95,50 +111,44 @@ export class TdeMigrationModel {
 		this._shownBefore = false;				// Reset the tde dialog showing status when databases change
 	}
 
-	// Sets the certificate migration method
-	public setTdeMigrationMethod(useAds: boolean): void {
-		if (useAds) {
-			this._exportUsingADS = true;
-		} else {
-			this._exportUsingADS = false;
-			this._adsExportConfirmation = false;
+	// User has clicked "Apply", applies setting
+	public applyConfigDialogSetting() {
+		if (!this.isAnyChangeReadyToBeApplied()) {
+			return;
 		}
-		this._tdeMigrationCompleted = false;
+
+		this._appliedConfigDialogSetting = this._pendingConfigDialogSetting;
+		this._appliedExportCertUserConsent = this._pendingExportCertUserConsent;
+		this._appliedNetworkPath = this._pendingNetworkPath;
+
+		if (this._appliedConfigDialogSetting !== ConfigDialogSetting.ExportCertificates) {
+			this._appliedExportCertUserConsent = false;
+			this._pendingExportCertUserConsent = false;
+			this._appliedNetworkPath = "";
+			this._pendingNetworkPath = "";
+		}
+
+		this._configurationCompleted = true;
 	}
 
-	// When a migration configuration was configured and accepted on the configuration blade.
-	public setConfigurationCompleted(): void {
-		this._configurationCompleted = true;
+	// User has clicked "Cancel", reverts settings to last applied
+	public cancelConfigDialogSetting() {
+		this._pendingConfigDialogSetting = this._appliedConfigDialogSetting;
+		this._pendingExportCertUserConsent = this._appliedExportCertUserConsent;
+		this._pendingNetworkPath = this._appliedNetworkPath;
+	}
+
+	// Sets the certificate migration method
+	public setPendingTdeMigrationMethod(config: ConfigDialogSetting): void {
+		this._pendingConfigDialogSetting = config;
+		this._tdeMigrationCompleted = false;
 	}
 
 	// When ADS is configured to do the certificates migration
 	public shouldAdsMigrateCertificates(): boolean {
-		return this.hasTdeEnabledDatabases() && this._configurationCompleted && this.isTdeMigrationMethodAdsConfirmed();
-	}
-
-	// When any valid method is properly set.
-	public isTdeMigrationMethodSet(): boolean {
-		return this.isTdeMigrationMethodAdsConfirmed() || this.isTdeMigrationMethodManual();
-	}
-
-	// When Ads is selected as method. may still need confirmation.
-	public isTdeMigrationMethodAds(): boolean {
-		return this._exportUsingADS === true;
-	}
-
-	// When ads migration method is confirmed
-	public isTdeMigrationMethodAdsConfirmed(): boolean {
-		return this.isTdeMigrationMethodAds() && this._adsExportConfirmation === true;
-	}
-
-	// When manual method is selected
-	public isTdeMigrationMethodManual(): boolean {
-		return this._exportUsingADS === false;
-	}
-
-	// When manual method is selected
-	public tdeMigrationCompleted(): boolean {
-		return this._tdeMigrationCompleted;
+		return this.hasTdeEnabledDatabases() &&
+			this._configurationCompleted &&
+			(this.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates);
 	}
 
 	// Get the value for the lastest tde migration result
@@ -160,14 +170,47 @@ export class TdeMigrationModel {
 		};
 	}
 
-	// When the confirmation is set, for ADS certificate migration method
-	public setAdsConfirmation(status: boolean, networkPath: string): void {
-		if (status && this.isTdeMigrationMethodAds()) {
-			this._adsExportConfirmation = true;
-
-			this._networkPath = networkPath;
-		} else {
-			this._adsExportConfirmation = false;
+	public isAnyChangeReadyToBeApplied() {
+		if (this._pendingConfigDialogSetting === ConfigDialogSetting.NoSelection) {
+			return false;
 		}
+
+		if (this._pendingConfigDialogSetting === ConfigDialogSetting.ExportCertificates) {
+			return this._pendingExportCertUserConsent;
+		}
+
+		return true;
+	}
+
+	public getPendingConfigDialogSetting() {
+		return this._pendingConfigDialogSetting;
+	}
+
+	public getAppliedConfigDialogSetting() {
+		return this._appliedConfigDialogSetting;
+	}
+
+	public getPendingNetworkPath() {
+		return this._pendingNetworkPath;
+	}
+
+	public setPendingNetworkPath(pendingNetworkPath: string) {
+		this._pendingNetworkPath = pendingNetworkPath;
+	}
+
+	public getAppliedNetworkPath() {
+		return this._appliedNetworkPath;
+	}
+
+	public getAppliedExportCertUserConsent() {
+		return this._appliedExportCertUserConsent;
+	}
+
+	public getPendingExportCertUserConsent() {
+		return this._pendingExportCertUserConsent;
+	}
+
+	public setPendingExportCertUserConsent(pendingExportCertUserConsent: boolean) {
+		this._pendingExportCertUserConsent = pendingExportCertUserConsent;
 	}
 }

@@ -445,7 +445,7 @@
         "mssql.enableConnectionPooling": {
           "type": "boolean",
           "description": "%mssql.enableConnectionPooling%",
-          "default": false
+          "default": true
         },
         "mssql.tableDesigner.preloadDatabaseModel": {
           "type": "boolean",
