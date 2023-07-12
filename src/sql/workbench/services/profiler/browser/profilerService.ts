@@ -22,6 +22,7 @@ import { ProfilerFilterDialog } from 'sql/workbench/services/profiler/browser/pr
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { promises as fs } from 'fs';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -316,6 +317,18 @@ export class ProfilerService implements IProfilerService {
 
 		if (fileURIs?.length === 1) {
 			const fileURI = fileURIs[0];
+
+			try {
+				let fileSize = await (await fs.stat(fileURI.fsPath)).size;
+				console.log(fileSize);
+				const fileLimitSize = 1073741824; 	// 1GB
+				if (fileSize > fileLimitSize) {
+					this._notificationService.error(nls.localize('FileTooLarge', "File is too large to open and it may hang ADS. "));
+					return false;
+				}
+			} catch (err) {
+				this._notificationService.error(err.message);
+			}
 
 			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, undefined, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
