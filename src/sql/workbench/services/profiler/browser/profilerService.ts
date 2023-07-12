@@ -11,6 +11,7 @@ import { ProfilerColumnEditorDialog } from 'sql/workbench/services/profiler/brow
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
+import { promises as fs } from 'fs';
 
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -316,6 +317,18 @@ export class ProfilerService implements IProfilerService {
 
 		if (fileURIs?.length === 1) {
 			const fileURI = fileURIs[0];
+
+			try {
+				let fileSize = await (await fs.stat(fileURI.fsPath)).size;
+				console.log(fileSize);
+				const fileLimitSize = 1073741824; 	// 1GB
+				if (fileSize > fileLimitSize) {
+					this._notificationService.error(nls.localize('FileTooLarge', "File is too large to open and it may hang ADS. "));
+					return false;
+				}
+			} catch (err) {
+				this._notificationService.error(err.message);
+			}
 
 			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, undefined, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
