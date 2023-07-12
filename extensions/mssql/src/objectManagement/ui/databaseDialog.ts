@@ -336,7 +336,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeLedgerSection(): void {
-		// Ledger Database - ReadOnly
+		// Ledger Database - ReadOnly (This can only be set during creation and not changed afterwards)
 		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async () => { }, this.objectInfo.isLedgerDatabase, false);
 
 		const ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
