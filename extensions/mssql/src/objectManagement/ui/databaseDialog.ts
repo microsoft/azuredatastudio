@@ -137,10 +137,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async () => {
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.NameText,
+			width: DefaultInputWidth,
+			required: true,
+			maxLength: 20
+		};
+
+		this.nameInput = this.createTextInputBox(localizedConstants.NameText, async () => {
 			this.objectInfo.name = this.nameInput.value;
 			await this.runValidation(false);
-		});
+		}, '', props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {

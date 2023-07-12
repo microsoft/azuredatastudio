@@ -147,6 +147,21 @@ export abstract class DialogBase<DialogResult> {
 		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
 	}
 
+	protected createTextInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
+		const textValidation = new RegExp('^[a-zA-Z0-9_]*$');
+		properties.ariaLabel = ariaLabel;
+		properties.validationErrorMessage = customValidation ? properties.validationErrorMessage : uiLoc.OnlyAlphanumericValuesAllowed;
+		const inputbox: azdata.InputBoxComponent = this.modelView.modelBuilder.inputBox().withProps(properties).withValidation(customValidation ? customValidation : () => {
+			return textValidation.test(inputbox.value)
+		}).component();
+		this.disposables.push(inputbox.onTextChanged(async () => {
+			await textChangeHandler(inputbox.value!);
+			this.onFormFieldChange();
+			await this.runValidation(false);
+		}));
+		return inputbox;
+	}
+
 	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number): azdata.InputBoxComponent {
 		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, required: required, min: min, max: max }).component();
 		this.disposables.push(inputbox.onTextChanged(async () => {
