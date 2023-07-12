@@ -24,14 +24,14 @@ export class TestConfigurationService implements IConfigurationService {
 		// This is a temporary fix and should be removed once xterm GPU rendering is working again.
 		if (configuration) {
 			if (configuration.integrated) {
-				configuration.integrated.gpuAcceleration = 'off';
+				configuration.integrated.gpuAcceleration = 'canvas';
 			}
 			else {
-				configuration.integrated = { gpuAcceleration: 'off' };
+				configuration.integrated = { gpuAcceleration: 'canvas' };
 			}
 		}
 		else {
-			configuration = { integrated: { gpuAcceleration: 'off' } };
+			configuration = { integrated: { gpuAcceleration: 'canvas' } };
 		}
 		// {{SQL CARBON EDIT}} - END
 
