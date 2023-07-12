@@ -19,7 +19,7 @@ export const NoActionScriptedMessage: string = localize('mssql.ui.noActionScript
 export const ScriptGeneratedText: string = localize('mssql.ui.scriptGenerated', "Script has been generated successfully. You can close the dialog to view it in the newly opened editor.")
 export const GeneratingScriptText: string = localize('mssql.ui.generatingScript', "Generating script...");
 export const GeneratingScriptCompletedText: string = localize('mssql.ui.generatingScriptCompleted', "Script generated");
-export const OnlyAlphanumericValuesAllowed = localize('objectManagement.OnlyAlphanumericValuesAllowed', " 'Only alphanumeric characters allowed'");
+export const OnlyAlphanumericValuesAllowed = localize('objectManagement.OnlyAlphanumericValuesAllowed', "Only alphanumeric characters allowed");
 
 export function scriptError(error: string): string {
 	return localize('mssql.ui.scriptError', "An error occurred while generating the script. {0}", error);
