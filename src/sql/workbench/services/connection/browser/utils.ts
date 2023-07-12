@@ -5,7 +5,7 @@
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { azureAuthenticationLibraryConfig, enableSqlAuthenticationProviderConfig, mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/utils';
+import { MSAL_AUTH_LIBRARY } from 'sql/workbench/services/accountManagement/common/utils';
 
 /**
  * Reads setting 'mssql.enableSqlAuthenticationProvider' returns true if it's enabled.

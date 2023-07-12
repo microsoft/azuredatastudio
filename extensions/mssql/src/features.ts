@@ -1001,10 +1001,11 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let startSession = (ownerUri: string, sessionName: string): Thenable<boolean> => {
+		let startSession = (ownerUri: string, sessionName: string, sessionType: azdata.ProfilingSessionType = azdata.ProfilingSessionType.RemoteSession): Thenable<boolean> => {
 			let params: contracts.StartProfilingParams = {
 				ownerUri,
-				sessionName
+				sessionName,
+				sessionType
 			};
 
 			return client.sendRequest(contracts.StartProfilingRequest.type, params).then(

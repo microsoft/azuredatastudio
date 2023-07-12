@@ -6,9 +6,11 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { INewProfilerState } from 'sql/workbench/common/editor/profiler/profilerState';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -69,9 +71,9 @@ export interface IProfilerService {
 	 */
 	createSession(id: string, createStatement: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean>;
 	/**
-	 * Starts the session specified by the id
+	 * Starts the session specified by the id or a session for opening file
 	 */
-	startSession(sessionId: ProfilerSessionID, sessionName: string): Thenable<boolean>;
+	startSession(sessionId: ProfilerSessionID, sessionName: string, sessionType?: ProfilingSessionType): Thenable<boolean>;
 	/**
 	 * Pauses the session specified by the id
 	 */
@@ -140,6 +142,18 @@ export interface IProfilerService {
 	 * @param filter filter object
 	 */
 	saveFilter(filter: ProfilerFilter): Promise<void>;
+	/**
+	 * Launches the dialog for picking a file to open in Profiler extension
+	 * @param fileDialogService service to open file dialog
+	 * @param editorService service to open profiler editor
+	 * @param instantiationService service to create profiler instance
+	 */
+	openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<boolean>;
+}
+
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
 }
 
 export interface IProfilerSettings {

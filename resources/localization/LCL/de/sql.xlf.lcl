@@ -12326,19 +12326,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.objectExplorer.filterDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[(Preview) Filter Settings: {0}]]></Val>
+          <Val><![CDATA[Filter Settings]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[(Vorschau) Filtereinstellungen: {0}]]></Val>
+            <Val><![CDATA[Filtereinstellungen]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.objectExplorer.nodePath" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Node Path: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Knotenpfad: {0}]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[(Preview) Filter Settings: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12383,6 +12377,15 @@
           <Val><![CDATA[No connections found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Keine Verbindungen gefunden.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution.objectExplorerConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Object Explorer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Objekt-Explorer]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12476,6 +12479,15 @@
           <Val><![CDATA[Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Notebook]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout.objectExplorer" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Object Explorer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Objekt-Explorer]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13623,6 +13635,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.skipNewLineAfterTrailingLineBreak" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob das Hinzufügen eines Zeilenumbruchs zwischen Zeilen beim Kopieren von Ergebnissen übersprungen werden soll, wenn die vorherige Zeile bereits einen nachgestellten Zeilenumbruch aufweist. Der Standardwert ist FALSE.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.streaming" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable results streaming; contains few minor visual issues]]></Val>
@@ -14390,10 +14411,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.scriptActionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while executing the action: {0}.]]></Val>
+          <Val><![CDATA[An error occurred while executing the action '{0}': {1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler beim Ausführen der Aktion: {0}.]]></Val>
+            <Val><![CDATA[Fehler beim Ausführen der Aktion "{0}": {1}.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while executing the action: {0}.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14408,10 +14432,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.scriptingAction.inProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Generating script...]]></Val>
+          <Val><![CDATA[Executing action: {0}...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Skript wird generiert...]]></Val>
+            <Val><![CDATA[Aktion wird ausgeführt: {0}...]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Generating script...]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14456,15 +14483,6 @@
           <Val><![CDATA[Tasks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Aufgaben]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/tasks/browser/tasks.contribution.viewCategory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sicht]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14652,6 +14670,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/views/browser/treeView.treeView.enableCollapseAll" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether the the tree view with id {0} enables collapse all.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob in der Strukturansicht mit der ID {0} alle Elemente reduziert werden können.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/views/browser/treeView.treeView.enableRefresh" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether the tree view with id {0} enables refresh.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob in der Strukturansicht mit der ID {0} eine Aktualisierung möglich ist.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/views/browser/treeView.treeView.toggleCollapseAll" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether collapse all is toggled for the tree view with id {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob für die Strukturansicht mit der ID {0} das Reduzieren aller Elemente umgeschaltet werden kann.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/webview/browser/webViewDialog.webViewDialog.close" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close]]></Val>
@@ -14693,6 +14738,24 @@
           <Val><![CDATA[Yes (recommended)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ja (empfohlen)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.miGettingStarted" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Getting &&Started]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erste &&Schritte]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.showReleaseNotes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show Getting Started]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA["Erste Schritte" anzeigen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15095,15 +15158,6 @@
           <Val><![CDATA[User Welcome Tour]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Einführungstour für Benutzer]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.help" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Help]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Hilfe]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15536,6 +15590,33 @@
           <Val><![CDATA[The window will reload after installing additional support for {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nach dem Installieren zusätzlicher Unterstützung für {0} wird das Fenster neu geladen.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.telemetryOptOut.optInNotice" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]5D;({0}) and learn how to [opt in]5D;({1}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Helfen Sie, Azure Data Studio zu verbessern, indem Sie Microsoft erlauben, Nutzungsdaten zu sammeln. Lesen Sie unsere [Datenschutzerklärung]5D;({0}) und erfahren Sie, wie Sie dies [aktivieren]5D;({1}).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.telemetryOptOut.optOutNotice" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]5D;({0}) and learn how to [opt out]5D;({1}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Helfen Sie, Azure Data Studio zu verbessern, indem Sie Microsoft erlauben, Nutzungsdaten zu sammeln. Lesen Sie unsere [Datenschutzerklärung]5D;({0}) und erfahren Sie, wie Sie dies [deaktivieren]5D;({1}).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.telemetryOptOut.readMore" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Read More]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Weitere Informationen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17847,24 +17928,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.deleteConnectionConfirmationNo" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nein]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.deleteConnectionConfirmationYes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Yes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ja]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.deleteConnectionGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete Group]]></Val>
@@ -17885,10 +17948,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.objectExplorer.filterChildren" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Filter (Preview)]]></Val>
+          <Val><![CDATA[Filter]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Filter (Vorschau)]]></Val>
+            <Val><![CDATA[Filter]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Filter (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18027,6 +18093,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.endsWithSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ends With]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Endet mit]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.equalsSelectBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Equals]]></Val>
@@ -18054,24 +18129,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.isNotNullSelectBox" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Is Not Null]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ist nicht NULL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.isNullSelectBox" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Is Null]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ist NULL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.lessThanSelectBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Less Than]]></Val>
@@ -18083,10 +18140,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.nodePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Node Path: {0}]]></Val>
+          <Val><![CDATA[Path:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Knotenpfad: {0}]]></Val>
+            <Val><![CDATA[Pfad:]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Node Path: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18108,11 +18168,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.notEndsWithSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Not Ends With]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Endet nicht mit]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.notEqualsSelectBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Not Equals]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ungleich]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.notStartsWithSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Not Starts With]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beginnt nicht mit]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -18131,6 +18209,15 @@
           <Val><![CDATA[Operator]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Operator]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog.objectExplorer.startsWithSelectBox" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Starts With]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Beginnt mit]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -19922,24 +20009,6 @@
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ja]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/update/electron-browser/gettingStarted.miGettingStarted" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Getting &&Started]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erste &&Schritte]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/update/electron-browser/gettingStarted.showReleaseNotes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Show Getting Started]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["Erste Schritte" anzeigen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

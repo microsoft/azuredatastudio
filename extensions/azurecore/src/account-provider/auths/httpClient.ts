@@ -16,7 +16,8 @@ export enum HttpMethod {
 	GET = 'get',
 	POST = 'post',
 	PUT = 'put',
-	DELETE = 'delete'
+	DELETE = 'delete',
+	PATCH = 'patch'
 }
 
 export enum HttpStatus {
@@ -115,6 +116,23 @@ export class HttpClient {
 			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.DELETE, options, this.customAgentOptions as http.AgentOptions);
 		} else {
 			return networkRequestViaHttps(url, HttpMethod.DELETE, options, this.customAgentOptions as https.AgentOptions);
+		}
+	}
+
+	/**
+	 * Http Patch request
+	 * @param url
+	 * @param options
+	 */
+	async sendPatchRequestAsync<T>(
+		url: string,
+		options?: NetworkRequestOptions,
+		cancellationToken?: number
+	): Promise<AzureNetworkResponse<T>> {
+		if (this.proxyUrl) {
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.PATCH, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
+		} else {
+			return networkRequestViaHttps(url, HttpMethod.PATCH, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
 		}
 	}
 
@@ -270,6 +288,7 @@ const networkRequestViaHttps = <T>(
 ): Promise<AzureNetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
+	const isPatchRequest = httpMethod === HttpMethod.PATCH;
 	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
 	const body = (new TextEncoder()).encode(options?.body || '');
 	const url = new URL(urlString);
@@ -288,7 +307,7 @@ const networkRequestViaHttps = <T>(
 		customOptions.agent = new https.Agent(agentOptions);
 	}
 
-	if (isPostRequest || isPutRequest) {
+	if (isPostRequest || isPutRequest || isPatchRequest) {
 		// needed for post request to work
 		customOptions.headers = {
 			...customOptions.headers,
@@ -306,7 +325,7 @@ const networkRequestViaHttps = <T>(
 			});
 		}
 
-		if (isPostRequest || isPutRequest) {
+		if (isPostRequest || isPutRequest || isPatchRequest) {
 			request.write(body);
 		}
 

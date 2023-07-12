@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./../media/filterDialog';
+import 'vs/css!./media/filterDialog';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Modal } from 'sql/workbench/browser/modal/modal'
@@ -397,7 +397,7 @@ export class FilterDialog extends Modal {
 		this.filterTable.layout(new DOM.Dimension(600, (tableData.length + 2) * TableRowHeight));
 
 		this._description = DOM.append(body, DOM.$('.filter-dialog-description'));
-		this._description.innerHTML = this._properties[0].description;
+		this._description.innerText = this._properties[0].description;
 	}
 
 	protected layout(height?: number): void {

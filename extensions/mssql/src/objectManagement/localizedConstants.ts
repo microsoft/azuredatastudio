@@ -26,6 +26,7 @@ export const ApplicationRoleTypeDisplayNameInTitle: string = localize('objectMan
 export const DatabaseRoleTypeDisplayName: string = localize('objectManagement.DatabaseRoleTypeDisplayName', "database role");
 export const DatabaseRoleTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseRoleTypeDisplayNameInTitle', "Database Role");
 export const DatabaseTypeDisplayNameInTitle: string = localize('objectManagement.DatabaseDisplayNameInTitle', "Database");
+export function NoDialogFoundError(nodeType: string, objectType: string): string { return localize('objectManagement.noDialogFoundError', "Could not find a supported dialog for node type '{0}' and object type '{1}'.", nodeType, objectType); }
 
 // Shared Strings
 export const FailedToRetrieveConnectionInfoErrorMessage: string = localize('objectManagement.noConnectionUriError', "Failed to retrieve the connection information, please reconnect and try again.")
@@ -124,7 +125,7 @@ export function ObjectPropertiesDialogTitle(objectType: string, objectName: stri
 	return localize({
 		key: 'objectManagement.objectPropertiesDialogTitle',
 		comment: ['{0} object type, {1}: object name.']
-	}, '{0} - {1} (Preview)', objectType, objectName);
+	}, '{0} Properties (Preview) - {1}', objectType, objectName);
 }
 
 export function RenameObjectOperationDisplayName(objectType: string, originalName: string, newName: string): string {
@@ -252,20 +253,24 @@ export const IsHadrEnabledText = localize('objectManagement.isHadrEnabled', "Is 
 export const IsPolyBaseInstalledText = localize('objectManagement.isPolyBaseInstalled', "Is PolyBase Installed");
 export const IsXTPSupportedText = localize('objectManagement.isXTPSupported', "Is XTP Supported");
 export const ProductText = localize('objectManagement.product', "Product");
-export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size");
+export const ReservedStorageSizeInMBText = localize('objectManagement.reservedStorageSizeInMB', "Reserved Storage Size (MB)");
 export const RootDirectoryText = localize('objectManagement.rootDirectory', "Root Directory");
 export const ServerCollationText = localize('objectManagement.serverCollation', "Server Collation");
 export const ServiceTierText = localize('objectManagement.serviceTier', "Service Tier");
-export const StorageSpaceUsageInGBText = localize('objectManagement.storageSpaceUsageInGB', "Storage Space Usage");
+export const StorageSpaceUsageInMBText = localize('objectManagement.storageSpaceUsageInMB', "Storage Space Usage (MB)");
 export const VersionText = localize('objectManagement.versionText', "Version");
-
-
 export const minServerMemoryText = localize('objectManagement.minServerMemoryText', "Minimum Server Memory (MB)");
 export const maxServerMemoryText = localize('objectManagement.maxServerMemoryText', "Maximum Server Memory (MB)");
+export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower than minimum server memory")
+
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
 export const LastDatabaseLogBackupText = localize('objectManagement.lastDatabaseLogBackup', "Last Database Log Backup");
 export const BackupSectionHeader = localize('objectManagement.databaseProperties.backupSectionHeader', "Backup");
+export const AutomaticSectionHeader = localize('objectManagement.databaseProperties.automaticSectionHeader', "Automatic");
+export const LedgerSectionHeader = localize('objectManagement.databaseProperties.ledgerSectionHeader', "Ledger");
+export const RecoverySectionHeader = localize('objectManagement.databaseProperties.recoverySectionHeader', "Recovery");
+export const StateSectionHeader = localize('objectManagement.databaseProperties.stateSectionHeader', "State");
 export const DatabaseSectionHeader = localize('objectManagement.databaseProperties.databaseSectionHeader', "Database");
 export const NamePropertyText = localize('objectManagement.databaseProperties.name', "Name");
 export const StatusText = localize('objectManagement.databaseProperties.status', "Status");
@@ -277,6 +282,19 @@ export const NumberOfUsersText = localize('objectManagement.databaseProperties.n
 export const MemoryAllocatedText = localize('objectManagement.databaseProperties.memoryAllocated', "Memory Allocated To Memory Optimized Objects");
 export const MemoryUsedText = localize('objectManagement.databaseProperties.memoryUsed', "Memory Used By Memory Optimized Objects");
 export const StringValueInMB = (value: string) => localize('objectManagement.databaseProperties.mbUnitText', "{0} MB", value);
+export const AutoCreateIncrementalStatisticsText = localize('objectManagement.databaseProperties.autoCreateIncrementalStatisticsText', "Auto Create Incremental Statistics");
+export const AutoCreateStatisticsText = localize('objectManagement.databaseProperties.AutoCreateStatisticsText', "Auto Create Statistics");
+export const AutoShrinkText = localize('objectManagement.databaseProperties.autoShrinkText', "Auto Shrink");
+export const AutoUpdateStatisticsText = localize('objectManagement.databaseProperties.autoUpdateStatisticsText', "Auto Update Statistics");
+export const AutoUpdateStatisticsAsynchronouslyText = localize('objectManagement.databaseProperties.autoUpdateStatisticsAsynchronouslyText', "Auto Update Statistics Asynchronously");
+export const IsLedgerDatabaseText = localize('objectManagement.databaseProperties.isLedgerDatabaseText', "Is Ledger Database");
+export const PageVerifyText = localize('objectManagement.databaseProperties.pageVerifyText', "Page Verify");
+export const TargetRecoveryTimeInSecondsText = localize('objectManagement.databaseProperties.targetRecoveryTimeInSecondsText', "Target Recovery Time (Seconds)");
+export const DatabaseReadOnlyText = localize('objectManagement.databaseProperties.databaseReadOnlyText', "Database Read-Only");
+export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
+export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
+export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
+
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

@@ -10,7 +10,7 @@ import { ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { ITableFilterStyles } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import *  as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { disabledCheckboxForeground, listFocusAndSelectionBackground, tableHeaderBackground, tableHeaderForeground } from 'sql/platform/theme/common/colors';
+import { disabledCheckboxForeground, listFocusAndSelectionBackground, listFocusAndSelectionForeground, tableHeaderBackground, tableHeaderForeground } from 'sql/platform/theme/common/colors';
 import { IInfoBoxStyles } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { IStyleOverride, defaultButtonStyles, defaultCountBadgeStyles, defaultInputBoxStyles, defaultListStyles, defaultSelectBoxStyles as vsDefaultSelectBoxStyles, overrideStyles } from 'vs/platform/theme/browser/defaultStyles';
@@ -93,7 +93,7 @@ export const defaultTableStyles: ITableStyles = {
 	listActiveSelectionBackground: cr.asCssVariable(cr.listActiveSelectionBackground),
 	listActiveSelectionForeground: cr.asCssVariable(cr.listActiveSelectionForeground),
 	listFocusAndSelectionBackground: cr.asCssVariable(listFocusAndSelectionBackground),
-	listFocusAndSelectionForeground: cr.asCssVariable(cr.listActiveSelectionForeground),
+	listFocusAndSelectionForeground: cr.asCssVariable(listFocusAndSelectionForeground),
 	listInactiveFocusBackground: undefined,
 	listInactiveSelectionBackground: cr.asCssVariable(cr.listInactiveSelectionBackground),
 	listInactiveSelectionForeground: undefined,

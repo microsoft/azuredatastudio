@@ -692,8 +692,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	public override $startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> {
-		return this._resolveProvider<azdata.ProfilerProvider>(handle).startSession(sessionId, sessionName);
+	public override $startSession(handle: number, sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> {
+		return this._resolveProvider<azdata.ProfilerProvider>(handle).startSession(sessionId, sessionName, sessionType);
 	}
 
 	/**
@@ -744,7 +744,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	public $onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void {
 		this._proxy.$onProfilerSessionCreated(handle, response);
 	}
-
 
 	/**
 	 * Agent Job Provider methods

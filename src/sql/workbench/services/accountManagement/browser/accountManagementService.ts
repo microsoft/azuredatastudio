@@ -27,7 +27,7 @@ import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
-import { ADAL_AUTH_LIBRARY, MSAL_AUTH_LIBRARY, AuthLibrary, AZURE_AUTH_LIBRARY_CONFIG, getAuthLibrary } from 'sql/workbench/services/accountManagement/utils';
+import { ADAL_AUTH_LIBRARY, MSAL_AUTH_LIBRARY, AuthLibrary, AZURE_AUTH_LIBRARY_CONFIG, getAuthLibrary } from 'sql/workbench/services/accountManagement/common/utils';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryError, TelemetryPropertyName, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
@@ -477,10 +477,9 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Copy the user code to the clipboard and open a browser to the verification URI
 	 */
-	public async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void> {
+	public async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<boolean> {
 		await this._clipboardService.writeText(userCode);
-		await this._openerService.open(URI.parse(uri));
-
+		return await this._openerService.open(URI.parse(uri));
 	}
 
 	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {

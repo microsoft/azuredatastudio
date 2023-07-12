@@ -579,12 +579,12 @@ const vscodeTranslationsExport = task.define(
 		compileLocalizationExtensionsBuildTask, // {{SQL CARBON EDIT}} now include all extensions in ADS, not just a subset. (replaces 'compileExtensionsBuildTask' here).
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToRehWebMetadata = './out-vscode-reh-web/nls.metadata.json';
+			//const pathToRehWebMetadata = './out-vscode-reh-web/nls.metadata.json'; // Disabling as web build is no longer done.
 			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/i18n/messages.en.isl';
 
 			return es.merge(
-				gulp.src([pathToMetadata, pathToRehWebMetadata]).pipe(merge({
+				gulp.src([pathToMetadata]).pipe(merge({ // [pathToMetadata, pathToRehWebMetadata] (use when web build is enabled).
 					fileName: 'nls.metadata.json',
 					jsonSpace: '',
 					concatArrays: true

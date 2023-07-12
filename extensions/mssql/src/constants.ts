@@ -29,6 +29,9 @@ export const ObjectManagementService = 'objectManagementService';
 
 // CONFIGURATION VALUES //////////////////////////////////////////////////////////
 export const configObjectExplorerGroupBySchemaFlagName = 'mssql.objectExplorer.groupBySchema';
+export const configAsyncParallelProcessingName = 'mssql.parallelMessageProcessing';
+export const configEnableSqlAuthenticationProviderName = 'mssql.enableSqlAuthenticationProvider';
+export const configEnableConnectionPoolingName = 'mssql.enableConnectionPooling';
 
 // COMMANDNAMES //////////////////////////////////////////////////////////
 export const cmdObjectExplorerEnableGroupBySchemaCommand = 'mssql.enableGroupBySchema';

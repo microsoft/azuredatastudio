@@ -23,6 +23,7 @@ import { logError, TelemetryViews, TelemetryAction, sendSqlMigrationActionEvent,
 import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 import { TdeMigrationModel } from '../models/tdeModels';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { ConfigDialogSetting } from '../models/tdeModels'
 
 export interface Product {
 	type: MigrationTargetType;
@@ -382,7 +383,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'margin': '0',
 			}
 		}).component();
-		this._tdeConfigurationDialog = new TdeConfigurationDialog(this, this.wizard, this.migrationStateModel, () => this._onTdeConfigClosed());
+		this._tdeConfigurationDialog = new TdeConfigurationDialog(this.migrationStateModel, () => this._onTdeConfigClosed());
 		this._disposables.push(this._tdeEditButton.onDidClick(
 			async (e) => await this._tdeConfigurationDialog.openDialog()));
 
@@ -845,16 +846,32 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private _onTdeConfigClosed(): Thenable<void> {
-		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+		const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting() === ConfigDialogSetting.ExportCertificates) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
 		this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount(), tdeMsg);
 
-		const tdeTelemetryAction = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed()) ? TelemetryAction.TdeConfigurationUseADS : TelemetryAction.TdeConfigurationIgnoreADS;
+		let tdeTelemetryAction: TelemetryAction;
+
+		switch (this.migrationStateModel.tdeMigrationConfig.getAppliedConfigDialogSetting()) {
+			case ConfigDialogSetting.ExportCertificates:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationUseADS;
+				break;
+			case ConfigDialogSetting.DoNotExport:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationAlreadyMigrated;
+				break;
+			case ConfigDialogSetting.NoSelection:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
+				break;
+			default:
+				tdeTelemetryAction = TelemetryAction.TdeConfigurationCancelled;
+				break;
+		}
 
 		sendSqlMigrationActionEvent(
 			TelemetryViews.TdeConfigurationDialog,
 			tdeTelemetryAction,
 			{
-				...getTelemetryProps(this.migrationStateModel)
+				...getTelemetryProps(this.migrationStateModel),
+				'numberOfDbsWithTde': this.migrationStateModel.tdeMigrationConfig.getTdeEnabledDatabasesCount().toString()
 			},
 			{}
 		);
