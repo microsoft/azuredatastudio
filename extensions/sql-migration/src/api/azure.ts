@@ -30,10 +30,17 @@ async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 
 export type Subscription = azurecore.azureResource.AzureResourceSubscription;
 export async function getSubscriptions(account: azdata.Account): Promise<Subscription[]> {
+	console.log('** getSubscriptions started **');
 	const api = await getAzureCoreAPI();
-	const subscriptions = await api.getSubscriptions(account, false);
+	const subscriptions = await api.getSubscriptions(account, true);
+	console.log(`** getSubscriptions retrieved subs: => '${subscriptions?.subscriptions?.length ?? ' no-subscriptions '}' **`);
+	console.log(`** getSubscriptions retrieved errs: => '${subscriptions?.errors?.length ?? ' no-errors '}' **`);
+	console.log(`** getSubscriptions retrieved errors: => '${subscriptions?.errors?.join(', ')}' **`);
+
 	let listOfSubscriptions = subscriptions.subscriptions;
+	console.log(`** getSubscriptions listOfSubscriptions: => '${listOfSubscriptions?.length ?? 0}' **`);
 	sortResourceArrayByName(listOfSubscriptions);
+	console.log(`** getSubscriptions listOfSubscriptions (sorted): => '${listOfSubscriptions?.length ?? 0}' **`);
 	return subscriptions.subscriptions;
 }
 
