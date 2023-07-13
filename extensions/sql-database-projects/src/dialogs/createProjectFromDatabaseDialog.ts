@@ -52,7 +52,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		let connected = false;
 
-		// make sure the profile passed in is actually a connection profile
+		// make sure the connection profile passed in has sufficient information to attempt to connect
 		if (this.profile && this.profile?.serverName) {
 			const connections = await getAzdataApi()!.connection.getConnections(true);
 			connected = !!connections.find(c => c.connectionId === this.profile!.id);
