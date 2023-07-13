@@ -554,11 +554,15 @@ class SavedConnectionNode {
 
 	getChildren() {
 		let input = TreeUpdateUtils.getTreeInput(this.connectionManagementService);
-		let newInput = [input];
-		if (input instanceof ConnectionProfileGroup) {
-			newInput = TreeUpdateUtils.alterTreeChildrenTitles([input], this.connectionManagementService);
-		}
-		return this.dataSource.getChildren(newInput[0]);
+		/**
+		 * Disabled due to issues with the title generation.
+		 */
+		// let newInput = [input];
+		// if (input instanceof ConnectionProfileGroup) {
+		// 	newInput = TreeUpdateUtils.alterTreeChildrenTitles([input], this.connectionManagementService);
+		// }
+		//return this.dataSource.getChildren(newInput[0]);
+		return this.dataSource.getChildren(input);
 	}
 }
 
