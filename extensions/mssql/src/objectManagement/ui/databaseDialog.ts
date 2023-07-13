@@ -137,7 +137,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		// The max length for database names is 128 characters: https://learn.microsoft.com/en-us/sql/t-sql/functions/db-name-transact-sql?view=sql-server-ver16
+		// The max length for database names is 128 characters: https://learn.microsoft.com/sql/t-sql/functions/db-name-transact-sql
 		const maxLengthDatabaseName: number = 128;
 		const props: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.NameText,
