@@ -139,9 +139,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		let containers: azdata.Component[] = [];
 		const props: azdata.InputBoxProperties = {
 			ariaLabel: localizedConstants.NameText,
-			width: DefaultInputWidth,
 			required: true,
-			value: '',
 			maxLength: 128
 		};
 
