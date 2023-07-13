@@ -138,7 +138,7 @@
                 "name": "Default",
                 "settings": {
                   "metadata": {
-                    "displayName": "DefaultCloud",
+                    "displayName": "",
                     "id": "azure_defaultCloud",
                     "endpoints": {
                       "host": "https://login.microsoftonline.com/",
