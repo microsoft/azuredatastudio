@@ -47,6 +47,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _migrationTargetPlatform!: utils.MigrationTargetType;
 	private _serviceContext!: MigrationServiceContext;
 	private _certMigrationEventEmitter: vscode.EventEmitter<TdeMigrationResult>;
+	private _certMigrationRequiredInfoBox!: azdata.InfoBoxComponent;
 
 	constructor(
 		wizard: azdata.window.Wizard,
@@ -55,9 +56,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			wizard,
 			azdata.window.createWizardPage(constants.AZURE_SQL_TARGET_PAGE_TITLE),
 			migrationStateModel);
-
 		this._certMigrationEventEmitter = new vscode.EventEmitter();
-
 		this._certMigrationEventEmitter.event(() => this._updateNextButton());
 	}
 
@@ -72,12 +71,26 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
 			}).component();
 
+		this._certMigrationRequiredInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.TDE_WIZARD_CERT_MIGRATION_BUTTON_MUST_BE_CLICKED,
+				style: 'information',
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '4px 14px 0px 14px',
+					'text-align': 'justify',
+					'width': WIZARD_INPUT_COMPONENT_WIDTH,
+					'display': 'none'
+				}
+			}).component();
+
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
 				{ component: this._pageDescription },
 				{ component: this.createAzureAccountsDropdown() },
 				{ component: this.createAzureTenantContainer() },
-				{ component: this.createTargetDropdownContainer() }
+				{ component: this.createTargetDropdownContainer() },
+				{ component: this._certMigrationRequiredInfoBox }
 			]).withProps({
 				CSSStyles: { 'padding-top': '0' }
 			}).component();
@@ -280,6 +293,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			await utils.clearDropDown(this._azureResourceDropdown);
 		}
 
+		await utils.updateControlDisplay(this._certMigrationRequiredInfoBox, this.migrationStateModel.tdeMigrationConfig.shouldAdsMigrateCertificates());
 		await this.populateAzureAccountsDropdown();
 	}
 
