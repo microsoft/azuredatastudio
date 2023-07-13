@@ -152,7 +152,12 @@ export abstract class DialogBase<DialogResult> {
 		properties.inputType = properties.inputType ?? 'text';
 		properties.value = properties.value ?? '';
 		properties.enabled = properties.enabled ?? true;
-		const inputbox: azdata.InputBoxComponent = customValidation ? this.modelView.modelBuilder.inputBox().withProps(properties).withValidation(customValidation).component() : this.modelView.modelBuilder.inputBox().withProps(properties).component();
+		let inputbox: azdata.InputBoxComponent;
+		if (customValidation) {
+			inputbox = this.modelView.modelBuilder.inputBox().withProps(properties).withValidation(customValidation).component();
+		} else {
+			inputbox = this.modelView.modelBuilder.inputBox().withProps(properties).component();
+		}
 		this.disposables.push(inputbox.onTextChanged(async () => {
 			await textChangeHandler(inputbox.value!);
 			this.onFormFieldChange();
