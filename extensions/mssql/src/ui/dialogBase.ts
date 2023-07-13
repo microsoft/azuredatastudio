@@ -161,6 +161,7 @@ export abstract class DialogBase<DialogResult> {
 		this.disposables.push(inputbox.onTextChanged(async () => {
 			await textChangeHandler(inputbox.value!);
 			this.onFormFieldChange();
+			await this.runValidation(false);
 		}));
 		return inputbox;
 	}
