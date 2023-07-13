@@ -36,7 +36,7 @@ const defaultTerminalConfig: Partial<ITerminalConfiguration> = {
 	unicodeVersion: '6'
 };
 
-suite.skip('Buffer Content Tracker', () => { // {{SQL CARBON EDIT}} skip failing suite
+suite('Buffer Content Tracker', () => {
 	let instantiationService: TestInstantiationService;
 	let configurationService: TestConfigurationService;
 	let themeService: TestThemeService;

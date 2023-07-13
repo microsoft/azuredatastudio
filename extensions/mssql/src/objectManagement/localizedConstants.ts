@@ -125,7 +125,7 @@ export function ObjectPropertiesDialogTitle(objectType: string, objectName: stri
 	return localize({
 		key: 'objectManagement.objectPropertiesDialogTitle',
 		comment: ['{0} object type, {1}: object name.']
-	}, '{0} - {1} (Preview)', objectType, objectName);
+	}, '{0} Properties (Preview) - {1}', objectType, objectName);
 }
 
 export function RenameObjectOperationDisplayName(objectType: string, originalName: string, newName: string): string {

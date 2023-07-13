@@ -81,7 +81,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					// Set values for advanced options received in model.
 					Object.keys(model.options).forEach(a => {
 						let option = options.find(opt => opt.name === a);
-						if (option !== undefined) {
+						if (option !== undefined && option.defaultValue?.toString().toLocaleLowerCase() !== model.options[a]?.toString().toLocaleLowerCase()) {
 							this.options[option.name] = model.options[a];
 						}
 					});
@@ -358,7 +358,11 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			id: connectionInfo.id
 		};
 
-		profile.options = connectionInfo.options;
+		Object.keys(connectionInfo.options).forEach(element => {
+			if (connectionInfo.options[element] && connectionInfo.options[element] !== null && connectionInfo.options[element] !== '') {
+				profile.options[element] = connectionInfo.options[element];
+			}
+		});
 
 		return profile;
 	}

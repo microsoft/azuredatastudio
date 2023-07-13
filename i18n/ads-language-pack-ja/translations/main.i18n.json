@@ -14606,8 +14606,8 @@
 			"enablePreviewFeatures.yes": "はい (推奨)"
 		},
 		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
+			"miGettingStarted": "はじめに(&&S)",
+			"showReleaseNotes": "「はじめに」を表示する"
 		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "接続の作成",

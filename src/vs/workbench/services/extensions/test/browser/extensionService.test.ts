@@ -128,7 +128,7 @@ suite('BrowserExtensionService', () => {
 	});
 });
 
-suite.skip('ExtensionService', () => { // {{SQL CARBON EDIT}} - disable failing suite
+suite('ExtensionService', () => {
 
 	class MyTestExtensionService extends AbstractExtensionService {
 
