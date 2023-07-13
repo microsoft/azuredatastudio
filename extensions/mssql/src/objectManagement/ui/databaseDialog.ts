@@ -145,9 +145,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			maxLength: 128
 		};
 
-		this.nameInput = this.createInputBoxWithProperties(localizedConstants.NameText, async () => {
+		this.nameInput = this.createInputBoxWithProperties(async () => {
 			this.objectInfo.name = this.nameInput.value;
-			await this.runValidation(false);
 		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 

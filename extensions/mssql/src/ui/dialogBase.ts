@@ -147,8 +147,7 @@ export abstract class DialogBase<DialogResult> {
 		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
 	}
 
-	protected createInputBoxWithProperties(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
-		properties.ariaLabel = ariaLabel;
+	protected createInputBoxWithProperties(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
 		const inputbox: azdata.InputBoxComponent = this.modelView.modelBuilder.inputBox().withProps(properties).withValidation(customValidation).component();
 		this.disposables.push(inputbox.onTextChanged(async () => {
 			await textChangeHandler(inputbox.value!);
