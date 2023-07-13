@@ -129,7 +129,7 @@ export class InputBox extends Widget {
 	private maxHeight: number = Number.POSITIVE_INFINITY;
 	private scrollableElement: ScrollableElement | undefined;
 
-	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
+	// {{SQL CARBON EDIT}} - Add showValidationMessage
 	protected showValidationMessage?: boolean;
 	// {{SQL CARBON EDIT}} - End
 	private _onDidChange = this._register(new Emitter<string>());
