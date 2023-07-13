@@ -55,7 +55,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
-		this.dialogObject.okButton.label = this.options.isNewObject ? uiLoc.CreateText : uiLoc.ApplyText;
 	}
 
 	protected override get helpUrl(): string {
