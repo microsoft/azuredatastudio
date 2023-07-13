@@ -167,7 +167,6 @@
               "description": "Provider Settings",
               "required": ["name", "settings"],
               "properties":{
-                "required": ["name", "settings"],
                 "name": {
                   "type": "string",
                   "default": "Azure Public",
