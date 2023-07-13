@@ -465,23 +465,16 @@ export function getAzureTenants(account?: Account): Tenant[] {
 }
 
 export async function getAzureSubscriptions(account?: Account, tenantId?: string): Promise<azureResource.AzureResourceSubscription[]> {
-	console.log('** getAzureSubscriptions started **');
 	let subscriptions: azureResource.AzureResourceSubscription[] = [];
 	try {
-		console.log(`** getAzureSubscriptions account name=> ${account?.displayInfo?.name ?? 'NULL'} **`);
-		console.log(`** getAzureSubscriptions tenantId=> ${tenantId ?? 'NULL'} **`);
-		console.log(`** getAzureSubscriptions isAccountTokenStale(account)=> ${isAccountTokenStale(account)} **`);
 		subscriptions = account && !isAccountTokenStale(account)
 			? await azure.getSubscriptions(account)
 			: [];
-		console.log(`** getAzureSubscriptions subscriptions=> ${subscriptions?.length ?? 'NULL'} **`);
 	} catch (e) {
 		logError(TelemetryViews.Utils, 'utils.getAzureSubscriptions', e);
 	}
 	const filtered = subscriptions.filter(subscription => subscription.tenant === tenantId);
-	console.log(`** getAzureSubscriptions subscriptions filtered by tenantId=> ${filtered?.length ?? 'NULL'} **`);
 	filtered.sort((a, b) => a.name.localeCompare(b.name));
-	console.log(`** getAzureSubscriptions subscriptions filtered by tenantId/sorted=> ${filtered?.length ?? 'NULL'} **`);
 	return filtered;
 }
 
