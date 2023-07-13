@@ -328,7 +328,7 @@ export class ProfilerService implements IProfilerService {
 					this._notificationService.error(nls.localize('FileTooLarge', "The file is too large to open in profiler. The profiler can open files that are less than 1GB."));
 					return false;
 				} else if (fileSize > fileOpenWarningSize) {
-					this._notificationService.info(nls.localize('LargeFileWait', "Loading the file might take a moment, because the file is large."));
+					this._notificationService.info(nls.localize('LargeFileWait', "Loading the file might take a moment due to the file size."));
 				}
 			} catch (err) {
 				this._notificationService.error(err.message);
