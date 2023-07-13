@@ -11,7 +11,7 @@ import { Action2, MenuId, MenuRegistry, registerAction2 } from 'vs/platform/acti
 import { localize } from 'vs/nls';
 import { ConnectionStatusbarItem } from 'sql/workbench/contrib/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
@@ -141,14 +141,20 @@ CommandsRegistry.registerCommand('azdata.connect',
 				saveTheConnection: true,
 				showDashboard: true,
 				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
+				showFirewallRuleOnError: true,
+				params: {
+					connectionType: ConnectionType.default,
+				}
 			});
 		} else {
 			connectionManagementService.showConnectionDialog(undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
 				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
+				showFirewallRuleOnError: true,
+				params: {
+					connectionType: ConnectionType.default,
+				}
 			});
 		}
 	});
