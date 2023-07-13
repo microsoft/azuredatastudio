@@ -141,13 +141,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			ariaLabel: localizedConstants.NameText,
 			width: DefaultInputWidth,
 			required: true,
-			maxLength: 20
+			value: '',
+			maxLength: 128
 		};
 
-		this.nameInput = this.createTextInputBox(localizedConstants.NameText, async () => {
+		this.nameInput = this.createInputBoxWithProperties(localizedConstants.NameText, async () => {
 			this.objectInfo.name = this.nameInput.value;
 			await this.runValidation(false);
-		}, '', props);
+		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
