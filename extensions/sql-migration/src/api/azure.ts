@@ -31,7 +31,8 @@ async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 export type Subscription = azurecore.azureResource.AzureResourceSubscription;
 export async function getSubscriptions(account: azdata.Account): Promise<Subscription[]> {
 	const api = await getAzureCoreAPI();
-	const subscriptions = await api.getSubscriptions(account, false);
+	const subscriptions = await api.getSubscriptions(account, true);
+
 	let listOfSubscriptions = subscriptions.subscriptions;
 	sortResourceArrayByName(listOfSubscriptions);
 	return subscriptions.subscriptions;
