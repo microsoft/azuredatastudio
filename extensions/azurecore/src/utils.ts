@@ -224,11 +224,6 @@ function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSet
 					endpointSuffix: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
 					azureResourceId: AzureResource.AzureStorage
 				},
-				azureKeyVaultResource: {
-					id: SettingIds.vault,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
-					azureResourceId: AzureResource.AzureKeyVault
-				},
 				sqlResource: {
 					id: SettingIds.sql,
 					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
@@ -261,6 +256,13 @@ function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSet
 			id: SettingIds.kusto,
 			endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
 			azureResourceId: AzureResource.AzureKusto
+		};
+	}
+	if (cloudProvider.settings.metadata.endpoints.azureKeyVaultResource) {
+		newSettings.metadata.settings.azureKeyVaultResource = {
+			id: SettingIds.vault,
+			endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
+			azureResourceId: AzureResource.AzureKeyVault
 		};
 	}
 	if (cloudProvider.settings.metadata.endpoints.powerBiResource) {

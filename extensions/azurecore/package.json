@@ -193,7 +193,7 @@
                         },
                         "endpoints": {
                           "type": "object",
-                          "required": ["host","scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource", "azureKeyVaultResource"],
+                          "required": ["host","scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource"],
                           "properties": {
                             "type": "object",
                             "host": {
