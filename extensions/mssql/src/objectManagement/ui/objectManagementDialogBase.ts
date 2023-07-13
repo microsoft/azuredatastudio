@@ -72,10 +72,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 			try {
 				await this.saveChangesAndRefreshNode(actionName);
 				// When the object is saved successfully, we need to update the original object info to the current object info.
+				// Otherwise, initialize.saveChanges will trigger another save operation.
 				this._originalObjectInfo = deepClone(this.objectInfo);
-				return true;
 			} catch (err) {
-				// When error occurs, add the error message to the dialog error object
+				// Add the error message to the dialog error object
 				this.dialogObject.message = {
 					text: err.message,
 					level: azdata.window.MessageLevel.Error
@@ -86,6 +86,10 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		return true;
 	}
 
+	/**
+	 * Saves the changes and refreshes the node in the object explorer.
+	 * @param actionName The action name for telemetry
+	 */
 	protected async saveChangesAndRefreshNode(actionName: TelemetryActions): Promise<void> {
 		const startTime = Date.now();
 		await this.saveChanges(this._contextId, this.objectInfo);

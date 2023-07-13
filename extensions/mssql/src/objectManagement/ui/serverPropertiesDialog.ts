@@ -7,6 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
+import * as uiLoc from '../../ui/localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo } from '../interfaces';
 
@@ -46,6 +47,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
 		this.dialogObject.customButtons[1].enabled = false;
+		this.dialogObject.okButton.label = uiLoc.SaveText;
 	}
 
 	protected override get helpUrl(): string {
@@ -66,6 +68,18 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.dialogObject.customButtons[1].enabled = false;
 		this.dialogObject.okButton.enabled = this.isDirty;
 	}
+
+	/**
+	 * Validate and Save the changes
+	 * @returns true if the dialog should be closed, false otherwise
+	 */
+	protected override async onConfirmation(): Promise<boolean> {
+		this.updateLoadingStatus(true, uiLoc.ValidateAndApplyChangesText);
+		const confirmed = await this.validateAndSaveChanges();
+		this.updateLoadingStatus(false);
+		return confirmed;
+	}
+
 
 	protected async initializeUI(): Promise<void> {
 		const serverInfo = await azdata.connection.getServerInfo(this.options.objectExplorerContext.connectionProfile.id);

@@ -8,11 +8,11 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
+import * as uiLoc from '../../ui/localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
-import * as uiLoc from '../../ui/localizedConstants';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -55,6 +55,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
+		this.dialogObject.okButton.label = this.options.isNewObject ? uiLoc.CreateText : uiLoc.SaveText;
 	}
 
 	protected override get helpUrl(): string {
@@ -140,7 +141,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * @returns true if the dialog should be closed, false otherwise
 	 */
 	protected override async onConfirmation(): Promise<boolean> {
-		this.updateLoadingStatus(true, this.options.isNewObject ? uiLoc.ValidateAndCreateDatabaseText : uiLoc.ValidateAndSaveChangesText);
+		this.updateLoadingStatus(true, this.options.isNewObject ? uiLoc.ValidateAndCreateDatabaseText : uiLoc.ValidateAndApplyChangesText);
 		const confirmed = await this.validateAndSaveChanges();
 		this.updateLoadingStatus(false);
 		return confirmed;
