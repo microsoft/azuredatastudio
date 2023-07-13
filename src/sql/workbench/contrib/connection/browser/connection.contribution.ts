@@ -21,6 +21,7 @@ import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ActiveConnectionsFilterAction, AddServerAction, AddServerGroupAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { CONTEXT_SERVER_TREE_VIEW, CONTEXT_SERVER_TREE_HAS_CONNECTIONS } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { SqlIconId } from 'sql/base/common/codicons';
+import * as Utils from 'sql/platform/connection/common/utils';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
@@ -132,11 +133,13 @@ CommandsRegistry.registerCommand('azdata.connect',
 				groupFullName: undefined,
 				saveProfile: true,
 				id: undefined,
-				groupId: undefined,
+				groupId: Utils.defaultGroupId,
 				options: args.options
 			};
 			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
-
+			const root = connectionManagementService.getConnectionGroups().filter(g => g.id === Utils.defaultGroupId)[0];
+			connectionProfile.parent = root;
+			connectionProfile.groupFullName = root.fullName;
 			connectionManagementService.connect(connectionProfile, undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
