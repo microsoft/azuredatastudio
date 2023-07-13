@@ -51,7 +51,9 @@ export class CreateProjectFromDatabaseDialog {
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		let connected = false;
-		if (this.profile) {
+
+		// make sure the profile passed in is actually a connection profile
+		if (this.profile && this.profile?.serverName) {
 			const connections = await getAzdataApi()!.connection.getConnections(true);
 			connected = !!connections.find(c => c.connectionId === this.profile!.id);
 
