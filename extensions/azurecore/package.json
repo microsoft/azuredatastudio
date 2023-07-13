@@ -135,7 +135,7 @@
             "scope": "resource",
             "default": [
               {
-                "name": "Default",
+                "name": "",
                 "settings": {
                   "metadata": {
                     "displayName": "",
