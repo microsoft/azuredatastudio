@@ -91,8 +91,11 @@ export class DashboardInput extends EditorInput {
 			// Only add DB name if this is a non-default, non-master connection
 			name = name + ':' + this.connectionProfile.databaseName;
 		}
+		/**
+		 * Disabled due to issues with the title generation.
+		 */
 		// Append any differing options if needed.
-		name += this._connectionService.getEditorConnectionProfileTitle(this.connectionProfile, true, true)
+		// name += this._connectionService.getEditorConnectionProfileTitle(this.connectionProfile, true, true)
 		return name;
 	}
 

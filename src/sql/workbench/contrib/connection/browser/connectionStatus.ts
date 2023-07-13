@@ -68,31 +68,34 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 
 	// Set connection info to connection status bar
 	private _setConnectionText(connectionProfile: IConnectionProfile): void {
-		let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
+		/**
+		 * Disabled due to issues with the title generation.
+		 */
+		//let distinguishedTitle = this.connectionManagementService.getEditorConnectionProfileTitle(connectionProfile);
 		let text: string = '';
 		let tooltip: string = '';
-		if (distinguishedTitle === '') {
-			text = connectionProfile.serverName;
-			if (text) {
-				if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
-					text = text + ' : ' + connectionProfile.databaseName;
-				} else {
-					text = text + ' : ' + '<default>';
-				}
-			}
-
-
-			tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
-				'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
-
-			if (connectionProfile.userName && connectionProfile.userName !== '') {
-				tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+		//if (distinguishedTitle === '') {
+		text = connectionProfile.serverName;
+		if (text) {
+			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
+				text = text + ' : ' + connectionProfile.databaseName;
+			} else {
+				text = text + ' : ' + '<default>';
 			}
 		}
-		else {
-			text = distinguishedTitle;
-			tooltip = (connectionProfile as any).serverInfo;
+
+
+		tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
+			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
+
+		if (connectionProfile.userName && connectionProfile.userName !== '') {
+			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
 		}
+		// }
+		// else {
+		// 	text = distinguishedTitle;
+		// 	tooltip = (connectionProfile as any).serverInfo;
+		// }
 
 		this.statusItem.update({
 			name: this.name,

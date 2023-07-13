@@ -58,7 +58,10 @@ export class BreadcrumbService implements IBreadcrumbService {
 
 	private getServerBreadcrumb(profile: ConnectionProfile): MenuItem {
 		let formattedProfileName = profile.connectionName ? profile.connectionName : profile.serverName;
-		formattedProfileName += this.commonService.connectionManagementService.getEditorConnectionProfileTitle(profile, true, true);
+		/**
+		 * Disabled due to issues with the title generation.
+		 */
+		// formattedProfileName += this.commonService.connectionManagementService.getEditorConnectionProfileTitle(profile, true, true);
 		return { label: formattedProfileName, routerLink: ['server-dashboard'] };
 	}
 

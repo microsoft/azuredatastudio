@@ -48,19 +48,21 @@ export class TreeUpdateUtils {
 	public static isInDragAndDrop: boolean = false;
 
 	/**
+	 * Disabled due to issues with the title generation.
+	 *
 	 * Functions to restore/remove the groupId for title generation as they are removed when added to treeInput
 	 */
-	private static restoreGroupId(treeInput: ConnectionProfileGroup, originalProfiles: ConnectionProfile[]) {
-		for (let i = 0; i < treeInput.connections.length; i++) {
-			treeInput.connections[i].groupId = originalProfiles[i].groupId
-		}
-	}
+	// private static restoreGroupId(treeInput: ConnectionProfileGroup, originalProfiles: ConnectionProfile[]) {
+	// 	for (let i = 0; i < treeInput.connections.length; i++) {
+	// 		treeInput.connections[i].groupId = originalProfiles[i].groupId
+	// 	}
+	// }
 
-	private static removeGroupId(treeInput: ConnectionProfileGroup) {
-		for (let i = 0; i < treeInput.connections.length; i++) {
-			treeInput.connections[i].groupId = undefined;
-		}
-	}
+	// private static removeGroupId(treeInput: ConnectionProfileGroup) {
+	// 	for (let i = 0; i < treeInput.connections.length; i++) {
+	// 		treeInput.connections[i].groupId = undefined;
+	// 	}
+	// }
 
 	/**
 	 * Set input for the tree.
@@ -83,21 +85,30 @@ export class TreeUpdateUtils {
 		if (viewKey === 'recent') {
 			groups = connectionManagementService.getRecentConnections(providers);
 			treeInput.addConnections(groups);
-			this.restoreGroupId(treeInput, connectionManagementService.getRecentConnections(providers));
-			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
-			this.removeGroupId(treeInput);
-			treeInput = treeArray[0];
+			/**
+			 * Disabled due to issues with the title generation.
+			 */
+			// this.restoreGroupId(treeInput, connectionManagementService.getRecentConnections(providers));
+			// let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
+			// this.removeGroupId(treeInput);
+			// treeInput = treeArray[0];
 		} else if (viewKey === 'active') {
 			groups = connectionManagementService.getActiveConnections(providers);
 			treeInput.addConnections(groups);
-			this.restoreGroupId(treeInput, connectionManagementService.getActiveConnections(providers));
-			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
-			this.removeGroupId(treeInput);
-			treeInput = treeArray[0];
+			/**
+			 * Disabled due to issues with the title generation.
+			 */
+			// this.restoreGroupId(treeInput, connectionManagementService.getActiveConnections(providers));
+			// let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
+			// this.removeGroupId(treeInput);
+			// treeInput = treeArray[0];
 		} else if (viewKey === 'saved') {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
-			let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
-			treeInput = treeArray[0];
+			/**
+			 * Disabled due to issues with the title generation.
+			 */
+			// let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService);
+			// treeInput = treeArray[0];
 		}
 		const previousTreeInput = tree.getInput();
 		if (treeInput) {
@@ -119,28 +130,33 @@ export class TreeUpdateUtils {
 	}
 
 	/**
+	 * Disabled due to issues with the title generation.
+	 *
 	 * Calls alterConnectionTitles on all levels of the Object Explorer Tree
 	 * so that profiles in connection groups can have distinguishing titles too.
 	 */
-	public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[], connectionManagementService: IConnectionManagementService, includeGroupName?: boolean): ConnectionProfileGroup[] {
-		inputGroups.forEach(group => {
-			group.children = TreeUpdateUtils.alterTreeChildrenTitles(group.children, connectionManagementService, includeGroupName);
-			let connections = group.connections;
-			TreeUpdateUtils.alterConnectionTitles(connections, connectionManagementService, includeGroupName);
-			group.connections = connections;
-		});
-		return inputGroups;
-	}
+	// public static alterTreeChildrenTitles(inputGroups: ConnectionProfileGroup[], connectionManagementService: IConnectionManagementService, includeGroupName?: boolean): ConnectionProfileGroup[] {
+	// 	inputGroups.forEach(group => {
+	// 		group.children = TreeUpdateUtils.alterTreeChildrenTitles(group.children, connectionManagementService, includeGroupName);
+	// 		let connections = group.connections;
+	// 		TreeUpdateUtils.alterConnectionTitles(connections, connectionManagementService, includeGroupName);
+	// 		group.connections = connections;
+	// 	});
+	// 	return inputGroups;
+	// }
 
 	/**
 	 * Set input for the registered servers tree.
 	 */
 	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
 		if (tree instanceof AsyncServerTree) {
-			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
-				let treeArray = this.alterTreeChildrenTitles([treeInput], connectionManagementService, false);
-				treeInput = treeArray[0];
+				/**
+				 * Disabled due to issues with the title generation.
+				 */
+				// let treeArray = this.alterTreeChildrenTitles([treeInput], connectionManagementService, false);
+				// treeInput = treeArray[0];
 				await tree.setInput(treeInput);
 			}
 			tree.rerender();
@@ -169,8 +185,11 @@ export class TreeUpdateUtils {
 
 			let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 			if (treeInput) {
-				let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService, false);
-				treeInput = treeArray[0];
+				/**
+				 * Disabled due to issues with the title generation.
+				 */
+				// let treeArray = TreeUpdateUtils.alterTreeChildrenTitles([treeInput], connectionManagementService, false);
+				// treeInput = treeArray[0];
 				const originalInput = tree.getInput();
 				if (treeInput !== originalInput) {
 					return tree.setInput(treeInput).then(async () => {
@@ -414,13 +433,16 @@ export class TreeUpdateUtils {
 		return connectionProfile;
 	}
 
-	private static alterConnectionTitles(inputList: ConnectionProfile[], connectionManagementService: IConnectionManagementService, includeGroupName?: boolean): void {
-		for (let i = 0; i < inputList.length; i++) {
-			let currentConnection = inputList[i];
-			let listOfDuplicates = inputList.filter(connection => connection.getOriginalTitle() === currentConnection.getOriginalTitle());
-			if (listOfDuplicates.length > 1) {
-				inputList[i].title = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], false, includeGroupName);
-			}
-		}
-	}
+	/**
+	 * Disabled due to issues with the title generation.
+	 */
+	// private static alterConnectionTitles(inputList: ConnectionProfile[], connectionManagementService: IConnectionManagementService, includeGroupName?: boolean): void {
+	// 	for (let i = 0; i < inputList.length; i++) {
+	// 		let currentConnection = inputList[i];
+	// 		let listOfDuplicates = inputList.filter(connection => connection.getOriginalTitle() === currentConnection.getOriginalTitle());
+	// 		if (listOfDuplicates.length > 1) {
+	// 			inputList[i].title = connectionManagementService.getEditorConnectionProfileTitle(inputList[i], false, includeGroupName);
+	// 		}
+	// 	}
+	// }
 }

@@ -27,12 +27,15 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
 			let titleString = `${context.connectionProfile!.serverName} - ${context.connectionProfile!.databaseName} - ${NewTableText}`;
+			/**
+			 * Disabled due to issues with the title generation.
+			 */
 			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
-			if (distinguishingOptions !== '') {
-				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
-				titleString += `${distinguishingOptions}`;
-			}
+			// let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			// if (distinguishingOptions !== '') {
+			// 	distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+			// 	titleString += `${distinguishingOptions}`;
+			// }
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			await azdata.designers.openTableDesigner(sqlProviderName, {
@@ -64,12 +67,15 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				throw new Error(FailedToGetConnectionStringError);
 			}
 			let titleString = `${server} - ${database} - ${schema}.${name}`;
+			/**
+			 * Disabled due to issues with the title generation.
+			 */
 			// append distinguishing options to end to let users know exact connection.
-			let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
-			if (distinguishingOptions !== '') {
-				distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
-				titleString += `${distinguishingOptions}`;
-			}
+			// let distinguishingOptions = await azdata.connection.getEditorConnectionProfileTitle(context.connectionProfile, true);
+			// if (distinguishingOptions !== '') {
+			// 	distinguishingOptions = distinguishingOptions.replace('(', '[').replace(')', ']');
+			// 	titleString += `${distinguishingOptions}`;
+			// }
 			const tableIcon = context.nodeInfo!.nodeSubType as azdata.designers.TableIcon;
 			const telemetryInfo = await getTelemetryInfo(context, tableIcon);
 			await azdata.designers.openTableDesigner(sqlProviderName, {

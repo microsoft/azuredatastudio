@@ -355,9 +355,12 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): string {
-		return undefined!;
-	}
+	/**
+	 * Disabled due to issues with the title generation
+	 */
+	// getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): string {
+	// 	return undefined!;
+	// }
 
 	openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Promise<string | undefined> {
 		return undefined;
