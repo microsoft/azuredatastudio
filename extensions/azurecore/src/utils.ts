@@ -185,7 +185,8 @@ export function updateProviderSettings(defaultSettings: ProviderSettings[]): Pro
 			void vscode.window.showInformationMessage(localize('providerSettings.success', 'Successfully loaded custom endpoints from settings'));
 
 		} catch (error) {
-			void vscode.window.showErrorMessage(localize('providerSettings.error', 'could not load endpoints from settings'));
+			void vscode.window.showErrorMessage(localize('providerSettings.error', 'Could not load endpoints from settings, please check the logs for more details.'));
+			console.error(error.message);
 			throw Error(error.message);
 		}
 	}
