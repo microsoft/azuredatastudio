@@ -82,7 +82,8 @@ export enum TelemetryAction {
 	TdeMigrationFailures = 'TdeMigrationFailures',
 	TdeMigrationClientException = 'TdeMigrationClientException',
 	TdeConfigurationUseADS = 'TdeConfigurationUseADS',
-	TdeConfigurationIgnoreADS = 'TdeConfigurationIgnoreADS'
+	TdeConfigurationAlreadyMigrated = 'TdeConfigurationAlreadyMigrated',
+	TdeConfigurationCancelled = 'TdeConfigurationCancelled'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
