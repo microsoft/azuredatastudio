@@ -22,8 +22,7 @@ import { ProfilerFilterDialog } from 'sql/workbench/services/profiler/browser/pr
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { promises as fs } from 'fs';
-import { ByteSize } from 'vs/platform/files/common/files';
+import { ByteSize, IFileService } from 'vs/platform/files/common/files';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -305,7 +304,7 @@ export class ProfilerService implements IProfilerService {
 		await this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
 	}
 
-	public async openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<boolean> {
+	public async openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService, fileService: IFileService): Promise<boolean> {
 		const fileURIs = await fileDialogService.showOpenDialog({
 			filters: [
 				{
@@ -320,7 +319,7 @@ export class ProfilerService implements IProfilerService {
 			const fileURI = fileURIs[0];
 
 			try {
-				const fileSize = (await fs.stat(fileURI.fsPath)).size;
+				const fileSize = (await fileService.stat(fileURI)).size;
 				const fileLimitSize = 1 * ByteSize.GB;
 				const fileOpenWarningSize = 100 * ByteSize.MB;
 
