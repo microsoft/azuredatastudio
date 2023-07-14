@@ -74,7 +74,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		this._certMigrationRequiredInfoBox = this._view.modelBuilder.infoBox()
 			.withProps({
 				text: constants.TDE_WIZARD_CERT_MIGRATION_BUTTON_MUST_BE_CLICKED,
-				style: 'information',
+				style: 'warning',
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'margin': '4px 14px 0px 14px',
