@@ -115,8 +115,7 @@ export class FileBrowserDialog extends Modal {
 	): void {
 		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType);
 		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
-		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters);
-		this._fileFilterSelectBox.select(0);
+		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters, 0);
 		this._filePathInputBox.value = expandPath;
 		this._isFolderSelected = true;
 		this.enableOkButton();
