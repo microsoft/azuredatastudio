@@ -319,7 +319,8 @@ export class WizardModal extends Modal {
 		let button = newPage === undefined ? this._doneButton : this._nextButton;
 		let buttonSpinnerHandler = setTimeout(() => {
 			button.enabled = false;
-			button.element.innerHTML = '&nbsp';
+			// Temporarily set the label to empty since we're showing a spinner instead
+			button.label = '';
 			button.element.classList.add('validating');
 		}, 100);
 		let navigationValid = await this._wizard.validateNavigation(newPage);
