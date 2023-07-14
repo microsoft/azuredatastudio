@@ -133,35 +133,6 @@
             "type": "array",
             "description": "%config.providerSettingsJson%",
             "scope": "resource",
-            "default": [
-              {
-                "name": "",
-                "settings": {
-                  "metadata": {
-                    "displayName": "",
-                    "id": "azure_defaultCloud",
-                    "endpoints": {
-                      "host": "https://login.microsoftonline.com/",
-                      "microsoftResource": "https://management.core.windows.net/",
-                      "graphResource": "https://graph.windows.net/",
-                      "msGraphResource": "https://graph.microsoft.com/",
-                      "armResource": "https://management.azure.com/",
-                      "sqlResource": "https://database.windows.net/",
-                      "azureKeyVaultResource": "https://vault.azure.net/",
-                      "azureLogAnalyticsResource": "https://api.loganalytics.io/",
-                      "azureStorageResource": {
-                        "endpoint": "",
-                        "endpointSuffix": ".core.windows.net/"
-                      },
-                      "azureKustoResource": "https://kusto.kusto.windows.net/",
-                      "powerBiResource": "https://analysis.windows.net/powerbi/api/",
-                      "scopes": "https://management.azure.com/user_impersonation",
-                      "portalEndpoint": "https://portal.azure.com"
-                    }
-                  }
-                }
-              }
-            ],
             "items": {
               "type": "object",
               "description": "Provider Settings",
