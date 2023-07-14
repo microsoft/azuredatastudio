@@ -147,6 +147,24 @@ export abstract class DialogBase<DialogResult> {
 		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
 	}
 
+	protected createInputBoxWithProperties(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
+		properties.width = properties.width ?? DefaultInputWidth;
+		properties.inputType = properties.inputType ?? 'text';
+		properties.value = properties.value ?? '';
+		properties.enabled = properties.enabled ?? true;
+		const inputbox = this.modelView.modelBuilder.inputBox().withProps(properties);
+		if (customValidation) {
+			inputbox.withValidation(customValidation);
+		}
+		const inputBoxComponent = inputbox.component();
+		this.disposables.push(inputBoxComponent.onTextChanged(async () => {
+			await textChangeHandler(inputBoxComponent.value!);
+			this.onFormFieldChange();
+			await this.runValidation(false);
+		}));
+		return inputBoxComponent;
+	}
+
 	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, min?: number, max?: number): azdata.InputBoxComponent {
 		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, min: min, max: max }).component();
 		this.disposables.push(inputbox.onTextChanged(async () => {
