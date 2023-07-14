@@ -128,6 +128,128 @@
               "Microsoft Authentication Library"
             ],
             "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
+          },
+          "azure.providerSettingsJson": {
+            "type": "array",
+            "description": "%config.providerSettingsJson%",
+            "scope": "resource",
+            "items": {
+              "type": "object",
+              "description": "Provider Settings",
+              "required": ["name", "settings"],
+              "properties":{
+                "name": {
+                  "type": "string",
+                  "default": "Azure Public",
+                  "description": "Cloud Name"
+                },
+                "settings": {
+                  "type": "object",
+                  "description": "Cloud Settings",
+                  "required": ["metadata"],
+                  "properties": {
+                    "metadata": {
+                      "type": "object",
+                      "required": ["displayName", "id"],
+                      "properties": {
+                        "displayName": {
+                          "type": "string",
+                          "default": "Azure Public Cloud",
+                          "description": "Cloud Display Name"
+                        },
+                        "id": {
+                          "type": "string",
+                          "default": "azure_publicCloud",
+                          "description": "Cloud ID"
+                        },
+                        "endpoints": {
+                          "type": "object",
+                          "required": ["host","scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource"],
+                          "properties": {
+                            "type": "object",
+                            "host": {
+                              "type": "string",
+                              "default": "https://login.microsoftonline.com/",
+                              "description": "Host Endpoint"
+                            },
+                            "microsoftResource": {
+                              "type": "string",
+                              "default": "https://management.core.windows.net/",
+                              "description": "Microsoft Resource Endpoint"
+                            },
+                            "graphResource": {
+                              "type": "string",
+                              "default": "https://graph.windows.net/",
+                              "description": "Graph Resource Endpoint"
+                            },
+                            "msGraphResource": {
+                              "type": "string",
+                              "default": "https://graph.microsoft.com/",
+                              "description": "Microsoft Graph Resource Endpoint"
+                            },
+                            "armResource": {
+                              "type": "string",
+                              "default": "https://management.azure.com/",
+                              "description": "ARM Resource Endpoint"
+                            },
+                            "sqlResource": {
+                              "type": "string",
+                              "default": "https://database.windows.net/",
+                              "description": "SQL Resource Endpoint"
+                            },
+                            "azureKeyVaultResource": {
+                              "type": "string",
+                              "default": "https://vault.azure.net/",
+                              "description": "Azure KeyVault Resource Endpoint"
+                            },
+                            "azureLogAnalyticsResource": {
+                              "type": "string",
+                              "default": "https://api.loganalytics.io/",
+                              "description": "Azure Log Analytics Endpoint"
+                            },
+                            "azureStorageResource": {
+                              "type": "object",
+                              "properties": {
+                                "endpoint": {
+                                  "type": "string",
+                                  "default": "",
+                                  "description": "Azure Storage Resource Endpoint"
+                                },
+                                "endpointSuffix": {
+                                  "type": "string",
+                                  "default": ".core.windows.net/",
+                                  "description": "Azure Storage Resource Endpoint Suffix"
+                                }
+                              }
+                            },
+                            "azureKustoResource": {
+                              "type": "string",
+                              "default": "https://kusto.kusto.windows.net/",
+                              "description": "Azure Kusto Resource Endpoint"
+                            },
+                            "powerBiResource": {
+                              "type": "string",
+                              "default": "https://analysis.windows.net/powerbi/api/",
+                              "description": "Power BI Resource Endpoint"
+                            },
+                            "scopes": {
+                              "type": "string",
+                              "default": "https://management.azure.com/user_impersonation",
+                              "description": ""
+                            },
+                            "portalEndpoint": {
+                              "type": "string",
+                              "default": "https://portal.azure.com",
+                              "description": "Azure Portal Endpoint"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

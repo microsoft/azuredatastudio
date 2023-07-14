@@ -72,9 +72,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.resources = [
 			this.metadata.settings.armResource,
 			this.metadata.settings.graphResource,
-			this.metadata.settings.azureKeyVaultResource
 		];
-
 		if (this.metadata.settings.sqlResource) {
 			this.resources.push(this.metadata.settings.sqlResource);
 		}
@@ -89,6 +87,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 		if (this.metadata.settings.azureLogAnalyticsResource) {
 			this.resources.push(this.metadata.settings.azureLogAnalyticsResource);
+		}
+		if (this.metadata.settings.azureKeyVaultResource) {
+			this.resources.push(this.metadata.settings.azureKeyVaultResource);
 		}
 		if (this.metadata.settings.azureKustoResource) {
 			this.resources.push(this.metadata.settings.azureKustoResource);

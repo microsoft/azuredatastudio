@@ -4,25 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { ProviderSettings } from './interfaces';
+import { ProviderSettings, SettingIds } from './interfaces';
 import { AzureResource } from 'azdata';
+import { updateProviderSettings } from '../utils';
 
 const localize = nls.loadMessageBundle();
-
-const enum SettingIds {
-	marm = 'marm',
-	graph = 'graph',
-	msgraph = 'msgraph',
-	arm = 'arm',
-	sql = 'sql',
-	ossrdbms = 'ossrdbms',
-	vault = 'vault',
-	ado = 'ado',
-	ala = 'ala',
-	storage = 'storage',
-	kusto = 'kusto',
-	powerbi = 'powerbi'
-}
 
 const publicAzureSettings: ProviderSettings = {
 	configKey: 'enablePublicCloud',
@@ -246,5 +232,7 @@ const chinaAzureSettings: ProviderSettings = {
 		}
 	}
 };
-const allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
+
+let allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
+allSettings = updateProviderSettings(allSettings);
 export default allSettings;
