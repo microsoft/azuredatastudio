@@ -66,6 +66,10 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">新增項目</target>
       </trans-unit>
+      <trans-unit id="addSqlCmdVariableWithoutDefaultValue">
+        <source xml:lang="en">Add SQLCMD variable '{0}' to project without default value?</source>
+        <target state="translated">是否將 SQLCMD 變數 '{0}' 新增至專案而不使用預設值?</target>
+      </trans-unit>
       <trans-unit id="advancedOptionsButton">
         <source xml:lang="en">Advanced...</source>
         <target state="translated">進階...</target>
@@ -89,6 +93,10 @@
       <trans-unit id="applySuccess">
         <source xml:lang="en">Project was successfully updated.</source>
         <target state="translated">已成功更新專案。</target>
+      </trans-unit>
+      <trans-unit id="artifactReference">
+        <source xml:lang="en">Artifact Reference</source>
+        <target state="translated">成品參考</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -442,13 +450,13 @@
         <source xml:lang="en">Downloading</source>
         <target state="translated">正在下載</target>
       </trans-unit>
-      <trans-unit id="downloadingDacFxDlls">
-        <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
-        <target state="translated">正在下載 Microsoft.Build.Sql Nuget 以取得組建 DLL</target>
-      </trans-unit>
       <trans-unit id="downloadingFromTo">
         <source xml:lang="en">Downloading from {0} to {1}</source>
         <target state="translated">正在從 {0} 下載到 {1}</target>
+      </trans-unit>
+      <trans-unit id="downloadingNuget">
+        <source xml:lang="en">Downloading {0} nuget to get build DLLs </source>
+        <target state="translated">正在下載 {0} NuGet 以取得組建 DLL </target>
       </trans-unit>
       <trans-unit id="edgeEulaAgreementTitle">
         <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
@@ -904,6 +912,10 @@
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">不支援在專案資料夾外具有絕對路徑的專案。請確定專案檔中的路徑與專案資料夾相對。</target>
       </trans-unit>
+      <trans-unit id="packageReference">
+        <source xml:lang="en">Package Reference</source>
+        <target state="translated">套件參考</target>
+      </trans-unit>
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
         <target state="translated">無法存取提供之樹狀項目的父代</target>
@@ -1016,6 +1028,10 @@
         <source xml:lang="en">Publish profile elements</source>
         <target state="translated">發佈設定檔元素</target>
       </trans-unit>
+      <trans-unit id="publishProfileFriendlyName">
+        <source xml:lang="en">Publish Profile</source>
+        <target state="translated">發行設定檔</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">已成功發佈資料庫專案</target>
@@ -1061,12 +1077,16 @@
         <target state="translated">正在發佈容器中的專案...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
-        <source xml:lang="en">Type</source>
-        <target state="translated">類型</target>
+        <source xml:lang="en">Referenced Database Type</source>
+        <target state="translated">參考的資料庫類型</target>
       </trans-unit>
-      <trans-unit id="referenceType">
-        <source xml:lang="en">Reference type</source>
+      <trans-unit id="referenceTypeRadioButtonsGroupTitle">
+        <source xml:lang="en">Reference Type</source>
         <target state="translated">參考型別</target>
+      </trans-unit>
+      <trans-unit id="referencedDatabaseType">
+        <source xml:lang="en">Referenced Database type</source>
+        <target state="translated">參考的資料庫類型</target>
       </trans-unit>
       <trans-unit id="reloadProject">
         <source xml:lang="en">Would you like to reload your database project?</source>
@@ -1123,6 +1143,10 @@
       <trans-unit id="save">
         <source xml:lang="en">Save</source>
         <target state="translated">儲存</target>
+      </trans-unit>
+      <trans-unit id="saveProfile">
+        <source xml:lang="en">Would you like to save the settings in a profile (.publish.xml)?</source>
+        <target state="translated">是否將設定儲存在設定檔 (.publish.xml) 中?</target>
       </trans-unit>
       <trans-unit id="saveProfileAsButtonText">
         <source xml:lang="en">Save As...</source>
@@ -1357,8 +1381,8 @@
         <target state="translated">找不到 SQLCMD 變數 '{0}'</target>
       </trans-unit>
       <trans-unit id="unableToPerformAction">
-        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
-        <target state="translated">找不到 '{0}' 目標: '{1}'</target>
+        <source xml:lang="en">Unable to locate '{0}' target: '{1}'. {2}</source>
+        <target state="translated">找不到 '{0}' 目標: '{1}'。{2}</target>
       </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
@@ -1600,6 +1624,10 @@
         <source xml:lang="en">Add Pre-Deployment Script</source>
         <target state="translated">新增預先部署指令碼</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPublishProfile">
+        <source xml:lang="en">Add Publish Profile</source>
+        <target state="translated">新增發行設定檔</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newScript">
         <source xml:lang="en">Add Script</source>
         <target state="translated">新增指令碼</target>
@@ -1631,6 +1659,10 @@
       <trans-unit id="sqlDatabaseProjects.openInDesigner">
         <source xml:lang="en">Open in Designer</source>
         <target state="translated">在設計工具中開啟</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openReferencedSqlProject">
+        <source xml:lang="en">Open project</source>
+        <target state="translated">開啟專案</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>

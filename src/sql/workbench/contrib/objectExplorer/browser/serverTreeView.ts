@@ -527,7 +527,10 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._connectionManagementService.deleteConnection(profile);
 			}
 			const connectionProfile = this.getConnectionInTreeInput(profile.id);
-
+			// If the connection is not found in the tree, it means it was already deleted from the tree and we don't need to disconnect it
+			if (!connectionProfile) {
+				return;
+			}
 			// For the connection profile, we need to clear the password from the last session if the user doesn't want to save it
 			if (!connectionProfile.savePassword) {
 				connectionProfile.password = '';

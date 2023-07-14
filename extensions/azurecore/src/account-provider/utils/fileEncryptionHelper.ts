@@ -100,15 +100,19 @@ export class FileEncryptionHelper {
 			if (resetOnError) {
 				// Reset IV/Keys if crypto cannot encrypt/decrypt data.
 				// This could be a possible case of corruption of expected iv/key combination
-				await this.deleteEncryptionKey(this._ivCredId);
-				await this.deleteEncryptionKey(this._keyCredId);
-				this._ivBuffer = undefined;
-				this._keyBuffer = undefined;
+				await this.clearEncryptionKeys();
 				await this.init();
 			}
 			// Throw error so cache file can be reset to empty.
 			throw new Error(`Decryption failed with error: ${ex}`);
 		}
+	}
+
+	public async clearEncryptionKeys(): Promise<void> {
+		await this.deleteEncryptionKey(this._ivCredId);
+		await this.deleteEncryptionKey(this._keyCredId);
+		this._ivBuffer = undefined;
+		this._keyBuffer = undefined;
 	}
 
 	protected async readEncryptionKey(credentialId: string): Promise<string | undefined> {
