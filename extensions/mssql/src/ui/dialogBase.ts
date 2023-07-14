@@ -27,7 +27,6 @@ export const DefaultTableListItemEnabledStateGetter: TableListItemEnabledStateGe
 export const DefaultTableListItemValueGetter: TableListItemValueGetter<any> = (item: any) => [item?.toString() ?? ''];
 export const DefaultTableListItemComparer: TableListItemComparer<any> = (item1: any, item2: any) => item1 === item2;
 
-
 export abstract class DialogBase<DialogResult> {
 	protected readonly disposables: vscode.Disposable[] = [];
 	protected readonly dialogObject: azdata.window.Dialog;
@@ -287,7 +286,7 @@ export abstract class DialogBase<DialogResult> {
 		return this.createButtonContainer([addButton, removeButton]);
 	}
 
-	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
+	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, editable?: boolean, strictSelection?: boolean, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
 		// Automatically add an empty item to the beginning of the list if the current value is not specified.
 		// This is needed when no meaningful default value can be provided.
 		// Create a new array so that the original array isn't modified.
@@ -301,7 +300,9 @@ export abstract class DialogBase<DialogResult> {
 			values: dropdownValues,
 			value: value,
 			width: width,
-			enabled: enabled
+			enabled: enabled,
+			editable: editable,
+			strictSelection: strictSelection
 		}).component();
 		this.disposables.push(dropdown.onValueChanged(async () => {
 			await handler(<string>dropdown.value!);

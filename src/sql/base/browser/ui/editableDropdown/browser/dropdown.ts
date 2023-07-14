@@ -418,4 +418,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	public get options(): IDropdownOptions {
 		return this._options;
 	}
+
+	public set strictSelection(val: boolean | undefined) {
+		this._options.strictSelection = val;
+	}
 }
