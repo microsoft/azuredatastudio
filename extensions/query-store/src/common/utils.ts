@@ -57,46 +57,20 @@ export function createTwoComponentFlexContainer(view: azdata.ModelView, firstCom
 /**
  * Creates a vertical splitview
  * @param view
- * @param topComponent
- * @param bottomComponent
- * @param splitViewHeight
+ * @param firstComponent
+ * @param secondComponent
+ * @param orientation orientation of the split view - horizontal or vertical
  * @returns Vertical SplitViewContainer with the top and bottom components
  */
-export function createVerticalSplitView(view: azdata.ModelView, topComponent: azdata.Component, bottomComponent: azdata.Component, splitViewHeight: number): azdata.SplitViewContainer {
-	// TODO: figure out why the horizontal spliview isn't working
-
+export function createSplitView(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, orientation: string): azdata.SplitViewContainer {
 	const splitview = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().component();
-	splitview.addItem(topComponent);
-	splitview.addItem(bottomComponent);
+	splitview.addItem(firstComponent);
+	splitview.addItem(secondComponent);
 
 	splitview.setLayout({
-		orientation: 'vertical',
-		splitViewHeight: splitViewHeight
+		orientation: orientation,
+		splitViewSize: undefined // setting this to udnefined will default the splitview size to use the model view container's size
 	});
-
-	return splitview;
-}
-
-/**
- * Creates a horizontal splitview
- * @param view
- * @param leftComponent
- * @param rightComponent
- * @param splitViewHeight
- * @returns Horizontal SplitViewContainer with the left and right components
- */
-export function createHorizontalSplitView(view: azdata.ModelView, leftComponent: azdata.Component, rightComponent: azdata.Component, splitViewHeight: number): azdata.SplitViewContainer {
-	// TODO: figure out why the horizontal spliview isn't working
-
-	const splitview = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().component();
-
-	splitview.setLayout({
-		orientation: 'horizontal',
-		splitViewHeight: splitViewHeight
-	});
-
-	splitview.addItem(leftComponent);
-	splitview.addItem(rightComponent);
 
 	return splitview;
 }
