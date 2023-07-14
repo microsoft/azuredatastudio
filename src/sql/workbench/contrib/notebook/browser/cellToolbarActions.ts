@@ -358,7 +358,7 @@ export class ToggleAddCellActionViewItem extends DropdownMenuActionViewItem {
 			{
 				actionRunner,
 				classNames: ToggleAddCellDropdownAction.ICON,
-				anchorAlignmentProvider: () => AnchorAlignment.RIGHT
+				anchorAlignmentProvider: () => AnchorAlignment.LEFT
 			});
 		this.setActionContext(cellContext);
 	}
@@ -392,7 +392,7 @@ export class CellToggleMoreActionViewItem extends DropdownMenuActionViewItem {
 			{
 				actionRunner,
 				classNames: CellToggleMoreAction.ICON,
-				anchorAlignmentProvider: () => AnchorAlignment.RIGHT
+				anchorAlignmentProvider: () => AnchorAlignment.LEFT
 			});
 		this.setActionContext(this._cellContext);
 		this._actions = [
