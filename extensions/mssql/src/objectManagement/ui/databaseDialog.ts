@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
@@ -17,6 +17,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	// Database Properties tabs
 	private generalTab: azdata.Tab;
 	private optionsTab: azdata.Tab;
+	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
 
 	// Database properties options
@@ -49,6 +50,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private databaseReadOnlyInput!: azdata.CheckBoxComponent;
 	private encryptionEnabledInput: azdata.CheckBoxComponent;
 	private restrictAccessInput!: azdata.DropDownComponent;
+	// Database Scoped Configurations Tab
+	private readonly dscTabId: string = 'dscDatabaseId';
+	private dscTabSectionsContainer: azdata.Component[] = [];
+	private dscTable: azdata.TableComponent;
 
 	private activeTabId: string;
 
@@ -68,6 +73,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				break;
 			case this.optionsTabId:
 				helpUrl = DatabaseOptionsPropertiesDocUrl;
+				break;
+			case this.dscTabId:
+				helpUrl = DatabaseScopedConfigurationPropertiesDocUrl;
+				break;
 			default:
 				break;
 		}
@@ -99,6 +108,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			this.initializeStateSection();
 
+			//Initilaize DSC Tab section
+			this.initializeDatabaseScopedConfigurationSection();
+
 			// Initilaize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
@@ -116,8 +128,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				content: this.createGroup('', this.optionsTabSectionsContainer, false)
 			};
 
+			this.dscTab = {
+				title: localizedConstants.DatabaseScopedConfigurationTabHeader,
+				id: this.dscTabId,
+				content: this.createGroup('', this.dscTabSectionsContainer, false)
+			}
+
 			// Initilaize tab group with tabbed panel
-			const propertiesTabGroup = { title: '', tabs: [this.generalTab, this.optionsTab] };
+			const propertiesTabGroup = { title: '', tabs: [this.generalTab, this.optionsTab, this.dscTab] };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
 				.withProps({
@@ -399,6 +417,41 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		this.optionsTabSectionsContainer.push(stateSection);
 	}
 	//#endregion
+
+	//#region Database Properties - Data Scoped configurations Tab
+	private initializeDatabaseScopedConfigurationSection(): void {
+		// Collation
+		this.dscTable = this.modelView.modelBuilder.table().withProps({
+			columns:
+				[{
+					type: azdata.ColumnType.text,
+					value: localizedConstants.DatabaseScopedOptionsColumnHeader
+				}, {
+					type: azdata.ColumnType.checkBox,
+					value: localizedConstants.IsDefaultValueColumnHeader,
+					width: 84
+				}, {
+					type: azdata.ColumnType.text,
+					value: localizedConstants.ValueForPrimaryColumnHeader,
+					width: 92
+				}, {
+					type: azdata.ColumnType.text,
+					value: localizedConstants.ValueForSecondaryColumnHeader,
+					width: 106
+				}],
+			data: this.objectInfo.databaseScopedConfigurations.map(metaData => {
+				return [
+					metaData.name,
+					metaData.isDefaultValue,
+					metaData.valueForPrimary,
+					metaData.valueForSecondary]
+			}),
+			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, 15),
+			width: DefaultTableWidth
+		}).component();
+
+		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable], true));
+	}
 
 	private initializeConfigureSLOSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];

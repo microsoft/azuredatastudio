@@ -454,6 +454,7 @@ export interface Database extends ObjectManagement.SqlObject {
 	databaseReadOnly?: boolean;
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
+	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -470,6 +471,13 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureMaxSizes: AzureEditionDetails[];
 	pageVerifyOptions: string[];
 	restrictAccessOptions: string[];
+}
+
+export interface DatabaseScopedConfigurationsInfo {
+	name: string;
+	isDefaultValue: boolean;
+	valueForPrimary: string;
+	valueForSecondary: string;
 }
 
 export interface AzureEditionDetails {

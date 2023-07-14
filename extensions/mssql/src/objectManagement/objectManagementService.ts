@@ -458,6 +458,12 @@ export class TestObjectManagementService implements IObjectManagementService {
 				azureServiceLevelObjective: ''
 			}
 		} : <DatabaseViewInfo>{
+			collationNames: ['Latin1_General_100_CI_AS_KS_WS', 'Latin1_General_100_CI_AS_KS_WS_SC'],
+			compatibilityLevels: ['SQL Server 2008', 'SQL Server 2012', 'SQL Server 2014', 'SQL Server 2016', 'SQL Server 2017', 'SQL Server 2019'],
+			containmentTypes: ['NONE', 'PARTIAL'],
+			restrictAccessOptions: ['MULTI_USER', 'RESTRICTED_USER', 'SINGLE_USER'],
+			pageVerifyOptions: ['CHECKSUM', 'NONE', 'TORN_PAGE_DETECTION'],
+			recoveryModels: ['FULL', 'SIMPLE', 'BULK_LOGGED'],
 			objectInfo: {
 				name: 'Database Properties1',
 				collationName: 'Latin1_General_100_CI_AS_KS_WS',
@@ -482,8 +488,19 @@ export class TestObjectManagementService implements IObjectManagementService {
 				databaseReadOnly: true,
 				encryptionEnabled: false,
 				restrictAccess: 'SINGLE_USER',
+				databaseScopedConfigurations: [
+					{ name: 'MAXDOP', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'legacy_cardinality_estimation', isDefaultValue: false, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'parameter_sniffing', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'query_optimizer_hotfixes', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'identity_cache', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'interleaved_execution_tvf', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'batch_mode_memory_grant_feedback', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'batch_mode_adaptive_joins', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'tsql_scalar_udf_inlining', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' }
+				]
 			}
-		};
+		}
 	}
 
 	private delayAndResolve(obj?: any): Promise<any> {
