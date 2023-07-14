@@ -200,3 +200,17 @@ export function getProxyEnabledHttpClient(): HttpClient {
 
 	return new HttpClient(proxy, agentOptions);
 }
+
+/* Display notification with button to reload
+ * return true if button clicked
+ * return false if button not clicked
+ */
+export async function displayReloadAds(message: string): Promise<boolean> {
+	const result = await vscode.window.showInformationMessage(message, loc.reloadChoice);
+	if (result === loc.reloadChoice) {
+		await vscode.commands.executeCommand('workbench.action.reloadWindow');
+		return true;
+	} else {
+		return false;
+	}
+}
