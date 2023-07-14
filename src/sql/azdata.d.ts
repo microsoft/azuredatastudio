@@ -3386,10 +3386,10 @@ declare module 'azdata' {
 		orientation: string;
 
 		/**
-		 * SplitView size. Height if the orientation is vertical, width if the orientation is horizontal
-		 * If undefined, the size of the model view container is used
+		 * SplitView height
+		 * @deprecated use splitViewSize instead
 		 */
-		splitViewSize?: number | string;
+		splitViewHeight: number | string;
 	}
 
 	export interface FlexItemLayout {

@@ -69,7 +69,7 @@ export function createSplitView(view: azdata.ModelView, firstComponent: azdata.C
 
 	splitview.setLayout({
 		orientation: orientation,
-		splitViewSize: undefined // setting this to udnefined will default the splitview size to use the model view container's size
+		splitViewSize: undefined // setting this to undefined will default the splitview size to use the model view container's size
 	});
 
 	return splitview;
