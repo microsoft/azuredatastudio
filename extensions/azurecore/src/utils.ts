@@ -166,7 +166,7 @@ export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promis
 	await configuration.update(constants.Filter, tenantIgnoreList, vscode.ConfigurationTarget.Global);
 }
 
-export function updateProviderSettings(defaultSettings: ProviderSettings[]): ProviderSettings[] {
+export function updateCustomCloudProviderSettings(defaultSettings: ProviderSettings[]): ProviderSettings[] {
 	let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(constants.AzureSection).get(constants.ProviderSettingsJson) as ProviderSettingsJson[];
 	vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
 		const impactProvider = changeEvent.affectsConfiguration(constants.ProviderSettingsJsonSection);
@@ -178,7 +178,7 @@ export function updateProviderSettings(defaultSettings: ProviderSettings[]): Pro
 		try {
 			for (let cloudProvider of providerSettingsJson) {
 				// build provider setting
-				let newSettings = buildProviderSettings(cloudProvider);
+				let newSettings = buildCustomCloudProviderSettings(cloudProvider);
 				defaultSettings.push(newSettings)
 				Logger.info(`Custom provider settings loaded for ${cloudProvider.settings.metadata.displayName}`);
 			}
@@ -193,7 +193,7 @@ export function updateProviderSettings(defaultSettings: ProviderSettings[]): Pro
 	return defaultSettings;
 }
 
-function buildProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
+function buildCustomCloudProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
 	// build provider setting
 	let newSettings: ProviderSettings = {
 		configKey: 'enable' + cloudProvider.settings.metadata.id,

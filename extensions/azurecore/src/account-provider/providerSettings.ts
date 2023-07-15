@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 import { ProviderSettings, SettingIds } from './interfaces';
 import { AzureResource } from 'azdata';
-import { updateProviderSettings } from '../utils';
+import { updateCustomCloudProviderSettings } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -234,5 +234,5 @@ const chinaAzureSettings: ProviderSettings = {
 };
 
 let allSettings = [publicAzureSettings, usGovAzureSettings, chinaAzureSettings];
-allSettings = updateProviderSettings(allSettings);
+allSettings = updateCustomCloudProviderSettings(allSettings);
 export default allSettings;
