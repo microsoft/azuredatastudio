@@ -16,7 +16,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Event } from 'vs/base/common/event';
-import { LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
+import { LayoutRequestParams } from 'sql/workbench/contrib/dialog/browser/dialogContainer.component';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';

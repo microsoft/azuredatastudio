@@ -216,7 +216,7 @@ export = new class implements eslint.Rule.RuleModule {
 		if (importPath[0] === '.') {
 			const relativeFilename = getRelativeFilename(context);
 			importPath = path.posix.join(path.posix.dirname(relativeFilename), importPath);
-			if (/^src\/{vs,sql}\//.test(importPath)) {
+			if (/^src\/(vs|sql)\//.test(importPath)) {
 				// resolve using AMD base url
 				importPath = importPath.substring('src/'.length);
 			}

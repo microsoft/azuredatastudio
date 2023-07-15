@@ -9,18 +9,18 @@ import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef 
 import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { WizardNavigation } from 'sql/workbench/services/dialog/browser/wizardNavigation.component';
+import { WizardNavigation } from 'sql/workbench/contrib/dialog/browser/wizardNavigation.component';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
-import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editableDropdown.component';
+import { EditableDropDown } from 'sql/platform/editableDropdown/browser/editableDropdown.component';
 import { QueryModelViewTabContainer } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTabContainer.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
-import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
-import { InputBox } from 'sql/platform/browser/inputbox/inputBox.component';
+import { SelectBox } from 'sql/platform/selectBox/browser/selectBox.component';
+import { InputBox } from 'sql/platform/inputBox/browser/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';

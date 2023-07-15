@@ -7,8 +7,8 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { MainThreadModelViewDialogShape, ExtHostModelViewDialogShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
-import { CustomDialogService, DefaultWizardOptions, DefaultDialogOptions } from 'sql/workbench/services/dialog/browser/customDialogService';
+import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/workbench/contrib/dialog/common/dialogTypes';
+import { CustomDialogService, DefaultWizardOptions, DefaultDialogOptions } from 'sql/workbench/contrib/dialog/browser/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails, IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/browser/modelComponents/modelViewInput';
 

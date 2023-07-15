@@ -10,7 +10,7 @@ import BarChart, { IBarChartConfig } from './barChart.component';
 import { defaultChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { DataType, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { DataType, ChartType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 

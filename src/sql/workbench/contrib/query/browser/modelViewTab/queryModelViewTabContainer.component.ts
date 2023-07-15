@@ -6,7 +6,7 @@
 import 'vs/css!./media/dialogModal';
 import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
-import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
+import { DialogPane } from 'sql/workbench/contrib/dialog/browser/dialogPane';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';

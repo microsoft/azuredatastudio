@@ -12,7 +12,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
+import * as BackupConstants from 'sql/workbench/common/restore/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
