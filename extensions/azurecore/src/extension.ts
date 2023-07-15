@@ -293,7 +293,7 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
 			void vscode.window.showInformationMessage(loc.deprecatedOption);
 		}
-		await utils.displayReloadAds('authenticationLibrary');
+		await utils.displayReloadAds(loc.reloadPrompt);
 	}
 }
 

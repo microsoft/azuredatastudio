@@ -114,8 +114,8 @@ export class FileBrowserDialog extends Modal {
 		fileValidationServiceType: string,
 	): void {
 		this._viewModel.initialize(ownerUri, expandPath, fileFilters, fileValidationServiceType);
-		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters);
-		this._fileFilterSelectBox.select(0);
+		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
+		this._fileFilterSelectBox.setOptions(this._viewModel.formattedFileFilters, 0);
 		this._filePathInputBox.value = expandPath;
 		this._isFolderSelected = true;
 		this.enableOkButton();
@@ -125,7 +125,6 @@ export class FileBrowserDialog extends Modal {
 		this._fileBrowserTreeView = this._instantiationService.createInstance(FileBrowserTreeView);
 		this._fileBrowserTreeView.setOnClickedCallback((arg) => this.onClicked(arg));
 		this._fileBrowserTreeView.setOnDoubleClickedCallback((arg) => this.onDoubleClicked(arg));
-		this._viewModel.openFileBrowser(0, false).catch(err => onUnexpectedError(err));
 	}
 
 	/* enter key */

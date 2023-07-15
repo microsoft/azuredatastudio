@@ -19,6 +19,7 @@ import { IConnectionDialogService } from 'sql/workbench/services/connection/comm
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileService } from 'vs/platform/files/common/files';
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',
@@ -107,9 +108,10 @@ CommandsRegistry.registerCommand({
 		const editorService: IEditorService = accessor.get(IEditorService);
 		const fileDialogService: IFileDialogService = accessor.get(IFileDialogService);
 		const profilerService: IProfilerService = accessor.get(IProfilerService);
-		const instantiationService: IInstantiationService = accessor.get(IInstantiationService)
+		const instantiationService: IInstantiationService = accessor.get(IInstantiationService);
+		const fileService: IFileService = accessor.get(IFileService);
 
-		const result = await profilerService.openFile(fileDialogService, editorService, instantiationService);
+		const result = await profilerService.openFile(fileDialogService, editorService, instantiationService, fileService);
 
 		return result;
 	}

@@ -66,6 +66,7 @@ export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 export function reloadPrompt(sectionName: string): string {
 	return localize('azurecore.reloadPrompt', "{0} setting changed, please reload Azure Data Studio.", sectionName);
 }
+export const reloadPromptCacheClear = localize('azurecore.reloadPromptCacheClear', "Token cache has been cleared successfully, please reload Azure Data Studio.");
 export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
 
 export const deprecatedOption = localize('azurecore.deprecated', "Warning: ADAL has been deprecated, and is scheduled to be removed in the next release. Please use MSAL instead.");

@@ -884,6 +884,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// unlink both cache files
 		await this.msalCacheProvider.unlinkMsalCache();
 		await this.msalCacheProvider.unlinkLocalCache();
+
+		// Delete Encryption Keys
+		await this.msalCacheProvider.clearCacheEncryptionKeys();
 	}
 
 	public async deleteAllCacheAdal(): Promise<void> {

@@ -11,6 +11,7 @@ import * as azdata from 'azdata';
 import { INewProfilerState } from 'sql/workbench/common/editor/profiler/profilerState';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileService } from 'vs/platform/files/common/files';
 
 const PROFILER_SERVICE_ID = 'profilerService';
 export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVICE_ID);
@@ -148,7 +149,7 @@ export interface IProfilerService {
 	 * @param editorService service to open profiler editor
 	 * @param instantiationService service to create profiler instance
 	 */
-	openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<boolean>;
+	openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService, fileService: IFileService): Promise<boolean>;
 }
 
 export enum ProfilingSessionType {
