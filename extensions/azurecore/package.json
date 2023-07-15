@@ -164,13 +164,18 @@
                         },
                         "endpoints": {
                           "type": "object",
-                          "required": ["host","scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource"],
+                          "required": ["host", "clientId", "scopes", "sqlResource", "microsoftResource", "armResource", "graphResource", "azureStorageResource"],
                           "properties": {
                             "type": "object",
                             "host": {
                               "type": "string",
                               "default": "https://login.microsoftonline.com/",
                               "description": "%config.providerSettings.endpoints.host%"
+                            },
+                            "clientId": {
+                              "type": "string",
+                              "default": "a69788c6-1d43-44ed-9ca3-b83e194da255",
+                              "description": "%config.providerSettings.endpoints.clientId%"
                             },
                             "microsoftResource": {
                               "type": "string",

@@ -202,7 +202,7 @@ function buildCustomCloudProviderSettings(cloudProvider: ProviderSettingsJson): 
 			id: cloudProvider.settings.metadata.id,
 			settings: {
 				host: cloudProvider.settings.metadata.endpoints.host,
-				clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+				clientId: cloudProvider.settings.metadata.endpoints.clientId,
 				microsoftResource: {
 					id: SettingIds.marm,
 					endpoint: cloudProvider.settings.metadata.endpoints.microsoftResource,

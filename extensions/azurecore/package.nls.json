@@ -35,6 +35,7 @@
 	"config.providerSettingsMetadata": "Cloud Display Name",
 	"config.providerSettingsId": "Cloud ID",
 	"config.providerSettings.endpoints.host": "Host Endpoint",
+	"config.providerSettings.endpoints.clientId": "Client ID for Azure Data Studio",
 	"config.providerSettings.endpoints.microsoftResource": "Microsoft Resource Endpoint",
 	"config.providerSettings.endpoints.graphResource": "Graph Resource Endpoint",
 	"config.providerSettings.endpoints.msGraphResource": "Microsoft Graph Resource Endpoint",
