@@ -149,7 +149,7 @@ class ConnectionProfileTemplate extends Disposable {
 		this._label.element.setLabel(labelText, '', {
 			matches: createMatches(filterData)
 		});
-		this._root.title = labelText;
+		this._root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(element.serverInfo) : element.serverInfo;
 		const actionProvider = this._objectExplorerService.getServerTreeView().treeActionProvider;
 		if (!this._isCompact) {
 			const tree = this._objectExplorerService.getServerTreeView().tree;
