@@ -47,6 +47,8 @@ export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', 
 export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
 export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
 export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
+export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
+export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
