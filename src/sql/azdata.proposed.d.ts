@@ -2043,6 +2043,6 @@ declare module 'azdata' {
 		 * SplitView size. Height if the orientation is vertical, width if the orientation is horizontal
 		 * If undefined, the size of the model view container is used
 		 */
-		splitViewSize?: number | string;
+		splitViewSize?: number | string | undefined;
 	}
 }
