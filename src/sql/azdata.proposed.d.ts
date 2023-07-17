@@ -2037,4 +2037,12 @@ declare module 'azdata' {
 		RemoteSession = 0,
 		LocalFile = 1
 	}
+
+	export interface SplitViewLayout extends FlexLayout {
+		/**
+		 * SplitView size. Height if the orientation is vertical, width if the orientation is horizontal
+		 * If undefined, the size of the model view container is used
+		 */
+		splitViewSize?: number | string | undefined;
+	}
 }
