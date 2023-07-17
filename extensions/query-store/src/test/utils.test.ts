@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as should from 'should';
-import { createOneComponentFlexContainer, createTwoComponentFlexContainer, createVerticalSplitView } from '../common/utils';
+import { createOneComponentFlexContainer, createTwoComponentFlexContainer, createSplitView } from '../common/utils';
 import { TestContext, createViewContext } from './testUtils';
 
 let testContext: TestContext;
@@ -29,8 +29,8 @@ describe('Test to verify flex container creation util function', () => {
 		should(flexContainer.valid).be.true();
 	});
 
-	it('Should create a component as expected with createVerticalSplitView', () => {
-		let splitViewContainer: azdata.SplitViewContainer = createVerticalSplitView(testContext.view, testContext.component, testContext.component, 100);
+	it('Should create a component as expected with createSplitView', () => {
+		let splitViewContainer: azdata.SplitViewContainer = createSplitView(testContext.view, testContext.component, testContext.component, 'vertical');
 		should(splitViewContainer.valid).be.true();
 	});
 });
