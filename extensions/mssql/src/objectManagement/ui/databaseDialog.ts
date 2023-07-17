@@ -427,34 +427,48 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	//#region Database Properties - Data Scoped configurations Tab
 	private initializeDatabaseScopedConfigurationSection(): void {
-		// Collation
+		const isValueDefaultAvailable = this.objectInfo.databaseScopedConfigurations.length > 0 && this.objectInfo.databaseScopedConfigurations[0].isDefaultValue !== null;
+		const dscNameColumn: azdata.TableColumn = {
+			type: azdata.ColumnType.text,
+			value: localizedConstants.DatabaseScopedOptionsColumnHeader,
+			width: isValueDefaultAvailable ? 169 : 200
+		};
+		const isValueDefaultColumn: azdata.TableColumn = {
+			type: azdata.ColumnType.checkBox,
+			value: localizedConstants.IsDefaultValueColumnHeader,
+			width: 84
+		};
+		const primaryValueColumn: azdata.TableColumn = {
+			type: azdata.ColumnType.text,
+			value: localizedConstants.ValueForPrimaryColumnHeader,
+			width: isValueDefaultAvailable ? 92 : 125
+		};
+		const secondaryValueColumn: azdata.TableColumn = {
+			type: azdata.ColumnType.text,
+			value: localizedConstants.ValueForSecondaryColumnHeader,
+			width: isValueDefaultAvailable ? 106 : 125
+		};
+		let dscTableColumns: azdata.TableColumn[] = [dscNameColumn, isValueDefaultColumn, primaryValueColumn, secondaryValueColumn];
+
+		// isDefaultValue property is not supported for all the database scoped configurations in case of SQL Server 2016 and below
+		if (!isValueDefaultAvailable) {
+			dscTableColumns = [dscNameColumn, primaryValueColumn, secondaryValueColumn]
+		}
 		this.dscTable = this.modelView.modelBuilder.table().withProps({
-			columns:
-				[{
-					type: azdata.ColumnType.text,
-					value: localizedConstants.DatabaseScopedOptionsColumnHeader
-				}, {
-					type: azdata.ColumnType.checkBox,
-					value: localizedConstants.IsDefaultValueColumnHeader,
-					width: 84
-				}, {
-					type: azdata.ColumnType.text,
-					value: localizedConstants.ValueForPrimaryColumnHeader,
-					width: 92
-				}, {
-					type: azdata.ColumnType.text,
-					value: localizedConstants.ValueForSecondaryColumnHeader,
-					width: 106
-				}],
+			columns: dscTableColumns,
 			data: this.objectInfo.databaseScopedConfigurations.map(metaData => {
-				return [
+				return isValueDefaultAvailable ? [
 					metaData.name,
 					metaData.isDefaultValue,
 					metaData.valueForPrimary,
-					metaData.valueForSecondary]
+					metaData.valueForSecondary] : [
+					metaData.name,
+					metaData.valueForPrimary,
+					metaData.valueForSecondary
+				]
 			}),
 			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, 15),
-			width: DefaultTableWidth
+			width: DefaultTableWidth + 10
 		}).component();
 
 		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable], true));

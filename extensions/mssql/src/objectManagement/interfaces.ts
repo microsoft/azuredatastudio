@@ -475,7 +475,7 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 
 export interface DatabaseScopedConfigurationsInfo {
 	name: string;
-	isDefaultValue: boolean;
+	isDefaultValue?: boolean;
 	valueForPrimary: string;
 	valueForSecondary: string;
 }
