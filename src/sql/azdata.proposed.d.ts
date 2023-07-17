@@ -1854,7 +1854,7 @@ declare module 'azdata' {
 
 	export interface DropDownProperties {
 		/**
-		 * Whether or not a options in the list must be selected or a "new" option can be set. Only applicable when 'editable' is true. Default false.
+		 * Whether or not an option in the list must be selected or a "new" option can be set. Only applicable when 'editable' is true. Default false.
 		 */
 		strictSelection?: boolean;
 	}
