@@ -40,7 +40,7 @@ import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/
 import { Schemas } from 'vs/base/common/network';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput'; // {{SQL CARBON EDIT}} - add type
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput'; // {{SQL CARBON EDIT}} - add type
 
 type CachedEditorInput = TextResourceEditorInput | IFileEditorInput | UntitledTextEditorInput;
 
