@@ -1534,13 +1534,14 @@ export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount
 
 export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "Certificates must be migrated before proceeding with the database migration otherwise a failure will occur. {0} about manually migrating TDE certificates.");
 
-export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.network.share.header.text', "Please enter a location where the SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.");
+export const TDE_WIZARD_ADS_CERTS_INFO = localize('sql.migration.tde.cert.network.info', "Please enter a network path where SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.");
 
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_LABEL = localize('sql.migration.tde.wizard.network.share.label', "Network path for certificate");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_PLACEHOLDER = localize('sql.migration.tde.wizard.network.share.placeholder', "Enter network path");
 export const TDE_WIZARD_CERTS_NETWORK_SHARE_INFO = localize('sql.migration.tde.wizard.network.share.info', "Network path where certificate will be placed.");
 
 export const TDE_MIGRATE_BUTTON = localize('sql.migration.tde.button.migrate', "Migrate certificates");
+export const TDE_WIZARD_CERT_MIGRATION_BUTTON_MUST_BE_CLICKED = localize('sql.migration.tde.cert.migration.info', "You must click the '{0}' button before proceeding to the next page of the wizard.", TDE_MIGRATE_BUTTON);
 
 
 export const STATE_CANCELED = localize('sql.migration.state.canceled', "Canceled");

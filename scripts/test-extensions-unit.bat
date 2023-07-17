@@ -38,6 +38,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					compile-extension:mssql^
 					compile-extension:notebook^
 					compile-extension:query-history^
+					compile-extension:query-store^
 					compile-extension:resource-deployment^
 					compile-extension:sql-bindings^
 					compile-extension:sql-database-projects
@@ -122,6 +123,11 @@ echo *******************************
 echo *** starting query-history tests ***
 echo *******************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\query-history --extensionTestsPath=%~dp0\..\extensions\query-history\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
+echo ********************************************
+echo *** starting query-store tests ***
+echo ********************************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\query-store --extensionTestsPath=%~dp0\..\extensions\query-store\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 echo ******************************************
 echo *** starting resource deployment tests ***
