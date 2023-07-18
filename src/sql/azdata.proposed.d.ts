@@ -508,6 +508,15 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
+
+		/**
+		 * Gets the formatted title of the connection profile for display
+		 * @param profile The connection profile we want to get the full display info for.
+		 * @param getOptionsOnly Provide if you only want to get the differing advanced options (for some titles).
+		 * @param includeGroupName Provide if you want to include the groupName as well (in areas that do not display the groupName).
+		 * @returns The title formatted with server info in front, with non default options at the end.
+		 */
+		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string>;
 	}
 
 	/*

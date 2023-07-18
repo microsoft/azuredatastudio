@@ -134,7 +134,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		this.options[name] = value;
 	}
 
-	private getServerInfo() {
+	public getServerInfo() {
 		let title = '';
 		if (this.serverCapabilities) {
 			title = this.serverName;
@@ -169,7 +169,7 @@ export class ProviderConnectionInfo implements azdata.ConnectionInfo {
 		return label;
 	}
 
-	private hasLoaded(): boolean {
+	public hasLoaded(): boolean {
 		return Object.keys(this.capabilitiesService.providers).length > 0;
 	}
 
