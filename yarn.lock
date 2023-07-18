@@ -10493,10 +10493,9 @@ xtend@~2.1.1:
   dependencies:
     object-keys "~0.4.0"
 
-xterm-addon-canvas@0.4.0-beta.14:
-  version "0.4.0-beta.14"
-  resolved "https://registry.yarnpkg.com/xterm-addon-canvas/-/xterm-addon-canvas-0.4.0-beta.14.tgz#ed8b5d2a839608ae5c9c73d1fa11f6ffb5f92be7"
-  integrity sha512-FBlHGuSjQMuujwOBhuoOO16iLHgeQ9ucOApsTS+Hf0ZpOnFVQX3JQDYAWlxRIpfDa/HiEGYPhAgFjqqFMtXL4Q==
+"xterm-addon-canvas@github:lewis-sanchez/xterm.js#0.4.2":
+  version "0.4.2"
+  resolved "https://codeload.github.com/lewis-sanchez/xterm.js/tar.gz/ec9cfa65116e378f54cbbc01612c83b13521afca"
 
 xterm-addon-image@0.4.0:
   version "0.4.0"
