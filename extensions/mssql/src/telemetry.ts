@@ -11,11 +11,16 @@ import * as Constants from './constants';
 import * as nls from 'vscode-nls';
 import { ServerInfo } from 'azdata';
 
+interface IPackageInfo {
+	name: string;
+	version: string;
+	aiKey: string;
+}
 
 const localize = nls.loadMessageBundle();
 const viewKnownIssuesAction = localize('viewKnownIssuesText', "View Known Issues");
 
-const packageInfo = vscode.extensions.getExtension(Constants.packageName)?.packageJSON;
+const packageInfo = vscode.extensions.getExtension(Constants.packageName)?.packageJSON as IPackageInfo | undefined;
 export const TelemetryReporter = new AdsTelemetryReporter<string, string>(packageInfo?.name, packageInfo?.version, packageInfo?.aiKey);
 
 /**
@@ -78,7 +83,8 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 }
 
 export enum TelemetryViews {
-	MssqlObjectExplorer = 'mssqlObjectExplorer'
+	MssqlObjectExplorer = 'mssqlObjectExplorer',
+	MssqlConnections = 'mssqlConnections'
 }
 
 export enum TelemetryActions {
@@ -88,4 +94,7 @@ export enum TelemetryActions {
 	DisableGroupBySchemaContextMenu = 'objectExplorerDisableGroupBySchemaContextMenu',
 	EnableGroupByServerViewTitleAction = 'objectExplorerEnableGroupByServerViewTitleAction',
 	DisableGroupByServerViewTitleAction = 'objectExplorerDisableGroupByServerViewTitleAction',
+	EnableFeatureAsyncParallelProcessing = 'enableFeatureAsyncParallelProcessing',
+	EnableFeatureSqlAuthenticationProvider = 'enableFeatureSqlAuthenticationProvider',
+	EnableFeatureConnectionPooling = 'enableFeatureConnectionPooling',
 }

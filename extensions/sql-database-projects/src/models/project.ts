@@ -838,8 +838,9 @@ export class Project implements ISqlProject {
 			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, referenceType, settings.databaseVariableLiteralValue);
 		} else {
 			systemDb = <unknown>settings.systemDb as vscodeMssql.SystemDatabase;
+			referenceType = settings.systemDbReferenceType as vscodeMssql.SystemDbReferenceType;
 			sqlProjService = this.sqlProjService as vscodeMssql.ISqlProjectsService;
-			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, settings.databaseVariableLiteralValue);
+			result = await sqlProjService.addSystemDatabaseReference(this.projectFilePath, systemDb, settings.suppressMissingDependenciesErrors, referenceType, settings.databaseVariableLiteralValue);
 		}
 
 		if (!result.success && result.errorMessage) {

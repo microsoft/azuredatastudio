@@ -20,6 +20,7 @@ const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
+const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
 /**
@@ -131,6 +132,10 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:parallelMessageProcessing` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
@@ -140,6 +145,10 @@ export function getParallelMessageProcessingConfig(): boolean {
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
+/**
+ * Retrieves configuration `mssql:enableSqlAuthenticationProvider` from settings file.
+ * @returns true if setting is enabled in ADS, false otherwise.
+ */
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
@@ -147,6 +156,21 @@ export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	}
 	else {
 		return true;
+	}
+}
+
+/**
+ * Retrieves configuration `mssql:enableConnectionPooling` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
+export function getEnableConnectionPoolingConfig(): boolean {
+	const config = getConfiguration();
+	if (config) {
+		const setting = config.inspect(enableConnectionPoolingConfig);
+		return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[enableConnectionPoolingConfig];
+	}
+	else {
+		return true; // enabled by default
 	}
 }
 
@@ -183,7 +207,7 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 
 export function ensure(target: { [key: string]: any }, key: string): any {
 	if (target[key] === void 0) {
-		target[key] = {} as any;
+		target[key] = {};
 	}
 	return target[key];
 }
@@ -201,7 +225,7 @@ export function getErrorMessage(error: Error | any, removeHeader: boolean = fals
 	if (error instanceof Error) {
 		errorMessage = error.message;
 	} else if (error.responseText) {
-		errorMessage = error.responseText;
+		errorMessage = error.responseText as string;
 		if (error.status) {
 			errorMessage += ` (${error.status})`;
 		}
@@ -243,9 +267,9 @@ export function isValidNumber(maybeNumber: any) {
  * Helper to log messages to the developer console if enabled
  * @param msg Message to log to the console
  */
-export function logDebug(msg: any): void {
+export function logDebug(msg: unknown): void {
 	let config = vscode.workspace.getConfiguration(extensionConfigSectionName);
-	let logDebugInfo = config[configLogDebugInfo];
+	let logDebugInfo = !!config[configLogDebugInfo];
 	if (logDebugInfo === true) {
 		let currentTime = new Date().toLocaleTimeString();
 		let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';

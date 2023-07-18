@@ -41,7 +41,7 @@ const USER_SELECT_CLASS = 'actionselect';
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
-	@ViewChild('preview', { read: ElementRef }) override output: ElementRef;
+	@ViewChild('preview', { read: ElementRef }) protected override output: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
 
 	@Input() cellModel: ICellModel;

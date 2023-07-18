@@ -170,27 +170,27 @@ Do you wish to proceed?</source>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-      <source xml:lang="en">Log Analytics workspace</source>
+      <source xml:lang="en">Log Analytics workspaces</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel">
-      <source xml:lang="en">CosmosDB for Mongo</source>
+      <source xml:lang="en">Azure CosmosDB for MongoDB</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-      <source xml:lang="en">SQL database</source>
+      <source xml:lang="en">SQL databases</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-      <source xml:lang="en">SQL server</source>
+      <source xml:lang="en">SQL servers</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.KustoContainerLabel">
-      <source xml:lang="en">Azure Data Explorer Cluster</source>
+      <source xml:lang="en">Azure Data Explorer Clusters</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
@@ -200,7 +200,7 @@ Do you wish to proceed?</source>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
-      <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
+      <source xml:lang="en">PostgreSQL servers – Azure Arc</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
@@ -215,12 +215,12 @@ Do you wish to proceed?</source>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
-      <source xml:lang="en">Azure SQL DB managed instance</source>
+      <source xml:lang="en">SQL managed instances</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
-      <source xml:lang="en">SQL managed instance – Azure Arc</source>
+      <source xml:lang="en">SQL managed instances - Azure Arc</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext"><body>
@@ -284,11 +284,8 @@ Do you wish to proceed?</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
-      <source xml:lang="en">No Subscriptions found.</source>
-    </trans-unit>
-    <trans-unit id="azure.unableToAccessSubscription">
-      <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
+    <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+      <source xml:lang="en">No Tenants found.</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/connectionDialogTreeProvider" source-language="en" datatype="plaintext"><body>
@@ -303,28 +300,23 @@ Do you wish to proceed?</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.flatAccountTreeNode.noResourcesLabel">
-      <source xml:lang="en">No Resources found.</source>
+    <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+      <source xml:lang="en">No Tenants found.</source>
     </trans-unit>
-    <trans-unit id="azure.resource.throttleerror">
-      <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
-    </trans-unit>
-    <trans-unit id="azure.resource.tree.accountTreeNode.title">
-      <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
-      <note>{0} is the display name of the azure account
-{1} is the number of selected subscriptions in this account
-{2} is the number of total subscriptions in this account</note>
-    </trans-unit>
-    <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
-      <source xml:lang="en">{0} - Loading...</source>
-    </trans-unit>
-    <trans-unit id="azure.resource.tree.loadresourceerror">
-      <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
+</body></file>
+  <file original="extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+      <source xml:lang="en">No Subscriptions found.</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
       <source xml:lang="en">No Resources found.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/azurecore/dist/azureResource/tree/tenantTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+      <source xml:lang="en">No Subscriptions found.</source>
     </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" datatype="plaintext"><body>
@@ -609,6 +601,9 @@ Do you wish to proceed?</source>
     </trans-unit>
     <trans-unit id="azure.resource.selectsubscriptions.title">
       <source xml:lang="en">Select Subscriptions</source>
+    </trans-unit>
+    <trans-unit id="azure.resource.selecttenants.title">
+      <source xml:lang="en">Select Tenants</source>
     </trans-unit>
     <trans-unit id="azure.resource.signin.title">
       <source xml:lang="en">Azure: Sign In</source>

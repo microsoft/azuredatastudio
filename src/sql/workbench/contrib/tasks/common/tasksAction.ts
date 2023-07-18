@@ -59,7 +59,7 @@ export class ScriptAction extends Action {
 	public override async run(element: TaskNode): Promise<void> {
 		if (element instanceof TaskNode) {
 			if (element.script) {
-				await this._queryEditorService.newSqlEditor({ initalContent: element.script });
+				await this._queryEditorService.newSqlEditor({ initialContent: element.script });
 			}
 		}
 	}

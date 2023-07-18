@@ -6,6 +6,9 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import * as platform from 'vs/base/common/platform';
 
 import { CellRangeSelector, ICellRangeSelector } from 'sql/base/browser/ui/table/plugins/cellRangeSelector';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { convertJQueryKeyDownEvent } from 'sql/base/browser/dom';
 
 export interface ICellSelectionModelOptions {
 	cellRangeSelector?: any;
@@ -37,14 +40,14 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		if (this.options.cellRangeSelector) {
 			this.selector = this.options.cellRangeSelector;
 		} else {
-			// this is added by the noderequires above
+			// this is added by the node requires above
 			this.selector = new CellRangeSelector({ selectionCss: { 'border': '2px dashed grey' } });
 		}
 	}
 
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
-		this._handler.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(e as KeyboardEvent));
+		this._handler.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(convertJQueryKeyDownEvent(e)));
 		this._handler.subscribe(this.grid.onAfterKeyboardNavigation, (e: Event) => this.handleAfterKeyboardNavigationEvent());
 		this._handler.subscribe(this.grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleCellClick(e as MouseEvent, args));
 		this._handler.subscribe(this.grid.onHeaderClick, (e: DOMEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e as MouseEvent, args));
@@ -273,19 +276,12 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		this.grid.setActiveCell(newActiveCell.row, newActiveCell.cell);
 	}
 
-	private handleKeyDown(e: KeyboardEvent) {
-		/*
-		 * Key codes
-		 * 37 left
-		 * 38 up
-		 * 39 right
-		 * 40 down
-		 */
+	private handleKeyDown(e: StandardKeyboardEvent) {
 		let active = this.grid.getActiveCell();
 		let metaKey = e.ctrlKey || e.metaKey;
 
 		if (active && e.shiftKey && !metaKey && !e.altKey &&
-			(e.which === 37 || e.which === 39 || e.which === 38 || e.which === 40)) {
+			(e.keyCode === KeyCode.LeftArrow || e.keyCode === KeyCode.RightArrow || e.keyCode === KeyCode.UpArrow || e.keyCode === KeyCode.DownArrow)) {
 			let ranges = this.getSelectedRanges(), last: Slick.Range;
 
 			ranges = this.getSelectedRanges();
@@ -307,13 +303,13 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				dirRow = active.row === last.fromRow ? 1 : -1,
 				dirCell = active.cell === last.fromCell ? 1 : -1;
 
-			if (e.which === 37) {
+			if (e.keyCode === KeyCode.LeftArrow) {
 				dCell -= dirCell;
-			} else if (e.which === 39) {
+			} else if (e.keyCode === KeyCode.RightArrow) {
 				dCell += dirCell;
-			} else if (e.which === 38) {
+			} else if (e.keyCode === KeyCode.UpArrow) {
 				dRow -= dirRow;
-			} else if (e.which === 40) {
+			} else if (e.keyCode === KeyCode.DownArrow) {
 				dRow += dirRow;
 			}
 

@@ -119,7 +119,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		try {
 			this.updateState(this.valid, this.dirty, 'generateScript');
 			const script = await this._provider.generateScript(this.tableInfo);
-			this._queryEditorService.newSqlEditor({ initalContent: script });
+			this._queryEditorService.newSqlEditor({ initialContent: script });
 			this.updateState(this.valid, this.dirty);
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
 			generateScriptEvent.withAdditionalMeasurements({

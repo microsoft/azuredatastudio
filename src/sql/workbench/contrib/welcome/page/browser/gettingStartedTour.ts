@@ -7,16 +7,12 @@ import * as dom from 'vs/base/browser/dom';
 import 'vs/css!./gettingStartedTour';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { localize } from 'vs/nls';
-import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { registerThemingParticipant, ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { buttonBackground, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 import { Color } from 'vs/base/common/color';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -24,6 +20,10 @@ import { extensionsViewIcon } from 'vs/workbench/contrib/extensions/browser/exte
 import { settingsViewBarIcon } from 'vs/workbench/browser/parts/activitybar/activitybarPart';
 import { NotebooksViewIcon } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { ConnectionsViewIcon } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { ThemeIcon } from 'vs/base/common/themables';
+import { Action2, registerAction2 } from 'vs/platform/actions/common/actions';
+import { Categories } from 'vs/platform/action/common/actionCommonCategories';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const $ = dom.$;
 interface TourData {
@@ -60,43 +60,47 @@ const tourData: TourData[] = [
 const IS_OVERLAY_VISIBLE = new RawContextKey<boolean>('interfaceOverviewVisible', false);
 let guidedTour: GuidedTour;
 
-export class GuidedTourAction extends Action {
+export class GuidedTourAction extends Action2 {
 	public static readonly ID = 'workbench.action.createGuidedTour';
+	public static readonly ORG_LABEL = 'User Welcome Tour';
 	public static readonly LABEL = localize('guidedTour', "User Welcome Tour");
 
-	constructor(
-		id: string,
-		label: string,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
-	) {
-		super(id, label);
+	constructor() {
+		super({
+			id: GuidedTourAction.ID,
+			title: { value: GuidedTourAction.LABEL, original: GuidedTourAction.ORG_LABEL },
+			category: Categories.Help,
+			f1: true
+		});
 	}
 
-	public override run(): Promise<void> {
+	run(accessor: ServicesAccessor): void {
+		const instantiationService = accessor.get(IInstantiationService);
 		if (!guidedTour) {
-			guidedTour = this.instantiationService.createInstance(GuidedTour);
+			guidedTour = instantiationService.createInstance(GuidedTour);
 		}
 		guidedTour.create();
-		return Promise.resolve();
 	}
 }
 
-export class HideGuidedTourAction extends Action {
+export class HideGuidedTourAction extends Action2 {
 	public static readonly ID = 'workbench.action.hideGuidedTour';
+	public static readonly ORG_LABEL = 'Hide Welcome Tour';
 	public static readonly LABEL = localize('hideGuidedTour', "Hide Welcome Tour");
 
-	constructor(
-		id: string,
-		label: string
-	) {
-		super(id, label);
+	constructor() {
+		super({
+			id: HideGuidedTourAction.ID,
+			title: { value: HideGuidedTourAction.LABEL, original: HideGuidedTourAction.ORG_LABEL },
+			category: Categories.Help,
+			f1: true
+		});
 	}
 
-	public override run(): Promise<void> {
+	run(accessor: ServicesAccessor): void {
 		if (guidedTour) {
 			guidedTour.hide();
 		}
-		return Promise.resolve();
 	}
 }
 
@@ -178,7 +182,7 @@ export class GuidedTour extends Disposable {
 			headerTag.innerText = header;
 			bodyTag.innerText = body;
 			stepText.innerText = `${step} of ${tourData.length}`;
-			let button = new Button(btnContainer);
+			let button = new Button(btnContainer, defaultButtonStyles);
 			button.label = btnText;
 			btnContainer.appendChild(stepText);
 			flexContainer.appendChild(img);
@@ -319,11 +323,10 @@ export class GuidedTour extends Disposable {
 	}
 }
 
-Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions)
-	.registerWorkbenchAction(SyncActionDescriptor.create(GuidedTourAction, GuidedTourAction.ID, GuidedTourAction.LABEL), 'Help: Show Getting Started Guided Tour', localize('help', "Help"));
+registerAction2(GuidedTourAction);
 
-Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions)
-	.registerWorkbenchAction(SyncActionDescriptor.create(HideGuidedTourAction, HideGuidedTourAction.ID, HideGuidedTourAction.LABEL, { primary: KeyCode.Escape }, IS_OVERLAY_VISIBLE), 'Help: Hide Getting Started Guided Tour', localize('help', "Help"));
+registerAction2(HideGuidedTourAction);
+
 
 registerThemingParticipant((theme, collector) => {
 	const bodyTag = theme.getColor(buttonForeground);

@@ -19,12 +19,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ers.AzureMonitorContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Log Analytics workspace]]></Val>
+            <Val><![CDATA[Log Analytics workspaces]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Log Analytics 工作区]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Monitor Logs workspace]]></Val>
+              <Val><![CDATA[Log Analytics workspace]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -34,10 +34,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) viders.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[适用于 Mongo 的 CosmosDB]]></Val>
+              <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -46,12 +49,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) base.treeDataProvider.databaseContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL database]]></Val>
+            <Val><![CDATA[SQL databases]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 数据库]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Databases]]></Val>
+              <Val><![CDATA[SQL database]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -61,12 +64,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.databaseServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL server]]></Val>
+            <Val><![CDATA[SQL servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 服务器]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Servers]]></Val>
+              <Val><![CDATA[SQL server]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -76,10 +79,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) inerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Data Explorer Cluster]]></Val>
+            <Val><![CDATA[Azure Data Explorer Clusters]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure 数据资源管理器群集]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Azure Data Explorer Cluster]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -103,10 +109,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) rce.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            <Val><![CDATA[PostgreSQL servers – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[PostgreSQL 超大规模 – Azure Arc]]></Val>
+              <Val><![CDATA[PostgreSQL 服务器 –Azure Arc]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -142,12 +151,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) s.sqlInstanceContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure SQL DB managed instance]]></Val>
+            <Val><![CDATA[SQL managed instances]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Azure SQL DB 托管实例]]></Val>
+              <Val><![CDATA[SQL 托管实例]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Managed Instances]]></Val>
+              <Val><![CDATA[Azure SQL DB managed instance]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -157,10 +166,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.sqlInstanceArcContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            <Val><![CDATA[SQL managed instances - Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 托管实例 - Azure Arc]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -196,18 +208,6 @@
             <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[登录到 Azure…]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noSubscriptionsL" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[No Subscriptions found.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[未找到订阅。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -249,13 +249,25 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.flatAccountTreeNode.noResourcesLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLab" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No Resources found.]]></Val>
+            <Val><![CDATA[No Tenants found.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[未找到资源。]]></Val>
+              <Val><![CDATA[找不到租户。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode.azure.resource.tree.accountTreeNode.noSubscriptio" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nsLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Subscriptions found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[未找到订阅。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -268,6 +280,18 @@
             <Val><![CDATA[No Resources found.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[未找到资源。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/tenantTreeNode.azure.resource.tree.accountTreeNode.noSubscriptionsLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Subscriptions found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[未找到订阅。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -831,51 +855,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.unableToAccessSubscription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unable to access subscription {0} ({1}). Please [refresh the account]5D;(command:azure.resource.signin) to try again. {2}]]></Val>
+          <Val><![CDATA[No Tenants found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[无法访问订阅 {0} ({1})。请[刷新帐户]5D;(command: azure.resource.signin)重试。{2}]]></Val>
+            <Val><![CDATA[找不到租户。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.throttleerror" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已限制来自此帐户的请求。要重试，请选择少量订阅。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.title" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} ({1}/{2} subscriptions)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} ({1}/{2} 个订阅)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.titleLoading" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} - Loading...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} - 正在加载...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.loadresourceerror" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[An error occurred while loading Azure resources: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[加载 Azure 资源时出错: {0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[An error occured while loading Azure resources: {0}]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1709,6 +1694,15 @@
           <Val><![CDATA[Select Subscriptions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[选择订阅]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/package.azure.resource.selecttenants.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Tenants]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择租户]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

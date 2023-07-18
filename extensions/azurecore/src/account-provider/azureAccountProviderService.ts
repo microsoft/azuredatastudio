@@ -19,6 +19,8 @@ import { Configuration, PublicClientApplication } from '@azure/msal-node';
 import * as Constants from '../constants';
 import { Logger } from '../utils/Logger';
 import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
+import { displayReloadAds } from '../utils';
+import { reloadPromptCacheClear } from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
@@ -106,8 +108,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return Promise.all(promises)
 			.then(
 				() => {
-					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					void vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
+					void displayReloadAds(reloadPromptCacheClear);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");

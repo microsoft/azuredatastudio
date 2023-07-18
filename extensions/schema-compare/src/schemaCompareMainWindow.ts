@@ -451,7 +451,7 @@ export class SchemaCompareMainWindow {
 			this.splitView.addItem(this.diffEditor);
 			this.splitView.setLayout({
 				orientation: 'vertical',
-				splitViewHeight: 800
+				splitViewSize: 800
 			});
 
 			// create a map of the differences to row numbers

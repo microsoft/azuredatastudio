@@ -921,7 +921,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	protected async removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): Promise<void> {
 		try {
-			const extensionDescriptions = await extensionService.getExtensions();
+			const extensionDescriptions = extensionService.extensions;
 			let extensionDescription = extensionDescriptions.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
 			if (extensionDescription && extensionDescription.contributes
 				&& extensionDescription.contributes[Extensions.NotebookProviderDescriptionContribution]

@@ -359,12 +359,24 @@ export class ConnectionConfig {
 		let profiles = this.getIConnectionProfileStores(true);
 		let existingProfile = profiles.find(p =>
 			p.providerName === profile.providerName &&
-			p.options.authenticationType === profile.options.authenticationType &&
-			p.options.database === profile.options.database &&
-			p.options.server === profile.options.server &&
-			p.options.user === profile.options.user &&
-			p.groupId === newGroupID);
+			this.checkIfAuthenticationOptionsMatch(p, profile) &&
+			p.options.databaseName === profile.options.databaseName &&
+			p.options.serverName === profile.options.serverName &&
+			p.options.userName === profile.options.userName &&
+			p.options.connectionName === profile.options.connectionName &&
+			p.groupId === newGroupID &&
+			this.checkIfNonDefaultOptionsMatch(p, profile));
 		return existingProfile === undefined;
+	}
+
+	private checkIfNonDefaultOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		let tempProfile = ConnectionProfile.createFromStoredProfile(profileStore, this._capabilitiesService);
+		let result = profile.getNonDefaultOptionsString() === tempProfile.getNonDefaultOptionsString();
+		return result;
+	}
+
+	private checkIfAuthenticationOptionsMatch(profileStore: IConnectionProfileStore, profile: ConnectionProfile): boolean {
+		return ((profileStore.options.authenticationType === undefined || profileStore.options.authenticationType === '') && (profile.options.authenticationType === undefined || profile.options.authenticationType === '')) || profileStore.options.authenticationType === profile.options.authenticationType;
 	}
 
 	/**

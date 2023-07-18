@@ -56,7 +56,7 @@ namespace BookContributions {
 	export function fromExtension(
 		extension: vscode.Extension<any>
 	): BookContribution[] {
-		const contributions = extension.packageJSON && extension.packageJSON.contributes;
+		const contributions = extension.packageJSON?.contributes as unknown[];
 		if (!contributions) {
 			return [];
 		}

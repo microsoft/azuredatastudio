@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
-import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Modal, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/browser/modal/modal';
@@ -22,6 +21,7 @@ import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { escapeLabel, escapeUrl, unquoteText } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -116,7 +116,8 @@ export class LinkCalloutDialog extends Modal {
 			this._contextViewService,
 			{
 				placeholder: constants.linkTextPlaceholder,
-				ariaLabel: constants.linkTextLabel
+				ariaLabel: constants.linkTextLabel,
+				inputBoxStyles: defaultInputBoxStyles
 			});
 		this._linkTextInputBox.value = this._defaultLabel;
 		DOM.append(linkTextRow, linkTextInputContainer);
@@ -133,15 +134,17 @@ export class LinkCalloutDialog extends Modal {
 			this._contextViewService,
 			{
 				placeholder: constants.linkAddressPlaceholder,
-				ariaLabel: constants.linkAddressLabel
+				ariaLabel: constants.linkAddressLabel,
+				inputBoxStyles: defaultInputBoxStyles
 			});
 		this._linkUrlInputBox.value = this._defaultLinkUrl;
 		DOM.append(linkAddressRow, linkAddressInputContainer);
 	}
 
 	private registerListeners(): void {
-		this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
+		// {{SQL CARBON TODO}} - apply styles
+		// this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
+		// this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 	}
 
 	protected override onAccept(e?: StandardKeyboardEvent) {

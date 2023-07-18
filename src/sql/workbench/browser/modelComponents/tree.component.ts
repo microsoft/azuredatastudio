@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { TreeComponentRenderer } from 'sql/workbench/browser/modelComponents/treeComponentRenderer';
 import { TreeComponentDataSource } from 'sql/workbench/browser/modelComponents/treeDataSource';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'sql/base/parts/tree/browser/treeDefaults';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITreeComponentItem } from 'sql/workbench/common/views';

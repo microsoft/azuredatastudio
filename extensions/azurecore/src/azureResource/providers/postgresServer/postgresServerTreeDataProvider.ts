@@ -16,7 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL servers");
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL Servers");
 
 	public constructor(
 		databaseServerService: azureResource.IAzureResourceService,
@@ -29,10 +29,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 		return {
 			id: `${AzureResourcePrefixes.postgresServer}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/postgresServer.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
@@ -62,16 +59,13 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: PostgresServerTreeDataProvider.containerId,
 			label: PostgresServerTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/postgresServer.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

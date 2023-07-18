@@ -327,8 +327,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				} else {
 					this.migrationStateModel._sqlMigrationServiceSubscription = undefined!;
 				}
-
-				utils.clearDropDown(this._resourceGroupDropdown);
+				await utils.clearDropDown(this._resourceGroupDropdown);
 				await this.loadResourceGroupDropdown();
 			}));
 
@@ -372,7 +371,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					else {
 						this.migrationStateModel._sqlMigrationServiceResourceGroup = undefined!;
 					}
-					utils.clearDropDown(this._dmsDropdown);
+					await utils.clearDropDown(this._dmsDropdown);
 					this.loadDmsDropdown();
 				}));
 

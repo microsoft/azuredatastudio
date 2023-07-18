@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as azurecore from 'azurecore';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -132,7 +132,7 @@ export class SqlToolsServer {
 	private async download(context: AppContext): Promise<string> {
 		const configDir = context.extensionContext.extensionPath;
 		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
-		this.config = JSON.parse(rawConfig.toString());
+		this.config = JSON.parse(rawConfig.toString()) as IConfig;
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy', '');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
@@ -165,6 +165,10 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
 	if (enableSqlAuthenticationProvider === true) {
 		launchArgs.push('--enable-sql-authentication-provider');
+	}
+	const enableConnectionPooling = getEnableConnectionPoolingConfig()
+	if (enableConnectionPooling) {
+		launchArgs.push('--enable-connection-pooling');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
@@ -218,7 +222,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 		synchronize: {
 			configurationSection: [
 				Constants.extensionConfigSectionName,
-				Constants.telemetryConfigSectionName
+				Constants.telemetryConfigSectionName,
+				Constants.queryEditorConfigSectionName,
 			]
 		},
 		providerId: Constants.providerId,

@@ -687,6 +687,25 @@ declare module 'azdata' {
 		headerFilter?: boolean,
 	}
 
+	export type ExecutionPlanData = executionPlan.ExecutionPlanGraphInfo | executionPlan.ExecutionPlanGraph[];
+
+	export interface ExecutionPlanComponentProperties extends ComponentProperties {
+		/**
+		 * Provide the execution plan file to be displayed. In case of execution plan graph info, the file type will determine the provider to be used to generate execution plan graphs
+		 */
+		data?: ExecutionPlanData;
+	}
+
+	/**
+	 * Defines the executionPlan component
+	 */
+	export interface ExecutionPlanComponent extends Component, ExecutionPlanComponentProperties {
+	}
+
+	export interface ModelBuilder {
+		executionPlan(): ComponentBuilder<ExecutionPlanComponent, ExecutionPlanComponentProperties>;
+	}
+
 	export interface ListViewOption {
 		/**
 		 * The optional accessibility label for the column. Default is the label for the list view option.
@@ -846,10 +865,6 @@ declare module 'azdata' {
 		 * Whether to include the column headers.
 		 */
 		includeHeaders: boolean
-		/**
-		 * Whether to remove line breaks from the cell value.
-		 */
-		removeNewLines: boolean;
 		/**
 		 * The selected ranges to be copied.
 		 */
@@ -1913,8 +1928,10 @@ declare module 'azdata' {
 		NotBetween = 7,
 		Contains = 8,
 		NotContains = 9,
-		IsNull = 10,
-		IsNotNull = 11
+		StartsWith = 10,
+		NotStartsWith = 11,
+		EndsWith = 12,
+		NotEndsWith = 13
 	}
 
 	export namespace window {
@@ -1994,5 +2011,22 @@ declare module 'azdata' {
 		 * Set active cell.
 		 */
 		setActiveCell(row: number, column: number): void;
+	}
+
+	export interface ProfilerProvider {
+		startSession(sessionId: string, sessionName: string, sessionType?: ProfilingSessionType): Thenable<boolean>;
+	}
+
+	export enum ProfilingSessionType {
+		RemoteSession = 0,
+		LocalFile = 1
+	}
+
+	export interface SplitViewLayout extends FlexLayout {
+		/**
+		 * SplitView size. Height if the orientation is vertical, width if the orientation is horizontal
+		 * If undefined, the size of the model view container is used
+		 */
+		splitViewSize?: number | string | undefined;
 	}
 }

@@ -31,7 +31,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
@@ -80,7 +80,7 @@ class TestParsedArgs implements NativeParsedArgs {
 	'install-source'?: string;
 	'list-extensions'?: boolean;
 	locale?: string;
-	log?: string;
+	log?: string[];
 	logExtensionHostCommunication?: boolean;
 	'max-memory'?: string;
 	'new-window'?: boolean;

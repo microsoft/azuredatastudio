@@ -64,11 +64,13 @@ export const subscription = localize('azurecore.subscription', "Subscription");
 export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 
 export const reloadPrompt = localize('azurecore.reloadPrompt', "Authentication Library has changed, please reload Azure Data Studio.");
+export const reloadPromptCacheClear = localize('azurecore.reloadPromptCacheClear', "Token cache has been cleared successfully, please reload Azure Data Studio.");
 export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
 
 export const piiWarning = localize('azurecore.piiLogging.warning', "Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.");
 export const disable = localize('azurecore.disable', 'Disable');
 export const dismiss = localize('azurecore.dismiss', 'Dismiss');
+export const switchMsal = localize('azurecore.switchMsal', 'Switch to MSAL');
 
 // Azure Resource Types
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");

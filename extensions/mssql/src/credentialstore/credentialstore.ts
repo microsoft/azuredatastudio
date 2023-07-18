@@ -26,7 +26,7 @@ export class CredentialStore {
 		baseConfig: IConfig
 	) {
 		if (baseConfig) {
-			this._config = JSON.parse(JSON.stringify(baseConfig));
+			this._config = JSON.parse(JSON.stringify(baseConfig)) as IConfig;
 			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
 		}
 		this.context = context;

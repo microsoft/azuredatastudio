@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// This is the place for extensions to expose APIs.
 declare module 'mssql' {
 	import * as azdata from 'azdata';
 
 	/**
-	 * Covers defining what the mssql extension exports to other extensions
+	 * Covers defining what the mssql extension exports to other extensions.
+	 *
+	 * This file should only contain definitions which rely on STABLE azdata typings
+	 * (from azdata.d.ts). Anything which relies on PROPOSED typings (from azdata.proposed.d.ts)
+	 * should go in mssql.proposed.d.ts.
 	 *
 	 * IMPORTANT: THIS IS NOT A HARD DEFINITION unlike vscode; therefore no enums or classes should be defined here
 	 * (const enums get evaluated when typescript -> javascript so those are fine)
@@ -42,20 +45,7 @@ declare module 'mssql' {
 
 		readonly sqlProjects: ISqlProjectsService;
 
-		readonly sqlAssessment: ISqlAssessmentService;
-
 		readonly azureBlob: IAzureBlobService;
-	}
-
-	/**
-	 * A browser supporting actions over the object explorer connections provided by this extension.
-	 * Currently this is the
-	 */
-	export interface MssqlObjectExplorerBrowser {
-		/**
-		 * Gets the matching node given a context object, e.g. one from a right-click on a node in Object Explorer
-		 */
-		getNode<T extends ITreeNode>(objectExplorerContext: azdata.ObjectExplorerContext): Thenable<T>;
 	}
 
 	/**
@@ -64,14 +54,6 @@ declare module 'mssql' {
 	export interface ITreeNode {
 		getNodeInfo(): azdata.NodeInfo;
 		getChildren(refreshChildren: boolean): ITreeNode[] | Thenable<ITreeNode[]>;
-	}
-
-	/**
-	 * A HDFS file node. This is a leaf node in the object explorer tree, and its contents
-	 * can be queried
-	 */
-	export interface IFileNode extends ITreeNode {
-		getFileContentsAsString(maxBytes?: number): Thenable<string>;
 	}
 
 	//#region --- schema compare
@@ -865,18 +847,6 @@ declare module 'mssql' {
 	}
 	//#endregion
 
-	/**
-	 * Sql Assessment
-	 */
-
-	// SqlAssessment interfaces  -----------------------------------------------------------------------
-
-	export interface ISqlAssessmentService {
-		assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
-		getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
-		generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
-	}
-
 	export interface CreateSasResponse {
 		sharedAccessSignature: string;
 	}
@@ -907,6 +877,7 @@ declare module 'mssql' {
 			DatabaseRole = "DatabaseRole",
 			ServerLevelLogin = "ServerLevelLogin",
 			ServerLevelServerRole = "ServerLevelServerRole",
+			Server = "Server",
 			Table = "Table",
 			User = "User",
 			View = "View"
@@ -1003,6 +974,16 @@ declare module 'mssql' {
 		 * @param schema Schema to search in.
 		 */
 		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
+		/**
+		 * Detach a database.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param dropConnections Whether to drop active connections to this database.
+		 * @param updateStatistics Whether to update the optimization statistics related to this database.
+		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
+		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
+		 */
+		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
 	}
 	// Object Management - End.
 }

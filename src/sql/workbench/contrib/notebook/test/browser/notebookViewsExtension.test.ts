@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICellModel, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -23,7 +23,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/browser/emptySessionClasses';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -38,8 +38,9 @@ import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ILanguageService } from 'vs/editor/common/languages/language';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{

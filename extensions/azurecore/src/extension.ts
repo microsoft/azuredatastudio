@@ -279,6 +279,12 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}
+	if (e.affectsConfiguration('azure.authenticationLibrary')) {
+		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
+			void vscode.window.showInformationMessage(loc.deprecatedOption);
+		}
+		await utils.displayReloadAds(loc.reloadPrompt);
+	}
 }
 
 function updatePiiLoggingLevel(): void {

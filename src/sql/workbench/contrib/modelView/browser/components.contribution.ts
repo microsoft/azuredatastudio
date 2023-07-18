@@ -36,6 +36,7 @@ import PropertiesContainerComponent from 'sql/workbench/browser/modelComponents/
 import ListViewComponent from 'sql/workbench/browser/modelComponents/listView.component';
 import InfoBoxComponent from 'sql/workbench/browser/modelComponents/infoBox.component';
 import SliderComponent from 'sql/workbench/browser/modelComponents/slider.component';
+import ExecutionPlanComponent from 'sql/workbench/browser/modelComponents/executionPlan.component';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -130,3 +131,6 @@ registerComponentType(INFOBOX_COMPONENT, ModelComponentTypes.InfoBox, InfoBoxCom
 
 export const SLIDER_COMPONENT = 'slider-component';
 registerComponentType(SLIDER_COMPONENT, ModelComponentTypes.Slider, SliderComponent);
+
+export const EXECUTION_PLAN_COMPONENT = 'executionplan-component';
+registerComponentType(EXECUTION_PLAN_COMPONENT, ModelComponentTypes.ExecutionPlan, ExecutionPlanComponent);

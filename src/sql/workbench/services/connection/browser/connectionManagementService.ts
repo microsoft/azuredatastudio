@@ -682,8 +682,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						connection.options = connectionErrorHandleResult.options;
 					}
 					if (connectionErrorHandleResult.reconnect) {
-						// Attempt reconnect if requested by provider
-						return this.connectWithOptions(connection, uri, options, callbacks);
+						// Attempt reconnect if requested by provider and reset URI to be regenerated.
+						return this.connectWithOptions(connection, undefined, options, callbacks);
 					} else {
 						if (callbacks.onConnectCanceled) {
 							callbacks.onConnectCanceled();
@@ -1189,16 +1189,22 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
-
+		if (this._providers.get(connection.providerName) === undefined) {
+			await this.handleUnsupportedProvider(connection.providerName);
+			throw new Error(nls.localize('connection.providerNotFound', "Connection provider '{0}' not found", connection.providerName));
+		}
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
 			this._onConnectRequestSent.fire();
 			// Connections are made per URI so while there may possibly be multiple editors with
 			// that URI they all share the same state
-			const editor = this._editorService.findEditors(URI.parse(uri))[0]?.editor;
-			// TODO make this generic enough to handle non-SQL languages too
-			const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
-			this.doChangeLanguageFlavor(uri, language, connection.providerName);
+			const editors = this._editorService.findEditors(URI.parse(uri));
+			if (editors && editors[0]?.editor) {
+				const editor = editors[0].editor;
+				// TODO make this generic enough to handle non-SQL languages too
+				const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
+				this.doChangeLanguageFlavor(uri, language, connection.providerName);
+			}
 			return true;
 		});
 	}
@@ -1296,7 +1302,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
 
-			const connectionUniqueId = connection.connectionProfile.getConnectionInfoId();
+			const connectionUniqueId = connection.connectionProfile.getOptionsKey();
 			if (info.isSupportedVersion === false
 				&& this._connectionsGotUnsupportedVersionWarning.indexOf(connectionUniqueId) === -1
 				&& this._configurationService.getValue<boolean>('connection.showUnsupportedServerVersionWarning')) {
@@ -1465,7 +1471,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 
 			// send connection request
-			self.sendConnectRequest(connection, uri).catch((e) => this._logService.error(e));
+			self.sendConnectRequest(connection, uri).catch((e) => {
+				this._logService.error(e);
+				this._connectionStatusManager.removeConnection(uri);
+				reject(e);
+			});
 		});
 	}
 

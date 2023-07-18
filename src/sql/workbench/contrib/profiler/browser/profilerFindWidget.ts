@@ -12,7 +12,7 @@ import * as dom from 'vs/base/browser/dom';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { FindInput, IFindInputStyles } from 'vs/base/browser/ui/findinput/findInput';
+import { FindInput } from 'vs/base/browser/ui/findinput/findInput';
 import { IMessage as InputBoxMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Sash, ISashEvent, Orientation, IVerticalSashLayoutProvider } from 'vs/base/browser/ui/sash/sash';
@@ -20,11 +20,11 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
-import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 import { CONTEXT_FIND_INPUT_FOCUSED, FIND_IDS } from 'vs/editor/contrib/find/browser/findModel';
+import { defaultInputBoxStyles, defaultToggleStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 const NLS_FIND_INPUT_LABEL = nls.localize('label.find', "Find");
 const NLS_FIND_INPUT_PLACEHOLDER = nls.localize('placeholder.find', "Find");
@@ -291,19 +291,20 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 	}
 
 	private _applyTheme(theme: IColorTheme) {
-		let inputStyles: IFindInputStyles = {
-			inputActiveOptionBorder: theme.getColor(colors.inputActiveOptionBorder),
-			inputBackground: theme.getColor(colors.inputBackground),
-			inputForeground: theme.getColor(colors.inputForeground),
-			inputBorder: theme.getColor(colors.inputBorder),
-			inputValidationInfoBackground: theme.getColor(colors.inputValidationInfoBackground),
-			inputValidationInfoBorder: theme.getColor(colors.inputValidationInfoBorder),
-			inputValidationWarningBackground: theme.getColor(colors.inputValidationWarningBackground),
-			inputValidationWarningBorder: theme.getColor(colors.inputValidationWarningBorder),
-			inputValidationErrorBackground: theme.getColor(colors.inputValidationErrorBackground),
-			inputValidationErrorBorder: theme.getColor(colors.inputValidationErrorBorder)
-		};
-		this._findInput.style(inputStyles);
+		// {{SQL CARBON TODO}} - styles
+		// let inputStyles: IFindInputStyles = {
+		// 	inputActiveOptionBorder: theme.getColor(colors.inputActiveOptionBorder),
+		// 	inputBackground: theme.getColor(colors.inputBackground),
+		// 	inputForeground: theme.getColor(colors.inputForeground),
+		// 	inputBorder: theme.getColor(colors.inputBorder),
+		// 	inputValidationInfoBackground: theme.getColor(colors.inputValidationInfoBackground),
+		// 	inputValidationInfoBorder: theme.getColor(colors.inputValidationInfoBorder),
+		// 	inputValidationWarningBackground: theme.getColor(colors.inputValidationWarningBackground),
+		// 	inputValidationWarningBorder: theme.getColor(colors.inputValidationWarningBorder),
+		// 	inputValidationErrorBackground: theme.getColor(colors.inputValidationErrorBackground),
+		// 	inputValidationErrorBorder: theme.getColor(colors.inputValidationErrorBorder)
+		// };
+		// this._findInput.style(inputStyles);
 	}
 
 	// ----- Public
@@ -367,7 +368,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 
 	private _buildFindPart(): HTMLElement {
 		// Find input
-		this._findInput = this._register(new FindInput(null, this._contextViewProvider, true, {
+		this._findInput = this._register(new FindInput(null, this._contextViewProvider, {
 			width: FIND_INPUT_AREA_WIDTH,
 			label: NLS_FIND_INPUT_LABEL,
 			placeholder: NLS_FIND_INPUT_PLACEHOLDER,
@@ -389,7 +390,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 				} catch (e) {
 					return { content: e.message };
 				}
-			}
+			},
+			toggleStyles: defaultToggleStyles,
+			inputBoxStyles: defaultInputBoxStyles
 		}));
 		this._findInput.setRegex(!!this._state.isRegex);
 		this._findInput.setCaseSensitive(!!this._state.matchCase);

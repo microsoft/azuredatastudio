@@ -7,6 +7,18 @@
  * A list of command line arguments we support natively.
  */
 export interface NativeParsedArgs {
+	// subcommands
+	tunnel?: {
+		'cli-data-dir'?: string;
+		'disable-telemetry'?: boolean;
+		'telemetry-level'?: string;
+		user: {
+			login: {
+				'access-token'?: string;
+				'provider'?: string;
+			};
+		};
+	};
 	/**
 	 * {{ SQL CARBON EDIT}} Start
 	 * Optional for Azure Data Studio to support URI conversion.
@@ -37,6 +49,8 @@ export interface NativeParsedArgs {
 	'prof-startup'?: boolean;
 	'prof-startup-prefix'?: string;
 	'prof-append-timers'?: string;
+	'prof-duration-markers'?: string[];
+	'prof-duration-markers-file'?: string;
 	'prof-v8-extensions'?: boolean;
 	'no-cached-data'?: boolean;
 	verbose?: boolean;
@@ -44,7 +58,7 @@ export interface NativeParsedArgs {
 	'trace-category-filter'?: string;
 	'trace-options'?: string;
 	'open-devtools'?: boolean;
-	log?: string;
+	log?: string[];
 	logExtensionHostCommunication?: boolean;
 	'extensions-dir'?: string;
 	'extensions-download-dir'?: string;
@@ -61,6 +75,8 @@ export interface NativeParsedArgs {
 	'inspect-brk-search'?: string;
 	'inspect-ptyhost'?: string;
 	'inspect-brk-ptyhost'?: string;
+	'inspect-sharedprocess'?: string;
+	'inspect-brk-sharedprocess'?: string;
 	'disable-extensions'?: boolean;
 	'disable-extension'?: string[]; // undefined or array of 1 or more
 	'list-extensions'?: boolean;
@@ -85,7 +101,6 @@ export interface NativeParsedArgs {
 	'crash-reporter-directory'?: string;
 	'crash-reporter-id'?: string;
 	'skip-add-to-recently-opened'?: boolean;
-	'max-memory'?: string;
 	'file-write'?: boolean;
 	'file-chmod'?: boolean;
 	'enable-smoke-test-driver'?: boolean;
@@ -98,7 +113,12 @@ export interface NativeParsedArgs {
 	'logsPath'?: string;
 	'__enable-file-policy'?: boolean;
 	editSessionId?: string;
+	continueOn?: string;
 	'locate-shell-integration-path'?: string;
+	'profile'?: string;
+	'profile-temp'?: boolean;
+
+	'enable-coi'?: boolean;
 
 	// {{SQL CARBON EDIT}} Start
 	/**
@@ -162,6 +182,7 @@ export interface NativeParsedArgs {
 	'inspect-brk'?: string;
 	'js-flags'?: string;
 	'disable-gpu'?: boolean;
+	'disable-gpu-sandbox'?: boolean;
 	'nolazy'?: boolean;
 	'force-device-scale-factor'?: string;
 	'force-renderer-accessibility'?: boolean;

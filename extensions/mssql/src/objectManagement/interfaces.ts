@@ -430,11 +430,30 @@ export interface Database extends ObjectManagement.SqlObject {
 	recoveryModel?: string;
 	compatibilityLevel?: string;
 	containmentType?: string;
-
+	dateCreated?: string;
+	lastDatabaseBackup?: string;
+	lastDatabaseLogBackup?: string;
+	memoryAllocatedToMemoryOptimizedObjectsInMb?: number;
+	memoryUsedByMemoryOptimizedObjectsInMb?: number;
+	numberOfUsers?: number;
+	sizeInMb?: number;
+	spaceAvailableInMb?: number;
+	status?: string;
 	azureBackupRedundancyLevel?: string;
 	azureServiceLevelObjective?: string;
 	azureEdition?: string;
 	azureMaxSize?: string;
+	autoCreateIncrementalStatistics: boolean;
+	autoCreateStatistics: boolean;
+	autoShrink: boolean;
+	autoUpdateStatistics: boolean;
+	autoUpdateStatisticsAsynchronously: boolean;
+	isLedgerDatabase?: boolean;
+	pageVerify?: string;
+	targetRecoveryTimeInSec?: number;
+	databaseReadOnly?: boolean;
+	encryptionEnabled: boolean;
+	restrictAccess?: string;
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
@@ -443,15 +462,55 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels: string[];
 	containmentTypes: string[];
 	recoveryModels: string[];
-
+	files: DatabaseFile[];
 	isAzureDB: boolean;
 	azureBackupRedundancyLevels: string[];
 	azureServiceLevelObjectives: AzureEditionDetails[];
 	azureEditions: string[];
 	azureMaxSizes: AzureEditionDetails[];
+	pageVerifyOptions: string[];
+	restrictAccessOptions: string[];
 }
 
 export interface AzureEditionDetails {
 	editionDisplayName: string;
 	details: string[];
+}
+
+export interface Server extends ObjectManagement.SqlObject {
+	hardwareGeneration: string;
+	language: string;
+	memoryInMB: number;
+	operatingSystem: string;
+	platform: string;
+	processors: string;
+	version: string;
+	isClustered: boolean;
+	isHadrEnabled: boolean;
+	isPolyBaseInstalled: boolean;
+	isXTPSupported: boolean;
+	product: string;
+	reservedStorageSizeMB: number;
+	rootDirectory: string;
+	serverCollation: string;
+	serviceTier: string;
+	storageSpaceUsageInMB: number;
+	minServerMemory: NumericServerProperty;
+	maxServerMemory: NumericServerProperty;
+}
+
+export interface NumericServerProperty {
+	maximumValue: number;
+	minimumValue: number;
+	value: number;
+}
+
+export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
+}
+
+export interface DatabaseFile {
+	name: string;
+	type: string;
+	path: string;
+	fileGroup: string;
 }

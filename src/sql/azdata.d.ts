@@ -1580,7 +1580,7 @@ declare module 'azdata' {
 	}
 
 	export enum FrequencyTypes {
-		Unknown,
+		Unknown = 0,
 		OneTime = 1 << 1,
 		Daily = 1 << 2,
 		Weekly = 1 << 3,
@@ -3387,8 +3387,9 @@ declare module 'azdata' {
 
 		/**
 		 * SplitView height
+		 * @deprecated use splitViewSize instead
 		 */
-		splitViewHeight: number | string;
+		splitViewHeight?: number | string;
 	}
 
 	export interface FlexItemLayout {

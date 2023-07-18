@@ -3,22 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
+import * as fs from 'fs-extra'; // {{SQL CARBON EDIT}} - use fs-extra instead of fs
 import { makeUniversalApp } from 'vscode-universal-bundler';
 import { spawn } from '@malept/cross-spawn-promise';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as product from '../../product.json';
 import * as glob from 'glob'; // {{SQL CARBON EDIT}}
 
-async function main() {
-	const buildDir = process.env['AGENT_BUILDDIRECTORY'];
+const root = path.dirname(path.dirname(__dirname));
+
+async function main(buildDir?: string) {
 	const arch = process.env['VSCODE_ARCH'];
 
 	if (!buildDir) {
-		throw new Error('$AGENT_BUILDDIRECTORY not set');
+		throw new Error('Build dir not provided');
 	}
 
-	// {{SQL CARBON EDIT}}
+	const product = JSON.parse(fs.readFileSync(path.join(root, 'product.json'), 'utf8'));
 	const x64AppNameBase = 'azuredatastudio-darwin-x64';
 	const arm64AppNameBase = 'azuredatastudio-darwin-arm64';
 	// {{SQL CARBON EDIT}} - END
@@ -78,11 +78,11 @@ async function main() {
 		force: true
 	});
 
-	const productJson = await fs.readJson(productJsonPath);
+	const productJson = JSON.parse(fs.readFileSync(productJsonPath, 'utf8'));
 	Object.assign(productJson, {
 		darwinUniversalAssetId: 'darwin-universal'
 	});
-	await fs.writeJson(productJsonPath, productJson);
+	fs.writeFileSync(productJsonPath, JSON.stringify(productJson, null, '\t'));
 
 	// Verify if native module architecture is correct
 	// {{SQL CARBON EDIT}} Some of our extensions have their own keytar so lookup
@@ -102,7 +102,7 @@ async function main() {
 }
 
 if (require.main === module) {
-	main().catch(err => {
+	main(process.argv[2]).catch(err => {
 		console.error(err);
 		process.exit(1);
 	});
