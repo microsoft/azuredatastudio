@@ -242,7 +242,7 @@ export class ConnectionConfig {
 				changed = true;
 			}
 			// SSMS 19 requires "user", fix any profiles created without user property.
-			if (profile.providerName === 'MSSQL' && !profile.options.user) {
+			if (profile.providerName === 'MSSQL' && profile.options.user === undefined) {
 				profile.options.user = '';
 				changed = true;
 			}
