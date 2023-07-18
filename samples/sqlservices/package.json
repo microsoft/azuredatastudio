@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "publisher": "demo",
   "engines": {
-    "vscode": "^1.26.0",
+    "vscode": "*",
     "azdata": "*"
   },
   "categories": [
@@ -227,7 +227,8 @@
   },
   "devDependencies": {
     "@types/node": "^7.0.43",
-    "@types/vscode": "^1.0.0",
+    "@types/vscode": "^1.77.0",
+    "@types/azdata": "^1.43.0",
     "braces": "^2.3.2",
     "child-process-promise": "^2.2.1",
     "del": "^3.0.0",
@@ -236,9 +237,10 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-tslint": "^6.0.2",
     "gulp-typescript": "^3.2.4",
+    "gulp-remote-src": "^0.4.3",
     "tslint": "^3.14.0",
     "typescript": "^4.1.0-dev.20200824",
-    "vsce": "^1.57.1",
+    "@vscode/vsce": "^2.18.0",
     "@types/uuid": "^8.3.0"
   },
   "repository": {

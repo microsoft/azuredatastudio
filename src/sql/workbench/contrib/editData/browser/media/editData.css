@@ -152,6 +152,22 @@ slick-grid.active .editDataGrid .slick-cell.selected {
 	--color-grid-dirty-text: #000;
 }
 
+.hc-light .slickgridContainer {
+	--color-content: #101010;
+	--color-content-disabled: grey;
+	--color-error: #E81123;
+	--color-success: #7CD300;
+	--color-bg-header: hsla(0,0%,50%,.2); /* used for pane toolbars */
+	--color-resize-handle: #000000;
+	--color-bg-content-header: #ffffff; /* used for color of grid headers */
+	--color-cell-border-active: #6fc3df;
+	--color-cell-bg-grid-selected: rgb(173, 214, 255);
+	--color-grid-link: #0078D7;
+	--color-grid-link-hover: #0b93ff;
+	--color-grid-dirty-background: #FFF;
+	--color-grid-dirty-text: #000;
+}
+
 .vs-dark .slickgridContainer {
 	--color-content: #E5E5E5;
 	--color-content-disabled: grey;
@@ -183,3 +199,6 @@ slick-grid.active .editDataGrid .slick-cell.selected {
 	--color-grid-dirty-background: #CCC;
 	--color-grid-dirty-text: #101010;
 }
+
+
+

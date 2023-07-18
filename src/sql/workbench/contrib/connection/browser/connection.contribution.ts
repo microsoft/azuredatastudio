@@ -7,12 +7,11 @@ import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import * as azdata from 'azdata';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { Action2, MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { ConnectionStatusbarItem } from 'sql/workbench/contrib/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
@@ -22,59 +21,34 @@ import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ActiveConnectionsFilterAction, AddServerAction, AddServerGroupAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { CONTEXT_SERVER_TREE_VIEW, CONTEXT_SERVER_TREE_HAS_CONNECTIONS } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { SqlIconId } from 'sql/base/common/codicons';
+import * as Utils from 'sql/platform/connection/common/utils';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
 workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, LifecyclePhase.Restored);
 
 import 'sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint';
-import { ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IObjectExplorerService, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { Codicon } from 'vs/base/common/codicons';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 
 // Connection Dashboard registration
 
-const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 // Connection Actions
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ClearRecentConnectionsAction,
-		ClearRecentConnectionsAction.ID,
-		ClearRecentConnectionsAction.LABEL
-	),
-	ClearRecentConnectionsAction.LABEL
-);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		AddServerGroupAction,
-		AddServerGroupAction.ID,
-		AddServerGroupAction.LABEL
-	),
-	AddServerGroupAction.LABEL
-);
+registerAction2(ClearRecentConnectionsAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		ActiveConnectionsFilterAction,
-		ActiveConnectionsFilterAction.ID,
-		ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL
-	),
-	ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL
-);
+registerAction2(AddServerGroupAction);
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		AddServerAction,
-		AddServerAction.ID,
-		AddServerAction.LABEL
-	),
-	AddServerAction.LABEL
-);
+registerAction2(ActiveConnectionsFilterAction);
+
+registerAction2(AddServerAction);
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
-	order: 10,
+	order: 1,
 	command: {
 		id: AddServerAction.ID,
 		title: AddServerAction.LABEL,
@@ -85,7 +59,7 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
-	order: 20,
+	order: 2,
 	command: {
 		id: AddServerGroupAction.ID,
 		title: AddServerGroupAction.LABEL,
@@ -96,7 +70,7 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 
 MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 	group: 'navigation',
-	order: 30,
+	order: 3,
 	command: {
 		id: ActiveConnectionsFilterAction.ID,
 		title: ActiveConnectionsFilterAction.SHOW_ACTIVE_CONNECTIONS_LABEL,
@@ -109,6 +83,26 @@ MenuRegistry.appendMenuItem(MenuId.ViewTitle, {
 		}
 	},
 	when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID),
+});
+
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
+			id: 'registeredServers.collapseAll',
+			title: localize('registeredServers.collapseAll', "Collapse All Connections"),
+			menu: {
+				id: MenuId.ViewTitle,
+				when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID),
+				group: 'navigation',
+				order: Number.MAX_SAFE_INTEGER - 1,
+			},
+			icon: Codicon.collapseAll
+		});
+	}
+	async run(accessor: ServicesAccessor): Promise<void> {
+		const objectExplorerService = accessor.get(IObjectExplorerService);
+		await objectExplorerService.getServerTreeView().collapseAllConnections();
+	}
 });
 
 CommandsRegistry.registerCommand('azdata.connect',
@@ -139,31 +133,36 @@ CommandsRegistry.registerCommand('azdata.connect',
 				groupFullName: undefined,
 				saveProfile: true,
 				id: undefined,
-				groupId: undefined,
+				groupId: Utils.defaultGroupId,
 				options: args.options
 			};
 			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
-
+			const root = connectionManagementService.getConnectionGroups().filter(g => g.id === Utils.defaultGroupId)[0];
+			connectionProfile.parent = root;
+			connectionProfile.groupFullName = root.fullName;
 			connectionManagementService.connect(connectionProfile, undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
-				params: undefined,
 				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
+				showFirewallRuleOnError: true,
+				params: {
+					connectionType: ConnectionType.default,
+				}
 			});
 		} else {
-			connectionManagementService.showConnectionDialog();
+			connectionManagementService.showConnectionDialog(undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true,
+				params: {
+					connectionType: ConnectionType.default,
+				}
+			});
 		}
 	});
 
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		GetCurrentConnectionStringAction,
-		GetCurrentConnectionStringAction.ID,
-		GetCurrentConnectionStringAction.LABEL
-	),
-	GetCurrentConnectionStringAction.LABEL
-);
+registerAction2(GetCurrentConnectionStringAction);
 
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({

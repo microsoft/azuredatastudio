@@ -11,7 +11,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ServerTreeDragAndDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
-import { TestTree } from 'sql/workbench/test/treeMock';
+import { TestTree } from 'sql/workbench/test/browser/parts/tree/treeMock';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { mssqlProviderName, pgsqlProviderName } from 'sql/platform/connection/common/constants';
@@ -40,7 +40,9 @@ suite('SQL Drag And Drop Controller tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
+		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
 		providerName: mssqlProviderName,
 		options: {},
@@ -58,7 +60,9 @@ suite('SQL Drag And Drop Controller tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
+		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
 		providerName: pgsqlProviderName,
 		options: {},

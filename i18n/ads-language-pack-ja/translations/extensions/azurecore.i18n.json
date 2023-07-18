@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "キャッシュへのアカウントの追加中にエラーが発生しました。",
 			"azure.cacheErrorGet": "キャッシュからのアカウントの取得中にエラーが発生しました",
 			"azure.cacheErrorParse": "キャッシュからのアカウントの解析中にエラーが発生しました",
-			"azure.cacheErrrorRemove": "キャッシュからのアカウントの削除中にエラーが発生しました。",
 			"azure.microsoftAccountDisplayName": "Microsoft アカウント",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "認証で何かが失敗したか、またはトークンがシステムから削除されています。アカウントを Azure Data Studio にもう一度追加してください。",
@@ -21,12 +20,15 @@
 			"azure.owningTenantNotFound": "アカウントの所有テナント情報が見つかりません。",
 			"azure.responseError": "トークンの取得がエラーで失敗しました。詳細は、[開発者ツールを開く]({0})。",
 			"azure.tenantNotFound": "ID '{0}' の指定されたテナントが見つかりません。",
-			"azureAuth.unidentifiedError": "Azure 認証で不明なエラーが発生しました",
-			"azureWorkAccountDisplayName": "職場または学校アカウント",
-			"azurecore.consentDialog.body": "テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio はこのテナント {0} ({1}) の認証をトリガーしなくなり、リソースにアクセスできなくなります。\r\n\r\nこのテナントのリソースへのアクセスを再度許可するには、'{2}' 設定の除外リストからテナントを削除する必要があります。\r\n\r\n続行しますか?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "確認",
+			"azurecore.consentDialog.authenticate": "キャンセルと認証",
+			"azurecore.consentDialog.body": "テナント {0} ({1}) では、 {2} リソースにアクセスするために再認証する必要があります。[開く] を押して認証プロセスを開始します。",
 			"azurecore.consentDialog.cancel": "キャンセル",
 			"azurecore.consentDialog.ignore": "テナントの無視",
 			"azurecore.consentDialog.open": "開く",
+			"msal.accountNotFoundError": "トークンを取得するときにアカウント情報が見つかりません。",
+			"msal.resourceNotFoundError": "Azure Resource {0}の構成が見つかりません",
 			"noMicrosoftResource": "プロバイダー '{0}' には、Microsoft リソース エンドポイントが定義されていません。"
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -44,7 +46,10 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "使用可能な Azure 認証方法がありません。ADS 構成で認証方法を有効にする必要があります。",
 			"azure.NoAuthMethod.Selected": "Azure 認証方法が選択されていません。使用する認証方法を選択する必要があります。",
-			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken の呼び出しが行われました。このメソッドは非推奨であり、今後のリリースで削除されます。代わりに getAccountSecurityToken を使用してください。"
+			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken の呼び出しが行われました。このメソッドは非推奨であり、今後のリリースで削除されます。代わりに getAccountSecurityToken を使用してください。",
+			"genericTokenError": "トークンを取得できませんでした",
+			"msalTokenError": "トークンの取得中に {0} が発生しました。\r\n{1}",
+			"tenantIgnoredError": "無視リストにテナントが見つかりましたが、認証は試行されませんでした。このテナントからリソースにアクセスする場合は、settings.json ファイル: {1} の無視リストからテナント {0} を削除できます。"
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "トークン キャッシュをクリアできませんでした",
@@ -52,10 +57,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Germany)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "この機能を動作させるには、Azure アカウントを選択する必要があります。",
@@ -74,10 +77,10 @@
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics ワークスペース"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Mongo 版 CosmosDB"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure CosmosDB for MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL Database"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL データベース"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
@@ -86,19 +89,32 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer クラスター"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL のフレキシブル サーバー"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL フレキシブル サーバー"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL サーバー - Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Azure Database for PostgreSQL のフレキシブル サーバー"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL サーバー"
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB マネージド インスタンス"
+			"azure.resource.providers.sqlInstanceContainerLabel": "SQL マネージド インスタンス"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL マネージド インスタンス - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "専用 SQL プール"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "プロバイダー リソースを認識できません: {0}",
+			"azurecore.unregisteredProviderType": "プロバイダー リソースの種類を認識できません: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "リソースは見つかりませんでした"
@@ -120,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Azure にサインイン..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。",
-			"azure.unableToAccessSubscription": "サブスクリプション {0} ({1}) にアクセスできません。再試行するには、[アカウントの更新] してください。(コマンド: azure.resource.signin) {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "テナントが見つかりません。"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Azure アカウントを読み込めませんでした。{0} ",
@@ -129,13 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure アカウントの表示"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.throttleerror": "このアカウントからの要求は抑えられています。再試行するには、より小さいサブスクリプション数を選択してください。",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} サブスクリプション)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 読み込んでいます...",
-			"azure.resource.tree.loadresourceerror": "Azure リソースの読み込み中にエラーが発生しました: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "テナントが見つかりません。"
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "リソースは見つかりませんでした。"
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。"
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "読み込み中..."
@@ -150,6 +168,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure リソース (プレビュー)",
+			"azure.credStoreSaveFailedError": "トークン キャッシュのキーを資格情報ストアに保存できませんでした。Azure アクセス トークンの永続化に問題が発生して接続が不安定になる可能性があります。SqlTools が Windows の資格情報ストレージ制限に達していると考えられる場合は、Windows 資格情報マネージャーで、\"Microsoft.SqlTools|\" から始まる資格情報を少なくとも 2 つクリアし、再読み込みしてください。",
 			"azure.unableToOpenAzureLink": "リンクを開けません。必要な値がありません",
 			"azurecore.australiacentral": "オーストラリア中部",
 			"azurecore.australiacentral2": "オーストラリア中部 2",
@@ -165,6 +184,9 @@
 			"azurecore.centralindia": "インド中部",
 			"azurecore.centralus": "米国中部",
 			"azurecore.centraluseuap": "米国中部 EUAP",
+			"azurecore.deprecated": "警告: ADAL は非推奨となり、今後のリリースで削除される予定です。代わりに MSAL を使用してください。",
+			"azurecore.disable": "無効",
+			"azurecore.dismiss": "却下",
 			"azurecore.eastasia": "東アジア",
 			"azurecore.eastus": "米国東部",
 			"azurecore.eastus2": "米国東部 2",
@@ -186,8 +208,12 @@
 			"azurecore.northeurope": "北ヨーロッパ",
 			"azurecore.norwayeast": "ノルウェー東部",
 			"azurecore.norwaywest": "ノルウェー西部",
-			"azurecore.postgresServer": "Azure Database for PostgreSQL サーバー",
+			"azurecore.piiLogging.warning": "警告: Azure PII ログが有効になっています。このオプションを有効にすると、個人を特定できる情報をログに記録でき、デバッグ目的でのみ使用する必要があります。",
+			"azurecore.postgresFlexibleServer": "Azure Database for PostgreSQL のフレキシブル サーバー",
+			"azurecore.postgresServer": "Azure Database for PostgreSQL",
 			"azurecore.reload": "再読み込み",
+			"azurecore.reloadChoice": "Azure Data Studio の再読み込み",
+			"azurecore.reloadPrompt": "認証ライブラリが変更されました。Azure Data Studio を再読み込みしてください。",
 			"azurecore.requiresReload": "この設定を変更するには、すべての変更を有効にするためにウィンドウを再読み込みする必要があります。",
 			"azurecore.resourceGroup": "リソース グループ",
 			"azurecore.resourceType": "リソースの種類",
@@ -228,11 +254,13 @@
 			"azure.resource.refresh.title": "最新の情報に更新",
 			"azure.resource.refreshall.title": "Azure: すべてのアカウントを更新する",
 			"azure.resource.selectsubscriptions.title": "サブスクリプションの選択",
+			"azure.resource.selecttenants.title": "テナントの選択",
 			"azure.resource.signin.title": "Azure: サインイン",
 			"azure.resource.startterminal.title": "Cloud Shell の開始",
 			"azure.resource.view.title": "Azure (プレビュー)",
-			"azure.tenant.config.filter.description": "Azure リソースの照会時に無視するテナント ID の一覧。各要素はテナント ID です。",
+			"azure.tenant.config.filter.description": "Azure リソースのクエリまたは認証トークンの要求時にスキップされるテナント ID の一覧。",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "AAD 認証フローに使用されるライブラリ。このオプションを変更した後は ADS を再起動してください。",
 			"config.azureAccountConfigurationSection": "Azure アカウント構成",
 			"config.azureAuthMethodConfigurationSection": "Azure 認証方法",
 			"config.azureCodeGrantMethod": "Code Grant 方法",

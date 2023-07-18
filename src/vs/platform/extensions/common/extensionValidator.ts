@@ -63,7 +63,7 @@ export function parseVersion(version: string): IParsedVersion | null {
 		};
 	}
 
-	let m = version.match(VERSION_REGEXP);
+	const m = version.match(VERSION_REGEXP);
 	if (!m) {
 		return null;
 	}
@@ -85,12 +85,12 @@ export function normalizeVersion(version: IParsedVersion | null): INormalizedVer
 		return null;
 	}
 
-	let majorBase = version.majorBase,
-		majorMustEqual = version.majorMustEqual,
-		minorBase = version.minorBase,
-		minorMustEqual = version.minorMustEqual,
-		patchBase = version.patchBase,
-		patchMustEqual = version.patchMustEqual;
+	const majorBase = version.majorBase;
+	const majorMustEqual = version.majorMustEqual;
+	const minorBase = version.minorBase;
+	let minorMustEqual = version.minorMustEqual;
+	const patchBase = version.patchBase;
+	let patchMustEqual = version.patchMustEqual;
 
 	if (version.hasCaret) {
 		if (majorBase === 0) {
@@ -148,14 +148,14 @@ export function isValidVersion(_inputVersion: string | INormalizedVersion, _inpu
 		return false;
 	}
 
-	let majorBase = version.majorBase;
-	let minorBase = version.minorBase;
-	let patchBase = version.patchBase;
+	const majorBase = version.majorBase;
+	const minorBase = version.minorBase;
+	const patchBase = version.patchBase;
 
 	let desiredMajorBase = desiredVersion.majorBase;
 	let desiredMinorBase = desiredVersion.minorBase;
 	let desiredPatchBase = desiredVersion.patchBase;
-	let desiredNotBefore = desiredVersion.notBefore;
+	const desiredNotBefore = desiredVersion.notBefore;
 
 	let majorMustEqual = desiredVersion.majorMustEqual;
 	let minorMustEqual = desiredVersion.minorMustEqual;
@@ -274,7 +274,7 @@ export function validateExtensionManifest(productVersion: string, vsCodeProductV
 			return validations;
 		}
 		if (typeof extensionManifest.main === 'undefined' && typeof extensionManifest.browser === 'undefined') {
-			validations.push([Severity.Error, nls.localize('extensionDescription.activationEvents2', "properties `{0}` and `{1}` must both be specified or must both be omitted", 'activationEvents', 'main')]);
+			validations.push([Severity.Error, nls.localize('extensionDescription.activationEvents2', "property `{0}` should be omitted if the extension doesn't have a `{1}` or `{2}` property.", 'activationEvents', 'main', 'browser')]);
 			return validations;
 		}
 	}
@@ -295,10 +295,6 @@ export function validateExtensionManifest(productVersion: string, vsCodeProductV
 				// not a failure case
 			}
 		}
-		if (typeof extensionManifest.activationEvents === 'undefined') {
-			validations.push([Severity.Error, nls.localize('extensionDescription.main3', "properties `{0}` and `{1}` must both be specified or must both be omitted", 'activationEvents', 'main')]);
-			return validations;
-		}
 	}
 	if (typeof extensionManifest.browser !== 'undefined') {
 		if (typeof extensionManifest.browser !== 'string') {
@@ -310,10 +306,6 @@ export function validateExtensionManifest(productVersion: string, vsCodeProductV
 				validations.push([Severity.Warning, nls.localize('extensionDescription.browser2', "Expected `browser` ({0}) to be included inside extension's folder ({1}). This might make the extension non-portable.", browserLocation.path, extensionLocation.path)]);
 				// not a failure case
 			}
-		}
-		if (typeof extensionManifest.activationEvents === 'undefined') {
-			validations.push([Severity.Error, nls.localize('extensionDescription.browser3', "properties `{0}` and `{1}` must both be specified or must both be omitted", 'activationEvents', 'browser')]);
-			return validations;
 		}
 	}
 
@@ -357,7 +349,7 @@ export function isEngineValid(engine: string, version: string, date: ProductDate
 // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 function isVersionValid(currentVersion: string, date: ProductDate, requestedVersion: string, parseError: string, notCompatibleError: string, notices: string[] = []): boolean {
 
-	let desiredVersion = normalizeVersion(parseVersion(requestedVersion));
+	const desiredVersion = normalizeVersion(parseVersion(requestedVersion));
 	if (!desiredVersion) {
 		notices.push(parseError); // {{SQL CARBON EDIT}} ADS-specific error messages
 		return false;

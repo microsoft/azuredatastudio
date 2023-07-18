@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
 import { URI } from 'vs/base/common/uri';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -119,7 +120,7 @@ export enum AlertType {
 }
 
 export enum FrequencyTypes {
-	Unknown,
+	Unknown = 0,
 	OneTime = 1 << 1,
 	Daily = 1 << 2,
 	Weekly = 1 << 3,
@@ -179,13 +180,15 @@ export enum ModelComponentTypes {
 	Separator,
 	PropertiesContainer,
 	InfoBox,
-	Slider
+	Slider,
+	ExecutionPlan
 }
 
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
 	AppendData = 'appendData',
-	Filter = 'filter'
+	Filter = 'filter',
+	SetActiveCell = 'setActiveCell'
 }
 
 export enum ColumnSizingMode {
@@ -214,6 +217,11 @@ export enum StepCompletionAction {
 	QuitWithFailure = 2,
 	GoToNextStep = 3,
 	GoToStep = 4
+}
+
+export enum ProfilingSessionType {
+	RemoteSession = 0,
+	LocalFile = 1
 }
 
 export interface CheckBoxInfo {
@@ -326,6 +334,29 @@ export interface IDialogProperties {
 	yPos: number,
 	width: number,
 	height: number
+}
+
+/**
+ * Provides dialog options to customize modal dialog content and layout
+ */
+export interface IErrorDialogOptions {
+	severity: MessageLevel;
+	headerTitle: string;
+	message: string;
+	messageDetails?: string;
+	telemetryView?: TelemetryView | string;
+	actions?: IDialogAction[];
+	instructionText?: string;
+	readMoreLink?: string;
+}
+
+/**
+ * An action that will be rendered as a button on the dialog.
+ */
+export interface IDialogAction {
+	id: string;
+	label: string;
+	isPrimary: boolean;
 }
 
 export enum MessageLevel {
@@ -450,7 +481,33 @@ export enum AzureResource {
 	AzureLogAnalytics = 8,
 	AzureStorage = 9,
 	AzureKusto = 10,
-	PowerBi = 11
+	PowerBi = 11,
+	Custom = 12 // Handles custom resource URIs as received from server endpoint.
+}
+
+export enum NodeFilterPropertyDataType {
+	String = 0,
+	Number = 1,
+	Boolean = 2,
+	Date = 3,
+	Choice = 4
+}
+
+export enum NodeFilterOperator {
+	Equals = 0,
+	NotEquals = 1,
+	LessThan = 2,
+	LessThanOrEquals = 3,
+	GreaterThan = 4,
+	GreaterThanOrEquals = 5,
+	Between = 6,
+	NotBetween = 7,
+	Contains = 8,
+	NotContains = 9,
+	StartsWith = 10,
+	NotStartsWith = 11,
+	EndsWith = 12,
+	NotEndsWith = 13
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

@@ -14,13 +14,16 @@ export const SelectProjectFileActionName = localize('SelectProjectFileActionName
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
 export const RestartConfirmation = localize('dataworkspace.restartConfirmation', "Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?");
-export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)");
+export const projectFailedToLoad = (project: string, error: string) => { return localize('projectFailedToLoad', "Project '{0}' failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).", project, error) };
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
 export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
 export const gitCloneMessage = (url: string): string => { return localize('gitCloneMessage', "Cloning git repository '{0}'...", url); };
 export const gitCloneError = localize('gitCloneError', "Error during git clone. View git output for more details");
 export const openedProjectsUndefinedAfterRefresh = localize('openedProjectsUndefinedAfterRefresh', "List of opened projects should not be undefined after refresh from disk.");
+export const dragAndDropNotSupported = localize('dragAndDropNotSupported', "This project type does not support drag and drop.");
+export const onlyMovingOneFileIsSupported = localize('onlyMovingOneFileIsSupported', "Only moving one file at a time is supported.");
+export const noProjectProvidingExtensionsInstalled = localize('noProjectProvidingExtensionsInstalled', "No database project extensions are installed. Please install a database project extension to use this feature.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
@@ -58,6 +61,14 @@ export const SdkLearnMorePlaceholder = localize('dataworkspace.sdkLearnMorePlace
 export const Default = localize('dataworkspace.default', "Default");
 export const SelectTargetPlatform = localize('dataworkspace.selectTargetPlatform', "Select Target Platform");
 export const LocalDevInfo = (target: string) => localize('LocalDevInfo', "Click \"Learn more\" button for more information about local development experience to {0}", target);
+export const undefinedFilenameErrorMessage = localize('undefinedFilenameErrorMessage', "Undefined name");
+export const filenameEndingIsPeriodErrorMessage = localize('filenameEndingInPeriodErrorMessage', "File name cannot end with a period");
+export const whitespaceFilenameErrorMessage = localize('whitespaceFilenameErrorMessage', "File name cannot be whitespace");
+export const invalidFileCharsErrorMessage = localize('invalidFileCharsErrorMessage', "Invalid file characters");
+export const reservedWindowsFilenameErrorMessage = localize('reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
+export const reservedValueErrorMessage = localize('reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
+export const trailingWhitespaceErrorMessage = localize('trailingWhitespaceErrorMessage', "File name cannot start or end with whitespace");
+export const tooLongFilenameErrorMessage = localize('tooLongFilenameErrorMessage', "File name cannot be over 255 characters");
 
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open Existing Project");
@@ -74,6 +85,7 @@ export const GitRepoUrlTitle = localize('dataworkspace.gitRepoUrlTitle', "Git re
 export const GitRepoUrlPlaceholder = localize('dataworkspace.gitRepoUrlPlaceholder', "Enter remote git repository URL");
 export const LocalClonePathTitle = localize('dataworkspace.localClonePathTitle', "Local clone path");
 export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathPlaceholder', "Select location to clone repository locally");
+export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';

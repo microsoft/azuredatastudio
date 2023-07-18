@@ -17,7 +17,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { mixin } from 'vs/base/common/objects';
-import { IThemable } from 'vs/base/common/styler';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -26,10 +25,12 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IThemable } from 'sql/platform/theme/common/vsstyler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Emitter } from 'vs/base/common/event';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { defaultButtonStyles, getButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export enum MessageLevel {
 	Error = 0,
@@ -85,6 +86,10 @@ export interface IModalOptions {
 	renderHeader?: boolean;
 	renderFooter?: boolean;
 	dialogProperties?: IDialogProperties;
+	/**
+	 * The height of the dialog, only applicable when the dialog style is normal.
+	 */
+	height?: number;
 }
 
 const defaultOptions: IModalOptions = {
@@ -98,7 +103,8 @@ const defaultOptions: IModalOptions = {
 	hasSpinner: true,
 	renderHeader: true,
 	renderFooter: true,
-	dialogProperties: undefined
+	dialogProperties: undefined,
+	height: 480
 };
 
 export type HideReason = 'close' | 'cancel' | 'ok';
@@ -210,9 +216,16 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		let top: number;
 		let builderClass = '.modal.fade';
-		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
-			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
-				: '';
+		switch (this._modalOptions.dialogStyle) {
+			case 'flyout':
+				builderClass += '.flyout-dialog';
+				break;
+			case 'callout':
+				builderClass += '.callout-dialog';
+				break;
+			default:
+				builderClass += '.normal-dialog';
+		}
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 
@@ -223,12 +236,19 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
+		const formElement = DOM.append(this._modalDialog, DOM.$('form'));
+
+		if (this._modalOptions.dialogStyle === 'normal') {
+			// set the height based on the available space and the expected height.
+			// so that the dialog can scroll vertically when needed.
+			this._modalDialog.style.height = `min(100%, ${this._modalOptions.height}px)`;
+		}
 
 		if (this._modalOptions.dialogStyle === 'callout') {
 			let arrowClass = `.callout-arrow.from-${this._modalOptions.dialogPosition}`;
-			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
+			this._modalContent = DOM.append(formElement, DOM.$(`.modal-content${arrowClass}`));
 		} else {
-			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+			this._modalContent = DOM.append(formElement, DOM.$('.modal-content'));
 		}
 
 		if (typeof this._modalOptions.width === 'number') {
@@ -250,10 +270,13 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
 				if (this._modalOptions.hasBackButton) {
 					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-					this._backButton = new Button(container, { secondary: true });
-					this._backButton.icon = {
-						id: 'backButtonIcon'
-					};
+					this._backButton = new Button(container,
+						getButtonStyles({
+							buttonBackground: SIDE_BAR_BACKGROUND,
+							buttonHoverBackground: SIDE_BAR_BACKGROUND
+						})
+					);
+					this._backButton.icon = 'backButtonIcon';
 					this._backButton.title = localize('modal.back', "Back");
 				}
 
@@ -272,30 +295,20 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._messageIcon = DOM.append(headerContainer, DOM.$('.dialog-message-icon'));
 			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
 			this._detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
-			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer);
-			this._toggleMessageDetailButton.icon = {
-				id: 'message-details-icon'
-			};
+			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer, defaultButtonStyles);
+			this._toggleMessageDetailButton.icon = 'message-details-icon';
 			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 			this._register(this._toggleMessageDetailButton.onDidClick(() => this.toggleMessageDetail()));
 			const copyMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
-			this._copyMessageButton = new Button(copyMessageButtonContainer);
-			this._copyMessageButton.icon = {
-				id: 'copy-message-icon'
-			};
+			this._copyMessageButton = new Button(copyMessageButtonContainer, defaultButtonStyles);
+			this._copyMessageButton.icon = 'copy-message-icon';
 			this._copyMessageButton.label = COPY_TEXT;
 			this._register(this._copyMessageButton.onDidClick(() => this._clipboardService.writeText(this.getTextForClipboard())));
 			const closeMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
-			this._closeMessageButton = new Button(closeMessageButtonContainer);
-			this._closeMessageButton.icon = {
-				id: 'close-message-icon'
-			};
+			this._closeMessageButton = new Button(closeMessageButtonContainer, defaultButtonStyles);
+			this._closeMessageButton.icon = 'close-message-icon';
 			this._closeMessageButton.label = CLOSE_TEXT;
 			this._register(this._closeMessageButton.onDidClick(() => this.setError(undefined)));
-
-			this._register(attachButtonStyler(this._toggleMessageDetailButton, this._themeService));
-			this._register(attachButtonStyler(this._copyMessageButton, this._themeService));
-			this._register(attachButtonStyler(this._closeMessageButton, this._themeService));
 
 			this._messageBody = DOM.append(this._messageElement, DOM.$('.dialog-message-body'));
 			this._messageSummary = DOM.append(this._messageBody, DOM.$('.dialog-message-summary'));
@@ -519,7 +532,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, position: 'left' | 'right' = 'right', isSecondary: boolean = false, index?: number): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = this._register(new Button(footerButton, { secondary: isSecondary }));
+		let button = this._register(new Button(footerButton, { secondary: isSecondary, ...defaultButtonStyles }));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		const container = position === 'left' ? this._leftFooter! : this._rightFooter!;
@@ -530,7 +543,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		} else {
 			DOM.append(container, footerButton);
 		}
-		attachButtonStyler(button, this._themeService);
 		this._footerButtons.push(button);
 		return button;
 	}
@@ -612,7 +624,11 @@ export abstract class Modal extends Disposable implements IThemable {
 	protected set messagesElementVisible(visible: boolean) {
 		if (visible) {
 			if (this._useDefaultMessageBoxLocation) {
-				DOM.prepend(this._modalContent!, this._messageElement!);
+				// To avoid stealing focus from the user, only reset the keyboard focus when the message is not currently visible.
+				if (!this._messageElement!.parentNode) {
+					DOM.prepend(this._modalContent!, this._messageElement!);
+					this.setInitialFocusedElement();
+				}
 			}
 		} else {
 			// only do the removal when the messageElement has parent element.
@@ -656,7 +672,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Set the title of the modal
 	 */
-	protected set title(title: string) {
+	public set title(title: string) {
 		this._title = title;
 		if (this._modalTitle) {
 			this._modalTitle.innerText = title;
@@ -666,7 +682,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 	}
 
-	protected get title(): string {
+	public get title(): string {
 		return this._title;
 	}
 
@@ -754,6 +770,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					box-shadow: 0px 3.2px 7.2px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.132),
 								0px 0.6px 1.8px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.108);
 				}
+
+				.hc-light .modal.callout-dialog .modal-dialog,
 				.hc-black .modal.callout-dialog .modal-dialog {
 					border-color: rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1);
 				}
@@ -764,6 +782,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					background-color: ${this._dialogBodyBackground};
 					border-color: transparent transparent rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 0.5) rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 0.5);
 				}
+
+				.hc-light .callout-arrow:before,
 				.hc-black .callout-arrow:before {
 					border-color: transparent transparent rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1) rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1);
 				}

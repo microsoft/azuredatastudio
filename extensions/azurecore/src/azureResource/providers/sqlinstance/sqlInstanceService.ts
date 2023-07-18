@@ -4,27 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { azureResource } from 'azurecore';
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { sqlInstanceQuery } from '../queryStringConstants';
+import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
+import { SqlInstanceGraphData } from '../../interfaces';
+import { SQLINSTANCE_PROVIDER_ID } from '../../../constants';
 
-interface SqlInstanceGraphData extends GraphData {
-	properties: {
-		fullyQualifiedDomainName: string;
-		administratorLogin: string;
-	};
-}
+export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData> {
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`;
+	public override queryFilter: string = sqlInstanceQuery;
 
-export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, azureResource.AzureResourceDatabaseServer> {
-
-	protected get query(): string {
-		return instanceQuery;
-	}
-
-	protected convertResource(resource: SqlInstanceGraphData): azureResource.AzureResourceDatabaseServer {
+	public override convertServerResource(resource: SqlInstanceGraphData): azureResource.AzureResourceDatabaseServer | undefined {
 		return {
 			id: resource.id,
 			name: resource.name,
+			provider: SQLINSTANCE_PROVIDER_ID,
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',

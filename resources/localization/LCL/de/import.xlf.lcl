@@ -15,7 +15,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/import/out/common/constants.flatFile.InvalidFileLocation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFile.InvalidFileLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid file location. Please try a different input file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +24,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.allowNulls" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.allowNulls" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Allow Nulls]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +33,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.browseFiles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.browseFiles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Browse]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +42,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.columnName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.columnName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Column Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,7 +51,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.columnTableTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.columnTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Column]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -60,7 +60,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.createDerivedColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.createDerivedColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create derived column]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -69,7 +69,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.dataType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.dataType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -78,7 +78,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.databaseDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.databaseDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database the table is created in]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -87,7 +87,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.databaseName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.databaseName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -96,7 +96,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction1" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.deriverColumnInstruction1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the columns of data on the left required to derive your new column]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -105,7 +105,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction2" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.deriverColumnInstruction2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a row and specify an example transformation that you would like applied to the rest of the column]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -114,7 +114,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction3" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.deriverColumnInstruction3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click "Preview Transformation" to preview the transformation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -123,7 +123,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction4" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.deriverColumnInstruction4" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refine your transformation until you have the desired column]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -132,7 +132,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction5" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.deriverColumnInstruction5" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify the new derived column's name and click "Done"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -141,7 +141,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.fileImport" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.fileImport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File to be imported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -150,7 +150,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.fileTextboxTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.fileTextboxTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Location of the file to be imported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -159,7 +159,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.headerIntructionText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.headerIntructionText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Welcome to the Derived Column Tool! To get started, please follow the steps below:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -168,7 +168,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.importData" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.importData" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import Data]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -177,7 +177,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.importInformation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.importInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import information]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -186,7 +186,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.importNewFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.importNewFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import new file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -195,7 +195,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.importStatus" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.importStatus" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -204,7 +204,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.next" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.next" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Next]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -213,7 +213,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.openFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.openFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -222,7 +222,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.page1Name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.page1Name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify Input File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -231,7 +231,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.page2Name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.page2Name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Preview Data]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -240,7 +240,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.page3Name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.page3Name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Modify Columns]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -249,7 +249,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.page4Name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.page4Name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Summary]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -258,7 +258,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.previewTransformation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.previewTransformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Preview Transformation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -267,7 +267,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.primaryKey" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.primaryKey" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Primary Key]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -276,7 +276,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.prosePreviewMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.prosePreviewMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -285,7 +285,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.prosePreviewMessageFail" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.prosePreviewMessageFail" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This operation was unsuccessful. Please try a different input file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -294,7 +294,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.refresh" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.refresh" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -303,7 +303,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.schemaTextboxTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.schemaTextboxTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table schema]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -312,7 +312,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.selectAllColumns" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.selectAllColumns" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select all columns]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -321,7 +321,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.selectColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.selectColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select column {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -330,7 +330,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.serverDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.serverDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server the database is in]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -339,7 +339,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.serverName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.serverName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -348,7 +348,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.specifyDerivedColNameTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.specifyDerivedColNameTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Column Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -357,7 +357,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.specifyTransformation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.specifyTransformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify Transformation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -366,7 +366,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.specifyTransformationForRow" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.specifyTransformationForRow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify transformation for row {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -375,7 +375,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.success.norows" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.success.norows" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[✔ You have successfully inserted the data into a table.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -384,7 +384,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.tableName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.tableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -393,7 +393,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.tableSchema" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.tableSchema" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table schema]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -402,7 +402,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.tableTextboxTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.tableTextboxTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New table name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -411,7 +411,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.flatFileImport.wizardName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.flatFileImport.wizardName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import flat file wizard]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -420,7 +420,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.import.needConnection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.import.needConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please connect to a server before using this wizard.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -429,7 +429,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.import.needSQLConnection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.import.needSQLConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Import extension does not support this type of connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -438,7 +438,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.import.serviceCrashButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.import.serviceCrashButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Give Feedback]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -447,7 +447,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/common/constants.serviceCrashMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/common/constants.serviceCrashMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[service component could not start]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -456,7 +456,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.downloadingService" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.downloadingService" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -465,19 +465,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.downloadingServiceComplete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.downloadingServiceComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Done downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Das Herunterladen von {0} wurde abgeschlossen]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Done!]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.downloadingServiceSize" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.downloadingServiceSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[({0} KB)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -486,19 +483,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.downloadingServiceStatus" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.downloadingServiceStatus" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA["{0}" wird heruntergeladen.]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Downloading Service]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.entryExtractedChannelMsg" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.entryExtractedChannelMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extracted {0} ({1}/{2})]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -507,75 +501,57 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.flatFileImport.serviceStartFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.flatFileImport.serviceStartFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to start {0}: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Fehler beim Starten von {0}: {1}]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Failed to start Import service{0}]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.installingService" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.installingService" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing {0} Service]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Der Dienst {0} wird installiert]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Installing Service]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.installingServiceDetailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.installingServiceDetailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing {0} to {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA["{0}" wird in "{1}" installiert.]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Installing {0} service to {1}]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.serviceInstalled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.serviceInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installed {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA["{0}" wurde installiert.]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Installed]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.serviceStarted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.serviceStarted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA["{0}" wurde gestartet.]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Service Started]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/import/out/services/serviceClient.serviceStarting" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/import/dist/services/serviceClient.serviceStarting" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Starting {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA["{0}" wird gestartet.]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Starting service]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

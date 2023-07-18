@@ -4,50 +4,85 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ICachePlugin, TokenCacheContext } from '@azure/msal-node';
-import { constants, promises as fsPromises } from 'fs';
+import { promises as fsPromises } from 'fs';
+
+import * as lockFile from 'lockfile';
 import * as path from 'path';
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import { AccountsClearTokenCacheCommand, AuthLibrary, LocalCacheSuffix, LockFileSuffix } from '../../constants';
 import { Logger } from '../../utils/Logger';
+import { FileEncryptionHelper } from './fileEncryptionHelper';
+import { CacheEncryptionKeys } from 'azurecore';
+import { Token } from '../auths/azureAuth';
+
+interface CacheConfiguration {
+	name: string,
+	cacheFilePath: string,
+	lockFilePath: string,
+	lockTaken: boolean
+}
+
+interface LocalAccountCache {
+	tokens: Token[];
+}
 
 export class MsalCachePluginProvider {
 	constructor(
 		private readonly _serviceName: string,
-		private readonly _msalFilePath: string
+		msalFilePath: string,
+		private readonly _credentialService: azdata.CredentialProvider,
+		private readonly _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>
 	) {
-		this._msalFilePath = path.join(this._msalFilePath, this._serviceName);
-		this._serviceName = this._serviceName.replace(/-/, '_');
-		Logger.verbose(`MsalCachePluginProvider: Using cache path ${_msalFilePath} and serviceName ${_serviceName}`);
+		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
+		this._msalCacheConfiguration = {
+			name: 'MSAL',
+			cacheFilePath: path.join(msalFilePath, this._serviceName),
+			lockFilePath: path.join(msalFilePath, this._serviceName) + LockFileSuffix,
+			lockTaken: false
+		}
+		this._localCacheConfiguration = {
+			name: 'Local',
+			cacheFilePath: path.join(msalFilePath, this._serviceName) + LocalCacheSuffix,
+			lockFilePath: path.join(msalFilePath, this._serviceName) + LocalCacheSuffix + LockFileSuffix,
+			lockTaken: false
+		}
+	}
+
+	private _fileEncryptionHelper: FileEncryptionHelper;
+	private _msalCacheConfiguration: CacheConfiguration;
+	private _localCacheConfiguration: CacheConfiguration;
+	private _emptyLocalCache: LocalAccountCache = { tokens: [] };
+
+	public async init(): Promise<void> {
+		await this._fileEncryptionHelper.init();
+	}
+
+	public getCacheEncryptionKeys(): CacheEncryptionKeys {
+		return this._fileEncryptionHelper.getEncryptionKeys();
+	}
+
+	public async clearCacheEncryptionKeys(): Promise<void> {
+		await this._fileEncryptionHelper.clearEncryptionKeys();
 	}
 
 	public getCachePlugin(): ICachePlugin {
 		const beforeCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
-			let exists = true;
 			try {
-				await fsPromises.access(this._msalFilePath, constants.R_OK | constants.W_OK);
-			} catch {
-				exists = false;
+				const decryptedData = await this.readCache(this._msalCacheConfiguration, this._localCacheConfiguration);
+				cacheContext.tokenCache.deserialize(decryptedData);
+			} catch (e) {
+				// Handle deserialization error in cache file in case file gets corrupted.
+				// Clearing cache here will ensure account is marked stale so re-authentication can be triggered.
+				Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file, file will be deleted: ${e.message}`);
+				await fsPromises.unlink(this._msalCacheConfiguration.cacheFilePath);
 			}
-			if (exists) {
-				try {
-					const cache = await fsPromises.readFile(this._msalFilePath, { encoding: 'utf8' });
-					cacheContext.tokenCache.deserialize(cache);
-					Logger.verbose(`MsalCachePlugin: Token read from cache successfully.`);
-				} catch (e) {
-					Logger.error(`MsalCachePlugin: Failed to read from cache file. ${e}`);
-					throw e;
-				}
-			}
-		};
+		}
 
 		const afterCacheAccess = async (cacheContext: TokenCacheContext): Promise<void> => {
 			if (cacheContext.cacheHasChanged) {
-				try {
-					const data = cacheContext.tokenCache.serialize();
-					await fsPromises.writeFile(this._msalFilePath, data, { encoding: 'utf8' });
-					Logger.verbose(`MsalCachePlugin: Token written to cache successfully.`);
-				} catch (e) {
-					Logger.error(`MsalCachePlugin: Failed to write to cache file. ${e}`);
-					throw e;
-				}
+				const data = cacheContext.tokenCache.serialize();
+				await this.writeCache(data, this._msalCacheConfiguration);
 			}
 		};
 
@@ -61,4 +96,185 @@ export class MsalCachePluginProvider {
 			afterCacheAccess,
 		};
 	}
+
+	/**
+	 * Fetches access token from local cache, before accessing MSAL Cache.
+	 * @param accountId Account Id for token owner.
+	 * @param tenantId Tenant Id to which token belongs to.
+	 * @param resource Resource Id to which token belongs to.
+	 * @returns Access Token.
+	 */
+	public async getTokenFromLocalCache(accountId: string, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
+		let cache = JSON.parse(await this.readCache(this._localCacheConfiguration, this._msalCacheConfiguration)) as LocalAccountCache;
+		let token = cache?.tokens?.find(token => (
+			token.key === accountId &&
+			token.tenantId === tenantId &&
+			token.resource === resource
+		));
+		return token;
+	}
+
+	/**
+	 * Updates local cache with newly fetched access token to prevent throttling of AAD requests.
+	 * @param token Access token to be written to cache file.
+	 */
+	public async writeTokenToLocalCache(token: Token): Promise<void> {
+		let updateCount = 0;
+		let indexToUpdate = -1;
+		let cache: LocalAccountCache;
+		cache = JSON.parse(await this.readCache(this._localCacheConfiguration, this._msalCacheConfiguration)) as LocalAccountCache;
+		if (cache?.tokens) {
+			cache.tokens.forEach((t, i) => {
+				if (t.key === token.key && t.tenantId === token.tenantId && t.resource === token.resource
+				) {
+					// Update token
+					indexToUpdate = i;
+					updateCount++;
+				}
+			});
+		} else {
+			// Initialize token cache
+			cache = this._emptyLocalCache;
+		}
+
+		if (updateCount === 0) {
+			// No tokens were updated, add new token.
+			cache.tokens.push(token);
+			updateCount = 1;
+		}
+
+		if (updateCount === 1) {
+			if (indexToUpdate !== -1) {
+				cache.tokens[indexToUpdate] = token;
+			}
+			await this.writeCache(JSON.stringify(cache), this._localCacheConfiguration);
+		}
+		else {
+			Logger.info(`Found multiple tokens in local cache, cache will be reset.`);
+			// Reset cache as we don't expect multiple tokens to be stored for same combination.
+			await this.writeCache(JSON.stringify(this._emptyLocalCache), this._localCacheConfiguration);
+		}
+	}
+
+	/**
+	 * Removes associated tokens for account, to be called when account is deleted.
+	 * @param accountId Account ID
+	 */
+	public async clearAccountFromLocalCache(accountId: string): Promise<void> {
+		let cache = JSON.parse(await this.readCache(this._localCacheConfiguration, this._msalCacheConfiguration)) as LocalAccountCache;
+		let tokenIndices: number[] = [];
+		if (cache?.tokens) {
+			cache.tokens.forEach((t, i) => {
+				if (t.key === accountId) {
+					tokenIndices.push(i);
+				}
+			});
+		}
+		tokenIndices.forEach(i => {
+			cache.tokens.splice(i);
+		})
+		Logger.info(`Local Cache cleared for account, ${tokenIndices.length} tokens were cleared.`);
+	}
+
+	/**
+	 * Deletes Msal access token cache file
+	 */
+	public async unlinkMsalCache(): Promise<void> {
+		await fsPromises.unlink(this._msalCacheConfiguration.cacheFilePath);
+	}
+
+	/**
+	 * Deletes local access token cache file.
+	 */
+	public async unlinkLocalCache(): Promise<void> {
+		await fsPromises.unlink(this._localCacheConfiguration.cacheFilePath);
+	}
+
+	//#region Private helper methods
+	private async writeCache(fileContents: string, config: CacheConfiguration): Promise<void> {
+		config.lockTaken = await this.waitAndLock(config.lockFilePath, config.lockTaken);
+		try {
+			const encryptedCache = await this._fileEncryptionHelper.fileSaver(fileContents);
+			await fsPromises.writeFile(config.cacheFilePath, encryptedCache, { encoding: 'utf8' });
+		} catch (e) {
+			Logger.error(`MsalCachePlugin: Failed to write to '${config.name}' cache file: ${e}`);
+			throw e;
+		} finally {
+			lockFile.unlockSync(config.lockFilePath);
+			config.lockTaken = false;
+		}
+	}
+
+	/**
+	 * Reads from an encrypted cache file based on currentConfig provided.
+	 * @param currentConfig Currently used cache configuration.
+	 * @param alternateConfig Alternate cache configuration for resetting needs.
+	 * @returns Decrypted data.
+	 */
+	private async readCache(currentConfig: CacheConfiguration, alternateConfig: CacheConfiguration): Promise<string> {
+		currentConfig.lockTaken = await this.waitAndLock(currentConfig.lockFilePath, currentConfig.lockTaken);
+		try {
+			const cache = await fsPromises.readFile(currentConfig.cacheFilePath, { encoding: 'utf8' });
+			const decryptedData = await this._fileEncryptionHelper.fileOpener(cache!, true);
+			return decryptedData;
+		} catch (e) {
+			if (e.code === 'ENOENT') {
+				// File doesn't exist, log and continue
+				Logger.verbose(`MsalCachePlugin: Cache file for '${currentConfig.name}' cache not found on disk: ${e.code}`);
+			}
+			else {
+				Logger.error(`MsalCachePlugin: Failed to read from cache file: ${e}`);
+				Logger.verbose(`MsalCachePlugin: Error occurred when trying to read cache file ${currentConfig.name}, file will be deleted: ${e.message}`);
+				await fsPromises.unlink(currentConfig.cacheFilePath);
+
+				// Ensure both configurations are not same.
+				if (currentConfig.name !== alternateConfig.name) {
+					// Delete alternate cache file as well.
+					alternateConfig.lockTaken = await this.waitAndLock(alternateConfig.lockFilePath, alternateConfig.lockTaken);
+					await fsPromises.unlink(alternateConfig.cacheFilePath);
+					lockFile.unlockSync(alternateConfig.lockFilePath);
+					alternateConfig.lockTaken = false;
+					Logger.verbose(`MsalCachePlugin: Cache file for ${alternateConfig.name} cache also deleted.`);
+				}
+			}
+			return '{}'; // Return empty json string if cache not read.
+		} finally {
+			lockFile.unlockSync(currentConfig.lockFilePath);
+			currentConfig.lockTaken = false;
+		}
+	}
+
+	private async waitAndLock(lockFilePath: string, lockTaken: boolean): Promise<boolean> {
+		// Make 500 retry attempts with 100ms wait time between each attempt to allow enough time for the lock to be released.
+		const retries = 500;
+		const retryWait = 100;
+
+		// We cannot rely on lockfile.lockSync() to clear stale lockfile,
+		// so we check if the lockfile exists and if it does, calling unlockSync() will clear it.
+		if (lockFile.checkSync(lockFilePath) && !lockTaken) {
+			lockFile.unlockSync(lockFilePath);
+			Logger.verbose(`MsalCachePlugin: Stale lockfile found and has been removed.`);
+		}
+
+		let retryAttempt = 0;
+		while (retryAttempt <= retries) {
+			try {
+				// Use lockfile.lockSync() to ensure only one process is accessing the cache at a time.
+				// lockfile.lock() does not wait for async callback promise to resolve.
+				lockFile.lockSync(lockFilePath);
+				lockTaken = true;
+				break;
+			} catch (e) {
+				if (retryAttempt === retries) {
+					Logger.error(`MsalCachePlugin: Failed to acquire lock on cache file after ${retries} attempts.`);
+					throw new Error(`Failed to acquire lock on cache file after ${retries} attempts. Please attempt command: '${AccountsClearTokenCacheCommand}' to clear access token cache.`);
+				}
+				retryAttempt++;
+				Logger.verbose(`MsalCachePlugin: Failed to acquire lock on cache file. Retrying in ${retryWait} ms.`);
+				await new Promise(resolve => setTimeout(resolve, retryWait));
+			}
+		}
+		return lockTaken;
+	}
+	//#endregion
 }

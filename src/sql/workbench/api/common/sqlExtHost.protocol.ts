@@ -18,14 +18,15 @@ import {
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
-	ISerializationManagerDetails
+	ISerializationManagerDetails,
+	IErrorDialogOptions
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { CheckboxUpdate, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
-import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
+import { DataTransferDTO } from 'vs/workbench/api/common/extHost.protocol';
 
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
@@ -66,6 +67,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Disconnect from a data source using the provided connectionUri string.
 	 */
 	$disconnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
+
+	/**
+	 * Changes password of the connection profile's user.
+	 */
+	$changePassword(handle: number, connectionUri: string, connection: azdata.ConnectionInfo, newPassword: string): Thenable<azdata.PasswordChangeResult> { throw ni(); }
 
 	/**
 	 * Cancel a connection to a data source using the provided connectionUri string.
@@ -246,6 +252,11 @@ export abstract class ExtHostDataProtocolShape {
 	$saveResults(handle: number, requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
 
 	/**
+	 * Copies the selected data to clipboard.
+	 */
+	$copyResults(handle: number, requestParams: azdata.CopyResultsRequestParams): Thenable<void> { throw ni(); }
+
+	/**
 	 * Commits all pending edits in an edit session
 	 */
 	$commitEdit(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
@@ -374,7 +385,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session
@@ -570,7 +581,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Open a new instance of table designer.
 	 */
-	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void { throw ni(); }
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void { throw ni(); }
 
 	/**
 	 * Gets the generic execution plan graph for a plan file.
@@ -599,7 +610,16 @@ export abstract class ExtHostResourceProviderShape {
 	 * Handle firewall rule
 	 */
 	$handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> { throw ni(); }
+}
 
+/**
+ * ResourceProvider extension host class.
+ */
+export abstract class ExtHostErrorDiagnosticsShape {
+	/**
+	 * Handle other connection error types
+	 */
+	$handleConnectionError(handle: number, errorInfo: azdata.diagnostics.IErrorInformation, connection: azdata.connection.ConnectionProfile): Thenable<azdata.diagnostics.ConnectionDiagnosticsResult> { throw ni(); }
 }
 
 /**
@@ -639,6 +659,11 @@ export interface MainThreadAzureBlobShape extends IDisposable {
 export interface MainThreadResourceProviderShape extends IDisposable {
 	$registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, handle: number): Thenable<any>;
 	$unregisterResourceProvider(handle: number): Thenable<any>;
+}
+
+export interface MainThreadErrorDiagnosticsShape extends IDisposable {
+	$registerDiagnosticsProvider(providerMetadata: azdata.diagnostics.ErrorDiagnosticsProviderMetadata, handle: number): Thenable<any>;
+	$unregisterDiagnosticsProvider(handle: number): Thenable<any>;
 }
 
 export interface MainThreadDataProtocolShape extends IDisposable {
@@ -685,7 +710,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
-	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): void;
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): void;
 	/**
 	 * Callback when a session has completed initialization
 	 */
@@ -703,6 +728,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
+	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -772,7 +798,7 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]>;
-	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
+	$handleDrop(destinationViewId: string, requestId: number, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
 	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: vscode.CancellationToken): Promise<DataTransferDTO | undefined>;
 
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): azdata.TreeComponentView<any>;
@@ -784,6 +810,8 @@ export interface ExtHostModelViewTreeViewsShape {
 	$setVisible(treeViewId: string, visible: boolean): void;
 	$hasResolve(treeViewId: string): Promise<boolean>;
 	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined>;
+	$setFocus(treeViewId: string, treeItemHandle: string): void;
+	$changeCheckboxState(treeViewId: string, checkboxUpdates: CheckboxUpdate[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {
@@ -858,6 +886,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$closeEditor(handle: number): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
+	$openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
@@ -1007,4 +1036,12 @@ export interface ExtHostExtensionManagementShape {
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
 	$showObsoleteExtensionApiUsageNotification(message: string): void;
+}
+
+export interface ExtHostPerfShape {
+	$mark(name: string): void;
+}
+
+export interface MainThreadPerfShape {
+	$mark(name: string): void;
 }

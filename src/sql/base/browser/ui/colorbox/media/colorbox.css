@@ -3,23 +3,32 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.colorbox {
-	cursor: pointer;
-	-webkit-appearance: none;
-	opacity: 0.3;
-	width: 100%;
-}
-
-.colorbox.checked {
-	opacity: 1;
-}
-
 .colorbox-container {
-	margin: 5px;
-	text-align: center;
-	flex: 1 1 auto;
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 3px;
+}
+
+.colorbox-container .color-element {
+	height: 20px;
+	width: 50px;
+	border-style: solid;
+	border-color: white;
+	border-width: 1px;
+}
+
+.colorbox-radio {
+	margin: 0px;
 }
 
 .colorbox-label {
 	user-select: text;
+}
+
+.color-selector-container {
+	display: flex;
+	align-items: center;
+	column-gap: 3px;
 }

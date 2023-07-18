@@ -116,7 +116,7 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 	});
 
 	it('Should throw an error for login failure', async function (): Promise<void> {
-		const connectionProfile = azdataTest.stubs.connectionProfile.createConnectionProfile({
+		const connectionProfile = azdataTest.stubs.azdata.createConnectionProfile({
 			// these need to match what's in mockConnectionInfo in testUtils.ts
 			options: {
 				server: mockConnectionInfo.serverName,

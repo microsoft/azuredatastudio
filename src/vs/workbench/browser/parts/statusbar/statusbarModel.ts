@@ -4,36 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { isStatusbarEntryLocation, IStatusbarEntryLocation, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
+import { isStatusbarEntryLocation, IStatusbarEntryPriority, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { hide, show, isAncestor } from 'vs/base/browser/dom';
 import { IStorageService, StorageScope, IStorageValueChangeEvent, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Emitter } from 'vs/base/common/event';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { Extensions, IProfileStorageRegistry } from 'vs/workbench/services/profiles/common/profileStorageRegistry';
-import { localize } from 'vs/nls';
-
-export interface IStatusbarEntryPriority {
-
-	/**
-	 * The main priority of the entry that
-	 * defines the order of appearance:
-	 * either a number or a reference to
-	 * another status bar entry to position
-	 * relative to.
-	 *
-	 * May not be unique across all entries.
-	 */
-	readonly primary: number | IStatusbarEntryLocation;
-
-	/**
-	 * The secondary priority of the entry
-	 * is used in case the main priority
-	 * matches another one's priority.
-	 *
-	 * Should be unique across all entries.
-	 */
-	readonly secondary: number;
-}
 
 export interface IStatusbarViewModelEntry {
 	readonly id: string;
@@ -68,15 +42,10 @@ export class StatusbarViewModel extends Disposable {
 		this.restoreState();
 		this.registerListeners();
 
-		Registry.as<IProfileStorageRegistry>(Extensions.ProfileStorageRegistry)
-			.registerKeys([{
-				key: StatusbarViewModel.HIDDEN_ENTRIES_KEY,
-				description: localize('statusbar.hidden', "Status bar entries visibility customizations"),
-			}]);
 	}
 
 	private restoreState(): void {
-		const hiddenRaw = this.storageService.get(StatusbarViewModel.HIDDEN_ENTRIES_KEY, StorageScope.GLOBAL);
+		const hiddenRaw = this.storageService.get(StatusbarViewModel.HIDDEN_ENTRIES_KEY, StorageScope.PROFILE);
 		if (hiddenRaw) {
 			try {
 				const hiddenArray: string[] = JSON.parse(hiddenRaw);
@@ -92,7 +61,7 @@ export class StatusbarViewModel extends Disposable {
 	}
 
 	private onDidStorageValueChange(event: IStorageValueChangeEvent): void {
-		if (event.key === StatusbarViewModel.HIDDEN_ENTRIES_KEY && event.scope === StorageScope.GLOBAL) {
+		if (event.key === StatusbarViewModel.HIDDEN_ENTRIES_KEY && event.scope === StorageScope.PROFILE) {
 
 			// Keep current hidden entries
 			const currentlyHidden = new Set(this.hidden);
@@ -281,9 +250,9 @@ export class StatusbarViewModel extends Disposable {
 
 	private saveState(): void {
 		if (this.hidden.size > 0) {
-			this.storageService.store(StatusbarViewModel.HIDDEN_ENTRIES_KEY, JSON.stringify(Array.from(this.hidden.values())), StorageScope.GLOBAL, StorageTarget.USER);
+			this.storageService.store(StatusbarViewModel.HIDDEN_ENTRIES_KEY, JSON.stringify(Array.from(this.hidden.values())), StorageScope.PROFILE, StorageTarget.USER);
 		} else {
-			this.storageService.remove(StatusbarViewModel.HIDDEN_ENTRIES_KEY, StorageScope.GLOBAL);
+			this.storageService.remove(StatusbarViewModel.HIDDEN_ENTRIES_KEY, StorageScope.PROFILE);
 		}
 	}
 
@@ -406,13 +375,9 @@ export class StatusbarViewModel extends Disposable {
 		}
 
 		// Mark: first visible item
-		if (firstVisibleItem) {
-			firstVisibleItem.container.classList.add('first-visible-item');
-		}
+		firstVisibleItem?.container.classList.add('first-visible-item');
 
 		// Mark: last visible item
-		if (lastVisibleItem) {
-			lastVisibleItem.container.classList.add('last-visible-item');
-		}
+		lastVisibleItem?.container.classList.add('last-visible-item');
 	}
 }

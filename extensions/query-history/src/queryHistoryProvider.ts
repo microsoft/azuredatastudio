@@ -95,7 +95,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
 						// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
 						if (textEditor?.document.uri.toString() !== vscode.Uri.parse(document.uri).toString()) {
-							TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'UriMismatch');
+							TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'UriMismatch');
 							// If we couldn't find the document then we can't get the text so just log the error and move on
 							console.error(`Active text editor ${textEditor?.document.uri} does not match URI ${document.uri} for query event`);
 							return;
@@ -128,7 +128,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			}
 		} catch (err) {
 			console.error(`Error getting persistance storage IV: ${err}`);
-			TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'InitializingIV');
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'InitializingIV', err);
 			// An IV is required to read/write the encrypted file so if we can't get it then just fail early
 			return;
 		}
@@ -144,7 +144,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			}
 		} catch (err) {
 			console.error(`Error getting persistance storage key: ${err}`);
-			TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'InitializingKey');
+			TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'InitializingKey', err);
 			// A key is required to read/write the encrypted file so if we can't get it then just fail early
 			return;
 		}
@@ -166,7 +166,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
 					writeStorageFileAction.send();
 				} catch (err) {
-					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'WriteStorageFile');
+					TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'WriteStorageFile', err);
 					console.error(`Error writing query history to disk: ${err}`);
 				}
 
@@ -191,7 +191,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		} catch (err) {
 			// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
 			if (err.code !== 'ENOENT') {
-				TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'ReadStorageFile');
+				TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'ReadStorageFile', err);
 				console.error(`Error deserializing stored history items: ${err}`);
 				void vscode.window.showWarningMessage(loc.errorLoading(err));
 				// Rename the file to avoid attempting to load a potentially corrupted or unreadable file every time we start up, we'll make
@@ -200,7 +200,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const bakPath = path.join(path.dirname(this._historyStorageFile), `${HISTORY_STORAGE_FILE_NAME}.bak`);
 					await fs.promises.rename(this._historyStorageFile, bakPath);
 				} catch (err) {
-					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'MovingBadStorageFile');
+					TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'MovingBadStorageFile', err);
 					console.error(`Error moving corrupted history file: ${err}`);
 				}
 			}
@@ -291,7 +291,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			} catch (err) {
 				// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
 				if (err.code !== 'ENOENT') {
-					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'CleaningUpStorageFile');
+					TelemetryReporter.sendErrorEvent2(TelemetryViews.QueryHistoryProvider, 'CleaningUpStorageFile', err);
 					// Best effort, we don't want other things to fail if we can't delete the file for some reason
 					console.error(`Error cleaning up query history storage: ${this._historyStorageFile}. ${err}`);
 				}

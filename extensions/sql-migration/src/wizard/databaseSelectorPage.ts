@@ -8,18 +8,23 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { debounce } from '../api/utils';
+import { debounce, promptUserForFolder } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { getDatabasesList, excludeDatabases } from '../api/sqlUtils';
+import { getDatabasesList, excludeDatabases, SourceDatabaseInfo, getSourceConnectionProfile } from '../api/sqlUtils';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _databaseSelectorTable!: azdata.TableComponent;
+	private _xEventsGroup!: azdata.GroupContainer;
+	private _xEventsFolderPickerInput!: azdata.InputBoxComponent;
+	private _xEventsFilesFolderPath!: string;
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
+
+	private readonly TABLE_WIDTH = 650;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
@@ -61,29 +66,29 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		this._xEventsFilesFolderPath = this.migrationStateModel._xEventsFilesFolderPath;
 	}
 
 	public async onPageLeave(): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
+
 		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
 		const selectedDatabases = this.migrationStateModel._databasesForAssessment;
 		// run assessment if
 		// * no prior assessment
 		// * the prior assessment had an error or
 		// * the assessed databases list is different from the selected databases list
+		// * the XEvents path has changed
 		this.migrationStateModel._runAssessments = !this.migrationStateModel._assessmentResults
 			|| !!this.migrationStateModel._assessmentResults?.assessmentError
 			|| assessedDatabases.length === 0
 			|| assessedDatabases.length !== selectedDatabases.length
-			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
+			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0)
+			|| this.migrationStateModel._xEventsFilesFolderPath.toLowerCase() !== this._xEventsFilesFolderPath.toLowerCase();
 
-		this.wizard.message = {
-			text: '',
-			level: azdata.window.MessageLevel.Error
-		};
-
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
+		this.migrationStateModel._xEventsFilesFolderPath = this._xEventsFilesFolderPath;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -162,8 +167,9 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		this._databaseSelectorTable = this._view.modelBuilder.table()
 			.withProps({
 				data: [],
-				width: 650,
+				width: this.TABLE_WIDTH,
 				height: '100%',
+				CSSStyles: { 'margin-bottom': '12px' },
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
 					<azdata.CheckboxColumn>{
@@ -218,23 +224,96 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
 
+		const xEventsDescription = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.XEVENTS_ASSESSMENT_DESCRIPTION,
+				width: this.TABLE_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS },
+				links: [{ text: constants.XEVENTS_ASSESSMENT_HELPLINK, url: 'https://aka.ms/sql-migration-xe-assess' }]
+			}).component();
+
+		const xEventsInstructions = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER,
+				width: this.TABLE_WIDTH,
+				CSSStyles: { ...styles.LABEL_CSS },
+			}).component();
+
+		this._xEventsFolderPickerInput = this._view.modelBuilder.inputBox()
+			.withProps({
+				placeHolder: constants.FOLDER_NAME,
+				readOnly: true,
+				width: 460,
+				ariaLabel: constants.XEVENTS_ASSESSMENT_OPEN_FOLDER
+			}).component();
+		this._disposables.push(
+			this._xEventsFolderPickerInput.onTextChanged(async (value) => {
+				if (value) {
+					this._xEventsFilesFolderPath = value.trim();
+				}
+			}));
+
+		const xEventsFolderPickerButton = this._view.modelBuilder.button()
+			.withProps({
+				label: constants.OPEN,
+				width: 80,
+			}).component();
+		this._disposables.push(
+			xEventsFolderPickerButton.onDidClick(
+				async () => this._xEventsFolderPickerInput.value = await promptUserForFolder()));
+
+		const xEventsFolderPickerClearButton = this._view.modelBuilder.button()
+			.withProps({
+				label: constants.CLEAR,
+				width: 80,
+			}).component();
+		this._disposables.push(
+			xEventsFolderPickerClearButton.onDidClick(
+				async () => {
+					this._xEventsFolderPickerInput.value = '';
+					this._xEventsFilesFolderPath = '';
+				}));
+
+		const xEventsFolderPickerContainer = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: { 'flex-direction': 'row', 'align-items': 'left' }
+			}).withItems([
+				this._xEventsFolderPickerInput,
+				xEventsFolderPickerButton,
+				xEventsFolderPickerClearButton
+			]).component();
+
+		this._xEventsGroup = this._view.modelBuilder.groupContainer()
+			.withLayout({
+				header: constants.XEVENTS_ASSESSMENT_TITLE,
+				collapsible: true,
+				collapsed: true
+			}).withItems([
+				xEventsDescription,
+				xEventsInstructions,
+				xEventsFolderPickerContainer
+			]).component();
+
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: '100%',
+			height: '65%',
 		}).withProps({
 			CSSStyles: {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
+
 		flex.addItem(text, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
+		flex.addItem(this._xEventsGroup, { flex: '0 0 auto' });
+
 		return flex;
 	}
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
-		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await stateMachine.getSourceConnectionProfile()));
+		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await getSourceConnectionProfile()));
 
 		const databaseList = allDatabases
 			.filter(database => !excludeDatabases.includes(database.options.name))
@@ -242,10 +321,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
 		this._dbNames = [];
+		stateMachine._databaseInfosForMigration = [];
 
 		this._databaseTableValues = databaseList.map(database => {
 			const databaseName = database.options.name;
 			this._dbNames.push(databaseName);
+			stateMachine._databaseInfosForMigration.push(this.getSourceDatabaseInfo(database));
 			return [
 				selectedDatabases?.indexOf(databaseName) > -1,
 				<azdata.IconColumnCellValue>{
@@ -276,5 +357,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				this._databaseSelectorTable.data?.length || 0)
 		});
 		this.migrationStateModel._databasesForAssessment = selectedDatabases;
+	}
+
+	private getSourceDatabaseInfo(database: azdata.DatabaseInfo): SourceDatabaseInfo {
+		return {
+			databaseName: database.options.name,
+			databaseCollation: database.options.collation,
+			databaseSizeInMB: database.options.sizeInMB,
+			databaseState: database.options.state
+		};
 	}
 }

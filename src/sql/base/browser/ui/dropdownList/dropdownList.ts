@@ -5,28 +5,82 @@
 
 import 'vs/css!./media/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
-import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Color } from 'vs/base/common/color';
 import { IAction } from 'vs/base/common/actions';
 import { EventType as GestureEventType } from 'vs/base/browser/touch';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
-import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { BaseDropdown, IBaseDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
+import { IAnchor, IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
+import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 
 export interface IDropdownStyles {
-	backgroundColor?: Color;
-	foregroundColor?: Color;
-	borderColor?: Color;
+	backgroundColor?: string;
+	foregroundColor?: string;
+	borderColor?: string;
+}
+
+export interface IDropdownOptions extends IBaseDropdownOptions {
+	contextViewProvider: IContextViewProvider;
+	buttonStyles: IButtonStyles;
+	dropdownStyles: IDropdownStyles;
+}
+
+export class Dropdown extends BaseDropdown {
+	private contextViewProvider: IContextViewProvider;
+
+	constructor(container: HTMLElement, options: IDropdownOptions) {
+		super(container, options);
+
+		this.contextViewProvider = options.contextViewProvider;
+	}
+
+	override show(): void {
+		super.show();
+
+		this.element.classList.add('active');
+
+		this.contextViewProvider.showContextView({
+			getAnchor: () => this.getAnchor(),
+
+			render: (container) => {
+				return this.renderContents(container);
+			},
+
+			onDOMEvent: (e, activeElement) => {
+				this.onEvent(e, activeElement);
+			},
+
+			onHide: () => this.onHide()
+		});
+	}
+
+	protected getAnchor(): HTMLElement | IAnchor {
+		return this.element;
+	}
+
+	protected onHide(): void {
+		this.element.classList.remove('active');
+	}
+
+	override hide(): void {
+		super.hide();
+
+		if (this.contextViewProvider) {
+			this.contextViewProvider.hideContextView();
+		}
+	}
+
+	protected renderContents(container: HTMLElement): IDisposable | null {
+		return null;
+	}
 }
 
 export class DropdownList extends Dropdown {
-
-	protected backgroundColor?: Color;
-	protected foregroundColor?: Color;
-	protected borderColor?: Color;
+	protected borderWidth = 1;
 
 	private button?: Button;
 
@@ -39,7 +93,7 @@ export class DropdownList extends Dropdown {
 	) {
 		super(container, _options);
 		if (action) {
-			this.button = new Button(_contentContainer);
+			this.button = new Button(_contentContainer, this._options.buttonStyles);
 			this.button.label = action.label;
 			this._register(DOM.addDisposableListener(this.button.element, DOM.EventType.CLICK, () => {
 				action.run();
@@ -82,14 +136,18 @@ export class DropdownList extends Dropdown {
 		}));
 
 		this.element.setAttribute('tabindex', '0');
+		this.applyStylesOnElement(this._contentContainer, _options.dropdownStyles.backgroundColor, _options.dropdownStyles.foregroundColor, _options.dropdownStyles.borderColor);
+		if (this.label) {
+			this.applyStylesOnElement(this.element, _options.dropdownStyles.backgroundColor, _options.dropdownStyles.foregroundColor, _options.dropdownStyles.borderColor);
+		}
 	}
 
 	/**
 	 * Render the dropdown contents
 	 */
-	protected override renderContents(container: HTMLElement): IDisposable {
+	protected override renderContents(container: HTMLElement): IDisposable | null {
 		let div = DOM.append(container, this._contentContainer);
-		div.style.width = DOM.getTotalWidth(this.element) + 'px';
+		div.style.width = (DOM.getTotalWidth(this.element) - this.borderWidth * 2) + 'px'; // Subtract border width
 		return { dispose: () => { } };
 	}
 
@@ -120,32 +178,13 @@ export class DropdownList extends Dropdown {
 		}
 	}
 
-	public style(styles: IDropdownStyles & IButtonStyles): void {
-		this.backgroundColor = styles.backgroundColor;
-		this.foregroundColor = styles.foregroundColor;
-		this.borderColor = styles.borderColor;
-		this.applyStyles();
-		if (this.button) {
-			this.button.style(styles);
-		}
-	}
-
-	protected applyStyles(): void {
-		const background = this.backgroundColor ? this.backgroundColor.toString() : '';
-		const foreground = this.foregroundColor ? this.foregroundColor.toString() : '';
-		const border = this.borderColor ? this.borderColor.toString() : '';
-		this.applyStylesOnElement(this._contentContainer, background, foreground, border);
-		if (this.label) {
-			this.applyStylesOnElement(this.element, background, foreground, border);
-		}
-	}
-
 	private applyStylesOnElement(element: HTMLElement, background: string, foreground: string, border: string): void {
 		if (element) {
 			element.style.backgroundColor = background;
 			element.style.color = foreground;
 
-			element.style.borderWidth = border ? '1px' : '';
+			this.borderWidth = border ? 1 : 0;
+			element.style.borderWidth = border ? this.borderWidth + 'px' : '';
 			element.style.borderStyle = border ? 'solid' : '';
 			element.style.borderColor = border;
 		}

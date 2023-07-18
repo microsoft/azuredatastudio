@@ -12,19 +12,18 @@ import { DatabaseMigration, getMigrationDetails } from '../api/azure';
 import { MigrationLocalStorage } from '../models/migrationLocalStorage';
 import { FileStorageType } from '../models/stateMachine';
 import { MigrationDetailsTabBase } from './migrationDetailsTabBase';
-import { MigrationDetailsFileShareTab } from './migrationDetailsFileShareTab';
-import { MigrationDetailsBlobContainerTab } from './migrationDetailsBlobContainerTab';
+import { MigrationDetailsTab } from './migrationDetailsTab';
 import { MigrationDetailsTableTab } from './migrationDetailsTableTab';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { getSourceConnectionId } from '../api/sqlUtils';
 
 export const MigrationsTabId = 'MigrationsTab';
 
 export class MigrationsTab extends TabBase<MigrationsTab> {
 	private _tab!: azdata.DivContainer;
 	private _migrationsListTab!: MigrationsListTab;
+	private _migrationDetailsViewTab!: MigrationDetailsTabBase<any>;
 	private _migrationDetailsTab!: MigrationDetailsTabBase<any>;
-	private _migrationDetailsFileShareTab!: MigrationDetailsTabBase<any>;
-	private _migrationDetailsBlobTab!: MigrationDetailsTabBase<any>;
 	private _migrationDetailsTableTab!: MigrationDetailsTabBase<any>;
 	private _selectedTabId: string | undefined = undefined;
 	private _migrationDetailsEvent!: vscode.EventEmitter<MigrationDetailsEvent>;
@@ -58,9 +57,9 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 		switch (this._selectedTabId) {
 			case undefined:
 			case MigrationsListTabId:
-				return this._migrationsListTab.refresh();
+				return this._migrationsListTab.refresh(true);
 			default:
-				return this._migrationDetailsTab.refresh();
+				return this._migrationDetailsViewTab.refresh();
 		}
 	}
 
@@ -84,37 +83,31 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 			this.statusBar);
 		this.disposables.push(this._migrationsListTab);
 
-		const openMigrationsListTab = async (): Promise<void> => {
+		const openMigrationsListTab = async (refresh?: boolean): Promise<void> => {
 			await this.statusBar.clearError();
 			await this._openTab(this._migrationsListTab);
+			if (refresh) {
+				await this._migrationsListTab.refresh();
+			}
 		};
 
-		this._migrationDetailsBlobTab = await new MigrationDetailsBlobContainerTab().create(
+		this._migrationDetailsTab = await new MigrationDetailsTab().create(
 			this.context,
 			this.view,
 			openMigrationsListTab,
 			this.statusBar);
-		this.disposables.push(this._migrationDetailsBlobTab);
-
-		this._migrationDetailsFileShareTab = await new MigrationDetailsFileShareTab().create(
-			this.context,
-			this.view,
-			openMigrationsListTab,
-			this.statusBar);
-		this.disposables.push(this._migrationDetailsFileShareTab);
+		this.disposables.push(this._migrationDetailsTab);
 
 		this._migrationDetailsTableTab = await new MigrationDetailsTableTab().create(
 			this.context,
 			this.view,
 			openMigrationsListTab,
 			this.statusBar);
-		this.disposables.push(this._migrationDetailsFileShareTab);
+		this.disposables.push(this._migrationDetailsTableTab);
 
-		const connectionProfile = await azdata.connection.getCurrentConnection();
-		const connectionId = connectionProfile.connectionId;
 		this.disposables.push(
 			this._migrationDetailsEvent.event(async e => {
-				if (e.connectionId === connectionId) {
+				if (e.connectionId === await getSourceConnectionId()) {
 					const migration = await this._getMigrationDetails(e.migrationId, e.migrationOperationId);
 					if (migration) {
 						await this.openMigrationDetails(migration);
@@ -133,22 +126,20 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 	public async openMigrationDetails(migration: DatabaseMigration): Promise<void> {
 		switch (migration.properties.backupConfiguration?.sourceLocation?.fileStorageType) {
 			case FileStorageType.AzureBlob:
-				this._migrationDetailsTab = this._migrationDetailsBlobTab;
-				break;
 			case FileStorageType.FileShare:
-				this._migrationDetailsTab = this._migrationDetailsFileShareTab;
+				this._migrationDetailsViewTab = this._migrationDetailsTab;
 				break;
 			case FileStorageType.None:
-				this._migrationDetailsTab = this._migrationDetailsTableTab;
+				this._migrationDetailsViewTab = this._migrationDetailsTableTab;
 				break;
 		}
 
-		await this._migrationDetailsTab.setMigrationContext(
+		await this._migrationDetailsViewTab.setMigrationContext(
 			await MigrationLocalStorage.getMigrationServiceContext(),
 			migration);
 
-		const promise = this._migrationDetailsTab.refresh();
-		await this._openTab(this._migrationDetailsTab);
+		const promise = this._migrationDetailsViewTab.refresh();
+		await this._openTab(this._migrationDetailsViewTab);
 		await promise;
 	}
 
@@ -164,11 +155,10 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 		return undefined;
 	}
 
-	private async _openTab(tab: azdata.Tab): Promise<void> {
+	private async _openTab(tab: TabBase<any>): Promise<void> {
 		if (tab.id === this._selectedTabId) {
 			return;
 		}
-
 		await this.statusBar.clearError();
 		this._tab.clearItems();
 		this._tab.addItem(tab.content);

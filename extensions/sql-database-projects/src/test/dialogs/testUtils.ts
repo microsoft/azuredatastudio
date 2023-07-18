@@ -14,12 +14,14 @@ export interface TestUtils {
 export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	sqlToolsServicePath: string = '';
 	dacFx: vscodeMssql.IDacFxService;
+	sqlProjects: vscodeMssql.ISqlProjectsService;
 	schemaCompare: vscodeMssql.ISchemaCompareService;
 	azureAccountService: vscodeMssql.IAzureAccountService;
 	azureResourceService: vscodeMssql.IAzureResourceService;
 
 	constructor() {
 		this.dacFx = TypeMoq.Mock.ofType<vscodeMssql.IDacFxService>().object;
+		this.sqlProjects = TypeMoq.Mock.ofType<vscodeMssql.ISqlProjectsService>().object;
 		this.schemaCompare = TypeMoq.Mock.ofType<vscodeMssql.ISchemaCompareService>().object;
 		this.azureAccountService = TypeMoq.Mock.ofType<vscodeMssql.IAzureAccountService>().object;
 		this.azureResourceService = TypeMoq.Mock.ofType<vscodeMssql.IAzureResourceService>().object;
@@ -49,7 +51,7 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	createConnectionDetails(_: vscodeMssql.IConnectionInfo): vscodeMssql.ConnectionDetails {
 		throw new Error('Method not implemented.');
 	}
-	getServerInfo(_: vscodeMssql.IConnectionInfo): vscodeMssql.ServerInfo {
+	getServerInfo(_: vscodeMssql.IConnectionInfo): vscodeMssql.IServerInfo {
 		throw new Error('Method not implemented.');
 	}
 }
@@ -75,6 +77,7 @@ export const mockConnectionInfo: vscodeMssql.IConnectionInfo = {
 	expiresOn: 0,
 	encrypt: false,
 	trustServerCertificate: false,
+	hostNameInCertificate: '',
 	persistSecurityInfo: false,
 	connectTimeout: 15,
 	connectRetryCount: 0,
@@ -94,5 +97,6 @@ export const mockConnectionInfo: vscodeMssql.IConnectionInfo = {
 	multipleActiveResultSets: false,
 	packetSize: 8192,
 	typeSystemVersion: 'Latest',
-	connectionString: ''
+	connectionString: '',
+	commandTimeout: undefined
 };

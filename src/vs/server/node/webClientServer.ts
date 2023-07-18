@@ -27,6 +27,7 @@ import { streamToBuffer } from 'vs/base/common/buffer';
 import { IProductConfiguration } from 'vs/base/common/product';
 import { isString } from 'vs/base/common/types';
 import { CharCode } from 'vs/base/common/charCode';
+import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
 
 const textMimeType = {
 	'.html': 'text/html',
@@ -60,7 +61,7 @@ export async function serveFile(filePath: string, cacheControl: CacheControl, lo
 			const etag = `W/"${[stat.ino, stat.size, stat.mtime.getTime()].join('-')}"`; // weak validator (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
 			if (req.headers['if-none-match'] === etag) {
 				res.writeHead(304);
-				return res.end();
+				return void res.end();
 			}
 
 			responseHeaders['Etag'] = etag;
@@ -85,11 +86,11 @@ export async function serveFile(filePath: string, cacheControl: CacheControl, lo
 		}
 
 		res.writeHead(404, { 'Content-Type': 'text/plain' });
-		return res.end('Not found');
+		return void res.end('Not found');
 	}
 }
 
-const APP_ROOT = dirname(FileAccess.asFileUri('', require).fsPath);
+const APP_ROOT = dirname(FileAccess.asFileUri('').fsPath);
 
 export class WebClientServer {
 
@@ -97,6 +98,7 @@ export class WebClientServer {
 
 	private readonly _staticRoute: string;
 	private readonly _callbackRoute: string;
+	private readonly _webExtensionRoute: string;
 
 	constructor(
 		private readonly _connectionToken: ServerConnectionToken,
@@ -106,9 +108,10 @@ export class WebClientServer {
 		@IProductService private readonly _productService: IProductService,
 	) {
 		this._webExtensionResourceUrlTemplate = this._productService.extensionsGallery?.resourceUrlTemplate ? URI.parse(this._productService.extensionsGallery.resourceUrlTemplate) : undefined;
-		const qualityAndCommit = `${_productService.quality ?? 'oss'}-${_productService.commit ?? 'dev'}`;
-		this._staticRoute = `/${qualityAndCommit}/static`;
-		this._callbackRoute = `/${qualityAndCommit}/callback`;
+		const serverRootPath = getRemoteServerRootPath(_productService);
+		this._staticRoute = `${serverRootPath}/static`;
+		this._callbackRoute = `${serverRootPath}/callback`;
+		this._webExtensionRoute = `${serverRootPath}/web-extension-resource`;
 	}
 
 	/**
@@ -130,7 +133,7 @@ export class WebClientServer {
 				// callback support
 				return this._handleCallback(res);
 			}
-			if (/^\/web-extension-resource\//.test(pathname)) {
+			if (pathname.startsWith(this._webExtensionRoute) && pathname.charCodeAt(this._webExtensionRoute.length) === CharCode.Slash) {
 				// extension resource support
 				return this._handleWebExtensionResource(req, res, parsedUrl);
 			}
@@ -176,7 +179,7 @@ export class WebClientServer {
 
 		// Strip `/web-extension-resource/` from the path
 		const normalizedPathname = decodeURIComponent(parsedUrl.pathname!); // support paths that are uri-encoded (e.g. spaces => %20)
-		const path = normalize(normalizedPathname.substr('/web-extension-resource/'.length));
+		const path = normalize(normalizedPathname.substring(this._webExtensionRoute.length + 1));
 		const uri = URI.parse(path).with({
 			scheme: this._webExtensionResourceUrlTemplate.scheme,
 			authority: path.substring(0, path.indexOf('/')),
@@ -229,7 +232,7 @@ export class WebClientServer {
 		setResponseHeader('Content-Type');
 		res.writeHead(200, responseHeaders);
 		const buffer = await streamToBuffer(context.stream);
-		return res.end(buffer.buffer);
+		return void res.end(buffer.buffer);
 	}
 
 	/**
@@ -252,7 +255,7 @@ export class WebClientServer {
 			);
 
 			const newQuery = Object.create(null);
-			for (let key in parsedUrl.query) {
+			for (const key in parsedUrl.query) {
 				if (key !== connectionTokenQueryName) {
 					newQuery[key] = parsedUrl.query[key];
 				}
@@ -261,14 +264,15 @@ export class WebClientServer {
 			responseHeaders['Location'] = newLocation;
 
 			res.writeHead(302, responseHeaders);
-			return res.end();
+			return void res.end();
 		}
 
-		let originalHost = req.headers['x-original-host'];
-		if (Array.isArray(originalHost)) {
-			originalHost = originalHost[0];
-		}
-		const remoteAuthority = originalHost || req.headers.host;
+		const getFirstHeader = (headerName: string) => {
+			const val = req.headers[headerName];
+			return Array.isArray(val) ? val[0] : val;
+		};
+
+		const remoteAuthority = getFirstHeader('x-original-host') || getFirstHeader('x-forwarded-host') || req.headers.host;
 		if (!remoteAuthority) {
 			return serveError(req, res, 400, `Bad request.`);
 		}
@@ -286,7 +290,7 @@ export class WebClientServer {
 
 		const resolveWorkspaceURI = (defaultLocation?: string) => defaultLocation && URI.file(path.resolve(defaultLocation)).with({ scheme: Schemas.vscodeRemote, authority: remoteAuthority });
 
-		const filePath = FileAccess.asFileUri(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html', require).fsPath;
+		const filePath = FileAccess.asFileUri(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html').fsPath;
 		const authSessionInfo = !this._environmentService.isBuilt && this._environmentService.args['github-auth'] ? {
 			id: generateUuid(),
 			providerId: 'github',
@@ -294,33 +298,43 @@ export class WebClientServer {
 			scopes: [['user:email'], ['repo']]
 		} : undefined;
 
+		const productConfiguration = <Partial<IProductConfiguration>>{
+			embedderIdentifier: 'server-distro',
+			extensionsGallery: this._webExtensionResourceUrlTemplate ? {
+				...this._productService.extensionsGallery,
+				'resourceUrlTemplate': this._webExtensionResourceUrlTemplate.with({
+					scheme: 'http',
+					authority: remoteAuthority,
+					path: `${this._webExtensionRoute}/${this._webExtensionResourceUrlTemplate.authority}${this._webExtensionResourceUrlTemplate.path}`
+				}).toString(true)
+			} : undefined
+		};
+
+		if (!this._environmentService.isBuilt) {
+			try {
+				const productOverrides = JSON.parse((await fsp.readFile(join(APP_ROOT, 'product.overrides.json'))).toString());
+				Object.assign(productConfiguration, productOverrides);
+			} catch (err) {/* Ignore Error */ }
+		}
 
 		const workbenchWebConfiguration = {
 			remoteAuthority,
 			_wrapWebWorkerExtHostInIframe,
-			developmentOptions: { enableSmokeTestDriver: this._environmentService.args['enable-smoke-test-driver'] ? true : undefined },
+			developmentOptions: { enableSmokeTestDriver: this._environmentService.args['enable-smoke-test-driver'] ? true : undefined, logLevel: this._logService.getLevel() },
 			settingsSyncOptions: !this._environmentService.isBuilt && this._environmentService.args['enable-sync'] ? { enabled: true } : undefined,
 			enableWorkspaceTrust: !this._environmentService.args['disable-workspace-trust'],
 			folderUri: resolveWorkspaceURI(this._environmentService.args['default-folder']),
 			workspaceUri: resolveWorkspaceURI(this._environmentService.args['default-workspace']),
-			productConfiguration: <Partial<IProductConfiguration>>{
-				embedderIdentifier: 'server-distro',
-				extensionsGallery: this._webExtensionResourceUrlTemplate ? {
-					...this._productService.extensionsGallery,
-					'resourceUrlTemplate': this._webExtensionResourceUrlTemplate.with({
-						scheme: 'http',
-						authority: remoteAuthority,
-						path: `web-extension-resource/${this._webExtensionResourceUrlTemplate.authority}${this._webExtensionResourceUrlTemplate.path}`
-					}).toString(true)
-				} : undefined
-			},
+			productConfiguration,
 			callbackRoute: this._callbackRoute
 		};
 
+		const nlsBaseUrl = this._productService.extensionsGallery?.nlsBaseUrl;
 		const values: { [key: string]: string } = {
 			WORKBENCH_WEB_CONFIGURATION: asJSON(workbenchWebConfiguration),
 			WORKBENCH_AUTH_SESSION: authSessionInfo ? asJSON(authSessionInfo) : '',
 			WORKBENCH_WEB_BASE_URL: this._staticRoute,
+			WORKBENCH_NLS_BASE_URL: nlsBaseUrl ? `${nlsBaseUrl}${!nlsBaseUrl.endsWith('/') ? '/' : ''}${this._productService.commit}/${this._productService.version}/` : '',
 		};
 
 
@@ -330,7 +344,7 @@ export class WebClientServer {
 			data = workbenchTemplate.replace(/\{\{([^}]+)\}\}/g, (_, key) => values[key] ?? 'undefined');
 		} catch (e) {
 			res.writeHead(404, { 'Content-Type': 'text/plain' });
-			return res.end('Not found');
+			return void res.end('Not found');
 		}
 
 		const cspDirectives = [
@@ -340,7 +354,7 @@ export class WebClientServer {
 			`script-src 'self' 'unsafe-eval' ${this._getScriptCspHashes(data).join(' ')} 'sha256-fh3TwPMflhsEIpR8g1OYTIMVWhXTLcjQ9kh2tIpmv54=' http://${remoteAuthority};`, // the sha is the same as in src/vs/workbench/services/extensions/worker/webWorkerExtensionHostIframe.html
 			'child-src \'self\';',
 			`frame-src 'self' https://*.vscode-cdn.net data:;`,
-			'worker-src \'self\' data:;',
+			'worker-src \'self\' data: blob:;',
 			'style-src \'self\' \'unsafe-inline\';',
 			'connect-src \'self\' ws: wss: https:;',
 			'font-src \'self\' blob:;',
@@ -366,7 +380,7 @@ export class WebClientServer {
 		}
 
 		res.writeHead(200, headers);
-		return res.end(data);
+		return void res.end(data);
 	}
 
 	private _getScriptCspHashes(content: string): string[] {
@@ -392,7 +406,7 @@ export class WebClientServer {
 	 * Handle HTTP requests for /callback
 	 */
 	private async _handleCallback(res: http.ServerResponse): Promise<any> {
-		const filePath = FileAccess.asFileUri('vs/code/browser/workbench/callback.html', require).fsPath;
+		const filePath = FileAccess.asFileUri('vs/code/browser/workbench/callback.html').fsPath;
 		const data = (await fsp.readFile(filePath)).toString();
 		const cspDirectives = [
 			'default-src \'self\';',
@@ -407,6 +421,6 @@ export class WebClientServer {
 			'Content-Type': 'text/html',
 			'Content-Security-Policy': cspDirectives
 		});
-		return res.end(data);
+		return void res.end(data);
 	}
 }

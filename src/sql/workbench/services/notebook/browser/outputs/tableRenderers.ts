@@ -8,16 +8,15 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { IDataResource, IDataResourceRow, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { values } from 'vs/base/common/collections';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -57,7 +56,7 @@ export function renderDataResource(
 	let transformedData = transformData(sourceObject.data, columnsTransformed);
 	tableResultsData.push(transformedData);
 
-	let detailTable = new Table(tableContainer, options.accessibilityService, options.quickInputService, {
+	let detailTable = new Table(tableContainer, options.accessibilityService, options.quickInputService, defaultTableStyles, {
 		dataProvider: tableResultsData, columns: columnsTransformed
 	}, {
 		rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
@@ -78,8 +77,6 @@ export function renderDataResource(
 		// Set the height dynamically if the grid's height is < 500px high; otherwise, set height to 500px
 		tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
 	}
-
-	attachTableStyler(detailTable, options.themeService);
 	host.appendChild(tableContainer);
 	detailTable.resizeCanvas();
 
@@ -88,13 +85,17 @@ export function renderDataResource(
 }
 
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
-export function transformData(rows: any[], columns: Slick.Column<any>[]): { [key: string]: string }[] {
+function transformData(rows: IDataResourceRow[], columns: Slick.Column<any>[]): IDataResourceRow[] {
+	// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+	let useColumnNameKey = rowHasColumnNameKeys(rows[0], columns.map(column => column.name));
 	return rows.map(row => {
 		let dataWithSchema = {};
 		Object.keys(row).forEach((val, index) => {
-			let displayValue = String(values(row)[index]);
 			// Since the columns[0] represents the row number, start at 1
-			dataWithSchema[columns[index + 1].field] = {
+			let columnName = columns[index + 1].field;
+			let sourceKey = useColumnNameKey ? columnName : index + 1;
+			let displayValue = String(row[sourceKey]);
+			dataWithSchema[columnName] = {
 				displayValue: displayValue,
 				ariaLabel: escape(displayValue),
 				isNull: false
@@ -104,7 +105,7 @@ export function transformData(rows: any[], columns: Slick.Column<any>[]): { [key
 	});
 }
 
-export function transformColumns(columns: string[]): Slick.Column<any>[] {
+function transformColumns(columns: string[]): Slick.Column<any>[] {
 	return columns.map((col, index) => {
 		return <Slick.Column<any>>{
 			name: col,

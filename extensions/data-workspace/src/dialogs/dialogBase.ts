@@ -69,7 +69,7 @@ export abstract class DialogBase {
 		};
 	}
 
-	public getErrorMessage(): azdataType.window.DialogMessage {
+	public getErrorMessage(): azdataType.window.DialogMessage | undefined {
 		return this.dialogObject.message;
 	}
 

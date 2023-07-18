@@ -264,10 +264,6 @@
         <source xml:lang="en">New Section (Preview)</source>
         <target state="translated">Новый раздел (предварительная версия)</target>
       </trans-unit>
-      <trans-unit id="noBDCConnectionError">
-        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
-        <target state="translated">Ядрам Spark требуется подключение к главному экземпляру кластера больших данных SQL Server.</target>
-      </trans-unit>
       <trans-unit id="noBooksSelected">
         <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
         <target state="translated">В данный момент во viewlet не выбраны книги Jupyter.</target>
@@ -311,10 +307,6 @@
       <trans-unit id="openUntitledNotebookError">
         <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
         <target state="translated">Не удалось открыть безымянную записную книжку {0} как безымянную: {1}</target>
-      </trans-unit>
-      <trans-unit id="providerNotValidError">
-        <source xml:lang="en">Non-MSSQL providers are not supported for spark kernels.</source>
-        <target state="translated">Поставщики, не являющиеся поставщиками MSSQL, не поддерживаются для ядер Spark.</target>
       </trans-unit>
       <trans-unit id="readBookError">
         <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
@@ -364,10 +356,6 @@
   </file>
   <file original="extensions/notebook/dist/common/notebookUtils" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.</target>
-      </trans-unit>
       <trans-unit id="noNotebookVisible">
         <source xml:lang="en">No notebook editor is active</source>
         <target state="translated">Нет активного редактора записных книжек</target>
@@ -784,29 +772,9 @@
   </file>
   <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="bdcConnectError">
-        <source xml:lang="en">Error: {0}. </source>
-        <target state="translated">Ошибка: {0}. </target>
-      </trans-unit>
-      <trans-unit id="clusterControllerConnectionRequired">
-        <source xml:lang="en">A connection to the cluster controller is required to run Spark jobs</source>
-        <target state="translated">Для выполнения заданий Spark требуется подключение к контроллеру кластера</target>
-      </trans-unit>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">Не удается запустить сеанс, диспетчер еще не инициализирован</target>
-      </trans-unit>
-      <trans-unit id="notebook.couldNotFindKnoxGateway">
-        <source xml:lang="en">Could not find Knox gateway endpoint</source>
-        <target state="translated">Не удалось найти конечную точку шлюза Knox</target>
-      </trans-unit>
-      <trans-unit id="promptBDCPassword">
-        <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
-        <target state="translated">Укажите пароль для подключения к контроллеру BDC</target>
-      </trans-unit>
-      <trans-unit id="promptBDCUsername">
-        <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
-        <target state="translated">{0}Укажите имя пользователя для подключения к контроллеру BDC:</target>
       </trans-unit>
     </body>
   </file>

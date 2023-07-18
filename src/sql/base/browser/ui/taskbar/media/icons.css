@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs .monaco-toolbar .action-label.toolbar-toggle-more {
+.vs .monaco-toolbar .action-label.toolbar-toggle-more,
+.hc-light .monaco-toolbar .action-label.toolbar-toggle-more {
 	background-image: url('ellipsis.svg');
 }
 
@@ -13,24 +14,28 @@
 }
 
 .vs .codicon.start,
+.hc-light .codicon.start,
 .vs-dark .codicon.start,
 .hc-black .codicon.start {
 	background-image: url('start.svg');
 }
 
 .vs .codicon.add,
+.hc-light .codicon.add,
 .vs-dark .codicon.add,
 .hc-black .codicon.add {
 	background-image: url('add.svg');
 }
 
 .vs .codicon.stop,
+.hc-light .codicon.stop,
 .vs-dark .codicon.stop,
 .hc-black .codicon.stop {
 	background-image: url('stop.svg');
 }
 
-.vs .codicon.disconnect {
+.vs .codicon.disconnect,
+.hc-light .codicon.disconnect {
 	background-image: url('disconnect.svg');
 }
 
@@ -40,7 +45,8 @@
 	background-repeat: no-repeat;
 }
 
-.vs .codicon.connect {
+.vs .codicon.connect,
+.hc-light .codicon.connect {
 	background-image: url('connect.svg');
 }
 
@@ -50,7 +56,8 @@
 	background-repeat: no-repeat;
 }
 
-.vs .codicon.changeConnection {
+.vs .codicon.changeConnection,
+.hc-light .codicon.changeConnection {
 	background-image: url('change_connection.svg');
 }
 
@@ -61,15 +68,19 @@
 }
 
 .vs .codicon.estimatedQueryPlan,
-.vs .codicon.actualQueryPlan {
+.hc-light .codicon.estimatedQueryPlan,
+.vs .codicon.actualQueryPlan,
+.hc-light .codicon.actualQueryPlan {
 	background-image: url('query-plan.svg');
 }
 
-.vs .codicon.disabledActualExecutionPlan {
+.vs .codicon.disabledActualExecutionPlan,
+.hc-light .codicon.disabledActualExecutionPlan {
 	background-image: url('disabled-actual-execution-plan.svg');
 }
 
-.vs .codicon.enabledActualExecutionPlan {
+.vs .codicon.enabledActualExecutionPlan,
+.hc-light .codicon.enabledActualExecutionPlan {
 	background-image: url('enabled-actual-execution-plan.svg');
 }
 
@@ -90,7 +101,8 @@
 	background-image: url('enabled-actual-execution-plan-inverse.svg');
 }
 
-.vs .codicon.createInsight {
+.vs .codicon.createInsight,
+.hc-light .codicon.createInsight {
 	background-image: url('create_insight.svg');
 }
 
@@ -99,7 +111,8 @@
 	background-image: url('create_insight_inverse.svg');
 }
 
-.vs .codicon.copyImage {
+.vs .codicon.copyImage,
+.hc-light .codicon.copyImage {
 	background-image: url('copy_image.svg');
 }
 
@@ -108,7 +121,8 @@
 	background-image: url('copy_image_inverse.svg');
 }
 
-.vs .codicon.saveAsImage {
+.vs .codicon.saveAsImage,
+.hc-light .codicon.saveAsImage {
 	background-image: url('save_as_image.svg');
 }
 
@@ -117,7 +131,8 @@
 	background-image: url('save_as_image_inverse.svg');
 }
 
-.vs .codicon.enablesqlcmd {
+.vs .codicon.enablesqlcmd,
+.hc-light .codicon.enablesqlcmd {
 	background-image: url('enable_sqlcmd.svg');
 }
 
@@ -127,7 +142,8 @@
 	background-repeat: no-repeat;
 }
 
-.vs .codicon.disablesqlcmd {
+.vs .codicon.disablesqlcmd,
+.hc-light .codicon.disablesqlcmd {
 	background-image: url('disable_sqlcmd.svg');
 }
 

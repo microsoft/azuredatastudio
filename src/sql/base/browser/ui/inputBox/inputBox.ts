@@ -3,19 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InputBox as vsInputBox, IInputOptions as vsIInputBoxOptions, IInputBoxStyles as vsIInputBoxStyles, IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox as vsInputBox, IInputOptions as vsIInputBoxOptions, IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
+import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 
 export interface OnLoseFocusParams {
 	value: string;
 	hasChanged: boolean;
-}
-
-export interface IInputBoxStyles extends vsIInputBoxStyles {
-	disabledInputBackground?: Color;
-	disabledInputForeground?: Color;
 }
 
 export interface IInputOptions extends vsIInputBoxOptions {
@@ -29,14 +24,7 @@ export interface IInputOptions extends vsIInputBoxOptions {
 	ariaDescription?: string;
 }
 
-export class InputBox extends vsInputBox {
-	private enabledInputBackground?: Color;
-	private enabledInputForeground?: Color;
-	private enabledInputBorder?: Color;
-	private disabledInputBackground?: Color;
-	private disabledInputForeground?: Color;
-	private disabledInputBorder?: Color;
-
+export class InputBox extends vsInputBox implements AdsWidget {
 	private _lastLoseFocusValue: string;
 
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
@@ -48,12 +36,8 @@ export class InputBox extends vsInputBox {
 	private _isTextAreaInput = false;
 	private _hideErrors = false;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private _sqlOptions?: IInputOptions) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, private _sqlOptions?: IInputOptions, id?: string) {
 		super(container, contextViewProvider, _sqlOptions);
-		this.enabledInputBackground = this.inputBackground;
-		this.enabledInputForeground = this.inputForeground;
-		this.enabledInputBorder = this.inputBorder;
-		this.disabledInputBackground = Color.transparent;
 
 		this._lastLoseFocusValue = this.value;
 		let self = this;
@@ -74,23 +58,16 @@ export class InputBox extends vsInputBox {
 		if (this._sqlOptions.ariaDescription) {
 			this.inputElement.setAttribute('aria-description', this._sqlOptions.ariaDescription);
 		}
-	}
 
-	public override style(styles: IInputBoxStyles): void {
-		super.style(styles);
-		this.enabledInputBackground = this.inputBackground;
-		this.enabledInputForeground = this.inputForeground;
-		this.enabledInputBorder = this.inputBorder;
-		this.disabledInputBackground = styles.disabledInputBackground;
-		this.disabledInputForeground = styles.disabledInputForeground;
+		if (id !== undefined) {
+			this.inputElement.id = id;
+		}
 		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
 	}
 
 	public override enable(): void {
 		super.enable();
 		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
 	}
 
 	public set rows(value: number) {
@@ -110,7 +87,6 @@ export class InputBox extends vsInputBox {
 	public override disable(): void {
 		super.disable();
 		this.updateInputEnabledDisabledColors();
-		this.applyStyles();
 	}
 
 	public setHeight(value: string) {
@@ -163,10 +139,14 @@ export class InputBox extends vsInputBox {
 	}
 
 	private updateInputEnabledDisabledColors(): void {
-		let enabled = this.isEnabled();
-		this.inputBackground = enabled ? this.enabledInputBackground : this.disabledInputBackground;
-		this.inputForeground = enabled ? this.enabledInputForeground : this.disabledInputForeground;
-		this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
+		const enabled = this.isEnabled();
+		const background = enabled ? this._sqlOptions.inputBoxStyles.inputBackground : this._sqlOptions.inputBoxStyles.disabledInputBackground
+		const foreground = enabled ? this._sqlOptions.inputBoxStyles.inputForeground : this._sqlOptions.inputBoxStyles.disabledInputForeground;
+		const border = enabled ? this._sqlOptions.inputBoxStyles.inputBorder : this._sqlOptions.inputBoxStyles.disabledInputBorder;
+		this.element.style.backgroundColor = background;
+		this.element.style.color = foreground;
+		this.input.style.color = foreground;
+		this.element.style.border = `1px solid ${border}`;
 	}
 
 	public override validate(force?: boolean): MessageType | undefined {
@@ -196,5 +176,9 @@ export class InputBox extends vsInputBox {
 	public override set value(newValue: string) {
 		this._lastLoseFocusValue = newValue;
 		super.value = newValue;
+	}
+
+	public get id(): string {
+		return this.input.id;
 	}
 }

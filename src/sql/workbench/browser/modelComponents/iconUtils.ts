@@ -25,7 +25,7 @@ export function createIconCssClass(iconPath: IconPath, className?: string): stri
 	removeCSSRulesContainingSelector(iconClass);
 	const icon = getLightIconUri(iconPath);
 	const iconDark = getDarkIconUri(iconPath) || icon;
-	createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(icon)}`);
+	createCSSRule(`.icon.${iconClass}, .hc-light .icon.${iconClass}`, `background-image: ${asCSSUrl(icon)}`);
 	createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(iconDark)}`);
 	return iconClass;
 }

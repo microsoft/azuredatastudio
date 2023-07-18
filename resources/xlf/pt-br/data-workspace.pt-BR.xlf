@@ -134,6 +134,10 @@
         <source xml:lang="en">Select project file</source>
         <target state="translated">Selecionar o arquivo do projeto</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.projectFileTitle">
+        <source xml:lang="en">Project file</source>
+        <target state="translated">Arquivo de projeto</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.projectLocationPlaceholder">
         <source xml:lang="en">Select location to create project</source>
         <target state="translated">Selecione o local para criar o projeto</target>
@@ -153,10 +157,6 @@
       <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
         <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
         <target state="translated">O local do projeto selecionado '{0}' não existe ou não é um diretório.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectsFailedToLoad">
-        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
-        <target state="translated">Ocorreu um erro ao carregar alguns projetos. Para exibir mais detalhes, [abra o console do desenvolvedor](command:workbench.action.toggleDevTools)</target>
       </trans-unit>
       <trans-unit id="dataworkspace.remoteGitRepo">
         <source xml:lang="en">Remote git repository</source>
@@ -202,9 +202,17 @@
         <source xml:lang="en">Yes (Recommended)</source>
         <target state="translated">Sim (Recomendado)</target>
       </trans-unit>
+      <trans-unit id="dragAndDropNotSupported">
+        <source xml:lang="en">This project type does not support drag and drop.</source>
+        <target state="translated">Esse tipo de projeto não é compatível com a ação de arrastar e soltar.</target>
+      </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>
         <target state="translated">O arquivo '{0}' não existe</target>
+      </trans-unit>
+      <trans-unit id="filenameEndingInPeriodErrorMessage">
+        <source xml:lang="en">File name cannot end with a period</source>
+        <target state="translated">O nome do arquivo não pode terminar com um ponto</target>
       </trans-unit>
       <trans-unit id="gitCloneError">
         <source xml:lang="en">Error during git clone. View git output for more details</source>
@@ -214,17 +222,57 @@
         <source xml:lang="en">Cloning git repository '{0}'...</source>
         <target state="translated">Clonando o repositório git '{0}'...</target>
       </trans-unit>
+      <trans-unit id="invalidFileCharsErrorMessage">
+        <source xml:lang="en">Invalid file characters</source>
+        <target state="translated">Caracteres de arquivo inválidos</target>
+      </trans-unit>
       <trans-unit id="noPreviousData">
         <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
         <target state="translated">Antes {0} para o projeto atual será exibido aqui, execute para visualizar os resultados.</target>
+      </trans-unit>
+      <trans-unit id="noProjectProvidingExtensionsInstalled">
+        <source xml:lang="en">No database project extensions are installed. Please install a database project extension to use this feature.</source>
+        <target state="translated">Não há extensões de projeto de banco de dados instaladas. Instale uma extensão de projeto de banco de dados para usar esse recurso.</target>
+      </trans-unit>
+      <trans-unit id="onlyMovingOneFileIsSupported">
+        <source xml:lang="en">Only moving one file at a time is supported.</source>
+        <target state="translated">Só há suporte para a movimentação de um arquivo por vez.</target>
       </trans-unit>
       <trans-unit id="openedProjectsUndefinedAfterRefresh">
         <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
         <target state="translated">A lista de projetos abertos não deve estar indefinida após a atualização do disco.</target>
       </trans-unit>
+      <trans-unit id="projectFailedToLoad">
+        <source xml:lang="en">Project '{0}' failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).</source>
+        <target state="translated">Falha ao carregar o projeto '{0}': {1} Para exibir mais detalhes, [abra o console do desenvolvedor](command:workbench.action.toggleDevTools).</target>
+      </trans-unit>
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>
         <target state="translated">O nome do projeto é nulo</target>
+      </trans-unit>
+      <trans-unit id="reservedValueErrorMessage">
+        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+        <target state="translated">Nome de arquivo reservado. Escolha outro nome e tente novamente</target>
+      </trans-unit>
+      <trans-unit id="reservedWindowsFilenameErrorMessage">
+        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+        <target state="translated">Este nome de arquivo está reservado para ser usado pelo Windows. Escolha outro nome e tente novamente.</target>
+      </trans-unit>
+      <trans-unit id="tooLongFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be over 255 characters</source>
+        <target state="translated">O nome do arquivo não pode ter mais de 255 caracteres</target>
+      </trans-unit>
+      <trans-unit id="trailingWhitespaceErrorMessage">
+        <source xml:lang="en">File name cannot start or end with whitespace</source>
+        <target state="translated">O nome do arquivo não pode começar ou terminar com espaço em branco</target>
+      </trans-unit>
+      <trans-unit id="undefinedFilenameErrorMessage">
+        <source xml:lang="en">Undefined name</source>
+        <target state="translated">Nome indefinido</target>
+      </trans-unit>
+      <trans-unit id="whitespaceFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be whitespace</source>
+        <target state="translated">O nome do arquivo não pode ser espaço em branco</target>
       </trans-unit>
     </body>
   </file>

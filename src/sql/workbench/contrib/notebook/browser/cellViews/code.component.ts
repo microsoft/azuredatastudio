@@ -147,10 +147,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		return this._editor;
 	}
 
-	public override hasEditor(): boolean {
-		return true;
-	}
-
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
@@ -298,8 +294,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
-		this._register(this.cellModel.onCellModeChanged((isEditMode) => {
-			this.onCellModeChanged(isEditMode);
+		this._register(this.cellModel.onCellEditModeChanged((isEditMode) => {
+			this.onCellEditModeChanged(isEditMode);
 		}));
 
 		this.layout();
@@ -410,8 +406,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
-			let modeValue = this._languageService.createById(this.cellModel.language);
-			this._modelService.setMode(this._editorModel, modeValue);
+			// let modeValue = this._languageService.createById(this.cellModel.language);
+			// {{SQL CARBON TODO}} - do we still need this
+			// this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
 
@@ -453,7 +450,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
 	}
 
-	private onCellModeChanged(isEditMode: boolean): void {
+	private onCellEditModeChanged(isEditMode: boolean): void {
 		if (this.cellModel.id === this._activeCellId || this._activeCellId === '') {
 			if (isEditMode) {
 				this._editor.getControl().focus();

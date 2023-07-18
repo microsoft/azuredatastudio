@@ -4,12 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { RevealOutputChannelOn, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
-import { Telemetry, LanguageClientErrorHandler } from './telemetry';
+import * as azurecore from 'azurecore';
+import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
+import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
@@ -18,15 +20,17 @@ import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
-import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
+import { CompletionExtensionParams, CompletionExtLoadRequest, EncryptionKeysChangedNotification } from './contracts';
 import { promises as fs } from 'fs';
 import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
-import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 import { AzureBlobService } from './azureBlob/azureBlobService';
+import { ErrorDiagnosticsProvider } from './errorDiagnostics/errorDiagnosticsProvider';
+import { SqlProjectsService } from './sqlProjects/sqlProjectsService';
+import { ObjectManagementService } from './objectManagement/objectManagementService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -47,7 +51,7 @@ export class SqlToolsServer {
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
-	public installDirectory: string | undefined = undefined;
+	public installDirectory: string;
 
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
@@ -55,9 +59,9 @@ export class SqlToolsServer {
 			const serverPath = await this.download(context);
 			this.installDirectory = path.dirname(serverPath);
 			const installationComplete = Date.now();
-			let serverOptions = await generateServerOptions(context.extensionContext.logPath, serverPath);
+			let serverOptions = generateServerOptions(context.extensionContext.logPath, serverPath);
 			let clientOptions = getClientOptions(context);
-			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			this.client = new SqlOpsDataClient('mssql', Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
 			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
@@ -68,7 +72,7 @@ export class SqlToolsServer {
 				vscode.commands.registerCommand('mssql.loadCompletionExtension', (params: CompletionExtensionParams) => {
 					return this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
-				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+				TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),
 					totalTime: String(processEnd - installationStart),
@@ -79,21 +83,59 @@ export class SqlToolsServer {
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
 			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
+			await this.handleEncryptionKeyEventNotification(this.client);
 			return this.client;
 		} catch (e) {
-			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
 			void vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}
 	}
 
+	/**
+	 * This is a hop notification handler to send Encryption Key and Iv information from Azure Core extension to backend
+	 * SqlToolsService. This notification is needed for Azure authentication flows to be able to read/write into
+	 * shared MSAL cache.
+	 * @param client SqlOpsDataClient instance
+	 */
+	private async handleEncryptionKeyEventNotification(client: SqlOpsDataClient) {
+		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
+			let azureCoreApi = await this.getAzureCoreAPI();
+			let onDidEncryptionKeysChanged = azureCoreApi.onEncryptionKeysUpdated;
+			// Register event listener from Azure Core extension and
+			// send client notification for updated encryption keys
+			onDidEncryptionKeysChanged((keys: azurecore.CacheEncryptionKeys) => {
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
+			});
+
+			try {
+				// Fetch encryption keys directly from AzureCore as notification event may not fire again
+				// if Azure Core extension was activated before.
+				const keys = await azureCoreApi.getEncryptionKeys();
+				client.sendNotification(EncryptionKeysChangedNotification.type, keys);
+			}
+			catch (e) {
+				console.error(`An error occurred when fetching encryption keys: ${e}`);
+			}
+			logDebug('SqlToolsServer: Registered encryption key event handler.');
+		}
+	}
+
+	private async getAzureCoreAPI(): Promise<azurecore.IExtension> {
+		const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
+		if (!api) {
+			throw new Error('Azure core extension could not be activated.');
+		}
+		return api;
+	}
+
 	private async download(context: AppContext): Promise<string> {
 		const configDir = context.extensionContext.extensionPath;
 		const rawConfig = await fs.readFile(path.join(configDir, 'config.json'));
-		this.config = JSON.parse(rawConfig.toString());
+		this.config = JSON.parse(rawConfig.toString()) as IConfig;
 		this.config.installDirectory = path.join(configDir, this.config.installDirectory);
-		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
+		this.config.proxy = vscode.workspace.getConfiguration('http').get<string>('proxy', '');
+		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		return getOrDownloadServer(this.config, handleServerProviderEvent);
 	}
 
@@ -114,11 +156,20 @@ export class SqlToolsServer {
 	}
 }
 
-async function generateServerOptions(logPath: string, executablePath: string): Promise<ServerOptions> {
+function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
 	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
-	const enableAsyncMessageProcessing = await getParallelMessageProcessingConfig();
+	const enableAsyncMessageProcessing = getParallelMessageProcessingConfig();
 	if (enableAsyncMessageProcessing) {
 		launchArgs.push('--parallel-message-processing');
+	}
+	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
+	const azureAuthLibrary = getAzureAuthenticationLibraryConfig();
+	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider === true) {
+		launchArgs.push('--enable-sql-authentication-provider');
+	}
+	const enableConnectionPooling = getEnableConnectionPoolingConfig()
+	if (enableConnectionPooling) {
+		launchArgs.push('--enable-connection-pooling');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
@@ -170,7 +221,11 @@ function getClientOptions(context: AppContext): ClientOptions {
 	return {
 		documentSelector: ['sql'],
 		synchronize: {
-			configurationSection: Constants.extensionConfigSectionName
+			configurationSection: [
+				Constants.extensionConfigSectionName,
+				Constants.telemetryConfigSectionName,
+				Constants.queryEditorConfigSectionName,
+			]
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
@@ -185,37 +240,19 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
 			DacFxService.asFeature(context),
+			SqlProjectsService.asFeature(context),
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
-			SqlMigrationService.asFeature(context),
 			SqlCredentialService.asFeature(context),
 			TableDesignerFeature,
-			ExecutionPlanServiceFeature
+			ExecutionPlanServiceFeature,
+			ErrorDiagnosticsProvider.asFeature(context),
+			ObjectManagementService.asFeature(context)
 		],
-		outputChannel: new CustomOutputChannel()
+		outputChannel: outputChannel,
+		// Automatically reveal the output channel only in dev mode, so that the users are not impacted and issues can still be caught during development.
+		revealOutputChannelOn: azdata.env.quality === azdata.env.AppQuality.dev ? RevealOutputChannelOn.Error : RevealOutputChannelOn.Never
 	};
-}
-
-class CustomOutputChannel implements vscode.OutputChannel {
-	name: string;
-	append(value: string): void {
-		console.log(value);
-	}
-	appendLine(value: string): void {
-		console.log(value);
-	}
-	clear(): void {
-	}
-	show(preserveFocus?: boolean): void;
-	show(column?: vscode.ViewColumn, preserveFocus?: boolean): void;
-	show(column?: any, preserveFocus?: any) {
-	}
-	hide(): void {
-	}
-	dispose(): void {
-	}
-	replace(_value: string): void {
-	}
 }

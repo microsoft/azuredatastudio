@@ -24,7 +24,9 @@
 }
 
 .vs .slick-header-menuicon.ascending,
-.vs .monaco-table .slick-sort-indicator-asc {
+.hc-light .slick-header-menuicon.ascending,
+.vs .monaco-table .slick-sort-indicator-asc,
+.hc-light .monaco-table .slick-sort-indicator-asc {
 	background-image: url('sort_asc.svg');
 }
 
@@ -36,7 +38,9 @@
 }
 
 .vs .slick-header-menuicon.descending,
-.vs .monaco-table .slick-sort-indicator-desc {
+.hc-light .slick-header-menuicon.descending,
+.vs .monaco-table .slick-sort-indicator-desc,
+.hc-light .monaco-table .slick-sort-indicator-desc {
 	background-image: url('sort_desc.svg');
 }
 
@@ -71,12 +75,17 @@
 	padding: 0px;
 }
 
+.hc-light .slick-header-menubutton {
+	background-image: url('down.svg');
+}
+
 .vs-dark .slick-header-menubutton,
 .hc-black .slick-header-menubutton {
 	background-image: url('down-inverse.svg');
 }
 
-.slick-header-menubutton.filtered {
+.slick-header-menubutton.filtered,
+.hc-light .slick-header-menubutton.filtered {
 	background-image: url('filter.svg');
 }
 
@@ -92,9 +101,14 @@
 	padding: 4px;
 	z-index: 100000;
 	cursor: default;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	margin: 0;
 	position: absolute;
+}
+
+.hc-light .slick-header-menu {
+	background: none repeat scroll 0 0 #F3F2F1;
 }
 
 .vs-dark .slick-header-menu {
@@ -105,10 +119,14 @@
 	background: none repeat scroll 0 0 #000000;
 }
 
+.slick-header-menu-image-button-container {
+	flex: 0 0 auto;
+}
+
 .slick-header-menu a.monaco-button.monaco-text-button {
 	width: 60px;
-	margin: 6px 6px 6px 6px;
-	padding: 4px;
+	margin: 5px;
+	padding: 2px;
 }
 
 .slick-header-menu .searchbox-row
@@ -117,6 +135,7 @@
 	align-items: center;
 	padding-left: 5px;
 	margin-top: 5px;
+	flex: 0 0 auto;
 }
 
 .slick-header-menu .searchbox-row .select-all-checkbox
@@ -155,7 +174,6 @@
 {
 	border: 1px solid #BFBDBD;
 	font-size: 8pt;
-	height: 250px;
 	margin-top: 6px;
 	overflow: hidden;
 	padding: 1px;
@@ -163,6 +181,7 @@
 	align-content: flex-start;
 	display: flex;
 	flex-direction: column;
+	flex: 1 1 auto;
 }
 
 .slick-header-menu .filter .filter-option {
@@ -175,6 +194,7 @@
 	display: flex;
 	flex-direction: row;
 	width: 100%;
+	flex: 0 0 auto;
 }
 
 .slick-header-menu .filter-menu-button {

@@ -6,18 +6,16 @@
 import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, forwardRef } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
+import { IGridDataProvider, copySelectionToClipboard, getTableHeaderString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { IDataResource, rowHasColumnNameKeys } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { getEolString, shouldSkipNewLineAfterTrailingLineBreak, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -28,7 +26,7 @@ import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
-import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
+import { IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
@@ -37,7 +35,6 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
@@ -51,6 +48,9 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -77,7 +77,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
@@ -161,7 +160,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
-			this._register(attachTableStyler(this._table, this.themeService));
 			await this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
@@ -194,7 +192,7 @@ function reorderGridData(source: IDataResource): void {
 	if (source.data.length > 0) {
 		let rowKeys = Object.keys(source.data[0]);
 		if (!equals(columnNames, rowKeys)) {
-			// SQL notebooks do not use columnName as key (instead use indices)
+			// Older SQL notebooks use indices as keys instead of the column name.
 			// Indicies indicate the row is ordered properly
 			// We must check the data to know if it is in index form
 			let notIndexOrderKeys = false;
@@ -239,17 +237,19 @@ class DataResourceTable extends GridTableBase<any> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@IComponentContextService componentContextService: IComponentContextService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@ILogService logService: ILogService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -262,6 +262,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._chart.onOptionsChange(options => {
 			this.setChartOptions(options);
 		});
+		this.providerId = cellModel.notebookModel.context?.providerName;
 	}
 
 	public get gridDataProvider(): IGridDataProvider {
@@ -272,17 +273,14 @@ class DataResourceTable extends GridTableBase<any> {
 		return this.cellOutput.metadata.azdata_chartOptions !== undefined;
 	}
 
-	protected getCurrentActions(): IAction[] {
-		return this.getContextActions();
+	protected override getActionBarItems(): IAction[] {
+		const items = super.getActionBarItems();
+		items.push(this.instantiationService.createInstance(NotebookChartAction, this));
+		return items;
 	}
 
 	protected getContextActions(): IAction[] {
 		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
 	}
@@ -369,19 +367,27 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	private transformSource(source: IDataResource): void {
-		this._rows = source.data.map(row => {
-			let rowData: azdata.DbCellValue[] = [];
-			Object.keys(row).forEach((val, index) => {
-				let displayValue = String(values(row)[index]);
-				// Since the columns[0] represents the row number, start at 1
-				rowData.push({
-					displayValue: displayValue,
-					isNull: false,
-					invariantCultureDisplayValue: displayValue
-				});
+		if (source.data.length > 0) {
+			let columns = source.schema.fields;
+			// Rows are either indexed by column name or ordinal number, so check for one column name to see if it uses that format
+			let useColumnNameKey = rowHasColumnNameKeys(source.data[0], source.schema.fields.map(field => field.name));
+			this._rows = source.data.map(row => {
+				let rowData: azdata.DbCellValue[] = [];
+				for (let index = 0; index < Object.keys(row).length; index++) {
+					let key = useColumnNameKey ? columns[index].name : index;
+					let displayValue = String(row[key]);
+					// Since the columns[0] represents the row number, start at 1
+					rowData.push({
+						displayValue: displayValue,
+						isNull: false,
+						invariantCultureDisplayValue: displayValue
+					});
+				}
+				return rowData;
 			});
-			return rowData;
-		});
+		} else {
+			this._rows = [];
+		}
 	}
 
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
@@ -407,10 +413,18 @@ export class DataResourceDataProvider implements IGridDataProvider {
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			let results = await getResultsString(this, selection, includeHeaders, tableView);
-			this._clipboardService.writeText(results);
+			await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selection, includeHeaders, tableView);
 		} catch (error) {
-			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
+		}
+	}
+
+	async copyHeaders(selection: Slick.Range[]): Promise<void> {
+		try {
+			const results = getTableHeaderString(this, selection);
+			await this._clipboardService.writeText(results);
+		} catch (error) {
+			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}
 	}
 
@@ -422,6 +436,9 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 	shouldRemoveNewLines(): boolean {
 		return shouldRemoveNewLines(this._configurationService);
+	}
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean {
+		return shouldSkipNewLineAfterTrailingLineBreak(this._configurationService);
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {
@@ -487,9 +504,12 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
 			if (connProviders?.length > 0) {
 				provider = connProviders[0];
-			} else {
-				provider = mssqlProviderName;
 			}
+		}
+		if (!provider || !this._serializationService.isProviderRegistered(provider)) {
+			// Serializing notebook query results to file is agnostic of database engine since the data is already available in the notebook.
+			// If the provider doesn't have its own serializer we can let the mssql provider handle it.
+			provider = mssqlProviderName;
 		}
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{

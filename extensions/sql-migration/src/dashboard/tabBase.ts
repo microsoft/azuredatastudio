@@ -7,11 +7,10 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { EOL } from 'os';
-import { DatabaseMigration } from '../api/azure';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
+import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
 
 export const EmptySettingValue = '-';
 
@@ -49,7 +48,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
-	public abstract refresh(): Promise<void>;
+	public abstract refresh(initialize?: boolean): Promise<void>;
 
 	dispose() {
 		this.disposables.forEach(
@@ -83,16 +82,35 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return new Date(stringDate1) > new Date(stringDate2) ? -sortDir : sortDir;
 	}
 
-	protected async updateServiceContext(button: azdata.ButtonComponent): Promise<void> {
+	protected async updateServiceButtonContext(button: azdata.ButtonComponent): Promise<void> {
 		const label = await getSelectedServiceStatus();
-		if (button.label !== label ||
-			button.title !== label) {
+		await button.updateProperty('label', '');
+		await button.updateProperty('title', '');
+		await button.updateProperty('label', label);
+		await button.updateProperty('title', label);
+	}
 
-			button.label = label;
-			button.title = label;
-
-			await this.refresh();
-		}
+	protected createNewLoginMigrationButton(): azdata.ButtonComponent {
+		const newLoginMigrationButton = this.view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: loc.DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL,
+				description: loc.DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION,
+				height: 24,
+				iconHeight: 24,
+				iconWidth: 24,
+				iconPath: IconPathHelper.addNew,
+			}).component();
+		this.disposables.push(
+			newLoginMigrationButton.onDidClick(async () => {
+				const actionId = MenuCommands.StartLoginMigration;
+				const args = {
+					extensionId: SqlMigrationExtensionId,
+					issueTitle: loc.DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_TITLE,
+				};
+				return await vscode.commands.executeCommand(actionId, args);
+			}));
+		return newLoginMigrationButton;
 	}
 
 	protected createNewMigrationButton(): azdata.ButtonComponent {
@@ -160,68 +178,11 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return feedbackButton;
 	}
 
-	protected getMigrationErrors(migration: DatabaseMigration): string {
-		const errors = [];
-		errors.push(migration.properties.provisioningError);
-		errors.push(migration.properties.migrationFailureError?.message);
-		errors.push(migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
-		errors.push(migration.properties.migrationStatusDetails?.restoreBlockingReason);
-		errors.push(migration.properties.migrationStatusDetails?.sqlDataCopyErrors);
-
-		// remove undefined and duplicate error entries
-		return errors
-			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-			.join(EOL);
-	}
-
 	protected showDialogMessage(
 		title: string,
 		statusMessage: string,
 		errorMessage: string,
 	): void {
-		const tab = azdata.window.createTab(title);
-		tab.registerContent(async (view) => {
-			const flex = view.modelBuilder.flexContainer()
-				.withItems([
-					view.modelBuilder.text()
-						.withProps({ value: statusMessage })
-						.component(),
-				])
-				.withLayout({
-					flexFlow: 'column',
-					width: 420,
-				})
-				.withProps({ CSSStyles: { 'margin': '0 15px' } })
-				.component();
-
-			if (errorMessage.length > 0) {
-				flex.addItem(
-					view.modelBuilder.inputBox()
-						.withProps({
-							value: errorMessage,
-							readOnly: true,
-							multiline: true,
-							inputType: 'text',
-							height: 100,
-							CSSStyles: { 'overflow': 'hidden auto' },
-						})
-						.component()
-				);
-			}
-
-			await view.initializeModel(flex);
-		});
-
-		const dialog = azdata.window.createModelViewDialog(
-			title,
-			'messageDialog',
-			450,
-			'normal');
-		dialog.content = [tab];
-		dialog.okButton.hidden = true;
-		dialog.cancelButton.focused = true;
-		dialog.cancelButton.label = loc.CLOSE;
-
-		azdata.window.openDialog(dialog);
+		ShowStatusMessageDialog(title, statusMessage, errorMessage);
 	}
 }

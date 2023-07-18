@@ -3,31 +3,37 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IssueReporterStyles, IssueReporterData, ProcessExplorerData, IssueReporterExtensionData } from 'vs/platform/issue/common/issue';
-import { IIssueService } from 'vs/platform/issue/electron-sandbox/issue';
+import { IssueReporterStyles, IssueReporterData, ProcessExplorerData, IssueReporterExtensionData, IIssueMainService } from 'vs/platform/issue/common/issue';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
-import { textLinkForeground, inputBackground, inputBorder, inputForeground, buttonBackground, buttonHoverBackground, buttonForeground, inputValidationErrorBorder, foreground, inputActiveOptionBorder, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, editorBackground, editorForeground, listHoverBackground, listHoverForeground, textLinkActiveForeground, inputValidationErrorBackground, inputValidationErrorForeground, listActiveSelectionBackground, listActiveSelectionForeground, listFocusOutline, listFocusBackground, listFocusForeground, activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { textLinkForeground, inputBackground, inputBorder, inputForeground, buttonBackground, buttonHoverBackground, buttonForeground, inputValidationErrorBorder, foreground, inputActiveOptionBorder, scrollbarSliderActiveBackground, scrollbarSliderBackground, scrollbarSliderHoverBackground, editorBackground, editorForeground, listHoverBackground, listHoverForeground, textLinkActiveForeground, inputValidationErrorBackground, inputValidationErrorForeground, listActiveSelectionBackground, listActiveSelectionForeground, listFocusOutline, listFocusBackground, listFocusForeground, activeContrastBorder, scrollbarShadow } from 'vs/platform/theme/common/colorRegistry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getZoomLevel } from 'vs/base/browser/browser';
-import { IWorkbenchIssueService } from 'vs/workbench/services/issue/common/issue';
+import { IIssueUriRequestHandler, IWorkbenchIssueService } from 'vs/workbench/services/issue/common/issue';
 import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { platform } from 'vs/base/common/process';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IWorkbenchAssignmentService } from 'vs/workbench/services/assignment/common/assignmentService';
 import { IAuthenticationService } from 'vs/workbench/services/authentication/common/authentication';
-import { registerMainProcessRemoteService } from 'vs/platform/ipc/electron-sandbox/services';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} Add preview features flag
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}} Add preview features flag
+import { IIntegrityService } from 'vs/workbench/services/integrity/common/integrity';
+import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { URI } from 'vs/base/common/uri';
+import { InstantiationType, registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
-export class WorkbenchIssueService implements IWorkbenchIssueService {
+export class NativeIssueService implements IWorkbenchIssueService {
 	declare readonly _serviceBrand: undefined;
 
+	private readonly _handlers = new Map<string, IIssueUriRequestHandler>();
+
 	constructor(
-		@IIssueService private readonly issueService: IIssueService,
+		@IIssueMainService private readonly issueMainService: IIssueMainService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
@@ -36,8 +42,14 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 		@IProductService private readonly productService: IProductService,
 		@IWorkbenchAssignmentService private readonly experimentService: IWorkbenchAssignmentService,
 		@IAuthenticationService private readonly authenticationService: IAuthenticationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService // {{SQL CARBON EDIT}} Add preview features flag
-	) { }
+		@IConfigurationService private readonly configurationService: IConfigurationService, // {{SQL CARBON EDIT}} Add preview features flag
+		@IIntegrityService private readonly integrityService: IIntegrityService,
+	) {
+		ipcRenderer.on('vscode:triggerIssueUriRequestHandler', async (event: unknown, request: { replyChannel: string; extensionId: string }) => {
+			const result = await this.getIssueReporterUri(request.extensionId, CancellationToken.None);
+			ipcRenderer.send(request.replyChannel, result.toString());
+		});
+	}
 
 	async openReporter(dataOverrides: Partial<IssueReporterData> = {}): Promise<void> {
 		const extensionData: IssueReporterExtensionData[] = [];
@@ -47,7 +59,7 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 			extensionData.push(...enabledExtensions.map((extension): IssueReporterExtensionData => {
 				const { manifest } = extension;
 				const manifestKeys = manifest.contributes ? Object.keys(manifest.contributes) : [];
-				const isTheme = !manifest.activationEvents && manifestKeys.length === 1 && manifestKeys[0] === 'themes';
+				const isTheme = !manifest.main && !manifest.browser && manifestKeys.length === 1 && manifestKeys[0] === 'themes';
 				const isBuiltin = extension.type === ExtensionType.System;
 				return {
 					name: manifest.name,
@@ -55,6 +67,7 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 					version: manifest.version,
 					repositoryUrl: manifest.repository && manifest.repository.url,
 					bugsUrl: manifest.bugs && manifest.bugs.url,
+					hasIssueUriRequestHandler: this._handlers.has(extension.identifier.id.toLowerCase()),
 					displayName: manifest.displayName,
 					id: extension.identifier.id,
 					isTheme,
@@ -85,6 +98,14 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 			// Ignore
 		}
 
+		// air on the side of caution and have false be the default
+		let isUnsupported = false;
+		try {
+			isUnsupported = !(await this.integrityService.isPure()).isPure;
+		} catch (e) {
+			// Ignore
+		}
+
 		const theme = this.themeService.getColorTheme();
 		const issueReporterData: IssueReporterData = Object.assign({
 			styles: getIssueReporterStyles(theme),
@@ -93,9 +114,10 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 			experiments: experiments?.join('\n'),
 			restrictedMode: !this.workspaceTrustManagementService.isWorkspaceTrusted(),
 			previewFeaturesEnabled: this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES), // {{SQL CARBON EDIT}} Add preview features flag
-			githubAccessToken,
+			isUnsupported,
+			githubAccessToken
 		}, dataOverrides);
-		return this.issueService.openReporter(issueReporterData);
+		return this.issueMainService.openReporter(issueReporterData);
 	}
 
 	openProcessExplorer(): Promise<void> {
@@ -114,11 +136,30 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 				listActiveSelectionBackground: getColor(theme, listActiveSelectionBackground),
 				listActiveSelectionForeground: getColor(theme, listActiveSelectionForeground),
 				listHoverOutline: getColor(theme, activeContrastBorder),
+				scrollbarShadowColor: getColor(theme, scrollbarShadow),
+				scrollbarSliderActiveBackgroundColor: getColor(theme, scrollbarSliderActiveBackground),
+				scrollbarSliderBackgroundColor: getColor(theme, scrollbarSliderBackground),
+				scrollbarSliderHoverBackgroundColor: getColor(theme, scrollbarSliderHoverBackground),
 			},
 			platform: platform,
 			applicationName: this.productService.applicationName
 		};
-		return this.issueService.openProcessExplorer(data);
+		return this.issueMainService.openProcessExplorer(data);
+	}
+
+	registerIssueUriRequestHandler(extensionId: string, handler: IIssueUriRequestHandler): IDisposable {
+		this._handlers.set(extensionId.toLowerCase(), handler);
+		return {
+			dispose: () => this._handlers.delete(extensionId)
+		};
+	}
+
+	private async getIssueReporterUri(extensionId: string, token: CancellationToken): Promise<URI> {
+		const handler = this._handlers.get(extensionId);
+		if (!handler) {
+			throw new Error(`No issue uri request handler registered for extension '${extensionId}'`);
+		}
+		return handler.provideIssueUrl(token);
 	}
 }
 
@@ -149,4 +190,4 @@ function getColor(theme: IColorTheme, key: string): string | undefined {
 	return color ? color.toString() : undefined;
 }
 
-registerMainProcessRemoteService(IIssueService, 'issue', { supportsDelayedInstantiation: true });
+registerSingleton(IWorkbenchIssueService, NativeIssueService, InstantiationType.Delayed);

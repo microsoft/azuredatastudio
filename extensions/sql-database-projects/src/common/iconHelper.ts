@@ -24,6 +24,9 @@ export class IconPathHelper {
 	public static referenceGroup: IconPath;
 	public static referenceDatabase: IconPath;
 
+	public static sqlCmdVariablesGroup: IconPath;
+	public static sqlCmdVariable: IconPath;
+
 	public static refresh: IconPath;
 	public static folder_blue: IconPath;
 	public static selectConnection: IconPath;
@@ -56,6 +59,9 @@ export class IconPathHelper {
 
 		IconPathHelper.referenceGroup = IconPathHelper.makeIcon('referenceGroup');
 		IconPathHelper.referenceDatabase = IconPathHelper.makeIcon('reference-database');
+
+		IconPathHelper.sqlCmdVariablesGroup = IconPathHelper.makeIcon('symbol-string');
+		IconPathHelper.sqlCmdVariable = IconPathHelper.makeIcon('symbol-variable');
 
 		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh', true);
 		IconPathHelper.folder_blue = IconPathHelper.makeIcon('folder_blue', true);

@@ -4,8 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as loc from './localizedConstants';
+import * as vscode from 'vscode';
+import * as constants from './constants';
+
 import { AzureRegion, azureResource } from 'azurecore';
 import { AppContext } from './appContext';
+import { HttpClient } from './account-provider/auths/httpClient';
+import { parse } from 'url';
+import { getProxyAgentOptions } from './proxy';
+import { HttpsProxyAgentOptions } from 'https-proxy-agent';
+
+const configProxy = 'proxy';
+const configProxyStrictSSL = 'proxyStrictSSL';
+const configProxyAuthorization = 'proxyAuthorization';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -116,6 +127,8 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.sqlManagedInstance;
 		case azureResource.AzureResourceType.postgresServer:
 			return loc.postgresServer;
+		case azureResource.AzureResourceType.postgresFlexibleServer:
+			return loc.postgresFlexibleServer;
 		case azureResource.AzureResourceType.azureArcSqlManagedInstance:
 			return loc.azureArcsqlManagedInstance;
 		case azureResource.AzureResourceType.azureArcService:
@@ -124,6 +137,28 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.azureArcPostgresServer;
 	}
 	return type;
+}
+
+function getHttpConfiguration(): vscode.WorkspaceConfiguration {
+	return vscode.workspace.getConfiguration(constants.httpConfigSectionName);
+}
+
+/**
+ * Gets tenants to be ignored.
+ * @returns Tenants configured in ignore list
+ */
+export function getTenantIgnoreList(): string[] {
+	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
+	return configuration.get(constants.Filter) ?? [];
+}
+
+/**
+ * Updates tenant ignore list in global settings.
+ * @param tenantIgnoreList Tenants to be configured in ignore list
+ */
+export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promise<void> {
+	const configuration = vscode.workspace.getConfiguration(constants.AzureTenantConfigSection);
+	await configuration.update(constants.Filter, tenantIgnoreList, vscode.ConfigurationTarget.Global);
 }
 
 export function getResourceTypeIcon(appContext: AppContext, type: string): string {
@@ -144,4 +179,38 @@ export function getResourceTypeIcon(appContext: AppContext, type: string): strin
 			return appContext.extensionContext.asAbsolutePath('resources/azureArcPostgresServer.svg');
 	}
 	return '';
+}
+
+
+export function getProxyEnabledHttpClient(): HttpClient {
+	const proxy = <string>getHttpConfiguration().get(configProxy);
+	const strictSSL = getHttpConfiguration().get(configProxyStrictSSL, true);
+	const authorization = getHttpConfiguration().get(configProxyAuthorization);
+
+	const url = parse(proxy);
+	let agentOptions = getProxyAgentOptions(url, proxy, strictSSL);
+
+	if (authorization && url.protocol === 'https:') {
+		let httpsAgentOptions = agentOptions as HttpsProxyAgentOptions;
+		httpsAgentOptions!.headers = Object.assign(httpsAgentOptions!.headers || {}, {
+			'Proxy-Authorization': authorization
+		});
+		agentOptions = httpsAgentOptions;
+	}
+
+	return new HttpClient(proxy, agentOptions);
+}
+
+/* Display notification with button to reload
+ * return true if button clicked
+ * return false if button not clicked
+ */
+export async function displayReloadAds(message: string): Promise<boolean> {
+	const result = await vscode.window.showInformationMessage(message, loc.reloadChoice);
+	if (result === loc.reloadChoice) {
+		await vscode.commands.executeCommand('workbench.action.reloadWindow');
+		return true;
+	} else {
+		return false;
+	}
 }

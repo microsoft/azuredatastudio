@@ -36,6 +36,8 @@ export interface ITableDesignerService {
 	 * Open a table designer for the given table
 	 * @param providerId The provider id
 	 * @param tableInfo The table information
+	 * @param telemetryInfo Telemetry information
+	 * @param objectExplorerContext The object explorer context
 	 */
-	openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void>;
+	openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties, objectExplorerContext?: azdata.ObjectExplorerContext): Promise<void>;
 }

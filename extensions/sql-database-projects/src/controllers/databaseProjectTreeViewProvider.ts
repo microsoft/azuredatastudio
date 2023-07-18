@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as constants from '../common/constants';
 
-import { BaseProjectTreeItem, SpacerTreeItem } from '../models/tree/baseTreeItem';
+import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { Project } from '../models/project';
 
@@ -44,13 +43,6 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		return element.children;
 	}
 
-	public getParent(element: BaseProjectTreeItem): BaseProjectTreeItem {
-		if (!element.parent) {
-			throw new Error(constants.parentTreeItemUnknown);
-		}
-		return element.parent;
-	}
-
 	/**
 	 * Constructs a new set of root nodes from a list of Projects
 	 * @param projects List of Projects
@@ -60,11 +52,6 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 
 		for (const proj of projects) {
 			newRoots.push(new ProjectRootTreeItem(proj));
-			newRoots.push(SpacerTreeItem);
-		}
-
-		if (newRoots[newRoots.length - 1] === SpacerTreeItem) {
-			newRoots.pop(); // get rid of the trailing SpacerTreeItem
 		}
 
 		this.roots = newRoots;
@@ -77,13 +64,5 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		}
 
 		this.treeView = value;
-	}
-
-	public async focus(project: Project): Promise<void> {
-		const projNode = this.roots.find(x => x instanceof ProjectRootTreeItem ? (<ProjectRootTreeItem>x).project === project : false);
-
-		if (projNode) {
-			await this.treeView?.reveal(projNode, { focus: true, expand: true });
-		}
 	}
 }

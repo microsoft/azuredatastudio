@@ -2,25 +2,103 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="scm button commit and push title">
+        <source xml:lang="en">{0} Commit &amp; Push</source>
+        <target state="translated">Фиксация и отправка {0}</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and push tooltip">
+        <source xml:lang="en">Commit &amp; Push Changes</source>
+        <target state="translated">Зафиксировать и отправить изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync title">
+        <source xml:lang="en">{0} Commit &amp; Sync</source>
+        <target state="translated">Фиксация и синхронизация {0}</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync tooltip">
+        <source xml:lang="en">Commit &amp; Sync Changes</source>
+        <target state="translated">Зафиксировать и синхронизировать изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button commit title">
+        <source xml:lang="en">{0} Commit</source>
+        <target state="translated">Фиксация {0}</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and push tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Push Changes</source>
+        <target state="translated">Зафиксировать в новой ветви и отправить изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and sync tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Sync Changes</source>
+        <target state="translated">Зафиксировать в новой ветви и синхронизировать изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch tooltip">
+        <source xml:lang="en">Commit Changes to New Branch</source>
+        <target state="translated">Зафиксировать изменения в новой ветви</target>
+      </trans-unit>
+      <trans-unit id="scm button commit tooltip">
+        <source xml:lang="en">Commit Changes</source>
+        <target state="translated">Зафиксировать изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and pushing tooltip">
+        <source xml:lang="en">Committing &amp; Pushing Changes...</source>
+        <target state="translated">Фиксация и отправка изменений…</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and synching tooltip">
+        <source xml:lang="en">Committing &amp; Synching Changes...</source>
+        <target state="translated">Фиксация и синхронизация изменений…</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and pushing tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Pushing Changes...</source>
+        <target state="translated">Фиксация в новой ветви и отправка изменений...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and synching tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Synching Changes...</source>
+        <target state="translated">Фиксация в новой ветви и синхронизация изменений...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch tooltip">
+        <source xml:lang="en">Committing Changes to New Branch...</source>
+        <target state="translated">Фиксация изменений в новой ветви...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing tooltip">
+        <source xml:lang="en">Committing Changes...</source>
+        <target state="translated">Фиксация изменений…</target>
+      </trans-unit>
+      <trans-unit id="scm button continue title">
+        <source xml:lang="en">{0} Continue</source>
+        <target state="translated">Продолжить {0}</target>
+      </trans-unit>
+      <trans-unit id="scm button continue tooltip">
+        <source xml:lang="en">Continue Rebase</source>
+        <target state="translated">Продолжить перемещение изменений из одной ветви в другую</target>
+      </trans-unit>
+      <trans-unit id="scm button continuing tooltip">
+        <source xml:lang="en">Continuing Rebase...</source>
+        <target state="translated">Продолжается перемещение изменений из одной ветви в другую...</target>
+      </trans-unit>
       <trans-unit id="scm button publish branch">
         <source xml:lang="en">Publish Branch</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
         <target state="translated">Опубликовать Branch</target>
       </trans-unit>
       <trans-unit id="scm button publish branch running">
         <source xml:lang="en">Publishing Branch...</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
         <target state="translated">Публикация Branch...</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
-        <target state="translated">$(cloud-upload) Опубликовать ветвь</target>
-      </trans-unit>
       <trans-unit id="scm button sync description">
-        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
-        <target state="translated">{0} Синхронизировать изменения {1}{2}</target>
+        <source xml:lang="en">{0} Sync Changes{1}{2}</source>
+        <target state="translated">{0} Синхронизировать изменения{1}{2}</target>
       </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en">{0} {1}{2}</source>
-        <target state="translated">{0} {1}{2}</target>
+      <trans-unit id="scm publish branch action button title">
+        <source xml:lang="en">{0} Publish Branch</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">{0} Опубликовать Branch</target>
+      </trans-unit>
+      <trans-unit id="scm secondary button commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">Фиксация</target>
       </trans-unit>
       <trans-unit id="syncing changes">
         <source xml:lang="en">Synchronizing Changes...</source>
@@ -61,6 +139,14 @@
       <trans-unit id="HEAD not available">
         <source xml:lang="en">HEAD version of '{0}' is not available.</source>
         <target state="translated">Версия HEAD '{0}' недоступна.</target>
+      </trans-unit>
+      <trans-unit id="Theirs">
+        <source xml:lang="en">Theirs</source>
+        <target state="translated">Их</target>
+      </trans-unit>
+      <trans-unit id="Yours">
+        <source xml:lang="en">Yours</source>
+        <target state="translated">Ваш</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add to Workspace</source>
@@ -110,6 +196,10 @@
         <source xml:lang="en">Branch name</source>
         <target state="translated">Имя ветви</target>
       </trans-unit>
+      <trans-unit id="branch name does not match sanitized">
+        <source xml:lang="en">The new branch will be '{0}'</source>
+        <target state="translated">Новая ветвь будет "{0}"</target>
+      </trans-unit>
       <trans-unit id="branch name format invalid">
         <source xml:lang="en">Branch name needs to match regex: {0}</source>
         <target state="translated">Имя ветви должно соответствовать регулярному выражению: {0}</target>
@@ -117,10 +207,6 @@
       <trans-unit id="cant push">
         <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
         <target state="translated">Не удается отправить ссылки в удаленный репозиторий. Сначала запустите операцию извлечения, чтобы интегрировать изменения.</target>
-      </trans-unit>
-      <trans-unit id="changed">
-        <source xml:lang="en">{0} Log level changed to: {1}</source>
-        <target state="translated">{0} Уровень ведения журнала изменен на: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -150,6 +236,10 @@
         <source xml:lang="en">Create Empty Commit</source>
         <target state="translated">Создать пустую фиксацию</target>
       </trans-unit>
+      <trans-unit id="commit changes">
+        <source xml:lang="en">Commit Anyway</source>
+        <target state="translated">Все равно зафиксировать</target>
+      </trans-unit>
       <trans-unit id="commit hash">
         <source xml:lang="en">Commit Hash</source>
         <target state="translated">Хэш фиксации</target>
@@ -158,9 +248,21 @@
         <source xml:lang="en">Commit message</source>
         <target state="translated">Сообщение о фиксации</target>
       </trans-unit>
+      <trans-unit id="commit to branch">
+        <source xml:lang="en">Commit to a New Branch</source>
+        <target state="translated">Зафиксировать в новой ветви</target>
+      </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel2">
         <source xml:lang="en">Message (commit on '{0}')</source>
         <target state="translated">Сообщение (фиксация: \"{0}\")</target>
+      </trans-unit>
+      <trans-unit id="confirm branch protection commit">
+        <source xml:lang="en">You are trying to commit to a protected branch and you might not have permission to push your commits to the remote.
+
+How would you like to proceed?</source>
+        <target state="translated">Вы пытаетесь выполнить фиксацию в защищенной ветви. Возможно, у вас нет разрешения на отправку фиксаций в удаленный репозиторий.
+
+Какое действие необходимо выполнить?</target>
       </trans-unit>
       <trans-unit id="confirm delete">
         <source xml:lang="en">Are you sure you want to DELETE {0}?
@@ -206,7 +308,7 @@ This is IRREVERSIBLE, your current working set will be FOREVER LOST.</source>
         <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
         <target state="translated">Вы действительно хотите отменить изменения в файлах ({0})?</target>
       </trans-unit>
-      <trans-unit id="confirm emtpy commit">
+      <trans-unit id="confirm empty commit">
         <source xml:lang="en">Are you sure you want to create an empty commit?</source>
         <target state="translated">Вы действительно хотите создать пустую фиксацию?</target>
       </trans-unit>
@@ -266,6 +368,10 @@ Are you sure to continue?</source>
         <source xml:lang="en">Current</source>
         <target state="translated">Текущая</target>
       </trans-unit>
+      <trans-unit id="default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">По умолчанию</target>
+      </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">Delete File</source>
         <target state="translated">Удалить файл</target>
@@ -317,6 +423,10 @@ What would you like to do?</source>
       <trans-unit id="drop one stash">
         <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
         <target state="translated">Вы действительно хотите удалить все спрятанные записи? Имеется 1 запись, которая будут удалена, и ЕЕ ВОССТАНОВЛЕНИЕ МОЖЕТ БЫТЬ НЕВОЗМОЖНО.</target>
+      </trans-unit>
+      <trans-unit id="empty commit">
+        <source xml:lang="en">Commit operation was cancelled due to empty commit message.</source>
+        <target state="translated">Операция фиксации была отменена из-за пустого сообщения фиксации.</target>
       </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
@@ -752,19 +862,27 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/git/dist/log" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="gitLogLevel">
+        <source xml:lang="en">Log level: {0}</source>
+        <target state="translated">Уровень ведения журнала: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">{0} Skipped found git in: {1}</source>
-        <target state="translated">{0} Пропущен найденный git в: {1}</target>
+        <source xml:lang="en">Skipped found git in: {0}</source>
+        <target state="translated">Пропущенный найденный Git в: {0}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">{0} Using git {1} from {2}</source>
-        <target state="translated">{0} Использование git {1} из {2}</target>
+        <source xml:lang="en">Using git {0} from {1}</source>
+        <target state="translated">Используется git {0} из {1}</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">{0} Validating found git in: {1}</source>
-        <target state="translated">{0} Проверка найденного git в: {1}</target>
+        <source xml:lang="en">Validating found git in: {0}</source>
+        <target state="translated">Проверка найденного git в:{0}</target>
       </trans-unit>
     </body>
   </file>
@@ -949,6 +1067,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">Открыто</target>
+      </trans-unit>
+      <trans-unit id="open.merge">
+        <source xml:lang="en">Open Merge</source>
+        <target state="translated">Открыть слияние</target>
       </trans-unit>
       <trans-unit id="pull">
         <source xml:lang="en">Pull</source>
@@ -1210,6 +1332,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Commit Empty (No Verify)</source>
         <target state="translated">Зафиксировать пустые (без проверки)</target>
       </trans-unit>
+      <trans-unit id="command.commitMessageAccept">
+        <source xml:lang="en">Accept Commit Message</source>
+        <target state="translated">Принять сообщение о фиксации</target>
+      </trans-unit>
+      <trans-unit id="command.commitMessageDiscard">
+        <source xml:lang="en">Discard Commit Message</source>
+        <target state="translated">Отменить сообщение о фиксации</target>
+      </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
         <target state="translated">Зафиксировать (без проверки)</target>
@@ -1261,6 +1391,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.fetchPrune">
         <source xml:lang="en">Fetch (Prune)</source>
         <target state="translated">Получение (с обрезкой)</target>
+      </trans-unit>
+      <trans-unit id="command.git.acceptMerge">
+        <source xml:lang="en">Accept Merge</source>
+        <target state="translated">Принять слияние</target>
       </trans-unit>
       <trans-unit id="command.ignore">
         <source xml:lang="en">Add to .gitignore</source>
@@ -1365,6 +1499,18 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.restoreCommitTemplate">
         <source xml:lang="en">Restore Commit Template</source>
         <target state="translated">Восстановить шаблон коммита</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.linux">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">Открыть содержащую папку</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.mac">
+        <source xml:lang="en">Reveal in Finder</source>
+        <target state="translated">Отобразить в Finder</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.windows">
+        <source xml:lang="en">Reveal in File Explorer</source>
+        <target state="translated">Показать в проводнике</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
         <source xml:lang="en">Reveal in Explorer View</source>
@@ -1542,6 +1688,54 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Whether auto refreshing is enabled.</source>
         <target state="translated">Включено ли автоматическое обновление.</target>
       </trans-unit>
+      <trans-unit id="config.branchPrefix">
+        <source xml:lang="en">Prefix used when creating a new branch.</source>
+        <target state="translated">Префикс, используемый при создании новой ветви.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtection">
+        <source xml:lang="en">List of protected branches. By default, a prompt is shown before changes are committed to a protected branch. The prompt can be controlled using the `#git.branchProtectionPrompt#`  setting.</source>
+        <target state="translated">Список защищенных ветвей. По умолчанию перед фиксацией изменений в защищенной ветви отображается запрос. Запросом можно управлять с помощью параметра `#git.branchProtectionPrompt#`.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt">
+        <source xml:lang="en">Controls whether a prompt is being before changes are committed to a protected branch.</source>
+        <target state="translated">Определяет, выполняется ли запрос перед фиксацией изменений в защищенной ветви.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommit">
+        <source xml:lang="en">Always commit changes to the protected branch.</source>
+        <target state="translated">Всегда фиксировать изменения в защищенной ветви.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommitToNewBranch">
+        <source xml:lang="en">Always commit changes to a new branch.</source>
+        <target state="translated">Всегда фиксировать изменения в новой ветви.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysPrompt">
+        <source xml:lang="en">Always prompt before changes are committed to a protected branch.</source>
+        <target state="translated">Всегда запрашивать перед фиксацией изменений в защищенной ветви.</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary">
+        <source xml:lang="en">List of dictionaries used for the randomly generated branch name. Each value represents the dictionary used to generate the segment of the branch name. Supported dictionaries: `adjectives`, `animals`, `colors` and `numbers`.</source>
+        <target state="translated">Список словарей, используемых для случайно сгенерированного названия ветки. Каждое значение представляет словарь, используемый для создания сегмента имени ветки. Поддерживаемые словари: "прилагательные", "животные", "цвета" и "числа".</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.adjectives">
+        <source xml:lang="en">A random adjective</source>
+        <target state="translated">Случайное прилагательное</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.animals">
+        <source xml:lang="en">A random animal name</source>
+        <target state="translated">Случайное имя животного</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.colors">
+        <source xml:lang="en">A random color name</source>
+        <target state="translated">Случайное имя цвета</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.numbers">
+        <source xml:lang="en">A random number between 100 and 999</source>
+        <target state="translated">Случайное число от 100 до 999</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameEnable">
+        <source xml:lang="en">Controls whether a random name is generated when creating a new branch.</source>
+        <target state="translated">Определяет, создается ли случайное имя при создании новой ветви.</target>
+      </trans-unit>
       <trans-unit id="config.branchSortOrder">
         <source xml:lang="en">Controls the sort order for branches.</source>
         <target state="translated">Управляет порядком сортировки ветвей.</target>
@@ -1551,8 +1745,8 @@ These files will be FOREVER LOST.</source>
         <target state="translated">Регулярное выражение для проверки новых имен ветвей.</target>
       </trans-unit>
       <trans-unit id="config.branchWhitespaceChar">
-        <source xml:lang="en">The character to replace whitespace in new branch names.</source>
-        <target state="translated">Символ, которым будут заменены пробелы в новых именах ветвей.</target>
+        <source xml:lang="en">The character to replace whitespace in new branch names, and to separate segments of a randomly generated branch name.</source>
+        <target state="translated">Символ для замены пробелов в новых именах ветвей и для разделения сегментов случайно созданного имени ветви.</target>
       </trans-unit>
       <trans-unit id="config.checkoutType">
         <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
@@ -1576,6 +1770,9 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="config.commandsToLog">
         <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Список команд Git (например, commit, push), для которых `stdout` записывается в [выходные данные Git](command:git.showOutput). Если для команды Git настроен обработчик на стороне клиента, то `stdout` обработчика на стороне клиента также будет записан в [выходные данные Git](command:git.showOutput).</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
@@ -1698,6 +1895,45 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
         <target state="translated">Управляет максимальной допустимой длиной темы сообщения фиксации, при превышении которой будет выдано предупреждение. Удалите это значение, чтобы использовалось значение параметра \"config.inputValidationLength\".</target>
       </trans-unit>
+      <trans-unit id="config.logLevel">
+        <source xml:lang="en">Specifies how much information (if any) to log to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Указывает объем данных (при наличии) для регистрации в [git output](command:git.showOutput).</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.critical">
+        <source xml:lang="en">Log only critical information</source>
+        <target state="translated">Регистрировать только критическую информацию</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.debug">
+        <source xml:lang="en">Log only debug, information, warning, error, and critical information</source>
+        <target state="translated">Регистрировать только информацию об отладке, сведения, предупреждения, ошибки и критическую информацию</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.error">
+        <source xml:lang="en">Log only error, and critical information</source>
+        <target state="translated">Регистрировать только ошибки и критическую информацию</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.info">
+        <source xml:lang="en">Log only information, warning, error, and critical information</source>
+        <target state="translated">Регистрировать только сведения, предупреждения, ошибки и критическую информацию</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.off">
+        <source xml:lang="en">Log nothing</source>
+        <target state="translated">Ничего не регистрировать</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.trace">
+        <source xml:lang="en">Log all information</source>
+        <target state="translated">Регистрировать все сведения</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.warn">
+        <source xml:lang="en">Log only warning, error, and critical information</source>
+        <target state="translated">Регистрировать только предупреждения, ошибки и критическую информацию</target>
+      </trans-unit>
+      <trans-unit id="config.mergeEditor">
+        <source xml:lang="en">Open the merge editor for files that are currently under conflict.</source>
+        <target state="translated">Откройте редактор объединения для файлов, которые сейчас конфликтуют.</target>
+      </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
         <target state="translated">Определяет, следует ли автоматически открывать репозиторий после клонирования.</target>
@@ -1802,6 +2038,22 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">List of paths to search for git repositories in.</source>
         <target state="translated">Список путей для поиска репозиториев Git.</target>
       </trans-unit>
+      <trans-unit id="config.showActionButton">
+        <source xml:lang="en">Controls whether an action button is shown in the Source Control view.</source>
+        <target state="translated">Определяет, отображается ли кнопка действия в представлении системы управления версиями.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.commit">
+        <source xml:lang="en">Show an action button to commit changes when the local branch has modified files ready to be committed.</source>
+        <target state="translated">Показывать кнопку действия для фиксации изменений, когда локальной ветви есть готовые к фиксации измененные файлы.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.publish">
+        <source xml:lang="en">Show an action button to publish the local branch when it does not have a tracking remote branch.</source>
+        <target state="translated">Показывать кнопку действия для публикации локальной ветви, если у нее нет удаленной ветви отслеживания.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.sync">
+        <source xml:lang="en">Show an action button to synchronize changes when the local branch is either ahead or behind the remote branch.</source>
+        <target state="translated">Показывать кнопку действия для синхронизации изменений, когда локализованная ветвь находится за удаленной ветвью или перед ней.</target>
+      </trans-unit>
       <trans-unit id="config.showCommitInput">
         <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
         <target state="translated">Определяет, отображаются ли входные данные фиксации на панели управления исходным кодом Git.</target>
@@ -1817,22 +2069,6 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.showPushSuccessNotification">
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">Определяет, следует ли отображать уведомление об успешной отправке.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton">
-        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
-        <target state="translated">Определяет, следует ли отображать управляющую кнопку для синхронизации или публикации, если имеются неопубликованные фиксации.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.always">
-        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
-        <target state="translated">Всегда отображает управляющую кнопку, если имеются неопубликованные фиксации.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.never">
-        <source xml:lang="en">Never shows the action button.</source>
-        <target state="translated">Управляющая кнопка никогда не отображается.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
-        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
-        <target state="translated">Отображает кнопку действия, только если нет других изменений и имеются неопубликованные фиксации.</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
@@ -1859,8 +2095,12 @@ These files will be FOREVER LOST.</source>
         <target state="translated">Определяет, выдается ли уведомление при запуске действия синхронизации. Это уведомление позволяет пользователю отменить операцию.</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
-        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">Определяет, следует ли включить Azure Data Studio в качестве обработчика проверки подлинности для процессов Git, порожденных во встроенном терминале. Примечание. Для получения изменения в этом параметре необходимо перезапустить терминалы.</target>
+        <source xml:lang="en">Controls whether to enable VS Code to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Определяет, следует ли включить VS Code в качестве обработчика проверки подлинности для процессов Git, порожденных во встроенном терминале. Примечание. Для получения изменения в этом параметре необходимо перезапустить терминалы.</target>
+      </trans-unit>
+      <trans-unit id="config.terminalGitEditor">
+        <source xml:lang="en">Controls whether to enable VS Code to be git editor for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Определяет, следует ли включить VS Code в качестве редактора GIT для процессов GIT, порожденных во встроенном терминале. Примечание. Для получения изменения в этом параметре необходимо перезапустить терминалы.</target>
       </trans-unit>
       <trans-unit id="config.timeline.date">
         <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
@@ -1902,6 +2142,10 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
         <target state="translated">Определяет, следует ли использовать сообщение из поля входных данных фиксации в качестве сообщения о спрятанных изменениях по умолчанию.</target>
       </trans-unit>
+      <trans-unit id="config.useEditorAsCommitInput">
+        <source xml:lang="en">Controls whether a full text editor will be used to author commit messages, whenever no message is provided in the commit input box.</source>
+        <target state="translated">Управляет тем, будет ли использоваться полнотекстовый редактор для создания сообщений фиксации, если в поле ввода фиксации не указано сообщение.</target>
+      </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">Определяет, используется ли более безопасный вариант принудительной отправки с арендой.</target>
@@ -1909,6 +2153,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.useIntegratedAskPass">
         <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
         <target state="translated">Определяет, следует ли перезаписать GIT_ASKPASS для использования интегрированной версии.</target>
+      </trans-unit>
+      <trans-unit id="config.verboseCommit">
+        <source xml:lang="en">Enable verbose output when `#git.useEditorAsCommitInput#` is enabled.</source>
+        <target state="translated">Включить подробные выходные данные, если включен `#git.useEditorAsCommitInput#`.</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1961,6 +2209,9 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="view.workbench.cloneRepository">
         <source xml:lang="en">You can clone a repository locally.
 [Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
+        <note>{Locked='](command:git.clone'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Репозиторий можно клонировать локально.
 [Клонировать репозиторий](command:git.clone \"Клонировать репозиторий после активации расширения Git\")</target>
       </trans-unit>
@@ -1971,6 +2222,9 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.openSettings?%5B%22git.enabled%22%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Если вы хотите использовать возможности Git, включите Git в своих [параметрах](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в VS Code, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
       </trans-unit>
@@ -1979,6 +2233,9 @@ To learn more about how to use git and source control in VS Code [read our docs]
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:vscode.openFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Чтобы использовать возможности Git, можно открыть папку, содержащую репозиторий Git, или клонировать из URL-адреса.
 [Открыть папку](command:vscode.openFolder)
 [Клонировать репозиторий](command:git.clone)
@@ -1988,6 +2245,9 @@ To learn more about how to use git and source control in Azure Data Studio [read
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.addRootFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">В открытой сейчас рабочей области нет папок, содержащих репозитории Git.
 [Добавить папку в рабочую область](command:workbench.action.addRootFolder)
 Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
@@ -1996,39 +2256,43 @@ To learn more about how to use git and source control in Azure Data Studio [read
         <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init?%5Btrue%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">В открытой папке нет репозитория Git. Вы можете инициализировать репозиторий, что позволит получить доступ к возможностям системы управления версиями на платформе Git.
 [Инициализировать репозиторий](command:git.init?%5Btrue%5D)
 Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.missing">
-        <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
-Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
-If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
-        <target state="translated">Допустимая установка Git не обнаружена, дополнительные сведения см. в [выходных данных Git](command:git.showOutput).
-[Установите Git](https://git-scm.com/) либо получите дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio в [нашей документации](https://aka.ms/vscode-scm).
-Если вы используете другую систему управления версиями, можете поискать дополнительные расширения [в Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
-      </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide">
         <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
         <target state="translated">Установите Git, популярную систему управления версиями, чтобы отслеживать изменения кода и совместно работать с другими пользователями. Дополнительные сведения см. в [Git guides](https://aka.ms/vscode-scm).</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.linux">
+      <trans-unit id="view.workbench.scm.missing.linux">
         <source xml:lang="en">Source control depends on Git being installed.
 [Download Git for Linux](https://git-scm.com/download/linux)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
-        <target state="translated">Системе управления версиями требуется установка Git.
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Системе управления версиями требуется установка Git.
 [Скачать Git для Linux](https://git-scm.com/download/linux)
 После установки выполните [перезагрузку](command:workbench.action.reloadWindow) (или [устранение неполадок](command:git.showOutput)). Возможна установка дополнительных поставщиков управления версиями [из Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.mac">
+      <trans-unit id="view.workbench.scm.missing.mac">
         <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[Скачать Git для macOS](https://git-scm.com/download/mac)
-После установки выполните [перезагрузку](command:workbench.action.reloadWindow) (или [устранение неполадок](command:git.showOutput)). Можно установить дополнительных поставщиков системы управления версиями [из Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+После установки выполните [перезагрузку](command:workbench.action.reloadWindow) (или [устранение неполадок](command:git.showOutput)). Возможна установка дополнительных поставщиков управления версиями [из Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.windows">
+      <trans-unit id="view.workbench.scm.missing.windows">
         <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[Скачать Git для Windows](https://git-scm.com/download/win)
 После установки выполните [перезагрузку](command:workbench.action.reloadWindow) (или [устранение неполадок](command:git.showOutput)). Можно установить дополнительных поставщиков системы управления версиями [из Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
@@ -2036,6 +2300,9 @@ After installing, please [reload](command:workbench.action.reloadWindow) (or [tr
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
 [Initialize Repository](command:git.init)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">В открытой рабочей области нет папок, содержащих репозитории Git. Вы можете инициализировать репозиторий в папке, что позволит получить доступ к возможностям системы управления версиями на платформе Git.
 [Инициализировать репозиторий](command:git.init)
 Чтобы получить дополнительные сведения об использовании Git и системы управления версиями в Azure Data Studio, [изучите нашу документацию](https://aka.ms/vscode-scm).</target>

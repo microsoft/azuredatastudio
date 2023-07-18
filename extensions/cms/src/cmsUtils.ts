@@ -15,6 +15,13 @@ const cmsProvider: string = 'MSSQL-CMS';
 const mssqlProvider: string = 'MSSQL';
 const CredentialNamespace = 'cmsCredentials';
 
+const CRED_PREFIX = 'Microsoft.SqlTools';
+const CRED_SEPARATOR = '|';
+const CRED_KEYVALUE_SEPARATOR = ':';
+const CRED_ID_PREFIX = 'id:';
+const CRED_ITEMTYPE_PREFIX = 'itemtype:';
+const CRED_PROFILE_USER = 'Profile';
+
 interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
 	connection: azdata.connection.Connection;
@@ -31,17 +38,32 @@ export class CmsUtils {
 	private _cmsService: mssql.ICmsService;
 	private _registeredCmsServers: ICmsResourceNodeInfo[] = [];
 
-	// [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Used for unit testing, not actual valid credential")]
-	public async savePassword(username: string, password: string): Promise<boolean> {
+	public async savePassword(credId: string, password: string): Promise<boolean> {
 		let provider = await this.credentialProvider();
-		let result = await provider.saveCredential(username, password);
+		let result = await provider.saveCredential(credId, password);
 		return result;
 	}
 
-	public async getPassword(username: string): Promise<string> {
+	public async getPassword(connection: azdata.connection.Connection): Promise<string | undefined> {
 		let provider = await this.credentialProvider();
-		let credential = await provider.readCredential(username);
-		return credential ? credential.password : undefined;
+		let credId = this.formatCredentialId(connection);
+		let credential = await provider.readCredential(credId);
+		return credential?.password ? credential.password : undefined;
+	}
+
+	/**
+	 * Creates a formatted credential usable for uniquely identifying a SQL Connection.
+	 * This string can be decoded but is not optimized for this.
+	 * @param connection connection instance - required
+	 * @returns formatted string with server, DB and username
+	 */
+	private formatCredentialId(connection: azdata.connection.Connection): string {
+		const cred: string[] = [CRED_PREFIX];
+		cred.push(CRED_ITEMTYPE_PREFIX.concat(CRED_PROFILE_USER));
+		cred.push('Server' + CRED_KEYVALUE_SEPARATOR + CRED_ID_PREFIX.concat(connection.options.server));
+		cred.push('Database' + CRED_KEYVALUE_SEPARATOR + CRED_ID_PREFIX.concat(connection.options.database));
+		cred.push('User' + CRED_KEYVALUE_SEPARATOR + CRED_ID_PREFIX.concat(connection.options.user));
+		return cred.join(CRED_SEPARATOR);
 	}
 
 	public getSavedServers(): ICmsResourceNodeInfo[] {
@@ -56,7 +78,9 @@ export class CmsUtils {
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			let result = await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false);
+			let profile = Utils.toConnectionProfile(connection);
+			profile.password = await this.getPassword(connection);
+			let result = await azdata.connection.connect(profile, false, false);
 			if (result) {
 				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			}
@@ -85,6 +109,10 @@ export class CmsUtils {
 		name: string, description: string): Promise<CreateCmsResult> {
 		let provider = await this.getCmsService();
 		connection.providerName = connection.providerName === cmsProvider ? mssqlProvider : connection.providerName;
+		// Populate password if it's a SQL Login mode.
+		if (connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin && connection.options.savePassword) {
+			connection.options.password = await this.getPassword(connection);
+		}
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
@@ -121,7 +149,7 @@ export class CmsUtils {
 			});
 		}
 		if (connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin && connection.options.savePassword) {
-			this._credentialProvider.deleteCredential(connection.options.user);
+			this._credentialProvider.deleteCredential(this.formatCredentialId(connection));
 		}
 	}
 
@@ -207,6 +235,11 @@ export class CmsUtils {
 
 	// Getters
 	public get registeredCmsServers(): ICmsResourceNodeInfo[] {
+		this._registeredCmsServers.forEach(async server => {
+			if (server.connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin) {
+				server.connection.options.password = await this.getPassword(server.connection);
+			}
+		});
 		return this._registeredCmsServers;
 	}
 
@@ -239,10 +272,10 @@ export class CmsUtils {
 		if (connection) {
 			// remove group ID from connection if a user chose connection
 			// from the recent connections list
-			connection.options['groupId'] = null;
+			connection.options['groupId'] = undefined;
 			connection.providerName = mssqlProvider;
 			if (connection.options.savePassword) {
-				await this.savePassword(connection.options.user, connection.options.password);
+				await this.savePassword(this.formatCredentialId(connection), connection.options.password);
 			}
 			return connection;
 		}
@@ -250,7 +283,6 @@ export class CmsUtils {
 	}
 
 	// Static Functions
-
 	public getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
 		let connectionProfile: azdata.IConnectionProfile = {
 			connectionName: connection.options.connectionName,
@@ -269,5 +301,4 @@ export class CmsUtils {
 		};
 		return connectionProfile;
 	}
-
 }

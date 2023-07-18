@@ -38,26 +38,34 @@ export const enum TelemetryView {
 	AgentJobSteps = 'AgentJobSteps',
 	AgentNotebookHistory = 'AgentNotebookHistory',
 	AgentNotebooks = 'AgentNotebooks',
-	ConnectionDialog = 'ConnectionDialog',
+	ConnectionErrorDialog = 'ConnectionErrorDialog',
+	ErrorMessageDialog = 'ErrorMessageDialog',
 	ExecutionPlan = 'ExecutionPlan',
 	ExtensionHost = 'ExtensionHost',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
+	LinkedAccounts = 'LinkedAccounts',
 	Notebook = 'Notebook',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
 	SqlAssessment = 'SqlAssessment',
-	TableDesigner = 'TableDesigner'
+	TableDesigner = 'TableDesigner',
+	ObjectExplorer = 'ObjectExplorer'
 }
 
 export const enum TelemetryError {
 	DatabaseConnectionError = 'DatabaseConnectionError',
-	ObjectExplorerExpandError = 'ObjectExplorerExpandError'
+	ObjectExplorerExpandError = 'ObjectExplorerExpandError',
+	AddAzureAccountError = 'AddAzureAccountError',
+	AddAzureAccountErrorNoResult = 'AddAzureAccountErrorNoResult',
+	RefreshAzureAccountError = 'RefreshAzureAccountError',
+	RefreshAzureAccountErrorNoResult = 'RefreshAzureAccountErrorNoResult',
 }
 
 export const enum TelemetryAction {
 	adsCommandExecuted = 'adsCommandExecuted',
 	AddExecutionPlan = 'AddExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
+	AddAzureAccount = 'AddAzureAccount',
 	BackupCreated = 'BackupCreated',
 	ConnectToServer = 'ConnectToServer',
 	CustomZoom = 'CustomZoom',
@@ -75,7 +83,6 @@ export const enum TelemetryAction {
 	DeleteAgentProxy = 'DeleteAgentProxy',
 	DeleteConnection = 'DeleteConnection',
 	DeleteServerGroup = 'DeleteServerGroup',
-	EnableTrustServerCertificate = 'EnableTrustServerCertificate',
 	FindNode = 'FindNode',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
@@ -90,10 +97,13 @@ export const enum TelemetryAction {
 	MoveServerGroup = 'MoveServerGroup',
 	NewQuery = 'NewQuery',
 	ObjectExplorerExpand = 'ObjectExplorerExpand',
+	ObjectExplorerFilter = 'ObjectExplorerFilter',
+	ObjectExplorerRemoveFilter = 'ObjectExplorerRemoveFilter',
 	Open = 'Open',
 	OpenQuery = 'OpenQuery',
 	OpenExecutionPlanProperties = 'OpenExecutionPlanProperties',
 	PublishChanges = 'PublishChanges',
+	RefreshAzureAccount = 'RefreshAzureAccount',
 	RestoreRequested = 'RestoreRequested',
 	RunAgentJob = 'RunAgentJob',
 	RunQuery = 'RunQuery',
@@ -132,6 +142,7 @@ export const enum NbTelemetryAction {
 
 export const enum TelemetryPropertyName {
 	ChartMaxRowCountExceeded = 'chartMaxRowCountExceeded',
-	ConnectionSource = 'connectionSource'
+	ConnectionSource = 'connectionSource',
+	AuthLibrary = 'AuthLibrary'
 }
 

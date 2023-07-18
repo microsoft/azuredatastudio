@@ -19,7 +19,7 @@ describe('Publish Database Options Dialog', () => {
 		await baselines.loadBaselines();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -36,7 +36,7 @@ describe('Publish Database Options Dialog', () => {
 
 	it('Should deployment options gets initialized correctly with sample test project', async function (): Promise<void> {
 		// Create new sample test project
-		const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+		const project = await testUtils.createTestProject(this.test, baselines.openProjectFileBaseline);
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, project);
 
 		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(testData.mockDacFxOptionsResult.deploymentOptions); });

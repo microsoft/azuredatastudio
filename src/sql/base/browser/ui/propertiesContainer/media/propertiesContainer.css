@@ -29,7 +29,9 @@ properties-container .columnLayout.property {
 }
 
 properties-container .propertyName,
-properties-container .splitter {
+.hc-light properties-container .propertyName,
+properties-container .splitter,
+.hc-light properties-container .splitter {
 	opacity: 0.6;
 	font-size: 12px;
 	flex: 0 0 auto

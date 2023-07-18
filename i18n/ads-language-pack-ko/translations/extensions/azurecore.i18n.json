@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "계정을 캐시에 추가하는 동안 오류가 발생했습니다.",
 			"azure.cacheErrorGet": "캐시에서 계정을 가져올 때 오류 발생",
 			"azure.cacheErrorParse": "캐시에서 계정을 구문 분석하는 동안 오류 발생",
-			"azure.cacheErrrorRemove": "캐시에서 계정을 제거하는 동안 오류가 발생했습니다.",
 			"azure.microsoftAccountDisplayName": "Microsoft 계정",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "인증 관련 오류가 발생했거나 토큰이 시스템에서 삭제되었습니다. 계정을 다시 Azure Data Studio에 추가해 보세요.",
@@ -21,12 +20,15 @@
 			"azure.owningTenantNotFound": "계정에 대한 소유 테넌트 정보를 찾을 수 없습니다.",
 			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
-			"azureAuth.unidentifiedError": "Azure 인증에서 식별되지 않은 오류 발생",
-			"azureWorkAccountDisplayName": "회사 또는 학교 계정",
-			"azurecore.consentDialog.body": "'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio에서 이 테넌트 {0}({1})에 대한 인증을 더 이상 트리거하지 않으며 리소스에 액세스할 수 없게 됩니다. \r\n\r\n이 테넌트의 리소스에 대한 액세스를 다시 허용하려면 '{2}' 설정의 제외 목록에서 테넌트를 제거해야 합니다.\r\n\r\n계속하시겠습니까?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "확인",
+			"azurecore.consentDialog.authenticate": "취소 및 인증",
+			"azurecore.consentDialog.body": "{0}({1}) 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. 열기를 눌러 인증 프로세스를 시작하세요.",
 			"azurecore.consentDialog.cancel": "취소",
 			"azurecore.consentDialog.ignore": "테넌트 무시",
 			"azurecore.consentDialog.open": "열기",
+			"msal.accountNotFoundError": "토큰을 가져올 때 계정 정보를 찾을 수 없습니다.",
+			"msal.resourceNotFoundError": "Azure 리소스 {0}에 대한 구성을 찾을 수 없습니다.",
 			"noMicrosoftResource": "'{0}' 공급자에 정의된 Microsoft 리소스 엔드포인트가 없습니다."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -44,7 +46,10 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "사용 가능한 Azure 인증 방법이 없습니다. ADS 구성에서 인증 방법을 사용하도록 설정해야 합니다.",
 			"azure.NoAuthMethod.Selected": "Azure 인증 방법이 선택되지 않았습니다. 사용할 인증 방법을 선택해야 합니다.",
-			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요."
+			"azure.deprecatedGetSecurityToken": "azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요.",
+			"genericTokenError": "토큰을 가져오지 못했습니다.",
+			"msalTokenError": "토큰을 획득할 때 {0}이(가) 발생했습니다. \r\n{1}",
+			"tenantIgnoredError": "테넌트가 무시 목록에 있습니다. 인증이 시도되지 않았습니다. {1} settings.json 파일의 무시 목록에서 {0} 테넌트를 제거하여 이 테넌트의 리소스에 액세스할 수 있습니다."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "토큰 캐시를 지우지 못했습니다.",
@@ -52,10 +57,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure(중국)",
-			"germanyCloud": "Azure(독일)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure(미국 정부)",
-			"usNatCloudDisplayName": "Azure(미국 국가)"
+			"usGovCloudDisplayName": "Azure(미국 정부)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "이 기능이 작동하려면 Azure 계정을 선택해야 합니다.",
@@ -74,31 +77,44 @@
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 작업 영역"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Mongo용 CosmosDB"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "MongoDB용 Azure CosmosDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 데이터베이스"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL Database"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL 서버"
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 데이터 탐색기 클러스터"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL 유연한 서버"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL 유동 서버"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 하이퍼스케일 - Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 서버 – Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Azure Database for PostgreSQL 유연한 서버"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 서버"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 관리형 인스턴스"
+			"azure.resource.providers.sqlInstanceContainerLabel": "SQL Managed Instance"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 관리형 인스턴스 - Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "전용 SQL 풀"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "인식할 수 없는 공급자 리소스: {0}",
+			"azurecore.unregisteredProviderType": "인식할 수 없는 공급자 리소스 종류: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "리소스를 찾을 수 없음"
@@ -120,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Azure에 로그인..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "구독을 찾을 수 없습니다.",
-			"azure.unableToAccessSubscription": "구독 {0}({1})에 액세스할 수 없습니다. 다시 시도하려면 [계정을 새로 고침](command:azure.resource.signin)하세요. {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "테넌트를 찾을 수 없습니다."
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "일부 Azure 계정을 로드하지 못했습니다. {0}",
@@ -129,13 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure 계정 표시"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.throttleerror": "이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.",
-			"azure.resource.tree.accountTreeNode.title": "{0}({1}/{2}개 구독)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 로드 중...",
-			"azure.resource.tree.loadresourceerror": "Azure 리소스를 로드하는 동안 오류가 발생했습니다. {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "테넌트를 찾을 수 없습니다."
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "구독을 찾을 수 없습니다."
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "리소스를 찾을 수 없습니다."
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "구독을 찾을 수 없습니다."
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "로드하는 중..."
@@ -150,6 +168,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure 리소스(미리 보기)",
+			"azure.credStoreSaveFailedError": "토큰 캐시에 대한 키를 자격 증명 저장소에 저장할 수 없습니다. 이로 인해 Azure 액세스 토큰 지속성 문제가 발생할 수 있으며 연결이 불안정해질 수 있습니다. SqlTools가 Windows의 자격 증명 저장 한도에 도달한 것 같습니다. Windows 자격 증명 관리자 \"Microsoft.SqlTools|\"로 시작하는 자격 증명을 2개 이상 지우고 다시 로드하세요.",
 			"azure.unableToOpenAzureLink": "링크를 열 수 없음, 필요한 값이 없음",
 			"azurecore.australiacentral": "오스트레일리아 중부",
 			"azurecore.australiacentral2": "오스트레일리아 중부 2",
@@ -165,6 +184,9 @@
 			"azurecore.centralindia": "인도 중부",
 			"azurecore.centralus": "미국 중부",
 			"azurecore.centraluseuap": "미국 중부 EUAP",
+			"azurecore.deprecated": "경고: ADAL은 더 이상 사용되지 않으며 향후 릴리스에서 제거될 예정입니다. 대신 MSAL을 사용하세요.",
+			"azurecore.disable": "사용 안 함",
+			"azurecore.dismiss": "해제",
 			"azurecore.eastasia": "동아시아",
 			"azurecore.eastus": "미국 동부",
 			"azurecore.eastus2": "미국 동부 2",
@@ -186,8 +208,12 @@
 			"azurecore.northeurope": "북유럽",
 			"azurecore.norwayeast": "노르웨이 동부",
 			"azurecore.norwaywest": "노르웨이 서부",
+			"azurecore.piiLogging.warning": "경고: Azure PII 로깅이 활성화되어 있습니다. 이 옵션을 활성화하면 개인 식별 정보가 기록될 수 있으며 디버깅 용도로만 사용해야 합니다.",
+			"azurecore.postgresFlexibleServer": "Azure Database for PostgreSQL 유연한 서버",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL 서버",
 			"azurecore.reload": "다시 로드",
+			"azurecore.reloadChoice": "Azure 데이터 스튜디오 다시 로드",
+			"azurecore.reloadPrompt": "인증 라이브러리가 변경되었습니다. Azure Data Studio를 다시 로드하세요.",
 			"azurecore.requiresReload": "이 설정을 수정하려면 모든 변경 내용이 적용되도록 창을 다시 로드해야 합니다.",
 			"azurecore.resourceGroup": "리소스 그룹",
 			"azurecore.resourceType": "리소스 종류",
@@ -228,11 +254,13 @@
 			"azure.resource.refresh.title": "새로 고침",
 			"azure.resource.refreshall.title": "Azure: 모든 계정 새로 고침",
 			"azure.resource.selectsubscriptions.title": "구독 선택",
+			"azure.resource.selecttenants.title": "테넌트 선택",
 			"azure.resource.signin.title": "Azure: 로그인",
 			"azure.resource.startterminal.title": "Cloud Shell 시작",
 			"azure.resource.view.title": "Azure(미리 보기)",
-			"azure.tenant.config.filter.description": "Azure 리소스를 쿼리할 때 무시할 테넌트 ID 목록입니다. 각 요소는 테넌트 ID입니다.",
+			"azure.tenant.config.filter.description": "Azure 리소스를 쿼리하거나 인증 토큰을 요청할 때 건너뛸 테넌트 ID 목록입니다.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "AAD 인증 흐름에 사용되는 라이브러리입니다. 이 옵션을 변경한 후 ADS를 다시 시작하세요.",
 			"config.azureAccountConfigurationSection": "Azure 계정 구성",
 			"config.azureAuthMethodConfigurationSection": "Azure 인증 방법",
 			"config.azureCodeGrantMethod": "코드 부여 방법",

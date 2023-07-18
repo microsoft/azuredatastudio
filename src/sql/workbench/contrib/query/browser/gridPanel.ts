@@ -6,25 +6,24 @@
 import 'vs/css!./media/gridPanel';
 
 import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/contrib/query/browser/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction, CopyHeadersAction } from 'sql/workbench/contrib/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { DBCellValue, getCellDisplayValue, hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { range } from 'vs/base/common/arrays';
@@ -33,39 +32,45 @@ import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/acti
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IAction, Separator } from 'vs/base/common/actions';
+import { IAction, Separator, toAction } from 'vs/base/common/actions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { CancellationToken } from 'vs/base/common/cancellation';
+import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
-import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { IQueryEditorConfiguration, IResultGridConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationHandle, INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
 import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { queryEditorNullBackground } from 'sql/platform/theme/common/colorRegistry';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { GridRange } from 'sql/base/common/gridRange';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 15;
 const BOTTOM_PADDING = 15;
+const NO_ACTIONBAR_ADDITIONAL_PADDING = 75;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
-const ACTIONBAR_HEIGHT = 120;
+const ACTIONBAR_HEIGHT = 140;
 
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
@@ -75,9 +80,12 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 // 2. when user clicks a cell, whether the cell content should be displayed in a new text editor as json.
 // Based on the requirements, the solution doesn't need to be very accurate, a simple regex is enough since it is more
 // performant than trying to parse the string to object.
-// Regex explaination: after removing the trailing whitespaces, the string must start with '[' (to support arrays)
-// or '{'. And there must be a '}' to match the '{'.
-const IsJsonRegex = /^\s*\[*\s*{.*?}/g;
+// Regex explaination: after removing the trailing whitespaces and line breaks, the string must start with '[' (to support arrays)
+// or '{', and there must be a '}' or ']' to close it.
+const IsJsonRegex = /^\s*[\{|\[][\S\s]*[\}\]]\s*$/g;
+
+// The css class for null cell
+const NULL_CELL_CSS_CLASS = 'cell-null';
 
 export class GridPanel extends Disposable {
 	private container = document.createElement('div');
@@ -94,8 +102,7 @@ export class GridPanel extends Disposable {
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@ILogService private readonly logService: ILogService,
-		@IThemeService private readonly themeService: IThemeService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		this.scrollableView = new ScrollableView(this.container);
@@ -249,7 +256,6 @@ export class GridPanel extends Disposable {
 					this.minimizeTables();
 				}
 			}));
-			this.tableDisposable.add(attachTableStyler(table, this.themeService));
 
 			tables.push(table);
 		}
@@ -351,7 +357,12 @@ const defaultGridTableOptions: IGridTableOptions = {
 	actionOrientation: ActionsOrientation.VERTICAL
 };
 
-export abstract class GridTableBase<T> extends Disposable implements IView {
+export interface IQueryResultGrid {
+	readonly htmlElement: HTMLElement;
+	runAction(actionId: string): void;
+}
+
+export abstract class GridTableBase<T> extends Disposable implements IView, IQueryResultGrid {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -361,6 +372,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private dataProvider: HybridDataProvider<T>;
 	private filterPlugin: HeaderFilter<T>;
 	private isDisposed: boolean = false;
+	private gridConfig: IResultGridConfiguration;
+	private selectionChangeHandlerTokenSource: CancellationTokenSource | undefined;
 
 	private columns: Slick.Column<T>[];
 
@@ -406,22 +419,23 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
-		@IQuickInputService private readonly quickInputService: IQuickInputService
+		@IQuickInputService private readonly quickInputService: IQuickInputService,
+		@IComponentContextService private readonly componentContextService: IComponentContextService,
+		@IContextKeyService protected readonly contextKeyService: IContextKeyService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
-		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
+		this.gridConfig = this.configurationService.getValue<IResultGridConfiguration>('resultsGrid');
+		this.rowHeight = this.gridConfig.rowHeight ?? ROW_HEIGHT;
 		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
 			return <Slick.Column<T>>{
 				id: i.toString(),
@@ -429,10 +443,52 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: c.isXml ? hyperLinkFormatter : queryResultTextFormatter,
+				formatter: c.isXml ? hyperLinkFormatter : (row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } => {
+					return queryResultTextFormatter(this.gridConfig.showJsonAsLink, row, cell, value, columnDef, dataContext);
+				},
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
+	}
+
+	public get htmlElement(): HTMLElement {
+		return this.tableContainer;
+	}
+
+	runAction(actionId: string): void {
+		let action: IAction | undefined;
+		switch (actionId) {
+			case CopyResultAction.COPYWITHHEADERS_ID:
+				action = this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true);
+				break;
+			case CopyHeadersAction.ID:
+				action = this.instantiationService.createInstance(CopyHeadersAction);
+				break;
+			case SelectAllGridAction.ID:
+				action = this.instantiationService.createInstance(SelectAllGridAction);
+				break;
+			case SaveResultAction.SAVECSV_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV);
+				break;
+			case SaveResultAction.SAVEEXCEL_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL);
+				break;
+			case SaveResultAction.SAVEJSON_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON);
+				break;
+			case SaveResultAction.SAVEMARKDOWN_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN);
+				break;
+			case SaveResultAction.SAVEXML_ID:
+				action = this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML);
+				break;
+			default:
+				this.logService.error(`No handler registered for action '${actionId}'`);
+				break;
+		}
+		if (action) {
+			action.run(this.generateContext());
+		}
 	}
 
 	abstract get gridDataProvider(): IGridDataProvider;
@@ -480,7 +536,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private build(): void {
 		let actionBarContainer = document.createElement('div');
 
-		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
+		// Create a horizontal actionbar if orientation passed in is HORIZONTAL.
+		// The horizontal actionbar gets created up top here so that it will appear above the results table.
+		// A vertical actionbar is supposed to come after the results table, so it gets created later down below.
 		if (this.options.actionOrientation === ActionsOrientation.HORIZONTAL) {
 			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
@@ -489,7 +547,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.tableContainer = document.createElement('div');
 		this.tableContainer.className = 'grid-panel';
 		this.tableContainer.style.display = 'inline-block';
-		this.tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+
+		let actionBarWidth = this.showActionBar ? ACTIONBAR_WIDTH : 0;
+		this.tableContainer.style.width = `calc(100% - ${actionBarWidth}px)`;
 
 		this.container.appendChild(this.tableContainer);
 
@@ -526,17 +586,18 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
 			});
-		this.table = this._register(new Table(this.tableContainer, this.accessibilityService, this.quickInputService, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, this.accessibilityService, this.quickInputService, defaultTableStyles, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
+		const autoSizeOnRender: boolean = !this.state.columnSizes && this.gridConfig.autoSizeColumns;
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.gridConfig.maxColumnWidth, extraColumnHeaderWidth: FilterButtonWidth }));
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
+		this._register(this.table.onDoubleClick(this.onTableDoubleClick, this));
 		this._register(this.dataProvider.onFilterStateChange(() => {
 			const columns = this.table.columns as FilterableColumn<T>[];
 			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
@@ -554,21 +615,32 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 			this.table.rerenderGrid();
 		}));
-		this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+		this.filterPlugin = new HeaderFilter({
 			disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-			refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
-		});
-		this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
+			refreshColumns: !autoSizeOnRender, // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
+			...defaultTableFilterStyles
+		}, this.contextViewService, this.notificationService,);
+		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const nullBackground = theme.getColor(queryEditorNullBackground);
+			if (nullBackground) {
+				collector.addRule(`.slick-row:not(:hover) .${NULL_CELL_CSS_CLASS} { background: ${nullBackground};}`);
+			}
+		}));
+
 		this.table.registerPlugin(this.filterPlugin);
+		const result = this.componentContextService.registerQueryResultGrid(this);
+		this._register(result);
+		this._register(this.componentContextService.registerTable(this.table, result.componentContextKeyService));
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
-		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
+		// if the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
 		if (this.options.actionOrientation === ActionsOrientation.VERTICAL) {
 			actionBarContainer.className = 'grid-panel action-bar vertical';
-			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+			actionBarContainer.style.width = (this.showActionBar ? ACTIONBAR_WIDTH : 0) + 'px';
 			this.container.appendChild(actionBarContainer);
 		}
+
 		let context: IGridActionContext = {
 			gridDataProvider: this.gridDataProvider,
 			table: this.table,
@@ -579,16 +651,19 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.actionBar = new ActionBar(actionBarContainer, {
 			orientation: this.options.actionOrientation, context: context
 		});
+
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			this.actionBar.context = this.generateContext();
 		});
+
 		this.rebuildActionBar();
+
 		this.selectionModel.onSelectedRangesChanged.subscribe(async e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
 			}
-			await this.notifyTableSelectionChanged();
+			await this.handleTableSelectionChange();
 		});
 
 		this.table.grid.onScroll.subscribe((e, data) => {
@@ -687,7 +762,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._state = val;
 	}
 
-	private async getRowData(start: number, length: number): Promise<ICellValue[][]> {
+	private async getRowData(start: number, length: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ICellValue[][]> {
 		let subset;
 		if (this.dataProvider.isDataInMemory) {
 			// handle the scenario when the data is sorted/filtered,
@@ -695,23 +770,102 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const data = await this.dataProvider.getRangeAsync(start, length);
 			subset = data.map(item => Object.keys(item).map(key => item[key]));
 		} else {
-			subset = (await this.gridDataProvider.getRowData(start, length)).rows;
+			subset = (await this.gridDataProvider.getRowData(start, length, cancellationToken, onProgressCallback)).rows;
 		}
 		return subset;
 	}
 
-	private async notifyTableSelectionChanged() {
-		const selectedCells = [];
-		for (const range of this.state.selection) {
-			const subset = await this.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
-			subset.forEach(row => {
-				// start with range.fromCell -1 because we have row number column which is not available in the actual data
-				for (let i = range.fromCell - 1; i < range.toCell; i++) {
-					selectedCells.push(row[i]);
-				}
-			});
+	private async handleTableSelectionChange(): Promise<void> {
+		if (this.selectionChangeHandlerTokenSource) {
+			this.selectionChangeHandlerTokenSource.cancel();
 		}
-		this.queryModelService.notifyCellSelectionChanged(selectedCells);
+		this.selectionChangeHandlerTokenSource = new CancellationTokenSource();
+		await this.notifyTableSelectionChanged(this.selectionChangeHandlerTokenSource);
+	}
+
+	private async notifyTableSelectionChanged(cancellationTokenSource: CancellationTokenSource): Promise<void> {
+		const gridRanges = GridRange.fromSlickRanges(this.state.selection ?? []);
+		const rowRanges = GridRange.getUniqueRows(gridRanges);
+		const columnRanges = GridRange.getUniqueColumns(gridRanges);
+		const rowCount = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
+		const runAction = async (proceed: boolean) => {
+			const selectedCells = [];
+			if (proceed && !cancellationTokenSource.token.isCancellationRequested) {
+				let notificationHandle: INotificationHandle = undefined;
+				const timeout = setTimeout(() => {
+					notificationHandle = this.notificationService.notify({
+						message: localize('resultsGrid.loadingData', "Loading selected rows for calculation..."),
+						severity: Severity.Info,
+						progress: {
+							infinite: true
+						},
+						actions: {
+							primary: [
+								toAction({
+									id: 'cancelLoadingCells',
+									label: localize('resultsGrid.cancel', "Cancel"),
+									run: () => {
+										cancellationTokenSource.cancel();
+										notificationHandle.close();
+									}
+								})]
+						}
+					});
+				}, 1000);
+				this.queryModelService.notifyCellSelectionChanged([]);
+				let rowsInProcessedRanges = 0;
+				for (const range of rowRanges) {
+					if (cancellationTokenSource.token.isCancellationRequested) {
+						break;
+					}
+					const rows = await this.getRowData(range.start, range.end - range.start + 1, cancellationTokenSource.token, (availableRows: number) => {
+						notificationHandle?.updateMessage(localize('resultsGrid.loadingDataWithProgress', "Loading selected rows for calculation ({0}/{1})...", rowsInProcessedRanges + availableRows, rowCount));
+					});
+					rows.forEach((row, rowIndex) => {
+						columnRanges.forEach(cr => {
+							for (let i = cr.start; i <= cr.end; i++) {
+								if (this.state.selection.some(selection => selection.contains(rowIndex + range.start, i))) {
+									// need to reduce the column index by 1 because we have row number column which is not available in the actual data
+									selectedCells.push(row[i - 1]);
+								}
+							}
+						});
+					});
+					rowsInProcessedRanges += range.end - range.start + 1;
+				}
+				clearTimeout(timeout);
+				notificationHandle?.close();
+			}
+			cancellationTokenSource.dispose();
+			if (!cancellationTokenSource.token.isCancellationRequested) {
+				this.queryModelService.notifyCellSelectionChanged(selectedCells);
+			}
+		};
+		const showPromptConfigValue = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.promptForLargeRowSelection;
+		if (this.options.inMemoryDataCountThreshold && rowCount > this.options.inMemoryDataCountThreshold && showPromptConfigValue) {
+			this.notificationService.prompt(Severity.Warning, localize('resultsGrid.largeRowSelectionPrompt.', 'You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?', rowCount), [
+				{
+					label: localize('resultsGrid.confirmLargeRowSelection', "Yes"),
+					run: async () => {
+						await runAction(true);
+					}
+				}, {
+					label: localize('resultsGrid.cancelLargeRowSelection', "Cancel"),
+					run: async () => {
+						await runAction(false);
+					}
+				}, {
+					label: localize('resultsGrid.donotShowLargeRowSelectionPromptAgain', "Don't show again"),
+					run: async () => {
+						this.configurationService.updateValue('queryEditor.results.promptForLargeRowSelection', false).catch(e => onUnexpectedError(e));
+						await runAction(true);
+					},
+					isSecondary: true
+				}
+			]);
+		} else {
+			await runAction(true);
+		}
 	}
 
 	private async onTableClick(event: ITableMouseEvent) {
@@ -721,27 +875,36 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (column) {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
-			const isJson = isJsonCell(value);
-			if (column.isXml || isJson) {
-				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
-				if (result.isExecutionPlan) {
-					const executionPlanGraphInfo = {
-						graphFileContent: value.displayValue,
-						graphFileType: result.queryExecutionPlanFileExtension
-					};
+			if (column.isXml || (this.gridConfig.showJsonAsLink && isJsonCell(value))) {
+				if (column.isXml && this.providerId) {
+					const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
+					if (result.isExecutionPlan) {
+						const executionPlanGraphInfo = {
+							graphFileContent: value.displayValue,
+							graphFileType: result.queryExecutionPlanFileExtension
+						};
 
-					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
-					await this.editorService.openEditor(executionPlanInput);
+						const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
+						await this.editorService.openEditor(executionPlanInput);
+						return;
+					}
 				}
-				else {
-					const content = value.displayValue;
-					const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
-					await input.resolve();
-					await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-					input.setDirty(false);
-					await this.editorService.openEditor(input);
-				}
+				const content = value.displayValue;
+				const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
+				await input.resolve();
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+				input.setDirty(false);
+				await this.editorService.openEditor(input);
 			}
+		}
+	}
+
+	private onTableDoubleClick(event: ITableMouseEvent) {
+		// the first column is already handled by rowNumberColumn plugin.
+		if (event.cell && event.cell.cell !== 0) {
+			// upon double clicking, we want to select the entire row so that it is easier to know which
+			// row is selected when the user needs to scroll horizontally.
+			this.table.grid.setSelectedRows([event.cell.row]);
 		}
 	}
 
@@ -774,7 +937,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private rebuildActionBar() {
-		let actions = this.getCurrentActions();
+		let actions = this.getActionBarItems();
 		this.actionBar.clear();
 		if (this.options.showActionBar) {
 			this.actionBar.push(actions, { icon: true, label: false });
@@ -792,7 +955,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	protected abstract getCurrentActions(): IAction[];
+	protected getActionBarItems(): IAction[] {
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
+		];
+	}
 
 	protected abstract getContextActions(): IAction[];
 
@@ -810,11 +981,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
 		// if there is only one table then allow a minimum size of ROW_HEIGHT
-		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return this.isOnlyTable ? ROW_HEIGHT : Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), actionBarHeight + bottomPadding);
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
+		let actionBarHeight = this.showActionBar ? ACTIONBAR_HEIGHT : 0;
+		let bottomPadding = this.showActionBar ? BOTTOM_PADDING : BOTTOM_PADDING + NO_ACTIONBAR_ADDITIONAL_PADDING;
+
+		return Math.max(this.maxSize, actionBarHeight + bottomPadding);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
@@ -826,9 +1003,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
+					const displayValue = r[i - 1].displayValue ?? '';
+					const ariaLabel = getCellDisplayValue(displayValue);
 					dataWithSchema[this.columns[i].field] = {
-						displayValue: r[i - 1].displayValue,
-						ariaLabel: escape(r[i - 1].displayValue),
+						displayValue: displayValue,
+						ariaLabel: ariaLabel,
 						isNull: r[i - 1].isNull,
 						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue
 					};
@@ -847,14 +1026,22 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					new SelectAllGridAction(),
 					new Separator()
 				];
+				actions.push(
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
+					this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
+				);
 				let contributedActions: IAction[] = this.getContextActions();
 				if (contributedActions && contributedActions.length > 0) {
 					actions.push(...contributedActions);
-					actions.push(new Separator());
 				}
+				actions.push(new Separator());
 				actions.push(
 					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
-					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+					this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true),
+					this.instantiationService.createInstance(CopyHeadersAction)
 				);
 
 				if (this.state.canBeMaximized) {
@@ -917,24 +1104,25 @@ class GridTable<T> extends GridTableBase<T> {
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
 		@IExecutionPlanService executionPlanService: IExecutionPlanService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@IComponentContextService componentContextService: IComponentContextService,
+		@ILogService logService: ILogService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
-			showActionBar: true,
+			showActionBar: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showActionBar,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, contextViewService, notificationService, executionPlanService, accessibilityService, quickInputService, componentContextService, contextKeyService, logService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}
@@ -943,7 +1131,7 @@ class GridTable<T> extends GridTableBase<T> {
 		return this._gridDataProvider;
 	}
 
-	protected getCurrentActions(): IAction[] {
+	protected override getActionBarItems(): IAction[] {
 
 		let actions = [];
 
@@ -955,14 +1143,8 @@ class GridTable<T> extends GridTableBase<T> {
 			}
 		}
 
-		actions.push(
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
-		);
+		actions.push(...super.getActionBarItems());
+		actions.push(this.instantiationService.createInstance(ChartDataAction));
 
 		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
 			actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
@@ -972,13 +1154,7 @@ class GridTable<T> extends GridTableBase<T> {
 	}
 
 	protected getContextActions(): IAction[] {
-		return [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-		];
+		return [];
 	}
 }
 
@@ -986,10 +1162,10 @@ function isJsonCell(value: ICellValue): boolean {
 	return !!(value && !value.isNull && value.displayValue?.match(IsJsonRegex));
 }
 
-function queryResultTextFormatter(row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string {
-	if (isJsonCell(value)) {
+function queryResultTextFormatter(showJsonAsLink: boolean, row: number | undefined, cell: any | undefined, value: ICellValue, columnDef: any | undefined, dataContext: any | undefined): string | { text: string, addClasses: string } {
+	if (showJsonAsLink && isJsonCell(value)) {
 		return hyperLinkFormatter(row, cell, value, columnDef, dataContext);
 	} else {
-		return textFormatter(row, cell, value, columnDef, dataContext);
+		return textFormatter(row, cell, value, columnDef, dataContext, (DBCellValue.isDBCellValue(value) && value.isNull) ? NULL_CELL_CSS_CLASS : undefined);
 	}
 }

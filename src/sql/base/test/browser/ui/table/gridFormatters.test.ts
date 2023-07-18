@@ -16,6 +16,9 @@ suite('Grid shared services tests', () => {
 			isNull: false
 		};
 		let formattedHtml = SharedServices.textFormatter(undefined, undefined, cellValue, undefined, undefined);
+		if (typeof formattedHtml !== 'string') {
+			formattedHtml = formattedHtml.text;
+		}
 
 		// Then the result is HTML for a span element containing the cell value's display value as plain text
 		verifyFormattedHtml(formattedHtml, testText);
@@ -24,6 +27,9 @@ suite('Grid shared services tests', () => {
 	test('textFormatter should encode HTML when formatting a string', () => {
 		// If I format a string that contains HTML
 		let formattedHtml = SharedServices.textFormatter(undefined, undefined, testText, undefined, undefined);
+		if (typeof formattedHtml !== 'string') {
+			formattedHtml = formattedHtml.text;
+		}
 
 		// Then the result is HTML for a span element containing the given text as plain text
 		verifyFormattedHtml(formattedHtml, testText);

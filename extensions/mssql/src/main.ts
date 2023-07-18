@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
+import * as os from 'os';
 
 import * as Constants from './constants';
 import ContextProvider from './contextProvider';
@@ -22,6 +23,10 @@ import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 import { INotebookConvertService } from './notebookConvert/notebookConvertService';
 import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
+// import { SqlNotebookController } from './sqlNotebook/sqlNotebookController';
+import { registerObjectManagementCommands } from './objectManagement/commands';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { noConvertResult, noDocumentFound, unsupportedPlatform } from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,8 +35,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	let supported = await Utils.verifyPlatform();
 
 	if (!supported) {
-		void vscode.window.showErrorMessage('Unsupported platform');
-		return undefined;
+		const msg = unsupportedPlatform(os.platform());
+		void vscode.window.showErrorMessage(msg);
+		throw new Error(unsupportedPlatform(msg));
 	}
 
 	// ensure our log path exists
@@ -62,33 +68,116 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(server);
 	await server.start(appContext);
 
-	vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
 		try {
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertSqlToNotebook(uri.toString());
+			if (!result) {
+				throw new Error(noConvertResult);
+			}
 			const title = findNextUntitledEditorName();
 			const untitledUri = vscode.Uri.parse(`untitled:${title}`);
 			await azdata.nb.showNotebookDocument(untitledUri, { initialContent: result.content });
 		} catch (err) {
 			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToNotebook', "An error occurred converting the SQL document to a Notebook. Error : {0}", err.toString()));
 		}
-	});
+	}));
 
-	vscode.commands.registerCommand('mssql.exportNotebookToSql', async (uri: vscode.Uri) => {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.exportNotebookToSql', async (uri: vscode.Uri) => {
 		try {
 			// SqlToolsService doesn't currently store anything about Notebook documents so we have to pass the raw JSON to it directly
 			// We use vscode.workspace.textDocuments here because the azdata.nb.notebookDocuments don't actually contain their contents
 			// (they're left out for perf purposes)
 			const doc = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
+			if (!doc) {
+				throw new Error(noDocumentFound(uri.toString()));
+			}
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertNotebookToSql(doc.getText());
+			if (!result) {
+				throw new Error(noConvertResult);
+			}
 			await azdata.queryeditor.openQueryDocument({ content: result.content });
 		} catch (err) {
 			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
 		}
-	});
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerEnableGroupBySchemaCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.EnableGroupBySchemaContextMenu)
+		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, true, true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.DisableGroupBySchemaContextMenu)
+		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, false, true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerEnabbleGroupBySchemaTitleCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.EnableGroupByServerViewTitleAction)
+		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, true, true);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand(Constants.cmdObjectExplorerDisableGroupBySchemaTitleCommand, async () => {
+		TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, TelemetryActions.DisableGroupByServerViewTitleAction)
+		await vscode.workspace.getConfiguration().update(Constants.configObjectExplorerGroupBySchemaFlagName, false, true);
+	}));
+
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
+		if (e.affectsConfiguration(Constants.configObjectExplorerGroupBySchemaFlagName)) {
+			const groupBySchemaTelemetryActionEvent = vscode.workspace.getConfiguration().get(Constants.configObjectExplorerGroupBySchemaFlagName) ? TelemetryActions.GroupBySchemaEnabled : TelemetryActions.GroupBySchemaDisabled;
+			TelemetryReporter.sendActionEvent(TelemetryViews.MssqlObjectExplorer, groupBySchemaTelemetryActionEvent);
+			const activeConnections = await azdata.objectexplorer.getActiveConnectionNodes();
+			const connections = await azdata.connection.getConnections();
+			activeConnections.forEach(async node => {
+				const connectionProfile = connections.find(c => c.connectionId === node.connectionId);
+				if (connectionProfile?.providerId === Constants.providerId) {
+					await node.refresh();
+				}
+			});
+		}
+		if (e.affectsConfiguration(Constants.configAsyncParallelProcessingName)) {
+			if (Utils.getParallelMessageProcessingConfig()) {
+				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureAsyncParallelProcessing);
+			}
+			await displayReloadAds();
+		}
+		if (e.affectsConfiguration(Constants.configEnableSqlAuthenticationProviderName)) {
+			if (Utils.getEnableSqlAuthenticationProviderConfig()) {
+				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureSqlAuthenticationProvider);
+			}
+			await displayReloadAds();
+		}
+		if (e.affectsConfiguration(Constants.configEnableConnectionPoolingName)) {
+			if (Utils.getEnableConnectionPoolingConfig()) {
+				TelemetryReporter.sendActionEvent(TelemetryViews.MssqlConnections, TelemetryActions.EnableFeatureConnectionPooling);
+			}
+			await displayReloadAds();
+		}
+	}));
 
 	registerTableDesignerCommands(appContext);
+	registerObjectManagementCommands(appContext);
+
+	// context.subscriptions.push(new SqlNotebookController()); Temporarily disabled due to breaking query editor
+
+	context.subscriptions.push(TelemetryReporter);
 
 	return createMssqlApi(appContext, server);
+}
+
+/**
+ * Display notification with action to reload ADS
+ * @returns true if button is clicked, false otherwise.
+ */
+async function displayReloadAds(): Promise<boolean> {
+	const reloadPrompt = localize('mssql.reloadPrompt', "This setting requires Azure Data Studio to be reloaded to take into effect.");
+	const reloadChoice = localize('mssql.reloadChoice', "Reload Azure Data Studio");
+	const result = await vscode.window.showInformationMessage(reloadPrompt, reloadChoice);
+	if (result === reloadChoice) {
+		await vscode.commands.executeCommand('workbench.action.reloadWindow');
+		return true;
+	} else {
+		return false;
+	}
 }
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];

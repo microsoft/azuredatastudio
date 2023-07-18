@@ -19,12 +19,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ers.AzureMonitorContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Log Analytics workspace]]></Val>
+            <Val><![CDATA[Log Analytics workspaces]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Log Analytics 工作区]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Monitor Logs workspace]]></Val>
+              <Val><![CDATA[Log Analytics workspace]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -34,10 +34,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) viders.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[适用于 Mongo 的 CosmosDB]]></Val>
+              <Val><![CDATA[Azure CosmosDB for MongoDB]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[CosmosDB for Mongo]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -46,12 +49,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) base.treeDataProvider.databaseContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL database]]></Val>
+            <Val><![CDATA[SQL databases]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 数据库]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Databases]]></Val>
+              <Val><![CDATA[SQL database]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -61,12 +64,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.databaseServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL server]]></Val>
+            <Val><![CDATA[SQL servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 服务器]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Servers]]></Val>
+              <Val><![CDATA[SQL server]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -76,10 +79,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) inerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Data Explorer Cluster]]></Val>
+            <Val><![CDATA[Azure Data Explorer Clusters]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure 数据资源管理器群集]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Azure Data Explorer Cluster]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -88,21 +94,39 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) esource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Database for MySQL Flexible server]]></Val>
+            <Val><![CDATA[Azure Database for MySQL flexible servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure Database for MySQL 灵活服务器]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Azure Database for MySQL Flexible server]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider.azure.resource" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider.azure.resou" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) rce.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            <Val><![CDATA[PostgreSQL servers – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[PostgreSQL 超大规模 – Azure Arc]]></Val>
+              <Val><![CDATA[PostgreSQL 服务器 –Azure Arc]]></Val>
+            </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            </Prev>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider.a" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) zure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure Database for PostgreSQL flexible servers]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure Database for PostgreSQL 灵活服务器]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -112,12 +136,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+            <Val><![CDATA[Azure Database for PostgreSQL servers]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure Database for PostgreSQL 服务器]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Database for PostgreSQL Servers]]></Val>
+              <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -127,12 +151,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) s.sqlInstanceContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure SQL DB managed instance]]></Val>
+            <Val><![CDATA[SQL managed instances]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Azure SQL DB 托管实例]]></Val>
+              <Val><![CDATA[SQL 托管实例]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[SQL Managed Instances]]></Val>
+              <Val><![CDATA[Azure SQL DB managed instance]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />
@@ -142,9 +166,36 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) oviders.sqlInstanceArcContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            <Val><![CDATA[SQL managed instances - Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[SQL 托管实例 - Azure Arc]]></Val>
+            </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            </Prev>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider.azure.resource.pr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) oviders.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Dedicated SQL Pools]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[专用 SQL 池]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider.azure.resourc" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) e.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure Synapse Analytics]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure Synapse Analytics]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -157,18 +208,6 @@
             <Val><![CDATA[Sign in to Azure...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[登录到 Azure…]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noSubscriptionsL" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[No Subscriptions found.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[未找到订阅。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -210,6 +249,30 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLab" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Tenants found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[找不到租户。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode.azure.resource.tree.accountTreeNode.noSubscriptio" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nsLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Subscriptions found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[未找到订阅。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode.azure.resource.tree.subscriptionTreeNode.noReso" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) urcesLabel" ItemType="0" PsrId="308" Leaf="true">
@@ -217,6 +280,18 @@
             <Val><![CDATA[No Resources found.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[未找到资源。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/tenantTreeNode.azure.resource.tree.accountTreeNode.noSubscriptionsLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No Subscriptions found.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[未找到订阅。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -254,15 +329,6 @@
           <Val><![CDATA[Error when parsing your account from the cache]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[在缓存中分析帐户时出错]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.cacheErrrorRemove" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error when removing your account from the cache.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[从缓存中删除帐户时出错。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -336,21 +402,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azureAuth.unidentifiedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unidentified error with azure authentication]]></Val>
+          <Val><![CDATA[Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. ]D;]A;]D;]A;To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.]D;]A;]D;]A;Do you wish to proceed?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[使用 Azure 身份验证时出现不明错误]]></Val>
+            <Val><![CDATA[Azure Data Studio 将不再触发此租户 {0} ({1}) 的身份验证，并且资源将无法访问。]D;]A;]D;]A;若要再次允许访问此租户的资源，需要从 "{2}" 设置的排除列表中删除租户。]D;]A;]D;]A;是否要继续?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.confirmIgnoreTenantDialog.confirm" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Confirm]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[确认]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.authenticate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cancel and Authenticate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取消并进行身份验证]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          <Val><![CDATA[Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。]]></Val>
+            <Val><![CDATA[你的租户 {0} ({1}) 需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -377,6 +464,24 @@
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[打开]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find account info when acquiring token.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[获取令牌时找不到帐户信息。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.msal.resourceNotFoundError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to find configuration for Azure Resource {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到 Azure 资源 {0} 的配置]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -489,6 +594,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.genericTokenError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to get token]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法获取令牌]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.msalTokenError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} occurred when acquiring token. ]D;]A;{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} 获取令牌时发生。 ]D;]A;{1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.tenantIgnoredError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在忽略列表中找到租户，未尝试身份验证。 如果要从此租户访问资源，可以从 settings.json 文件: {1} 中的忽略列表中删除租户 {0}。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProviderService.clearTokenCacheFailure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to clear token cache]]></Val>
@@ -516,15 +648,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.germanyCloud" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure (Germany)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure (德国)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.publicCloudDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure]]></Val>
@@ -539,15 +662,6 @@
           <Val><![CDATA[Azure (US Government)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure (美国政府)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.usNatCloudDisplayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure (US National)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure (美国国家)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -629,6 +743,24 @@
           <Val><![CDATA[Failed to get subscriptions for account {0}. Please refresh the account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[无法获取帐户 {0} 的订阅。请刷新帐户。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProvider" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法识别的提供程序资源:{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/providers/universal/universalService.azurecore.unregisteredProviderType" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unrecognized Provider resource type: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法识别的提供程序资源类型:{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -723,51 +855,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.unableToAccessSubscription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.noTenantsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unable to access subscription {0} ({1}). Please [refresh the account]5D;(command:azure.resource.signin) to try again. {2}]]></Val>
+          <Val><![CDATA[No Tenants found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[无法访问订阅 {0} ({1})。请[刷新帐户]5D;(command: azure.resource.signin)重试。{2}]]></Val>
+            <Val><![CDATA[找不到租户。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.throttleerror" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已限制来自此帐户的请求。要重试，请选择少量订阅。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.title" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} ({1}/{2} subscriptions)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} ({1}/{2} 个订阅)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.titleLoading" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} - Loading...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} - 正在加载...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.loadresourceerror" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[An error occurred while loading Azure resources: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[加载 Azure 资源时出错: {0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[An error occured while loading Azure resources: {0}]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -839,6 +932,15 @@
           <Val><![CDATA[Azure Resources (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure 资源(预览)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azure.credStoreSaveFailedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法在凭据存储中保存令牌缓存的密钥，这可能会导致 Azure 访问令牌持久性问题和连接不稳定。SqlTools 可能已达到 Windows 上的凭据存储限制，请清除至少 2 个以 Windows 凭据管理器中的“Microsoft.SqlTools|”开头的凭据，然后重新加载。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -977,6 +1079,33 @@
           <Val><![CDATA[Central US EUAP]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[美国中部 EUAP]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.deprecated" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[警告: ADAL 已弃用，并计划在将来的版本中删除。请改用 MSAL。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.disable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[禁用]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.dismiss" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Dismiss]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[忽略]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1170,12 +1299,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.piiLogging.warning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[警告: 已启用 Azure PII 日志记录。启用此选项可允许记录个人身份信息，并且只能用于调试目的。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresFlexibleServer" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Database for PostgreSQL flexible servers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Database for PostgreSQL 灵活服务器]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          <Val><![CDATA[Azure Database for PostgreSQL servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database for PostgreSQL 服务器]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1548,6 +1698,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/package.azure.resource.selecttenants.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Tenants]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[选择租户]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/package.azure.resource.signin.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure: Sign In]]></Val>
@@ -1577,10 +1736,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/package.azure.tenant.config.filter.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          <Val><![CDATA[The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。]]></Val>
+            <Val><![CDATA[查询 Azure 资源或请求身份验证令牌时将跳过的租户 ID 列表。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

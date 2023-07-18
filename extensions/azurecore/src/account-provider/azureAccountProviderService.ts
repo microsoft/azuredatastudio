@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
 import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import { SimpleTokenCache } from './simpleTokenCache';
+import { promises as fsPromises } from 'fs';
+import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
-import { AzureAccountProviderMetadata } from 'azurecore';
+import { AzureAccountProviderMetadata, CacheEncryptionKeys } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import { MsalCachePluginProvider } from './utils/msalCachePlugin';
 import * as loc from '../localizedConstants';
@@ -18,6 +20,8 @@ import { Configuration, PublicClientApplication } from '@azure/msal-node';
 import * as Constants from '../constants';
 import { Logger } from '../utils/Logger';
 import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
+import { displayReloadAds } from '../utils';
+import { reloadPromptCacheClear } from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
@@ -39,10 +43,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
+	private _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>;
 
 	constructor(private _context: vscode.ExtensionContext,
 		private _userStoragePath: string,
 		private _authLibrary: string) {
+		this._onEncryptionKeysUpdated = new vscode.EventEmitter<CacheEncryptionKeys>();
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -73,6 +79,17 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			});
 	}
 
+	public getEncryptionKeysEmitter(): vscode.EventEmitter<CacheEncryptionKeys> {
+		return this._onEncryptionKeysUpdated;
+	}
+
+	public async getEncryptionKeys(): Promise<CacheEncryptionKeys> {
+		if (!this._cachePluginProvider) {
+			await this.onDidChangeConfiguration();
+		}
+		return this._cachePluginProvider!.getCacheEncryptionKeys();
+	}
+
 	public dispose() {
 		while (this._disposables.length) {
 			const item = this._disposables.pop();
@@ -93,8 +110,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return Promise.all(promises)
 			.then(
 				() => {
-					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					void vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
+					void displayReloadAds(reloadPromptCacheClear);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");
@@ -144,7 +160,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
 		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-		const tokenCacheKeyMsal = `azureTokenCacheMsal-${provider.metadata.id}`;
+		const tokenCacheKeyMsal = Constants.MSALCacheName;
+		await this.clearOldCacheIfExists();
 		try {
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
@@ -152,10 +169,16 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// ADAL Token Cache
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
-			await simpleTokenCache.init();
+			if (this._authLibrary === Constants.AuthLibrary.ADAL) {
+				await simpleTokenCache.init();
+			}
 
 			// MSAL Cache Plugin
-			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath);
+			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
+			if (this._authLibrary === Constants.AuthLibrary.MSAL) {
+				// Initialize cache provider and encryption keys
+				await this._cachePluginProvider.init();
+			}
 
 			const msalConfiguration: Configuration = {
 				auth: {
@@ -176,11 +199,28 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			this.clientApplication = new PublicClientApplication(msalConfiguration);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
-				simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
+				simpleTokenCache, this._context, this.clientApplication, this._cachePluginProvider,
+				this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
 			console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
+		}
+	}
+
+	/**
+	 * Clears old cache file that is no longer needed on system.
+	 */
+	private async clearOldCacheIfExists(): Promise<void> {
+		let filePath = path.join(this._userStoragePath, Constants.oldMsalCacheFileName);
+		try {
+			await fsPromises.access(filePath);
+			await fsPromises.unlink('file:' + filePath);
+			Logger.verbose(`Old cache file removed successfully.`);
+		} catch (e) {
+			if (e.code !== 'ENOENT') {
+				Logger.verbose(`Error occurred while removing old cache file: ${e}`);
+			} // else file doesn't exist.
 		}
 	}
 
@@ -200,7 +240,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 						break;
 				}
 			} else {
-				Logger.verbose(message);
+				Logger.pii(message);
 			}
 		}
 	}

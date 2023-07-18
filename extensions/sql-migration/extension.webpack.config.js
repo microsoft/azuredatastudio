@@ -13,5 +13,8 @@ module.exports = withDefaults({
 	context: __dirname,
 	entry: {
 		main: './src/main.ts'
+	},
+	externals: {
+		'native-is-elevated': 'commonjs native-is-elevated',
 	}
 });

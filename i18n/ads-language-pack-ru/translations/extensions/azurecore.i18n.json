@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Ошибка при добавлении учетной записи в кэш.",
 			"azure.cacheErrorGet": "Ошибка при получении учетной записи из кэша.",
 			"azure.cacheErrorParse": "Ошибка при анализе учетной записи из кэша.",
-			"azure.cacheErrrorRemove": "Ошибка при удалении учетной записи из кэша.",
 			"azure.microsoftAccountDisplayName": "Учетная запись Майкрософт",
 			"azure.microsoftCorpAccount": "Корпорация Майкрософт",
 			"azure.noBaseToken": "Произошла ошибка при проверке подлинности, или ваши токены были удалены из системы. Попробуйте добавить учетную запись в Azure Data Studio еще раз.",
@@ -21,12 +20,15 @@
 			"azure.owningTenantNotFound": "Для учетной записи не найдены сведения о владении клиентом.",
 			"azure.responseError": "Не удалось получить токен из-за ошибки. [Откройте инструменты разработчика]({0}), чтобы узнать подробности.",
 			"azure.tenantNotFound": "Указанный клиент с идентификатором \"{0}\" не найден.",
-			"azureAuth.unidentifiedError": "Неизвестная ошибка при проверке подлинности Azure",
-			"azureWorkAccountDisplayName": "Рабочая или учебная учетная запись",
-			"azurecore.consentDialog.body": "Клиент \"{0} ({1})\" требует повторной проверки подлинности для доступа к ресурсам {2}. Нажмите кнопку \"Открыть\", чтобы начать процесс проверки подлинности.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio больше не будет запускать проверку подлинности для этого клиента {0} ({1}), а ресурсы будут недоступны. \r\n\r\nЧтобы снова разрешить доступ к ресурсам для этого клиента, необходимо удалить его из списка исключений в параметре \"{2}\".\r\n\r\nВы хотите продолжить?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "Подтвердить",
+			"azurecore.consentDialog.authenticate": "Отмена и проверка подлинности",
+			"azurecore.consentDialog.body": "Клиент {0} ({1}) требует повторной проверки подлинности для доступа к ресурсам {2}. Нажмите кнопку \"Открыть\", чтобы начать проверку подлинности.",
 			"azurecore.consentDialog.cancel": "Отмена",
 			"azurecore.consentDialog.ignore": "Игнорировать клиента",
 			"azurecore.consentDialog.open": "Открыть",
+			"msal.accountNotFoundError": "Не удалось найти сведения об учетной записи при получении токена.",
+			"msal.resourceNotFoundError": "Не удалось найти конфигурацию для ресурса Azure {0}",
 			"noMicrosoftResource": "Для поставщика {0} не определена конечная точка ресурса Майкрософт."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -44,7 +46,10 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Методы проверки подлинности Azure недоступны. Необходимо включить методы проверки подлинности в конфигурации ADS.",
 			"azure.NoAuthMethod.Selected": "Метод проверки подлинности Azure не выбран. Необходимо выбрать метод проверки подлинности, который будет использоваться.",
-			"azure.deprecatedGetSecurityToken": "Выполнен вызов метода azdata.accounts.getSecurityToken. Этот метод является устаревшим и будет удален в будущих выпусках. Используйте вместо него метод getAccountSecurityToken."
+			"azure.deprecatedGetSecurityToken": "Выполнен вызов метода azdata.accounts.getSecurityToken. Этот метод является устаревшим и будет удален в будущих выпусках. Используйте вместо него метод getAccountSecurityToken.",
+			"genericTokenError": "Не удалось получить маркер",
+			"msalTokenError": "{0} произошло при приобретении маркера. \r\n{1}",
+			"tenantIgnoredError": "Клиент найден в списке игнорирования, проверка подлинности не предпринята. Вы можете удалить клиент из {0} списка игнорирования в файле settings.json: {1} если вы хотите получить доступ к ресурсам этого клиента."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Не удалось очистить кэш токена",
@@ -52,10 +57,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure для Китая",
-			"germanyCloud": "Azure для Германии",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure для государственных организаций США",
-			"usNatCloudDisplayName": "Azure (национальное облако для США)"
+			"usGovCloudDisplayName": "Azure для государственных организаций США"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Для работы этой функции необходимо выбрать учетную запись Azure.",
@@ -71,34 +74,47 @@
 			"azure.subscriptionError": "Не удалось получить подписки для учетной записи {0}. Обновите ее."
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Рабочая область Log Analytics"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Рабочие области Log Analytics"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "CosmosDB для Mongo"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure CosmosDB для MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "База данных SQL"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "Базы данных SQL"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "Сервер SQL Server"
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "Серверы SQL"
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
-			"azure.resource.providers.KustoContainerLabel": "Кластер Azure Data Explorer"
+			"azure.resource.providers.KustoContainerLabel": "Кластеры Azure Data Explorer"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Гибкий сервер Базы данных Azure для MySQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Гибкие серверы базы данных Azure для MySQL"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Гипермасштабирование PostgreSQL — Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Серверы PostgreSQL — Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Гибкие серверы Базы данных Azure для PostgreSQL"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Сервер Базы данных Azure для PostgreSQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Серверы Базы данных Azure для PostgreSQL"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Управляемый экземпляр Базы данных SQL Azure"
+			"azure.resource.providers.sqlInstanceContainerLabel": "Управляемые экземпляры SQL"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "Управляемый экземпляр SQL — Azure Arc"
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "Управляемые экземпляры SQL — Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Выделенные пулы SQL"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "Нераспознанный ресурс поставщика: {0}",
+			"azurecore.unregisteredProviderType": "Нераспознанный тип ресурса поставщика: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Ресурсы не найдены"
@@ -120,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Вход в Azure…"
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Подписки не найдены.",
-			"azure.unableToAccessSubscription": "Не удается получить доступ к подписке {0} ({1}). [Обновите учетную запись](command:azure.resource.signin), чтобы повторить попытку. {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Клиенты не найдены."
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Не удалось загрузить некоторые учетные записи хранения Azure. {0}",
@@ -129,13 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Показать учетные записи Azure"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.throttleerror": "Запросы от этой учетной записи были ограничены. Чтобы повторить попытку, выберите меньшее количество подписок.",
-			"azure.resource.tree.accountTreeNode.title": "{0} (выбрано подписок: {1} из {2})",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} — загрузка…",
-			"azure.resource.tree.loadresourceerror": "При загрузке ресурсов Azure произошла ошибка: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Клиенты не найдены."
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Подписки не найдены."
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Ресурсы не найдены."
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Подписки не найдены."
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "Идет загрузка…"
@@ -150,6 +168,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Ресурсы Azure (предварительная версия)",
+			"azure.credStoreSaveFailedError": "Не удалось сохранить ключи для кэша маркеров в хранилище учетных данных, что может привести к проблемам с сохранением маркера доступа Azure и нестабильности подключения. Вполне вероятно, что SqlTools достиг предела хранения учетных данных в Windows. Очистите по крайней мере 2 записи учетных данных, которые начинаются с «Microsoft.SqlTools|» в диспетчере учетных данных Windows и перезагрузите.",
 			"azure.unableToOpenAzureLink": "Не удается открыть ссылку, отсутствуют обязательные значения",
 			"azurecore.australiacentral": "Центральная Австралия",
 			"azurecore.australiacentral2": "Центральная Австралия — 2",
@@ -165,6 +184,9 @@
 			"azurecore.centralindia": "Центральная Индия",
 			"azurecore.centralus": "Центральная часть США",
 			"azurecore.centraluseuap": "Центральная часть США (EUAP)",
+			"azurecore.deprecated": "Предупреждение. ADAL не рекомендуется и будет удален в будущем выпуске. Вместо этого используйте MSAL.",
+			"azurecore.disable": "Отключить",
+			"azurecore.dismiss": "Закрыть",
 			"azurecore.eastasia": "Восточная Азия",
 			"azurecore.eastus": "Восточная часть США",
 			"azurecore.eastus2": "Восточная часть США — 2",
@@ -186,8 +208,12 @@
 			"azurecore.northeurope": "Северная Европа",
 			"azurecore.norwayeast": "Восточная Норвегия",
 			"azurecore.norwaywest": "Западная Норвегия",
-			"azurecore.postgresServer": "Сервер Базы данных Azure для PostgreSQL",
+			"azurecore.piiLogging.warning": "Внимание! Ведение журнала личных сведений Azure включено. Включение этого параметра позволяет регистрировать личные сведения. Это следует использовать только для отладки.",
+			"azurecore.postgresFlexibleServer": "Гибкие серверы Базы данных Azure для PostgreSQL",
+			"azurecore.postgresServer": "Серверы Базы данных Azure для PostgreSQL",
 			"azurecore.reload": "Перезагрузить",
+			"azurecore.reloadChoice": "Перезагрузить Azure Data Studio",
+			"azurecore.reloadPrompt": "Библиотека проверки подлинности изменена. Перезагрузите Azure Data Studio.",
 			"azurecore.requiresReload": "При изменении этого ресурса необходимо перезагрузить окно, чтобы все изменения вступили в силу.",
 			"azurecore.resourceGroup": "Группа ресурсов",
 			"azurecore.resourceType": "Тип ресурса",
@@ -228,11 +254,13 @@
 			"azure.resource.refresh.title": "Обновить",
 			"azure.resource.refreshall.title": "Azure: обновление всех учетных записей",
 			"azure.resource.selectsubscriptions.title": "Выберите подписки",
+			"azure.resource.selecttenants.title": "Выбрать клиенты",
 			"azure.resource.signin.title": "Azure: вход",
 			"azure.resource.startterminal.title": "Запуск Cloud Shell",
 			"azure.resource.view.title": "Azure (предварительная версия)",
-			"azure.tenant.config.filter.description": "Список идентификаторов клиентов, которые будут проигнорированы при запросе ресурсов Azure. Каждый элемент представляет собой идентификатор клиента.",
+			"azure.tenant.config.filter.description": "Список идентификаторов клиентов, которые будут пропущены при запросе ресурсов Azure или запросе маркеров проверки подлинности.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "Библиотека, используемая для потока проверки подлинности AAD. Перезапустите ADS после изменения этого параметра.",
 			"config.azureAccountConfigurationSection": "Конфигурация учетной записи Azure",
 			"config.azureAuthMethodConfigurationSection": "Метод проверки подлинности Azure",
 			"config.azureCodeGrantMethod": "Метод предоставления кода",

@@ -4,13 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/checkbox';
-
-import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { generateUuid } from 'vs/base/common/uuid';
 
-export interface ICheckboxOptions {
+export interface ICheckboxOptions extends Partial<ICheckboxStyles> {
 	label: string;
 	enabled?: boolean;
 	checked?: boolean;
@@ -20,13 +18,12 @@ export interface ICheckboxOptions {
 }
 
 export interface ICheckboxStyles {
-	disabledCheckboxForeground?: Color;
+	disabledCheckboxForeground?: string;
 }
 
 export class Checkbox extends Widget {
 	private _el: HTMLInputElement;
 	private _label: HTMLSpanElement;
-	private disabledCheckboxForeground?: Color;
 
 	private _onChange = new Emitter<boolean>();
 	public readonly onChange: Event<boolean> = this._onChange.event;
@@ -34,7 +31,7 @@ export class Checkbox extends Widget {
 	private _onFocus = new Emitter<void>();
 	public readonly onFocus: Event<void> = this._onFocus.event;
 
-	constructor(container: HTMLElement, opts: ICheckboxOptions) {
+	constructor(container: HTMLElement, private readonly _options: ICheckboxOptions) {
 		super();
 		const id = generateUuid();
 		this._el = document.createElement('input');
@@ -42,12 +39,12 @@ export class Checkbox extends Widget {
 		this._el.style.verticalAlign = 'middle';
 		this._el.id = id;
 
-		if (opts.ariaLabel) {
-			this.ariaLabel = opts.ariaLabel;
+		if (_options.ariaLabel) {
+			this.ariaLabel = _options.ariaLabel;
 		}
 
-		if (opts.ariaDescription) {
-			this._el.setAttribute('aria-description', opts.ariaDescription);
+		if (_options.ariaDescription) {
+			this._el.setAttribute('aria-description', _options.ariaDescription);
 		}
 
 		this.onchange(this._el, e => {
@@ -62,12 +59,12 @@ export class Checkbox extends Widget {
 		this._label.style.verticalAlign = 'middle';
 		this._label.setAttribute('for', id);
 
-		this.label = opts.label;
-		this.enabled = opts.enabled ?? true;
-		this.checked = opts.checked ?? false;
+		this.label = _options.label;
+		this.enabled = _options.enabled ?? true;
+		this.checked = _options.checked ?? false;
 
-		if (opts.onChange) {
-			this.onChange(opts.onChange);
+		if (_options.onChange) {
+			this.onChange(_options.onChange);
 		}
 
 		container.appendChild(this._el);
@@ -84,7 +81,7 @@ export class Checkbox extends Widget {
 
 	public set enabled(val: boolean) {
 		this._el.disabled = !val;
-		this.updateStyle();
+		this._label.style.color = !this.enabled && this._options.disabledCheckboxForeground ? this._options.disabledCheckboxForeground : 'inherit';
 	}
 
 	public get enabled(): boolean {
@@ -133,14 +130,5 @@ export class Checkbox extends Widget {
 
 	public setWidth(value: string) {
 		this._el.style.width = value;
-	}
-
-	public style(styles: ICheckboxStyles): void {
-		this.disabledCheckboxForeground = styles.disabledCheckboxForeground;
-		this.updateStyle();
-	}
-
-	private updateStyle(): void {
-		this._label.style.color = !this.enabled && this.disabledCheckboxForeground ? this.disabledCheckboxForeground.toString() : 'inherit';
 	}
 }

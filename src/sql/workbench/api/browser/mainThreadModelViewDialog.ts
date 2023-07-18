@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { MainThreadModelViewDialogShape, ExtHostModelViewDialogShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { CustomDialogService, DefaultWizardOptions, DefaultDialogOptions } from 'sql/workbench/services/dialog/browser/customDialogService';
-import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails, IErrorDialogOptions } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/browser/modelComponents/modelViewInput';
 
 import * as vscode from 'vscode';
@@ -111,6 +111,10 @@ export class MainThreadModelViewDialog extends Disposable implements MainThreadM
 		let dialog = this.getDialog(handle);
 		this._dialogService.closeDialog(dialog);
 		return Promise.resolve();
+	}
+
+	public $openCustomErrorDialog(options: IErrorDialogOptions): Promise<string | undefined> {
+		return this._dialogService.openCustomErrorDialog(options);
 	}
 
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {

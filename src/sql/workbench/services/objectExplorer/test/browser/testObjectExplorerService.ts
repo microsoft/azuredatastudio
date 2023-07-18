@@ -55,6 +55,8 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> { throw new Error('Method not implemented'); }
 
+	public get onNodeExpandedError(): Event<NodeExpandInfoWithProviderId> { throw new Error('Method not implemented'); }
+
 	public get onSelectionOrFocusChange(): Event<void> { throw new Error('Method not implemented'); }
 
 	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> { }

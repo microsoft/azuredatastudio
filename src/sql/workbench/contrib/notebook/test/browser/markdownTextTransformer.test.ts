@@ -29,11 +29,11 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditor } from 'vs/editor/common/editorCommon';
-import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
+import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/browser/testCommon';
 import { Range } from 'vs/editor/common/core/range';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
-import { LanguageId } from 'vs/editor/common/languages';
+import { LanguageId } from 'vs/editor/common/encodedTokenAttributes';
 
 suite.skip('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;

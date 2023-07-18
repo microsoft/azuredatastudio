@@ -7,7 +7,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { URI } from 'vs/base/common/uri';
-import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
+import { IUntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 export interface IQueryEditorOptions extends IEditorOptions {
 
@@ -19,7 +19,7 @@ export interface IQueryEditorOptions extends IEditorOptions {
 export const IQueryEditorService = createDecorator<IQueryEditorService>('QueryEditorService');
 
 export interface INewSqlEditorOptions {
-	initalContent?: string;
+	initialContent?: string;
 	/**
 	 * Defaults based on user configuration
 	 */

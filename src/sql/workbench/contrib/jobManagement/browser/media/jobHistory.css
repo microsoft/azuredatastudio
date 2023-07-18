@@ -46,6 +46,10 @@ notebookhistory-component .all-jobs {
 	color: #ffffff;
 }
 
+.hc-light .overview-container .overview-tab {
+	color: #000000;
+}
+
 .overview-container > .overview-tab {
 	position: relative;
 	margin-bottom: 1px;
@@ -75,6 +79,11 @@ input#accordion{
 	border: 1px solid #2b56f2;
 }
 
+.hc-light .overview-container .overview-tab label {
+	background: #ffffff;
+	border: 1px solid #6fc3df;
+}
+
 .overview-container .overview-tab label {
 	position: relative;
 	display: block;
@@ -94,6 +103,12 @@ input#accordion{
 .grid-arrow {
 	background: #000000;
 	border: 1px solid #2b56f2;
+}
+
+.hc-light .overview-tab .accordion-content,
+.grid-arrow {
+	background: #ffffff;
+	border: 1px solid #6fc3df;
 }
 
 .overview-tab .accordion-content {
@@ -136,7 +151,8 @@ input#accordion:checked ~ .accordion-content,
 	transition: all 0.3s;
 }
 
-.all-jobs > .back-button-icon {
+.all-jobs > .back-button-icon,
+.hc-light .all-jobs > .back-button-icon {
 	content: url("back.svg");
 	width: 20px;
 	margin-right: 10px;
@@ -151,7 +167,8 @@ input#accordion:checked ~ .accordion-content,
 	content: url("back_inverse.svg");
 }
 
-.vs .action-label.codicon.newStepIcon {
+.vs .action-label.codicon.newStepIcon,
+.hc-light .action-label.codicon.newStepIcon {
 	background-image: url("new.svg");
 }
 
@@ -168,7 +185,9 @@ notebookhistory-component .vs-dark .codicon.edit {
 }
 
 jobhistory-component .vs .codicon.edit,
-notebookhistory-component .vs .codicon.edit {
+jobhistory-component .hc-light .codicon.edit,
+notebookhistory-component .vs .codicon.edit,
+notebookhistory-component .hc-light .codicon.edit {
 	background-image: url("edit.svg");
 }
 
@@ -229,6 +248,10 @@ table.step-list tr.step-row td {
 
 .hc-black .history-details > .job-steps {
 	border-left: 3px solid #2b56f2;
+}
+
+.hc-light .history-details > .job-steps {
+	border-left: 3px solid #6fc3df;
 }
 
 .history-details > .job-steps > table.step-list {
@@ -331,6 +354,11 @@ notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #2b56f2;
 }
 
+.hc-light jobhistory-component > .agent-actionbar-container,
+.hc-light notebookhistory-component > .agent-actionbar-container {
+	border-top: 3px solid #6fc3df;
+}
+
 jobhistory-component
 	.step-table.prev-run-list
 	.monaco-tree-wrapper
@@ -374,7 +402,8 @@ notebookhistory-component
 	height: 50px;
 }
 
-.notebook-grid-item:hover {
+.notebook-grid-item:hover,
+.hc-light .notebook-grid-item:hover {
 	background: #dcdcdc !important;
 }
 
@@ -396,6 +425,11 @@ notebookhistory-component
 	background-repeat: no-repeat;
 }
 
+.hc-light .notebook-grid-item > .img-success {
+	background-image: url(./NotebookSuccess_16x.svg);
+	background-position: center;
+}
+
 .vs-dark .notebook-grid-item > .img-success,
 .hc-black .notebook-grid-item > .img-success {
 	background-image: url(./NotebookSuccess_16x_white.svg);
@@ -413,6 +447,11 @@ notebookhistory-component
 	height: 40px;
 	background-size: 40px 40px;
 	background-repeat: no-repeat;
+}
+
+.hc-light .notebook-grid-item > .img-failure {
+	background-image: url(./NotebookFail_16x.svg);
+	background-position: center;
 }
 
 .vs-dark .notebook-grid-item > .img-failure,
@@ -433,6 +472,11 @@ notebookhistory-component
 	background-size: 40px 40px;
 	background-repeat: no-repeat;
 	cursor: pointer;
+}
+
+.hc-light .notebook-grid-item > .img-error {
+	background-image: url(./NotebookError_16x.svg);
+	background-position: center;
 }
 
 .vs-dark .notebook-grid-item > .img-error,
@@ -474,4 +518,9 @@ notebookhistory-component
 .hc-black .grid-title {
 	background: #000000;
 	border: 1px solid #2b56f2;
+}
+
+.hc-light .grid-title {
+	background: #ffffff;
+	border: 1px solid #6fc3df;
 }

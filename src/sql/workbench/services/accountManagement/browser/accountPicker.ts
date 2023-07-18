@@ -12,6 +12,7 @@ export const IAccountPickerService = createDecorator<IAccountPickerService>('Acc
 export interface IAccountPickerService {
 	_serviceBrand: undefined;
 	renderAccountPicker(rootContainer: HTMLElement): void;
+	setInitialAccountTenant(account: string, tenant: string): void;
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;

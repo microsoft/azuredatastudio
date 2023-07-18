@@ -264,10 +264,6 @@
         <source xml:lang="en">New Section (Preview)</source>
         <target state="translated">Nouvelle section (Aperçu)</target>
       </trans-unit>
-      <trans-unit id="noBDCConnectionError">
-        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
-        <target state="translated">Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server.</target>
-      </trans-unit>
       <trans-unit id="noBooksSelected">
         <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
         <target state="translated">Aucun Jupyter Book n'est actuellement sélectionné dans la viewlet.</target>
@@ -311,10 +307,6 @@
       <trans-unit id="openUntitledNotebookError">
         <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
         <target state="translated">Ouvrez un notebook {0} sans titre, car le {1} sans titre a échoué</target>
-      </trans-unit>
-      <trans-unit id="providerNotValidError">
-        <source xml:lang="en">Non-MSSQL providers are not supported for spark kernels.</source>
-        <target state="translated">Les fournisseurs non-MSSQL ne sont pas pris en charge pour les noyaux Spark.</target>
       </trans-unit>
       <trans-unit id="readBookError">
         <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
@@ -364,10 +356,6 @@
   </file>
   <file original="extensions/notebook/dist/common/notebookUtils" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.</target>
-      </trans-unit>
       <trans-unit id="noNotebookVisible">
         <source xml:lang="en">No notebook editor is active</source>
         <target state="translated">Aucun éditeur de notebook actif</target>
@@ -784,29 +772,9 @@
   </file>
   <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="bdcConnectError">
-        <source xml:lang="en">Error: {0}. </source>
-        <target state="translated">Erreur : {0}. </target>
-      </trans-unit>
-      <trans-unit id="clusterControllerConnectionRequired">
-        <source xml:lang="en">A connection to the cluster controller is required to run Spark jobs</source>
-        <target state="translated">Une connexion au contrôleur de cluster est nécessaire pour exécuter les travaux Spark</target>
-      </trans-unit>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé</target>
-      </trans-unit>
-      <trans-unit id="notebook.couldNotFindKnoxGateway">
-        <source xml:lang="en">Could not find Knox gateway endpoint</source>
-        <target state="translated">Point de terminaison de passerelle Knox introuvable</target>
-      </trans-unit>
-      <trans-unit id="promptBDCPassword">
-        <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
-        <target state="translated">Fournissez le mot de passe pour se connecter au contrôleur BDC</target>
-      </trans-unit>
-      <trans-unit id="promptBDCUsername">
-        <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
-        <target state="translated">{0}Fournissez le nom d'utilisateur pour se connecter au contrôleur BDC :</target>
       </trans-unit>
     </body>
   </file>

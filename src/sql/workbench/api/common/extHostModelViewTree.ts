@@ -9,14 +9,13 @@ import * as vscode from 'vscode';
 import { ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
-import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { CheckboxUpdate, IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
 import * as  vsTreeExt from 'vs/workbench/api/common/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
-import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
-import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { SqlMainContext, DataTransferDTO } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -86,12 +85,18 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		return Promise.resolve(undefined);
 	}
 
-	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
+	$handleDrop(destinationViewId: string, requestId: number, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
 		return Promise.resolve(undefined);
 	}
 
 	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: vscode.CancellationToken): Promise<DataTransferDTO | undefined> {
 		return Promise.resolve(undefined);
+	}
+
+	$setFocus(treeViewId: string, treeItemHandle: string): void {
+	}
+
+	$changeCheckboxState(treeViewId: string, checkboxUpdates: CheckboxUpdate[]): void {
 	}
 
 	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: azdata.TreeComponentDataProvider<T>, extension: IExtensionDescription, logService: ILogService): ExtHostTreeView<T> {

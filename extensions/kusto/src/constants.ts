@@ -6,6 +6,7 @@ export const serviceName = 'Kusto Tools Service';
 export const providerId = 'KUSTO';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-kusto/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'kusto';
+export const packageName = 'Microsoft.kusto';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const kustoClusterProviderName = 'kustoCluster';

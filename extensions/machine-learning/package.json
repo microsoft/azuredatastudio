@@ -2,7 +2,7 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -153,7 +153,7 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "lodash": "^4.17.21",
-    "@microsoft/azdata-test": "^2.0.3"
+    "@microsoft/azdata-test": "^3.0.1"
   },
   "__metadata": {
     "id": "65",

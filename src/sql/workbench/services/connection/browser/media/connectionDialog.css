@@ -83,6 +83,7 @@
 
 .vs-dark .connection-dialog .connection-history-actions .action-label.codicon,
 .hc-black .connection-dialog .connection-history-actions .action-label.codicon,
+.hc-light .connection-dialog .connection-history-actions .action-label.codicon,
 .connection-dialog .connection-history-actions .action-label.codicon {
 	display: block;
 	height: 20px;
@@ -95,7 +96,8 @@
 	width: auto;
 }
 
-.search-action.clear-search-results {
+.search-action.clear-search-results,
+.hc-light .search-action.clear-search-results {
 	background: url('clear-search-results.svg');
 }
 
@@ -112,6 +114,7 @@
 }
 
 .custom-connection-options .connection-label .dialog-label-container,
+.hc-light .custom-connection-options .connection-label .dialog-label-container,
 .vs-dark .custom-connection-options .connection-label .dialog-label-container,
 .hc-black .custom-connection-options .connection-label .dialog-label-container {
 	background-size: 9px;
@@ -122,7 +125,8 @@
 }
 
 .dialog-label-container.info-icon,
-.vs .dialog-label-container.info-icon {
+.vs .dialog-label-container.info-icon,
+.hc-light .dialog-label-container.info-icon {
 	background-image: url("info.svg");
 }
 

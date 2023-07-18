@@ -2,25 +2,103 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
+      <trans-unit id="scm button commit and push title">
+        <source xml:lang="en">{0} Commit &amp; Push</source>
+        <target state="translated">{0} 提交與推送</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and push tooltip">
+        <source xml:lang="en">Commit &amp; Push Changes</source>
+        <target state="translated">提交與推送變更</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync title">
+        <source xml:lang="en">{0} Commit &amp; Sync</source>
+        <target state="translated">{0} 提交與同步處理</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync tooltip">
+        <source xml:lang="en">Commit &amp; Sync Changes</source>
+        <target state="translated">提交與同步變更</target>
+      </trans-unit>
+      <trans-unit id="scm button commit title">
+        <source xml:lang="en">{0} Commit</source>
+        <target state="translated">{0} 認可</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and push tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Push Changes</source>
+        <target state="translated">提交新的分支與推送變更</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and sync tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Sync Changes</source>
+        <target state="translated">提交新的分支與同步處理變更</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch tooltip">
+        <source xml:lang="en">Commit Changes to New Branch</source>
+        <target state="translated">提交新分支的變更</target>
+      </trans-unit>
+      <trans-unit id="scm button commit tooltip">
+        <source xml:lang="en">Commit Changes</source>
+        <target state="translated">認可變更</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and pushing tooltip">
+        <source xml:lang="en">Committing &amp; Pushing Changes...</source>
+        <target state="translated">正在提交並推送變更...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and synching tooltip">
+        <source xml:lang="en">Committing &amp; Synching Changes...</source>
+        <target state="translated">正在提交並同步處理變更...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and pushing tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Pushing Changes...</source>
+        <target state="translated">正在提交新的分支與推送變更...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and synching tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Synching Changes...</source>
+        <target state="translated">正在提交新的分支與同步處理變更...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch tooltip">
+        <source xml:lang="en">Committing Changes to New Branch...</source>
+        <target state="translated">正在提交對新分支的變更...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing tooltip">
+        <source xml:lang="en">Committing Changes...</source>
+        <target state="translated">正在認可變更...</target>
+      </trans-unit>
+      <trans-unit id="scm button continue title">
+        <source xml:lang="en">{0} Continue</source>
+        <target state="translated">{0} 繼續</target>
+      </trans-unit>
+      <trans-unit id="scm button continue tooltip">
+        <source xml:lang="en">Continue Rebase</source>
+        <target state="translated">繼續重訂基底</target>
+      </trans-unit>
+      <trans-unit id="scm button continuing tooltip">
+        <source xml:lang="en">Continuing Rebase...</source>
+        <target state="translated">繼續重訂基底...</target>
+      </trans-unit>
       <trans-unit id="scm button publish branch">
         <source xml:lang="en">Publish Branch</source>
-        <target state="translated">發佈分支</target>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">發佈 Branch</target>
       </trans-unit>
       <trans-unit id="scm button publish branch running">
         <source xml:lang="en">Publishing Branch...</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
         <target state="translated">正在發布 Branch...</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
-        <target state="translated">$(cloud-upload) 發布分支</target>
-      </trans-unit>
       <trans-unit id="scm button sync description">
-        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
-        <target state="translated">{0} 同步變更 {1}{2}</target>
+        <source xml:lang="en">{0} Sync Changes{1}{2}</source>
+        <target state="translated">{0} 同步變更{1}{2}</target>
       </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en">{0} {1}{2}</source>
-        <target state="translated">{0} {1}{2}</target>
+      <trans-unit id="scm publish branch action button title">
+        <source xml:lang="en">{0} Publish Branch</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">{0} 發佈 Branch</target>
+      </trans-unit>
+      <trans-unit id="scm secondary button commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">提交</target>
       </trans-unit>
       <trans-unit id="syncing changes">
         <source xml:lang="en">Synchronizing Changes...</source>
@@ -61,6 +139,14 @@
       <trans-unit id="HEAD not available">
         <source xml:lang="en">HEAD version of '{0}' is not available.</source>
         <target state="translated">'{0}' 的 HEAD 版本無法使用。</target>
+      </trans-unit>
+      <trans-unit id="Theirs">
+        <source xml:lang="en">Theirs</source>
+        <target state="translated">他們的</target>
+      </trans-unit>
+      <trans-unit id="Yours">
+        <source xml:lang="en">Yours</source>
+        <target state="translated">您的</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add to Workspace</source>
@@ -110,6 +196,10 @@
         <source xml:lang="en">Branch name</source>
         <target state="translated">分支名稱</target>
       </trans-unit>
+      <trans-unit id="branch name does not match sanitized">
+        <source xml:lang="en">The new branch will be '{0}'</source>
+        <target state="translated">新分支會是 '{0}'</target>
+      </trans-unit>
       <trans-unit id="branch name format invalid">
         <source xml:lang="en">Branch name needs to match regex: {0}</source>
         <target state="translated">分支名稱需要匹配 正規表達式: {0}</target>
@@ -117,10 +207,6 @@
       <trans-unit id="cant push">
         <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
         <target state="translated">無法將參考推送到遠端。請先嘗試執行 '提取' 以整合您的變更。</target>
-      </trans-unit>
-      <trans-unit id="changed">
-        <source xml:lang="en">{0} Log level changed to: {1}</source>
-        <target state="translated">{0} 記錄層級已變更為: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -150,6 +236,10 @@
         <source xml:lang="en">Create Empty Commit</source>
         <target state="translated">建立空白認可</target>
       </trans-unit>
+      <trans-unit id="commit changes">
+        <source xml:lang="en">Commit Anyway</source>
+        <target state="translated">仍要提交</target>
+      </trans-unit>
       <trans-unit id="commit hash">
         <source xml:lang="en">Commit Hash</source>
         <target state="translated">認可雜湊</target>
@@ -158,9 +248,21 @@
         <source xml:lang="en">Commit message</source>
         <target state="translated">認可訊息</target>
       </trans-unit>
+      <trans-unit id="commit to branch">
+        <source xml:lang="en">Commit to a New Branch</source>
+        <target state="translated">提交新的分支</target>
+      </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel2">
         <source xml:lang="en">Message (commit on '{0}')</source>
         <target state="translated">訊息 (在 '{0}' 上認可)</target>
+      </trans-unit>
+      <trans-unit id="confirm branch protection commit">
+        <source xml:lang="en">You are trying to commit to a protected branch and you might not have permission to push your commits to the remote.
+
+How would you like to proceed?</source>
+        <target state="translated">您正在嘗試提交受保護的分支，而且可能沒有將提交推到遠端的權限。
+
+您要如何繼續進行?</target>
       </trans-unit>
       <trans-unit id="confirm delete">
         <source xml:lang="en">Are you sure you want to DELETE {0}?
@@ -206,9 +308,9 @@ This is IRREVERSIBLE, your current working set will be FOREVER LOST.</source>
         <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
         <target state="translated">確定要捨棄 {0} 檔案中的變更嗎?</target>
       </trans-unit>
-      <trans-unit id="confirm emtpy commit">
+      <trans-unit id="confirm empty commit">
         <source xml:lang="en">Are you sure you want to create an empty commit?</source>
-        <target state="translated">確實要建立空白認可嗎？</target>
+        <target state="translated">確實要建立空白認可嗎?</target>
       </trans-unit>
       <trans-unit id="confirm force delete branch">
         <source xml:lang="en">The branch '{0}' is not fully merged. Delete anyway?</source>
@@ -266,6 +368,10 @@ Are you sure to continue?</source>
         <source xml:lang="en">Current</source>
         <target state="translated">目前</target>
       </trans-unit>
+      <trans-unit id="default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">預設</target>
+      </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">Delete File</source>
         <target state="translated">刪除檔案</target>
@@ -317,6 +423,10 @@ What would you like to do?</source>
       <trans-unit id="drop one stash">
         <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
         <target state="translated">確定要卸除所有隱藏項目嗎? 有 1 個隱藏項目將需要剪除，可能無法復原。</target>
+      </trans-unit>
+      <trans-unit id="empty commit">
+        <source xml:lang="en">Commit operation was cancelled due to empty commit message.</source>
+        <target state="translated">提交作業已取消，因為提交訊息為空白。</target>
       </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
@@ -752,19 +862,27 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/git/dist/log" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="gitLogLevel">
+        <source xml:lang="en">Log level: {0}</source>
+        <target state="translated">記錄層級: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">{0} Skipped found git in: {1}</source>
-        <target state="translated">{0} 已略過在下列位置找到的 git: {1}</target>
+        <source xml:lang="en">Skipped found git in: {0}</source>
+        <target state="translated">已略過在下列位置找到的 git: {0}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">{0} Using git {1} from {2}</source>
-        <target state="translated">{0} 使用來自 {2} 的 git {1}</target>
+        <source xml:lang="en">Using git {0} from {1}</source>
+        <target state="translated">正在使用來自 {1} 的 git {0}</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">{0} Validating found git in: {1}</source>
-        <target state="translated">{0} 正在驗證在下列位置找到的 git: {1}</target>
+        <source xml:lang="en">Validating found git in: {0}</source>
+        <target state="translated">正在驗證在下列位置找到的 git: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -949,6 +1067,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">開啟</target>
+      </trans-unit>
+      <trans-unit id="open.merge">
+        <source xml:lang="en">Open Merge</source>
+        <target state="translated">開啟合併</target>
       </trans-unit>
       <trans-unit id="pull">
         <source xml:lang="en">Pull</source>
@@ -1210,6 +1332,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Commit Empty (No Verify)</source>
         <target state="translated">認可空白 (未驗證)</target>
       </trans-unit>
+      <trans-unit id="command.commitMessageAccept">
+        <source xml:lang="en">Accept Commit Message</source>
+        <target state="translated">接受提交訊息</target>
+      </trans-unit>
+      <trans-unit id="command.commitMessageDiscard">
+        <source xml:lang="en">Discard Commit Message</source>
+        <target state="translated">捨棄提交訊息</target>
+      </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
         <target state="translated">認可 (未驗證)</target>
@@ -1261,6 +1391,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.fetchPrune">
         <source xml:lang="en">Fetch (Prune)</source>
         <target state="translated">擷取 (剪除)</target>
+      </trans-unit>
+      <trans-unit id="command.git.acceptMerge">
+        <source xml:lang="en">Accept Merge</source>
+        <target state="translated">接受合併</target>
       </trans-unit>
       <trans-unit id="command.ignore">
         <source xml:lang="en">Add to .gitignore</source>
@@ -1365,6 +1499,18 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.restoreCommitTemplate">
         <source xml:lang="en">Restore Commit Template</source>
         <target state="translated">還原認可範本</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.linux">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">開啟所屬資料夾</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.mac">
+        <source xml:lang="en">Reveal in Finder</source>
+        <target state="translated">在 Finder 中顯示</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.windows">
+        <source xml:lang="en">Reveal in File Explorer</source>
+        <target state="translated">在檔案總管中顯示</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
         <source xml:lang="en">Reveal in Explorer View</source>
@@ -1542,6 +1688,54 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Whether auto refreshing is enabled.</source>
         <target state="translated">是否啟用自動重新整理。</target>
       </trans-unit>
+      <trans-unit id="config.branchPrefix">
+        <source xml:lang="en">Prefix used when creating a new branch.</source>
+        <target state="translated">建立新分支時使用的首碼。</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtection">
+        <source xml:lang="en">List of protected branches. By default, a prompt is shown before changes are committed to a protected branch. The prompt can be controlled using the `#git.branchProtectionPrompt#`  setting.</source>
+        <target state="translated">受保護分支的清單。根據預設，在將變更提交到受保護的分支之前，會先顯示提示。可使用 `#git.branchProtectionPrompt#` 設定控制提示。</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt">
+        <source xml:lang="en">Controls whether a prompt is being before changes are committed to a protected branch.</source>
+        <target state="translated">控制是否要在變更提交至受保護的分支之前先提示。</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommit">
+        <source xml:lang="en">Always commit changes to the protected branch.</source>
+        <target state="translated">一律提交至受保護分支的變更。</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommitToNewBranch">
+        <source xml:lang="en">Always commit changes to a new branch.</source>
+        <target state="translated">一律提交新分支的變更。</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysPrompt">
+        <source xml:lang="en">Always prompt before changes are committed to a protected branch.</source>
+        <target state="translated">在變更提交至受保護的分支之前一律提示。</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary">
+        <source xml:lang="en">List of dictionaries used for the randomly generated branch name. Each value represents the dictionary used to generate the segment of the branch name. Supported dictionaries: `adjectives`, `animals`, `colors` and `numbers`.</source>
+        <target state="translated">隨機產生的分支名稱所使用的字典清單。每個值代表用來產生分支名稱區段的字典。支援的字典: '形容詞'、'動物'、'色彩' 和 '數字'。</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.adjectives">
+        <source xml:lang="en">A random adjective</source>
+        <target state="translated">隨機形容詞</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.animals">
+        <source xml:lang="en">A random animal name</source>
+        <target state="translated">隨機動物名稱</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.colors">
+        <source xml:lang="en">A random color name</source>
+        <target state="translated">隨機色彩名稱</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.numbers">
+        <source xml:lang="en">A random number between 100 and 999</source>
+        <target state="translated">介於 100 到 999 之間的隨機數字</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameEnable">
+        <source xml:lang="en">Controls whether a random name is generated when creating a new branch.</source>
+        <target state="translated">控制建立新分支時是否產生隨機名稱。</target>
+      </trans-unit>
       <trans-unit id="config.branchSortOrder">
         <source xml:lang="en">Controls the sort order for branches.</source>
         <target state="translated">控制分支的排序順序。</target>
@@ -1551,8 +1745,8 @@ These files will be FOREVER LOST.</source>
         <target state="translated">用於驗證新分支名稱的正規表達式。</target>
       </trans-unit>
       <trans-unit id="config.branchWhitespaceChar">
-        <source xml:lang="en">The character to replace whitespace in new branch names.</source>
-        <target state="translated">要在新分支名稱中取代空白字元的字元。</target>
+        <source xml:lang="en">The character to replace whitespace in new branch names, and to separate segments of a randomly generated branch name.</source>
+        <target state="translated">要取代新分支名稱中的空格，以及分隔隨機產生之分支名稱區段的字元。</target>
       </trans-unit>
       <trans-unit id="config.checkoutType">
         <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
@@ -1576,6 +1770,9 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="config.commandsToLog">
         <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">GIT 命令列表 (例如: commit、push)，這些命令的 `stdout` 將被記錄到 [git 輸出](command:git.showOutput)。如果 GIT 命令設定了用戶端勾點，那麼用戶端勾點的 `stdout` 也將被記錄到 [git 輸出](command:git.showOutput)。</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
@@ -1698,6 +1895,45 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
         <target state="translated">控制用於顯示警告的認可訊息主旨長度閾值。將其取消設定可繼承 `config.inputValidationLength` 的值。</target>
       </trans-unit>
+      <trans-unit id="config.logLevel">
+        <source xml:lang="en">Specifies how much information (if any) to log to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">指定要記錄至 [GIT 輸出](command:git.showOutput) 的資訊量 (如果有的話)。</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.critical">
+        <source xml:lang="en">Log only critical information</source>
+        <target state="translated">只記錄重大資訊</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.debug">
+        <source xml:lang="en">Log only debug, information, warning, error, and critical information</source>
+        <target state="translated">只記錄偵錯、資訊、警告、錯誤和重大資訊</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.error">
+        <source xml:lang="en">Log only error, and critical information</source>
+        <target state="translated">只記錄錯誤和重大資訊</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.info">
+        <source xml:lang="en">Log only information, warning, error, and critical information</source>
+        <target state="translated">只記錄資訊、警告、錯誤和重大資訊</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.off">
+        <source xml:lang="en">Log nothing</source>
+        <target state="translated">不記錄任何項目</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.trace">
+        <source xml:lang="en">Log all information</source>
+        <target state="translated">記錄所有資訊</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.warn">
+        <source xml:lang="en">Log only warning, error, and critical information</source>
+        <target state="translated">只記錄警告、錯誤和重大資訊</target>
+      </trans-unit>
+      <trans-unit id="config.mergeEditor">
+        <source xml:lang="en">Open the merge editor for files that are currently under conflict.</source>
+        <target state="translated">針對目前發生衝突的檔案開啟合併編輯器。</target>
+      </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
         <target state="translated">控制是否要在複製後自動開啟存放庫。</target>
@@ -1802,6 +2038,22 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">List of paths to search for git repositories in.</source>
         <target state="translated">要在其中搜尋 git 存放庫的路徑清單。</target>
       </trans-unit>
+      <trans-unit id="config.showActionButton">
+        <source xml:lang="en">Controls whether an action button is shown in the Source Control view.</source>
+        <target state="translated">控制是否可以在原始檔控制檢視中顯示動作按鈕。</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.commit">
+        <source xml:lang="en">Show an action button to commit changes when the local branch has modified files ready to be committed.</source>
+        <target state="translated">當本地分支有可提交的修改檔案時，顯示提交變更的動作按鈕。</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.publish">
+        <source xml:lang="en">Show an action button to publish the local branch when it does not have a tracking remote branch.</source>
+        <target state="translated">當本地分支沒有追蹤遠端分支時，顯示發佈的動作按鈕。</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.sync">
+        <source xml:lang="en">Show an action button to synchronize changes when the local branch is either ahead or behind the remote branch.</source>
+        <target state="translated">當本地分支位於遠端分支前後時，顯示同步變更的動作按鈕。</target>
+      </trans-unit>
       <trans-unit id="config.showCommitInput">
         <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
         <target state="translated">控制是否要在 Git 原始檔控制台中顯示認可輸入。</target>
@@ -1817,22 +2069,6 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.showPushSuccessNotification">
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">控制是否要在推送成功時顯示通知。</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton">
-        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
-        <target state="translated">控制如果存在未發布的提交，是否顯示動作按鈕以同步或發布。</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.always">
-        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
-        <target state="translated">如果存在未發布的提交，則一律顯示動作按鈕。</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.never">
-        <source xml:lang="en">Never shows the action button.</source>
-        <target state="translated">一律不顯示動作按鈕。</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
-        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
-        <target state="translated">僅在沒有其他變更且存在未發布的提交時顯示動作按鈕。</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
@@ -1859,8 +2095,12 @@ These files will be FOREVER LOST.</source>
         <target state="translated">控制是否要在執行同步動作時顯示允許使用者取消作業的通知。</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
-        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">控制是否要讓 Azure Data Studio 成為在整合式終端中繁衍之 git 處理序的驗證處理常式。請注意: 您必須重新啟動終端，才能在此設定中挑選變更。</target>
+        <source xml:lang="en">Controls whether to enable VS Code to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">控制是否要讓 VS Code 成為在整合式終端中繁衍之 git 處理序的驗證處理常式。請注意: 您必須重新啟動終端，才能在此設定中挑選變更。</target>
+      </trans-unit>
+      <trans-unit id="config.terminalGitEditor">
+        <source xml:lang="en">Controls whether to enable VS Code to be git editor for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">控制是否要讓 VS Code 成為在整合式終端中繁衍之 git 處理序的 git 編輯器。請注意: 您必須重新啟動終端，才能在此設定中發現變更。</target>
       </trans-unit>
       <trans-unit id="config.timeline.date">
         <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
@@ -1902,6 +2142,10 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
         <target state="translated">控制是否使用認可輸入方塊中的訊息作為預設隱藏訊息。</target>
       </trans-unit>
+      <trans-unit id="config.useEditorAsCommitInput">
+        <source xml:lang="en">Controls whether a full text editor will be used to author commit messages, whenever no message is provided in the commit input box.</source>
+        <target state="translated">控制在提交輸入方塊中未提供訊息時，是否使用全文字編輯器來撰寫提交訊息。</target>
+      </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">控制強制推送是否使用較安全的 force-with-lease 方法。</target>
@@ -1909,6 +2153,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.useIntegratedAskPass">
         <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
         <target state="translated">控制是否應覆寫 GIT_ASKPASS 以使用整合式版本。</target>
+      </trans-unit>
+      <trans-unit id="config.verboseCommit">
+        <source xml:lang="en">Enable verbose output when `#git.useEditorAsCommitInput#` is enabled.</source>
+        <target state="translated">啟用 '#git.useEditorAsCommitInput#' 時，啟用詳細資訊輸出。</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1961,6 +2209,9 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="view.workbench.cloneRepository">
         <source xml:lang="en">You can clone a repository locally.
 [Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
+        <note>{Locked='](command:git.clone'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">您可以在本機複製存放庫。
 [複製存放庫](command:git.clone '在 GIT 延伸模組啟用後複製存放庫')</target>
       </trans-unit>
@@ -1971,6 +2222,9 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.openSettings?%5B%22git.enabled%22%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">如果您想要使用 git 功能，請在[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 git。
 若要深入了解如何在 VS Code 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
@@ -1979,6 +2233,9 @@ To learn more about how to use git and source control in VS Code [read our docs]
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:vscode.openFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">如果要使用 git 功能，您可以開啟包含 git 存放庫的資料夾或從 URL 複製。
 [開啟資料夾](command:vscode.openFolder)
 [複製存放庫](command:git.clone)
@@ -1988,6 +2245,9 @@ To learn more about how to use git and source control in Azure Data Studio [read
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.addRootFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">目前開啟的工作區沒有任何資料夾包含 git 存放庫。
 [新增資料夾至工作區](command:workbench.action.addRootFolder)
 如果要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。</target>
@@ -1996,46 +2256,53 @@ To learn more about how to use git and source control in Azure Data Studio [read
         <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init?%5Btrue%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">目前開啟的資料夾沒有任何 git 存放庫。您可以將存放庫初始化，以啟用 git 支援的原始檔控制功能。
 [將存放庫初始化](command:git.init?%5Btrue%5D)
 若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.missing">
-        <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
-Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
-If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
-        <target state="translated">未偵測到有效的 git 安裝，您可以在 [git 輸出](command:git.showOutput)中找到更多詳細資料。
-請[安裝 git](https://git-scm.com/)，或在 [我們的文件](https://aka.ms/vscode-scm) 深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制。
-如果您使用的是其他版本的控制系統，可以[搜尋市集](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) 尋找其他延伸模組。</target>
-      </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide">
         <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
         <target state="translated">安裝 Git，這是熱門的原始檔控制系統，以追蹤程式碼變更並與其他人共同作業。在我們的[Git指南](https://aka.ms/vscode-scm)中深入了解。</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.linux">
+      <trans-unit id="view.workbench.scm.missing.linux">
         <source xml:lang="en">Source control depends on Git being installed.
 [Download Git for Linux](https://git-scm.com/download/linux)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
-        <target state="translated">原始檔控制必須安裝 Git。
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">原始檔控制取決於安裝的 Git。
 [下載適用於 Linux 的 Git](https://git-scm.com/download/linux)
-安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或 [疑難排解](command:git.showOutput))。可 [從 Marketplace] 安裝其他原始檔控制提供者 (command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或[疑難排解](command:git.showOutput))。可[從 Marketplace] 安裝其他原始檔控制提供者 (command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.mac">
+      <trans-unit id="view.workbench.scm.missing.mac">
         <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[下載適用於 macOS 的 Git](https://git-scm.com/download/mac)
-安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或 [疑難排解](command:git.showOutput))。可 [從 Marketplace] 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+安裝之後，請[重新載入](command:workbench.action.reloadWindow) (或[疑難排解](command:git.showOutput))。可[從 Marketplace] 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.windows">
+      <trans-unit id="view.workbench.scm.missing.windows">
         <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[下載適用於 Windows 的 Git](https://git-scm.com/download/win)
-安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或[疑難排解](command:git.showOutput))。可 [從 Marketplace] 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+安裝之後，請[重新載入](command:workbench.action.reloadWindow) (或[疑難排解](command:git.showOutput))。可[從 Marketplace] 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
 [Initialize Repository](command:git.init)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">目前開啟的工作區沒有任何包含 git 存放庫的資料夾。您可以在資料夾上將存放庫初始化，以啟用 git 支援的原始檔控制功能。
 [將存放庫初始化](command:git.init)
 若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。</target>

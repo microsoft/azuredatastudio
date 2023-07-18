@@ -7,16 +7,15 @@ import { distinct } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { CancellationError, getErrorMessage, isCancellationError } from 'vs/base/common/errors';
-import { getOrDefault } from 'vs/base/common/objects';
 import { IPager } from 'vs/base/common/paging';
 import { isWeb, platform } from 'vs/base/common/platform';
 import { arch } from 'vs/base/common/process';
 import { isBoolean } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
-import { IRequestContext, IRequestOptions } from 'vs/base/parts/request/common/request';
+import { IHeaders, IRequestContext, IRequestOptions } from 'vs/base/parts/request/common/request';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { getFallbackTargetPlarforms, getTargetPlatform, IExtensionGalleryService, IExtensionIdentifier, IExtensionInfo, IGalleryExtension, IGalleryExtensionAsset, IGalleryExtensionAssets, IGalleryExtensionVersion, InstallOperation, IQueryOptions, IExtensionsControlManifest, isNotWebExtensionInWebTargetPlatform, isTargetPlatformCompatible, ITranslation, SortBy, SortOrder, StatisticType, toTargetPlatform, WEB_EXTENSION_TAG, IExtensionQueryOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { getFallbackTargetPlarforms, getTargetPlatform, IExtensionGalleryService, IExtensionIdentifier, IExtensionInfo, IGalleryExtension, IGalleryExtensionAsset, IGalleryExtensionAssets, IGalleryExtensionVersion, InstallOperation, IQueryOptions, IExtensionsControlManifest, isNotWebExtensionInWebTargetPlatform, isTargetPlatformCompatible, ITranslation, SortBy, SortOrder, StatisticType, toTargetPlatform, WEB_EXTENSION_TAG, IExtensionQueryOptions, IDeprecationInfo } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { adoptToGalleryExtensionId, areSameExtensions, getGalleryExtensionId, getGalleryExtensionTelemetryData } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ExtensionsPolicy, ExtensionsPolicyKey, IExtensionManifest, TargetPlatform } from 'vs/platform/extensions/common/extensions';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
@@ -29,6 +28,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 const CURRENT_TARGET_PLATFORM = isWeb ? TargetPlatform.WEB : getTargetPlatform(platform, arch);
+const ACTIVITY_HEADER_NAME = 'X-Market-Search-Activity-Id';
 
 interface IRawGalleryExtensionFile {
 	readonly assetType: string;
@@ -77,6 +77,12 @@ interface IRawGalleryExtension {
 	readonly lastUpdated: string;
 	readonly categories: string[] | undefined;
 	readonly flags: string;
+}
+
+interface IRawGalleryExtensionsResult {
+	readonly galleryExtensions: IRawGalleryExtension[];
+	readonly total: number;
+	readonly context?: IStringDictionary<string>;
 }
 
 interface IRawGalleryQueryResult {
@@ -195,6 +201,7 @@ const AssetType = {
 	VSIX: 'Microsoft.VisualStudio.Services.VSIXPackage',
 	License: 'Microsoft.VisualStudio.Services.Content.License',
 	Repository: 'Microsoft.VisualStudio.Services.Links.Source',
+	Signature: 'Microsoft.VisualStudio.Services.VsixSignature',
 	// {{SQL CARBON EDIT}}
 	DownloadPage: 'Microsoft.SQLOps.DownloadPage'
 };
@@ -207,7 +214,8 @@ const PropertyType = {
 	// {{SQL CARBON EDIT}}
 	AzDataEngine: 'Microsoft.AzDataEngine',
 	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages',
-	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension'
+	WebExtension: 'Microsoft.VisualStudio.Code.WebExtension',
+	SponsorLink: 'Microsoft.VisualStudio.Code.SponsorLink'
 };
 
 interface ICriterium {
@@ -240,19 +248,22 @@ const DefaultQueryState: IQueryState = {
 
 /* {{SQL CARBON EDIT}} Remove unused
 type GalleryServiceQueryClassification = {
-	readonly filterTypes: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly flags: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly sortBy: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly sortOrder: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly pageNumber: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true };
-	readonly success: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly requestBodySize: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly responseBodySize?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly statusCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly errorCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly count?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-	readonly source?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	owner: 'sandy081';
+	comment: 'Information about Marketplace query and its response';
+	readonly filterTypes: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Filter types used in the query.' };
+	readonly flags: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Flags passed in the query.' };
+	readonly sortBy: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'sorted by option passed in the query' };
+	readonly sortOrder: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'sort order option passed in the query' };
+	readonly pageNumber: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'requested page number in the query' };
+	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true; comment: 'amount of time taken by the query request' };
+	readonly success: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'whether the query reques is success or not' };
+	readonly requestBodySize: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'size of the request body' };
+	readonly responseBodySize?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'size of the response body' };
+	readonly statusCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'status code of the response' };
+	readonly errorCode?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'error code of the response' };
+	readonly count?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'total number of extensions matching the query' };
+	readonly source?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'source that requested this query, eg., recommendations, viewlet' };
+	readonly searchTextLength?: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'length of the search text in the query' };
 };
 */
 
@@ -263,6 +274,7 @@ type QueryTelemetryData = {
 	readonly sortOrder: string;
 	readonly pageNumber: string;
 	readonly source?: string;
+	readonly searchTextLength?: number;
 };
 
 /* {{SQL CARBON EDIT}} Remove unused
@@ -277,8 +289,10 @@ type GalleryServiceQueryEvent = QueryTelemetryData & {
 };
 
 type GalleryServiceAdditionalQueryClassification = {
-	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true };
-	readonly count: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+	owner: 'sandy081';
+	comment: 'Response information about the additional query to the Marketplace for fetching all versions to get release version';
+	readonly duration: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; 'isMeasurement': true; comment: 'Amount of time taken by the additional query' };
+	readonly count: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'Total number of extensions returned by this additional query' };
 };
 
 type GalleryServiceAdditionalQueryEvent = {
@@ -356,7 +370,8 @@ class Query {
 			sortBy: String(this.sortBy),
 			sortOrder: String(this.sortOrder),
 			pageNumber: String(this.pageNumber),
-			source: this.state.source
+			source: this.state.source,
+			searchTextLength: this.searchText.length
 		};
 	}
 }
@@ -457,6 +472,10 @@ function getLocalizedLanguages(version: IRawGalleryExtensionVersion): string[] {
 	return value ? value.split(',') : [];
 }
 
+function getSponsorLink(version: IRawGalleryExtensionVersion): string | undefined {
+	return version.properties?.find(p => p.key === PropertyType.SponsorLink)?.value;
+}
+
 function getIsPreview(flags: string): boolean {
 	return flags.indexOf('preview') !== -1;
 }
@@ -517,13 +536,14 @@ function setTelemetry(extension: IGalleryExtension, index: number, querySource?:
 	/* __GDPR__FRAGMENT__
 	"GalleryExtensionTelemetryData2" : {
 		"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-		"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+		"queryActivityId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	}
 	*/
-	extension.telemetryData = { index, querySource };
+	extension.telemetryData = { index, querySource, queryActivityId: extension.queryContext?.[ACTIVITY_HEADER_NAME] };
 }
 
-function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGalleryExtensionVersion, allTargetPlatforms: TargetPlatform[]): IGalleryExtension {
+function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGalleryExtensionVersion, allTargetPlatforms: TargetPlatform[], queryContext?: IStringDictionary<any>): IGalleryExtension {
 	const latestVersion = galleryExtension.versions[0];
 	const assets = <IGalleryExtensionAssets>{
 		manifest: getVersionAsset(version, AssetType.Manifest),
@@ -535,6 +555,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		// {{SQL CARBON EDIT}} - Add downloadPage
 		downloadPage: getVersionAsset(version, AssetType.DownloadPage),
 		icon: getVersionAsset(version, AssetType.Icon),
+		signature: getVersionAsset(version, AssetType.Signature),
 		coreTranslations: getCoreTranslationAssets(version)
 	};
 
@@ -550,6 +571,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		publisher: galleryExtension.publisher.publisherName,
 		publisherDisplayName: galleryExtension.publisher.displayName,
 		publisherDomain: galleryExtension.publisher.domain ? { link: galleryExtension.publisher.domain, verified: !!galleryExtension.publisher.isDomainVerified } : undefined,
+		publisherSponsorLink: getSponsorLink(latestVersion),
 		description: galleryExtension.shortDescription || '',
 		installCount: getStatistic(galleryExtension.statistics, 'install'),
 		rating: getStatistic(galleryExtension.statistics, 'averagerating'),
@@ -573,24 +595,39 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		hasPreReleaseVersion: isPreReleaseVersion(latestVersion),
 		hasReleaseVersion: true,
 		preview: getIsPreview(galleryExtension.flags),
+		isSigned: !!assets.signature,
+		queryContext
 	};
 }
 
-type PreReleaseMigrationInfo = { id: string; displayName: string; migrateStorage?: boolean; engine?: string };
 interface IRawExtensionsControlManifest {
 	malicious: string[];
-	unsupported?: IStringDictionary<boolean | { preReleaseExtension: { id: string; displayName: string } }>;
-	migrateToPreRelease?: IStringDictionary<PreReleaseMigrationInfo>;
+	migrateToPreRelease?: IStringDictionary<{
+		id: string;
+		displayName: string;
+		migrateStorage?: boolean;
+		engine?: string;
+	}>;
+	deprecated?: IStringDictionary<boolean | {
+		disallowInstall?: boolean;
+		extension?: {
+			id: string;
+			displayName: string;
+		};
+		settings?: string[];
+		additionalInfo?: string;
+	}>;
 }
 
 abstract class AbstractExtensionGalleryService implements IExtensionGalleryService {
 
 	declare readonly _serviceBrand: undefined;
 
-	private extensionsGalleryUrl: string | undefined;
-	private extensionsControlUrl: string | undefined;
+	private readonly extensionsGalleryUrl: string | undefined;
+	// private readonly extensionsGallerySearchUrl: string | undefined; // {{SQL CARBON EDIT}} - Remove unused
+	private readonly extensionsControlUrl: string | undefined;
 
-	private readonly commonHeadersPromise: Promise<{ [key: string]: string }>;
+	private readonly commonHeadersPromise: Promise<IStringDictionary<string>>;
 
 	constructor(
 		storageService: IStorageService | undefined,
@@ -603,9 +640,18 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 	) {
 		const config = productService.extensionsGallery;
-		this.extensionsGalleryUrl = config && config.serviceUrl;
-		this.extensionsControlUrl = config && config.controlUrl;
-		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, productService, this.environmentService, this.configurationService, this.fileService, storageService);
+		const isPPEEnabled = config?.servicePPEUrl && configurationService.getValue('_extensionsGallery.enablePPE');
+		this.extensionsGalleryUrl = isPPEEnabled ? config.servicePPEUrl : config?.serviceUrl;
+		// this.extensionsGallerySearchUrl = isPPEEnabled ? undefined : config?.searchUrl; // {{SQL CARBON EDIT}} - Remove unused
+		this.extensionsControlUrl = config?.controlUrl;
+		this.commonHeadersPromise = resolveMarketplaceHeaders(
+			productService.version,
+			productService,
+			this.environmentService,
+			this.configurationService,
+			this.fileService,
+			storageService,
+			this.telemetryService);
 	}
 
 	private api(path = ''): string {
@@ -707,8 +753,13 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		if (compatible) {
-			const engine = await this.getEngine(rawGalleryExtensionVersion);
-			if (!isEngineValid(engine, this.productService.version, this.productService.date)) {
+			try {
+				const engine = await this.getEngine(rawGalleryExtensionVersion);
+				if (!isEngineValid(engine, this.productService.version, this.productService.date)) {
+					return false;
+				}
+			} catch (error) {
+				this.logService.error(`Error while getting the engine for the version ${rawGalleryExtensionVersion.version}.`, getErrorMessage(error));
 				return false;
 			}
 		}
@@ -717,15 +768,17 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 	}
 
 	async query(options: IQueryOptions, token: CancellationToken): Promise<IPager<IGalleryExtension>> {
-		if (!this.isEnabled()) {
-			throw new Error('No extension gallery service configured.');
-		}
-
 		let text = options.text || '';
-		const pageSize = getOrDefault(options, o => o.pageSize, 50);
+		const pageSize = options.pageSize ?? 50;
 
 		let query = new Query()
 			.withPage(1, pageSize);
+
+		// {{SQL CARBON EDIT}} exclude extensions matching excludeFlags options
+		if (options.excludeFlags) {
+			query = query.withFilter(FilterType.ExcludeWithFlags, options.excludeFlags);
+		}
+		// {{SQL CARBON EDIT}}} - END
 
 		if (text) {
 			// Use category filter instead of "category:themes"
@@ -820,13 +873,13 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		 * Add necessary extension flags
 		 */
 		query = query.withFlags(query.flags, Flags.IncludeAssetUri, Flags.IncludeCategoryAndTags, Flags.IncludeFiles, Flags.IncludeStatistics, Flags.IncludeVersionProperties);
-		const { galleryExtensions: rawGalleryExtensions, total } = await this.queryRawGalleryExtensions(query, token);
+		const { galleryExtensions: rawGalleryExtensions, total, context } = await this.queryRawGalleryExtensions(query, token);
 
 		const hasAllVersions: boolean = !(query.flags & Flags.IncludeLatestVersionOnly);
 		if (hasAllVersions) {
 			const extensions: IGalleryExtension[] = [];
 			for (const rawGalleryExtension of rawGalleryExtensions) {
-				const extension = await this.toGalleryExtensionWithCriteria(rawGalleryExtension, criteria);
+				const extension = await this.toGalleryExtensionWithCriteria(rawGalleryExtension, criteria, context);
 				if (extension) {
 					extensions.push(extension);
 				}
@@ -846,7 +899,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 				*/
 				continue;
 			}
-			const extension = await this.toGalleryExtensionWithCriteria(rawGalleryExtension, criteria);
+			const extension = await this.toGalleryExtensionWithCriteria(rawGalleryExtension, criteria, context);
 			if (!extension
 				/** Need all versions if the extension is a pre-release version but
 				 * 		- the query is to look for a release version or
@@ -882,7 +935,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		return { extensions: result.sort((a, b) => a[0] - b[0]).map(([, extension]) => extension), total };
 	}
 
-	private async toGalleryExtensionWithCriteria(rawGalleryExtension: IRawGalleryExtension, criteria: IExtensionCriteria): Promise<IGalleryExtension | null> {
+	private async toGalleryExtensionWithCriteria(rawGalleryExtension: IRawGalleryExtension, criteria: IExtensionCriteria, queryContext?: IStringDictionary<any>): Promise<IGalleryExtension | null> {
 
 		const extensionIdentifier = { id: getGalleryExtensionId(rawGalleryExtension.publisher.publisherName, rawGalleryExtension.extensionName), uuid: rawGalleryExtension.extensionId };
 		const version = criteria.versions?.find(extensionIdentifierWithVersion => areSameExtensions(extensionIdentifierWithVersion, extensionIdentifier))?.version;
@@ -901,7 +954,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			}
 			// Allow any version if includePreRelease flag is set otherwise only release versions are allowed
 			if (await this.isValidVersion(rawGalleryExtensionVersion, includePreRelease ? 'any' : 'release', criteria.compatible, allTargetPlatforms, criteria.targetPlatform)) {
-				return toExtension(rawGalleryExtension, rawGalleryExtensionVersion, allTargetPlatforms);
+				return toExtension(rawGalleryExtension, rawGalleryExtensionVersion, allTargetPlatforms, queryContext);
 			}
 			if (version && rawGalleryExtensionVersion.version === version) {
 				return null;
@@ -1034,7 +1087,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
-	private async queryRawGalleryExtensions(query: Query, token: CancellationToken): Promise<{ galleryExtensions: IRawGalleryExtension[]; total: number }> {
+	private async queryRawGalleryExtensions(query: Query, token: CancellationToken): Promise<IRawGalleryExtensionsResult> {
 		if (!this.isEnabled()) {
 			throw new Error('No extension gallery service configured.');
 		}
@@ -1052,7 +1105,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			'Content-Type': 'application/json',
 			'Accept': 'application/json;api-version=3.0-preview.1',
 			'Accept-Encoding': 'gzip',
-			'Content-Length': String(data.length)
+			'Content-Length': String(data.length),
 		};
 
 		const context = await this.requestService.request({
@@ -1111,6 +1164,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		const startTime = new Date().getTime();
 		/* __GDPR__
 			"galleryService:downloadVSIX" : {
+				"owner": "sandy081",
 				"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 				"${include}": [
 					"${GalleryExtensionTelemetryData}"
@@ -1127,9 +1181,21 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 			fallbackUri: `${extension.assets.download.fallbackUri}${URI.parse(extension.assets.download.fallbackUri).query ? '&' : '?'}${operationParam}=true`
 		} : extension.assets.download;
 
-		const context = await this.getAsset(downloadAsset);
+		const headers: IHeaders | undefined = extension.queryContext?.[ACTIVITY_HEADER_NAME] ? { [ACTIVITY_HEADER_NAME]: extension.queryContext[ACTIVITY_HEADER_NAME] } : undefined;
+		const context = await this.getAsset(downloadAsset, headers ? { headers } : undefined);
 		await this.fileService.writeFile(location, context.stream);
 		log(new Date().getTime() - startTime);
+	}
+
+	async downloadSignatureArchive(extension: IGalleryExtension, location: URI): Promise<void> {
+		if (!extension.assets.signature) {
+			throw new Error('No signature asset found');
+		}
+
+		this.logService.trace('ExtensionGalleryService#downloadSignatureArchive', extension.identifier.id);
+
+		const context = await this.getAsset(extension.assets.signature);
+		await this.fileService.writeFile(location, context.stream);
 	}
 
 	async getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
@@ -1245,8 +1311,10 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 
 			const message = getErrorMessage(err);
 			type GalleryServiceCDNFallbackClassification = {
-				url: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
-				message: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				owner: 'sandy081';
+				comment: 'Fallback request information when the primary asset request to CDN fails';
+				url: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'asset url that failed' };
+				message: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'error message' };
 			};
 			type GalleryServiceCDNFallbackEvent = {
 				url: string;
@@ -1319,7 +1387,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		}
 
 		if (!this.extensionsControlUrl) {
-			return { malicious: [] };
+			return { malicious: [], deprecated: {} };
 		}
 
 		const context = await this.requestService.request({ type: 'GET', url: this.extensionsControlUrl }, CancellationToken.None);
@@ -1329,30 +1397,36 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 
 		const result = await asJson<IRawExtensionsControlManifest>(context);
 		const malicious: IExtensionIdentifier[] = [];
-		const unsupportedPreReleaseExtensions: IStringDictionary<{ id: string; displayName: string; migrateStorage?: boolean }> = {};
-
+		const deprecated: IStringDictionary<IDeprecationInfo> = {};
 		if (result) {
 			for (const id of result.malicious) {
 				malicious.push({ id });
 			}
-			if (result.unsupported) {
-				for (const extensionId of Object.keys(result.unsupported)) {
-					const value = result.unsupported[extensionId];
-					if (!isBoolean(value)) {
-						unsupportedPreReleaseExtensions[extensionId.toLowerCase()] = value.preReleaseExtension;
-					}
-				}
-			}
 			if (result.migrateToPreRelease) {
 				for (const [unsupportedPreReleaseExtensionId, preReleaseExtensionInfo] of Object.entries(result.migrateToPreRelease)) {
 					if (!preReleaseExtensionInfo.engine || isEngineValid(preReleaseExtensionInfo.engine, this.productService.version, this.productService.date)) {
-						unsupportedPreReleaseExtensions[unsupportedPreReleaseExtensionId.toLowerCase()] = preReleaseExtensionInfo;
+						deprecated[unsupportedPreReleaseExtensionId.toLowerCase()] = {
+							disallowInstall: true,
+							extension: {
+								id: preReleaseExtensionInfo.id,
+								displayName: preReleaseExtensionInfo.displayName,
+								autoMigrate: { storage: !!preReleaseExtensionInfo.migrateStorage },
+								preRelease: true
+							}
+						};
+					}
+				}
+			}
+			if (result.deprecated) {
+				for (const [deprecatedExtensionId, deprecationInfo] of Object.entries(result.deprecated)) {
+					if (deprecationInfo) {
+						deprecated[deprecatedExtensionId.toLowerCase()] = isBoolean(deprecationInfo) ? {} : deprecationInfo;
 					}
 				}
 			}
 		}
 
-		return { malicious, unsupportedPreReleaseExtensions };
+		return { malicious, deprecated };
 	}
 }
 

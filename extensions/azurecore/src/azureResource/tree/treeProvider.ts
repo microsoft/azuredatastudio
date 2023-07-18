@@ -44,7 +44,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			return element.getChildren();
 		}
 
 		if (!this.isSystemInitialized) {
@@ -55,11 +55,15 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 		}
 
 		try {
-			if (this.accounts && this.accounts.length > 0) {
-				this.accounts = filterAccounts(this.accounts, this.authLibrary);
-				return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
+			if (this.accounts) {
+				if (this.accounts.length === 0) {
+					return [new AzureResourceAccountNotSignedInTreeNode()];
+				} else {
+					this.accounts = filterAccounts(this.accounts, this.authLibrary);
+					return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
+				}
 			} else {
-				return [new AzureResourceAccountNotSignedInTreeNode()];
+				return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', "Loading ..."), undefined)];
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), undefined)];
@@ -68,7 +72,10 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	private async loadAccounts(): Promise<void> {
 		try {
-			this.accounts = filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
+			let accounts = await azdata.accounts.getAllAccounts();
+			if (accounts) {
+				this.accounts = filterAccounts(accounts, this.authLibrary);
+			}
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);

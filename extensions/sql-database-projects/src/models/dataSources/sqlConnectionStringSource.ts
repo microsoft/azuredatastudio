@@ -6,6 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscodeMssql from 'vscode-mssql';
 import { DataSource } from './dataSources';
+import { DataSourceJson } from './dataSourceJson';
 import * as constants from '../../common/constants';
 
 /**
@@ -62,6 +63,18 @@ export class SqlConnectionDataSource extends DataSource {
 		return this.getSetting(constants.passwordSetting);
 	}
 
+	public get encrypt(): string {
+		return this.getSetting(constants.encryptSetting);
+	}
+
+	public get trustServerCertificate(): string {
+		return this.getSetting(constants.trustServerCertificateSetting);
+	}
+
+	public get hostnameInCertificate(): string {
+		return this.getSetting(constants.hostnameInCertificateSetting);
+	}
+
 	constructor(name: string, connectionString: string) {
 		super(name);
 
@@ -100,7 +113,11 @@ export class SqlConnectionDataSource extends DataSource {
 			providerName: 'MSSQL',
 			saveProfile: true,
 			id: this.name + '-dataSource',
-			options: []
+			options: {
+				'encrypt': this.encrypt,
+				'trustServerCertificate': this.trustServerCertificate,
+				'hostnameInCertificate': this.hostnameInCertificate
+			}
 		};
 
 		return connProfile;

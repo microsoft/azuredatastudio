@@ -25,7 +25,9 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
+		serverCapabilities: undefined,
 		getOptionsKey: undefined!,
+		getOptionKeyIdNames: undefined!,
 		matches: undefined!,
 		providerName: mssqlProviderName,
 		options: {},
@@ -171,7 +173,8 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		msSQLCapabilities = {
 			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
-			connectionOptions: connectionProvider
+			connectionOptions: connectionProvider,
+			useFullOptions: true
 		};
 		capabilitiesService = new TestCapabilitiesService();
 		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
@@ -234,7 +237,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('getOptionsKey should create a valid unique id', () => {
 		let conn = new ConnectionProfile(capabilitiesService, iConnectionProfile);
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|group:group id';
+		let expectedId = 'providerName:MSSQL|authenticationType:|connectionName:new name|databaseName:database|serverName:new server|userName:user|databaseDisplayName:database|groupId:group id';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
@@ -280,5 +283,11 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	test('an empty connection profile does not cause issues', () => {
 		assert.doesNotThrow(() => new ConnectionProfile(capabilitiesService, {} as IConnectionProfile));
+	});
+
+	test('getOptionsKey should produce the same optionsKey after converting to IConnectionProfile', () => {
+		let conn = new ConnectionProfile(capabilitiesService, iConnectionProfile);
+		const myIConnectionProfile = conn.toIConnectionProfile();
+		assert.equal(conn.getOptionsKey(), myIConnectionProfile.getOptionsKey());
 	});
 });

@@ -159,6 +159,15 @@
     <trans-unit id="azuredatastudio">
       <source xml:lang="en">Azure Data Studio</source>
     </trans-unit>
+    <trans-unit id="azuredatastudio.download">
+      <source xml:lang="en">Download</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.downloadTooltip">
+      <source xml:lang="en">Download this extension from an external source</source>
+    </trans-unit>
+    <trans-unit id="azuredatastudio.installTooltip">
+      <source xml:lang="en">Install this extension</source>
+    </trans-unit>
     <trans-unit id="connectionDialogBrowseTree.context">
       <source xml:lang="en">The connection dialog's browse tree context menu</source>
     </trans-unit>
@@ -198,6 +207,10 @@
     <trans-unit id="maxMemoryForLargeFilesMB">
       <source xml:lang="en">Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.</source>
     </trans-unit>
+    <trans-unit id="miNewDeployment">
+      <source xml:lang="en">New &amp;&amp;Deployment...</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
     <trans-unit id="miNewNotebook">
       <source xml:lang="en">&amp;&amp;New Notebook</source>
       <note>&amp;&amp; denotes a mnemonic</note>
@@ -216,11 +229,79 @@
     <trans-unit id="notebook.cellTitle">
       <source xml:lang="en">The notebook cell title menu</source>
     </trans-unit>
+    <trans-unit id="notebook.cellToolbarLocation.description">
+      <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.cellToolbarVisibility.description">
+      <source xml:lang="en">Whether the cell toolbar should appear on hover or click. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.compactView.description">
+      <source xml:lang="en">Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.consolidatedOutputButton.description">
+      <source xml:lang="en">Control whether outputs action should be rendered in the output toolbar. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.consolidatedRunButton.description">
+      <source xml:lang="en">Control whether extra actions are shown in a dropdown next to the run button. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.diff.enablePreview.description">
+      <source xml:lang="en">Whether to use the enhanced text diff editor for notebook. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.displayOrder.description">
+      <source xml:lang="en">Priority list for output mime types. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.dragAndDrop.description">
+      <source xml:lang="en">Control whether the notebook editor should allow moving cells through drag and drop. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.editorOptions.experimentalCustomization">
+      <source xml:lang="en">Settings for code editors used in notebooks. This can be used to customize most editor.* settings. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.focusIndicator.description">
+      <source xml:lang="en">Controls where the focus indicator is rendered, either along the cell borders or on the left gutter. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.globalToolbar.description">
+      <source xml:lang="en">Control whether to render a global toolbar inside the notebook editor. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.globalToolbarShowLabel">
+      <source xml:lang="en">Control whether the actions on the notebook toolbar should render label or not. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.insertToolbarPosition.description">
+      <source xml:lang="en">Control where the insert cell actions should appear. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.interactiveWindow.collapseCodeCells">
+      <source xml:lang="en">Controls whether code cells in the interactive window are collapsed by default. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.markup.fontSize">
+      <source xml:lang="en">Controls the font size in pixels of rendered markup in notebooks. When set to `0`, 120% of `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.outputFontFamily">
+      <source xml:lang="en">The font family for the output text for notebook cells. When set to empty, the `#editor.fontFamily#` is used. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.outputFontSize">
+      <source xml:lang="en">Font size for the output text for notebook cells. When set to 0 `#editor.fontSize#` is used. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.outputLineHeight">
+      <source xml:lang="en">Line height of the output text for notebook cells.
+ - Values between 0 and 8 will be used as a multiplier with the font size.
+ - Values greater than or equal to 8 will be used as effective values. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.showCellStatusbar.description">
+      <source xml:lang="en">Whether the cell status bar should be shown. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.showFoldingControls.description">
+      <source xml:lang="en">Controls when the Markdown header folding arrow is shown. (for VS Code Notebooks only)</source>
+    </trans-unit>
+    <trans-unit id="notebook.textOutputLineLimit">
+      <source xml:lang="en">Control how many lines of text in a text output is rendered. (for VS Code Notebooks only)</source>
+    </trans-unit>
     <trans-unit id="notebook.title">
       <source xml:lang="en">The notebook title menu</source>
     </trans-unit>
     <trans-unit id="notebook.toolbar">
       <source xml:lang="en">The notebook toolbar menu</source>
+    </trans-unit>
+    <trans-unit id="notebook.undoRedoPerCell.description">
+      <source xml:lang="en">Whether to use separate undo/redo stack for each cell. (for VS Code Notebooks only)</source>
     </trans-unit>
     <trans-unit id="objectExplorer.context">
       <source xml:lang="en">The object explorer item context menu</source>
@@ -358,7 +439,7 @@ Default Skipped Commands:
       <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
     </trans-unit>
     <trans-unit id="refreshAccount">
-      <source xml:lang="en">Reenter your credentials</source>
+      <source xml:lang="en">Refresh your credentials</source>
     </trans-unit>
     <trans-unit id="removeAccount">
       <source xml:lang="en">Remove account</source>
@@ -562,6 +643,9 @@ Default Skipped Commands:
     <trans-unit id="notebookFindRangeHighlight">
       <source xml:lang="en">Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations.</source>
     </trans-unit>
+    <trans-unit id="queryEditorNullBackground">
+      <source xml:lang="en">The background color for null values in the query editor results grid. To disable the background color, you can use a transparent color like {0}.</source>
+    </trans-unit>
     <trans-unit id="tileBorder">
       <source xml:lang="en">The border color of tiles</source>
     </trans-unit>
@@ -728,6 +812,12 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="showConnectDialogOnStartup">
       <source xml:lang="en">Show connect dialog on startup</source>
+    </trans-unit>
+    <trans-unit id="useVSCodeNotebooks">
+      <source xml:lang="en">(Preview) Use VS Code notebooks as the default notebook experience. Note: Azure Data Studio will need to be restarted to enable this setting.</source>
+    </trans-unit>
+    <trans-unit id="useVSCodeNotebooksTitle">
+      <source xml:lang="en">Use VS Code notebooks</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext"><body>
@@ -1348,6 +1438,11 @@ Default Skipped Commands:
       <source xml:lang="en">Backup</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/backup/browser/backupUiService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="backupDialogTitle">
+      <source xml:lang="en">Backup database - {0}:{1}</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/backup/common/constants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="backup.asymmetricKey">
       <source xml:lang="en">Asymmetric Key</source>
@@ -1552,6 +1647,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="commandline.propertiesFormatError">
+      <source xml:lang="en">Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}</source>
+    </trans-unit>
     <trans-unit id="confirmConnect">
       <source xml:lang="en">Are you sure you want to connect?</source>
     </trans-unit>
@@ -1592,6 +1690,9 @@ Default Skipped Commands:
     <trans-unit id="connection.showUnsupportedServerVersionWarning">
       <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
     </trans-unit>
+    <trans-unit id="registeredServers.collapseAll">
+      <source xml:lang="en">Collapse All Connections</source>
+    </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
       <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
     </trans-unit>
@@ -1620,6 +1721,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/connection/common/connectionProviderExtension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="schema.azureResource">
+      <source xml:lang="en">Azure resource endpoint for the provider.</source>
+    </trans-unit>
     <trans-unit id="schema.connectionOptions">
       <source xml:lang="en">Options for connection</source>
     </trans-unit>
@@ -1785,6 +1889,9 @@ Default Skipped Commands:
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboard.configureDashboardTooltip">
+      <source xml:lang="en">Learn more about how to configure the dashboard</source>
+    </trans-unit>
     <trans-unit id="dashboard.generalTabGroupHeader">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -2397,6 +2504,11 @@ Default Skipped Commands:
       <source xml:lang="en">Revert Current Row</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataGridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="editData.cellWithNullCharMessage">
+      <source xml:lang="en">This cell contains the Unicode null character which is currently not supported for editing.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
@@ -2583,6 +2695,11 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="loadingExecutionPlanFile">
       <source xml:lang="en">Generating execution plans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext"><body>
@@ -2807,6 +2924,9 @@ Default Skipped Commands:
     <trans-unit id="executionPlanEnterValueTitle">
       <source xml:lang="en">Enter search value</source>
     </trans-unit>
+    <trans-unit id="executionPlanFindNodeLabel">
+      <source xml:lang="en">Find nodes</source>
+    </trans-unit>
     <trans-unit id="executionPlanSearchTypeContains">
       <source xml:lang="en">Contains</source>
     </trans-unit>
@@ -2824,11 +2944,6 @@ Default Skipped Commands:
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
       <source xml:lang="en">Previous Match</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="epCompare.executionPlanEditorName">
-      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -3282,6 +3397,9 @@ Error: {1}</source>
     <trans-unit id="RemoveParameterCell">
       <source xml:lang="en">Remove parameter cell</source>
     </trans-unit>
+    <trans-unit id="addCellLabel">
+      <source xml:lang="en">Add cell</source>
+    </trans-unit>
     <trans-unit id="clear">
       <source xml:lang="en">Clear Result</source>
     </trans-unit>
@@ -3315,9 +3433,6 @@ Error: {1}</source>
     <trans-unit id="markdownBelow">
       <source xml:lang="en">Insert Text Below</source>
     </trans-unit>
-    <trans-unit id="moreActionsLabel">
-      <source xml:lang="en">More</source>
-    </trans-unit>
     <trans-unit id="runAllAbove">
       <source xml:lang="en">Run Cells Above</source>
     </trans-unit>
@@ -3338,12 +3453,6 @@ Error: {1}</source>
     <trans-unit id="buttonMoveUp">
       <source xml:lang="en">Move cell up</source>
     </trans-unit>
-    <trans-unit id="codeCellsPreview">
-      <source xml:lang="en">Add cell</source>
-    </trans-unit>
-    <trans-unit id="codePreview">
-      <source xml:lang="en">Code cell</source>
-    </trans-unit>
     <trans-unit id="optionCodeCell">
       <source xml:lang="en">Code cell</source>
     </trans-unit>
@@ -3352,9 +3461,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="splitCell">
       <source xml:lang="en">Split cell</source>
-    </trans-unit>
-    <trans-unit id="textPreview">
-      <source xml:lang="en">Text cell</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/code.component" source-language="en" datatype="plaintext"><body>
@@ -3546,12 +3652,6 @@ Error: {1}</source>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
     </trans-unit>
-    <trans-unit id="codeCellsPreview">
-      <source xml:lang="en">Add cell</source>
-    </trans-unit>
-    <trans-unit id="codePreview">
-      <source xml:lang="en">Code cell</source>
-    </trans-unit>
     <trans-unit id="createFile">
       <source xml:lang="en">Create File</source>
     </trans-unit>
@@ -3569,9 +3669,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="runAllPreview">
       <source xml:lang="en">Run all</source>
-    </trans-unit>
-    <trans-unit id="textPreview">
-      <source xml:lang="en">Text cell</source>
     </trans-unit>
     <trans-unit id="views">
       <source xml:lang="en">Views</source>
@@ -3790,6 +3887,9 @@ Error: {1}</source>
     <trans-unit id="clearResults">
       <source xml:lang="en">Clear Results</source>
     </trans-unit>
+    <trans-unit id="codePreview">
+      <source xml:lang="en">Code cell</source>
+    </trans-unit>
     <trans-unit id="collapseAllCells">
       <source xml:lang="en">Collapse Cells</source>
     </trans-unit>
@@ -3809,6 +3909,9 @@ Error: {1}</source>
       <source xml:lang="en">localhost</source>
     </trans-unit>
     <trans-unit id="newNotebookAction">
+      <source xml:lang="en">New Notebook</source>
+    </trans-unit>
+    <trans-unit id="newNotebookTask.newNotebook">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
     <trans-unit id="newViewLabel">
@@ -3840,6 +3943,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="selectConnection">
       <source xml:lang="en">Select Connection</source>
+    </trans-unit>
+    <trans-unit id="textPreview">
+      <source xml:lang="en">Text cell</source>
     </trans-unit>
     <trans-unit id="trustLabel">
       <source xml:lang="en">Trusted</source>
@@ -3998,9 +4104,6 @@ Error: {1}</source>
     <trans-unit id="insertCells">
       <source xml:lang="en">Insert Cells</source>
     </trans-unit>
-    <trans-unit id="moreActionsLabel">
-      <source xml:lang="en">More</source>
-    </trans-unit>
     <trans-unit id="runCell">
       <source xml:lang="en">Run cell</source>
     </trans-unit>
@@ -4049,7 +4152,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
+      <source xml:lang="en">Copy failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="notebook.showChart">
       <source xml:lang="en">Show chart</source>
@@ -4071,23 +4174,46 @@ Error: {1}</source>
       <source xml:lang="en">Error displaying Plotly graph: {0}</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/notebook/common/notebookLoc" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="moreActionsLabel">
+      <source xml:lang="en">More</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorer.filterDialogTitle">
+      <source xml:lang="en">Filter Settings</source>
+    </trans-unit>
     <trans-unit id="serverTree.newConnection">
       <source xml:lang="en">New Connection</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification">
+      <source xml:lang="en">Server tree has changed. Please reload the window to see the changes.</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification.doNotReload">
+      <source xml:lang="en">Don't Reload</source>
+    </trans-unit>
+    <trans-unit id="serverTreeViewChangeNotification.reload">
+      <source xml:lang="en">Reload</source>
     </trans-unit>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="objectExplorerConfigurationTitle">
+      <source xml:lang="en">Object Explorer</source>
+    </trans-unit>
     <trans-unit id="serverGroup.autoExpand">
       <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
     </trans-unit>
     <trans-unit id="serverGroup.colors">
       <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
     </trans-unit>
+    <trans-unit id="serverTree.configuration.title">
+      <source xml:lang="en">Server Tree</source>
+    </trans-unit>
     <trans-unit id="serverTree.useAsyncServerTree">
-      <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
+      <source xml:lang="en">Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering. Requires a restart to take effect.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext"><body>
@@ -4108,6 +4234,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="notebook">
       <source xml:lang="en">Notebook</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer">
+      <source xml:lang="en">Object Explorer</source>
     </trans-unit>
     <trans-unit id="profiler">
       <source xml:lang="en">Profiler</source>
@@ -4261,17 +4390,26 @@ Error: {1}</source>
     <trans-unit id="chart">
       <source xml:lang="en">Chart</source>
     </trans-unit>
+    <trans-unit id="copyHeaders">
+      <source xml:lang="en">Copy Headers</source>
+    </trans-unit>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
     </trans-unit>
     <trans-unit id="copyWithHeaders">
       <source xml:lang="en">Copy With Headers</source>
     </trans-unit>
+    <trans-unit id="excelLimitExceededError">
+      <source xml:lang="en">The number of rows or columns in the table has exceeded the Excel limits. Please try a different format instead.</source>
+    </trans-unit>
     <trans-unit id="jsonEncoding">
       <source xml:lang="en">Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created.</source>
     </trans-unit>
     <trans-unit id="maximize">
       <source xml:lang="en">Maximize</source>
+    </trans-unit>
+    <trans-unit id="openExcelSpecs">
+      <source xml:lang="en">View Excel specifications</source>
     </trans-unit>
     <trans-unit id="restore">
       <source xml:lang="en">Restore</source>
@@ -4337,6 +4475,27 @@ Error: {1}</source>
     <trans-unit id="resultsGrid">
       <source xml:lang="en">Results grid</source>
     </trans-unit>
+    <trans-unit id="resultsGrid.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.cancelLargeRowSelection">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.confirmLargeRowSelection">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.donotShowLargeRowSelectionPromptAgain">
+      <source xml:lang="en">Don't show again</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.largeRowSelectionPrompt.">
+      <source xml:lang="en">You have selected {0} rows, it might take a while to load the data and calculate the summary, do you want to continue?</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.loadingData">
+      <source xml:lang="en">Loading selected rows for calculation...</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.loadingDataWithProgress">
+      <source xml:lang="en">Loading selected rows for calculation ({0}/{1})...</source>
+    </trans-unit>
     <trans-unit id="resultsGrid.maxRowCountExceeded">
       <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
     </trans-unit>
@@ -4367,13 +4526,13 @@ Error: {1}</source>
       <source xml:lang="en">Parse Query</source>
     </trans-unit>
     <trans-unit id="queryActions.notConnected">
-      <source xml:lang="en">Please connect to a server</source>
+      <source xml:lang="en">Please connect to a server before running this action.</source>
     </trans-unit>
     <trans-unit id="queryActions.parseSyntaxFailure">
-      <source xml:lang="en">Command failed: </source>
+      <source xml:lang="en">Failed to parse the query: {0}</source>
     </trans-unit>
     <trans-unit id="queryActions.parseSyntaxSuccess">
-      <source xml:lang="en">Commands completed successfully</source>
+      <source xml:lang="en">Successfully parsed the query.</source>
     </trans-unit>
     <trans-unit id="queryActions.queryResultsCopySuccess">
       <source xml:lang="en">Successfully copied query and results.</source>
@@ -4404,6 +4563,9 @@ Error: {1}</source>
     <trans-unit id="messagePanel">
       <source xml:lang="en">Message Panel</source>
     </trans-unit>
+    <trans-unit id="messagePanel.message">
+      <source xml:lang="en">Timestamp: {0}, Message: {1}</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/query.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="newQuery">
@@ -4432,6 +4594,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.openAfterSave">
       <source xml:lang="en">Whether to open the file in Azure Data Studio after the result is saved.</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.preferProvidersCopyHandler">
+      <source xml:lang="en">Whether the copy result request should be handled by the query provider when it is supported. The default value is true, set this to false to force all copy handling to be done by Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.promptForLargeRowSelection">
+      <source xml:lang="en">When cells are selected in the results grid, ADS will calculate the summary for them, This setting controls whether to show the a confirmation when the number of rows selected is larger than the value specified in the 'inMemoryDataProcessingThreshold' setting. The default value is true.</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsCsv.delimiter">
       <source xml:lang="en">The custom delimiter to use between values when saving as CSV</source>
@@ -4465,6 +4633,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.formatted">
       <source xml:lang="en">When true, XML output will be formatted when saving results as XML</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.showActionBar">
+      <source xml:lang="en">Whether to show the action bar in the query results view</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.skipNewLineAfterTrailingLineBreak">
+      <source xml:lang="en">Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false.</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.streaming">
       <source xml:lang="en">Enable results streaming; contains few minor visual issues</source>
@@ -4505,6 +4679,9 @@ Error: {1}</source>
       <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="changeConnectionDatabaseLabel">
+      <source xml:lang="en">Change</source>
+    </trans-unit>
+    <trans-unit id="changeConnectionDatabaseTooltip">
       <source xml:lang="en">Change Connection</source>
     </trans-unit>
     <trans-unit id="changeDatabase.failed">
@@ -4540,8 +4717,14 @@ Error: {1}</source>
     <trans-unit id="query.multiSelectionNotSupported">
       <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
     </trans-unit>
-    <trans-unit id="queryEditor.exportSqlAsNotebook">
+    <trans-unit id="queryEditor.exportSqlAsNotebookLabel">
+      <source xml:lang="en">To Notebook</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.exportSqlAsNotebookTooltip">
       <source xml:lang="en">Export as Notebook</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.parse">
+      <source xml:lang="en">Parse</source>
     </trans-unit>
     <trans-unit id="runQueryLabel">
       <source xml:lang="en">Run</source>
@@ -4551,6 +4734,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/queryEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryActions.selectDatabase.label">
+      <source xml:lang="en">Database:</source>
+    </trans-unit>
     <trans-unit id="queryEditor.name">
       <source xml:lang="en">Query Editor</source>
     </trans-unit>
@@ -4585,6 +4771,12 @@ Error: {1}</source>
     <trans-unit id="status.query.summaryText">
       <source xml:lang="en">Average: {0}  Count: {1}  Sum: {2}</source>
     </trans-unit>
+    <trans-unit id="status.query.summaryTextNonNumeric">
+      <source xml:lang="en">Count: {0}  Distinct Count: {1}  Null Count: {2}</source>
+    </trans-unit>
+    <trans-unit id="status.query.summaryTooltip">
+      <source xml:lang="en">Average: {0}  Count: {1}  Distinct Count: {2}  Max: {3}  Min: {4}  Null Count: {5}  Sum: {6}</source>
+    </trans-unit>
     <trans-unit id="status.query.timeElapsed">
       <source xml:lang="en">Time Elapsed</source>
     </trans-unit>
@@ -4610,6 +4802,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="maxColumnWidth">
       <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid.showJsonAsLink">
+      <source xml:lang="en">Whether to show cells with JSON formatted string as hyperlink. When enabled, upon click the JSON value will be opened in another tab. The default value is true.</source>
     </trans-unit>
     <trans-unit id="resultsGridConfigurationTitle">
       <source xml:lang="en">Results Grid and Messages</source>
@@ -4736,6 +4931,15 @@ Error: {1}</source>
     <trans-unit id="refreshError">
       <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
     </trans-unit>
+    <trans-unit id="scriptActionError">
+      <source xml:lang="en">An error occurred while executing the action '{0}': {1}.</source>
+    </trans-unit>
+    <trans-unit id="scriptingAction.close">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="scriptingAction.inProgress">
+      <source xml:lang="en">Executing action: {0}...</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="tableDesigner.publishTableChanges">
@@ -4755,9 +4959,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tasks">
       <source xml:lang="en">Tasks</source>
-    </trans-unit>
-    <trans-unit id="viewCategory">
-      <source xml:lang="en">View</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasksActions" source-language="en" datatype="plaintext"><body>
@@ -4832,6 +5033,15 @@ Error: {1}</source>
     <trans-unit id="refresh">
       <source xml:lang="en">Refresh</source>
     </trans-unit>
+    <trans-unit id="treeView.enableCollapseAll">
+      <source xml:lang="en">Whether the the tree view with id {0} enables collapse all.</source>
+    </trans-unit>
+    <trans-unit id="treeView.enableRefresh">
+      <source xml:lang="en">Whether the tree view with id {0} enables refresh.</source>
+    </trans-unit>
+    <trans-unit id="treeView.toggleCollapseAll">
+      <source xml:lang="en">Whether collapse all is toggled for the tree view with id {0}.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/webview/browser/webViewDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="webViewDialog.close">
@@ -4855,15 +5065,13 @@ Error: {1}</source>
       <source xml:lang="en">Yes (recommended)</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notifyEncryption.message">
-      <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
+  <file original="src/sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="miGettingStarted">
+      <source xml:lang="en">Getting &amp;&amp;Started</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
     </trans-unit>
-    <trans-unit id="notifyEncryption.moreInfoLink">
-      <source xml:lang="en">More information</source>
-    </trans-unit>
-    <trans-unit id="notifyEncryption.title">
-      <source xml:lang="en">Important Update</source>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
@@ -5000,9 +5208,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="guidedTour">
       <source xml:lang="en">User Welcome Tour</source>
-    </trans-unit>
-    <trans-unit id="help">
-      <source xml:lang="en">Help</source>
     </trans-unit>
     <trans-unit id="hideGuidedTour">
       <source xml:lang="en">Hide Welcome Tour</source>
@@ -5166,6 +5371,17 @@ Error: {1}</source>
       <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="telemetryOptOut.optInNotice">
+      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).</source>
+    </trans-unit>
+    <trans-unit id="telemetryOptOut.optOutNotice">
+      <source xml:lang="en">Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).</source>
+    </trans-unit>
+    <trans-unit id="telemetryOptOut.readMore">
+      <source xml:lang="en">Read More</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="accountDialog.addConnection">
       <source xml:lang="en">Add an account</source>
@@ -5206,11 +5422,25 @@ Error: {1}</source>
     <trans-unit id="accountManagementService.close">
       <source xml:lang="en">Close</source>
     </trans-unit>
+    <trans-unit id="addAccountFailedCodeMessage">
+      <source xml:lang="en">{0} 
+Error Message: {1}</source>
+    </trans-unit>
+    <trans-unit id="addAccountFailedGenericMessage">
+      <source xml:lang="en">Adding account failed, check Azure Accounts log for more info.</source>
+    </trans-unit>
     <trans-unit id="loggingIn">
       <source xml:lang="en">Adding account...</source>
     </trans-unit>
-    <trans-unit id="refreshFailed">
+    <trans-unit id="refreshAccountFailedGenericMessage">
+      <source xml:lang="en">Refreshing account failed, check Azure Accounts log for more info.</source>
+    </trans-unit>
+    <trans-unit id="refreshCanceled">
       <source xml:lang="en">Refresh account was canceled by the user</source>
+    </trans-unit>
+    <trans-unit id="refreshFailed">
+      <source xml:lang="en">{0} 
+Error Message: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountPickerImpl" source-language="en" datatype="plaintext"><body>
@@ -5225,6 +5455,9 @@ Error: {1}</source>
     <trans-unit id="copyAndOpen">
       <source xml:lang="en">Copy &amp; Open</source>
     </trans-unit>
+    <trans-unit id="deviceCodeAuthDialogTitle">
+      <source xml:lang="en">Azure Auth: Device Code</source>
+    </trans-unit>
     <trans-unit id="oauthDialog.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -5238,6 +5471,9 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/accountManagement/browser/autoOAuthDialogController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="oauthFlyoutIsAlreadyOpen">
       <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+    </trans-unit>
+    <trans-unit id="selfHelpMessage">
+      <source xml:lang="en">A web browser cannot be launched in this environment, please launch a browser, navigate to the URL above and enter code manually.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/admin/common/adminService" source-language="en" datatype="plaintext"><body>
@@ -5380,9 +5616,6 @@ Error: {1}</source>
     <trans-unit id="connectionError">
       <source xml:lang="en">Connection error</source>
     </trans-unit>
-    <trans-unit id="enableTrustServerCertificate">
-      <source xml:lang="en">Enable Trust server certificate</source>
-    </trans-unit>
     <trans-unit id="kerberosErrorStart">
       <source xml:lang="en">Connection failed due to Kerberos error.</source>
     </trans-unit>
@@ -5394,11 +5627,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="runKinit">
       <source xml:lang="en">Run Kinit</source>
-    </trans-unit>
-    <trans-unit id="trustServerCertInstructionText">
-      <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
-
-			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/connection/browser/connectionDialogWidget" source-language="en" datatype="plaintext"><body>
@@ -5434,6 +5662,14 @@ Error: {1}</source>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
     </trans-unit>
+    <trans-unit id="connection.connTitleGroupSection">
+      <source xml:lang="en"> (Group: {0})</source>
+    </trans-unit>
+    <trans-unit id="connection.duplicateEditErrorMessage">
+      <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
+
+ {0}{1}</source>
+    </trans-unit>
     <trans-unit id="connection.extensionNotInstalled">
       <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
     </trans-unit>
@@ -5448,6 +5684,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+    </trans-unit>
+    <trans-unit id="connection.unknownProvider">
+      <source xml:lang="en">Unknown provider '{0}'</source>
     </trans-unit>
     <trans-unit id="connection.unsupportedServerVersionWarning">
       <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
@@ -5494,13 +5733,25 @@ Error: {1}</source>
       <source xml:lang="en">Add an account...</source>
     </trans-unit>
     <trans-unit id="connectionWidget.ConnectionStringError">
-      <source xml:lang="en">Failed to parse the connection string.</source>
+      <source xml:lang="en">Failed to parse the connection string. {0}</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.ConnectionStringUndefined">
+      <source xml:lang="en">No connection info returned.</source>
     </trans-unit>
     <trans-unit id="connectionWidget.Error">
       <source xml:lang="en">Error</source>
     </trans-unit>
     <trans-unit id="connectionWidget.connectionString">
       <source xml:lang="en">Connection string</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputType.connectionString">
+      <source xml:lang="en">Connection String</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputType.parameters">
+      <source xml:lang="en">Parameters</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.inputTypeLabel">
+      <source xml:lang="en">Input type</source>
     </trans-unit>
     <trans-unit id="connectionWidget.invalidAzureAccount">
       <source xml:lang="en">You must select an account</source>
@@ -5541,6 +5792,44 @@ Error: {1}</source>
       <source xml:lang="en">Unsaved Connections</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/connection/browser/passwordChangeDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="passwordChangeDialog.Message1">
+      <source xml:lang="en">Password must be changed for '{0}' to continue logging into '{1}'.</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.Message2">
+      <source xml:lang="en">Please enter a new password below:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.confirmPassword">
+      <source xml:lang="en">Confirm password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.connecting">
+      <source xml:lang="en">Connecting</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorHeader">
+      <source xml:lang="en">Failure when attempting to change password</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchErrorMessage">
+      <source xml:lang="en">Passwords entered do not match</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.errorPasswordMismatchRecoveryInstructions">
+      <source xml:lang="en">Press OK and enter the exact same password in both boxes.</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.newPassword">
+      <source xml:lang="en">New password:</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.passwordChangeInProgress">
+      <source xml:lang="en">Password change already in progress</source>
+    </trans-unit>
+    <trans-unit id="passwordChangeDialog.title">
+      <source xml:lang="en">Change Password</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl" source-language="en" datatype="plaintext"><body>
     <trans-unit id="newDashboardTab.cancel">
       <source xml:lang="en">Cancel</source>
@@ -5558,6 +5847,12 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/dialog/browser/dialogPane" source-language="en" datatype="plaintext"><body>
     <trans-unit id="wizardPageNumberDisplayText">
       <source xml:lang="en">Step {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/dialog/browser/wizardNavigation.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="wizardNavigation.stepName">
+      <source xml:lang="en">Step {0}: {1}</source>
+      <note>Name of a step in wizard. {0}: step number, {1}: step name.</note>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/dialog/common/dialogTypes" source-language="en" datatype="plaintext"><body>
@@ -5605,6 +5900,12 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/executionPlan/common/executionPlanService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanService.ensureCapabilitiesRegistered">
+      <source xml:lang="en">Provider with id {0} was not registered after 30 seconds.</source>
+    </trans-unit>
+    <trans-unit id="executionPlanService.ensureFileExtensionHandlerRegistered">
+      <source xml:lang="en">Execution plan provider which supports file format '{0}' was not registered after 30 seconds.</source>
+    </trans-unit>
     <trans-unit id="noHandlerRegistered">
       <source xml:lang="en">No valid execution plan handler is registered</source>
     </trans-unit>
@@ -5867,6 +6168,9 @@ Error: {1}</source>
     <trans-unit id="kernelRequiresConnection">
       <source xml:lang="en">Please select a connection to run cells for this kernel</source>
     </trans-unit>
+    <trans-unit id="savedKernelNotSupported">
+      <source xml:lang="en">This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.</source>
+    </trans-unit>
     <trans-unit id="shutdownClientSessionError">
       <source xml:lang="en">A client session error occurred when closing the notebook: {0}</source>
     </trans-unit>
@@ -5948,13 +6252,13 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-      <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
+      <source xml:lang="en">Optional execution target this magic indicates, for example Python vs SQL</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
       <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.kernels">
-      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
+      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, sql</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.language">
       <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
@@ -5982,6 +6286,12 @@ Error: {1}</source>
     <trans-unit id="activeConnections">
       <source xml:lang="en">Show Active Connections</source>
     </trans-unit>
+    <trans-unit id="connectionDeleted">
+      <source xml:lang="en">Connection {0} deleted</source>
+    </trans-unit>
+    <trans-unit id="connectionGroupDeleted">
+      <source xml:lang="en">Connection group {0} deleted</source>
+    </trans-unit>
     <trans-unit id="connectionTree.addConnection">
       <source xml:lang="en">New Connection</source>
     </trans-unit>
@@ -6000,11 +6310,121 @@ Error: {1}</source>
     <trans-unit id="deleteConnection">
       <source xml:lang="en">Delete Connection</source>
     </trans-unit>
+    <trans-unit id="deleteConnectionConfirmation">
+      <source xml:lang="en">Are you sure you want to delete connection '{0}'?</source>
+    </trans-unit>
     <trans-unit id="deleteConnectionGroup">
       <source xml:lang="en">Delete Group</source>
     </trans-unit>
+    <trans-unit id="deleteConnectionGroupConfirmation">
+      <source xml:lang="en">Are you sure you want to delete connection group '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.filterChildren">
+      <source xml:lang="en">Filter</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.removeFilter">
+      <source xml:lang="en">Remove Filter</source>
+    </trans-unit>
+    <trans-unit id="registeredServers.clearRecentConnections">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
     <trans-unit id="showAllConnections">
       <source xml:lang="en">Show All Connections</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/filterDialog/filterDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filterDialog.errorDateRange">
+      <source xml:lang="en">Start date cannot be greater than end date.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorEndDate">
+      <source xml:lang="en">End date is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorEndNumber">
+      <source xml:lang="en">End number is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorNumberRange">
+      <source xml:lang="en">Start number cannot be greater than end number.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorStartDate">
+      <source xml:lang="en">Start date is not specified.</source>
+    </trans-unit>
+    <trans-unit id="filterDialog.errorStartNumber">
+      <source xml:lang="en">Start number is not specified.</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.andSelectBox">
+      <source xml:lang="en">And</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.betweenSelectBox">
+      <source xml:lang="en">Between</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.cancelButtonText">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.clearAllButtonText">
+      <source xml:lang="en">Clear All</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.clearColumnHeader">
+      <source xml:lang="en">Clear</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.containsSelectBox">
+      <source xml:lang="en">Contains</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.endsWithSelectBox">
+      <source xml:lang="en">Ends With</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.equalsSelectBox">
+      <source xml:lang="en">Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.falseSelectBox">
+      <source xml:lang="en">False</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.greaterThanOrEqualsSelectBox">
+      <source xml:lang="en">Greater Than Or Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.greaterThanSelectBox">
+      <source xml:lang="en">Greater Than</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.lessThanOrEqualsSelectBox">
+      <source xml:lang="en">Less Than Or Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.lessThanSelectBox">
+      <source xml:lang="en">Less Than</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.nodePath">
+      <source xml:lang="en">Path:</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notBetweenSelectBox">
+      <source xml:lang="en">Not Between</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notContainsSelectBox">
+      <source xml:lang="en">Not Contains</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notEndsWithSelectBox">
+      <source xml:lang="en">Not Ends With</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notEqualsSelectBox">
+      <source xml:lang="en">Not Equals</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.notStartsWithSelectBox">
+      <source xml:lang="en">Not Starts With</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.okButtonText">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.operatorColumnHeader">
+      <source xml:lang="en">Operator</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.propertyNameColumnHeader">
+      <source xml:lang="en">Property</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.startsWithSelectBox">
+      <source xml:lang="en">Starts With</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.trueSelectBox">
+      <source xml:lang="en">True</source>
+    </trans-unit>
+    <trans-unit id="objectExplorer.valueColumnHeader">
+      <source xml:lang="en">Value</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerService" source-language="en" datatype="plaintext"><body>
@@ -6013,6 +6433,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="nodeExpansionError">
       <source xml:lang="en">Multiple errors:</source>
+    </trans-unit>
+    <trans-unit id="objectExplorerSessionIdMissing">
+      <source xml:lang="en">The session ID returned by provider "{0}" for connection "{1}" is invalid.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim" source-language="en" datatype="plaintext"><body>
@@ -6026,6 +6449,11 @@ Error: {1}</source>
       <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filteredTreeElementName">
+      <source xml:lang="en">{0} (filtered)</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext"><body>
     <trans-unit id="serversAriaLabel">
       <source xml:lang="en">Servers</source>
@@ -6035,6 +6463,11 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="treeCreation.regTreeAriaLabel">
       <source xml:lang="en">Servers</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/objectExplorer/browser/treeUpdateUtils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectionFailedError">
+      <source xml:lang="en">Failed to connect, please try again.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/profiler/browser/profilerColumnEditorDialog" source-language="en" datatype="plaintext"><body>
@@ -6057,6 +6490,9 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/profiler/browser/profilerFilterDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="profilerFilterDialog.addClauseText">
       <source xml:lang="en">Add a clause</source>
+    </trans-unit>
+    <trans-unit id="profilerFilterDialog.allClausesCleared">
+      <source xml:lang="en">All clauses have been cleared.</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.apply">
       <source xml:lang="en">Apply</source>
@@ -6081,6 +6517,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.loadFilter">
       <source xml:lang="en">Load Filter</source>
+    </trans-unit>
+    <trans-unit id="profilerFilterDialog.newClauseAdded">
+      <source xml:lang="en">A new clause has been added.</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.notContainsOperator">
       <source xml:lang="en">Not Contains</source>
@@ -6108,6 +6547,28 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.valueColumn">
       <source xml:lang="en">Value</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/profiler/browser/profilerService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="FileFilterDescription">
+      <source xml:lang="en">XEL Files</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="gridDataProvider.cancelCopyResults">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.closeNotification">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.copyResultsCompleted">
+      <source xml:lang="en">Selected data has been copied to the clipboard. Row count: {0}.</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.copying">
+      <source xml:lang="en">Copying...</source>
+    </trans-unit>
+    <trans-unit id="gridDataProvider.loadingRowsInProgress">
+      <source xml:lang="en">Loading the rows to be copied ({0}/{1})...</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
@@ -6143,7 +6604,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/services/query/common/queryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
+      <source xml:lang="en">Copy failed with error: {0}</source>
     </trans-unit>
     <trans-unit id="elapsedBatchTime">
       <source xml:lang="en">Batch execution time: {0}</source>
@@ -6215,11 +6676,14 @@ Error: {1}</source>
     <trans-unit id="firewall.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
-    <trans-unit id="firewallRuleDialogDescription">
-      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+    <trans-unit id="firewall.ruleName">
+      <source xml:lang="en">Rule name</source>
     </trans-unit>
-    <trans-unit id="firewallRuleHelpDescription">
-      <source xml:lang="en">Learn more about firewall settings</source>
+    <trans-unit id="firewallRuleDescription">
+      <source xml:lang="en">A firewall rule is required to access the SQL Server instance. Click the link below to create a new firewall rule.</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpLink">
+      <source xml:lang="en">Learn more about firewall rules</source>
     </trans-unit>
     <trans-unit id="from">
       <source xml:lang="en">From</source>
@@ -6347,6 +6811,11 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="targetDatabaseTooltip">
       <source xml:lang="en">Please enter target database name</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/restore/browser/restoreServiceImpl" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="restoreDialogTitle">
+      <source xml:lang="en">Restore database - {0}:{1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/restore/common/constants" source-language="en" datatype="plaintext"><body>
@@ -6653,6 +7122,10 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.publishChangeSuccess">
       <source xml:lang="en">The changes have been successfully published.</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.refreshOEError">
+      <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
+      <note>{0}: error message.</note>
+    </trans-unit>
     <trans-unit id="tableDesigner.savingChanges">
       <source xml:lang="en">Publishing table designer changes...</source>
     </trans-unit>
@@ -6695,15 +7168,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="taskService.yes">
       <source xml:lang="en">Yes</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="miGettingStarted">
-      <source xml:lang="en">Getting &amp;&amp;Started</source>
-      <note>&amp;&amp; denotes a mnemonic</note>
-    </trans-unit>
-    <trans-unit id="showReleaseNotes">
-      <source xml:lang="en">Show Getting Started</source>
     </trans-unit>
 </body></file>
 </xliff>

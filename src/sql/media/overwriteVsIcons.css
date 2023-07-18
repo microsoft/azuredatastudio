@@ -7,7 +7,8 @@
 	background-size: 10px;
 }
 
-.monaco-workbench.vs .tab > .tab-close .action-label.close-editor-action {
+.monaco-workbench.vs .tab > .tab-close .action-label.close-editor-action,
+.monaco-workbench.hc-light .tab > .tab-close .action-label.close-editor-action {
 	background: url('icons/close.svg') center center no-repeat;
 }
 

@@ -11,6 +11,7 @@ import * as styles from '../../constants/styles';
 import * as utils from '../../api/utils';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 import { EOL } from 'os';
+import { getSourceConnectionProfile } from '../../api/sqlUtils';
 
 export class GetAzureRecommendationDialog {
 	private static readonly StartButtonText: string = constants.AZURE_RECOMMENDATION_START;
@@ -176,6 +177,7 @@ export class GetAzureRecommendationDialog {
 				readOnly: true,
 				width: 320,
 				CSSStyles: { 'margin-right': '12px' },
+				ariaLabel: constants.AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER
 			}).component();
 		this._disposables.push(
 			this._collectDataFolderInput.onTextChanged(async (value) => {
@@ -228,6 +230,7 @@ export class GetAzureRecommendationDialog {
 			readOnly: true,
 			width: 320,
 			CSSStyles: { 'margin-right': '12px' },
+			ariaLabel: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER
 		}).component();
 		this._disposables.push(
 			this._openExistingFolderInput.onTextChanged(async (value) => {
@@ -290,10 +293,13 @@ export class GetAzureRecommendationDialog {
 				'narrow');
 
 			this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
+			this.dialog.okButton.position = 'left';
+
 			this._disposables.push(
 				this.dialog.okButton.onClick(
 					async () => await this.execute()));
 
+			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(
 				this.dialog.cancelButton.onClick(
 					() => this._isOpen = false));
@@ -330,7 +336,7 @@ export class GetAzureRecommendationDialog {
 					this.skuRecommendationPage);
 				break;
 			case PerformanceDataSourceOptions.OpenExisting: {
-				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+				const serverName = (await getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];
 				try {
 					await this.skuRecommendationPage.startCardLoading();

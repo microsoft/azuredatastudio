@@ -6,7 +6,6 @@
 import { IProfilerController } from 'sql/workbench/contrib/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { IProfilerStateChangedEvent } from 'sql/workbench/common/editor/profiler/profilerState';
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS, PROFILER_MAX_MATCHES } from 'sql/workbench/contrib/profiler/browser/profilerFindWidget';
@@ -35,6 +34,8 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -72,7 +73,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
-		@IQuickInputService private readonly _quickInputService: IQuickInputService
+		@IQuickInputService private readonly _quickInputService: IQuickInputService,
+		@IComponentContextService private readonly _componentContextService: IComponentContextService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -80,7 +82,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._showStatusBarItem = true;
 	}
 
-	public createEditor(parent: HTMLElement): void {
+	protected createEditor(parent: HTMLElement): void {
 
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets';
@@ -88,7 +90,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, {
+		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, defaultTableStyles, {
 			sorter: (args) => {
 				let input = this.input as ProfilerInput;
 				if (input && input.data) {
@@ -96,7 +98,11 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 				}
 			}
 		}, {
-			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor,
+			// The details component in profiler UI is refreshed based on the selected row in this table.
+			// If in grid tab navigation is enabled, keyboard-only users will never be able to reach the details component
+			// when a particular row is selected.
+			enableInGridTabNavigation: false
 		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		const copyKeybind = new CopyKeybind();
@@ -110,7 +116,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 			});
 		});
 		this._profilerTable.registerPlugin(copyKeybind);
-		attachTableStyler(this._profilerTable, this._themeService);
+		this._register(this._componentContextService.registerTable(this._profilerTable));
 
 		this._findState = new FindReplaceState();
 		this._findState.onFindReplaceStateChange(e => this._onFindStateChange(e));
@@ -251,12 +257,13 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 	}
 
 	private _onFindStateChange(e: FindReplaceStateChangedEvent): void {
+		const node = this._finder.getDomNode();
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
-				this._finder.getDomNode().style.top = '0px';
+				node.style.top = '0px';
 				this._updateFinderMatchState();
 			} else {
-				this._finder.getDomNode().style.top = '';
+				node.style.top = '';
 			}
 		}
 

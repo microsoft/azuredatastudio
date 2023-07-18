@@ -85,7 +85,7 @@ suite('Extension Version Validator', () => {
 
 	test('isValidVersion', () => {
 		function testIsValidVersion(version: string, desiredVersion: string, expectedResult: boolean): void {
-			let actual = isValidVersion(version, productVersion, desiredVersion);
+			const actual = isValidVersion(version, productVersion, desiredVersion);
 			assert.strictEqual(actual, expectedResult, 'extension - vscode: ' + version + ', desiredVersion: ' + desiredVersion + ' should be ' + expectedResult);
 		}
 
@@ -218,8 +218,8 @@ suite('Extension Version Validator', () => {
 				},
 				main: hasMain ? 'something' : undefined
 			};
-			let reasons: string[] = [];
-			let actual = isValidExtensionVersion('*', version, productVersion, manifest, isBuiltin, reasons); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
+			const reasons: string[] = [];
+			const actual = isValidExtensionVersion('*', version, productVersion, manifest, isBuiltin, reasons); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 
 			assert.strictEqual(actual, expectedResult, 'version: ' + version + ', desiredVersion: ' + desiredVersion + ', desc: ' + JSON.stringify(manifest) + ', reasons: ' + JSON.stringify(reasons));
 		}

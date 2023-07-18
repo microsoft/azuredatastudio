@@ -17,7 +17,6 @@ abstract class AzureResourceTreeNodeBase extends TreeNode {
 		parent: TreeNode | undefined
 	) {
 		super();
-
 		this.parent = parent;
 	}
 }
@@ -29,7 +28,6 @@ export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTr
 		parent: TreeNode | undefined
 	) {
 		super(appContext, treeChangeHandler, parent);
-
 		this._cacheService = this.appContext.getService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService);
 	}
 

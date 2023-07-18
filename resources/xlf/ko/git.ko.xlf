@@ -2,25 +2,103 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="scm button commit and push title">
+        <source xml:lang="en">{0} Commit &amp; Push</source>
+        <target state="translated">{0} 커밋 및 푸시</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and push tooltip">
+        <source xml:lang="en">Commit &amp; Push Changes</source>
+        <target state="translated">변경 내용 커밋 및 푸시</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync title">
+        <source xml:lang="en">{0} Commit &amp; Sync</source>
+        <target state="translated">{0} 커밋 및 동기화</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync tooltip">
+        <source xml:lang="en">Commit &amp; Sync Changes</source>
+        <target state="translated">변경 내용 커밋 및 동기화</target>
+      </trans-unit>
+      <trans-unit id="scm button commit title">
+        <source xml:lang="en">{0} Commit</source>
+        <target state="translated">{0} 커밋</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and push tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Push Changes</source>
+        <target state="translated">새 분기에 커밋 및 변경 내용 푸시</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and sync tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Sync Changes</source>
+        <target state="translated">새 분기에 커밋 및 변경 내용 동기화</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch tooltip">
+        <source xml:lang="en">Commit Changes to New Branch</source>
+        <target state="translated">새 분기에 변경 내용 커밋</target>
+      </trans-unit>
+      <trans-unit id="scm button commit tooltip">
+        <source xml:lang="en">Commit Changes</source>
+        <target state="translated">변경 내용 커밋</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and pushing tooltip">
+        <source xml:lang="en">Committing &amp; Pushing Changes...</source>
+        <target state="translated">변경 내용 커밋 및 푸시 중...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and synching tooltip">
+        <source xml:lang="en">Committing &amp; Synching Changes...</source>
+        <target state="translated">변경 내용 커밋 및 동기화 중...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and pushing tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Pushing Changes...</source>
+        <target state="translated">새 분기에 대한 커밋 및 변경 내용 추진...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and synching tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Synching Changes...</source>
+        <target state="translated">새 분기에 커밋하고 변경 내용을 동기화하는 중...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch tooltip">
+        <source xml:lang="en">Committing Changes to New Branch...</source>
+        <target state="translated">새 분기에 변경 내용 커밋 중...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing tooltip">
+        <source xml:lang="en">Committing Changes...</source>
+        <target state="translated">변경 내용 커밋 중...</target>
+      </trans-unit>
+      <trans-unit id="scm button continue title">
+        <source xml:lang="en">{0} Continue</source>
+        <target state="translated">{0} 계속</target>
+      </trans-unit>
+      <trans-unit id="scm button continue tooltip">
+        <source xml:lang="en">Continue Rebase</source>
+        <target state="translated">계속 기준 다시 지정</target>
+      </trans-unit>
+      <trans-unit id="scm button continuing tooltip">
+        <source xml:lang="en">Continuing Rebase...</source>
+        <target state="translated">기준 주소 다시 지정을 계속하는 중...</target>
+      </trans-unit>
       <trans-unit id="scm button publish branch">
         <source xml:lang="en">Publish Branch</source>
-        <target state="translated">분기 게시</target>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">게시 Branch</target>
       </trans-unit>
       <trans-unit id="scm button publish branch running">
         <source xml:lang="en">Publishing Branch...</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
         <target state="translated">게시 Branch...</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
-        <target state="translated">$(cloud-upload) 분기 게시</target>
-      </trans-unit>
       <trans-unit id="scm button sync description">
-        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
+        <source xml:lang="en">{0} Sync Changes{1}{2}</source>
         <target state="translated">{0} 변경 내용 동기화 {1}{2}</target>
       </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en">{0} {1}{2}</source>
-        <target state="translated">{0} {1}{2}</target>
+      <trans-unit id="scm publish branch action button title">
+        <source xml:lang="en">{0} Publish Branch</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">{0} Branch 게시</target>
+      </trans-unit>
+      <trans-unit id="scm secondary button commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">커밋</target>
       </trans-unit>
       <trans-unit id="syncing changes">
         <source xml:lang="en">Synchronizing Changes...</source>
@@ -61,6 +139,14 @@
       <trans-unit id="HEAD not available">
         <source xml:lang="en">HEAD version of '{0}' is not available.</source>
         <target state="translated">'{0}'의 HEAD 버전이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="Theirs">
+        <source xml:lang="en">Theirs</source>
+        <target state="translated">다른 사용자들의 항목</target>
+      </trans-unit>
+      <trans-unit id="Yours">
+        <source xml:lang="en">Yours</source>
+        <target state="translated">사용자 버전</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add to Workspace</source>
@@ -110,6 +196,10 @@
         <source xml:lang="en">Branch name</source>
         <target state="translated">분기 이름</target>
       </trans-unit>
+      <trans-unit id="branch name does not match sanitized">
+        <source xml:lang="en">The new branch will be '{0}'</source>
+        <target state="translated">새 브랜치는 '{0}'입니다.</target>
+      </trans-unit>
       <trans-unit id="branch name format invalid">
         <source xml:lang="en">Branch name needs to match regex: {0}</source>
         <target state="translated">분기 이름은 regex {0}과(와) 일치해야 합니다.</target>
@@ -117,10 +207,6 @@
       <trans-unit id="cant push">
         <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
         <target state="translated">참조를 원격에 푸시할 수 없습니다. 먼저 '풀'을 실행하여 변경 내용을 통합하세요.</target>
-      </trans-unit>
-      <trans-unit id="changed">
-        <source xml:lang="en">{0} Log level changed to: {1}</source>
-        <target state="translated">{0} 로그 수준이 다음으로 변경됨: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -150,6 +236,10 @@
         <source xml:lang="en">Create Empty Commit</source>
         <target state="translated">빈 커밋 만들기</target>
       </trans-unit>
+      <trans-unit id="commit changes">
+        <source xml:lang="en">Commit Anyway</source>
+        <target state="translated">커밋 진행</target>
+      </trans-unit>
       <trans-unit id="commit hash">
         <source xml:lang="en">Commit Hash</source>
         <target state="translated">커밋 해시</target>
@@ -158,9 +248,21 @@
         <source xml:lang="en">Commit message</source>
         <target state="translated">커밋 메시지</target>
       </trans-unit>
+      <trans-unit id="commit to branch">
+        <source xml:lang="en">Commit to a New Branch</source>
+        <target state="translated">새 브랜치에 커밋</target>
+      </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel2">
         <source xml:lang="en">Message (commit on '{0}')</source>
         <target state="translated">메시지('{0}'에서 커밋)</target>
+      </trans-unit>
+      <trans-unit id="confirm branch protection commit">
+        <source xml:lang="en">You are trying to commit to a protected branch and you might not have permission to push your commits to the remote.
+
+How would you like to proceed?</source>
+        <target state="translated">보호된 브랜치에 커밋하려고 하며 커밋을 원격으로 푸시할 수 있는 권한이 없을 수 있습니다.
+
+어떻게 진행하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="confirm delete">
         <source xml:lang="en">Are you sure you want to DELETE {0}?
@@ -206,7 +308,7 @@ This is IRREVERSIBLE, your current working set will be FOREVER LOST.</source>
         <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
         <target state="translated">{0}개 파일의 변경 내용을 취소하시겠습니까?</target>
       </trans-unit>
-      <trans-unit id="confirm emtpy commit">
+      <trans-unit id="confirm empty commit">
         <source xml:lang="en">Are you sure you want to create an empty commit?</source>
         <target state="translated">빈 커밋을 만드시겠습니까?</target>
       </trans-unit>
@@ -266,6 +368,10 @@ Are you sure to continue?</source>
         <source xml:lang="en">Current</source>
         <target state="translated">현재</target>
       </trans-unit>
+      <trans-unit id="default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">Delete File</source>
         <target state="translated">파일 삭제</target>
@@ -317,6 +423,10 @@ What would you like to do?</source>
       <trans-unit id="drop one stash">
         <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
         <target state="translated">모든 스태시를 삭제하시겠습니까? 정리 대상이 될 스태시가 1개 있으며 복구가 불가능할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="empty commit">
+        <source xml:lang="en">Commit operation was cancelled due to empty commit message.</source>
+        <target state="translated">커밋 메시지가 비어 있어 커밋 작업이 취소되었습니다.</target>
       </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
@@ -752,19 +862,27 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/git/dist/log" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="gitLogLevel">
+        <source xml:lang="en">Log level: {0}</source>
+        <target state="translated">로그 수준: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">{0} Skipped found git in: {1}</source>
-        <target state="translated">{0} {1}에서 찾은 git 건너뜀</target>
+        <source xml:lang="en">Skipped found git in: {0}</source>
+        <target state="translated">다음 위치에서 찾은 git 건너뛰기: {0}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">{0} Using git {1} from {2}</source>
-        <target state="translated">{0} {2}에서 git {1}을(를) 사용하는 중</target>
+        <source xml:lang="en">Using git {0} from {1}</source>
+        <target state="translated">{1}에서 git {0}을(를) 사용하는 중</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">{0} Validating found git in: {1}</source>
-        <target state="translated">{0} {1}에서 찾은 git 유효성을 검사하는 중</target>
+        <source xml:lang="en">Validating found git in: {0}</source>
+        <target state="translated">{0}에서 찾은 git 유효성을 검사하는 중</target>
       </trans-unit>
     </body>
   </file>
@@ -949,6 +1067,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="open.merge">
+        <source xml:lang="en">Open Merge</source>
+        <target state="translated">병합 열기</target>
       </trans-unit>
       <trans-unit id="pull">
         <source xml:lang="en">Pull</source>
@@ -1210,6 +1332,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Commit Empty (No Verify)</source>
         <target state="translated">빈 상태로 커밋(확인 안 함)</target>
       </trans-unit>
+      <trans-unit id="command.commitMessageAccept">
+        <source xml:lang="en">Accept Commit Message</source>
+        <target state="translated">커밋 메시지 수락</target>
+      </trans-unit>
+      <trans-unit id="command.commitMessageDiscard">
+        <source xml:lang="en">Discard Commit Message</source>
+        <target state="translated">커밋 메시지 삭제</target>
+      </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
         <target state="translated">커밋(확인 안 함)</target>
@@ -1261,6 +1391,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.fetchPrune">
         <source xml:lang="en">Fetch (Prune)</source>
         <target state="translated">페치(정리)</target>
+      </trans-unit>
+      <trans-unit id="command.git.acceptMerge">
+        <source xml:lang="en">Accept Merge</source>
+        <target state="translated">병합 수락</target>
       </trans-unit>
       <trans-unit id="command.ignore">
         <source xml:lang="en">Add to .gitignore</source>
@@ -1365,6 +1499,18 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.restoreCommitTemplate">
         <source xml:lang="en">Restore Commit Template</source>
         <target state="translated">커밋 템플릿 복원</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.linux">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">상위 폴더 열기</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.mac">
+        <source xml:lang="en">Reveal in Finder</source>
+        <target state="translated">Finder에 표시</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.windows">
+        <source xml:lang="en">Reveal in File Explorer</source>
+        <target state="translated">파일 탐색기에 표시</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
         <source xml:lang="en">Reveal in Explorer View</source>
@@ -1542,6 +1688,54 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Whether auto refreshing is enabled.</source>
         <target state="translated">자동 새로 고침을 사용할지 여부입니다.</target>
       </trans-unit>
+      <trans-unit id="config.branchPrefix">
+        <source xml:lang="en">Prefix used when creating a new branch.</source>
+        <target state="translated">새 브랜치를 만들 때 사용되는 접두사입니다.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtection">
+        <source xml:lang="en">List of protected branches. By default, a prompt is shown before changes are committed to a protected branch. The prompt can be controlled using the `#git.branchProtectionPrompt#`  setting.</source>
+        <target state="translated">보호된 브랜치 목록입니다. 기본적으로 변경 내용이 보호된 브랜치에 커밋되기 전에 프롬프트가 표시됩니다. 프롬프트는 '#git.branchProtectionPrompt#' 설정을 사용하여 제어할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt">
+        <source xml:lang="en">Controls whether a prompt is being before changes are committed to a protected branch.</source>
+        <target state="translated">변경 내용을 보호된 브랜치에 커밋하기 전에 프롬프트를 표시할지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommit">
+        <source xml:lang="en">Always commit changes to the protected branch.</source>
+        <target state="translated">항상 보호된 브랜치에 변경 내용을 커밋합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommitToNewBranch">
+        <source xml:lang="en">Always commit changes to a new branch.</source>
+        <target state="translated">변경 사항을 항상 새 브랜치에 커밋</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysPrompt">
+        <source xml:lang="en">Always prompt before changes are committed to a protected branch.</source>
+        <target state="translated">변경 내용이 보호된 분기에 커밋되기 전에 항상 프롬프트를 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary">
+        <source xml:lang="en">List of dictionaries used for the randomly generated branch name. Each value represents the dictionary used to generate the segment of the branch name. Supported dictionaries: `adjectives`, `animals`, `colors` and `numbers`.</source>
+        <target state="translated">무작위로 생성된 분기 이름에 사용되는 사전 목록입니다. 각 값은 분기 이름의 세그먼트를 생성하는 데 사용되는 사전을 나타냅니다. 지원되는 사전: '형용사', '동물', '색상', '숫자'.</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.adjectives">
+        <source xml:lang="en">A random adjective</source>
+        <target state="translated">무작위 형용사</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.animals">
+        <source xml:lang="en">A random animal name</source>
+        <target state="translated">임의의 동물 이름</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.colors">
+        <source xml:lang="en">A random color name</source>
+        <target state="translated">임의의 색상 이름</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.numbers">
+        <source xml:lang="en">A random number between 100 and 999</source>
+        <target state="translated">100에서 999 사이의 난수</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameEnable">
+        <source xml:lang="en">Controls whether a random name is generated when creating a new branch.</source>
+        <target state="translated">새 브랜치를 만들 때 임의 이름이 생성되는지 여부를 제어합니다.</target>
+      </trans-unit>
       <trans-unit id="config.branchSortOrder">
         <source xml:lang="en">Controls the sort order for branches.</source>
         <target state="translated">분기의 정렬 순서를 제어합니다.</target>
@@ -1551,8 +1745,8 @@ These files will be FOREVER LOST.</source>
         <target state="translated">새 분기 이름의 유효성을 검사하는 정규식입니다.</target>
       </trans-unit>
       <trans-unit id="config.branchWhitespaceChar">
-        <source xml:lang="en">The character to replace whitespace in new branch names.</source>
-        <target state="translated">새 브랜치 이름에서 공백을 대체하는 문자.</target>
+        <source xml:lang="en">The character to replace whitespace in new branch names, and to separate segments of a randomly generated branch name.</source>
+        <target state="translated">새 브랜치 이름의 공백을 바꾸고 임의로 생성된 브랜치 이름의 세그먼트를 구분할 문자입니다.</target>
       </trans-unit>
       <trans-unit id="config.checkoutType">
         <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
@@ -1576,6 +1770,9 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="config.commandsToLog">
         <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">`stdout`를 [git output](command:git.showOutput)에 기록하는 git 명령(예: 커밋, 푸시) 목록입니다. git 명령에 클라이언트 측 후크가 구성된 경우 클라이언트 측 후크의 `stdout`도 [git output](command:git.showOutput)에 기록됩니다.</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
@@ -1698,6 +1895,45 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
         <target state="translated">경고 표시를 위한 커밋 메시지 제목 길이 임계값을 제어합니다. `config.inputValidationLength` 값을 상속하려면 이 임계값 설정을 해제하세요.</target>
       </trans-unit>
+      <trans-unit id="config.logLevel">
+        <source xml:lang="en">Specifies how much information (if any) to log to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">[git output](command:git.showOutput)에 로그할 정보(있는 경우)를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.critical">
+        <source xml:lang="en">Log only critical information</source>
+        <target state="translated">중요한 정보만 로그</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.debug">
+        <source xml:lang="en">Log only debug, information, warning, error, and critical information</source>
+        <target state="translated">로그 전용 디버그, 정보, 경고, 오류 및 중요 정보</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.error">
+        <source xml:lang="en">Log only error, and critical information</source>
+        <target state="translated">로그 전용 오류 및 중요 정보</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.info">
+        <source xml:lang="en">Log only information, warning, error, and critical information</source>
+        <target state="translated">로그 전용 정보, 경고, 오류 및 중요 정보</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.off">
+        <source xml:lang="en">Log nothing</source>
+        <target state="translated">아무 것도 로그하지 않음</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.trace">
+        <source xml:lang="en">Log all information</source>
+        <target state="translated">모든 정보 로그</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.warn">
+        <source xml:lang="en">Log only warning, error, and critical information</source>
+        <target state="translated">로그 전용 경고, 오류 및 중요 정보</target>
+      </trans-unit>
+      <trans-unit id="config.mergeEditor">
+        <source xml:lang="en">Open the merge editor for files that are currently under conflict.</source>
+        <target state="translated">현재 충돌 된 파일의 병합 편집기를 엽니다.</target>
+      </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
         <target state="translated">복제 후에 자동으로 리포지토리를 열지 여부를 제어합니다.</target>
@@ -1802,6 +2038,22 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">List of paths to search for git repositories in.</source>
         <target state="translated">Git 리포지토리를 검색할 경로의 목록입니다.</target>
       </trans-unit>
+      <trans-unit id="config.showActionButton">
+        <source xml:lang="en">Controls whether an action button is shown in the Source Control view.</source>
+        <target state="translated">작업 단추가 원본 제어 뷰에 표시되는지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.commit">
+        <source xml:lang="en">Show an action button to commit changes when the local branch has modified files ready to be committed.</source>
+        <target state="translated">로컬 분기에서 커밋할 준비가 된 파일을 수정한 경우 변경 내용을 커밋하는 작업 단추를 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.publish">
+        <source xml:lang="en">Show an action button to publish the local branch when it does not have a tracking remote branch.</source>
+        <target state="translated">추적 원격 분기가 없는 경우 로컬 분기를 게시하는 작업 단추를 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.sync">
+        <source xml:lang="en">Show an action button to synchronize changes when the local branch is either ahead or behind the remote branch.</source>
+        <target state="translated">로컬 분기가 원격 분기 앞이나 뒤에 있을 때 변경 내용을 동기화하는 작업 단추를 표시합니다.</target>
+      </trans-unit>
       <trans-unit id="config.showCommitInput">
         <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
         <target state="translated">Git 소스 제어판에 커밋 입력을 표시할지 여부를 제어합니다.</target>
@@ -1817,22 +2069,6 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.showPushSuccessNotification">
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">푸시가 성공했을 때 알림을 표시할지 여부를 제어합니다.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton">
-        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
-        <target state="translated">게시되지 않은 커밋이 있는 경우 동기화 또는 게시할 작업 버튼을 표시할지 여부를 제어합니다.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.always">
-        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
-        <target state="translated">게시되지 않은 커밋이 있는 경우 항상 작업 버튼을 표시합니다.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.never">
-        <source xml:lang="en">Never shows the action button.</source>
-        <target state="translated">작업 버튼을 표시하지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
-        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
-        <target state="translated">다른 변경 내용이 없고 게시되지 않은 커밋이 있는 경우에만 작업 버튼을 표시합니다.</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
@@ -1859,8 +2095,12 @@ These files will be FOREVER LOST.</source>
         <target state="translated">동기화 작업을 실행할 때 사용자가 작업을 취소할 수 있도록 알림이 표시되는지 여부를 제어합니다.</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
-        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">통합 터미널에서 생성된 git 프로세스의 인증 처리기로 Azure Data Studio를 사용할지 여부를 제어합니다. 참고: 이 설정의 변경 내용을 적용하려면 터미널을 다시 시작해야 합니다.</target>
+        <source xml:lang="en">Controls whether to enable VS Code to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">통합 터미널에서 생성된 git 프로세스의 인증 처리기로 VS Code를 사용할지 여부를 제어합니다. 참고: 이 설정의 변경 내용을 적용하려면 터미널을 다시 시작해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.terminalGitEditor">
+        <source xml:lang="en">Controls whether to enable VS Code to be git editor for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">통합 터미널에서 생성된 git 프로세스에 대한 git 편집기로 VS Code 사용할지 여부를 제어합니다. 참고: 이 설정에서 변경 사항을 선택하려면 터미널을 다시 시작해야 합니다.</target>
       </trans-unit>
       <trans-unit id="config.timeline.date">
         <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
@@ -1902,6 +2142,10 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
         <target state="translated">커밋 입력 상자의 메시지를 기본 스태시 메시지로 사용할지 여부를 제어합니다.</target>
       </trans-unit>
+      <trans-unit id="config.useEditorAsCommitInput">
+        <source xml:lang="en">Controls whether a full text editor will be used to author commit messages, whenever no message is provided in the commit input box.</source>
+        <target state="translated">커밋 입력 상자에 메시지가 제공되지 않을 때마다 커밋 메시지를 작성하는 데 전체 텍스트 편집기를 사용할지 여부를 제어합니다.</target>
+      </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">강제 푸시가 좀 더 안전한 force-with-lease 변형을 사용하는지 여부를 제어합니다.</target>
@@ -1909,6 +2153,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.useIntegratedAskPass">
         <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
         <target state="translated">통합 버전을 사용하기 위해 GIT_ASKPASS를 덮어써야 하는지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.verboseCommit">
+        <source xml:lang="en">Enable verbose output when `#git.useEditorAsCommitInput#` is enabled.</source>
+        <target state="translated">'#git.useEditorAsCommitInput#'이 사용하도록 설정된 경우 자세한 정보 표시 출력을 사용하도록 설정합니다.</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1961,6 +2209,9 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="view.workbench.cloneRepository">
         <source xml:lang="en">You can clone a repository locally.
 [Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
+        <note>{Locked='](command:git.clone'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">리포지토리를 로컬에서 복제할 수 있습니다.
 [리포지토리 복제](command:git.clone 'Git 확장이 활성화되면 리포지토리 복제')</target>
       </trans-unit>
@@ -1971,7 +2222,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="translated">Git 기능을 사용하려면 [설정]에서 Git을 사용하도록 설정하세요(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
+        <note>{Locked='](command:workbench.action.openSettings?%5B%22git.enabled%22%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Git 기능을 사용하려면 [설정](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)에서 Git을 사용하도록 설정하세요.
 VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
@@ -1979,6 +2233,9 @@ VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 �
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:vscode.openFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Git 기능을 사용하려면 Git 리포지토리가 포함된 폴더를 열거나 URL에서 복제할 수 있습니다.
 [폴더 열기](command:vscode.openFolder)
 [리포지토리 복제](command:git.clone)
@@ -1988,6 +2245,9 @@ Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 �
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.addRootFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">현재 열려 있는 작업 영역에 Git 리포지토리를 포함하는 폴더가 없습니다.
 [작업 영역에 폴더 추가](command:workbench.action.addRootFolder)
 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [관련 문서를 참조](https://aka.ms/vscode-scm)하세요.</target>
@@ -1996,46 +2256,53 @@ Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 �
         <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init?%5Btrue%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">현재 열린 폴더에 Git 리포지토리가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 리포지토리를 초기화할 수 있습니다.
 [리포지토리 초기화](command:git.init?%5Btrue%5D)
 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.missing">
-        <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
-Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
-If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
-        <target state="translated">유효한 git 설치가 검색되지 않았습니다. [git 출력](command:git.showOutput)에서 자세한 내용을 확인할 수 있습니다.
-[git을 설치하거나](https://git-scm.com/) [Microsoft Docs](https://aka.ms/vscode-scm)에서 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보세요.
-다른 버전의 제어 시스템을 사용하는 경우 추가 확장에 대해 [Marketplace를 검색](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)할 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide">
         <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
         <target state="translated">인기 있는 소스 제어 시스템인 Git을 설치하여 코드 변경 내용을 추적하고 다른 사용자와 공동 작업합니다. [Git 가이드](https://aka.ms/vscode-scm)에서 자세히 알아보세요.</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.linux">
+      <trans-unit id="view.workbench.scm.missing.linux">
         <source xml:lang="en">Source control depends on Git being installed.
 [Download Git for Linux](https://git-scm.com/download/linux)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">소스 제어는 설치 중인 Git에 따라 달라집니다.
 [Linux용 Git 다운로드](https://git-scm.com/download/linux)
-치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
+설치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.mac">
+      <trans-unit id="view.workbench.scm.missing.mac">
         <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[macOS용 GIT 다운로드](https://git-scm.com/download/mac)
 설치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.windows">
+      <trans-unit id="view.workbench.scm.missing.windows">
         <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[Windows용 GIT 다운로드](https://git-scm.com/download/win)
-설치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
+설치 후에 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
 [Initialize Repository](command:git.init)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">현재 열린 작업 영역에 Git 리포지토리가 포함된 폴더가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 폴더의 리포지토리를 초기화할 수 있습니다.
 [리포지토리 초기화](command:git.init)
 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.</target>

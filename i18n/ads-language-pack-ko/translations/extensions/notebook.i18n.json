@@ -75,7 +75,6 @@
 			"newMarkdown": "새 Markdown(미리 보기)",
 			"newNotebook": "새 Notebook(미리 보기)",
 			"newSection": "새 섹션(미리 보기)",
-			"noBDCConnectionError": "Spark 커널을 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다.",
 			"noBooksSelected": "뷰렛에 현재 선택된 Jupyter Book이 없습니다.",
 			"onGitHub": "GitHub",
 			"onsharedFile": "공유 파일",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "Notebook 열기",
 			"openNotebookError": "{0} Notebook을 열지 못함: {1}",
 			"openUntitledNotebookError": "제목 없는 Notebook {0}을(를) 제목 없음으로 열지 못함: {1}",
-			"providerNotValidError": "비 MSSQL 공급자는 Spark 커널에서 지원되지 않습니다.",
 			"readBookError": "Jupyter Book {0}을(를) 읽지 못했습니다. {1}",
 			"releases": "릴리스",
 			"repoUrl": "리포지토리 URL",
@@ -101,7 +99,6 @@
 			"version": "버전"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.",
 			"noNotebookVisible": "Notebook 편집기가 활성 상태가 아님",
 			"notebookFiles": "Notebook"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "Notebook 서버 종료 실패: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "오류: {0}. ",
-			"clusterControllerConnectionRequired": "Spark 작업을 실행하려면 클러스터 컨트롤러에 대한 연결이 필요합니다.",
-			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.",
-			"notebook.couldNotFindKnoxGateway": "Knox 게이트웨이 엔드포인트를 찾을 수 없음",
-			"promptBDCPassword": "BDC 컨트롤러에 연결하려면 암호를 제공하세요.",
-			"promptBDCUsername": "{0}BDC 컨트롤러에 연결하려면 사용자 이름을 제공하세요."
+			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다."
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "{0} {1} 오류를 나타내며 패키지 정보 요청 실패"

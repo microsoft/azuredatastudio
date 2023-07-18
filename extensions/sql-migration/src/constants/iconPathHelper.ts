@@ -48,6 +48,7 @@ export class IconPathHelper {
 	public static addNew: IconPath;
 	public static breadCrumb: IconPath;
 	public static allTables: IconPath;
+	public static notFound: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -197,6 +198,10 @@ export class IconPathHelper {
 		IconPathHelper.allTables = {
 			light: context.asAbsolutePath('images/allTables.svg'),
 			dark: context.asAbsolutePath('images/allTables.svg'),
+		};
+		IconPathHelper.notFound = {
+			light: context.asAbsolutePath('images/notFound.svg'),
+			dark: context.asAbsolutePath('images/notFound.svg'),
 		};
 	}
 }

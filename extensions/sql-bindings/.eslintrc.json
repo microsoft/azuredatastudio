@@ -9,6 +9,7 @@
 				"ignoreVoid": true
 			}
 		],
-		"jsdoc/require-param": "error"
+		"jsdoc/require-param": "error",
+		"@typescript-eslint/no-unsafe-assignment": "off"
 	}
 }

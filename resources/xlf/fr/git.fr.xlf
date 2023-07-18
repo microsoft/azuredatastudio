@@ -2,25 +2,103 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="fr">
     <body>
+      <trans-unit id="scm button commit and push title">
+        <source xml:lang="en">{0} Commit &amp; Push</source>
+        <target state="translated">Validation{0} et envoi (push)</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and push tooltip">
+        <source xml:lang="en">Commit &amp; Push Changes</source>
+        <target state="translated">Valider et envoyer (push) les modifications</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync title">
+        <source xml:lang="en">{0} Commit &amp; Sync</source>
+        <target state="translated">Validation {0} et synchronisation</target>
+      </trans-unit>
+      <trans-unit id="scm button commit and sync tooltip">
+        <source xml:lang="en">Commit &amp; Sync Changes</source>
+        <target state="translated">Valider et synchroniser les modifications</target>
+      </trans-unit>
+      <trans-unit id="scm button commit title">
+        <source xml:lang="en">{0} Commit</source>
+        <target state="translated">Validation {0}</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and push tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Push Changes</source>
+        <target state="translated">Valider dans une nouvelle branche et envoyer (push) des modifications</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch and sync tooltip">
+        <source xml:lang="en">Commit to New Branch &amp; Sync Changes</source>
+        <target state="translated">Valider dans une nouvelle branche et synchroniser des modifications</target>
+      </trans-unit>
+      <trans-unit id="scm button commit to new branch tooltip">
+        <source xml:lang="en">Commit Changes to New Branch</source>
+        <target state="translated">Valider les modifications apportées à la nouvelle branche</target>
+      </trans-unit>
+      <trans-unit id="scm button commit tooltip">
+        <source xml:lang="en">Commit Changes</source>
+        <target state="translated">Valider les modifications</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and pushing tooltip">
+        <source xml:lang="en">Committing &amp; Pushing Changes...</source>
+        <target state="translated">Validation et envoi (push) des modifications...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing and synching tooltip">
+        <source xml:lang="en">Committing &amp; Synching Changes...</source>
+        <target state="translated">Validation et synchronisation des modifications...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and pushing tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Pushing Changes...</source>
+        <target state="translated">Validation dans une nouvelle branche et envoi (push) des modifications...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch and synching tooltip">
+        <source xml:lang="en">Committing to New Branch &amp; Synching Changes...</source>
+        <target state="translated">Validation dans une nouvelle branche et synchronisation des modifications...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing to new branch tooltip">
+        <source xml:lang="en">Committing Changes to New Branch...</source>
+        <target state="translated">Validation des modifications apportées à la nouvelle branche...</target>
+      </trans-unit>
+      <trans-unit id="scm button committing tooltip">
+        <source xml:lang="en">Committing Changes...</source>
+        <target state="translated">Validation des modifications...</target>
+      </trans-unit>
+      <trans-unit id="scm button continue title">
+        <source xml:lang="en">{0} Continue</source>
+        <target state="translated">{0} Continuer</target>
+      </trans-unit>
+      <trans-unit id="scm button continue tooltip">
+        <source xml:lang="en">Continue Rebase</source>
+        <target state="translated">Poursuite du rebasement</target>
+      </trans-unit>
+      <trans-unit id="scm button continuing tooltip">
+        <source xml:lang="en">Continuing Rebase...</source>
+        <target state="translated">Poursuite du rebasement...</target>
+      </trans-unit>
       <trans-unit id="scm button publish branch">
         <source xml:lang="en">Publish Branch</source>
-        <target state="translated">Publier la branche</target>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">Publier Branch</target>
       </trans-unit>
       <trans-unit id="scm button publish branch running">
         <source xml:lang="en">Publishing Branch...</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
         <target state="translated">Publication de Branch...</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
-        <target state="translated">$(cloud-upload) Publier les branches</target>
-      </trans-unit>
       <trans-unit id="scm button sync description">
-        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
-        <target state="translated">{0} Synchroniser les modifications {1}{2}</target>
+        <source xml:lang="en">{0} Sync Changes{1}{2}</source>
+        <target state="translated">{0}Synchroniser les modifications {1}{2}</target>
       </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en">{0} {1}{2}</source>
-        <target state="translated">{0} {1}{2}</target>
+      <trans-unit id="scm publish branch action button title">
+        <source xml:lang="en">{0} Publish Branch</source>
+        <note>{Locked="Branch"}
+Do not translate "Branch" as it is a git term</note>
+        <target state="translated">{0} Publier Branch</target>
+      </trans-unit>
+      <trans-unit id="scm secondary button commit">
+        <source xml:lang="en">Commit</source>
+        <target state="translated">Valider</target>
       </trans-unit>
       <trans-unit id="syncing changes">
         <source xml:lang="en">Synchronizing Changes...</source>
@@ -61,6 +139,14 @@
       <trans-unit id="HEAD not available">
         <source xml:lang="en">HEAD version of '{0}' is not available.</source>
         <target state="translated">La version HEAD de '{0}' n'est pas disponible.</target>
+      </trans-unit>
+      <trans-unit id="Theirs">
+        <source xml:lang="en">Theirs</source>
+        <target state="translated">Les leurs</target>
+      </trans-unit>
+      <trans-unit id="Yours">
+        <source xml:lang="en">Yours</source>
+        <target state="translated">Vôtres</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add to Workspace</source>
@@ -110,6 +196,10 @@
         <source xml:lang="en">Branch name</source>
         <target state="translated">Nom de la branche</target>
       </trans-unit>
+      <trans-unit id="branch name does not match sanitized">
+        <source xml:lang="en">The new branch will be '{0}'</source>
+        <target state="translated">La nouvelle branche sera « {0} »</target>
+      </trans-unit>
       <trans-unit id="branch name format invalid">
         <source xml:lang="en">Branch name needs to match regex: {0}</source>
         <target state="translated">Le nom de la branche doit correspondre à la regex : {0}</target>
@@ -117,10 +207,6 @@
       <trans-unit id="cant push">
         <source xml:lang="en">Can't push refs to remote. Try running 'Pull' first to integrate your changes.</source>
         <target state="translated">impossible de pousser les références vers la branche distante. Exécutez d'abord 'Récupérer' pour intégrer vos modifications.</target>
-      </trans-unit>
-      <trans-unit id="changed">
-        <source xml:lang="en">{0} Log level changed to: {1}</source>
-        <target state="translated">{0} Niveau de consignation remplacé par: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -150,6 +236,10 @@
         <source xml:lang="en">Create Empty Commit</source>
         <target state="translated">Créer un commit vide</target>
       </trans-unit>
+      <trans-unit id="commit changes">
+        <source xml:lang="en">Commit Anyway</source>
+        <target state="translated">Commiter quand même</target>
+      </trans-unit>
       <trans-unit id="commit hash">
         <source xml:lang="en">Commit Hash</source>
         <target state="translated">Commiter le code de hachage</target>
@@ -158,9 +248,21 @@
         <source xml:lang="en">Commit message</source>
         <target state="translated">Message de validation</target>
       </trans-unit>
+      <trans-unit id="commit to branch">
+        <source xml:lang="en">Commit to a New Branch</source>
+        <target state="translated">Valider dans une nouvelle branche</target>
+      </trans-unit>
       <trans-unit id="commitMessageWithHeadLabel2">
         <source xml:lang="en">Message (commit on '{0}')</source>
         <target state="translated">Message (commit sur '{0}')</target>
+      </trans-unit>
+      <trans-unit id="confirm branch protection commit">
+        <source xml:lang="en">You are trying to commit to a protected branch and you might not have permission to push your commits to the remote.
+
+How would you like to proceed?</source>
+        <target state="translated">Vous essayez de vous engager dans une branche protégée et vous n'avez peut-être pas la permission de pousser vos engagements vers la télécommande.
+
+Comment aimeriez-vous procéder?</target>
       </trans-unit>
       <trans-unit id="confirm delete">
         <source xml:lang="en">Are you sure you want to DELETE {0}?
@@ -206,7 +308,7 @@ Cette action est IRRÉVERSIBLE, votre plage de travail actuelle sera DÉFINITIVE
         <source xml:lang="en">Are you sure you want to discard changes in {0} files?</source>
         <target state="translated">Voulez-vous vraiment abandonner les changements apportés à {0} fichiers ?</target>
       </trans-unit>
-      <trans-unit id="confirm emtpy commit">
+      <trans-unit id="confirm empty commit">
         <source xml:lang="en">Are you sure you want to create an empty commit?</source>
         <target state="translated">Êtes-vous sûr d vouloir créer un commit vide ?</target>
       </trans-unit>
@@ -266,6 +368,10 @@ Voulez-vous vraiment continuer ?</target>
         <source xml:lang="en">Current</source>
         <target state="translated">Actuelle</target>
       </trans-unit>
+      <trans-unit id="default">
+        <source xml:lang="en">Default</source>
+        <target state="translated">Par défaut</target>
+      </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">Delete File</source>
         <target state="translated">Supprimer le fichier</target>
@@ -317,6 +423,10 @@ Que voulez-vous faire ?</target>
       <trans-unit id="drop one stash">
         <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
         <target state="translated">Voulez-vous vraiment supprimer TOUS les stashes ? Il y a 1 stash qui va faire l’objet d’un nettoyage et PEUT ÊTRE IMPOSSIBLE À RÉCUPÉRER.</target>
+      </trans-unit>
+      <trans-unit id="empty commit">
+        <source xml:lang="en">Commit operation was cancelled due to empty commit message.</source>
+        <target state="translated">L’opération de validation a été annulée en raison d’un message de validation vide.</target>
       </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
@@ -752,19 +862,27 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/git/dist/log" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="gitLogLevel">
+        <source xml:lang="en">Log level: {0}</source>
+        <target state="translated">Niveau de journal : {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">{0} Skipped found git in: {1}</source>
-        <target state="translated">{0} GIT ignoré trouvé dans : {1}</target>
+        <source xml:lang="en">Skipped found git in: {0}</source>
+        <target state="translated">Git ignoré trouvé dans : {0}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">{0} Using git {1} from {2}</source>
-        <target state="translated">{0} Utilisation de {1} GIT à partir de {2}</target>
+        <source xml:lang="en">Using git {0} from {1}</source>
+        <target state="translated">Utilisation de git {0} à partir de {1}</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">{0} Validating found git in: {1}</source>
-        <target state="translated">{0} Validation du git trouvé dans : {1}</target>
+        <source xml:lang="en">Validating found git in: {0}</source>
+        <target state="translated">Validation du git trouvé dans : {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -949,6 +1067,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">Ouvrir</target>
+      </trans-unit>
+      <trans-unit id="open.merge">
+        <source xml:lang="en">Open Merge</source>
+        <target state="translated">Ouvrir la fusion</target>
       </trans-unit>
       <trans-unit id="pull">
         <source xml:lang="en">Pull</source>
@@ -1210,6 +1332,14 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Commit Empty (No Verify)</source>
         <target state="translated">Commiter le contenu vide (aucune vérification)</target>
       </trans-unit>
+      <trans-unit id="command.commitMessageAccept">
+        <source xml:lang="en">Accept Commit Message</source>
+        <target state="translated">Accepter le message de validation</target>
+      </trans-unit>
+      <trans-unit id="command.commitMessageDiscard">
+        <source xml:lang="en">Discard Commit Message</source>
+        <target state="translated">Ignorer le message de validation</target>
+      </trans-unit>
       <trans-unit id="command.commitNoVerify">
         <source xml:lang="en">Commit (No Verify)</source>
         <target state="translated">Commiter (aucune vérification)</target>
@@ -1261,6 +1391,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="command.fetchPrune">
         <source xml:lang="en">Fetch (Prune)</source>
         <target state="translated">Récupérer (élaguer)</target>
+      </trans-unit>
+      <trans-unit id="command.git.acceptMerge">
+        <source xml:lang="en">Accept Merge</source>
+        <target state="translated">Accepter la fusion</target>
       </trans-unit>
       <trans-unit id="command.ignore">
         <source xml:lang="en">Add to .gitignore</source>
@@ -1365,6 +1499,18 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="command.restoreCommitTemplate">
         <source xml:lang="en">Restore Commit Template</source>
         <target state="translated">Restaurer le modèle de commit</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.linux">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">Ouvrir le dossier contenant</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.mac">
+        <source xml:lang="en">Reveal in Finder</source>
+        <target state="translated">Afficher dans le Finder</target>
+      </trans-unit>
+      <trans-unit id="command.revealFileInOS.windows">
+        <source xml:lang="en">Reveal in File Explorer</source>
+        <target state="translated">Afficher dans l'Explorateur de fichiers</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
         <source xml:lang="en">Reveal in Explorer View</source>
@@ -1542,6 +1688,54 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Whether auto refreshing is enabled.</source>
         <target state="translated">Détermine si l'actualisation automatique est activée.</target>
       </trans-unit>
+      <trans-unit id="config.branchPrefix">
+        <source xml:lang="en">Prefix used when creating a new branch.</source>
+        <target state="translated">Préfixe utilisé lors de la création d’une branche.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtection">
+        <source xml:lang="en">List of protected branches. By default, a prompt is shown before changes are committed to a protected branch. The prompt can be controlled using the `#git.branchProtectionPrompt#`  setting.</source>
+        <target state="translated">Liste des branches protégées. Par défaut, une invite s’affiche avant que les modifications ne soient validées dans une branche protégée. L’invite peut être contrôlée à l’aide du paramètre `#git.branchProtectionPrompt#`.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt">
+        <source xml:lang="en">Controls whether a prompt is being before changes are committed to a protected branch.</source>
+        <target state="translated">Contrôle si une invite est envoyée avant la validation des modifications dans une branche protégée.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommit">
+        <source xml:lang="en">Always commit changes to the protected branch.</source>
+        <target state="translated">Toujours valider les modifications apportées à la branche protégée.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysCommitToNewBranch">
+        <source xml:lang="en">Always commit changes to a new branch.</source>
+        <target state="translated">Toujours valider les changements dans une nouvelle branche.</target>
+      </trans-unit>
+      <trans-unit id="config.branchProtectionPrompt.alwaysPrompt">
+        <source xml:lang="en">Always prompt before changes are committed to a protected branch.</source>
+        <target state="translated">Toujours demander avant la validation des modifications dans une branche protégée.</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary">
+        <source xml:lang="en">List of dictionaries used for the randomly generated branch name. Each value represents the dictionary used to generate the segment of the branch name. Supported dictionaries: `adjectives`, `animals`, `colors` and `numbers`.</source>
+        <target state="translated">Liste des dictionnaires utilisés pour le nom de branche généré de manière aléatoire. Chaque valeur représente le dictionnaire utilisé pour générer le segment du nom de la branche. Dictionnaires pris en charge : « adjectifs », « animaux », « couleurs » et « nombres ».</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.adjectives">
+        <source xml:lang="en">A random adjective</source>
+        <target state="translated">Adjectif aléatoire</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.animals">
+        <source xml:lang="en">A random animal name</source>
+        <target state="translated">Nom d’animal aléatoire</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.colors">
+        <source xml:lang="en">A random color name</source>
+        <target state="translated">Nom de couleur aléatoire</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameDictionary.numbers">
+        <source xml:lang="en">A random number between 100 and 999</source>
+        <target state="translated">Nombre aléatoire compris entre 100 et 999</target>
+      </trans-unit>
+      <trans-unit id="config.branchRandomNameEnable">
+        <source xml:lang="en">Controls whether a random name is generated when creating a new branch.</source>
+        <target state="translated">Contrôle si un nom aléatoire est généré lors de la création d’une branche.</target>
+      </trans-unit>
       <trans-unit id="config.branchSortOrder">
         <source xml:lang="en">Controls the sort order for branches.</source>
         <target state="translated">Contrôle l'ordre de tri des branches.</target>
@@ -1551,8 +1745,8 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <target state="translated">Expression régulière pour valider les nouveaux noms de branche.</target>
       </trans-unit>
       <trans-unit id="config.branchWhitespaceChar">
-        <source xml:lang="en">The character to replace whitespace in new branch names.</source>
-        <target state="translated">Le caractère pour remplacer les espaces dans les nouveaux noms de branche.</target>
+        <source xml:lang="en">The character to replace whitespace in new branch names, and to separate segments of a randomly generated branch name.</source>
+        <target state="translated">Caractère permettant de remplacer les espaces dans les nouveaux noms de branche et de séparer les segments d’un nom de branche généré de manière aléatoire.</target>
       </trans-unit>
       <trans-unit id="config.checkoutType">
         <source xml:lang="en">Controls what type of git refs are listed when running `Checkout to...`.</source>
@@ -1576,6 +1770,9 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       </trans-unit>
       <trans-unit id="config.commandsToLog">
         <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Liste des commandes git (par exemple, commit, push) pour lesquelles 'stdout' serait journalisé dans le [git output](command:git.showOutput). Si un crochet côté client est configuré pour la commande git, le « stdout » du crochet côté client est également enregistré dans le [git output](command:git.showOutput).</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
@@ -1698,6 +1895,45 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Controls the commit message subject length threshold for showing a warning. Unset it to inherit the value of `config.inputValidationLength`.</source>
         <target state="translated">Contrôle le seuil de longueur de l'objet du message de validation pour afficher un avertissement. Annulez pour hériter la valeur de 'config.inputValidationLength'.</target>
       </trans-unit>
+      <trans-unit id="config.logLevel">
+        <source xml:lang="en">Specifies how much information (if any) to log to the [git output](command:git.showOutput).</source>
+        <note>{Locked='](command:git.showOutput'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Spécifie la quantité d’informations (le cas échéant) à journaliser sur le [git output](command:git.showOutput).</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.critical">
+        <source xml:lang="en">Log only critical information</source>
+        <target state="translated">Journaliser uniquement les informations critiques</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.debug">
+        <source xml:lang="en">Log only debug, information, warning, error, and critical information</source>
+        <target state="translated">Journaliser uniquement le débogage, les informations, l’avertissement, l’erreur et les informations critiques</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.error">
+        <source xml:lang="en">Log only error, and critical information</source>
+        <target state="translated">Journaliser uniquement les informations d’erreur et critiques</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.info">
+        <source xml:lang="en">Log only information, warning, error, and critical information</source>
+        <target state="translated">Journaliser uniquement les informations d’avertissement, d’erreur et les informations critiques</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.off">
+        <source xml:lang="en">Log nothing</source>
+        <target state="translated">Ne rien journaliser</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.trace">
+        <source xml:lang="en">Log all information</source>
+        <target state="translated">Journaliser toutes les informations</target>
+      </trans-unit>
+      <trans-unit id="config.logLevel.warn">
+        <source xml:lang="en">Log only warning, error, and critical information</source>
+        <target state="translated">Journaliser uniquement les informations d’avertissement, d’erreur et critiques</target>
+      </trans-unit>
+      <trans-unit id="config.mergeEditor">
+        <source xml:lang="en">Open the merge editor for files that are currently under conflict.</source>
+        <target state="translated">Ouvrez l’éditeur de fusion pour les fichiers actuellement en conflit.</target>
+      </trans-unit>
       <trans-unit id="config.openAfterClone">
         <source xml:lang="en">Controls whether to open a repository automatically after cloning.</source>
         <target state="translated">Détermine s'il est nécessaire d'ouvrir un dépôt automatiquement après le clonage.</target>
@@ -1802,6 +2038,22 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">List of paths to search for git repositories in.</source>
         <target state="translated">Liste des chemins d’accès pour rechercher des dépôts git.</target>
       </trans-unit>
+      <trans-unit id="config.showActionButton">
+        <source xml:lang="en">Controls whether an action button is shown in the Source Control view.</source>
+        <target state="translated">Contrôle si un bouton d’action est affiché dans la vue Contrôle de code source.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.commit">
+        <source xml:lang="en">Show an action button to commit changes when the local branch has modified files ready to be committed.</source>
+        <target state="translated">Afficher un bouton d’action pour valider les modifications lorsque la branche locale a modifié des fichiers prêts à être validés.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.publish">
+        <source xml:lang="en">Show an action button to publish the local branch when it does not have a tracking remote branch.</source>
+        <target state="translated">Afficher un bouton d’action pour publier la branche locale lorsqu’elle n’a pas de branche distante de suivi.</target>
+      </trans-unit>
+      <trans-unit id="config.showActionButton.sync">
+        <source xml:lang="en">Show an action button to synchronize changes when the local branch is either ahead or behind the remote branch.</source>
+        <target state="translated">Afficher un bouton d’action pour synchroniser les modifications lorsque la branche locale est en avance ou derrière la branche distante.</target>
+      </trans-unit>
       <trans-unit id="config.showCommitInput">
         <source xml:lang="en">Controls whether to show the commit input in the Git source control panel.</source>
         <target state="translated">Détermine si l'entrée de commit doit être affichée dans le panneau de contrôle de code source Git.</target>
@@ -1817,22 +2069,6 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="config.showPushSuccessNotification">
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">Contrôle s’il faut afficher une notification en cas de réussite d'un envoi (push).</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton">
-        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
-        <target state="translated">Contrôle s’il faut afficher un bouton d’action pour synchroniser ou publier, s’il existe des validations non publiées.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.always">
-        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
-        <target state="translated">Affiche toujours le bouton d’action, s’il existe des validations non publiées.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.never">
-        <source xml:lang="en">Never shows the action button.</source>
-        <target state="translated">N’affiche jamais le bouton d’action.</target>
-      </trans-unit>
-      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
-        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
-        <target state="translated">Affiche uniquement le bouton d’action s’il n’y a pas d’autres modifications et s’il existe des validations non publiées.</target>
       </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
@@ -1859,8 +2095,12 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <target state="translated">Contrôle si une notification apparaît lors de l'exécution de l'action Sync, qui permet à l'utilisateur d'annuler l'opération.</target>
       </trans-unit>
       <trans-unit id="config.terminalAuthentication">
-        <source xml:lang="en">Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
-        <target state="translated">Contrôle s’il faut activer Azure Data Studio comme gestionnaire d’authentification pour les processus git générés dans le terminal intégré. Remarque : les terminaux doivent être redémarrés pour prendre en compte une modification de ce paramètre.</target>
+        <source xml:lang="en">Controls whether to enable VS Code to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Détermine si VS Code doit être activé en tant que gestionnaire d'authentification pour les processus git générés dans le terminal intégré. Remarque : Les terminaux doivent redémarrer pour permettre la prise en compte des changements apportés à ce paramètre.</target>
+      </trans-unit>
+      <trans-unit id="config.terminalGitEditor">
+        <source xml:lang="en">Controls whether to enable VS Code to be git editor for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.</source>
+        <target state="translated">Détermine si VS Code doit être activé en tant qu’éditeur Git pour les processus git générés dans le terminal intégré. Remarque : Les terminaux doivent redémarrer pour permettre la prise en compte des changements apportés à ce paramètre.</target>
       </trans-unit>
       <trans-unit id="config.timeline.date">
         <source xml:lang="en">Controls which date to use for items in the Timeline view.</source>
@@ -1902,6 +2142,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
         <target state="translated">Détermine s'il est nécessaire d'utiliser le message de la zone d'entrée de commit en tant que message de stash par défaut.</target>
       </trans-unit>
+      <trans-unit id="config.useEditorAsCommitInput">
+        <source xml:lang="en">Controls whether a full text editor will be used to author commit messages, whenever no message is provided in the commit input box.</source>
+        <target state="translated">Contrôle si un éditeur de texte intégral est utilisé pour créer des messages de validation, chaque fois qu’aucun message n’est fourni dans la zone d’entrée de validation.</target>
+      </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">Contrôles si force push utilise la variante force-with-lease plus sûr.</target>
@@ -1909,6 +2153,10 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="config.useIntegratedAskPass">
         <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
         <target state="translated">Contrôle si GIT_ASKPASS doit être remplacé pour utiliser la version intégrée.</target>
+      </trans-unit>
+      <trans-unit id="config.verboseCommit">
+        <source xml:lang="en">Enable verbose output when `#git.useEditorAsCommitInput#` is enabled.</source>
+        <target state="translated">Activez la sortie détaillée quand '#git.useEditorAsCommitInput#' est activé.</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1961,6 +2209,9 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="view.workbench.cloneRepository">
         <source xml:lang="en">You can clone a repository locally.
 [Clone Repository](command:git.clone 'Clone a repository once the git extension has activated')</source>
+        <note>{Locked='](command:git.clone'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Vous pouvez cloner un dépôt localement.
 [Cloner un dépôt](command:git.clone 'Cloner un dépôt une fois l'extension Git activée')</target>
       </trans-unit>
@@ -1971,6 +2222,9 @@ Ces fichiers seront DÉFINITIVEMENT PERDUS.</target>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.openSettings?%5B%22git.enabled%22%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Si vous souhaitez utiliser des fonctionnalités Git, activez Git dans vos [paramètres](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
 Pour en savoir plus sur la façon d'utiliser Git et le contrôle de code source dans VS Code, [lisez notre documentation](https://aka.ms/vscode-scm).</target>
       </trans-unit>
@@ -1979,6 +2233,9 @@ Pour en savoir plus sur la façon d'utiliser Git et le contrôle de code source 
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:vscode.openFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Pour utiliser les fonctionnalités de git, vous pouvez ouvrir un dossier contenant un référentiel git ou cloner à partir d’une URL.
 [Open Folder](command:vscode.openFolder)
 [Clone Repository](command:git.clone)
@@ -1988,6 +2245,9 @@ Pour en savoir plus sur l’utilisation de git et du contrôle de code source da
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:workbench.action.addRootFolder'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">L’espace de travail actuellement ouvert ne contient aucun dossier contenant des référentiels git.
 [Add Folder to Workspace](command:workbench.action.addRootFolder)
 Pour en savoir plus sur l’utilisation de git et du contrôle de code source dans Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
@@ -1996,47 +2256,53 @@ Pour en savoir plus sur l’utilisation de git et du contrôle de code source da
         <source xml:lang="en">The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init?%5Btrue%5D'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">Le dossier actuellement ouvert n’a pas de référentiel git. Vous pouvez initialiser un référentiel qui activera les fonctionnalités de contrôle de source alimentées par git.
 [Initialize Repository](command:git.init?%5Btrue%5D)
 Pour en savoir plus sur l’utilisation de git et du contrôle de code source dans Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.missing">
-        <source xml:lang="en">A valid git installation was not detected, more details can be found in the [git output](command:git.showOutput).
-Please [install git](https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs](https://aka.ms/vscode-scm).
-If you're using a different version control system, you can [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.</source>
-        <target state="translated">Une installation git valide n’a pas été détectée, plus de détails peuvent être trouvés dans la [git output] (commande : git.showOutput).
-Veuillez [install git](https://git-scm.com/), ou découvrez comment utiliser git et le contrôle de source dans Azure Data Studio dans [our docs](https://aka.ms/vscode-scm ).
-Si vous utilisez un système de contrôle de version différent, vous pouvez [search the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) pour des extensions supplémentaires.</target>
-      </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide">
         <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
         <target state="translated">Installez Git, un système de contrôle de code source populaire, pour suivre les modifications du code et collaborer avec d’autres personnes. En savoir plus sur notre [Git guides](https://aka.ms/vscode-scm).</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.linux">
+      <trans-unit id="view.workbench.scm.missing.linux">
         <source xml:lang="en">Source control depends on Git being installed.
 [Download Git for Linux](https://git-scm.com/download/linux)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
-        <target state="translated">Le contrôle de code source dépend de Git en cours d’installation.
-
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
+        <target state="translated">Le contrôle des sources dépend de l'installation de Git.
 [Download Git for Linux](https://git-scm.com/download/linux)
-Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.mac">
+      <trans-unit id="view.workbench.scm.missing.mac">
         <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[Download Git for macOS](https://git-scm.com/download/mac)
-Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
-      <trans-unit id="view.workbench.scm.missing.guide.windows">
+      <trans-unit id="view.workbench.scm.missing.windows">
         <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
 After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <note>{Locked='](command:workbench.action.reloadWindow'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">[Download Git for Windows](https://git-scm.com/download/win)
-Après l’installation, [reload](command:workbench.action.reloadWindow) (ou [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de code source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
+Après l'installation, veuillez [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Des fournisseurs de contrôle de source supplémentaires peuvent être installés [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
 [Initialize Repository](command:git.init)
 To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+        <note>{Locked='](command:git.init'}
+Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for Azure Data Studio
+Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links</note>
         <target state="translated">L’espace de travail actuellement ouvert ne contient aucun dossier contenant des référentiels git. Vous pouvez initialiser un référentiel sur un dossier qui activera les fonctionnalités de contrôle de source alimentées par git.
 [Initialize Repository](command:git.init)
 Pour en savoir plus sur l’utilisation de git et du contrôle de code source dans Azure Data Studio [lisez notre documentation](https://aka.ms/vscode-scm).</target>

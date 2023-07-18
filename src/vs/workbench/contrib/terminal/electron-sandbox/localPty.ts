@@ -5,10 +5,9 @@
 
 import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ILocalPtyService } from 'vs/platform/terminal/electron-sandbox/terminal';
-import { IProcessDataEvent, ITerminalChildProcess, ITerminalLaunchError, IProcessProperty, IProcessPropertyMap, ProcessPropertyType, IProcessReadyEvent } from 'vs/platform/terminal/common/terminal';
-import { IPtyHostProcessReplayEvent, ISerializedCommandDetectionCapability } from 'vs/platform/terminal/common/terminalProcess';
+import { IProcessDataEvent, ITerminalChildProcess, ITerminalLaunchError, IProcessProperty, IProcessPropertyMap, ProcessPropertyType, IProcessReadyEvent, ILocalPtyService } from 'vs/platform/terminal/common/terminal';
 import { URI } from 'vs/base/common/uri';
+import { IPtyHostProcessReplayEvent, ISerializedCommandDetectionCapability } from 'vs/platform/terminal/common/capabilities/capabilities';
 
 /**
  * Responsible for establishing and maintaining a connection with an existing terminal process
@@ -24,7 +23,9 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 		shellType: undefined,
 		hasChildProcesses: true,
 		resolvedShellLaunchConfig: {},
-		overrideDimensions: undefined
+		overrideDimensions: undefined,
+		failedShellIntegrationActivation: false,
+		usedShellIntegrationInjection: undefined
 	};
 	private readonly _onProcessData = this._register(new Emitter<IProcessDataEvent | string>());
 	readonly onProcessData = this._onProcessData.event;
@@ -47,11 +48,11 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 		super();
 	}
 
-	start(): Promise<ITerminalLaunchError | undefined> {
+	start(): Promise<ITerminalLaunchError | { injectedArgs: string[] } | undefined> {
 		return this._localPtyService.start(this.id);
 	}
-	detach(): Promise<void> {
-		return this._localPtyService.detachFromProcess(this.id);
+	detach(forcePersist?: boolean): Promise<void> {
+		return this._localPtyService.detachFromProcess(this.id, forcePersist);
 	}
 	shutdown(immediate: boolean): void {
 		this._localPtyService.shutdown(this.id, immediate);
@@ -73,6 +74,12 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 			return;
 		}
 		this._localPtyService.resize(this.id, cols, rows);
+	}
+	freePortKillProcess(port: string): Promise<{ port: string; processId: string }> {
+		if (!this._localPtyService.freePortKillProcess) {
+			throw new Error('freePortKillProcess does not exist on the local pty service');
+		}
+		return this._localPtyService.freePortKillProcess(port);
 	}
 	async getInitialCwd(): Promise<string> {
 		return this._properties.initialCwd;

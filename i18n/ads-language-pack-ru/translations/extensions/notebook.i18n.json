@@ -75,7 +75,6 @@
 			"newMarkdown": "Новый файл Markdown (предварительный просмотр)",
 			"newNotebook": "Новая записная книжка (предварительный просмотр)",
 			"newSection": "Новый раздел (предварительная версия)",
-			"noBDCConnectionError": "Ядрам Spark требуется подключение к главному экземпляру кластера больших данных SQL Server.",
 			"noBooksSelected": "В данный момент во viewlet не выбраны книги Jupyter.",
 			"onGitHub": "GitHub",
 			"onsharedFile": "Общий файл",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "Открыть записную книжку",
 			"openNotebookError": "Не удалось открыть записную книжку {0}: {1}",
 			"openUntitledNotebookError": "Не удалось открыть безымянную записную книжку {0} как безымянную: {1}",
-			"providerNotValidError": "Поставщики, не являющиеся поставщиками MSSQL, не поддерживаются для ядер Spark.",
 			"readBookError": "Не удалось прочитать книгу Jupyter {0}: {1}",
 			"releases": "Выпуски",
 			"repoUrl": "URL-адрес репозитория",
@@ -101,7 +99,6 @@
 			"version": "Версия"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "Этот пример кода загружает файл в кадр данных и отображает первые 10 результатов.",
 			"noNotebookVisible": "Нет активного редактора записных книжек",
 			"notebookFiles": "Записные книжки"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "Сбой при завершении работы сервера Notebook: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "Ошибка: {0}. ",
-			"clusterControllerConnectionRequired": "Для выполнения заданий Spark требуется подключение к контроллеру кластера",
-			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован",
-			"notebook.couldNotFindKnoxGateway": "Не удалось найти конечную точку шлюза Knox",
-			"promptBDCPassword": "Укажите пароль для подключения к контроллеру BDC",
-			"promptBDCUsername": "{0}Укажите имя пользователя для подключения к контроллеру BDC:"
+			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "Запрос сведений о пакете завершился с ошибкой: {0} {1}"

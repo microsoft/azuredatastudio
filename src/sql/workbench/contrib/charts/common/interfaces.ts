@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as chartjs from 'chart.js';
+
 export interface IInsightOptions {
 	type: InsightType | ChartType;
 	dataDirection?: DataDirection;
@@ -18,6 +20,7 @@ export interface IInsightOptions {
 	xAxisMax?: number;
 	encoding?: string;
 	imageFormat?: string;
+	indexAxis?: string;
 }
 
 export enum InsightType {
@@ -36,12 +39,30 @@ export enum ChartType {
 	Scatter = 'scatter'
 }
 
+export const ChartTypeToChartJsType: { [key in ChartType]: chartjs.ChartType } = {
+	'bar': 'bar',
+	'doughnut': 'doughnut',
+	'horizontalBar': 'bar',
+	'line': 'line',
+	'pie': 'pie',
+	'timeSeries': 'line',
+	'scatter': 'scatter'
+}
+
 export enum LegendPosition {
 	Top = 'top',
 	Bottom = 'bottom',
 	Left = 'left',
 	Right = 'right',
 	None = 'none'
+}
+
+export const LegendPositionToChartJsPosition: { [key in LegendPosition]: chartjs.LayoutPosition } = {
+	'top': 'top',
+	'bottom': 'bottom',
+	'left': 'left',
+	'right': 'right',
+	'none': 'left' // chart.js doesn't have a 'none' option, so we use 'left' and then hide the legend
 }
 
 export enum DataType {

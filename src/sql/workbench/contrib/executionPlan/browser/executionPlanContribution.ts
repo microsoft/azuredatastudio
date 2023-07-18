@@ -13,7 +13,7 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWo
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/browser/executionPlanInput';
 import { ExecutionPlanEditor } from 'sql/workbench/contrib/executionPlan/browser/executionPlanEditor';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ExecutionPlanComparisonEditor } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor';
@@ -70,14 +70,16 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 				priority: RegisteredEditorPriority.builtin
 			},
 			{},
-			(editorInput, group) => {
-				const executionPlanGraphInfo = {
-					graphFileContent: undefined,
-					graphFileType: undefined
-				};
-				const executionPlanInput = this._register(this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo));
+			{
+				createEditorInput: (editorInput, group) => {
+					const executionPlanGraphInfo = {
+						graphFileContent: undefined,
+						graphFileType: undefined
+					};
+					const executionPlanInput = this._register(this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo));
 
-				return { editor: executionPlanInput, options: editorInput.options, group: group };
+					return { editor: executionPlanInput, options: editorInput.options, group: group };
+				}
 			}
 		));
 	}
@@ -88,7 +90,7 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 }
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(ExecutionPlanEditorOverrideContribution, LifecyclePhase.Restored);
+	.registerWorkbenchContribution(ExecutionPlanEditorOverrideContribution, LifecyclePhase.Starting);
 
 const comparisonExecutionPlanEditor = EditorPaneDescriptor.create(
 	ExecutionPlanComparisonEditor,

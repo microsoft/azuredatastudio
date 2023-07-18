@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Si è verificato un errore durante l'aggiunta dell'account alla cache.",
 			"azure.cacheErrorGet": "Si è verificato un errore durante il recupero dell'account dalla cache",
 			"azure.cacheErrorParse": "Si è verificato un errore durante l'analisi dell'account dalla cache",
-			"azure.cacheErrrorRemove": "Si è verificato un errore durante la rimozione dell'account dalla cache.",
 			"azure.microsoftAccountDisplayName": "Account Microsoft",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Si è verificato un errore durante l'autenticazione oppure i token sono stati eliminati dal sistema. Provare ad aggiungere di nuovo l'account ad Azure Data Studio.",
@@ -21,12 +20,15 @@
 			"azure.owningTenantNotFound": "Informazioni sul tenant proprietario non trovate per l'account.",
 			"azure.responseError": "Il recupero del token non è riuscito generando un errore. [Aprire gli strumenti di sviluppo] ({0}) per ulteriori dettagli.",
 			"azure.tenantNotFound": "Il tenant specificato con ID '{0}' non è stato trovato.",
-			"azureAuth.unidentifiedError": "Errore non identificato con l'autenticazione di Azure",
-			"azureWorkAccountDisplayName": "Account aziendale o dell'istituto di istruzione",
-			"azurecore.consentDialog.body": "Il tenant '{0} ({1})' richiede una nuova autenticazione per accedere alle risorse {2}. Premere Apri per avviare il processo di autenticazione.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio non attiverà più l'autenticazione per questo tenant {0} ({1}) e le risorse non saranno accessibili. \r\n\r\nPer consentire di nuovo l'accesso alle risorse del tenant, è necessario rimuovere il tenant dall'elenco di esclusione nell'impostazione '{2}'.\r\n\r\nContinuare?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "Conferma",
+			"azurecore.consentDialog.authenticate": "Annulla ed esegui autenticazione",
+			"azurecore.consentDialog.body": "Il tenant {0} ({1}) richiede una nuova autenticazione per accedere alle risorse {2}. Premere Apri per avviare il processo di autenticazione.",
 			"azurecore.consentDialog.cancel": "Annulla",
 			"azurecore.consentDialog.ignore": "Ignora tenant",
 			"azurecore.consentDialog.open": "Apri",
+			"msal.accountNotFoundError": "Non è stato possibile trovare informazioni sull'account durante l'acquisizione del token.",
+			"msal.resourceNotFoundError": "Non è possibile trovare la configurazione per la risorsa di Azure {0}",
 			"noMicrosoftResource": "Per il provider '{0}' non è definito un endpoint di risorsa Microsoft."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -44,7 +46,10 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Nessun metodo di autenticazione di Azure disponibile. È necessario abilitare i metodi di autenticazione nella configurazione di ADS.",
 			"azure.NoAuthMethod.Selected": "Non è stato selezionato alcun metodo di autenticazione di Azure. È necessario selezionare il metodo di autenticazione che si vuole usare.",
-			"azure.deprecatedGetSecurityToken": "È stata effettuata una chiamata ad azdata.accounts.getSecurityToken. Questo metodo è deprecato e verrà rimosso nelle versioni future. Usare getAccountSecurityToken."
+			"azure.deprecatedGetSecurityToken": "È stata effettuata una chiamata ad azdata.accounts.getSecurityToken. Questo metodo è deprecato e verrà rimosso nelle versioni future. Usare getAccountSecurityToken.",
+			"genericTokenError": "Non è stato possibile ottenere il token",
+			"msalTokenError": "Si è verificato un {0} durante l'acquisizione del token. \r\n{1}",
+			"tenantIgnoredError": "Tenant trovato nell'elenco di elementi da ignorare. L'autenticazione non è stata tentata. Se si vuole accedere alle risorse di questo tenant, è possibile rimuovere il tenant {0} dall'elenco di elementi da ignorare nel file settings.json {1}."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Non è stato possibile cancellare la cache dei token",
@@ -52,10 +57,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (Cina)",
-			"germanyCloud": "Azure (Germania)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US Government)",
-			"usNatCloudDisplayName": "Azure (US National)"
+			"usGovCloudDisplayName": "Azure (US Government)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Per usare questa funzionalità, è necessario selezionare un account Azure.",
@@ -71,34 +74,47 @@
 			"azure.subscriptionError": "Non è stato possibile ottenere le sottoscrizioni per l'account {0}. Aggiornare l'account."
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Area di lavoro Log Analytics"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Aree di lavoro Log Analytics"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "CosmosDB per Mongo"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure Cosmos DB for MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
 			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "Database SQL"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "Server SQL"
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster di Esplora dati di Azure"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Server flessibile di Database di Azure per MySQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Server flessibili di Database di Azure per MySQL"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Server PostgreSQL - Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Server flessibili di Database di Azure per PostgreSQL"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Server di Database di Azure per PostgreSQL"
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Database di Azure per i server PostgreSQL"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Istanza gestita di database SQL di Azure"
+			"azure.resource.providers.sqlInstanceContainerLabel": "Istanze gestite di SQL"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "Istanza gestita di SQL - Azure Arc"
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "Istanze gestite di SQL- Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Pool SQL dedicati"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "Risorsa provider non riconosciuta: {0}",
+			"azurecore.unregisteredProviderType": "Tipo di risorsa provider non riconosciuto: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Non sono state trovate risorse"
@@ -120,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Accedi ad Azure..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Non sono state trovate sottoscrizioni.",
-			"azure.unableToAccessSubscription": "Non è possibile accedere alla sottoscrizione {0} ({1}). [Aggiornare l'account](command:azure.resource.signin) per riprovare. {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Non sono stati trovati tenant."
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Non è stato possibile caricare alcuni account Azure. {0}",
@@ -129,13 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Mostra account Azure"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.throttleerror": "Le richieste da questo account sono state limitate. Per riprovare, selezionare un numero inferiore di sottoscrizioni.",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} sottoscrizioni)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - Caricamento...",
-			"azure.resource.tree.loadresourceerror": "Si è verificato un errore durante il caricamento delle risorse di Azure: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Non sono stati trovati tenant."
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Non sono state trovate sottoscrizioni."
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Non sono state trovate risorse."
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Non sono state trovate sottoscrizioni."
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "Caricamento..."
@@ -150,6 +168,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Risorse di Azure (anteprima)",
+			"azure.credStoreSaveFailedError": "Non è stato possibile salvare le chiavi per la cache dei token nell'archivio credenziali. Ciò potrebbe causare problemi di persistenza del token di accesso di Azure e instabilità della connessione. È probabile che SqlTools abbia raggiunto il limite di archiviazione delle credenziali in Windows. Cancellare almeno 2 credenziali che iniziano con \"Microsoft.SqlTools|\" in Windows Gestione credenziali e ricaricare.",
 			"azure.unableToOpenAzureLink": "Non è possibile aprire il collegamento, mancano i valori richiesti",
 			"azurecore.australiacentral": "Australia centrale",
 			"azurecore.australiacentral2": "Australia centrale 2",
@@ -165,6 +184,9 @@
 			"azurecore.centralindia": "India centrale",
 			"azurecore.centralus": "Stati Uniti centrali",
 			"azurecore.centraluseuap": "Stati Uniti centrali EUAP",
+			"azurecore.deprecated": "Avviso: ADAL è stato deprecato e sarà rimosso in una versione futura. In alternativa, usare MSAL.",
+			"azurecore.disable": "Disabilita",
+			"azurecore.dismiss": "Chiudi",
 			"azurecore.eastasia": "Asia orientale",
 			"azurecore.eastus": "Stati Uniti orientali",
 			"azurecore.eastus2": "Stati Uniti orientali 2",
@@ -186,8 +208,12 @@
 			"azurecore.northeurope": "Europa settentrionale",
 			"azurecore.norwayeast": "Norvegia orientale",
 			"azurecore.norwaywest": "Norvegia occidentale",
-			"azurecore.postgresServer": "Server di Database di Azure per PostgreSQL",
+			"azurecore.piiLogging.warning": "Avviso: la registrazione delle informazioni personali di Azure è abilitata. L'abilitazione di questa opzione consente la registrazione delle informazioni personali e deve essere utilizzata solo a scopo di debug.",
+			"azurecore.postgresFlexibleServer": "Server flessibili di Database di Azure per PostgreSQL",
+			"azurecore.postgresServer": "Database di Azure per i server PostgreSQL",
 			"azurecore.reload": "Ricarica",
+			"azurecore.reloadChoice": "Scaricare Azure Data Studio",
+			"azurecore.reloadPrompt": "La libreria di autenticazione è stata modificata. Ricaricare Azure Data Studio.",
 			"azurecore.requiresReload": "Se si modifica questa impostazione, è necessario ricaricare la finestra per rendere effettive tutte le modifiche.",
 			"azurecore.resourceGroup": "Gruppo di risorse",
 			"azurecore.resourceType": "Tipo di risorsa",
@@ -228,11 +254,13 @@
 			"azure.resource.refresh.title": "Aggiorna",
 			"azure.resource.refreshall.title": "Azure: Aggiorna tutti gli account",
 			"azure.resource.selectsubscriptions.title": "Seleziona sottoscrizioni",
+			"azure.resource.selecttenants.title": "Seleziona tenant",
 			"azure.resource.signin.title": "Azure: Accedi",
 			"azure.resource.startterminal.title": "Avvia Cloud Shell",
 			"azure.resource.view.title": "Azure (anteprima)",
-			"azure.tenant.config.filter.description": "Elenco di ID tenant da ignorare durante l'esecuzione di query sulle risorse di Azure. Ogni elemento è un ID tenant.",
+			"azure.tenant.config.filter.description": "Elenco di ID di tenant che verranno ignorati durante l'esecuzione di query sulle risorse di Azure o la richiesta di token di autenticazione.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "Libreria usata per il flusso di autenticazione di AAD. Riavviare ADS dopo aver modificato questa opzione.",
 			"config.azureAccountConfigurationSection": "Configurazione dell'account Azure",
 			"config.azureAuthMethodConfigurationSection": "Metodo di autenticazione di Azure",
 			"config.azureCodeGrantMethod": "Metodo di concessione codice",

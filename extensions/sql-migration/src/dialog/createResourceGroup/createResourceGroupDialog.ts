@@ -187,6 +187,7 @@ export class CreateResourceGroupDialog {
 			});
 		});
 		this._dialogObject.okButton.label = constants.APPLY;
+		this._dialogObject.okButton.position = 'left';
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
 

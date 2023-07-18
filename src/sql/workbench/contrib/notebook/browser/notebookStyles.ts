@@ -72,11 +72,13 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const hcOutline = theme.getColor(contrastBorder);
 		if (outline) {
 			collector.addRule(`
-				.hc-black .notebookEditor .notebook-cell:not(.active) code-component {
+				.hc-black .notebookEditor .notebook-cell:not(.active) code-component,
+				.hc-light .notebookEditor .notebook-cell:not(.active) code-component {
 					border-color: ${hcOutline};
 					border-width: 0px 0px 1px 0px;
 				}
-				.hc-black .notebookEditor .notebook-cell:not(.active) {
+				.hc-black .notebookEditor .notebook-cell:not(.active),
+				.hc-light .notebookEditor .notebook-cell:not(.active) {
 					outline-color: ${hcOutline};
 					outline-width: 1px;
 					outline-style: solid;

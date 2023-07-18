@@ -6,9 +6,10 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as uiUtils from './utils';
-import { IDockerSettings, IPublishToDockerSettings, ISqlProject } from 'sqldbproj';
+import { ISqlProject } from 'sqldbproj';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import { DockerImageInfo } from '../models/deploy/deployProfile';
+import { IDockerSettings, IPublishToDockerSettings } from '../models/deploy/publishSettings';
 
 /**
  * Gets the settings for publishing a database to docker container using only VS Code-native APIs such as QuickPick

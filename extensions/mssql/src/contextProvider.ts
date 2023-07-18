@@ -37,22 +37,17 @@ export default class ContextProvider {
 	}
 
 	public onDashboardOpen(e: azdata.DashboardDocument): void {
-		let iscloud: boolean;
-		let edition: number;
-		let serverMajorVersion: number;
+		let isCloud: boolean = false;
+		let edition: number | undefined;
+		let serverMajorVersion: number | undefined;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
-			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
-				iscloud = true;
-			} else {
-				iscloud = false;
-			}
-
+			isCloud = isCloudEditions.some(i => i === e.serverInfo.engineEditionId);
 			edition = e.serverInfo.engineEditionId;
 			serverMajorVersion = e.serverInfo.serverMajorVersion;
 		}
 
-		if (iscloud === true || iscloud === false) {
-			void setCommandContext(ContextKeys.ISCLOUD, iscloud);
+		if (isCloud === true || isCloud === false) {
+			void setCommandContext(ContextKeys.ISCLOUD, isCloud);
 		}
 
 		if (!types.isUndefinedOrNull(edition)) {
@@ -65,6 +60,7 @@ export default class ContextProvider {
 	}
 
 	dispose(): void {
-		this._disposables = this._disposables.map(i => i.dispose());
+		this._disposables.forEach(i => i.dispose());
+		this._disposables = [];
 	}
 }

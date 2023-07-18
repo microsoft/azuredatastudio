@@ -20,6 +20,10 @@
 	padding-right: 10px;
 }
 
+.hc-light .monaco-dropdown > .dropdown-icon{
+	content: url("dropdownarrow.svg");
+}
+
 .vs-dark .monaco-dropdown > .dropdown-icon,
 .hc-black .monaco-dropdown > .dropdown-icon {
 	content: url("dropdownarrow_inverse.svg");

@@ -63,9 +63,10 @@ class FireWallFeature extends SqlOpsFeature<any> {
 function asCreateFirewallRuleParams(account: azdata.Account, params: azdata.FirewallRuleInfo): CreateFirewallRuleParams {
 	return {
 		account: account,
+		firewallRuleName: params.firewallRuleName,
 		serverName: params.serverName,
-		startIpAddress: params.startIpAddress,
-		endIpAddress: params.endIpAddress,
+		startIpAddress: params.startIpAddress || '',
+		endIpAddress: params.endIpAddress || '',
 		securityTokenMappings: params.securityTokenMappings
 	};
 }
@@ -76,7 +77,7 @@ export class AzureResourceProvider {
 
 	constructor(private logPath: string, baseConfig: IConfig) {
 		if (baseConfig) {
-			this._config = JSON.parse(JSON.stringify(baseConfig));
+			this._config = JSON.parse(JSON.stringify(baseConfig)) as IConfig;
 			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
 		}
 	}

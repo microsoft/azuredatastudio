@@ -13,7 +13,6 @@
 			"azure.cacheErrorAdd": "Fehler beim Hinzufügen Ihres Kontos zum Cache.",
 			"azure.cacheErrorGet": "Fehler beim Abrufen Ihres Kontos aus dem Cache.",
 			"azure.cacheErrorParse": "Fehler beim Analysieren Ihres Kontos aus dem Cache.",
-			"azure.cacheErrrorRemove": "Fehler beim Entfernen Ihres Kontos aus dem Cache.",
 			"azure.microsoftAccountDisplayName": "Microsoft-Konto",
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",
@@ -21,12 +20,15 @@
 			"azure.owningTenantNotFound": "Informationen zum Besitzer des Mandanten wurden für das Konto nicht gefunden.",
 			"azure.responseError": "Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.",
 			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
-			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
-			"azureWorkAccountDisplayName": "Geschäfts-, Schul- oder Unikonto",
-			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
+			"azurecore.confirmIgnoreTenantDialog.body": "Azure Data Studio löst keine Authentifizierung für diesen Mandanten {0} ({1}) aus, und auf Ressourcen kann nicht zugegriffen werden. \r\n\r\nUm den Zugriff auf Ressourcen für diesen Mandanten erneut zuzulassen, müssen Sie den Mandanten aus der Ausschlussliste in der Einstellung '{2}' entfernen.\r\n\r\nMöchten Sie den Vorgang fortsetzen?",
+			"azurecore.confirmIgnoreTenantDialog.confirm": "Bestätigen",
+			"azurecore.consentDialog.authenticate": "Abbrechen und authentifizieren",
+			"azurecore.consentDialog.body": "Für Ihren Mandanten {0} ({1}) müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
 			"azurecore.consentDialog.cancel": "Abbrechen",
 			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
 			"azurecore.consentDialog.open": "Öffnen",
+			"msal.accountNotFoundError": "Beim Abrufen des Tokens wurden keine Kontoinformationen gefunden.",
+			"msal.resourceNotFoundError": "Die Konfiguration für Azure-Resource {0} wurde nicht gefunden",
 			"noMicrosoftResource": "Für den Anbieter \"{0}\" ist kein Microsoft-Ressourcenendpunkt definiert."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
@@ -44,7 +46,10 @@
 		"dist/account-provider/azureAccountProvider": {
 			"azure.NoAuthMethod.Available": "Es ist keine Azure-Authentifizierungsmethode verfügbar. Sie müssen die Authentifizierungsmethoden in der ADS-Konfiguration aktivieren.",
 			"azure.NoAuthMethod.Selected": "Es wurde keine Azure-Authentifizierungsmethode ausgewählt. Sie müssen die Art der Authentifizierung auswählen, die Sie verwenden möchten.",
-			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\"."
+			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\".",
+			"genericTokenError": "Fehler beim Abrufen des Tokens",
+			"msalTokenError": "Beim Abrufen des Tokens ist {0} aufgetreten. \r\n{1}",
+			"tenantIgnoredError": "Der Mandant wurde in der Liste \"Ignorieren\" gefunden. Es wurde keine Authentifizierung versucht. Sie können die Mandanten-{0} aus der Liste der zu ignorierenden Elemente in der Datei \"settings.json\" entfernen: {1}, wenn Sie auf Ressourcen von diesem Mandanten zugreifen möchten."
 		},
 		"dist/account-provider/azureAccountProviderService": {
 			"clearTokenCacheFailure": "Fehler beim Löschen des Tokencaches.",
@@ -52,10 +57,8 @@
 		},
 		"dist/account-provider/providerSettings": {
 			"chinaCloudDisplayName": "Azure (China)",
-			"germanyCloud": "Azure (Deutschland)",
 			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)",
-			"usNatCloudDisplayName": "Azure (USA, national)"
+			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)"
 		},
 		"dist/azureResource/commands": {
 			"azure.accountNotSelectedError": "Sie müssen ein Azure-Konto auswählen, damit dieses Feature funktioniert.",
@@ -71,34 +74,47 @@
 			"azure.subscriptionError": "Fehler beim Abrufen von Abonnements für das Konto {0}. Aktualisieren Sie das Konto."
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics-Arbeitsbereich"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics-Arbeitsbereiche"
 		},
 		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "CosmosDB für Mongo"
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "Azure CosmosDB for MongoDB"
 		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL-Datenbank"
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL-Datenbanken"
 		},
 		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server-Instanzen"
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer-Cluster"
 		},
 		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL – Flexibler Server"
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Flexible Server für Azure Database for MySQL"
 		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
+		"dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL-Server – Azure Arc"
+		},
+		"dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel": "Flexible Server für Azure Database for PostgreSQL"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL-Server"
 		},
 		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Verwaltete Azure SQL-Datenbank-Instanz"
+			"azure.resource.providers.sqlInstanceContainerLabel": "Verwaltete SQL-Instanzen"
 		},
 		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL Managed Instance – Azure Arc"
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "Verwaltete SQL-Instanzen – Azure Arc"
+		},
+		"dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider": {
+			"azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel": "Dedizierte SQL-Pools"
+		},
+		"dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider": {
+			"azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel": "Azure Synapse Analytics"
+		},
+		"dist/azureResource/providers/universal/universalService": {
+			"azurecore.unregisteredProvider": "Unbekannte Anbieterressource: {0}",
+			"azurecore.unregisteredProviderType": "Unbekannter Anbieterressourcentyp: {0}"
 		},
 		"dist/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
@@ -120,8 +136,7 @@
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Bei Azure anmelden..."
 		},
 		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Keine Abonnements gefunden.",
-			"azure.unableToAccessSubscription": "Auf abonnement {0} ({1}) kann nicht zugegriffen werden. [Aktualisieren Sie das Konto](command:azure.resource.signin), um es noch mal zu versuchen. {2}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Keine Mandanten gefunden."
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Fehler beim Laden einiger Azure-Konten. {0}",
@@ -129,13 +144,16 @@
 			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure-Konten anzeigen"
 		},
 		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.throttleerror": "Anforderungen von diesem Konto wurden gedrosselt. Wählen Sie eine geringere Anzahl von Abonnements aus, um den Vorgang zu wiederholen.",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} Abonnements)",
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0}: Wird geladen...",
-			"azure.resource.tree.loadresourceerror": "Fehler beim Laden von Azure-Ressourcen: {0}"
+			"azure.resource.tree.accountTreeNode.noTenantsLabel": "Keine Mandanten gefunden."
+		},
+		"dist/azureResource/tree/flatTenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Keine Abonnements gefunden."
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
+		},
+		"dist/azureResource/tree/tenantTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Keine Abonnements gefunden."
 		},
 		"dist/azureResource/tree/treeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "Wird geladen..."
@@ -150,6 +168,7 @@
 		},
 		"dist/localizedConstants": {
 			"azure.azureResourcesGridTitle": "Azure-Ressourcen (Vorschau)",
+			"azure.credStoreSaveFailedError": "Die Schlüssel für den Tokencache konnten nicht im Anmeldeinformationsspeicher gespeichert werden. Dies kann zu Problemen bei der Persistenz des Azure-Zugriffstokens und zu Verbindungsinstabilitäten führen. Wahrscheinlich hat SqlTools das Speicherlimit für Anmeldeinformationen unter Windows erreicht. Löschen Sie in der Windows-Anmeldeinformationsverwaltung mindestens 2 Anmeldeinformationen, die mit „Microsoft.SqlTools|“ beginnen, und wiederholen Sie den Ladevorgang.",
 			"azure.unableToOpenAzureLink": "Der Link kann nicht geöffnet werden, weil erforderliche Werte fehlen.",
 			"azurecore.australiacentral": "Australien, Mitte",
 			"azurecore.australiacentral2": "Australien, Mitte 2",
@@ -165,6 +184,9 @@
 			"azurecore.centralindia": "Indien, Mitte",
 			"azurecore.centralus": "USA, Mitte",
 			"azurecore.centraluseuap": "USA, Mitte EUAP",
+			"azurecore.deprecated": "Warnung: ADAL ist veraltet und wird voraussichtlich in einer zukünftigen Version entfernt werden. Bitte verwenden Sie stattdessen MSAL.",
+			"azurecore.disable": "Deaktivieren",
+			"azurecore.dismiss": "Schließen",
 			"azurecore.eastasia": "Asien, Osten",
 			"azurecore.eastus": "USA, Osten",
 			"azurecore.eastus2": "USA, Osten 2",
@@ -186,8 +208,12 @@
 			"azurecore.northeurope": "Europa, Norden",
 			"azurecore.norwayeast": "Norwegen, Osten",
 			"azurecore.norwaywest": "Norwegen, Westen",
+			"azurecore.piiLogging.warning": "Warnung: Die Azure-PII-Protokollierung ist aktiviert. Wenn Sie diese Option aktivieren, können personenbezogene Informationen protokolliert werden. Sie dürfen nur zu Debugzwecken verwendet werden.",
+			"azurecore.postgresFlexibleServer": "Flexible Server für Azure Database for PostgreSQL",
 			"azurecore.postgresServer": "Azure Database for PostgreSQL-Server",
 			"azurecore.reload": "Neu laden",
+			"azurecore.reloadChoice": "Azure Data Studio neu laden",
+			"azurecore.reloadPrompt": "Die Authentifizierungsbibliothek wurde geändert, bitte laden Sie Azure Data Studio neu.",
 			"azurecore.requiresReload": "Bei Änderung dieser Einstellung muss das Fenster neu geladen werden, damit alle Änderungen wirksam werden.",
 			"azurecore.resourceGroup": "Ressourcengruppe",
 			"azurecore.resourceType": "Ressourcentyp",
@@ -228,11 +254,13 @@
 			"azure.resource.refresh.title": "Aktualisieren",
 			"azure.resource.refreshall.title": "Azure: Alle Konten aktualisieren",
 			"azure.resource.selectsubscriptions.title": "Abonnements auswählen",
+			"azure.resource.selecttenants.title": "Mandanten auswählen",
 			"azure.resource.signin.title": "Azure: Anmelden",
 			"azure.resource.startterminal.title": "Cloud Shell starten",
 			"azure.resource.view.title": "Azure (Vorschau)",
-			"azure.tenant.config.filter.description": "Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen ignoriert werden sollen. Jedes Element ist eine Mandanten-ID.",
+			"azure.tenant.config.filter.description": "Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen oder beim Anfordern von Authentifizierungstoken übersprungen werden.",
 			"azure.title": "Azure",
+			"config.authenticationLibrary": "Die Bibliothek, die für den AAD-Authentifizierungsfluss verwendet wird. Bitte starten Sie ADS neu, nachdem Sie diese Option geändert haben.",
 			"config.azureAccountConfigurationSection": "Azure-Kontokonfiguration",
 			"config.azureAuthMethodConfigurationSection": "Azure-Authentifizierungsmethode",
 			"config.azureCodeGrantMethod": "Gewährungsmethode über Code",

@@ -103,6 +103,7 @@ export class TaskHistoryRenderer implements IRenderer {
 			// Determine the task title and set hover text equal to that
 			templateData.label.textContent = element.taskName + ' ' + taskStatus;
 			templateData.label.title = templateData.label.textContent;
+			templateData.label.setAttribute('role', 'alert');
 
 			let description: string | undefined;
 			// Determine the target name and set hover text equal to that

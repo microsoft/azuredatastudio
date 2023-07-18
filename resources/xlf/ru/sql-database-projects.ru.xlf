@@ -18,6 +18,10 @@
         <source xml:lang="en">In progress</source>
         <target state="translated">Выполняется</target>
       </trans-unit>
+      <trans-unit id="Move">
+        <source xml:lang="en">Move</source>
+        <target state="translated">Переместить</target>
+      </trans-unit>
       <trans-unit id="PublishHistory">
         <source xml:lang="en">Publish History</source>
         <target state="translated">Журнал публикации</target>
@@ -62,6 +66,10 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">Добавить элемент</target>
       </trans-unit>
+      <trans-unit id="addSqlCmdVariableWithoutDefaultValue">
+        <source xml:lang="en">Add SQLCMD variable '{0}' to project without default value?</source>
+        <target state="translated">Добавить переменную SQLCMD "{0}" в проект без значения по умолчанию?</target>
+      </trans-unit>
       <trans-unit id="advancedOptionsButton">
         <source xml:lang="en">Advanced...</source>
         <target state="translated">Дополнительно…</target>
@@ -85,6 +93,10 @@
       <trans-unit id="applySuccess">
         <source xml:lang="en">Project was successfully updated.</source>
         <target state="translated">Проект успешно обновлен.</target>
+      </trans-unit>
+      <trans-unit id="artifactReference">
+        <source xml:lang="en">Artifact Reference</source>
+        <target state="translated">Ссылка на артефакт</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -247,8 +259,8 @@
         <target state="translated">Файлы DACPAC</target>
       </trans-unit>
       <trans-unit id="dacpacNotOnSameDrive">
-        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
-        <target state="translated">Ссылки DACPAC должны располагаться на том же диске, что и файл проекта. Файл проекта расположен в {0}</target>
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file.</source>
+        <target state="translated">Ссылки DACPAC должны располагаться на том же диске, что и файл проекта.</target>
       </trans-unit>
       <trans-unit id="dacpacReferenceElement">
         <source xml:lang="en">Dacpac reference</source>
@@ -268,10 +280,6 @@
       </trans-unit>
       <trans-unit id="dataSourceRadioButtonLabel">
         <source xml:lang="en">Data sources</source>
-        <target state="translated">Источники данных</target>
-      </trans-unit>
-      <trans-unit id="dataSourcesNodeName">
-        <source xml:lang="en">Data Sources</source>
         <target state="translated">Источники данных</target>
       </trans-unit>
       <trans-unit id="databaseLocation">
@@ -358,6 +366,10 @@
         <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
         <target state="translated">Вы действительно хотите удалить ссылку на {0}?</target>
       </trans-unit>
+      <trans-unit id="deleteSqlCmdVariableConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the SQLCMD Variable '{0}'?</source>
+        <target state="translated">Вы действительно хотите удалить переменную SQLCMD "{0}"?</target>
+      </trans-unit>
       <trans-unit id="deployAppSettingUpdateFailed">
         <source xml:lang="en">Failed to update app setting '{0}'</source>
         <target state="translated">Не удалось обновить параметр приложения "{0}"</target>
@@ -438,13 +450,13 @@
         <source xml:lang="en">Downloading</source>
         <target state="translated">Выполняется скачивание</target>
       </trans-unit>
-      <trans-unit id="downloadingDacFxDlls">
-        <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
-        <target state="translated">Скачивание nuget Microsoft.Build.Sql для получения библиотек DLL сборки</target>
-      </trans-unit>
       <trans-unit id="downloadingFromTo">
         <source xml:lang="en">Downloading from {0} to {1}</source>
         <target state="translated">Идет скачивание из {0} в {1}</target>
+      </trans-unit>
+      <trans-unit id="downloadingNuget">
+        <source xml:lang="en">Downloading {0} nuget to get build DLLs </source>
+        <target state="translated">Скачивание {0} nuget для получения библиотек DLL сборки </target>
       </trans-unit>
       <trans-unit id="edgeEulaAgreementTitle">
         <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
@@ -502,9 +514,21 @@
         <source xml:lang="en">Enter new database name</source>
         <target state="translated">Введите новое имя базы данных</target>
       </trans-unit>
+      <trans-unit id="enterNewName">
+        <source xml:lang="en">Enter new name</source>
+        <target state="translated">Введите новое имя</target>
+      </trans-unit>
+      <trans-unit id="enterNewSqlCmdVariableDefaultValue">
+        <source xml:lang="en">Enter default value for SQLCMD variable '{0}'</source>
+        <target state="translated">Введите значение по умолчанию для переменной SQLCMD "{0}".</target>
+      </trans-unit>
+      <trans-unit id="enterNewSqlCmdVariableName">
+        <source xml:lang="en">Enter new SQLCMD Variable name</source>
+        <target state="translated">Введите новое имя переменной SQLCMD</target>
+      </trans-unit>
       <trans-unit id="enterNewValueForVar">
-        <source xml:lang="en">Enter new value for variable '{0}'</source>
-        <target state="translated">Введите новое значение для переменной "{0}"</target>
+        <source xml:lang="en">Enter new default value for variable '{0}'</source>
+        <target state="translated">Введите новое значение по умолчанию для переменной "{0}"</target>
       </trans-unit>
       <trans-unit id="enterPassword">
         <source xml:lang="en">Enter {0} admin password</source>
@@ -526,6 +550,10 @@
         <source xml:lang="en">The project is already up to date with the database.</source>
         <target state="translated">Проект уже содержит новейшие данные из базы данных.</target>
       </trans-unit>
+      <trans-unit id="errorAddingDatabaseReference">
+        <source xml:lang="en">Error adding database reference to {0}. Error: {1}</source>
+        <target state="translated">Ошибка при добавлении ссылки на базу данных {0}. Ошибка: {1}</target>
+      </trans-unit>
       <trans-unit id="errorDownloading">
         <source xml:lang="en">Error downloading {0}. Error: {1}</source>
         <target state="translated">Ошибка при загрузке {0}. Ошибка: {1}</target>
@@ -538,9 +566,25 @@
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">Ошибка при поиске расположения файлов сборки: {0}</target>
       </trans-unit>
+      <trans-unit id="errorMovingFile">
+        <source xml:lang="en">Error when moving file from {0} to {1}. Error: {2}</source>
+        <target state="translated">Ошибка при перемещении файла из {0} в {1}. Ошибка: {2}</target>
+      </trans-unit>
+      <trans-unit id="errorNotSupportedInVsCode">
+        <source xml:lang="en">Error: {0} is not currently supported in SQL Database Projects for VS Code.</source>
+        <target state="translated">Ошибка: {0} сейчас не поддерживается в проектах базы данных SQL для VS Code.</target>
+      </trans-unit>
+      <trans-unit id="errorPrefix">
+        <source xml:lang="en">Error: {0}</source>
+        <target state="translated">Ошибка: {0}</target>
+      </trans-unit>
       <trans-unit id="errorReadingProjectGuid">
-        <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
-        <target state="translated">Ошибка при попытке чтения {0} проекта "{1}"</target>
+        <source xml:lang="en">Error trying to read {0} of project '{1}'. {2}</source>
+        <target state="translated">Ошибка при попытке чтения {0} проекта "{1}". {2}</target>
+      </trans-unit>
+      <trans-unit id="errorRenamingFile">
+        <source xml:lang="en">Error when renaming file from {0} to {1}. Error: {2}</source>
+        <target state="translated">Ошибка при переименовании файла с {0} на {1}. Ошибка: {2}</target>
       </trans-unit>
       <trans-unit id="errorRetrievingBuildFiles">
         <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
@@ -567,6 +611,10 @@
       <trans-unit id="excludeAction">
         <source xml:lang="en">Exclude</source>
         <target state="translated">Исключить</target>
+      </trans-unit>
+      <trans-unit id="excludeFolderNotSupported">
+        <source xml:lang="en">Excluding folders is not yet supported</source>
+        <target state="translated">Исключение папок пока не поддерживается</target>
       </trans-unit>
       <trans-unit id="excludeObjectTypes">
         <source xml:lang="en">Exclude Object Types</source>
@@ -740,6 +788,14 @@
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">Отсутствует запись "version" в {0}</target>
       </trans-unit>
+      <trans-unit id="moveConfirmationPrompt">
+        <source xml:lang="en">Are you sure you want to move {0} to {1}?</source>
+        <target state="translated">Вы уверены, что хотите переместить {0} в {1}?</target>
+      </trans-unit>
+      <trans-unit id="movingFilesBetweenProjectsNotSupported">
+        <source xml:lang="en">Moving files between projects is not supported</source>
+        <target state="translated">Перемещение файлов между проектами не поддерживается</target>
+      </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
         <target state="translated">мс</target>
@@ -816,9 +872,13 @@
         <source xml:lang="en">None Elements</source>
         <target state="translated">Нет элементов</target>
       </trans-unit>
-      <trans-unit id="notValidVariableName">
-        <source xml:lang="en">The variable name '{0}' is not valid.</source>
-        <target state="translated">Недопустимое имя переменной "{0}".</target>
+      <trans-unit id="nupkgNamePlaceholder">
+        <source xml:lang="en">NuGet package name</source>
+        <target state="translated">Имя пакета NuGet</target>
+      </trans-unit>
+      <trans-unit id="nupkgText">
+        <source xml:lang="en">Published data-tier application (.nupkg)</source>
+        <target state="translated">Опубликовано приложение уровня данных (NUPKG)</target>
       </trans-unit>
       <trans-unit id="objectType">
         <source xml:lang="en">Object Type</source>
@@ -827,6 +887,10 @@
       <trans-unit id="okString">
         <source xml:lang="en">Ok</source>
         <target state="translated">ОК</target>
+      </trans-unit>
+      <trans-unit id="onlyMoveFilesFoldersSupported">
+        <source xml:lang="en">Only moving files and folders are supported</source>
+        <target state="translated">Поддерживается только перемещение файлов и папок</target>
       </trans-unit>
       <trans-unit id="openEulaString">
         <source xml:lang="en">Open License Agreement</source>
@@ -847,6 +911,10 @@
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">Элементы с абсолютным путем вне папки проекта не поддерживаются. Убедитесь, что пути в файле проекта указаны относительно папки проекта.</target>
+      </trans-unit>
+      <trans-unit id="packageReference">
+        <source xml:lang="en">Package Reference</source>
+        <target state="translated">Ссылка на пакет</target>
       </trans-unit>
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
@@ -920,6 +988,10 @@
         <source xml:lang="en">Enter project name</source>
         <target state="translated">Введите имя проекта</target>
       </trans-unit>
+      <trans-unit id="projectNeedsUpdatingForCrossPlat">
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'.</source>
+        <target state="translated">Для сборки проекта "{0}" необходимо обновить целевые объекты, ссылки и системные ссылки на базы данных.</target>
+      </trans-unit>
       <trans-unit id="projectReferenceElement">
         <source xml:lang="en">Project reference</source>
         <target state="translated">Ссылка на проект</target>
@@ -952,6 +1024,14 @@
         <source xml:lang="en">Publish Options</source>
         <target state="translated">Параметры публикации</target>
       </trans-unit>
+      <trans-unit id="publishProfileElements">
+        <source xml:lang="en">Publish profile elements</source>
+        <target state="translated">Элементы профиля публикации</target>
+      </trans-unit>
+      <trans-unit id="publishProfileFriendlyName">
+        <source xml:lang="en">Publish Profile</source>
+        <target state="translated">Профиль публикации</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">Проект базы данных успешно опубликован</target>
@@ -976,13 +1056,17 @@
         <source xml:lang="en">Publish to new {0} local development container</source>
         <target state="translated">Опубликовать в новом {0} контейнере локальной разработки</target>
       </trans-unit>
+      <trans-unit id="publishToDockerContainerPreview">
+        <source xml:lang="en">Publish to new {0} local development container (Preview)</source>
+        <target state="translated">Опубликовать в новом {0} контейнере локальной разработки (предварительная версия)</target>
+      </trans-unit>
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to an existing {0}</source>
         <target state="translated">Опубликовать в существующем {0}</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServer">
-        <source xml:lang="en">Publish to new Azure SQL logical server</source>
-        <target state="translated">Публикация на новом логическом сервере Azure SQL</target>
+        <source xml:lang="en">Publish to new Azure SQL logical server (Preview)</source>
+        <target state="translated">Публикация на новом логическом сервере Azure SQL (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="publishToNewAzureServerFailed">
         <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
@@ -993,20 +1077,20 @@
         <target state="translated">Публикация проекта в контейнере...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Тип</target>
+        <source xml:lang="en">Referenced Database Type</source>
+        <target state="translated">Тип базы данных, на которую указывает ссылка</target>
       </trans-unit>
-      <trans-unit id="referenceType">
-        <source xml:lang="en">Reference type</source>
-        <target state="translated">Тип ссылки</target>
+      <trans-unit id="referenceTypeRadioButtonsGroupTitle">
+        <source xml:lang="en">Reference Type</source>
+        <target state="translated">Ссылочный тип</target>
+      </trans-unit>
+      <trans-unit id="referencedDatabaseType">
+        <source xml:lang="en">Referenced Database type</source>
+        <target state="translated">Тип базы данных, на которую указывает ссылка</target>
       </trans-unit>
       <trans-unit id="reloadProject">
         <source xml:lang="en">Would you like to reload your database project?</source>
         <target state="translated">Вы хотите перезагрузить проект базы данных?</target>
-      </trans-unit>
-      <trans-unit id="reloadValuesFromProjectButtonTitle">
-        <source xml:lang="en">Reload values from project</source>
-        <target state="translated">Перезагрузить значения из проекта</target>
       </trans-unit>
       <trans-unit id="reset">
         <source xml:lang="en">Reset</source>
@@ -1040,6 +1124,10 @@
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
         <target state="translated">Ожидание {0} сек. до выполнения другой попытки операции "{1}"</target>
       </trans-unit>
+      <trans-unit id="revertSqlCmdVarsButtonTitle">
+        <source xml:lang="en">Revert values to project defaults</source>
+        <target state="translated">Вернуться к значениям проекта по умолчанию</target>
+      </trans-unit>
       <trans-unit id="runViaNpx">
         <source xml:lang="en">Run via npx</source>
         <target state="translated">Запустить через npx</target>
@@ -1051,6 +1139,18 @@
       <trans-unit id="sameDatabase">
         <source xml:lang="en">Same database</source>
         <target state="translated">Та же база данных</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Сохранить</target>
+      </trans-unit>
+      <trans-unit id="saveProfile">
+        <source xml:lang="en">Would you like to save the settings in a profile (.publish.xml)?</source>
+        <target state="translated">Сохранить параметры в профиле (.publish.xml)?</target>
+      </trans-unit>
+      <trans-unit id="saveProfileAsButtonText">
+        <source xml:lang="en">Save As...</source>
+        <target state="translated">Сохранить как…</target>
       </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
@@ -1193,16 +1293,16 @@
         <target state="translated">Строка подключения SQL</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
-        <target state="translated">Не удается найти пакет SDK для .NET. Сборка проекта работать не будет. Установите пакет SDK для .NET версии 3.1 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">Не удается найти пакет SDK для .NET. Сборка проекта работать не будет. Установите пакет SDK для .NET версии 6 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">Установить</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
-        <target state="translated">Установленная сейчас версия пакета SDK для .NET Core {0} не поддерживается. Сборка проекта работать не будет. Установите пакет SDK для .NET Core версии 3.1 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
+        <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">Установленная сейчас версия пакета SDK для .NET SDK {0} не поддерживается. Сборка проекта работать не будет. Установите пакет SDK для .NET версии 6 или выше. Если поддерживаемая версия уже установлена, обновите ее расположение в разделе параметров.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
@@ -1215,6 +1315,22 @@
       <trans-unit id="sqlDatabaseProjects.outputChannel">
         <source xml:lang="en">Database Projects</source>
         <target state="translated">Проекты баз данных</target>
+      </trans-unit>
+      <trans-unit id="sqlcmdVariableAlreadyExists">
+        <source xml:lang="en">A SQLCMD Variable with the same name already exists in this project</source>
+        <target state="translated">Переменная SQLCMD с таким именем уже существует в этом проекте.</target>
+      </trans-unit>
+      <trans-unit id="sqlcmdVariableNameCannotBeWhitespace">
+        <source xml:lang="en">SQLCMD variable name '{0}' cannot contain whitespace</source>
+        <target state="translated">Имя переменной SQLCMD "{0}" не может содержать пробелы</target>
+      </trans-unit>
+      <trans-unit id="sqlcmdVariableNameCannotContainIllegalChars">
+        <source xml:lang="en">SQLCMD variable name '{0}' cannot contain any of the following characters: {1}</source>
+        <target state="translated">Имя переменной SQLCMD "{0}" не может содержать следующие символы: {1}</target>
+      </trans-unit>
+      <trans-unit id="sqlcmdVariablesNodeName">
+        <source xml:lang="en">SQLCMD Variables</source>
+        <target state="translated">Переменные SQLCMD</target>
       </trans-unit>
       <trans-unit id="storedProcedureFriendlyName">
         <source xml:lang="en">Stored Procedure</source>
@@ -1265,12 +1381,20 @@
         <target state="translated">Не удалось найти переменную SQLCMD "{0}"</target>
       </trans-unit>
       <trans-unit id="unableToPerformAction">
-        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
-        <target state="translated">Не удалось найти "{0}", цель: "{1}"</target>
+        <source xml:lang="en">Unable to locate '{0}' target: '{1}'. {2}</source>
+        <target state="translated">Не удается найти "{0}", цель: "{1}". {2}</target>
       </trans-unit>
       <trans-unit id="unexpectedProjectContext">
         <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
         <target state="translated">Не удалось установить контекст проекта.  Команда вызвана из неожиданного расположения: {0}</target>
+      </trans-unit>
+      <trans-unit id="unhandledDeleteType">
+        <source xml:lang="en">Unhandled item type during delete: '{0}</source>
+        <target state="translated">Необработанный тип элемента во время удаления: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="unhandledMoveNode">
+        <source xml:lang="en">Unhandled node type for move</source>
+        <target state="translated">Необработанный тип узла для перемещения</target>
       </trans-unit>
       <trans-unit id="unknownDataSourceType">
         <source xml:lang="en">Unknown data source type: </source>
@@ -1292,9 +1416,13 @@
         <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
         <target state="translated">Для сборки проекта "{0}" необходимо обновить ссылки на системную базу данных. Если проект был создан в SSDT, он продолжит работать в обоих инструментах. Вы хотите обновить проект?</target>
       </trans-unit>
-      <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">Для сборки проекта "{0}" необходимо обновить целевые объекты, ссылки и ссылки на системную базу данных. Если проект был создан в SSDT, он продолжит работать в обоих инструментах. Вы хотите обновить проект?</target>
+      <trans-unit id="updateProjectForCrossPlatform">
+        <source xml:lang="en">{0} If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">{0} Если проект был создан в SSDT, он продолжит работать в обоих инструментах. Обновить проект?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectForCrossPlatformShort">
+        <source xml:lang="en">Update {0} for cross-platform support?</source>
+        <target state="translated">Обновить {0} для кроссплатформенной поддержки?</target>
       </trans-unit>
       <trans-unit id="updateProjectFromDatabaseDialogName">
         <source xml:lang="en">Update project from database</source>
@@ -1327,6 +1455,18 @@
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">Значение не может быть пустым.</target>
+      </trans-unit>
+      <trans-unit id="version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Версия</target>
+      </trans-unit>
+      <trans-unit id="versionMustNotBeEmpty">
+        <source xml:lang="en">Version must not be empty</source>
+        <target state="translated">Версия не должна быть пустой</target>
+      </trans-unit>
+      <trans-unit id="versionPlaceholder">
+        <source xml:lang="en">NuGet package version</source>
+        <target state="translated">Версия пакета NuGet</target>
       </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
@@ -1384,6 +1524,10 @@
         <source xml:lang="en">Add Existing Item...</source>
         <target state="translated">Добавить существующий элемент...</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.addSqlCmdVariable">
+        <source xml:lang="en">Add SQLCMD Variable</source>
+        <target state="translated">Добавить переменную SQLCMD</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
         <target state="translated">Какую версию Autorest.Sql использовать из NPM. Если значение не задано, будет использоваться последняя версия.</target>
@@ -1425,28 +1569,36 @@
         <target state="translated">Проекты баз данных</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
-        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
-        <target state="translated">Полный путь к пакету SDK для .NET на компьютере.</target>
+        <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
+        <target state="translated">Полный путь к пакету SDK для .NET на компьютере. Например, если dotnet.exe находится в расположении C:\folder1\dotnet\dotnet.exe, задайте следующий путь для этого параметра: C:\folder1\dotnet</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.edit">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">Изменить</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">Изменить файл .sqlproj</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.enablePreviewFeatures">
+        <source xml:lang="en">Enable preview SQL Database Projects features</source>
+        <target state="translated">Включить предварительные версии функций SQL Database Projects</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">Исключить из проекта</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
-        <target state="translated">Сформировать проект SQL из спецификации OpenAPI/Swagger</target>
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
+        <target state="translated">Сформировать проект SQL из спецификации OpenAPI/Swagger (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
-        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
-        <target state="translated">Какую версию Microsoft.Build.Sql SDK использовать для создания устаревших проектов SQL. Пример: 0.1.3-предварительная версия</target>
+        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
+        <target state="translated">Какую версию Microsoft.Build.Sql SDK использовать для создания устаревших проектов SQL. Пример: 0.1.7-предварительная версия</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-        <target state="translated">Следует ли предлагать пользователю установить .NET Core, если он не будет обнаружен.</target>
+        <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
+        <target state="translated">Следует ли предлагать пользователю установить .NET SDK, если он не будет обнаружен.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>
@@ -1471,6 +1623,10 @@
       <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
         <source xml:lang="en">Add Pre-Deployment Script</source>
         <target state="translated">Добавить сценарий, выполняемый перед развертыванием</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPublishProfile">
+        <source xml:lang="en">Add Publish Profile</source>
+        <target state="translated">Добавить профиль публикации</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newScript">
         <source xml:lang="en">Add Script</source>
@@ -1504,6 +1660,10 @@
         <source xml:lang="en">Open in Designer</source>
         <target state="translated">Открыть в конструкторе</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openReferencedSqlProject">
+        <source xml:lang="en">Open project</source>
+        <target state="translated">Открыть проект</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>
         <target state="translated">Свойства</target>
@@ -1511,6 +1671,10 @@
       <trans-unit id="sqlDatabaseProjects.publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">Опубликовать</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.rename">
+        <source xml:lang="en">Rename</source>
+        <target state="translated">Переименовать</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.schemaCompare">
         <source xml:lang="en">Schema Compare</source>

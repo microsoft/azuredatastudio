@@ -105,6 +105,11 @@
     <PostDeploy Include="Script.PostDeployment1.sql" />
     <None Include="Tables\Script.PostDeployment1.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="TestProjectName_1.publish.xml" />
+    <None Include="TestProjectName_2.publish.xml" />
+    <None Include="TestProjectName_3.publish.xml" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>

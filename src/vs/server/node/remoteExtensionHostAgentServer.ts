@@ -11,7 +11,8 @@ import { performance } from 'perf_hooks';
 import * as url from 'url';
 import { LoaderStats } from 'vs/base/common/amd';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { onUnexpectedError, setUnexpectedErrorHandler } from 'vs/base/common/errors';
+import { CharCode } from 'vs/base/common/charCode';
+import { isSigPipeError, onUnexpectedError, setUnexpectedErrorHandler } from 'vs/base/common/errors';
 import { isEqualOrParent } from 'vs/base/common/extpath';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { connectionTokenQueryName, FileAccess, Schemas } from 'vs/base/common/network';
@@ -22,13 +23,16 @@ import { createRegExp, escapeRegExpCharacters } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { findFreePort } from 'vs/base/node/ports';
+import { addUNCHostToAllowlist, disableUNCAccessRestrictions } from 'vs/base/node/unc';
 import { PersistentProtocol } from 'vs/base/parts/ipc/common/ipc.net';
 import { NodeSocket, WebSocketNodeSocket } from 'vs/base/parts/ipc/node/ipc.net';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { ConnectionType, ConnectionTypeRequest, ErrorMessage, HandshakeMessage, IRemoteExtensionHostStartParams, ITunnelConnectionStartParams, SignRequest } from 'vs/platform/remote/common/remoteAgentConnection';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
+import { getRemoteServerRootPath } from 'vs/platform/remote/common/remoteHosts';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ExtensionHostConnection } from 'vs/server/node/extensionHostConnection';
 import { ManagementConnection } from 'vs/server/node/remoteExtensionManagement';
@@ -53,13 +57,15 @@ declare module vsda {
 	}
 }
 
-export class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
+class RemoteExtensionHostAgentServer extends Disposable implements IServerAPI {
 
 	private readonly _extHostConnections: { [reconnectionToken: string]: ExtensionHostConnection };
 	private readonly _managementConnections: { [reconnectionToken: string]: ManagementConnection };
 	private readonly _allReconnectionTokens: Set<string>;
 	private readonly _webClientServer: WebClientServer | null;
 	private readonly _webEndpointOriginChecker = WebEndpointOriginChecker.create(this._productService);
+
+	private readonly _serverRootPath: string;
 
 	private shutdownTimer: NodeJS.Timer | undefined;
 
@@ -75,6 +81,7 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 	) {
 		super();
 
+		this._serverRootPath = getRemoteServerRootPath(_productService);
 		this._extHostConnections = Object.create(null);
 		this._managementConnections = Object.create(null);
 		this._allReconnectionTokens = new Set<string>();
@@ -84,9 +91,11 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 				: null
 		);
 		this._logService.info(`Extension host agent started.`);
+
+		this._waitThenShutdown(true);
 	}
 
-	public async handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<any> {
+	public async handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
 		// Only serve GET requests
 		if (req.method !== 'GET') {
 			return serveError(req, res, 405, `Unsupported method ${req.method}`);
@@ -97,23 +106,28 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 		}
 
 		const parsedUrl = url.parse(req.url, true);
-		const pathname = parsedUrl.pathname;
+		let pathname = parsedUrl.pathname;
 
 		if (!pathname) {
 			return serveError(req, res, 400, `Bad request.`);
 		}
 
+		// for now accept all paths, with or without server root path
+		if (pathname.startsWith(this._serverRootPath) && pathname.charCodeAt(this._serverRootPath.length) === CharCode.Slash) {
+			pathname = pathname.substring(this._serverRootPath.length);
+		}
+
 		// Version
 		if (pathname === '/version') {
 			res.writeHead(200, { 'Content-Type': 'text/plain' });
-			return res.end(this._productService.commit || '');
+			return void res.end(this._productService.commit || '');
 		}
 
 		// Delay shutdown
 		if (pathname === '/delay-shutdown') {
 			this._delayShutdown();
 			res.writeHead(200);
-			return res.end('OK');
+			return void res.end('OK');
 		}
 
 		if (!httpRequestHasValidConnectionToken(this._connectionToken, req, parsedUrl)) {
@@ -161,7 +175,7 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 		}
 
 		res.writeHead(404, { 'Content-Type': 'text/plain' });
-		return res.end('Not found');
+		return void res.end('Not found');
 	}
 
 	public handleUpgrade(req: http.IncomingMessage, socket: net.Socket) {
@@ -182,7 +196,7 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 			}
 		}
 
-		if (req.headers['upgrade'] !== 'websocket') {
+		if (req.headers['upgrade'] === undefined || req.headers['upgrade'].toLowerCase() !== 'websocket') {
 			socket.end('HTTP/1.1 400 Bad Request');
 			return;
 		}
@@ -270,12 +284,12 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 	/**
 	 * NOTE: Avoid using await in this method!
 	 * The problem is that await introduces a process.nextTick due to the implicit Promise.then
-	 * This can lead to some bytes being interpreted and a control message being emitted before the next listener has a chance to be registered.
+	 * This can lead to some bytes being received and interpreted and a control message being emitted before the next listener has a chance to be registered.
 	 */
 	private _handleWebSocketConnection(socket: NodeSocket | WebSocketNodeSocket, isReconnection: boolean, reconnectionToken: string): void {
 		const remoteAddress = this._getRemoteAddress(socket);
 		const logPrefix = `[${remoteAddress}][${reconnectionToken.substr(0, 8)}]`;
-		const protocol = new PersistentProtocol(socket);
+		const protocol = new PersistentProtocol({ socket });
 
 		const validator = this._vsdaMod ? new this._vsdaMod.validator() : null;
 		const signer = this._vsdaMod ? new this._vsdaMod.signer() : null;
@@ -382,11 +396,11 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 				// We have received a new connection.
 				// This indicates that the server owner has connectivity.
 				// Therefore we will shorten the reconnection grace period for disconnected connections!
-				for (let key in this._managementConnections) {
+				for (const key in this._managementConnections) {
 					const managementConnection = this._managementConnections[key];
 					managementConnection.shortenReconnectionGraceTimeIfNecessary();
 				}
-				for (let key in this._extHostConnections) {
+				for (const key in this._extHostConnections) {
 					const extHostConnection = this._extHostConnections[key];
 					extHostConnection.shortenReconnectionGraceTimeIfNecessary();
 				}
@@ -577,12 +591,12 @@ export class RemoteExtensionHostAgentServer extends Disposable implements IServe
 		}
 	}
 
-	private _waitThenShutdown(): void {
+	private _waitThenShutdown(initial = false): void {
 		if (!this._environmentService.args['enable-remote-auto-shutdown']) {
 			return;
 		}
 
-		if (this._environmentService.args['remote-auto-shutdown-without-delay']) {
+		if (this._environmentService.args['remote-auto-shutdown-without-delay'] && !initial) {
 			this._shutdown();
 		} else {
 			this.shutdownTimer = setTimeout(() => {
@@ -654,6 +668,39 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 		console.warn(connectionToken.message);
 		process.exit(1);
 	}
+
+	// setting up error handlers, first with console.error, then, once available, using the log service
+
+	function initUnexpectedErrorHandler(handler: (err: any) => void) {
+		setUnexpectedErrorHandler(err => {
+			// See https://github.com/microsoft/vscode-remote-release/issues/6481
+			// In some circumstances, console.error will throw an asynchronous error. This asynchronous error
+			// will end up here, and then it will be logged again, thus creating an endless asynchronous loop.
+			// Here we try to break the loop by ignoring EPIPE errors that include our own unexpected error handler in the stack.
+			if (isSigPipeError(err) && err.stack && /unexpectedErrorHandler/.test(err.stack)) {
+				return;
+			}
+			handler(err);
+		});
+	}
+
+	const unloggedErrors: any[] = [];
+	initUnexpectedErrorHandler((error: any) => {
+		unloggedErrors.push(error);
+		console.error(error);
+	});
+	let didLogAboutSIGPIPE = false;
+	process.on('SIGPIPE', () => {
+		// See https://github.com/microsoft/vscode-remote-release/issues/6543
+		// We would normally install a SIGPIPE listener in bootstrap.js
+		// But in certain situations, the console itself can be in a broken pipe state
+		// so logging SIGPIPE to the console will cause an infinite async loop
+		if (!didLogAboutSIGPIPE) {
+			didLogAboutSIGPIPE = true;
+			onUnexpectedError(new Error(`Unexpected SIGPIPE`));
+		}
+	});
+
 	const disposables = new DisposableStore();
 	const { socketServer, instantiationService } = await setupServerServices(connectionToken, args, REMOTE_DATA_FOLDER, disposables);
 
@@ -661,23 +708,23 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 	// the telemetry service overwrite our handler
 	instantiationService.invokeFunction((accessor) => {
 		const logService = accessor.get(ILogService);
-		setUnexpectedErrorHandler(err => {
-			// See https://github.com/microsoft/vscode-remote-release/issues/6481
-			// In some circumstances, console.error will throw an asynchronous error. This asynchronous error
-			// will end up here, and then it will be logged again, thus creating an endless asynchronous loop.
-			// Here we try to break the loop by ignoring EPIPE errors that include our own unexpected error handler in the stack.
-			if (err && err.code === 'EPIPE' && err.syscall === 'write' && err.stack && /unexpectedErrorHandler/.test(err.stack)) {
-				return;
+		unloggedErrors.forEach(error => logService.error(error));
+		unloggedErrors.length = 0;
+
+		initUnexpectedErrorHandler((error: any) => logService.error(error));
+	});
+
+	// On Windows, configure the UNC allow list based on settings
+	instantiationService.invokeFunction((accessor) => {
+		const configurationService = accessor.get(IConfigurationService);
+
+		if (platform.isWindows) {
+			if (configurationService.getValue('security.restrictUNCAccess') === false) {
+				disableUNCAccessRestrictions();
+			} else {
+				addUNCHostToAllowlist(configurationService.getValue('security.allowedUNCHosts'));
 			}
-			logService.error(err);
-		});
-		process.on('SIGPIPE', () => {
-			// See https://github.com/microsoft/vscode-remote-release/issues/6543
-			// We would normally install a SIGPIPE listener in bootstrap.js
-			// But in certain situations, the console itself can be in a broken pipe state
-			// so logging SIGPIPE to the console will cause an infinite async loop
-			onUnexpectedError(new Error(`Unexpected SIGPIPE`));
-		});
+		}
 	});
 
 	//
@@ -687,7 +734,7 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 	instantiationService.invokeFunction((accessor) => {
 		const logService = accessor.get(ILogService);
 
-		if (process.platform === 'win32' && process.env.HOMEDRIVE && process.env.HOMEPATH) {
+		if (platform.isWindows && process.env.HOMEDRIVE && process.env.HOMEPATH) {
 			const homeDirModulesPath = join(process.env.HOMEDRIVE, 'node_modules');
 			const userDir = dirname(join(process.env.HOMEDRIVE, process.env.HOMEPATH));
 			const userDirModulesPath = join(userDir, 'node_modules');
@@ -714,10 +761,10 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 
 	const vsdaMod = instantiationService.invokeFunction((accessor) => {
 		const logService = accessor.get(ILogService);
-		const hasVSDA = fs.existsSync(join(FileAccess.asFileUri('', require).fsPath, '../node_modules/vsda'));
+		const hasVSDA = fs.existsSync(join(FileAccess.asFileUri('').fsPath, '../node_modules/vsda'));
 		if (hasVSDA) {
 			try {
-				return <typeof vsda>require.__$__nodeRequire('vsda');
+				return <typeof vsda>globalThis._VSCODE_NODE_MODULES['vsda'];
 			} catch (err) {
 				logService.error(err);
 			}
@@ -725,7 +772,7 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 		return null;
 	});
 
-	const hasWebClient = fs.existsSync(FileAccess.asFileUri('vs/code/browser/workbench/workbench.html', require).fsPath);
+	const hasWebClient = fs.existsSync(FileAccess.asFileUri('vs/code/browser/workbench/workbench.html').fsPath);
 
 	if (hasWebClient && address && typeof address !== 'string') {
 		// ships the web ui!
@@ -745,10 +792,12 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 		const telemetryService = accessor.get(ITelemetryService);
 
 		type ServerStartClassification = {
-			startTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth' };
-			startedTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth' };
-			codeLoadedTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth' };
-			readyTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth' };
+			owner: 'alexdima';
+			comment: 'The server has started up';
+			startTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The time the server started at.' };
+			startedTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The time the server began listening for connections.' };
+			codeLoadedTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The time which the code loaded on the server' };
+			readyTime: { classification: 'SystemMetaData'; purpose: 'PerformanceAndHealth'; comment: 'The time when the server was completely ready' };
 		};
 		type ServerStartEvent = {
 			startTime: number;

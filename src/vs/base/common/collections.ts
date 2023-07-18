@@ -9,13 +9,13 @@
  */
 export type IStringDictionary<V> = Record<string, V>;
 
-
 /**
  * An interface for a JavaScript object that
  * acts a dictionary. The keys are numbers.
  */
 export type INumberDictionary<V> = Record<number, V>;
 
+// {{ SQL CARBON EDIT }} - BEGIN - Needed to retrive values from IStringDictionary's and INumberDictionary's
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
@@ -31,6 +31,9 @@ export function values<T>(from: IStringDictionary<T> | INumberDictionary<T>): T[
 	}
 	return result;
 }
+// {{SQL CARBON EDIT}} - END - Needed to retrive values from IStringDictionary's and INumberDictionary's
+
+// {{ SQL CARBON EDIT }} - BEGIN - Adding forEach definition
 
 /**
  * Iterates over each entry in the provided dictionary. The iterator allows
@@ -51,6 +54,8 @@ export function forEach<T>(from: IStringDictionary<T> | INumberDictionary<T>, ca
 	}
 }
 
+// {{ SQL CARBON EDIT }} - END - Adding forEach definition
+
 /**
  * Groups the collection into a dictionary based on the provided
  * group function.
@@ -68,25 +73,15 @@ export function groupBy<K extends string | number | symbol, V>(data: V[], groupF
 	return result;
 }
 
-export function fromMap<T>(original: Map<string, T>): IStringDictionary<T> {
-	const result: IStringDictionary<T> = Object.create(null);
-	if (original) {
-		original.forEach((value, key) => {
-			result[key] = value;
-		});
-	}
-	return result;
-}
-
 export function diffSets<T>(before: Set<T>, after: Set<T>): { removed: T[]; added: T[] } {
 	const removed: T[] = [];
 	const added: T[] = [];
-	for (let element of before) {
+	for (const element of before) {
 		if (!after.has(element)) {
 			removed.push(element);
 		}
 	}
-	for (let element of after) {
+	for (const element of after) {
 		if (!before.has(element)) {
 			added.push(element);
 		}
@@ -97,12 +92,12 @@ export function diffSets<T>(before: Set<T>, after: Set<T>): { removed: T[]; adde
 export function diffMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[]; added: V[] } {
 	const removed: V[] = [];
 	const added: V[] = [];
-	for (let [index, value] of before) {
+	for (const [index, value] of before) {
 		if (!after.has(index)) {
 			removed.push(value);
 		}
 	}
-	for (let [index, value] of after) {
+	for (const [index, value] of after) {
 		if (!before.has(index)) {
 			added.push(value);
 		}

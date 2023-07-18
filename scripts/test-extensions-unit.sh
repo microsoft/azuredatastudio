@@ -46,13 +46,15 @@ else
 				compile-extension:azurecore \
 				compile-extension:cms \
 				compile-extension:dacpac \
+				compile-extension:datavirtualization \
 				compile-extension:import \
-				compile-extension:schema-compare \
 				compile-extension:machine-learning \
 				compile-extension:mssql \
 				compile-extension:notebook \
 				compile-extension:query-history \
+				compile-extension:query-store \
 				compile-extension:resource-deployment \
+				compile-extension:schema-compare \
 				compile-extension:sql-bindings \
 				compile-extension:sql-database-projects
 
@@ -119,6 +121,11 @@ echo *** starting dacpac tests ***
 echo *****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
+echo *****************************************
+echo *** starting datavirtualization tests ***
+echo *****************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/datavirtualization --extensionTestsPath=$ROOT/extensions/datavirtualization/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
 # {{SQL CARBON TODO}} - disable tests for this extension
 # echo ********************************************
 # echo *** starting data-workspace tests ***
@@ -149,6 +156,11 @@ echo ******************************************
 echo *** starting query-history tests ***
 echo ******************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-history --extensionTestsPath=$ROOT/extensions/query-history/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
+echo ********************************************
+echo *** starting query-store tests ***
+echo ********************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-store --extensionTestsPath=$ROOT/extensions/query-store/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo ******************************************
 echo *** starting resource deployment tests ***

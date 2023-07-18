@@ -5,12 +5,10 @@
 
 .group-color-options {
 	display: flex;
+	flex-wrap: wrap;
 	width: 100%;
-}
-
-.group-color-options .server-group-color {
-	height: 20px;
-	margin: 0px;
+	row-gap: 10px;
+	column-gap: 15px;
 }
 
 .server-group-dialog {

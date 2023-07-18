@@ -4,23 +4,22 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 
 export class TargetDatabaseSummaryDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
-	private _tableLength: number;
+	private _tableLength: number = 700;
 
 	constructor(private _model: MigrationStateModel) {
-		let dialogWidth: azdata.window.DialogWidth;
+		let dialogWidth: azdata.window.DialogWidth = 'medium';
+
+		// extend for blob container
 		if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
 			this._tableLength = 800;
 			dialogWidth = 900;
-		} else {
-			this._tableLength = 700;
-			dialogWidth = 'medium';
 		}
 		this._dialogObject = azdata.window.createModelViewDialog(
 			constants.DATABASE_TO_BE_MIGRATED,
@@ -33,7 +32,7 @@ export class TargetDatabaseSummaryDialog {
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 
-			const isSqlDbMigration = this._model._targetType === MigrationTargetType.SQLDB;
+			const isSqlDbMigration = this._model.isSqlDbTarget;
 			const databaseCount = this._view.modelBuilder.text()
 				.withProps({
 					value: constants.COUNT_DATABASES(this._model._databasesForMigration.length),
@@ -77,7 +76,16 @@ export class TargetDatabaseSummaryDialog {
 					headerCssStyles: headerCssStyle
 				}];
 
-			if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+			if (isSqlDbMigration) {
+				columns.push({
+					valueType: azdata.DeclarativeDataType.string,
+					displayName: constants.TARGET_TABLE_COUNT_NAME,
+					isReadOnly: true,
+					width: columnWidth,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyle
+				});
+			} else if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
 				columns.push(
 					{
 						valueType: azdata.DeclarativeDataType.string,
@@ -120,16 +128,7 @@ export class TargetDatabaseSummaryDialog {
 						headerCssStyles: headerCssStyle,
 						hidden: this._model._databaseBackup.migrationMode === MigrationMode.ONLINE
 					});
-			} else if (isSqlDbMigration) {
-				columns.push({
-					valueType: azdata.DeclarativeDataType.string,
-					displayName: constants.TARGET_TABLE_COUNT_NAME,
-					isReadOnly: true,
-					width: columnWidth,
-					rowCssStyles: rowCssStyle,
-					headerCssStyles: headerCssStyle
-				});
-			} else {
+			} else if (this._model._databaseBackup.networkContainerType === NetworkContainerType.FILE_SHARE) {
 				columns.push({
 					valueType: azdata.DeclarativeDataType.string,
 					displayName: constants.NETWORK_SHARE_PATH,
@@ -148,25 +147,24 @@ export class TargetDatabaseSummaryDialog {
 					{ value: db },
 					{ value: this._model._targetDatabaseNames[index] });
 
-				if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
-					tableRow.push(
-						{ value: this._model._databaseBackup.blobs[index].storageAccount.location },
-						{ value: this._model._databaseBackup.blobs[index].storageAccount.resourceGroup! },
-						{ value: this._model._databaseBackup.blobs[index].storageAccount.name },
-						{ value: this._model._databaseBackup.blobs[index].blobContainer.name });
-
-					if (this._model._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-						tableRow.push(
-							{ value: this._model._databaseBackup.blobs[index].lastBackupFile! });
-					}
-				} else if (isSqlDbMigration) {
+				if (isSqlDbMigration) {
 					const totalTables = this._model._sourceTargetMapping.get(db)?.sourceTables.size ?? 0;
 					let selectedTables = 0;
 					this._model._sourceTargetMapping.get(db)?.sourceTables.forEach(
 						tableInfo => selectedTables += tableInfo.selectedForMigration ? 1 : 0);
 					tableRow.push(
 						{ value: constants.TOTAL_TABLES_SELECTED(selectedTables, totalTables) });
-				} else {
+				} else if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+					tableRow.push(
+						{ value: this._model._databaseBackup.blobs[index].storageAccount.location },
+						{ value: this._model._databaseBackup.blobs[index].storageAccount.resourceGroup! },
+						{ value: this._model._databaseBackup.blobs[index].storageAccount.name },
+						{ value: this._model._databaseBackup.blobs[index].blobContainer.name });
+					if (this._model._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						tableRow.push(
+							{ value: this._model._databaseBackup.blobs[index].lastBackupFile! });
+					}
+				} else if (this._model._databaseBackup.networkContainerType === NetworkContainerType.FILE_SHARE) {
 					tableRow.push(
 						{ value: this._model._databaseBackup.networkShares[index].networkShareLocation });
 				}

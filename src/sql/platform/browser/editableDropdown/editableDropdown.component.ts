@@ -10,10 +10,8 @@ import {
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
-
+import { defaultEditableDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 @Component({
 	selector: 'editable-select-box',
@@ -32,7 +30,6 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService
 	) {
 		super();
@@ -44,7 +41,8 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			strictSelection: false,
 			placeholder: '',
 			maxHeight: 125,
-			ariaLabel: ''
+			ariaLabel: '',
+			...defaultEditableDropdownStyles
 		};
 		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, dropdownOptions);
 		this._selectbox.values = this.options;
@@ -61,7 +59,6 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 				this.onDidSelect.emit(e);
 			}
 		});
-		this._register(attachEditableDropdownStyler(this._selectbox, this.themeService));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {

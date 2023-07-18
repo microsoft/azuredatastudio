@@ -3,7 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// {{SQL CARBON EDIT}}
+import { Iterable } from 'vs/base/common/iterator';
+import { toDisposable } from 'vs/base/common/lifecycle';
+import { LinkedList } from 'vs/base/common/linkedList';
+
+// {{SQL CARBON EDIT}} - update word separator to remove '@' symbol since that is valid SQL character
 export const USUAL_WORD_SEPARATORS = '`~!#$%^&*()-=+[{]}\\|;:\'",.<>/?';
 
 /**
@@ -58,7 +62,7 @@ export function ensureValidWordDefinition(wordDefinition?: RegExp | null): RegEx
 			if (wordDefinition.multiline) {
 				flags += 'm';
 			}
-			if ((wordDefinition as any).unicode) {
+			if (wordDefinition.unicode) {
 				flags += 'u';
 			}
 			result = new RegExp(wordDefinition.source, flags);
@@ -72,13 +76,31 @@ export function ensureValidWordDefinition(wordDefinition?: RegExp | null): RegEx
 	return result;
 }
 
-const _defaultConfig = {
+
+export interface IGetWordAtTextConfig {
+	maxLen: number;
+	windowSize: number;
+	timeBudget: number;
+}
+
+
+const _defaultConfig = new LinkedList<IGetWordAtTextConfig>();
+_defaultConfig.unshift({
 	maxLen: 1000,
 	windowSize: 15,
 	timeBudget: 150
-};
+});
 
-export function getWordAtText(column: number, wordDefinition: RegExp, text: string, textOffset: number, config = _defaultConfig): IWordAtPosition | null {
+export function setDefaultGetWordAtTextConfig(value: IGetWordAtTextConfig) {
+	const rm = _defaultConfig.unshift(value);
+	return toDisposable(rm);
+}
+
+export function getWordAtText(column: number, wordDefinition: RegExp, text: string, textOffset: number, config?: IGetWordAtTextConfig): IWordAtPosition | null {
+
+	if (!config) {
+		config = Iterable.first(_defaultConfig)!;
+	}
 
 	if (text.length > config.maxLen) {
 		// don't throw strings that long at the regexp
@@ -97,7 +119,7 @@ export function getWordAtText(column: number, wordDefinition: RegExp, text: stri
 	const pos = column - 1 - textOffset;
 
 	let prevRegexIndex = -1;
-	let match: RegExpMatchArray | null = null;
+	let match: RegExpExecArray | null = null;
 
 	for (let i = 1; ; i++) {
 		// check time budget
@@ -138,8 +160,8 @@ export function getWordAtText(column: number, wordDefinition: RegExp, text: stri
 	return null;
 }
 
-function _findRegexMatchEnclosingPosition(wordDefinition: RegExp, text: string, pos: number, stopPos: number): RegExpMatchArray | null {
-	let match: RegExpMatchArray | null;
+function _findRegexMatchEnclosingPosition(wordDefinition: RegExp, text: string, pos: number, stopPos: number): RegExpExecArray | null {
+	let match: RegExpExecArray | null;
 	while (match = wordDefinition.exec(text)) {
 		const matchIndex = match.index || 0;
 		if (matchIndex <= pos && wordDefinition.lastIndex >= pos) {

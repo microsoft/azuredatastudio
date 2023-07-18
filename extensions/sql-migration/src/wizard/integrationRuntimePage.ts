@@ -6,20 +6,20 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData } from '../api/azure';
+import { getFullResourceGroupFromId, getSqlMigrationService, getSqlMigrationServiceMonitoringData, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, TelemetryViews } from '../telemetry';
 import * as utils from '../api/utils';
 import * as styles from '../constants/styles';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _statusLoadingComponent!: azdata.LoadingComponent;
-	private _subscription!: azdata.TextComponent;
+	private _subscriptionDropdown!: azdata.DropDownComponent;
 	private _location!: azdata.TextComponent;
 	private _resourceGroupDropdown!: azdata.DropDownComponent;
 	private _dmsDropdown!: azdata.DropDownComponent;
@@ -27,15 +27,23 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _dmsStatusInfoBox!: azdata.InfoBoxComponent;
 	private _authKeyTable!: azdata.DeclarativeTableComponent;
 	private _refreshButton!: azdata.ButtonComponent;
-	private _connectionStatusLoader!: azdata.LoadingComponent;
-	private _copy1!: azdata.ButtonComponent;
-	private _copy2!: azdata.ButtonComponent;
-	private _refresh1!: azdata.ButtonComponent;
-	private _refresh2!: azdata.ButtonComponent;
+	private _onlineButton!: azdata.RadioButtonComponent;
+	private _offlineButton!: azdata.RadioButtonComponent;
+	private _modeContainer!: azdata.FlexContainer;
+	private _radioButtonContainer!: azdata.FlexContainer;
+	private _networkShareButton!: azdata.RadioButtonComponent;
+	private _blobContainerButton!: azdata.RadioButtonComponent;
+	private _sqlVmPageBlobInfoBox!: azdata.TextComponent;
+	private _originalMigrationMode!: MigrationMode;
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
+		this.migrationStateModel._databaseBackup.migrationMode =
+			this.migrationStateModel._databaseBackup.migrationMode ||
+				this.migrationStateModel.isSqlDbTarget
+				? MigrationMode.OFFLINE
+				: MigrationMode.ONLINE;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -49,8 +57,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.withItems([this._statusLoadingComponent])
 			.component();
 
+		this._radioButtonContainer = this.createBackupLocationComponent();
+		this._modeContainer = this.migrationModeContainer();
+
 		const form = view.modelBuilder.formContainer()
 			.withFormItems([
+				{ component: this._modeContainer },
+				{ component: this._radioButtonContainer },
 				{ component: this.migrationServiceDropdownContainer() },
 				{ component: this._dmsInfoContainer }])
 			.withProps({ CSSStyles: { 'padding-top': '0' } })
@@ -64,25 +77,152 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		await view.initializeModel(form);
 	}
 
+	private migrationModeContainer(): azdata.FlexContainer {
+		const buttonGroup = 'migrationMode';
+		this._onlineButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
+				name: buttonGroup,
+				checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE,
+				CSSStyles: { ...styles.LABEL_CSS, },
+			}).component();
+		const onlineDescription = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
+				CSSStyles: { ...styles.NOTE_CSS, 'margin-left': '20px' }
+			}).component();
+		this._disposables.push(
+			this._onlineButton.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
+				}
+			}));
+
+		this._offlineButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
+				name: buttonGroup,
+				checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '12px' },
+			}).component();
+		const offlineDescription = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
+				CSSStyles: { ...styles.NOTE_CSS, 'margin-left': '20px' }
+			}).component();
+		this._disposables.push(
+			this._offlineButton.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
+				}
+			}));
+
+		const flexContainer = this._view.modelBuilder.flexContainer()
+			.withItems([
+				this._onlineButton,
+				onlineDescription,
+				this._offlineButton,
+				offlineDescription]
+			).withLayout({ flexFlow: 'column' })
+			.component();
+
+		return flexContainer;
+	}
+
+	private createBackupLocationComponent(): azdata.FlexContainer {
+		const buttonGroup = 'networkContainer';
+
+		const selectLocationText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_PAGE_DESCRIPTION,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		this._networkShareButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
+				checked: this.migrationStateModel.isBackupContainerNetworkShare,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
+
+		this._disposables.push(
+			this._networkShareButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.NETWORK_SHARE;
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
+
+					const hasService = this.migrationStateModel._sqlMigrationService !== undefined;
+					await utils.updateControlDisplay(this._dmsInfoContainer, hasService);
+					if (hasService) {
+						await this.loadStatus();
+					}
+				}
+			}));
+
+		this._blobContainerButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
+				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
+
+		this._disposables.push(
+			this._blobContainerButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
+					await utils.updateControlDisplay(this._dmsInfoContainer, false);
+					this.migrationStateModel.refreshDatabaseBackupPage = true;
+				}
+			}));
+
+		this._sqlVmPageBlobInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_INFO,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' },
+				links: [
+					{
+						text: constants.DATABASE_BACKUP_SQL_VM_PAGE_BLOB_URL_LABEL,
+						url: 'https://aka.ms/dms-migrations-troubleshooting'
+					}
+				]
+			}).component();
+
+		const flexContainer = this._view.modelBuilder.flexContainer()
+			.withItems([
+				selectLocationText,
+				this._blobContainerButton,
+				this._networkShareButton,
+				this._sqlVmPageBlobInfoBox
+			])
+			.withLayout({ flexFlow: 'column' })
+			.component();
+
+		return flexContainer;
+	}
+
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
+		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
+		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 
-		this._subscription.value = this.migrationStateModel._targetSubscription.name;
-		this._location.value = await getLocationDisplayName(
-			this.migrationStateModel._targetServerInstance.location);
-
-		await utils.updateControlDisplay(
-			this._dmsInfoContainer,
-			this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-			this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
-
-		await this.loadResourceGroupDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
+			}
+			const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+			if (!isSqlDbTarget && !this._networkShareButton.checked && !this._blobContainerButton.checked) {
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.SERVICE_SELECTION_LOCATION_MESSAGE,
+				};
+				return false;
 			}
 
 			const state = this.migrationStateModel._sqlMigrationService?.properties?.integrationRuntimeState;
@@ -93,10 +233,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				};
 				return false;
 			}
-			if ((this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-				this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE)
-				&& state !== 'Online') {
-
+			if ((isSqlDbTarget || isNetworkShare) && state !== 'Online') {
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
 					text: constants.SERVICE_OFFLINE_ERROR
@@ -105,10 +242,50 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+
+		await utils.updateControlDisplay(this._modeContainer, !isSqlDbTarget);
+		this._onlineButton.enabled = !isSqlDbTarget;
+
+		if (isSqlDbTarget) {
+			this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+			this._offlineButton.checked = true;
+		}
+		this._originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
+
+		this._networkShareButton.checked = this.migrationStateModel.isBackupContainerNetworkShare;
+		this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
+		await utils.updateControlDisplay(
+			this._radioButtonContainer,
+			!isSqlDbTarget);
+
+		// if target SQL VM version is <= 2014, disable IR scenario and show info box
+		const shouldDisableIrScenario = isSqlVmTarget && utils.isTargetSqlVm2014OrBelow(this.migrationStateModel._targetServerInstance as SqlVMServer);
+		this._networkShareButton.enabled = !shouldDisableIrScenario;
+		await utils.updateControlDisplay(this._sqlVmPageBlobInfoBox, shouldDisableIrScenario, 'block');
+
+		// always pre-select blob scenario
+		this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
+		this._blobContainerButton.checked = true;
+
+		await this.loadSubscriptionsDropdown();
+
+		this._location.value = this.migrationStateModel._location.displayName;
+
+		await utils.updateControlDisplay(
+			this._dmsInfoContainer,
+			isSqlDbTarget || isNetworkShare);
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => true);
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
+		if (this._originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
+			this.migrationStateModel.refreshDatabaseBackupPage = true;
+		}
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -127,12 +304,32 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				value: constants.SUBSCRIPTION,
 				CSSStyles: { ...styles.LABEL_CSS }
 			}).component();
-		this._subscription = this._view.modelBuilder.text()
+
+		this._subscriptionDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
-				enabled: false,
+				ariaLabel: constants.MIGRATION_SERVICE_SELECT_SERVICE_LABEL,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				editable: true,
+				required: true,
+				fireOnTextChange: true,
+				placeholder: constants.SELECT_A_SERVICE,
 				CSSStyles: { 'margin': '0' }
 			}).component();
+
+		this._disposables.push(
+			this._subscriptionDropdown.onValueChanged(async (value) => {
+				if (value && value !== 'undefined' && value !== constants.SERVICE_NOT_FOUND) {
+					const selectedSubscription = this.migrationStateModel._subscriptions.find(
+						sub => `${sub.name} - ${sub.id}` === value);
+					this.migrationStateModel._sqlMigrationServiceSubscription = (selectedSubscription)
+						? selectedSubscription
+						: undefined!;
+				} else {
+					this.migrationStateModel._sqlMigrationServiceSubscription = undefined!;
+				}
+				await utils.clearDropDown(this._resourceGroupDropdown);
+				await this.loadResourceGroupDropdown();
+			}));
 
 		const locationLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -170,8 +367,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 						this.migrationStateModel._sqlMigrationServiceResourceGroup = (selectedResourceGroup)
 							? selectedResourceGroup
 							: undefined!;
-						this.populateDms();
 					}
+					else {
+						this.migrationStateModel._sqlMigrationServiceResourceGroup = undefined!;
+					}
+					await utils.clearDropDown(this._dmsDropdown);
+					this.loadDmsDropdown();
 				}));
 
 		const migrationServiceDropdownLabel = this._view.modelBuilder.text()
@@ -195,16 +396,21 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				async (value) => {
 					if (value && value !== 'undefined' && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
 						this.wizard.message = { text: '' };
+						const resourceGroupName = this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase();
+						const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
+							dms => dms.name === value
+								&& dms.properties.resourceGroup.toLowerCase() === resourceGroupName);
 
+						const showShirStatus = selectedDms !== undefined &&
+							(this.migrationStateModel.isSqlDbTarget ||
+								this.migrationStateModel.isBackupContainerNetworkShare);
+
+						this.migrationStateModel._sqlMigrationService = selectedDms;
 						await utils.updateControlDisplay(
 							this._dmsInfoContainer,
-							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
+							showShirStatus);
 
-						const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
-							dms => dms.name === value && dms.properties.resourceGroup.toLowerCase() === this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase());
-						if (selectedDms) {
-							this.migrationStateModel._sqlMigrationService = selectedDms;
+						if (showShirStatus) {
 							await this.loadStatus();
 						}
 					} else {
@@ -233,15 +439,15 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 					this.migrationStateModel._sqlMigrationServiceResourceGroup = createdDmsResult.resourceGroup;
 					this.migrationStateModel._sqlMigrationService = createdDmsResult.service;
+
 					await this.loadResourceGroupDropdown();
-					this.populateDms();
 				}));
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
 				descriptionText,
 				subscriptionLabel,
-				this._subscription,
+				this._subscriptionDropdown,
 				locationLabel,
 				this._location,
 				resourceGroupLabel,
@@ -276,7 +482,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._refreshButton.onDidClick(
-				async (e) => this.loadStatus()));
+				async (e) => await this.loadStatus()));
 
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer()
 			.component();
@@ -299,222 +505,174 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const authenticationKeysLabel = this._view.modelBuilder.text()
-			.withProps({
-				value: constants.AUTHENTICATION_KEYS,
-				CSSStyles: { ...styles.LABEL_CSS }
-			}).component();
+		const instructions = utils.createRegistrationInstructions(this._view, false);
 
-		this._copy1 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.COPY_KEY1,
-				iconPath: IconPathHelper.copy,
-				ariaLabel: constants.COPY_KEY1,
-			}).component();
-
-		this._disposables.push(
-			this._copy1.onDidClick(
-				async (e) => {
-					await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
-					void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-				}));
-
-		this._copy2 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.COPY_KEY2,
-				iconPath: IconPathHelper.copy,
-				ariaLabel: constants.COPY_KEY2,
-			}).component();
-
-		this._disposables.push(
-			this._copy2.onDidClick(async (e) => {
-				await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
-				void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-			}));
-
-		this._refresh1 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.REFRESH_KEY1,
-				iconPath: IconPathHelper.refresh,
-				ariaLabel: constants.REFRESH_KEY1,
-			}).component();
-
-		this._refresh2 = this._view.modelBuilder.button()
-			.withProps({
-				title: constants.REFRESH_KEY2,
-				iconPath: IconPathHelper.refresh,
-				ariaLabel: constants.REFRESH_KEY2,
-			}).component();
-
-		this._authKeyTable = createAuthenticationKeyTable(this._view);
+		this._authKeyTable = utils.createAuthenticationKeyTable(this._view, '50px', '500px');
 
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
-			authenticationKeysLabel,
+			instructions,
 			this._authKeyTable]);
-
-		this._connectionStatusLoader = this._view.modelBuilder.loadingComponent()
-			.withItem(statusContainer)
-			.withProps({ loading: false })
-			.component();
 
 		container.addItems([
 			connectionLabelContainer,
-			this._connectionStatusLoader]);
+			statusContainer]);
 
 		return container;
+	}
+
+	public async loadSubscriptionsDropdown(): Promise<void> {
+		try {
+			this._subscriptionDropdown.loading = true;
+			this.migrationStateModel._subscriptions = await utils.getAzureSubscriptions(
+				this.migrationStateModel._azureAccount,
+				this.migrationStateModel._azureTenant?.id);
+
+			const sub = this.migrationStateModel._sqlMigrationServiceSubscription
+				?? this.migrationStateModel._targetSubscription;
+
+			this._subscriptionDropdown.values = await utils.getAzureSubscriptionsDropdownValues(
+				this.migrationStateModel._subscriptions);
+
+			utils.selectDefaultDropdownValue(this._subscriptionDropdown, sub?.id, false);
+		} catch (e) {
+			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadSubscriptionsDropdown', e);
+		} finally {
+			this._subscriptionDropdown.loading = false;
+		}
 	}
 
 	public async loadResourceGroupDropdown(): Promise<void> {
 		try {
 			this._resourceGroupDropdown.loading = true;
-			this._dmsDropdown.loading = true;
+			const account = this.migrationStateModel._azureAccount;
+			const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
+			const serviceId = this.migrationStateModel._sqlMigrationService?.id;
+			const resourceGroup = this.migrationStateModel._sqlMigrationServiceResourceGroup?.name ??
+				serviceId !== undefined
+				? getFullResourceGroupFromId(serviceId!)
+				: undefined;
 
-			this.migrationStateModel._sqlMigrationServices = await utils.getAzureSqlMigrationServices(
-				this.migrationStateModel._azureAccount,
-				this.migrationStateModel._targetSubscription);
+			const migrationServices = await utils.getAzureSqlMigrationServices(
+				account,
+				subscription);
 
-			this.migrationStateModel._resourceGroups = utils.getServiceResourceGroupsByLocation(
-				this.migrationStateModel._sqlMigrationServices,
+			const resourceGroups = utils.getServiceResourceGroupsByLocation(
+				migrationServices,
 				this.migrationStateModel._location);
 
 			this._resourceGroupDropdown.values = utils.getResourceDropdownValues(
-				this.migrationStateModel._resourceGroups,
+				resourceGroups,
 				constants.RESOURCE_GROUP_NOT_FOUND);
 
-			const resourceGroup = this.migrationStateModel._sqlMigrationService
-				? getFullResourceGroupFromId(this.migrationStateModel._sqlMigrationService?.id)
-				: undefined;
+			this.migrationStateModel._sqlMigrationServices = migrationServices;
+			this.migrationStateModel._resourceGroups = resourceGroups;
 			utils.selectDefaultDropdownValue(this._resourceGroupDropdown, resourceGroup, false);
+		} catch (e) {
+			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadResourceGroupDropdown', e);
 		} finally {
-			this._dmsDropdown.loading = false;
 			this._resourceGroupDropdown.loading = false;
 		}
 	}
 
-	public populateDms(): void {
+	public loadDmsDropdown(): void {
 		try {
 			this._dmsDropdown.loading = true;
+			const serviceId = this.migrationStateModel._sqlMigrationService?.id;
+
 			this._dmsDropdown.values = utils.getAzureResourceDropdownValues(
 				this.migrationStateModel._sqlMigrationServices,
 				this.migrationStateModel._location,
-				this.migrationStateModel._sqlMigrationServiceResourceGroup.name,
+				this.migrationStateModel._sqlMigrationServiceResourceGroup?.name,
 				constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR);
 
 			utils.selectDefaultDropdownValue(
 				this._dmsDropdown,
-				this.migrationStateModel._sqlMigrationService?.id,
+				serviceId,
 				false);
+		} catch (e) {
+			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadDmsDropdown', e);
 		} finally {
 			this._dmsDropdown.loading = false;
 		}
 	}
 
+	private _lastIn = 0;
 	private async loadStatus(): Promise<void> {
+		const callSequence = ++this._lastIn;
+		let serviceName = '';
 		try {
-			this._statusLoadingComponent.loading = true;
+			if (callSequence === this._lastIn) {
+				this._statusLoadingComponent.loading = true;
+			}
 
-			if (this.migrationStateModel._sqlMigrationService) {
+			const service = this.migrationStateModel._sqlMigrationService;
+			if (service) {
+				const account = this.migrationStateModel._azureAccount;
+				const subscription = this.migrationStateModel._sqlMigrationServiceSubscription;
+				const resourceGroup = service.properties.resourceGroup;
+				const location = service.location;
+				serviceName = service.name;
+				if (service?.properties?.integrationRuntimeState) {
+					service.properties.integrationRuntimeState = undefined;
+				}
+
 				const migrationService = await getSqlMigrationService(
-					this.migrationStateModel._azureAccount,
-					this.migrationStateModel._targetSubscription,
-					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
-					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService.name);
-				this.migrationStateModel._sqlMigrationService = migrationService;
+					account,
+					subscription,
+					resourceGroup,
+					location,
+					serviceName);
+
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
+
 				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
-					this.migrationStateModel._azureAccount,
-					this.migrationStateModel._targetSubscription,
-					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
-					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name);
-				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(
+					account,
+					subscription,
+					resourceGroup,
+					location,
+					serviceName);
+
+				const nodeNames = migrationServiceMonitoringStatus.nodes.map(
 					node => node.nodeName);
 
-				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
-					this.migrationStateModel._azureAccount,
-					this.migrationStateModel._targetSubscription,
-					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
-					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name);
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
 
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_READY(
-							this.migrationStateModel._sqlMigrationService!.name,
-							this.migrationStateModel._nodeNames.join(', ')),
+						text: constants.SERVICE_READY(serviceName, nodeNames.join(', '), true),
 						style: 'success'
 					});
 				} else {
 					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
-						text: constants.SERVICE_NOT_READY(
-							this.migrationStateModel._sqlMigrationService!.name),
+						text: constants.SERVICE_NOT_READY(serviceName, true),
 						style: 'error'
 					});
 				}
 
-				const data = [
-					[
-						{ value: constants.SERVICE_KEY1_LABEL },
-						{ value: migrationServiceAuthKeys.authKey1 },
-						{
-							value: this._view.modelBuilder.flexContainer()
-								.withItems([this._copy1, this._refresh1])
-								.component()
-						}
-					],
-					[
-						{ value: constants.SERVICE_KEY2_LABEL },
-						{ value: migrationServiceAuthKeys.authKey2 },
-						{
-							value: this._view.modelBuilder.flexContainer()
-								.withItems([this._copy2, this._refresh2])
-								.component()
-						}
-					]];
+				// exit if new call has started
+				if (callSequence !== this._lastIn) { return; }
 
-				await this._authKeyTable.setDataValues(data);
+				await utils.refreshAuthenticationKeyTable(this._view, this._authKeyTable, account, subscription, resourceGroup, location, migrationService);
+
+				this.migrationStateModel._sqlMigrationService = migrationService;
+				this.migrationStateModel._sqlMigrationServiceSubscription = subscription;
+				this.migrationStateModel._nodeNames = nodeNames;
 			}
 		} catch (e) {
-			logError(TelemetryViews.IntegrationRuntimePage, 'ErrorLoadingStatus', e);
+			await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+				text: constants.SERVICE_ERROR_NOT_READY(serviceName, e.message),
+				style: 'error'
+			});
+
+			logError(TelemetryViews.IntegrationRuntimePage, 'Error loadStatus', e);
 		} finally {
-			this._statusLoadingComponent.loading = false;
+			if (callSequence === this._lastIn) {
+				this._statusLoadingComponent.loading = false;
+			}
 		}
 	}
-}
-
-export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.DeclarativeTableComponent {
-	const authKeyTable = view.modelBuilder.declarativeTable()
-		.withProps({
-			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
-			columns: [
-				{
-					displayName: constants.NAME,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
-					isReadOnly: true,
-					rowCssStyles: { ...styles.BODY_CSS },
-					headerCssStyles: { ...styles.BODY_CSS, 'font-weight': '600' }
-				},
-				{
-					displayName: constants.AUTH_KEY_COLUMN_HEADER,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
-					isReadOnly: true,
-					rowCssStyles: { ...styles.BODY_CSS },
-					headerCssStyles: { ...styles.BODY_CSS, 'font-weight': '600' }
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
-					isReadOnly: true,
-					rowCssStyles: { ...styles.BODY_CSS },
-					headerCssStyles: { ...styles.BODY_CSS }
-				}
-			],
-			CSSStyles: { 'margin-top': '5px', 'width': WIZARD_INPUT_COMPONENT_WIDTH }
-		}).component();
-	return authKeyTable;
 }

@@ -264,10 +264,6 @@
         <source xml:lang="en">New Section (Preview)</source>
         <target state="translated">新节(预览)</target>
       </trans-unit>
-      <trans-unit id="noBDCConnectionError">
-        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
-        <target state="translated">Spark 内核需要连接到 SQL Server 大数据群集主实例。</target>
-      </trans-unit>
       <trans-unit id="noBooksSelected">
         <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
         <target state="translated">当前，Viewlet 中未选中任何 Jupyter Book。</target>
@@ -311,10 +307,6 @@
       <trans-unit id="openUntitledNotebookError">
         <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
         <target state="translated">以无标题形式打开无标题笔记本 {0} 失败: {1}</target>
-      </trans-unit>
-      <trans-unit id="providerNotValidError">
-        <source xml:lang="en">Non-MSSQL providers are not supported for spark kernels.</source>
-        <target state="translated">Spark 内核不支持非 MSSQL 提供程序。</target>
       </trans-unit>
       <trans-unit id="readBookError">
         <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
@@ -364,10 +356,6 @@
   </file>
   <file original="extensions/notebook/dist/common/notebookUtils" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">此示例代码将文件加载到数据帧中，并显示前 10 个结果。</target>
-      </trans-unit>
       <trans-unit id="noNotebookVisible">
         <source xml:lang="en">No notebook editor is active</source>
         <target state="translated">没有笔记本编辑器处于活动状态</target>
@@ -784,29 +772,9 @@
   </file>
   <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="bdcConnectError">
-        <source xml:lang="en">Error: {0}. </source>
-        <target state="translated">错误: {0}。</target>
-      </trans-unit>
-      <trans-unit id="clusterControllerConnectionRequired">
-        <source xml:lang="en">A connection to the cluster controller is required to run Spark jobs</source>
-        <target state="translated">需要与群集控制器建立连接才能运行 Spark 作业</target>
-      </trans-unit>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">无法启动会话，管理器尚未初始化</target>
-      </trans-unit>
-      <trans-unit id="notebook.couldNotFindKnoxGateway">
-        <source xml:lang="en">Could not find Knox gateway endpoint</source>
-        <target state="translated">找不到 KNOX 网关终结点</target>
-      </trans-unit>
-      <trans-unit id="promptBDCPassword">
-        <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
-        <target state="translated">请提供密码以连接到 BDC 控制器</target>
-      </trans-unit>
-      <trans-unit id="promptBDCUsername">
-        <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
-        <target state="translated">{0}请提供用户名以连接到 BDC 控制器:</target>
       </trans-unit>
     </body>
   </file>

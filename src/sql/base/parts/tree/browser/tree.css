@@ -72,21 +72,42 @@
 	left: -16px;
 }
 
+.hc-light .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	background-image: url('tree-collapsed-hc-light.svg');
+}
+
 .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded > .content:before {
 	background-image: url('tree-expanded-light.svg');
+}
+
+.hc-light .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded > .content:before {
+	background-image: url('tree-expanded-hc-light.svg');
 }
 
 .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded:not(.loading) > .content:before {
 	background-image: url('tree-expanded-hc.svg');
 }
 
+.hc-light .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded:not(.loading) > .content:before {
+	background-image: url('tree-expanded-hc-light.svg');
+}
+
 .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
 	background-image: url('tree-collapsed-hc.svg');
+}
+
+.hc-light .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
+	background-image: url('tree-collapsed-hc-light.svg');
 }
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
 	background-image: url('loading.svg');
 }
+
+.hc-light .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
+	background-image: url('loading-hc-light.svg');
+}
+
 .vs-dark .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
 	background-image: url('tree-collapsed-dark.svg');
 }

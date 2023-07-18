@@ -43,13 +43,13 @@ export class OEShimService extends Disposable implements IOEShimService {
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService,
-		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
 	}
 
 	private async createSession(viewId: string, providerId: string, node: ITreeItem): Promise<string> {
-		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+		let payload = await this.cm.fixProfile(node.payload);
+		let connProfile = new ConnectionProfile(this.capabilities, payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
 			connProfile = await this.connectOrPrompt(connProfile);
@@ -87,7 +87,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private async connectOrPrompt(connProfile: ConnectionProfile): Promise<ConnectionProfile> {
 		connProfile = await new Promise(async (resolve, reject) => {
-			let result = await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
+			let result = await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false }, {
 				onConnectSuccess: async (e, profile) => {
 					let existingConnection = this.cm.findExistingConnection(profile);
 					connProfile = new ConnectionProfile(this.capabilities, existingConnection);
@@ -119,15 +119,13 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
-			if (node.payload.authenticationType !== undefined && node.payload.authenticationType === '') {
-				node.payload.authenticationType = this.getDefaultAuthenticationType(this.configurationService);  // we need to set auth type here, because it's value is part of the session key
-			}
+			node.payload = await this.cm.fixProfile(node.payload);
 
 			if (node.sessionId === undefined) {
 				node.sessionId = await this.createSession(viewId, node.childProvider!, node);
 			}
 			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-			const treeNode = new TreeNode(undefined!, undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
+			const treeNode = new TreeNode(undefined!, undefined!, undefined!, undefined!, requestHandle, undefined!, undefined!); // hack since this entire system is a hack anyways
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
 			const childrenNodes = await this.oe.refreshTreeNode({
 				success: true,
@@ -170,6 +168,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 		}
 		const nodeInfo: azdata.NodeInfo = {
 			nodePath: nodePath,
+			parentNodePath: node.parentNodePath,
 			nodeType: node.nodeTypeId,
 			objectType: node.objectType,
 			nodeSubType: node.nodeSubType,

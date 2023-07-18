@@ -18,10 +18,6 @@
         <source xml:lang="en">Error when parsing your account from the cache</source>
         <target state="translated">캐시에서 계정을 구문 분석하는 동안 오류 발생</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrrorRemove">
-        <source xml:lang="en">Error when removing your account from the cache.</source>
-        <target state="translated">캐시에서 계정을 제거하는 동안 오류가 발생했습니다.</target>
-      </trans-unit>
       <trans-unit id="azure.microsoftAccountDisplayName">
         <source xml:lang="en">Microsoft Account</source>
         <target state="translated">Microsoft 계정</target>
@@ -50,17 +46,29 @@
         <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.</target>
       </trans-unit>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">Azure 인증에서 식별되지 않은 오류 발생</target>
+      <trans-unit id="azurecore.confirmIgnoreTenantDialog.body">
+        <source xml:lang="en">Azure Data Studio will no longer trigger authentication for this tenant {0} ({1}) and resources will not be accessible. 
+
+To allow access to resources for this tenant again, you will need to remove the tenant from the exclude list in the '{2}' setting.
+
+Do you wish to proceed?</source>
+        <target state="translated">Azure Data Studio에서 이 테넌트 {0}({1})에 대한 인증을 더 이상 트리거하지 않으며 리소스에 액세스할 수 없게 됩니다. 
+
+이 테넌트의 리소스에 대한 액세스를 다시 허용하려면 '{2}' 설정의 제외 목록에서 테넌트를 제거해야 합니다.
+
+계속하시겠습니까?</target>
       </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">회사 또는 학교 계정</target>
+      <trans-unit id="azurecore.confirmIgnoreTenantDialog.confirm">
+        <source xml:lang="en">Confirm</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.authenticate">
+        <source xml:lang="en">Cancel and Authenticate</source>
+        <target state="translated">취소 및 인증</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.body">
-        <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
-        <target state="translated">'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.</target>
+        <source xml:lang="en">Your tenant {0} ({1}) requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+        <target state="translated">{0}({1}) 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. 열기를 눌러 인증 프로세스를 시작하세요.</target>
       </trans-unit>
       <trans-unit id="azurecore.consentDialog.cancel">
         <source xml:lang="en">Cancel</source>
@@ -73,6 +81,14 @@
       <trans-unit id="azurecore.consentDialog.open">
         <source xml:lang="en">Open</source>
         <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="msal.accountNotFoundError">
+        <source xml:lang="en">Unable to find account info when acquiring token.</source>
+        <target state="translated">토큰을 가져올 때 계정 정보를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="msal.resourceNotFoundError">
+        <source xml:lang="en">Unable to find configuration for Azure Resource {0}</source>
+        <target state="translated">Azure 리소스 {0}에 대한 구성을 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="noMicrosoftResource">
         <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
@@ -134,6 +150,20 @@
         <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
         <target state="translated">azdata.accounts.getSecurityToken이 호출되었습니다. 이 메서드는 사용되지 않으며 향후 릴리스에서 제거됩니다. 대신 getAccountSecurityToken을 사용하세요.</target>
       </trans-unit>
+      <trans-unit id="genericTokenError">
+        <source xml:lang="en">Failed to get token</source>
+        <target state="translated">토큰을 가져오지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="msalTokenError">
+        <source xml:lang="en">{0} occurred when acquiring token. 
+{1}</source>
+        <target state="translated">토큰을 획득할 때 {0}이(가) 발생했습니다. 
+{1}</target>
+      </trans-unit>
+      <trans-unit id="tenantIgnoredError">
+        <source xml:lang="en">Tenant found in ignore list, authentication not attempted. You can remove tenant {0} from ignore list in settings.json file: {1} if you wish to access resources from this tenant.</source>
+        <target state="translated">테넌트가 무시 목록에 있습니다. 인증이 시도되지 않았습니다. {1} settings.json 파일의 무시 목록에서 {0} 테넌트를 제거하여 이 테넌트의 리소스에 액세스할 수 있습니다.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="ko">
@@ -154,10 +184,6 @@
         <source xml:lang="en">Azure (China)</source>
         <target state="translated">Azure(중국)</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure(독일)</target>
-      </trans-unit>
       <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
@@ -165,10 +191,6 @@
       <trans-unit id="usGovCloudDisplayName">
         <source xml:lang="en">Azure (US Government)</source>
         <target state="translated">Azure(미국 정부)</target>
-      </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure(미국 국가)</target>
       </trans-unit>
     </body>
   </file>
@@ -219,7 +241,7 @@
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Log Analytics workspace</source>
+        <source xml:lang="en">Log Analytics workspaces</source>
         <target state="translated">Log Analytics 작업 영역</target>
       </trans-unit>
     </body>
@@ -227,31 +249,31 @@
   <file original="extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel">
-        <source xml:lang="en">CosmosDB for Mongo</source>
-        <target state="translated">Mongo용 CosmosDB</target>
+        <source xml:lang="en">Azure CosmosDB for MongoDB</source>
+        <target state="translated">MongoDB용 Azure CosmosDB</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL database</source>
-        <target state="translated">SQL 데이터베이스</target>
+        <source xml:lang="en">SQL databases</source>
+        <target state="translated">SQL Database</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL server</source>
-        <target state="translated">SQL 서버</target>
+        <source xml:lang="en">SQL servers</source>
+        <target state="translated">SQL Server</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
-        <source xml:lang="en">Azure Data Explorer Cluster</source>
+        <source xml:lang="en">Azure Data Explorer Clusters</source>
         <target state="translated">Azure 데이터 탐색기 클러스터</target>
       </trans-unit>
     </body>
@@ -259,23 +281,31 @@
   <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
-        <source xml:lang="en">Azure Database for MySQL Flexible server</source>
-        <target state="translated">Azure Database for MySQL 유연한 서버</target>
+        <source xml:lang="en">Azure Database for MySQL flexible servers</source>
+        <target state="translated">Azure Database for MySQL 유동 서버</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresArcServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
-        <target state="translated">PostgreSQL 하이퍼스케일 - Azure Arc</target>
+        <source xml:lang="en">PostgreSQL servers – Azure Arc</source>
+        <target state="translated">PostgreSQL 서버 – Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresFlexibleServer/postgresFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresFlexibleServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL flexible servers</source>
+        <target state="translated">Azure Database for PostgreSQL 유연한 서버</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
+        <source xml:lang="en">Azure Database for PostgreSQL servers</source>
         <target state="translated">Azure Database for PostgreSQL 서버</target>
       </trans-unit>
     </body>
@@ -283,16 +313,44 @@
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
-        <source xml:lang="en">Azure SQL DB managed instance</source>
-        <target state="translated">Azure SQL DB 관리형 인스턴스</target>
+        <source xml:lang="en">SQL managed instances</source>
+        <target state="translated">SQL Managed Instance</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
-        <source xml:lang="en">SQL managed instance – Azure Arc</source>
+        <source xml:lang="en">SQL managed instances - Azure Arc</source>
         <target state="translated">SQL 관리형 인스턴스 - Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseSqlPool/synapseSqlPoolTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseSqlPool.treeDataProvider.synapseSqlPoolContainerLabel">
+        <source xml:lang="en">Dedicated SQL Pools</source>
+        <target state="translated">전용 SQL 풀</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/synapseWorkspace/synapseWorkspaceTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.providers.synapseWorkspace.treeDataProvider.synapseWorkspaceContainerLabel">
+        <source xml:lang="en">Azure Synapse Analytics</source>
+        <target state="translated">Azure Synapse Analytics</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/universal/universalService" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azurecore.unregisteredProvider">
+        <source xml:lang="en">Unrecognized Provider resource: {0}</source>
+        <target state="translated">인식할 수 없는 공급자 리소스: {0}</target>
+      </trans-unit>
+      <trans-unit id="azurecore.unregisteredProviderType">
+        <source xml:lang="en">Unrecognized Provider resource type: {0}</source>
+        <target state="translated">인식할 수 없는 공급자 리소스 종류: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -360,13 +418,9 @@
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
-        <source xml:lang="en">No Subscriptions found.</source>
-        <target state="translated">구독을 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="azure.unableToAccessSubscription">
-        <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
-        <target state="translated">구독 {0}({1})에 액세스할 수 없습니다. 다시 시도하려면 [계정을 새로 고침](command:azure.resource.signin)하세요. {2}</target>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+        <source xml:lang="en">No Tenants found.</source>
+        <target state="translated">테넌트를 찾을 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -388,24 +442,17 @@
   </file>
   <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="azure.resource.throttleerror">
-        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
-        <target state="translated">이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.</target>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noTenantsLabel">
+        <source xml:lang="en">No Tenants found.</source>
+        <target state="translated">테넌트를 찾을 수 없습니다.</target>
       </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.title">
-        <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
-        <note>{0} is the display name of the azure account
-{1} is the number of selected subscriptions in this account
-{2} is the number of total subscriptions in this account</note>
-        <target state="translated">{0}({1}/{2}개 구독)</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
-        <source xml:lang="en">{0} - Loading...</source>
-        <target state="translated">{0} - 로드 중...</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.loadresourceerror">
-        <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
-        <target state="translated">Azure 리소스를 로드하는 동안 오류가 발생했습니다. {0}</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/flatTenantTreeNode" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">구독을 찾을 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -414,6 +461,14 @@
       <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found.</source>
         <target state="translated">리소스를 찾을 수 없습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/tenantTreeNode" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">구독을 찾을 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -458,6 +513,10 @@
       <trans-unit id="azure.azureResourcesGridTitle">
         <source xml:lang="en">Azure Resources (Preview)</source>
         <target state="translated">Azure 리소스(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="azure.credStoreSaveFailedError">
+        <source xml:lang="en">Keys for token cache could not be saved in credential store, this may cause Azure access token persistence issues and connection instabilities. It's likely that SqlTools has reached credential storage limit on Windows, please clear at least 2 credentials that start with "Microsoft.SqlTools|" in Windows Credential Manager and reload.</source>
+        <target state="translated">토큰 캐시에 대한 키를 자격 증명 저장소에 저장할 수 없습니다. 이로 인해 Azure 액세스 토큰 지속성 문제가 발생할 수 있으며 연결이 불안정해질 수 있습니다. SqlTools가 Windows의 자격 증명 저장 한도에 도달한 것 같습니다. Windows 자격 증명 관리자 "Microsoft.SqlTools|"로 시작하는 자격 증명을 2개 이상 지우고 다시 로드하세요.</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
@@ -518,6 +577,18 @@
       <trans-unit id="azurecore.centraluseuap">
         <source xml:lang="en">Central US EUAP</source>
         <target state="translated">미국 중부 EUAP</target>
+      </trans-unit>
+      <trans-unit id="azurecore.deprecated">
+        <source xml:lang="en">Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL instead.</source>
+        <target state="translated">경고: ADAL은 더 이상 사용되지 않으며 향후 릴리스에서 제거될 예정입니다. 대신 MSAL을 사용하세요.</target>
+      </trans-unit>
+      <trans-unit id="azurecore.disable">
+        <source xml:lang="en">Disable</source>
+        <target state="translated">사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="azurecore.dismiss">
+        <source xml:lang="en">Dismiss</source>
+        <target state="translated">해제</target>
       </trans-unit>
       <trans-unit id="azurecore.eastasia">
         <source xml:lang="en">East Asia</source>
@@ -603,13 +674,29 @@
         <source xml:lang="en">Norway West</source>
         <target state="translated">노르웨이 서부</target>
       </trans-unit>
+      <trans-unit id="azurecore.piiLogging.warning">
+        <source xml:lang="en">Warning: Azure PII Logging is enabled. Enabling this option allows personally identifiable information to be logged and should only be used for debugging purposes.</source>
+        <target state="translated">경고: Azure PII 로깅이 활성화되어 있습니다. 이 옵션을 활성화하면 개인 식별 정보가 기록될 수 있으며 디버깅 용도로만 사용해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="azurecore.postgresFlexibleServer">
+        <source xml:lang="en">Azure Database for PostgreSQL flexible servers</source>
+        <target state="translated">Azure Database for PostgreSQL 유연한 서버</target>
+      </trans-unit>
       <trans-unit id="azurecore.postgresServer">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
+        <source xml:lang="en">Azure Database for PostgreSQL servers</source>
         <target state="translated">Azure Database for PostgreSQL 서버</target>
       </trans-unit>
       <trans-unit id="azurecore.reload">
         <source xml:lang="en">Reload</source>
         <target state="translated">다시 로드</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadChoice">
+        <source xml:lang="en">Reload Azure Data Studio</source>
+        <target state="translated">Azure 데이터 스튜디오 다시 로드</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reloadPrompt">
+        <source xml:lang="en">Authentication Library has changed, please reload Azure Data Studio.</source>
+        <target state="translated">인증 라이브러리가 변경되었습니다. Azure Data Studio를 다시 로드하세요.</target>
       </trans-unit>
       <trans-unit id="azurecore.requiresReload">
         <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
@@ -767,6 +854,10 @@
         <source xml:lang="en">Select Subscriptions</source>
         <target state="translated">구독 선택</target>
       </trans-unit>
+      <trans-unit id="azure.resource.selecttenants.title">
+        <source xml:lang="en">Select Tenants</source>
+        <target state="translated">테넌트 선택</target>
+      </trans-unit>
       <trans-unit id="azure.resource.signin.title">
         <source xml:lang="en">Azure: Sign In</source>
         <target state="translated">Azure: 로그인</target>
@@ -780,12 +871,16 @@
         <target state="translated">Azure(미리 보기)</target>
       </trans-unit>
       <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
-        <target state="translated">Azure 리소스를 쿼리할 때 무시할 테넌트 ID 목록입니다. 각 요소는 테넌트 ID입니다.</target>
+        <source xml:lang="en">The list of tenant IDs which will be skipped when querying Azure resources or requesting authentication tokens.</source>
+        <target state="translated">Azure 리소스를 쿼리하거나 인증 토큰을 요청할 때 건너뛸 테넌트 ID 목록입니다.</target>
       </trans-unit>
       <trans-unit id="azure.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="config.authenticationLibrary">
+        <source xml:lang="en">The library used for the AAD auth flow. Please restart ADS after changing this option.</source>
+        <target state="translated">AAD 인증 흐름에 사용되는 라이브러리입니다. 이 옵션을 변경한 후 ADS를 다시 시작하세요.</target>
       </trans-unit>
       <trans-unit id="config.azureAccountConfigurationSection">
         <source xml:lang="en">Azure Account Configuration</source>

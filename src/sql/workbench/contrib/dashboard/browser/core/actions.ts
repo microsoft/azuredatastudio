@@ -68,12 +68,14 @@ export class ToolbarAction extends Action {
 	constructor(
 		id: string,
 		label: string,
+		tooltip: string,
 		cssClass: string,
 		private runFn: (id: string) => void,
 		private context: any, // this
 		private logService: ILogService
 	) {
 		super(id, label, cssClass);
+		this.tooltip = tooltip;
 	}
 
 	override async run(): Promise<void> {

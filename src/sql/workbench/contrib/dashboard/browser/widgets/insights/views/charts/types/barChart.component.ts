@@ -6,6 +6,7 @@
 import { ChartInsight } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component';
 import { mixin } from 'sql/base/common/objects';
 import { IChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
+import * as chartjs from 'chart.js';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
@@ -36,88 +37,80 @@ export default class BarChart extends ChartInsight {
 	}
 
 	public override setConfig(config: IBarChartConfig): void {
-		let options = {};
+		let options: chartjs.ChartOptions = {};
 		if (config.xAxisMax) {
-			const opts = {
+			const opts: chartjs.ChartOptions = {
 				scales: {
-					xAxes: [{
+					x: {
 						display: true,
-						ticks: {
-							max: config.xAxisMax
-						}
-					}]
+						max: config.xAxisMax
+					}
 				}
 			};
 			options = mixin({}, mixin(options, opts, true, customMixin));
 		}
 
 		if (config.xAxisMin) {
-			const opts = {
+			const opts: chartjs.ChartOptions = {
 				scales: {
-					xAxes: [{
+					x: {
 						display: true,
-						ticks: {
-							min: config.xAxisMin
-						}
-					}]
+						min: config.xAxisMin
+					}
 				}
 			};
 			options = mixin({}, mixin(options, opts, true, customMixin));
 		}
 
 		if (config.xAxisLabel) {
-			const opts = {
+			const opts: chartjs.ChartOptions = {
 				scales: {
-					xAxes: [{
+					x: {
 						display: true,
-						scaleLabel: {
+						title: {
 							display: true,
-							labelString: config.xAxisLabel
+							text: config.xAxisLabel
 						}
-					}]
+					}
 				}
 			};
 			options = mixin({}, mixin(options, opts, true, customMixin));
 		}
 
 		if (config.yAxisMax) {
-			const opts = {
+			const opts: chartjs.ChartOptions = {
 				scales: {
-					yAxes: [{
+					y: {
 						display: true,
-						ticks: {
-							max: config.yAxisMax
-						}
-					}]
+						max: config.yAxisMax
+					}
 				}
 			};
 			options = mixin({}, mixin(options, opts, true, customMixin));
 		}
 
 		if (config.yAxisMin) {
-			const opts = {
+			const opts: chartjs.ChartOptions = {
 				scales: {
-					yAxes: [{
+					y: {
 						display: true,
-						ticks: {
-							min: config.yAxisMin
-						}
-					}]
+						min: config.yAxisMin
+					}
 				}
 			};
 			options = mixin({}, mixin(options, opts, true, customMixin));
 		}
 
 		if (config.yAxisLabel) {
-			const opts = {
+			const opts: chartjs.ChartOptions = {
 				scales: {
-					yAxes: [{
+					y: {
 						display: true,
-						scaleLabel: {
+						title: {
 							display: true,
-							labelString: config.yAxisLabel
+							text: config.yAxisLabel
 						}
-					}]
+					}
 				}
 			};
 			options = mixin({}, mixin(options, opts, true, customMixin));
@@ -133,30 +126,30 @@ export default class BarChart extends ChartInsight {
 		const foreground = foregroundColor ? foregroundColor.toString() : null;
 		const gridLinesColor = e.getColor(editorLineNumbers);
 		const gridLines = gridLinesColor ? gridLinesColor.toString() : null;
-		const options = {
+		const options: chartjs.ChartOptions = {
 			scales: {
-				xAxes: [{
-					scaleLabel: {
-						fontColor: foreground
+				x: {
+					title: {
+						color: foreground
 					},
 					ticks: {
-						fontColor: foreground
+						color: foreground
 					},
-					gridLines: {
+					grid: {
 						color: gridLines
 					}
-				}],
-				yAxes: [{
-					scaleLabel: {
-						fontColor: foreground
+				},
+				y: {
+					title: {
+						color: foreground
 					},
 					ticks: {
-						fontColor: foreground
+						color: foreground
 					},
-					gridLines: {
+					grid: {
 						color: gridLines
 					}
-				}]
+				}
 			}
 		};
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, Event, Disposable, ProviderResult, CancellationToken, Progress } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
+import { Uri, Event, Disposable, ProviderResult, Command, Progress, CancellationToken } from 'vscode'; // {{SQL CARBON EDIT}} - add Progress
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -78,6 +78,7 @@ export const enum Status {
 	UNTRACKED,
 	IGNORED,
 	INTENT_TO_ADD,
+	INTENT_TO_RENAME,
 
 	ADDED_BY_US,
 	ADDED_BY_THEM,
@@ -137,6 +138,15 @@ export interface CommitOptions {
 	empty?: boolean;
 	noVerify?: boolean;
 	requireUserConfig?: boolean;
+	useEditor?: boolean;
+	verbose?: boolean;
+	/**
+	 * string    - execute the specified command after the commit operation
+	 * undefined - execute the command specified in git.postCommitCommand
+	 *             after the commit operation
+	 * null      - do not execute any command after the commit operation
+	 */
+	postCommitCommand?: string | null;
 }
 
 export interface FetchOptions {
@@ -147,11 +157,19 @@ export interface FetchOptions {
 	depth?: number;
 }
 
-export interface BranchQuery {
-	readonly remote?: boolean;
-	readonly pattern?: string;
-	readonly count?: number;
+export interface InitOptions {
+	defaultBranch?: string;
+}
+
+export interface RefQuery {
 	readonly contains?: string;
+	readonly count?: number;
+	readonly pattern?: string;
+	readonly sort?: 'alphabetically' | 'committerdate';
+}
+
+export interface BranchQuery extends RefQuery {
+	readonly remote?: boolean;
 }
 
 export interface Repository {
@@ -195,8 +213,10 @@ export interface Repository {
 	createBranch(name: string, checkout: boolean, ref?: string): Promise<void>;
 	deleteBranch(name: string, force?: boolean): Promise<void>;
 	getBranch(name: string): Promise<Branch>;
-	getBranches(query: BranchQuery): Promise<Ref[]>;
+	getBranches(query: BranchQuery, cancellationToken?: CancellationToken): Promise<Ref[]>;
 	setBranchUpstream(name: string, upstream: string): Promise<void>;
+
+	getRefs(query: RefQuery, cancellationToken?: CancellationToken): Promise<Ref[]>;
 
 	getMergeBase(ref1: string, ref2: string): Promise<string>;
 
@@ -251,8 +271,27 @@ export interface CredentialsProvider {
 	getCredentials(host: Uri): ProviderResult<Credentials>;
 }
 
+export interface PostCommitCommandsProvider {
+	getCommands(repository: Repository): Command[];
+}
+
 export interface PushErrorHandler {
 	handlePushError(repository: Repository, remote: Remote, refspec: string, error: Error & { gitErrorCode: GitErrorCodes }): Promise<boolean>;
+}
+
+export interface BranchProtection {
+	readonly remote: string;
+	readonly rules: BranchProtectionRule[];
+}
+
+export interface BranchProtectionRule {
+	readonly include?: string[];
+	readonly exclude?: string[];
+}
+
+export interface BranchProtectionProvider {
+	onDidChangeBranchProtection: Event<Uri>;
+	provideBranchProtection(): BranchProtection[];
 }
 
 export type APIState = 'uninitialized' | 'initialized';
@@ -278,16 +317,18 @@ export interface API {
 	 * @param cancellationToken
 	 * @returns a promise to the string location where the repository was cloned to
 	 */
-	clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string>; // {{SQL CARBON EDIT}}
+	clone(url: string, options: any, cancellationToken?: CancellationToken): Promise<string>; // {{SQL CARBON EDIT}}
 	toGitUri(uri: Uri, ref: string): Uri;
 	getRepository(uri: Uri): Repository | null;
-	init(root: Uri): Promise<Repository | null>;
+	init(root: Uri, options?: InitOptions): Promise<Repository | null>;
 	openRepository(root: Uri): Promise<Repository | null>
 
 	registerRemoteSourcePublisher(publisher: RemoteSourcePublisher): Disposable;
 	registerRemoteSourceProvider(provider: RemoteSourceProvider): Disposable;
 	registerCredentialsProvider(provider: CredentialsProvider): Disposable;
+	registerPostCommitCommandsProvider(provider: PostCommitCommandsProvider): Disposable;
 	registerPushErrorHandler(handler: PushErrorHandler): Disposable;
+	registerBranchProtectionProvider(root: Uri, provider: BranchProtectionProvider): Disposable;
 }
 
 export interface GitExtension {
@@ -298,7 +339,7 @@ export interface GitExtension {
 	/**
 	 * Returns a specific API version.
 	 *
-	 * Throws error if git extension is disabled. You can listed to the
+	 * Throws error if git extension is disabled. You can listen to the
 	 * [GitExtension.onDidChangeEnablement](#GitExtension.onDidChangeEnablement) event
 	 * to know when the extension becomes enabled/disabled.
 	 *
@@ -344,6 +385,10 @@ export const enum GitErrorCodes {
 	PatchDoesNotApply = 'PatchDoesNotApply',
 	NoPathFound = 'NoPathFound',
 	UnknownPath = 'UnknownPath',
+	EmptyCommitMessage = 'EmptyCommitMessage',
+	BranchFastForwardRejected = 'BranchFastForwardRejected',
+	BranchNotYetBorn = 'BranchNotYetBorn',
+	TagConflict = 'TagConflict'
 }
 
 // {{SQL CARBON EDIT}} move ICloneOptions from git.ts to here since it's used in clone()
@@ -351,4 +396,5 @@ export interface ICloneOptions {
 	readonly parentPath: string;
 	readonly progress: Progress<{ increment: number }>;
 	readonly recursive?: boolean;
+	readonly ref?: string;
 }

@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "無效的檔案位置。請嘗試其他輸入檔",
 			"flatFileImport.allowNulls": "允許 Null 值",
 			"flatFileImport.browseFiles": "瀏覽",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "提供意見反應",
 			"serviceCrashMessage": "服務元件無法啟動"
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "正在下載 {0}",
 			"downloadingServiceComplete": "已完成下載 {0}",
 			"downloadingServiceSize": "({0} KB)",

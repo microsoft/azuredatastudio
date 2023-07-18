@@ -5,8 +5,6 @@
 
 declare module 'sqldbproj' {
 	import * as vscode from 'vscode';
-	import { DeploymentOptions as mssqlDeploymentOptions } from 'mssql';
-	import { DeploymentOptions as vscodeMssqlDeploymentOptions } from 'vscode-mssql';
 
 	export const enum extension {
 		name = 'Microsoft.sql-database-projects',
@@ -67,12 +65,6 @@ declare module 'sqldbproj' {
 		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
 
 		/**
-		 * Gathers information required for publishing a project to a docker container, prompting the user as necessary
-		 * @param project The Project being published
-		 */
-		getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined>;
-
-		/**
 		 * Gets the information required to start a docker container for publishing to
 		 * @param projectName The name of the project being published
 		 * @param baseImage The base docker image being deployed
@@ -112,7 +104,8 @@ declare module 'sqldbproj' {
 		externalStreamingJob = 'externalStreamingJob',
 		folder = 'folder',
 		preDeployScript = 'preDeployScript',
-		postDeployScript = 'postDeployScript'
+		postDeployScript = 'postDeployScript',
+		publishProfile = 'publishProfile'
 	}
 
 	/**
@@ -149,18 +142,41 @@ declare module 'sqldbproj' {
 		readProjFile(): Promise<void>;
 
 		/**
-		 * Adds the list of sql files and directories to the project, and saves the project file
-		 *
-		 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
+		 * Adds a pre-deployment script
+		 * @param relativePath
 		 */
-		addToProject(list: vscode.Uri[]): Promise<void>;
+		addPreDeploymentScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Adds a post-deployment script
+		 * @param relativePath
+		 */
+		addPostDeploymentScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Adds a none item that is not included in "Build"
+		 * @param relativePath
+		 */
+		addNoneItem(relativePath: string): Promise<void>;
+
+		/**
+		 * Add a SQL object script that will be included in the schema
+		 * @param relativePath
+		 */
+		addSqlObjectScript(relativePath: string): Promise<void>;
+
+		/**
+		 * Adds multiple SQL object scripts that will be included in the schema
+		 * @param relativePaths Array of paths relative to the .sqlproj file
+		 */
+		addSqlObjectScripts(relativePaths: string[]): Promise<void>;
 
 		/**
 		 * Adds a folder to the project, and saves the project file
 		 *
 		 * @param relativeFolderPath Relative path of the folder
 		 */
-		addFolderItem(relativeFolderPath: string): Promise<IFileProjectEntry>;
+		addFolder(relativeFolderPath: string): Promise<void>;
 
 		/**
 		 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
@@ -179,6 +195,11 @@ declare module 'sqldbproj' {
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
 
 		/**
+		 * Gets an array of all database sources specified in the project.
+		 */
+		getDatabaseSourceValues(): string[];
+
+		/**
 		 * Appends given database source to the DatabaseSource property element.
 		 * If property element does not exist, then new one will be created.
 		 *
@@ -195,18 +216,6 @@ declare module 'sqldbproj' {
 		removeDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
-		 * Excludes entry from project by removing it from the project file
-		 * @param entry
-		 */
-		exclude(entry: IFileProjectEntry): Promise<void>;
-
-		/**
-		 * Deletes file or folder and removes it from the project file
-		 * @param entry
-		 */
-		deleteFileFolder(entry: IFileProjectEntry): Promise<void>;
-
-		/**
 		 * returns the sql version the project is targeting
 		 */
 		getProjectTargetVersion(): string;
@@ -217,6 +226,11 @@ declare module 'sqldbproj' {
 		 * @returns Default collation for the database set in the project.
 		 */
 		getDatabaseDefaultCollation(): string;
+
+		/**
+		 * Type of .sqlproj file, either "SdkStyle" or "LegacyStyle"
+		 */
+		readonly sqlProjStyleName: string;
 
 		/**
 		 * Path where dacpac is output to after a successful build
@@ -239,14 +253,14 @@ declare module 'sqldbproj' {
 		readonly projectFileName: string;
 
 		/**
-		 * Files and folders that are included in the project
+		 * SQL object scripts in this project
 		 */
-		readonly files: IFileProjectEntry[];
+		readonly sqlObjectScripts: IFileProjectEntry[];
 
 		/**
 		 * SqlCmd variables and their values
 		 */
-		readonly sqlCmdVariables: Record<string, string>;
+		readonly sqlCmdVariables: Map<string, string>;
 
 		/**
 		 * Pre-deployment scripts in this project
@@ -290,7 +304,7 @@ declare module 'sqldbproj' {
 	 * Represents a database reference entry in a project file
 	 */
 	export interface IDatabaseReferenceProjectEntry extends IFileProjectEntry {
-		databaseName: string;
+		referenceName: string;
 		databaseVariableLiteralValue?: string;
 		suppressMissingDependenciesErrors: boolean;
 	}
@@ -306,7 +320,7 @@ declare module 'sqldbproj' {
 		sqlServer2019 = 'SQL Server 2019',
 		sqlServer2022 = 'SQL Server 2022',
 		sqlAzure = 'Azure SQL Database',
-		sqlDW = 'Azure Synapse Dedicated SQL Pool',
+		sqlDW = 'Azure Synapse SQL Pool',
 		sqlEdge = 'Azure SQL Edge'
 	}
 
@@ -320,36 +334,6 @@ declare module 'sqldbproj' {
 		dbName: string,
 		profileName?: string,
 		connectionRetryTimeout?: number
-	}
-
-	/**
-	 * Settings for creating the docker container a project is being published to
-	 */
-	export interface IDockerSettings extends ISqlConnectionProperties {
-		dockerBaseImage: string,
-		dockerBaseImageEula: string,
-	}
-
-	/**
-	 * Settings for publishing a SQL Project to a docker container
-	 */
-	export interface IPublishToDockerSettings {
-		dockerSettings: IDockerSettings;
-		sqlProjectPublishSettings: ISqlProjectPublishSettings;
-	}
-
-	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
-
-	/**
-	 * Settings to use when publishing a SQL Project
-	 */
-	export interface ISqlProjectPublishSettings {
-		databaseName: string;
-		serverName: string;
-		connectionUri: string;
-		sqlCmdVariables?: Record<string, string>;
-		deploymentOptions?: DeploymentOptions;
-		profileUsed?: boolean;
 	}
 
 	/**

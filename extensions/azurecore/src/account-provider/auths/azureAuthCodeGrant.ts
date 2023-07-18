@@ -8,7 +8,7 @@ import { AzureAccountProviderMetadata, AzureAuthType, Resource, Tenant } from 'a
 import { Deferred } from '../interfaces';
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
-import { SimpleTokenCache } from '../simpleTokenCache';
+import { SimpleTokenCache } from '../utils/simpleTokenCache';
 import { SimpleWebServer } from '../utils/simpleWebServer';
 import { AzureAuthError } from './azureAuthError';
 import { Logger } from '../../utils/Logger';
@@ -19,6 +19,7 @@ import * as http from 'http';
 import * as qs from 'qs';
 import { promises as fs } from 'fs';
 import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
+import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 
 const localize = nls.loadMessageBundle();
 
@@ -43,12 +44,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	constructor(
 		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
+		msalCacheProvider: MsalCachePluginProvider,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		clientApplication: PublicClientApplication,
 		authLibrary: string
 	) {
-		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME, authLibrary);
+		super(metadata, tokenCache, msalCacheProvider, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME, authLibrary);
 		this.cryptoProvider = new CryptoProvider();
 		this.pkceCodes = {
 			nonce: '',
@@ -148,8 +150,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 			return authCodeRequest;
 		} catch (e) {
-			Logger.error('MSAL: Error requesting auth code', e);
-			throw new AzureAuthError('error', 'Error requesting auth code', e);
+			let errorMessage = localize('azureAuthCodeGrant.getAuthCodeUrlError', 'An error occurred in MSAL library when requesting auth code URL. For more detailed information on error, please check \'Azure Accounts\' output pane. \n\n');
+			Logger.error(errorMessage);
+			throw new AzureAuthError(errorMessage + e.message, e.message, e);
 		}
 	}
 
@@ -233,7 +236,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				codeChallenge: this.pkceCodes.codeChallenge,
 				codeChallengeMethod: this.pkceCodes.challengeMethod,
 				prompt: Constants.SELECT_ACCOUNT,
-				authority: `https://login.microsoftonline.com/${tenant.id}`,
+				authority: `${this.loginEndpointUrl}${tenant.id}`,
 				state: state
 			};
 			let authCodeRequest: AuthorizationCodeRequest;
@@ -241,23 +244,21 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				scopes: this.scopes,
 				redirectUri: `${this.redirectUri}:${serverPort}/redirect`,
 				codeVerifier: this.pkceCodes.codeVerifier,
-				authority: `https://login.microsoftonline.com/${tenant.id}`,
+				authority: `${this.loginEndpointUrl}${tenant.id}`,
 				code: ''
 			};
 			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
-
 
 			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
 			const authCode = await this.addServerListeners(server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
 
 			authCodeRequest.code = authCode;
-
 			return authCodeRequest;
 		}
-
 		catch (e) {
-			Logger.error('MSAL: Error requesting auth code', e);
-			throw new AzureAuthError('error', 'Error requesting auth code', e);
+			let errorMessage = localize('azureAuthCodeGrant.getAuthCodeUrlError', 'An error occurred in MSAL library when requesting auth code URL. For more detailed information on error, please check \'Azure Accounts\' output pane. \n\n');
+			Logger.error(errorMessage);
+			throw new AzureAuthError(errorMessage + e.message, e.message, e);
 		}
 	}
 

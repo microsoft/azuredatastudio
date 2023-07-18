@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { RequestType, NotificationType } from 'vscode-languageclient';
+import * as telemetry from '@microsoft/ads-extension-telemetry';
 
 export interface IMessage {
 	jsonrpc: string;
@@ -24,17 +25,9 @@ export namespace TelemetryNotification {
 export class TelemetryParams {
 	public params: {
 		eventName: string;
-		properties: ITelemetryEventProperties;
-		measures: ITelemetryEventMeasures;
+		properties: telemetry.TelemetryEventProperties;
+		measures: telemetry.TelemetryEventMeasures;
 	};
-}
-
-export interface ITelemetryEventProperties {
-	[key: string]: string;
-}
-
-export interface ITelemetryEventMeasures {
-	[key: string]: number;
 }
 
 /**

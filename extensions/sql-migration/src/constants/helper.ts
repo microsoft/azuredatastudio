@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DatabaseMigration } from '../api/azure';
-import { DefaultSettingValue } from '../api/utils';
-import { FileStorageType, MigrationMode, MigrationTargetType } from '../models/stateMachine';
+import { AzureResourceKind, DatabaseMigration } from '../api/azure';
+import { DefaultSettingValue, MigrationTargetType } from '../api/utils';
+import { FileStorageType, MigrationMode } from '../models/stateMachine';
 import * as loc from './strings';
 
 export enum SQLTargetAssetType {
@@ -14,6 +14,48 @@ export enum SQLTargetAssetType {
 	SQLVM = 'Microsoft.SqlVirtualMachine/sqlVirtualMachines',
 	SQLDB = 'Microsoft.Sql/servers',
 }
+
+export const FileStorageTypeCodes = {
+	FileShare: "FileShare",
+	AzureBlob: "AzureBlob",
+	None: "None",
+};
+
+export const BackupTypeCodes = {
+	// Type of backup. The values match the output of a RESTORE HEADERONLY query.
+	Unknown: "Unknown",
+	Database: "Database",
+	TransactionLog: "TransactionLog",
+	File: "File",
+	DifferentialDatabase: "DifferentialDatabase",
+	DifferentialFile: "DifferentialFile",
+	Partial: "Partial",
+	DifferentialPartial: "DifferentialPartial",
+};
+
+export const InternalManagedDatabaseRestoreDetailsBackupSetStatusCodes = {
+	None: "None",
+	Skipped: "Skipped",
+	Queued: "Queued",
+	Restoring: "Restoring",
+	Restored: "Restored",
+};
+
+export const InternalManagedDatabaseRestoreDetailsStatusCodes = {
+	None: "None",                           // Something went wrong most likely.
+	Initializing: "Initializing",           // Restore is initializing.
+	NotStarted: "NotStarted",               // Restore not started
+	SearchingBackups: "SearchingBackups",   // Searching for backups
+	Restoring: "Restoring",                 // Restore is in progress
+	RestorePaused: "RestorePaused",         // Restore is paused
+	RestoreCompleted: "RestoreCompleted",   // Restore completed for all found log, but there may have more logs coming
+	Waiting: "Waiting",                         // Waiting for new files to be uploaded or for Complete restore signal.
+	CompletingMigration: "CompletingMigration", // Completing migration
+	Cancelled: "Cancelled",                     // Restore cancelled.
+	Failed: "Failed",                           // Restore failed.
+	Completed: "Completed",                     // Database is restored and recovery is complete.
+	Blocked: "Blocked",                         // Restore is temporarily blocked: "", awaiting for user to mitigate the issue.
+};
 
 export const ParallelCopyTypeCodes = {
 	None: 'None',
@@ -37,6 +79,18 @@ export const PipelineStatusCodes = {
 	Cancelled: 'Cancelled',
 };
 
+export const LoginMigrationStatusCodes = {
+	// status codes: 'InProgress' | 'Failed' | 'Succeeded'
+	InProgress: 'InProgress',
+	Succeeded: 'Succeeded',
+	Failed: 'Failed',
+};
+
+export const ValidationErrorCodes = {
+	// TODO: adding other error codes for troubleshooting
+	SqlInfoValidationFailed: '2056'
+};
+
 const _dateFormatter = new Intl.DateTimeFormat(
 	undefined, {
 	year: 'numeric',
@@ -47,7 +101,7 @@ const _dateFormatter = new Intl.DateTimeFormat(
 	second: '2-digit'
 });
 
-const _numberFormatter = new Intl.NumberFormat(
+const _numberFormatterOneMinIntegers = new Intl.NumberFormat(
 	undefined, {
 	style: 'decimal',
 	useGrouping: true,
@@ -55,6 +109,31 @@ const _numberFormatter = new Intl.NumberFormat(
 	minimumFractionDigits: 0,
 	maximumFractionDigits: 0,
 });
+
+const _numberFormatterTwoMinIntegers = new Intl.NumberFormat(
+	undefined, {
+	style: 'decimal',
+	useGrouping: true,
+	minimumIntegerDigits: 2,
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0,
+});
+
+export function formatSecondsIntoReadableTime(seconds: number) {
+	const hours = seconds / (60 * 60);
+	const absoluteHours = Math.floor(hours);
+	const h = _numberFormatterTwoMinIntegers.format(absoluteHours);
+
+	const minutesRemaining = (hours - absoluteHours) * 60;
+	const absoluteMinutes = Math.floor(minutesRemaining);
+	const m = _numberFormatterTwoMinIntegers.format(absoluteMinutes);
+
+	const secondsRemaining = (minutesRemaining - absoluteMinutes) * 60;
+	const absoluteSeconds = Math.floor(secondsRemaining);
+	const s = _numberFormatterTwoMinIntegers.format(absoluteSeconds);
+
+	return h + ':' + m + ':' + s;
+}
 
 export function formatDateTimeString(dateTime: string): string {
 	return dateTime
@@ -66,14 +145,16 @@ export function formatTime(miliseconds: number): string {
 	if (miliseconds > 0) {
 		// hh:mm:ss
 		const matches = (new Date(miliseconds))?.toUTCString()?.match(/(\d\d:\d\d:\d\d)/) || [];
-		return matches?.length > 0 ? matches[0] : '';
+		return matches?.length > 0
+			? matches[0] ?? ''
+			: '';
 	}
 	return '';
 }
 
 export function formatNumber(value: number): string {
 	return value >= 0
-		? _numberFormatter.format(value)
+		? _numberFormatterOneMinIntegers.format(value)
 		: '';
 }
 
@@ -106,12 +187,12 @@ export function getMigrationTargetType(migration: DatabaseMigration | undefined)
 }
 
 export function getMigrationTargetTypeEnum(migration: DatabaseMigration | undefined): MigrationTargetType | undefined {
-	switch (migration?.type) {
-		case SQLTargetAssetType.SQLMI:
+	switch (migration?.properties?.kind) {
+		case AzureResourceKind.SQLMI:
 			return MigrationTargetType.SQLMI;
-		case SQLTargetAssetType.SQLVM:
+		case AzureResourceKind.SQLVM:
 			return MigrationTargetType.SQLVM;
-		case SQLTargetAssetType.SQLDB:
+		case AzureResourceKind.SQLDB:
 			return MigrationTargetType.SQLDB;
 		default:
 			return undefined;
@@ -138,6 +219,24 @@ export function isBlobMigration(migration: DatabaseMigration | undefined): boole
 	return migration?.properties?.backupConfiguration?.sourceLocation?.fileStorageType === FileStorageType.AzureBlob;
 }
 
+export function isShirMigration(migration?: DatabaseMigration): boolean {
+	return isLogicalMigration(migration)
+		|| isFileShareMigration(migration);
+}
+
+export function isLogicalMigration(migration?: DatabaseMigration): boolean {
+	return migration?.properties?.kind === AzureResourceKind.ORACLETOSQLDB
+		|| migration?.properties?.kind === AzureResourceKind.SQLDB;
+}
+
+export function isFileShareMigration(migration?: DatabaseMigration): boolean {
+	return migration?.properties?.backupConfiguration?.sourceLocation?.fileStorageType === FileStorageTypeCodes.FileShare;
+}
+
+export function isTargetType(migration?: DatabaseMigration, kind?: string): boolean {
+	return migration?.properties?.kind === kind;
+}
+
 export function getMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
 	return migration?.properties.migrationStatus
 		?? migration?.properties.provisioningState;
@@ -153,6 +252,16 @@ export function hasMigrationOperationId(migration: DatabaseMigration | undefined
 	const migationOperationId = migration?.properties?.migrationOperationId ?? '';
 	return migrationId.length > 0
 		&& migationOperationId.length > 0;
+}
+
+export function getMigrationBackupLocation(migration: DatabaseMigration): string | undefined {
+	return migration?.properties?.backupConfiguration?.sourceLocation?.fileShare?.path
+		?? migration?.properties?.backupConfiguration?.sourceLocation?.azureBlob?.blobContainerName
+		?? migration?.properties?.migrationStatusDetails?.blobContainerName;
+}
+
+export function getMigrationFullBackupFiles(migration: DatabaseMigration): string | undefined {
+	return migration?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles?.map(file => file.fileName).join(',');
 }
 
 export function hasRestoreBlockingReason(migration: DatabaseMigration | undefined): boolean {
@@ -180,6 +289,11 @@ export function canDeleteMigration(migration: DatabaseMigration | undefined): bo
 }
 
 export function canRetryMigration(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
+	return status === loc.MigrationState.Retriable;
+}
+
+export function canRestartMigrationWizard(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return status === loc.MigrationState.Canceled
 		|| status === loc.MigrationState.Retriable

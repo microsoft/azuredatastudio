@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
-import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { Component, Input, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { localize } from 'vs/nls';
 import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -117,13 +117,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	private initActionBar() {
 		let linkButtonContainer = DOM.$('li.action-item');
 		linkButtonContainer.setAttribute('role', 'presentation');
-		let linkButton = new Button(linkButtonContainer);
+		let linkButton = new Button(linkButtonContainer, null);
 		linkButton.title = this.insertLink;
 		linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
-		let buttonStyle: IButtonStyles = {
-			buttonBackground: null
-		};
-		linkButton.style(buttonStyle);
 
 		this._register(DOM.addDisposableListener(linkButtonContainer, DOM.EventType.CLICK, async e => {
 			await this.onInsertButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
@@ -131,11 +127,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 		let imageButtonContainer = DOM.$('li.action-item');
 		imageButtonContainer.setAttribute('role', 'presentation');
-		let imageButton = new Button(imageButtonContainer);
+		let imageButton = new Button(imageButtonContainer, null);
 		imageButton.title = this.insertImage;
 		imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
-
-		imageButton.style(buttonStyle);
 
 		this._register(DOM.addDisposableListener(imageButtonContainer, DOM.EventType.CLICK, async e => {
 			await this.onInsertButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
@@ -263,7 +257,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 					// VS Code blocks loading directly from the file protocol - we have to transform it to a vscode-file URI
 					// first. Currently we assume that the path here is always going to be a path since we don't support
 					// embedding images from web links.
-					const uri = FileAccess.asBrowserUri(URI.file(imageCalloutResult.imagePath));
+					const uri = FileAccess.uriToBrowserUri(URI.file(imageCalloutResult.imagePath));
 					let base64String = await this.getFileContentBase64(uri);
 					let mimeType = await this.getFileMimeType(uri);
 					const originalImageName: string = path.basename(imageCalloutResult.imagePath).replace(/\s/g, '');
@@ -375,10 +369,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (!this._cellEditor?.getEditor()?.getControl()) {
 			this._cellEditor = this._notebookEditor?.cellEditors?.find(e => e.cellGuid() === this.cellModel?.cellGuid);
 		}
-		if (this._cellEditor?.hasEditor) {
-			return this._cellEditor.getEditor()?.getControl();
-		}
-		return undefined;
+		return this._cellEditor.getEditor()?.getControl();
 	}
 
 	public async getFileContentBase64(fileUri: URI): Promise<string> {

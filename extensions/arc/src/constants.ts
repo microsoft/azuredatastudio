@@ -190,3 +190,7 @@ export namespace cssStyles {
 }
 
 export const iconSize = '20px';
+
+export const encryptOption = 'encrypt';
+export const trustServerCertificateOption = 'trustServerCertificate';
+export const encryptReadMoreLink = 'https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine';

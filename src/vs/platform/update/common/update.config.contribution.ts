@@ -28,7 +28,11 @@ configurationRegistry.registerConfiguration({
 				localize('manual', "Disable automatic background update checks. Updates will be available if you manually check for updates."),
 				localize('start', "Check for updates only on startup. Disable automatic background update checks."),
 				locConstants.updateConfigContributionDefault // {{SQL CARBON EDIT}} Change product name to ADS
-			]
+			],
+			policy: {
+				name: 'UpdateMode',
+				minimumVersion: '1.67',
+			}
 		},
 		'update.channel': {
 			type: 'string',

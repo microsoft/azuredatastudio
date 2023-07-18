@@ -680,6 +680,11 @@ declare namespace Slick {
 		 * Link to the accessibility issue: https://github.com/microsoft/azuredatastudio/issues/20784
 		 */
 		disableColumnBasedCellVirtualization?: boolean;
+
+		/**
+		 * Whether tab/shift+tab can be used to navigate within the grid, if disabled, the focus will move out of the grid. The default value is true.
+		 */
+		enableInGridTabNavigation?: boolean;
 	}
 
 	export interface DataProvider<T extends SlickData> {
@@ -1238,6 +1243,7 @@ declare namespace Slick {
 
 		// #region Plugins
 
+		public getPlugins(): Plugin<T>[];
 		public registerPlugin(plugin: Plugin<T>): void;
 		public unregisterPlugin(plugin: Plugin<T>): void;
 
@@ -1571,7 +1577,7 @@ declare namespace Slick {
 	}
 
 	export interface Formatter<T extends SlickData> {
-		(row: number, cell: number, value: any, columnDef: Column<T>, dataContext: T): string | undefined;
+		(row: number, cell: number, value: any, columnDef: Column<T>, dataContext: T): string | undefined | { text: string, addClasses: string };
 	}
 
 	export module Formatters {

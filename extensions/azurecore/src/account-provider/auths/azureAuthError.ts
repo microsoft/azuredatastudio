@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 export class AzureAuthError extends Error {
-	constructor(localizedMessage: string, public readonly originalMessage: string, private readonly originalException: any) {
+	constructor(localizedMessage: string, public readonly originalMessage: string, private readonly originalException: unknown) {
 		super(localizedMessage);
 	}
 

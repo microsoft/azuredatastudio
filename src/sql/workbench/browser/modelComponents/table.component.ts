@@ -15,14 +15,10 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter, CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
@@ -41,6 +37,9 @@ import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { deepClone, equals } from 'vs/base/common/objects';
+import { defaultTableFilterStyles, defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -87,14 +86,14 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IAccessibilityService) private accessibilityService: IAccessibilityService,
-		@Inject(IQuickInputService) private quickInputService: IQuickInputService
+		@Inject(IQuickInputService) private quickInputService: IQuickInputService,
+		@Inject(IComponentContextService) private componentContextService: IComponentContextService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -207,7 +206,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 									cellValue = <HyperlinkCellValue>{
 										iconCssClass: hyperlinkValue.icon ? this.createIconCssClassInternal(hyperlinkValue.icon) : undefined,
 										title: hyperlinkValue.title,
-										url: hyperlinkValue.url
+										url: hyperlinkValue.url,
+										role: hyperlinkValue.role
 									};
 									break;
 								}
@@ -276,36 +276,26 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				enableColumnReorder: false,
 				enableCellNavigation: true,
 				forceFitColumns: true, // default to true during init, actual value will be updated when setProperties() is called
-				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData, // must change formatter if you are changing explicit column value extractor,
+				enableInGridTabNavigation: this.moveFocusOutWithTab
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this._tableData, columns: this._tableColumns }, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, defaultTableStyles, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 
 			this._register(this._table);
-			this._register(attachTableStyler(this._table, this.themeService));
 			this._register(this._table.onSelectedRowsChanged((e, data) => {
+				if (this.isCheckboxColumnsUsedForSelection()) {
+					return;
+				}
 				this.selectedRows = data.rows;
 				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
 					args: e
 				});
 			}));
-
-			this._table.grid.onKeyDown.subscribe((e: DOMEvent) => {
-				if (this.moveFocusOutWithTab) {
-					let event = new StandardKeyboardEvent(e as KeyboardEvent);
-					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-						e.stopImmediatePropagation();
-						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
-
-					} else if (event.equals(KeyCode.Tab)) {
-						e.stopImmediatePropagation();
-						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).nextElementSibling).focus();
-					}
-				}
-			});
+			this._register(this.componentContextService.registerTable(this._table));
 		}
 		this.baseInit();
 	}
@@ -366,23 +356,26 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
+		const oldColumns = deepClone(this.columns);
 		super.setProperties(properties);
 		this._tableData.clear();
 		this._tableData.push(this.transformData(this.data, this.columns));
-		this._tableColumns = this.transformColumns(this.columns);
-		this._table.columns = this._tableColumns;
+		if (!equals(oldColumns, this.columns)) {
+			this._tableColumns = this.transformColumns(this.columns);
+			this._table.columns = this._tableColumns;
+			this._checkboxColumns.forEach((column, columnName) => { this.registerPlugins(columnName, column); })
+			Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
+			Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
+			Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
+
+			this._table.columns = this._tableColumns;
+			this._table.autosizeColumns();
+		}
 		this._table.setData(this._tableData);
 		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
-
-		this._checkboxColumns.forEach((column, columnName) => {
-			this.registerPlugins(columnName, column);
-		})
-		Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
-		Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
-		Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
 
 		if (this.headerFilter === true) {
 			this.registerFilterPlugin();
@@ -441,10 +434,13 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				width: col.width,
 				cssClass: col.cssClass,
 				headerCssClass: col.headerCssClass,
-				actionOnCheck: checkboxAction
+				actionOnCheck: checkboxAction,
+				columnId: `checkbox-column-${index}`,
 			}, index));
 
 			this._register(this._checkboxColumns.get(col.value).onChange((state) => {
+				this.data[state.row][state.column] = state.checked;
+				this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
 				this.fireEvent({
 					eventType: ComponentEventType.onCellAction,
 					args: {
@@ -454,6 +450,34 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 						name: name
 					}
 				});
+				if (checkboxAction === ActionOnCheck.selectRow) {
+					const selectedRows: number[] = [];
+					this.data.forEach((row, index) => {
+						if (row[state.column]) {
+							selectedRows.push(index);
+						}
+					});
+					this.selectedRows = selectedRows;
+					this.fireEvent({
+						eventType: ComponentEventType.onSelectedRowChanged,
+						args: selectedRows
+					});
+				}
+			}));
+
+			this._register(this._checkboxColumns.get(col.value).onCheckAllChange((state) => {
+				this.data.forEach((row, index) => {
+					row[state.column] = state.checked;
+				});
+				this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+				if (checkboxAction === ActionOnCheck.selectRow) {
+
+					this.selectedRows = state.checked ? this.data.map((v, i) => i) : [];
+					this.fireEvent({
+						eventType: ComponentEventType.onSelectedRowChanged,
+						args: this.selectedRows
+					});
+				}
 			}));
 		}
 	}
@@ -562,12 +586,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	private createMenuItem(commandId: string): MenuItemAction {
 		const command = MenuRegistry.getCommand(commandId);
-		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true });
+		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true }, undefined);
 	}
 
 
 	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}> | HyperlinkColumn<{}> | ContextMenuColumn<{}>): void {
-
 		const index = 'index' in plugin ? plugin.index : this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
 		if (index >= 0) {
 			this._tableColumns.splice(index, 0, plugin.definition);
@@ -576,16 +599,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				this._pluginsRegisterStatus[col] = true;
 			}
 		}
-
-		this._table.columns = this._tableColumns;
-		this._table.autosizeColumns();
-
 	}
 
 
 	private registerFilterPlugin() {
-		const filterPlugin = new HeaderFilter<Slick.SlickData>(this.contextViewService);
-		this._register(attachTableFilterStyler(filterPlugin, this.themeService));
+		const filterPlugin = new HeaderFilter<Slick.SlickData>(defaultTableFilterStyles, this.contextViewService);
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = (<any>args).column.filterValues;
@@ -619,6 +637,16 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			}
 			this._table.grid.getActiveCellNode().focus();
 		}
+	}
+
+	/**
+	 * Returns true if the checkbox column is used for row selection in the table
+	 */
+	private isCheckboxColumnsUsedForSelection(): boolean {
+		return this.columns.some(c => {
+			const checkboxAction = <ActionOnCheck>(c.options ? (<azdata.CheckboxColumnOption>c.options).actionOnCheckbox : c.action);
+			return checkboxAction === ActionOnCheck.selectRow
+		});
 	}
 
 	// CSS-bound properties
@@ -691,6 +719,10 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		switch (action) {
 			case ModelViewAction.AppendData:
 				this.appendData(args[0]);
+				break;
+			case ModelViewAction.SetActiveCell:
+				this._table.grid.setActiveCell(args[0], args[1]);
+				break;
 		}
 	}
 

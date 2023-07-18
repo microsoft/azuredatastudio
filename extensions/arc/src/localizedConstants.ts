@@ -142,12 +142,21 @@ export const controllerPassword = localize('arc.controllerPassword', "Controller
 export const username = localize('arc.username', "Username");
 export const password = localize('arc.password', "Password");
 export const rememberPassword = localize('arc.rememberPassword', "Remember Password");
+export const encrypt = localize('arc.encrypt', "Encrypt");
+export const encryptDescription = localize('arc.encryptDescription', "When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed.");
+export const trustServerCertificate = localize('arc.trustServerCertificate', "Trust Server Certificate");
+export const trustServerCertDescription = localize('arc.trustServerCertDescription', "When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate.");
+export const enableTrustServerCert = localize('arc.enableTrustServerCert', "Enable Trust Server Certificate");
+export const msgPromptSSLCertificateValidationFailed = localize('arc.msgPromptSSLCertificateValidationFailed', 'Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or set \'Trust server certificate\' to \'true\' in the settings file. Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable \'Trust server certificate\' on this connection and retry?');
 export const connect = localize('arc.connect', "Connect");
+export const readMore = localize('arc.readMore', "Read more");
 export const cancel = localize('arc.cancel', "Cancel");
 export const apply = localize('arc.apply', "Apply");
 export const ok = localize('arc.ok', "Ok");
 export const on = localize('arc.on', "On");
 export const off = localize('arc.off', "Off");
+export const booleantrue = localize('arc.booleantrue', "True");
+export const booleanfalse = localize('arc.booleanfalse', "False");
 export const notConfigured = localize('arc.notConfigured', "Not Configured");
 
 // Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states

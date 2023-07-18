@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "ファイルの場所が無効です。別の入力ファイルをお試しください",
 			"flatFileImport.allowNulls": "Null を許容",
 			"flatFileImport.browseFiles": "参照",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "フィードバックの送信",
 			"serviceCrashMessage": "サービス コンポーネントを開始できませんでした"
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "{0} をダウンロードしています",
 			"downloadingServiceComplete": "{0} のダウンロードが完了しました",
 			"downloadingServiceSize": "({0} KB)",

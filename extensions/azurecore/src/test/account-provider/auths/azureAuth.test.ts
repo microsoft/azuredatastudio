@@ -19,7 +19,8 @@ let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 const mockToken: Token = {
 	key: 'someUniqueId',
 	token: 'test_token',
-	tokenType: 'Bearer'
+	tokenType: 'Bearer',
+	expiresOn: new Date().getTime() / 1000 + (60 * 60) // 1 hour from now.
 };
 let mockAccessToken: AccessToken;
 let mockRefreshToken: RefreshToken;
@@ -98,7 +99,7 @@ describe('Azure Authentication', function () {
 			should(securityToken).be.undefined();
 		});
 		it('dont find correct resources', async function () {
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, TypeMoq.It.isAny(), -1);
+			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityTokenAdal(mockAccount, TypeMoq.It.isAny(), <any>-1);
 			should(securityToken).be.undefined();
 		});
 		it('incorrect tenant', async function () {
@@ -118,7 +119,7 @@ describe('Azure Authentication', function () {
 			});
 
 			azureAuthCodeGrant.setup(x => x.refreshTokenAdal(mockTenant, provider.settings.ossRdbmsResource!, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
-				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
+				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken)) as AccessToken;
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
 					accessToken: mockToken
@@ -164,7 +165,7 @@ describe('Azure Authentication', function () {
 				});
 			});
 			azureAuthCodeGrant.setup(x => x.refreshTokenAdal(mockTenant, provider.settings.microsoftResource!, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
-				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
+				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken)) as AccessToken;
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
 					accessToken: mockToken

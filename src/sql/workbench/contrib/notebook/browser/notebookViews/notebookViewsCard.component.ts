@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
-import * as DOM from 'vs/base/browser/dom';
 import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef, SimpleChange } from '@angular/core';
 import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -11,7 +10,7 @@ import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH, ViewsTab } from 'sql
 import { CellChangeEventType, INotebookView, INotebookViewCard } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { RunCellAction, HideCellAction, ViewCellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
+import { RunCellAction, HideCellAction, ViewCellToggleMoreAction, ViewCellToggleMoreActionViewItem } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -30,8 +29,6 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	private _actionbar: Taskbar;
 	private _executionState: CellExecutionState;
 	private _pendingReinitialize: boolean = false;
-
-	public _cellToggleMoreActions: ViewCellToggleMoreActions;
 
 	@Input() card: INotebookViewCard;
 	@Input() cells: ICellModel[];
@@ -121,7 +118,14 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 				this._actionbar.dispose();
 			}
 
-			this._actionbar = new Taskbar(this._actionbarRef.nativeElement);
+			this._actionbar = new Taskbar(this._actionbarRef.nativeElement, {
+				actionViewItemProvider: action => {
+					if (action.id === ViewCellToggleMoreAction.ID) {
+						return this._instantiationService.createInstance(ViewCellToggleMoreActionViewItem, action, this._actionbar.actionRunner, context);
+					}
+					return undefined;
+				}
+			});
 			this._actionbar.context = { target: this._actionbarRef.nativeElement };
 
 			if (this.cell.cellType === CellTypes.Code) {
@@ -132,10 +136,8 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 			let hideButton = new HideCellAction(this.hide, this);
 			taskbarContent.push({ action: hideButton });
 
-			let moreActionsContainer = DOM.$('li.action-item');
-			this._cellToggleMoreActions = this._instantiationService.createInstance(ViewCellToggleMoreActions);
-			this._cellToggleMoreActions.onInit(moreActionsContainer, context);
-			taskbarContent.push({ element: moreActionsContainer });
+			const viewCellToggleMoreAction = this._instantiationService.createInstance(ViewCellToggleMoreAction);
+			taskbarContent.push({ action: viewCellToggleMoreAction });
 
 			this._actionbar.setContent(taskbarContent);
 		}

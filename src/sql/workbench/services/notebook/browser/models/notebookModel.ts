@@ -1085,6 +1085,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._providerId = provider;
 			} else if (!provider) {
 				this._providerId = SQL_NOTEBOOK_PROVIDER;
+				this._notebookOptions.notificationService.notify({ severity: Severity.Info, message: localize('savedKernelNotSupported', "This notebook's '{0}' kernel is not supported. Defaulting to SQL kernel instead.", this._savedKernelInfo.display_name ?? this._savedKernelInfo.name) });
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {
@@ -1120,7 +1121,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Switching from Kusto to another kernel should set the currentKernelAlias to undefined
 			if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
 				this._currentKernelAlias = undefined;
-			} else {
+			} else if (this._currentKernelAlias) {
 				// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
 				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 			}

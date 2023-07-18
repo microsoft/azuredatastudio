@@ -8,9 +8,11 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { KeyCode, EVENT_KEY_CODE_MAP } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
-import { Event } from 'vs/base/common/event';
+import { Dropdown, IEditableDropdownStyles } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { IInputBoxStyles } from 'vs/base/browser/ui/inputbox/inputBox';
+import { ISelectBoxStyles } from 'sql/base/browser/ui/selectBox/selectBox';
 
 const InverseKeyCodeMap: { [k: string]: number } = Object.fromEntries(Object.entries(EVENT_KEY_CODE_MAP).map(([key, value]) => [value, Number(key)]));
 
@@ -18,8 +20,9 @@ export interface ITableCellEditorOptions {
 	valueGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string,
 	valueSetter?: (context: any, row: number, item: Slick.SlickData, column: Slick.Column<Slick.SlickData>, value: string) => void,
 	optionsGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string[],
-	editorStyler: (component: InputBox | SelectBox | Dropdown) => void,
-	onStyleChange: Event<void>;
+	inputBoxStyles: IInputBoxStyles,
+	editableDropdownStyles: IEditableDropdownStyles,
+	selectBoxStyles: ISelectBoxStyles
 }
 
 export class TableCellEditorFactory {
@@ -36,12 +39,13 @@ export class TableCellEditorFactory {
 			optionsGetter: options.optionsGetter ?? function (item, column) {
 				return [];
 			},
-			editorStyler: options.editorStyler,
-			onStyleChange: options.onStyleChange
+			inputBoxStyles: options.inputBoxStyles,
+			editableDropdownStyles: options.editableDropdownStyles,
+			selectBoxStyles: options.selectBoxStyles
 		};
 	}
 
-	public getTextEditorClass(context: any, inputType: 'text' | 'number' = 'text'): any {
+	public getTextEditorClass(context: any, inputType: 'text' | 'number' | 'date' = 'text', presetValue?: string): any {
 		const self = this;
 		class TextEditor extends Disposable {
 			private _originalValue: string;
@@ -64,18 +68,16 @@ export class TableCellEditorFactory {
 
 			public init(): void {
 				this._input = new InputBox(this._args.container, self._contextViewProvider, {
-					type: inputType
+					type: inputType,
+					inputBoxStyles: defaultInputBoxStyles
 				});
-				self._options.editorStyler(this._input);
 				this._input.element.style.height = '100%';
 				this._input.focus();
 				this._input.onLoseFocus(async () => {
 					await this.commitEdit();
 				});
 				this._register(this._input);
-				this._register(self._options.onStyleChange(() => {
-					self._options.editorStyler(this._input);
-				}));
+				this._input.value = presetValue ?? '';
 			}
 
 			private async commitEdit(): Promise<void> {
@@ -96,11 +98,21 @@ export class TableCellEditorFactory {
 
 			public loadValue(item: Slick.SlickData): void {
 				this._originalValue = self._options.valueGetter(item, this._args.column) ?? '';
-				this._input.value = this._originalValue;
+				if (inputType === 'date') {
+					this._input.inputElement.valueAsDate = new Date(this._originalValue);
+				} else {
+					this._input.value = this._originalValue;
+				}
 			}
 
 			public applyValue(item: Slick.SlickData, state: string): void {
 				const activeCell = this._args.grid.getActiveCell();
+				if (inputType === 'date') {
+					// Usually, the date picker will return the date in the local time zone and change the date to the previous day.
+					// We need to convert the date to UTC time zone to avoid this behavior so that the date will be the same as the
+					// date picked in the date picker.
+					state = new Date(state).toLocaleDateString(window.navigator.language, { timeZone: 'UTC' });
+				}
 				self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
 			}
 
@@ -149,7 +161,7 @@ export class TableCellEditorFactory {
 				container.style.height = '100%';
 				container.style.width = '100%';
 				if (isEditable) {
-					this._component = new Dropdown(container, self._contextViewProvider);
+					this._component = new Dropdown(container, self._contextViewProvider, self._options.editableDropdownStyles);
 					this._component.onValueChange(async () => {
 						await this.commitEdit();
 					});
@@ -157,19 +169,15 @@ export class TableCellEditorFactory {
 						await this.commitEdit();
 					});
 				} else {
-					this._component = new SelectBox([], undefined, self._contextViewProvider);
+					this._component = new SelectBox([], undefined, self._options.selectBoxStyles, self._contextViewProvider);
 					this._component.render(container);
 					this._component.selectElem.style.height = '100%';
 					this._component.onDidSelect(async () => {
 						await this.commitEdit();
 					});
 				}
-				self._options.editorStyler(this._component);
 				this._component.focus();
 				this._register(this._component);
-				this._register(self._options.onStyleChange(() => {
-					self._options.editorStyler(this._component);
-				}));
 			}
 
 			private async commitEdit(): Promise<void> {

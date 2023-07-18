@@ -275,10 +275,9 @@ export class NewProfilerAction extends Task {
 	}
 
 	public async runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
-		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
+		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile, undefined);
 		await accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
 		let options: IConnectionCompletionOptions = {
-			params: undefined,
 			saveTheConnection: false,
 			showConnectionDialogOnError: true,
 			showDashboard: false,

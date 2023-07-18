@@ -20,7 +20,7 @@ import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { Event } from 'vs/base/common/event';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
@@ -58,7 +58,7 @@ suite('SQL QueryEditor Tests', () => {
 			return new Promise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined, undefined)));
+			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined, undefined, undefined)));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
@@ -68,7 +68,7 @@ suite('SQL QueryEditor Tests', () => {
 				}
 			}
 			// Default
-			return new RunQueryAction(undefined, undefined, undefined, undefined);
+			return new RunQueryAction(undefined, undefined, undefined, undefined, undefined);
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
@@ -285,7 +285,7 @@ suite('SQL QueryEditor Tests', () => {
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
 				// Default
-				return new RunQueryAction(undefined, undefined, undefined, undefined);
+				return new RunQueryAction(undefined, undefined, undefined, undefined, undefined);
 			});
 
 			// Setup hook to capture calls to create the listDatabase action
@@ -296,7 +296,7 @@ suite('SQL QueryEditor Tests', () => {
 						return item;
 					}
 					// Default
-					return new RunQueryAction(undefined, undefined, undefined, undefined);
+					return new RunQueryAction(undefined, undefined, undefined, undefined, undefined);
 				});
 
 			const workbenchinstantiationService = workbenchInstantiationService();

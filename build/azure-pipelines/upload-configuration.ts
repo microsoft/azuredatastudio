@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as path from 'path';
 import * as os from 'os';
 import * as cp from 'child_process';
@@ -14,7 +12,7 @@ import { ClientSecretCredential } from '@azure/identity';
 const azure = require('gulp-azure-storage');
 import * as packageJson from '../../package.json';
 
-const commit = process.env['VSCODE_DISTRO_COMMIT'] || process.env['BUILD_SOURCEVERSION'];
+const commit = process.env['BUILD_SOURCEVERSION'];
 
 function generateVSCodeConfigurationTask(): Promise<string | undefined> {
 	return new Promise((resolve, reject) => {
@@ -63,7 +61,7 @@ function generateVSCodeConfigurationTask(): Promise<string | undefined> {
 		const timer = setTimeout(() => {
 			codeProc.kill();
 			reject(new Error('export-default-configuration process timed out'));
-		}, 12 * 1000);
+		}, 60 * 1000);
 
 		codeProc.on('error', err => {
 			clearTimeout(timer);

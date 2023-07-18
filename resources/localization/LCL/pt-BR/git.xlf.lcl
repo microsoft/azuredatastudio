@@ -10,16 +10,178 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit and push title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish Branch]]></Val>
+          <Val><![CDATA[{0} Commit & Push]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Publicar Ramificação]]></Val>
+            <Val><![CDATA[{0} Confirmar e Efetuar push]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch running" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit and push tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit & Push Changes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar e Enviar Alterações por Push]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit and sync title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Commit & Sync]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Confirmar e Sincronizar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit and sync tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit & Sync Changes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar e Sincronizar Alterações]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Commit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Confirmação]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit to new branch and push tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit to New Branch & Push Changes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar Nova Ramificação e Alterações por Push]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit to new branch and sync tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit to New Branch & Sync Changes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar Nova Ramificação e Sincronizar Alterações]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit to new branch tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit Changes to New Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar Alterações na Nova Ramificação]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button commit tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit Changes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar Alterações]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button committing and pushing tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Committing & Pushing Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmando e enviando alterações por push...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button committing and synching tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Committing & Synching Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmando e Sincronizando Alterações...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button committing to new branch and pushing tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Committing to New Branch & Pushing Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmando Novas Ramificações e Enviando Alterações por Push...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button committing to new branch and synching tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Committing to New Branch & Synching Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmando Novas Ramificações e Sincronizando Alterações...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button committing to new branch tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Committing Changes to New Branch...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmando Alterações no Novo Branch...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button committing tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Committing Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmando Alterações...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button continue title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Continue]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Continuar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button continue tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Continue Rebase]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Continuar Troca de base]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button continuing tooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Continuing Rebase...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Continuando troca de base...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publish Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Publicar Branch]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch running" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publishing Branch...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -28,29 +190,32 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/actionButton.scm button publish title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[$(cloud-upload) Publish Branch]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[$(cloud-upload) Publicar Ramificação]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/git/dist/actionButton.scm button sync description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Sync Changes {1}{2}]]></Val>
+          <Val><![CDATA[{0} Sync Changes{1}{2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Alterações de Sincronização {1}{2}]]></Val>
+            <Val><![CDATA[{0} Sincronizar Alterações{1}{2}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} Sync Changes {1}{2}]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm publish branch action button title" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Publish Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Publicar Branch]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/actionButton.scm button sync title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/actionButton.scm secondary button commit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} {1}{2}]]></Val>
+          <Val><![CDATA[Commit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} {1}{2}]]></Val>
+            <Val><![CDATA[Commit]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -114,6 +279,24 @@
           <Val><![CDATA[HEAD version of '{0}' is not available.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[A versão HEAD de '{0}' não está disponível.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/commands.Theirs" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Theirs]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Deles]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/commands.Yours" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Yours]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Suas]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -217,6 +400,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.branch name does not match sanitized" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The new branch will be '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O novo branch será '{0}']]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.branch name format invalid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Branch name needs to match regex: {0}]]></Val>
@@ -232,18 +424,6 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Não é possível enviar refs por push para o remoto. Tente executar 'pull' primeiro para integrar suas alterações.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/commands.changed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} Log level changed to: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Nível de log alterado para: {1}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Log level changed to: {0}]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -310,6 +490,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.commit changes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit Anyway]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Confirmar mesmo assim]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.commit hash" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Commit Hash]]></Val>
@@ -328,11 +517,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.commit to branch" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit to a New Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fazer commit em um novo branch]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.commitMessageWithHeadLabel2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Message (commit on '{0}')]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Mensagem (confirmar em '{0}')]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/commands.confirm branch protection commit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[You are trying to commit to a protected branch and you might not have permission to push your commits to the remote.]D;]A;]D;]A;How would you like to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Você está tentando fazer commit em um branch protegido e pode não ter permissão para enviar suas confirmações para o remoto.]D;]A;]D;]A;Como você gostaria de proceder?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -400,7 +607,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/commands.confirm emtpy commit" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/commands.confirm empty commit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to create an empty commit?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -520,6 +727,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.default" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Default]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Padrão]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.delete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete File]]></Val>
@@ -615,6 +831,15 @@
           <Val><![CDATA[Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Tem certeza de que deseja remover TODOS os stashes? Há 1 estoque que estará sujeito a remoção e PODE SER IMPOSSÍVEL DE RECUPERAR.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/commands.empty commit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Commit operation was cancelled due to empty commit message.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A operação de confirmação foi cancelada devido à mensagem de confirmação vazia.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1546,38 +1771,47 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/log.gitLogLevel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log level: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nível de log: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/main.skipped" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Skipped found git in: {1}]]></Val>
+          <Val><![CDATA[Skipped found git in: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Git encontrado ignorado em: {1}]]></Val>
+            <Val><![CDATA[Git localizado ignorado em: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Skipped found git in: {0}]]></Val>
+            <Val><![CDATA[{0} Skipped found git in: {1}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/main.using git" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Using git {1} from {2}]]></Val>
+          <Val><![CDATA[Using git {0} from {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Usando o git {1} do {2}]]></Val>
+            <Val><![CDATA[Usando git {0} de {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Using git {0} from {1}]]></Val>
+            <Val><![CDATA[{0} Using git {1} from {2}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/main.validating" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Validating found git in: {1}]]></Val>
+          <Val><![CDATA[Validating found git in: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Validando o git encontrado em: {1}]]></Val>
+            <Val><![CDATA[Validando git localizado em: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Validating found git in: {0}]]></Val>
+            <Val><![CDATA[{0} Validating found git in: {1}]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1974,6 +2208,15 @@
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Abrir]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/repository.open.merge" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Merge]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abrir Mesclagem]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2536,6 +2779,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.command.commitMessageAccept" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Accept Commit Message]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aceitar Mensagem de Confirmação]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.commitMessageDiscard" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Discard Commit Message]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Descartar Mensagem de Confirmação]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.command.commitNoVerify" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Commit (No Verify)]]></Val>
@@ -2649,6 +2910,15 @@
           <Val><![CDATA[Fetch (Prune)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Buscar (Remover)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.git.acceptMerge" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Accept Merge]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aceitar Mesclagem]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2883,6 +3153,33 @@
           <Val><![CDATA[Restore Commit Template]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Restaurar Modelo de Confirmação]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.revealFileInOS.linux" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Containing Folder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abrir Pasta de retenção]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.revealFileInOS.mac" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Reveal in Finder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Revelar no Localizador]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.revealFileInOS.windows" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Reveal in File Explorer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Revelar no Explorador de Arquivos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3286,6 +3583,114 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.branchPrefix" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Prefix used when creating a new branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Prefixo usado ao criar um novo branch.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchProtection" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of protected branches. By default, a prompt is shown before changes are committed to a protected branch. The prompt can be controlled using the `#git.branchProtectionPrompt#`  setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Lista de branches protegidos. Por padrão, um prompt é mostrado antes que as alterações sejam confirmadas em um branch protegido. O prompt pode ser controlado usando a configuração `#git.branchProtectionPrompt#`.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchProtectionPrompt" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether a prompt is being before changes are committed to a protected branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controla se um prompt está sendo usado antes que as alterações sejam confirmadas em um branch protegido.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchProtectionPrompt.alwaysCommit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Always commit changes to the protected branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sempre faça commit nas alterações no branch protegido.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchProtectionPrompt.alwaysCommitToNewBranch" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Always commit changes to a new branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sempre fazer commit nas alterações em um novo branch.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchProtectionPrompt.alwaysPrompt" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Always prompt before changes are committed to a protected branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sempre solicitar antes que as alterações sejam confirmadas em um branch protegido.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchRandomNameDictionary" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of dictionaries used for the randomly generated branch name. Each value represents the dictionary used to generate the segment of the branch name. Supported dictionaries: `adjectives`, `animals`, `colors` and `numbers`.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Lista de dicionários usados para o nome do branch gerado aleatoriamente. Cada valor representa o dicionário usado para gerar o segmento do nome da ramificação. Dicionários suportados: `adjetivos`, `animais`, `cores` e `números`.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchRandomNameDictionary.adjectives" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A random adjective]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Um adjetivo aleatório]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchRandomNameDictionary.animals" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A random animal name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Um nome de animal aleatório]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchRandomNameDictionary.colors" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A random color name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Um nome de cor aleatório]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchRandomNameDictionary.numbers" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A random number between 100 and 999]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Um número aleatório entre 100 e 999]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.branchRandomNameEnable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether a random name is generated when creating a new branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controla se um nome aleatório é gerado ao criar um novo branch.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.branchSortOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the sort order for branches.]]></Val>
@@ -3306,10 +3711,13 @@
       </Item>
       <Item ItemId=";extensions/git/package.config.branchWhitespaceChar" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The character to replace whitespace in new branch names.]]></Val>
+          <Val><![CDATA[The character to replace whitespace in new branch names, and to separate segments of a randomly generated branch name.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O caractere para substituir espaço em branco em novos nomes de ramificação.]]></Val>
+            <Val><![CDATA[O caractere para substituir o espaço em branco em novos nomes de branch e para separar segmentos de um nome de branch gerado aleatoriamente.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The character to replace whitespace in new branch names.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3358,7 +3766,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.config.commandsToLog" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.config.commandsToLog" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output]5D;(command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output]5D;(command:git.showOutput).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -3637,6 +4045,87 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Specifies how much information (if any) to log to the [git output]5D;(command:git.showOutput).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifica a quantidade de informações (se houver) para registrar no [git output]5D;(command:git.showOutput).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.critical" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log only critical information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Registrar somente informações críticas]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.debug" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log only debug, information, warning, error, and critical information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Registrar apenas depuração, informações, avisos, erros e informações críticas]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log only error, and critical information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erro somente de log e informações críticas]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.info" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log only information, warning, error, and critical information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Registrar apenas informações, avisos, erros e informações críticas]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.off" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log nothing]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não registrar nada]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.trace" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log all information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Registrar todas as informações]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.logLevel.warn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log only warning, error, and critical information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Registrar apenas avisos, erros e informações críticas]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.mergeEditor" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open the merge editor for files that are currently under conflict.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abra o editor de mesclagem para arquivos que estão atualmente em conflito.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.openAfterClone" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to open a repository automatically after cloning.]]></Val>
@@ -3871,6 +4360,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.showActionButton" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether an action button is shown in the Source Control view.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controla se um botão de ação é mostrado na visualização Source Control.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.showActionButton.commit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show an action button to commit changes when the local branch has modified files ready to be committed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostre um botão de ação para confirmar as alterações quando a ramificação local tiver modificado os arquivos prontos para serem confirmados.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.showActionButton.publish" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show an action button to publish the local branch when it does not have a tracking remote branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostre um botão de ação para publicar a ramificação local quando ela não tiver uma ramificação remota de rastreamento.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.showActionButton.sync" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Show an action button to synchronize changes when the local branch is either ahead or behind the remote branch.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostre um botão de ação para sincronizar as alterações quando a ramificação local estiver à frente ou atrás da ramificação remota.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.showCommitInput" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to show the commit input in the Git source control panel.]]></Val>
@@ -3903,42 +4428,6 @@
           <Val><![CDATA[Controls whether to show a notification when a push is successful.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Controla se uma notificação deve ser mostrada quando um envio por push é bem-sucedido.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/package.config.showUnpublishedCommitsButton" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Controls whether to show an action button to sync or publish, if there are unpublished commits.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Controla se deve mostrar um botão de ação para sincronizar ou publicar, se houver confirmações não publicadas.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/package.config.showUnpublishedCommitsButton.always" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Always shows the action button, if there are unpublished commits.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sempre mostra o botão de ação, se houver confirmações não publicados.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/package.config.showUnpublishedCommitsButton.never" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Never shows the action button.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nunca mostrar o botão de ação.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/package.config.showUnpublishedCommitsButton.whenEmpty" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Only shows the action button if there are no other changes and there are unpublished commits.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Mostra o botão de ação somente se não houver outras alterações e se houver confirmações não publicadas.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3999,9 +4488,21 @@
       </Item>
       <Item ItemId=";extensions/git/package.config.terminalAuthentication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Val><![CDATA[Controls whether to enable VS Code to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Controla se o Azure Data Studio deve ser habilitado com o manipulador de autenticação para processos git gerados no terminal integrado. Observação: os terminais precisam ser reiniciados para obter uma alteração nesta configuração.]]></Val>
+            <Val><![CDATA[Controla se o VS Code deve ser habilitado para ser o manipulador de autenticação para processos git gerados no terminal integrado. Observação: os terminais precisam ser reiniciados para retirar uma alteração nesta configuração.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Controls whether to enable Azure Data Studio to be the authentication handler for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.terminalGitEditor" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether to enable VS Code to be git editor for git processes spawned in the integrated terminal. Note: terminals need to be restarted to pick up a change in this setting.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controla se o VS Code deve ser ativado como editor git para processos git gerados no terminal integrado. Nota: os terminais precisam ser reiniciados para detectar uma alteração nesta configuração.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4096,6 +4597,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.useEditorAsCommitInput" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether a full text editor will be used to author commit messages, whenever no message is provided in the commit input box.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controla se um editor de texto completo será usado para criar mensagens de confirmação, sempre que nenhuma mensagem for fornecida na caixa de entrada de confirmação.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.useForcePushWithLease" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether force pushing uses the safer force-with-lease variant.]]></Val>
@@ -4110,6 +4620,15 @@
           <Val><![CDATA[Controls whether GIT_ASKPASS should be overwritten to use the integrated version.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Controla se o GIT_ASKPASS deve ser substituído para usar a versão integrada.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.verboseCommit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable verbose output when `#git.useEditorAsCommitInput#` is enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilite a saída detalhada quando `#git.useEditorAsCommitInput#` estiver habilitado.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4222,11 +4741,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.cloneRepository" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.cloneRepository" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You can clone a repository locally.]D;]A;[Clone Repository]5D;(command:git.clone 'Clone a repository once the git extension has activated')]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Você pode clonar um repositório localmente.]D;]A;[Clonar Repositório]5D;(comando: git.clone 'Clonar um repositório após a ativação da extensão git')]]></Val>
+            <Val><![CDATA[Você pode clonar um repositório localmente.]D;]A;[Clone Repository]5D;(command:git.clone 'Clonar um repositório após a ativação da extensão git')]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4240,7 +4759,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -4252,7 +4771,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.empty" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use git features, you can open a folder containing a git repository or clone from a URL.]D;]A;[Open Folder]5D;(command:vscode.openFolder)]D;]A;[Clone Repository]5D;(command:git.clone)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -4261,7 +4780,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.emptyWorkspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories.]D;]A;[Add Folder to Workspace]5D;(command:workbench.action.addRootFolder)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -4270,7 +4789,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.folder" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The folder currently open doesn't have a git repository. You can initialize a repository which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init?%5Btrue%5D)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -4281,50 +4800,44 @@
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Não foi detectada uma instalação do git válida. Mais detalhes podem ser encontrados em [saída do git]5D;(command:git.showOutput).]D;]A;[instale o git]5D;(https://git-scm.com/) ou saiba mais sobre como usar o git e o controle do código-fonte no Azure Data Studio em [nossos documentos]5D;(https://aka.ms/vscode-scm).]D;]A;Se você estiver usando um sistema de controle de versão diferente, poderá [pesquisar no Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) por extensões adicionais.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
           <Val><![CDATA[Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Instale o Git, um sistema de controle do código-fonte popular, para acompanhar alterações de código e colaborar com outras pessoas. Saiba mais em nossos [guias do Git]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.linux" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.linux" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source control depends on Git being installed.]D;]A;[Download Git for Linux]5D;(https://git-scm.com/download/linux)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O controle do código-fonte depende da instalação do Git.]D;]A;[Baixe o Git para Linux]5D;(https://git-scm.com/download/linux)]D;]A;Depois de instalar, [recarregue]5D;(command:workbench.action.reloadWindow) (ou [solucione o problema]5D;(command:git.showOutput)). Provedores de controle do código-fonte adicionais podem ser instalados [a partir do Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+            <Val><![CDATA[O controle de origem depende da instalação do Git.]D;]A;[Baixe o Git para Linux]5D;(https://git-scm.com/download/linux)]D;]A;Após a instalação, [recarregue]5D;(command:workbench.action.reloadWindow) (ou [solucione problemas]5D;(command:git.showOutput)). Provedores de controle de origem adicionais podem ser instalados [do Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.mac" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.mac" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for macOS]5D;(https://git-scm.com/download/mac)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[Baixe o Git para macOS]5D;(https://git-scm.com/download/mac)]D;]A;Depois de instalar, [recarregue]5D;(command:workbench.action.reloadWindow) (ou [solucione o probleme]5D;(command:git.showOutput)). Provedores de controle do código-fonte adicionais podem ser instalados [a partir do Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+            <Val><![CDATA[[Baixe o Git para macOS]5D;(https://git-scm.com/download/mac)]D;]A;Após a instalação, [recarregue]5D;(command:workbench.action.reloadWindow) (ou [solucione problemas]5D;(command:git.showOutput)). Provedores de controle de origem adicionais podem ser instalados [do Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.windows" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.windows" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[Baixar o Git para Windows]5D;(https://git-scm.com/download/win)]D;]A;Depois de instalar, [recarregue]5D;(command:workbench.action.reloadWindow) (ou [solucione o problema]5D;(command:git.showOutput)). Provedores de controle do código-fonte adicionais podem ser instalados [a partir do Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+            <Val><![CDATA[[Baixe o Git para Windows]5D;(https://git-scm.com/download/win)]D;]A;Após a instalação, [recarregue]5D;(command:workbench.action.reloadWindow) (ou [solucione problemas]5D;(command:git.showOutput)). Provedores de controle de origem adicionais podem ser instalados [do Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/package.view.workbench.scm.workspace" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.]D;]A;[Initialize Repository]5D;(command:git.init)]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

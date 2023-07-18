@@ -29,12 +29,12 @@ suite('Open Existing Dialog', function (): void {
 		const validateResult = await dialog.validate();
 
 		const msg = constants.FileNotExistError('project', 'nonExistentProjectFile');
-		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(dialog.dialogObject.message?.text, msg);
 		should.equal(validateResult, false, 'Validation should fail because project file does not exist, but passed');
 
 		// create a project file
 		dialog.filePathTextBox!.value = await createProjectFile('testproj');
-		should.equal(await dialog.validate(), true, `Validation should pass because project file exists, but failed with: ${dialog.dialogObject.message.text}`);
+		should.equal(await dialog.validate(), true, `Validation should pass because project file exists, but failed with: ${dialog.dialogObject.message?.text}`);
 	});
 
 
@@ -50,13 +50,13 @@ suite('Open Existing Dialog', function (): void {
 
 		const validateResult = await dialog.validate();
 		const msg = constants.CloneParentDirectoryNotExistError(dialog.localClonePathTextBox!.value);
-		should.equal(dialog.dialogObject.message.text, msg, 'Dialog message should be correct');
+		should.equal(dialog.dialogObject.message?.text, msg, 'Dialog message should be correct');
 		should.equal(validateResult, false, 'Validation should fail because clone directory does not exist, but passed');
 
 		// validation should pass if directory exists
 		dialog.localClonePathTextBox!.value = os.tmpdir();
 		folderExistStub.resolves(true);
-		should.equal(await dialog.validate(), true, `Validation should pass because clone directory exists, but failed with: ${dialog.dialogObject.message.text}`);
+		should.equal(await dialog.validate(), true, `Validation should pass because clone directory exists, but failed with: ${dialog.dialogObject.message?.text}`);
 	});
 
 	test('project browse', async function (): Promise<void> {

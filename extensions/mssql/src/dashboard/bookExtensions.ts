@@ -56,7 +56,7 @@ namespace BookContributions {
 	export function fromExtension(
 		extension: vscode.Extension<any>
 	): BookContribution[] {
-		const contributions = extension.packageJSON && extension.packageJSON.contributes;
+		const contributions = extension.packageJSON?.contributes as unknown[];
 		if (!contributions) {
 			return [];
 		}
@@ -96,7 +96,7 @@ class AzdataExtensionBookContributionProvider extends Disposable implements Book
 		vscode.extensions.onDidChange(async () => {
 			const currentContributions = this.getCurrentContributions();
 			const existingContributions = this._contributions || undefined;
-			if (!arrays.equals(existingContributions, currentContributions, BookContributions.equal)) {
+			if (!existingContributions || !arrays.equals(existingContributions, currentContributions, BookContributions.equal)) {
 				await this.unregisterCommands();
 				this._contributions = currentContributions;
 				await this.registerCommands();

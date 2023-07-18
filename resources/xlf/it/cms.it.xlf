@@ -134,17 +134,13 @@
         <source xml:lang="en">Application name</source>
         <target state="translated">Nome dell'applicazione</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">Collega nome file del database</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+      <trans-unit id="cms.connectionOptions.attachDbFilename.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
         <target state="translated">Nome del file primario, incluso il nome del percorso completo, di un database collegabile</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">Nome file del database collegato</target>
+      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">Collega nome file del database</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -167,12 +163,20 @@
         <target state="translated">Tipo di autenticazione</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="translated">Impostazione di crittografia di colonna predefinita per tutti i comandi della connessione</target>
+        <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
+        <target state="translated">Abilita o disabilita Always Encrypted per la connessione</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Column encryption</source>
-        <target state="translated">Crittografia di colonna</target>
+        <source xml:lang="en">Always Encrypted</source>
+        <target state="translated">Always Encrypted</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.commandTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error</source>
+        <target state="translated">Intervallo di tempo (in secondi) in cui attendere l'esecuzione di un comando prima di interrompere il tentativo e generare un errore</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.commandTimeout.displayName">
+        <source xml:lang="en">Command timeout</source>
+        <target state="translated">Timeout del comando</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
@@ -222,9 +226,49 @@
         <source xml:lang="en">Current language</source>
         <target state="translated">Lingua corrente</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
+        <source xml:lang="en">Azure Attestation</source>
+        <target state="translated">Attestazione di Azure</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
+        <source xml:lang="en">Host Guardian Service</source>
+        <target state="translated">Servizio Sorveglianza host</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None">
+        <source xml:lang="en">None</source>
+        <target state="translated">Nessuno</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.description">
+        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+        <target state="translated">Specifica un protocollo per l'attestazione di un enclave lato server usato con Always Encrypted con enclave sicuri</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationProtocol.displayName">
+        <source xml:lang="en">Attestation protocol</source>
+        <target state="translated">Protocollo di attestazione</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.description">
+        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves</source>
+        <target state="translated">Specifica un endpoint per l'attestazione di un enclave lato server usato con Always Encrypted con enclavi sicuri</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.enclaveAttestationUrl.displayName">
+        <source xml:lang="en">Attestation URL</source>
+        <target state="translated">URL di attestazione</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.false">
+        <source xml:lang="en">Optional (False)</source>
+        <target state="translated">Facoltativo (Falso)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.strict">
+        <source xml:lang="en">Strict</source>
+        <target state="translated">Restrittivo</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.categoryValues.true">
+        <source xml:lang="en">Mandatory (True)</source>
+        <target state="translated">Obbligatorio (Vero)</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">Se è true, SQL Server usa la crittografia SSL per tutti i dati scambiati tra il client e il server, se nel server è installato un certificato</target>
+        <source xml:lang="en">When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.</source>
+        <target state="translated">Quando è 'Obbligatorio' o 'Restrittivo', SQL Server utilizza la crittografia SSL per tutti i dati inviati tra il client e il server se nel server è installato un certificato. Se impostato su 'Restrittivo', SQL Server utilizza TDS 8.0 per tutti i trasferimenti di dati tra il client e il server. 'Restrittivo' è supportato a partire da SQL Server 2022.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
@@ -269,6 +313,14 @@
       <trans-unit id="cms.connectionOptions.groupName.source">
         <source xml:lang="en">Source</source>
         <target state="translated">Origine</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.hostNameInCertificate.description">
+        <source xml:lang="en">Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.</source>
+        <target state="translated">Indica il nome host specificato nel certificato TLS che verrà utilizzato da SQL Server per convalidare il certificato del server. Se non specificato, il nome del server viene utilizzato per impostazione predefinita per la convalida del certificato.</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.hostNameInCertificate.displayName">
+        <source xml:lang="en">Host name in certificate</source>
+        <target state="translated">Nome host nel certificato</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
@@ -350,6 +402,14 @@
         <source xml:lang="en">Replication</source>
         <target state="translated">Replica</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.secureEnclaves.description">
+        <source xml:lang="en">Enables or disables Secure enclaves for the connection</source>
+        <target state="translated">Abilita o disabilita enclave sicuri per la connessione</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.secureEnclaves.displayName">
+        <source xml:lang="en">Secure enclaves</source>
+        <target state="translated">Enclave sicuri</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.description">
         <source xml:lang="en">Description of the SQL Server instance</source>
         <target state="translated">Descrizione dell'istanza di SQL Server</target>
@@ -366,9 +426,13 @@
         <source xml:lang="en">Server</source>
         <target state="translated">Server</target>
       </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.placeholder">
+        <source xml:lang="en">e.g. tcp:servername,1433</source>
+        <target state="translated">ad esempio, tcp:nomeserver,1433</target>
+      </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">Se è true (ed encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server</target>
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.</source>
+        <target state="translated">Se il valore è true (e encrypt=true), SQL Server usa la crittografia SSL per tutti i dati inviati tra il client e il server senza convalidare il certificato del server. Questa proprietà non è supportata con Encrypt=Strict.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -406,9 +470,17 @@
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
         <target state="translated">Supporto per la gestione di Server di gestione centrale di SQL Server</target>
       </trans-unit>
+      <trans-unit id="cms.disabled">
+        <source xml:lang="en">Disabled</source>
+        <target state="translated">Disabilitato</target>
+      </trans-unit>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
         <target state="translated">Server di gestione centrale di SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.enabled">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Abilitato</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>

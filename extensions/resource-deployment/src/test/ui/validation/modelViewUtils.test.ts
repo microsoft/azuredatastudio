@@ -16,16 +16,16 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 
 describe('WizardPage', () => {
-	let stubCheckbox: azdataTest.stubs.modelView.StubCheckbox;
-	let stubInputBox: azdataTest.stubs.modelView.StubInputBox;
+	let stubCheckbox: azdataTest.stubs.azdata.modelView.StubCheckbox;
+	let stubInputBox: azdataTest.stubs.azdata.modelView.StubInputBox;
 	let testWizardPage: WizardPageContext;
 	let contentRegistered: Deferred<void>;
 
 	before(function () {
 		contentRegistered = new Deferred<void>();
 		const mockWizardPage = TypeMoq.Mock.ofType<azdata.window.WizardPage>();
-		stubCheckbox = new azdataTest.stubs.modelView.StubCheckbox();
-		stubInputBox = new azdataTest.stubs.modelView.StubInputBox();
+		stubCheckbox = new azdataTest.stubs.azdata.modelView.StubCheckbox();
+		stubInputBox = new azdataTest.stubs.azdata.modelView.StubInputBox();
 		const mockModelView = azdataTest.mocks.azdata.modelView.createModelViewMock({
 			checkBox: () => stubCheckbox,
 			inputBox: () => stubInputBox

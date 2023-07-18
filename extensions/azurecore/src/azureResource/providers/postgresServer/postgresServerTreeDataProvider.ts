@@ -8,32 +8,28 @@ import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { AzureResourceItemType } from '../../constants';
+import { AzureResourceItemType, AzureResourcePrefixes, pgsqlProvider } from '../../constants';
 import { generateGuid } from '../../utils';
-import { IAzureResourceService } from '../../interfaces';
+import { GraphData, DbServerGraphData } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
-export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
+export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase<GraphData, DbServerGraphData> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL server");
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL Servers");
 
 	public constructor(
-		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
+		databaseServerService: azureResource.IAzureResourceService,
 		private _extensionContext: ExtensionContext
 	) {
 		super(databaseServerService);
 	}
 
-
-	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
+	public getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `${AzureResourcePrefixes.postgresServer}${account.key.accountId}${databaseServer.tenant}${databaseServer.id ?? databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${PostgresServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
 			collapsibleState: this.browseConnectionMode ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
@@ -47,7 +43,7 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'PGSQL',
+				providerName: pgsqlProvider,
 				saveProfile: false,
 				options: {
 					// Set default for SSL or will get error complaining about it not being set correctly
@@ -58,21 +54,18 @@ export class PostgresServerTreeDataProvider extends ResourceTreeDataProviderBase
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'PGSQL',
+			childProvider: pgsqlProvider,
 			type: ExtensionNodeType.Server
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: PostgresServerTreeDataProvider.containerId,
 			label: PostgresServerTreeDataProvider.containerLabel,
-			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-			},
+			iconPath: this._extensionContext.asAbsolutePath('resources/postgresServer.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

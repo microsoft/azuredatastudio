@@ -47,7 +47,15 @@ export class Logger {
 		this.write(LogLevel.Verbose, msg, vals);
 	}
 
-
+	/**
+	 * Logs a message containing PII (when enabled).
+	 * @param msg The initial message to log
+	 */
+	static pii(msg: any, ...vals: any[]) {
+		if (this.piiLogging) {
+			Logger.write(LogLevel.Pii, msg, vals);
+		}
+	}
 
 	/**
 	 * Logs a message containing PII (when enabled). Provides the ability to sanitize or shorten values to hide information or reduce the amount logged.
@@ -56,7 +64,7 @@ export class Logger {
 	 * @param stringsToShorten Set of strings to shorten
 	 * @param vals Any other values to add on to the end of the log message
 	 */
-	static pii(msg: any, objsToSanitize: { name: string, objOrArray: any | any[] }[], stringsToShorten: { name: string, value: string }[], ...vals: any[]) {
+	static piiSanitized(msg: any, objsToSanitize: { name: string, objOrArray: any }[], stringsToShorten: { name: string, value: string }[], ...vals: any[]) {
 		if (this.piiLogging) {
 			msg = [
 				msg,
@@ -90,6 +98,7 @@ function sanitize(objOrArray: any): string {
 }
 
 function sanitizeImpl(obj: any): string {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	obj = Object.assign({}, obj);
 	delete obj.domains; // very long and not really useful
 	// shorten all tokens since we don't usually need the exact values and there's security concerns if they leaked

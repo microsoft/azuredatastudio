@@ -199,7 +199,8 @@ export function createViewContext(): ViewTestContext {
 		data: [] as any[][],
 		columns: [] as string[],
 		onRowSelected: onClick.event,
-		appendData: (data: any[][]) => undefined,
+		appendData: (_data: any[][]) => undefined,
+		setActiveCell: (_row: number, _column: number) => undefined
 	});
 
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
@@ -316,7 +317,8 @@ export function createViewContext(): ViewTestContext {
 			separator: undefined!,
 			propertiesContainer: undefined!,
 			infoBox: undefined!,
-			slider: undefined!
+			slider: undefined!,
+			executionPlan: undefined!,
 		}
 	};
 	return {

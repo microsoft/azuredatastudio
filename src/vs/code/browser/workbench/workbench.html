@@ -52,6 +52,19 @@
 		Object.keys(self.webPackagePaths).map(function (key, index) {
 			self.webPackagePaths[key] = `${baseUrl}/node_modules/${key}/${self.webPackagePaths[key]}`;
 		});
+
+		// Set up nls if the user is not using the default language (English)
+		const nlsConfig = {};
+		const locale = window.localStorage.getItem('vscode.nls.locale') || navigator.language;
+		if (!locale.startsWith('en')) {
+			nlsConfig['vs/nls'] = {
+				availableLanguages: {
+					'*': locale
+				},
+				translationServiceUrl: '{{WORKBENCH_NLS_BASE_URL}}'
+			};
+		}
+
 		require.config({
 			baseUrl: `${baseUrl}/out`,
 			recordStats: true,
@@ -82,10 +95,8 @@
 				'@angular/animations': `${window.location.origin}/static/node_modules/@angular/animations/bundles/animations.umd.n.js`,
 				'angular2-grid': `${window.location.origin}/static/node_modules/angular2-grid/bundles/NgGrid.umd.js`,
 				'angular2-slickgrid': `${window.location.origin}/static/node_modules/angular2-slickgrid/out/bundles/angular2-slickgrid.umd.js`,
-				'chart.js':  `${window.location.origin}/static/node_modules/chart.js/dist/Chart.bundle.min.js`,
-				'kburtram-query-plan': `${window.location.origin}/static/node_modules/kburtram-query-plan/dist/index.min.js`,
+				'chart.js':  `${window.location.origin}/static/node_modules/chart.js/dist/chart.umd.js`,
 				'html-to-image': `${window.location.origin}/static/node_modules/html-to-image/dist/html-to-image.js`,
-				'ng2-charts': `${window.location.origin}/static/node_modules/ng2-charts/bundles/ng2-charts.umd.js`,
 				'rxjs/Observable': `${window.location.origin}/static/node_modules/rxjs/bundles/Rx.min.js?0`,
 				'rxjs/observable/merge': `${window.location.origin}/static/node_modules/rxjs/bundles/Rx.min.js?1`,
 				'rxjs/operator/share': `${window.location.origin}/static/node_modules/rxjs/bundles/Rx.min.js?2`,
@@ -105,7 +116,7 @@
 				'plotly.js-dist-min': `${window.location.origin}/static/node_modules/plotly.js-dist-min/plotly.min.js`,
 				'azdataGraph': `${window.location.origin}/static/node_modules/azdataGraph/dist/build.js`
 			}
-		};
+		});
 	</script>
 
 

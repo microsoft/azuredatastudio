@@ -6,7 +6,6 @@
 import * as DOM from 'vs/base/browser/dom';
 import type * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
@@ -15,6 +14,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
 	// Div that holds the name of the element selected
@@ -23,14 +23,14 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 
 	public constructor(
 		parentContainer: HTMLElement,
-		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IContextViewService contextViewService: IContextViewService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IQuickInputService quickInputService: IQuickInputService
+		@IQuickInputService quickInputService: IQuickInputService,
+		@IComponentContextService componentContextService: IComponentContextService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService);
+		super(parentContainer, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService, componentContextService);
 		this._model = <ExecutionPlanPropertiesView>{};
 		this._operationName = DOM.$('h3');
 		this._operationName.classList.add('operation-name');

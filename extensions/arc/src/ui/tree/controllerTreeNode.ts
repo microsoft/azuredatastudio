@@ -110,10 +110,15 @@ export class ControllerTreeNode extends TreeNode {
 						node = new PostgresTreeNode(postgresModel, this.model);
 						break;
 					case ResourceType.sqlManagedInstances:
-						// Fill in the username too if we already have it
-						(resourceInfo as MiaaResourceInfo).userName = (this.model.info.resources.find(info =>
+						// Fill in the username and connection properties too if we already have them
+						let miaaResourceInfo = this.model.info.resources.find(info =>
 							info.name === resourceInfo.name &&
-							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.userName;
+							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo;
+						if (miaaResourceInfo) {
+							(resourceInfo as MiaaResourceInfo).userName = miaaResourceInfo.userName;
+							(resourceInfo as MiaaResourceInfo).encrypt = miaaResourceInfo.encrypt;
+							(resourceInfo as MiaaResourceInfo).trustServerCertificate = miaaResourceInfo.trustServerCertificate;
+						}
 						const miaaModel = new MiaaModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;

@@ -26,6 +26,8 @@ import { OperatorsCacheObject } from 'sql/workbench/services/jobManagement/commo
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
+import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -79,7 +81,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService,
-		@Inject(IQuickInputService) private _quickInputService: IQuickInputService
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService,
+		@Inject(IComponentContextService) private _componentContextService: IComponentContextService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
@@ -147,8 +150,9 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, { columns }, this.options);
+		this._table = new Table(this._gridEl.nativeElement, this._accessibilityService, this._quickInputService, defaultTableStyles, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
+		this._register(this._componentContextService.registerTable(this._table));
 
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);

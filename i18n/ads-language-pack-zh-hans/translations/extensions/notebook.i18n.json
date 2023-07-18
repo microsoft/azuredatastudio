@@ -75,7 +75,6 @@
 			"newMarkdown": "新建 Markdown (预览)",
 			"newNotebook": "新笔记本(预览)",
 			"newSection": "新节(预览)",
-			"noBDCConnectionError": "Spark 内核需要连接到 SQL Server 大数据群集主实例。",
 			"noBooksSelected": "当前，Viewlet 中未选中任何 Jupyter Book。",
 			"onGitHub": "GitHub",
 			"onsharedFile": "共享文件",
@@ -87,7 +86,6 @@
 			"openNotebookCommand": "打开笔记本",
 			"openNotebookError": "打开笔记本 {0} 失败: {1}",
 			"openUntitledNotebookError": "以无标题形式打开无标题笔记本 {0} 失败: {1}",
-			"providerNotValidError": "Spark 内核不支持非 MSSQL 提供程序。",
 			"readBookError": "无法读取 Jupyter Book {0}: {1}",
 			"releases": "版本",
 			"repoUrl": "存储库 URL",
@@ -101,7 +99,6 @@
 			"version": "版本"
 		},
 		"dist/common/notebookUtils": {
-			"msgSampleCodeDataFrame": "此示例代码将文件加载到数据帧中，并显示前 10 个结果。",
 			"noNotebookVisible": "没有笔记本编辑器处于活动状态",
 			"notebookFiles": "笔记本"
 		},
@@ -219,12 +216,7 @@
 			"shutdownError": "关闭笔记本服务器失败: {0}"
 		},
 		"dist/jupyter/jupyterSessionManager": {
-			"bdcConnectError": "错误: {0}。",
-			"clusterControllerConnectionRequired": "需要与群集控制器建立连接才能运行 Spark 作业",
-			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化",
-			"notebook.couldNotFindKnoxGateway": "找不到 KNOX 网关终结点",
-			"promptBDCPassword": "请提供密码以连接到 BDC 控制器",
-			"promptBDCUsername": "{0}请提供用户名以连接到 BDC 控制器:"
+			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
 		},
 		"dist/jupyter/pypiClient": {
 			"managePackages.packageRequestError": "包信息请求失败，出现错误: {0} {1}"

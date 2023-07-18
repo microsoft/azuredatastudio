@@ -190,14 +190,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
 			this._changeRef.detectChanges();
-			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.GLOBAL, StorageTarget.MACHINE);
+			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.APPLICATION, StorageTarget.MACHINE);
 		}
 		return result;
 	}
 
 	private _checkStorage(): boolean {
 		if (this.insightConfig.cacheId) {
-			const storage = this.storageService.get(this._getStorageKey(), StorageScope.GLOBAL);
+			const storage = this.storageService.get(this._getStorageKey(), StorageScope.APPLICATION);
 			if (storage) {
 				const storedResult: IStorageResult = JSON.parse(storage);
 				const date = new Date(storedResult.date);

@@ -281,6 +281,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	executionPlan(): azdata.ComponentBuilder<azdata.ExecutionPlanComponent, azdata.ExecutionPlanComponentProperties> {
+		const id = this.getNextComponentId();
+		const builder: ComponentBuilderImpl<azdata.ExecutionPlanComponent, azdata.ExecutionPlanComponentProperties> = this.getComponentBuilder(new ExecutionPlanComponentWrapper(this._proxy, this._handle, id, this.logService), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
 		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -1004,10 +1012,10 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLive(): string {
+	public get ariaLive(): azdata.AriaLiveValue | undefined {
 		return this.properties['ariaLive'];
 	}
-	public set ariaLive(v: string) {
+	public set ariaLive(v: azdata.AriaLiveValue | undefined) {
 		this.setProperty('ariaLive', v);
 	}
 
@@ -1392,11 +1400,11 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.setProperty('textType', type);
 	}
 
-	public get ariaLive(): string | undefined {
+	public get ariaLive(): azdata.AriaLiveValue | undefined {
 		return this.properties['ariaLive'];
 	}
 
-	public set ariaLive(ariaLive: string | undefined) {
+	public set ariaLive(ariaLive: azdata.AriaLiveValue | undefined) {
 		this.setProperty('ariaLive', ariaLive);
 	}
 }
@@ -1502,6 +1510,10 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 
 	public appendData(v: any[][]): Thenable<void> {
 		return this.doAction(ModelViewAction.AppendData, v);
+	}
+
+	public setActiveCell(row: number, column: number): void {
+		this.doAction(ModelViewAction.SetActiveCell, row, column);
 	}
 }
 
@@ -2219,6 +2231,21 @@ class SliderComponentWrapper extends ComponentWrapper implements azdata.SliderCo
 	public get onInput(): vscode.Event<number> {
 		const emitter = this._emitterMap.get(ComponentEventType.onInput);
 		return emitter!.event;
+	}
+}
+
+class ExecutionPlanComponentWrapper extends ComponentWrapper implements azdata.ExecutionPlanComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
+		super(proxy, handle, ModelComponentTypes.ExecutionPlan, id, logService);
+		this.properties = {};
+	}
+
+	public get data(): azdata.ExecutionPlanData {
+		return this.properties['data'];
+	}
+
+	public set data(v: azdata.ExecutionPlanData) {
+		this.setProperty('data', v);
 	}
 }
 

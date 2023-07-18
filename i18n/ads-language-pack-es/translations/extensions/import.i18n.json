@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"out/common/constants": {
+		"dist/common/constants": {
 			"flatFile.InvalidFileLocation": "Ubicación de archivo no válida. Inténtelo con otro archivo de entrada",
 			"flatFileImport.allowNulls": "Permitir valores NULL",
 			"flatFileImport.browseFiles": "Examinar",
@@ -59,7 +59,7 @@
 			"import.serviceCrashButton": "Ofrecer comentarios",
 			"serviceCrashMessage": "el componente de servicio no se pudo iniciar"
 		},
-		"out/services/serviceClient": {
+		"dist/services/serviceClient": {
 			"downloadingService": "Descargando {0}",
 			"downloadingServiceComplete": "Descarga finalizada de {0}",
 			"downloadingServiceSize": "({0} KB)",

@@ -11,36 +11,15 @@ import * as os from 'os';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
-
-import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
-import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
-import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
-import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
 import { AzureResourceService } from './azureResource/resourceService';
-import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from './azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService, IAzureResourceTenantFilterService } from './azureResource/interfaces';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { AzureResourceSubscriptionService } from './azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from './azureResource/services/subscriptionFilterService';
 import { AzureResourceCacheService } from './azureResource/services/cacheService';
 import { registerAzureResourceCommands } from './azureResource/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
-import { SqlInstanceResourceService } from './azureResource/providers/sqlinstance/sqlInstanceService';
-import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
-import { KustoResourceService } from './azureResource/providers/kusto/kustoService';
-import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
-import { AzureMonitorResourceService } from './azureResource/providers/azuremonitor/azuremonitorService';
-import { AzureMonitorProvider } from './azureResource/providers/azuremonitor/azuremonitorProvider';
-import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
-import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 import { AzureTerminalService } from './azureResource/services/terminalService';
-import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcProvider';
-import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
-import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
-import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
-import { CosmosDbMongoProvider } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoProvider';
-import { CosmosDbMongoService } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoService';
-import { MysqlFlexibleServerProvider } from './azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerProvider';
-import { MysqlFlexibleServerService } from './azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerService';
 import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
@@ -50,6 +29,10 @@ import { AzureResourceGroupService } from './azureResource/providers/resourceGro
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
+import { AzureResourceUniversalService } from './azureResource/providers/universal/universalService';
+import { AzureResourceUniversalTreeDataProvider } from './azureResource/providers/universal/universalTreeDataProvider';
+import { AzureResourceUniversalResourceProvider } from './azureResource/providers/universal/universalProvider';
+import { AzureResourceTenantFilterService } from './azureResource/services/tenantFilterService';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -93,64 +76,76 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
 		?? Constants.DefaultAuthLibrary;
 
+	if (authLibrary !== Constants.DefaultAuthLibrary) {
+		void vscode.window.showWarningMessage(loc.deprecatedOption, loc.switchMsal, loc.dismiss).then(async (value) => {
+			if (value === loc.switchMsal) {
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.AuthenticationLibrarySection, Constants.DefaultAuthLibrary, vscode.ConfigurationTarget.Global);
+			}
+		});
+	}
+	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
+	if (piiLogging) {
+		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {
+			if (value === loc.disable) {
+				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.piiLogging, false, vscode.ConfigurationTarget.Global);
+			}
+		});
+
+	}
 	updatePiiLoggingLevel();
 
+	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => console.log(err));
+	let providerService = await initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
+	if (providerService) {
+		eventEmitter = providerService.getEncryptionKeysEmitter();
 
-	registerAzureServices(appContext);
-	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
-	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
-	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
-	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
-	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
-	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
-		const portalEndpoint = item.portalEndpoint;
-		const subscriptionId = item.subscriptionId;
-		const resourceGroup = item.resourceGroup;
-		const type = item.type;
-		const name = item.name;
-		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
-			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
-		} else {
-			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
-			void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
-		}
-	});
-
+		registerAzureServices(appContext);
+		const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
+		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
+		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
+		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
+		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
+		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
+		vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
+			const portalEndpoint = item.portalEndpoint;
+			const subscriptionId = item.subscriptionId;
+			const resourceGroup = item.resourceGroup;
+			const type = item.type;
+			const name = item.name;
+			if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+				await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
+			} else {
+				Logger.error(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+				void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+			}
+		});
+	}
 	return {
 		getSubscriptions(account?: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
 			return selectedOnly
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
-		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		getResourceGroups(account?: azurecore.AzureAccount, subscription?: azurecore.azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> {
+			return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors);
+		},
 		getLocations(account?: azurecore.AzureAccount,
 			subscription?: azurecore.azureResource.AzureResourceSubscription,
 			ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
 			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
 		},
 		provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
-			const arcFeaturedEnabled = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.EnableArcFeaturesSection);
-			const providers: azurecore.azureResource.IAzureResourceProvider[] = [
-				new KustoProvider(new KustoResourceService(), extensionContext),
-				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
-				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
-				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
-				new PostgresServerProvider(new PostgresServerService(), extensionContext),
-				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext),
-				new MysqlFlexibleServerProvider(new MysqlFlexibleServerService(), extensionContext)
-			];
-			if (arcFeaturedEnabled) {
-				providers.push(
-					new SqlInstanceArcProvider(new SqlInstanceArcResourceService(), extensionContext),
-					new PostgresServerArcProvider(new PostgresServerArcService(), extensionContext)
-				);
-			}
-			return providers;
+			return azureResourceUtils.getAllResourceProviders(extensionContext);
+		},
+		getUniversalProvider(): azurecore.azureResource.IAzureUniversalResourceProvider {
+			let providers = azureResourceUtils.getAllResourceProviders(extensionContext);
+			let treeDataProviders = new Map<string, azurecore.azureResource.IAzureResourceTreeDataProvider>();
+			providers.forEach(provider => {
+				treeDataProviders.set(provider.providerId, provider.getTreeDataProvider());
+			})
+			return new AzureResourceUniversalResourceProvider(Constants.UNIVERSAL_PROVIDER_ID, new AzureResourceUniversalTreeDataProvider(new AzureResourceUniversalService(treeDataProviders)));
 		},
 		getSqlManagedInstances(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
@@ -210,14 +205,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.CreateResourceGroupResult> {
 			return azureResourceUtils.createResourceGroup(account, subscription, resourceGroupName, location, ignoreErrors);
 		},
-		makeAzureRestRequest(account: azurecore.AzureAccount,
+		makeAzureRestRequest<B>(account: azurecore.AzureAccount,
 			subscription: azurecore.azureResource.AzureResourceSubscription,
 			path: string,
 			requestType: azurecore.HttpRequestMethod,
 			requestBody: any,
 			ignoreErrors: boolean,
 			host: string = 'https://management.azure.com',
-			requestHeaders: { [key: string]: string } = {}): Promise<azurecore.AzureRestResponse> {
+			requestHeaders: Record<string, string> = {}): Promise<azurecore.AzureRestResponse<B>> {
 			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
@@ -229,6 +224,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean,
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
+		},
+		onEncryptionKeysUpdated: eventEmitter!.event,
+		async getEncryptionKeys(): Promise<azurecore.CacheEncryptionKeys> {
+			if (!providerService) {
+				throw new Error("Failed to initialize Azure account provider.");
+			}
+			return await providerService!.getEncryptionKeys();
 		}
 	};
 }
@@ -242,7 +244,7 @@ async function findOrMakeStoragePath() {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
 	} catch (e) {
 		if (e.code !== 'EEXIST') {
-			console.log(`Creating the base directory failed... ${e}`);
+			Logger.error(`Creating the base directory failed... ${e}`);
 			return undefined;
 		}
 	}
@@ -251,23 +253,25 @@ async function findOrMakeStoragePath() {
 		await fs.mkdir(storagePath, { recursive: true });
 	} catch (e) {
 		if (e.code !== 'EEXIST') {
-			console.error(`Initialization of Azure account extension storage failed: ${e}`);
-			console.error('Azure accounts will not be available');
+			Logger.error(`Initialization of Azure account extension storage failed: ${e}`);
+			Logger.error('Azure accounts will not be available');
 			return undefined;
 		}
 	}
 
-	console.log('Initialized Azure account extension storage.');
+	Logger.verbose('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<void> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<AzureAccountProviderService | undefined> {
 	try {
 		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
+		return accountProviderService;
 	} catch (err) {
-		console.log('Unexpected error starting account provider: ' + err.message);
+		Logger.error('Unexpected error starting account provider: ' + err.message);
+		return undefined;
 	}
 }
 
@@ -277,6 +281,7 @@ function registerAzureServices(appContext: AppContext): void {
 	appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(extensionContext));
 	appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
 	appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(extensionContext)));
+	appContext.registerService<IAzureResourceTenantFilterService>(AzureResourceServiceNames.tenantFilterService, new AzureResourceTenantFilterService(new AzureResourceCacheService(extensionContext)));
 	appContext.registerService<IAzureTerminalService>(AzureResourceServiceNames.terminalService, new AzureTerminalService(extensionContext));
 }
 
@@ -285,7 +290,10 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 		updatePiiLoggingLevel();
 	}
 	if (e.affectsConfiguration('azure.authenticationLibrary')) {
-		await displayReloadAds();
+		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
+			void vscode.window.showInformationMessage(loc.deprecatedOption);
+		}
+		await utils.displayReloadAds(loc.reloadPrompt);
 	}
 }
 
@@ -293,18 +301,3 @@ function updatePiiLoggingLevel(): void {
 	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
 }
-
-// Display notification with button to reload
-// return true if button clicked
-// return false if button not clicked
-async function displayReloadAds(): Promise<boolean> {
-	const result = await vscode.window.showInformationMessage(loc.reloadPrompt, loc.reloadChoice);
-	if (result === loc.reloadChoice) {
-		await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		return true;
-	} else {
-		return false;
-	}
-
-}
-

@@ -91,3 +91,12 @@ export async function showInfoMessageWithLearnMoreLink(message: string, link: st
 		void vscode.env.openExternal(vscode.Uri.parse(link));
 	}
 }
+
+/**
+ * Consolidates on the error message string
+ */
+export function getErrorMessage(error: any): string {
+	return (error instanceof Error)
+		? (typeof error.message === 'string' ? error.message : '')
+		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
+}

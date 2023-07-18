@@ -38,7 +38,7 @@ export class DarwinUpdateService extends AbstractUpdateService {
 		super(lifecycleMainService, configurationService, environmentMainService, requestService, logService, productService);
 	}
 
-	override async initialize(): Promise<void> {
+	protected override async initialize(): Promise<void> {
 		await super.initialize();
 		this.onRawError(this.onError, this, this.disposables);
 		this.onRawUpdateAvailable(this.onUpdateAvailable, this, this.disposables);
@@ -50,8 +50,7 @@ export class DarwinUpdateService extends AbstractUpdateService {
 		this.logService.error('UpdateService error:', err);
 
 		// only show message when explicitly checking for updates
-		const shouldShowMessage = this.state.type === StateType.CheckingForUpdates ? this.state.explicit : true;
-		const message: string | undefined = shouldShowMessage ? err : undefined;
+		const message = (this.state.type === StateType.CheckingForUpdates && this.state.explicit) ? err : undefined;
 		this.setState(State.Idle(UpdateType.Archive, message));
 	}
 
@@ -92,7 +91,9 @@ export class DarwinUpdateService extends AbstractUpdateService {
 		}
 
 		type UpdateDownloadedClassification = {
-			version: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+			owner: 'joaomoreno';
+			version: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The version number of the new VS Code that has been downloaded.' };
+			comment: 'This is used to know how often VS Code has successfully downloaded the update.';
 		};
 		this.telemetryService.publicLog2<{ version: String }, UpdateDownloadedClassification>('update:downloaded', { version: update.version });
 

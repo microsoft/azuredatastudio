@@ -777,6 +777,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			this._proxy.$openDialog(handle);
 	}
 
+	public openCustomErrorDialog(options: azdata.window.IErrorDialogOptions): Thenable<string | undefined> {
+		return this._proxy.$openCustomErrorDialog(options);
+	}
+
 	public closeDialog(dialog: azdata.window.Dialog): void {
 		let handle = this.getHandle(dialog);
 		this._proxy.$closeDialog(handle);

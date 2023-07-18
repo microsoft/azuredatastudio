@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 import * as styles from '../constants/styles';
+import { MigrationTargetType } from '../api/utils';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -40,11 +41,13 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
-		const isSqlVmTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLVM;
-		const isSqlMiTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLMI;
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		const isSqlVmTarget = this.migrationStateModel.isSqlVmTarget;
+		const isSqlMiTarget = this.migrationStateModel.isSqlMiTarget;
+		const isSqlDbTarget = this.migrationStateModel.isSqlDbTarget;
+		const isNetworkShare = this.migrationStateModel.isBackupContainerNetworkShare;
 
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink()
 			.withProps({
@@ -97,8 +100,7 @@ export class SummaryPage extends MigrationWizardPage {
 				createInformationRow(
 					this._view,
 					constants.LOCATION,
-					await this.migrationStateModel.getLocationDisplayName(
-						this.migrationStateModel._targetServerInstance.location)),
+					this.migrationStateModel._location.displayName),
 				createInformationRow(
 					this._view,
 					constants.RESOURCE_GROUP,
@@ -132,23 +134,20 @@ export class SummaryPage extends MigrationWizardPage {
 		}
 
 		this._flexContainer.addItems([
-
-
 			await createHeadingTextComponent(
 				this._view,
 				constants.IR_PAGE_TITLE),
 			createInformationRow(
 				this._view, constants.SUBSCRIPTION,
-				this.migrationStateModel._targetSubscription.name),
+				this.migrationStateModel._sqlMigrationServiceSubscription.name),
 			createInformationRow(
 				this._view,
 				constants.LOCATION,
-				await this.migrationStateModel.getLocationDisplayName(
-					this.migrationStateModel._sqlMigrationService?.location!)),
+				this.migrationStateModel._location.displayName),
 			createInformationRow(
 				this._view,
 				constants.RESOURCE_GROUP,
-				this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
+				this.migrationStateModel._sqlMigrationServiceResourceGroup.name),
 			createInformationRow(
 				this._view,
 				constants.IR_PAGE_TITLE,
@@ -163,11 +162,17 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.SHIR,
 					this.migrationStateModel._nodeNames.join(', ')));
 		}
+
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
+			this.wizard.message = { text: '' };
+			return true;
+		});
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => true);
+		this.wizard.message = { text: '' };
 		this._flexContainer.clearItems();
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -178,7 +183,10 @@ export class SummaryPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.component();
 
-		const networkShare = this.migrationStateModel._databaseBackup.networkShares[0];
+		const networkShare = this.migrationStateModel._databaseBackup.networkShares?.length > 0
+			? this.migrationStateModel._databaseBackup.networkShares[0]
+			: <NetworkShare>{};
+
 		switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 			case NetworkContainerType.NETWORK_SHARE:
 				flexContainer.addItems([

@@ -92,7 +92,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		testContext = createContext();
 		wizard.setPages();
 
-		sinon.stub(azdata.connection, 'getConnections').resolves([azdataTest.stubs.connectionProfile.createConnectionProfile()]);
+		sinon.stub(azdata.connection, 'getConnections').resolves([azdataTest.stubs.azdata.createConnectionProfile()]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName']);
 		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(dacpacPath)]);
 
@@ -112,7 +112,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		testContext = createContext();
 		wizard.setPages();
 
-		sinon.stub(azdata.connection, 'getConnections').resolves([azdataTest.stubs.connectionProfile.createConnectionProfile()]);
+		sinon.stub(azdata.connection, 'getConnections').resolves([azdataTest.stubs.azdata.createConnectionProfile()]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName', 'master', 'msdb', 'tempdb', 'model']);
 
 		let extractConfigPage = new TestExtractConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);

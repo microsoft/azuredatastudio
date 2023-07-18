@@ -59,7 +59,7 @@ suite('Labels', () => {
 		assert.deepStrictEqual(labels.shorten(['a', 'a\\b', 'a\\b\\c', 'd\\b\\c', 'd\\b']), ['a', 'a\\b', 'a\\b\\c', 'd\\b\\c', 'd\\b']);
 		assert.deepStrictEqual(labels.shorten(['a', 'a\\b', 'b']), ['a', 'a\\b', 'b']);
 		assert.deepStrictEqual(labels.shorten(['', 'a', 'b', 'b\\c', 'a\\c']), ['.\\', 'a', 'b', 'b\\c', 'a\\c']);
-		assert.deepStrictEqual(labels.shorten(['src\\vs\\workbench\\parts\\execution\\electron-browser', 'src\\vs\\workbench\\parts\\execution\\electron-browser\\something', 'src\\vs\\workbench\\parts\\terminal\\electron-browser']), ['…\\execution\\electron-browser', '…\\something', '…\\terminal\\…']);
+		assert.deepStrictEqual(labels.shorten(['src\\vs\\workbench\\parts\\execution\\electron-sandbox', 'src\\vs\\workbench\\parts\\execution\\electron-sandbox\\something', 'src\\vs\\workbench\\parts\\terminal\\electron-sandbox']), ['…\\execution\\electron-sandbox', '…\\something', '…\\terminal\\…']);
 	});
 
 	(isWindows ? test.skip : test)('shorten - not windows', () => {
@@ -137,20 +137,10 @@ suite('Labels', () => {
 		assert.strictEqual(labels.template(t, { dirty: '', activeEditorShort: '', rootName: 'monaco', appName: 'Visual Studio Code', separator: { label: ' - ' } }), 'monaco - Visual Studio Code');
 		assert.strictEqual(labels.template(t, { dirty: '', activeEditorShort: 'somefile.txt', rootName: 'monaco', appName: 'Visual Studio Code', separator: { label: ' - ' } }), 'somefile.txt - monaco - Visual Studio Code');
 		assert.strictEqual(labels.template(t, { dirty: '* ', activeEditorShort: 'somefile.txt', rootName: 'monaco', appName: 'Visual Studio Code', separator: { label: ' - ' } }), '* somefile.txt - monaco - Visual Studio Code');
-	});
 
-	(isWindows ? test.skip : test)('getBaseLabel - unix', () => {
-		assert.strictEqual(labels.getBaseLabel('/some/folder/file.txt'), 'file.txt');
-		assert.strictEqual(labels.getBaseLabel('/some/folder'), 'folder');
-		assert.strictEqual(labels.getBaseLabel('/'), '/');
-	});
-
-	(!isWindows ? test.skip : test)('getBaseLabel - windows', () => {
-		assert.strictEqual(labels.getBaseLabel('c:'), 'C:');
-		assert.strictEqual(labels.getBaseLabel('c:\\'), 'C:');
-		assert.strictEqual(labels.getBaseLabel('c:\\some\\folder\\file.txt'), 'file.txt');
-		assert.strictEqual(labels.getBaseLabel('c:\\some\\folder'), 'folder');
-		assert.strictEqual(labels.getBaseLabel('c:\\some\\f:older'), 'f:older'); // https://github.com/microsoft/vscode-remote-release/issues/4227
+		// real world example (other)
+		t = '${dirty}${activeEditorShort}${separator}${rootNameShort}${separator}${appName}';
+		assert.strictEqual(labels.template(t, { dirty: '', activeEditorShort: '', rootName: 'monaco (Workspace)', rootNameShort: 'monaco', appName: 'Visual Studio Code', separator: { label: ' - ' } }), 'monaco - Visual Studio Code');
 	});
 
 	test('mnemonicButtonLabel', () => {

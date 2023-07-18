@@ -17,7 +17,7 @@ import { IEditorFactoryRegistry, EditorExtensions } from 'vs/workbench/common/ed
 import { getSingletonServiceDescriptors } from 'vs/platform/instantiation/common/extensions';
 import { Position, Parts, IWorkbenchLayoutService, positionToString } from 'vs/workbench/services/layout/browser/layoutService';
 import { IStorageService, WillSaveStateReason, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationChangeEvent, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { LifecyclePhase, ILifecycleService, WillShutdownEvent } from 'vs/workbench/services/lifecycle/common/lifecycle';
@@ -101,14 +101,17 @@ export class Workbench extends Layout {
 			phase: 'configuration';
 		}
 		type AnnotatedError = AnnotatedLoadingError | AnnotatedFactoryError | AnnotatedValidationError;
-		(<any>window).require.config({
-			onError: (err: AnnotatedError) => {
-				if (err.phase === 'loading') {
-					onUnexpectedError(new Error(localize('loaderErrorNative', "Failed to load a required file. Please restart the application to try again. Details: {0}", JSON.stringify(err))));
+
+		if (typeof (<any>window).require.config === 'function') {
+			(<any>window).require.config({
+				onError: (err: AnnotatedError) => {
+					if (err.phase === 'loading') {
+						onUnexpectedError(new Error(localize('loaderErrorNative', "Failed to load a required file. Please restart the application to try again. Details: {0}", JSON.stringify(err))));
+					}
+					console.error(err);
 				}
-				console.error(err);
-			}
-		});
+			});
+		}
 	}
 
 	private previousUnexpectedError: { message: string | undefined; time: number } = { message: undefined, time: 0 };
@@ -145,6 +148,7 @@ export class Workbench extends Layout {
 				const configurationService = accessor.get(IConfigurationService);
 				const hostService = accessor.get(IHostService);
 				const dialogService = accessor.get(IDialogService);
+				const notificationService = accessor.get(INotificationService) as NotificationService;
 
 				// Layout
 				this.initLayout(accessor);
@@ -161,7 +165,7 @@ export class Workbench extends Layout {
 				this.registerListeners(lifecycleService, storageService, configurationService, hostService, dialogService);
 
 				// Render Workbench
-				this.renderWorkbench(instantiationService, accessor.get(INotificationService) as NotificationService, storageService, configurationService);
+				this.renderWorkbench(instantiationService, notificationService, storageService, configurationService);
 
 				// Workbench Layout
 				this.createWorkbenchLayout();
@@ -190,17 +194,14 @@ export class Workbench extends Layout {
 		//
 		// NOTE: Please do NOT register services here. Use `registerSingleton()`
 		//       from `workbench.common.main.ts` if the service is shared between
-		//       native and web or `workbench.sandbox.main.ts` if the service
-		//       is native only.
-		//
-		//       DO NOT add services to `workbench.desktop.main.ts`, always add
-		//       to `workbench.sandbox.main.ts` to support our Electron sandbox
+		//       desktop and web or `workbench.desktop.main.ts` if the service
+		//       is desktop only.
 		//
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		// All Contributed Services
 		const contributedServices = getSingletonServiceDescriptors();
-		for (let [id, descriptor] of contributedServices) {
+		for (const [id, descriptor] of contributedServices) {
 			serviceCollection.set(id, descriptor);
 		}
 
@@ -226,7 +227,7 @@ export class Workbench extends Layout {
 	private registerListeners(lifecycleService: ILifecycleService, storageService: IStorageService, configurationService: IConfigurationService, hostService: IHostService, dialogService: IDialogService): void {
 
 		// Configuration changes
-		this._register(configurationService.onDidChangeConfiguration(() => this.setFontAliasing(configurationService)));
+		this._register(configurationService.onDidChangeConfiguration(e => this.updateFontAliasing(e, configurationService)));
 
 		// Font Info
 		if (isNative) {
@@ -263,9 +264,13 @@ export class Workbench extends Layout {
 	}
 
 	private fontAliasing: 'default' | 'antialiased' | 'none' | 'auto' | undefined;
-	private setFontAliasing(configurationService: IConfigurationService) {
+	private updateFontAliasing(e: IConfigurationChangeEvent | undefined, configurationService: IConfigurationService) {
 		if (!isMacintosh) {
 			return; // macOS only
+		}
+
+		if (e && !e.affectsConfiguration('workbench.fontAliasing')) {
+			return;
 		}
 
 		const aliasing = configurationService.getValue<'default' | 'antialiased' | 'none' | 'auto'>('workbench.fontAliasing');
@@ -286,7 +291,7 @@ export class Workbench extends Layout {
 	}
 
 	private restoreFontInfo(storageService: IStorageService, configurationService: IConfigurationService): void {
-		const storedFontInfoRaw = storageService.get('editorFontInfo', StorageScope.GLOBAL);
+		const storedFontInfoRaw = storageService.get('editorFontInfo', StorageScope.APPLICATION);
 		if (storedFontInfoRaw) {
 			try {
 				const storedFontInfo = JSON.parse(storedFontInfoRaw);
@@ -304,7 +309,7 @@ export class Workbench extends Layout {
 	private storeFontInfo(storageService: IStorageService): void {
 		const serializedFontInfo = FontMeasurements.serializeFontInfo();
 		if (serializedFontInfo) {
-			storageService.store('editorFontInfo', JSON.stringify(serializedFontInfo), StorageScope.GLOBAL, StorageTarget.MACHINE);
+			storageService.store('editorFontInfo', JSON.stringify(serializedFontInfo), StorageScope.APPLICATION, StorageTarget.MACHINE);
 		}
 	}
 
@@ -332,7 +337,7 @@ export class Workbench extends Layout {
 		}
 
 		// Apply font aliasing
-		this.setFontAliasing(configurationService);
+		this.updateFontAliasing(undefined, configurationService);
 
 		// Warm up font cache information before building up too many dom elements
 		this.restoreFontInfo(storageService, configurationService);
@@ -350,7 +355,9 @@ export class Workbench extends Layout {
 		]) {
 			const partContainer = this.createPart(id, role, classes);
 
+			mark(`code/willCreatePart/${id}`);
 			this.getPart(id).create(partContainer, options);
+			mark(`code/didCreatePart/${id}`);
 		}
 
 		// Notification Handlers
@@ -410,7 +417,7 @@ export class Workbench extends Layout {
 		}
 
 		// Transition into restored phase after layout has restored
-		// but do not wait indefinitly on this to account for slow
+		// but do not wait indefinitely on this to account for slow
 		// editors restoring. Since the workbench is fully functional
 		// even when the visible editors have not resolved, we still
 		// want contributions on the `Restored` phase to work before
@@ -423,15 +430,6 @@ export class Workbench extends Layout {
 				this.whenRestored,
 				timeout(2000)
 			]).finally(() => {
-
-				// Set lifecycle phase to `Restored`
-				lifecycleService.phase = LifecyclePhase.Restored;
-
-				// Set lifecycle phase to `Eventually` after a short delay and when idle (min 2.5sec, max 5sec)
-				const eventuallyPhaseScheduler = this._register(new RunOnceScheduler(() => {
-					this._register(runWhenIdle(() => lifecycleService.phase = LifecyclePhase.Eventually, 2500));
-				}, 2500));
-				eventuallyPhaseScheduler.schedule();
 
 				// Update perf marks only when the layout is fully
 				// restored. We want the time it takes to restore
@@ -447,6 +445,15 @@ export class Workbench extends Layout {
 				} else {
 					this.whenRestored.finally(() => markDidStartWorkbench());
 				}
+
+				// Set lifecycle phase to `Restored`
+				lifecycleService.phase = LifecyclePhase.Restored;
+
+				// Set lifecycle phase to `Eventually` after a short delay and when idle (min 2.5sec, max 5sec)
+				const eventuallyPhaseScheduler = this._register(new RunOnceScheduler(() => {
+					this._register(runWhenIdle(() => lifecycleService.phase = LifecyclePhase.Eventually, 2500));
+				}, 2500));
+				eventuallyPhaseScheduler.schedule();
 			})
 		);
 	}

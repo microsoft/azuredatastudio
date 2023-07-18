@@ -30,19 +30,6 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
-export interface SqlArgs {
-	_?: string[];
-	authenticationType?: string
-	database?: string;
-	server?: string;
-	user?: string;
-	command?: string;
-	provider?: string;
-	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
-	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
-	showDashboard?: boolean;
-}
-
 //#region decorators
 
 type PathHandler = (uri: URI) => Promise<boolean>;
@@ -108,7 +95,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
 	// (serverName, null) => Connect object explorer and open a new query editor if no file names are passed. If file names are passed, connect their editors to the server.
 	// (null, null) => Prompt for a connection unless there are registered servers
-	public async processCommandLine(args: SqlArgs): Promise<void> {
+	public async processCommandLine(args: NativeParsedArgs): Promise<void> {
 		let profile: IConnectionProfile = undefined;
 		let commandName = undefined;
 		if (args) {
@@ -123,7 +110,12 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
 		if (showConnectDialogOnStartup && !commandName && !profile && !this._connectionManagementService.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
-			await this._connectionManagementService.showConnectionDialog();
+			await this._connectionManagementService.showConnectionDialog(undefined, {
+				showDashboard: true,
+				saveTheConnection: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 			return;
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
@@ -230,18 +222,24 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			}
 			let isOpenOk = await this.confirmConnect(args);
 			if (!isOpenOk) {
-				return false;
+				// returning true will ensure the request won't be looped (since urlService opens url with shouldStop = false)
+				return true;
 			}
 
 			const connectionProfile = this.readProfileFromArgs(args);
-			await this._connectionManagementService.showConnectionDialog(undefined, undefined, connectionProfile);
+			await this._connectionManagementService.showConnectionDialog(undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			}, connectionProfile);
 		} catch (err) {
 			this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
 		}
 		return true;
 	}
 
-	private async confirmConnect(args: SqlArgs): Promise<boolean> {
+	private async confirmConnect(args: NativeParsedArgs): Promise<boolean> {
 		let detail = args && args.server ? localize('connectServerDetail', "This will connect to server {0}", args.server) : '';
 		const result = await this.dialogService.confirm({
 			message: localize('confirmConnect', "Are you sure you want to connect?"),
@@ -256,8 +254,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		return false;
 	}
 
-	private parseProtocolArgs(uri: URI): SqlArgs {
-		let args: SqlArgs = querystring.parse(uri.query);
+	private parseProtocolArgs(uri: URI): NativeParsedArgs {
+		let args: NativeParsedArgs = querystring.parse(uri.query);
 		// Clear out command, not supporting arbitrary command via this path
 		args.command = undefined;
 		return args;
@@ -281,7 +279,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 	}
 
-	private readProfileFromArgs(args: SqlArgs) {
+	private readProfileFromArgs(args: NativeParsedArgs) {
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;
@@ -307,10 +305,37 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 							Constants.AuthenticationType.Integrated;
 
 		profile.connectionName = '';
-		profile.setOptionValue('applicationName', Constants.applicationName);
+		const applicationName = args.applicationName
+			? args.applicationName + '-' + Constants.applicationName
+			: Constants.applicationName;
+		profile.setOptionValue('applicationName', applicationName);
 		profile.setOptionValue('databaseDisplayName', profile.databaseName);
 		profile.setOptionValue('groupId', profile.groupId);
+		// Set all advanced options
+		let advancedOptions = this.getAdvancedOptions(args.connectionProperties, profile.getOptionKeyIdNames());
+		advancedOptions.forEach((v, k) => {
+			profile.setOptionValue(k, v);
+		});
 		return this._connectionManagementService ? this.tryMatchSavedProfile(profile) : profile;
+	}
+
+	private getAdvancedOptions(options: string, idNames: string[]): Map<string, string> {
+		const ignoredProperties = idNames.concat(['password', 'azureAccountToken']);
+		let advancedOptionsMap = new Map<string, string>();
+		if (options) {
+			try {
+				// Decode options if they contain any encoded URL characters
+				options = decodeURI(options);
+				JSON.parse(options, (k, v) => {
+					if (!(k in ignoredProperties)) {
+						advancedOptionsMap.set(k, v);
+					}
+				});
+			} catch (e) {
+				throw new Error(localize('commandline.propertiesFormatError', 'Advanced connection properties could not be parsed as JSON, error occurred: {0} Received properties value: {1}', e, options));
+			}
+		}
+		return advancedOptionsMap;
 	}
 
 	private tryMatchSavedProfile(profile: ConnectionProfile) {

@@ -91,7 +91,7 @@ suite('UntitledFileWorkingCopy', () => {
 	const factory = new TestUntitledFileWorkingCopyModelFactory();
 
 	let disposables: DisposableStore;
-	let resource = URI.from({ scheme: Schemas.untitled, path: 'Untitled-1' });
+	const resource = URI.from({ scheme: Schemas.untitled, path: 'Untitled-1' });
 	let instantiationService: IInstantiationService;
 	let accessor: TestServiceAccessor;
 	let workingCopy: UntitledFileWorkingCopy<TestUntitledFileWorkingCopyModel>;
@@ -102,6 +102,7 @@ suite('UntitledFileWorkingCopy', () => {
 			uri,
 			basename(uri),
 			hasAssociatedFilePath,
+			false,
 			initialValue.length > 0 ? { value: bufferToStream(VSBuffer.fromString(initialValue)) } : undefined,
 			factory,
 			async workingCopy => { await workingCopy.revert(); return true; },

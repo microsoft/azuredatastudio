@@ -12,10 +12,10 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { NotebookFindNextAction, NotebookFindPreviousAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
-import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
-import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
-import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/common/nbTestQueryManagementService';
+import * as stubs from 'sql/workbench/contrib/notebook/test/browser/stubs';
+import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/browser/testCommon';
+import { CellEditModes, ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookEditor, INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
@@ -28,7 +28,6 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
-import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -59,6 +58,20 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
 import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/browser/findState';
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
+import { CharCode } from 'vs/base/common/charCode';
+
+function getRandomInt(min: number, max: number): number {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getRandomString(minLength: number, maxLength: number): string {
+	const length = getRandomInt(minLength, maxLength);
+	let r = '';
+	for (let i = 0; i < length; i++) {
+		r += String.fromCharCode(getRandomInt(CharCode.a, CharCode.z));
+	}
+	return r;
+}
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -439,7 +452,7 @@ suite('Test class NotebookEditor:', () => {
 				TypeMoq.It.isAny(),
 				TypeMoq.It.isAnyNumber()
 			), TypeMoq.Times.once());
-			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.never());
+			findDecorationsMock.verify(x => x.clearDecorations(), TypeMoq.Times.once());
 			notebookFindModelMock.verify(x => x.clearFind(), TypeMoq.Times.never());
 			if (visibility === 'visible') {
 				assert.strictEqual(notebookEditor.getPosition(), currentMatch, `position must be set to the same NotebookRange that we set for '_currentMatch' property of notebookEditor`);
@@ -463,7 +476,7 @@ suite('Test class NotebookEditor:', () => {
 		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
 		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel })];
 		notebookEditor['registerModelChanges']();
-		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
+		notebookModel.cells[0]['_onCurrentEditModeChanged'].fire(CellEditModes.SPLIT); //fire onCurrentEditModeChanged event on the first cell of our test notebookModel
 		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });
 		(<NotebookService>notebookService)['_onNotebookEditorAdd'].fire(<INotebookEditor>{});
 		notebookFindModelMock.verify(x => x.find(
@@ -730,7 +743,8 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ITextResourceConfigurationService),
 		instantiationService.get(IThemeService),
 		instantiationService.get(IEditorGroupsService),
-		instantiationService.get(IEditorService)
+		instantiationService.get(IEditorService),
+		instantiationService.get(IFileService)
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);

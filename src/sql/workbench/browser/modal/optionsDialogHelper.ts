@@ -12,6 +12,8 @@ import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export interface IOptionElement {
 	optionWidget: any;
@@ -41,12 +43,14 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 					}
 				}
 			},
-			ariaLabel: option.displayName
-		});
+			ariaLabel: option.displayName,
+			placeholder: option.placeholder,
+			inputBoxStyles: defaultInputBoxStyles
+		}, option.name);
 		optionWidget.value = optionValue;
 		inputElement = findElement(rowContainer, 'input');
 	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
-		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService, undefined, { ariaLabel: option.displayName });
+		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), defaultSelectBoxStyles, contextViewService, undefined, { ariaLabel: option.displayName }, option.name);
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
 		inputElement = findElement(rowContainer, 'monaco-select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
@@ -54,8 +58,10 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 			validationOptions: {
 				validation: (value: string) => (!value && option.isRequired) ? ({ type: MessageType.ERROR, content: option.displayName + missingErrorMessage }) : null
 			},
-			ariaLabel: option.displayName
-		});
+			ariaLabel: option.displayName,
+			placeholder: option.placeholder,
+			inputBoxStyles: defaultInputBoxStyles
+		}, option.name);
 		optionWidget.value = optionValue;
 		if (option.valueType === ServiceOptionType.password) {
 			optionWidget.inputElement.type = 'password';

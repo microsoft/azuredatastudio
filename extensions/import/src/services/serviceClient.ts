@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
 
-import { Telemetry, LanguageClientErrorHandler } from './telemetry';
+import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../common/constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import { promises as fs } from 'fs';
@@ -43,7 +43,7 @@ export class ServiceClient {
 				setTimeout(() => {
 					this.statusView.hide();
 				}, 1500);
-				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
+				TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),
 					totalTime: String(processEnd - installationStart),
@@ -57,7 +57,7 @@ export class ServiceClient {
 			return client;
 		}
 		catch (error) {
-			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
+			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
 			vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", Constants.serviceName, error));
 			// Just resolve to avoid unhandled promise. We show the error to the user.
 			return undefined;
@@ -68,7 +68,7 @@ export class ServiceClient {
 		const config = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
-		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
+		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL', true);
 		const serverdownloader = new ServerProvider(config);
 		serverdownloader.eventEmitter.onAny(this.generateHandleServerProviderEvent());
 		return serverdownloader.getOrDownloadServer();
