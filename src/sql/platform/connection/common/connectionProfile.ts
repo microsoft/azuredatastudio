@@ -9,7 +9,7 @@ import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerC
 import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { isString } from 'vs/base/common/types';
+import { isString, isUndefinedOrNull } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { URI } from 'vs/base/common/uri';
@@ -361,7 +361,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		Object.keys(connectionInfo.options).forEach(element => {
 			// Allow empty strings to ensure "user": "" is populated if empty << Required by SSMS 19.2
 			// Do not change this design until SSMS 19 goes out of support.
-			if (connectionInfo.options[element] === '' || (connectionInfo.options[element] && connectionInfo.options[element] !== null)) {
+			if (connectionInfo.options[element] === '' || !isUndefinedOrNull(connectionInfo.options[element])) {
 				profile.options[element] = connectionInfo.options[element];
 			}
 		});

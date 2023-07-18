@@ -14,6 +14,7 @@ import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { deepClone } from 'vs/base/common/objects';
 import { isDisposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
@@ -242,7 +243,7 @@ export class ConnectionConfig {
 				changed = true;
 			}
 			// SSMS 19 requires "user", fix any profiles created without user property.
-			if (profile.providerName === 'MSSQL' && profile.options.user === undefined) {
+			if (profile.providerName === 'MSSQL' && isUndefinedOrNull(profile.options.user)) {
 				profile.options.user = '';
 				changed = true;
 			}
