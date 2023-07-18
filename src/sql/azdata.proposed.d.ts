@@ -1996,60 +1996,124 @@ declare module 'azdata' {
 		}
 	}
 
-	export interface ChartData {
-		line: {
-			dataset: number[],
-			datasetLabel: string,
-			backgroundColor?: string;
-		};
-		doughnut: {
-			dataset: number[],
-			labels: string[],
-			colors?: string[];
-		};
-		bar: {
-			dataset: number[],
-			labels: string[],
-			datasetLabel: string,
-			colors?: string | string[];
-		};
-		horizontalBar: {
-			dataset: number[],
-			labels: string[],
-			datasetLabel: string,
-			colors?: string | string[];
-		};
-		pie: {
-			dataset: number[],
-			labels: string[],
-			colors?: string[];
-		};
-		radar: {
-			dataset: number[],
-			datasetLabel: string,
-			backgroundColor?: string;
-		};
-		polarArea: {
-			dataset: number[],
-			labels: string[],
-			colors?: string[];
-		};
-	}
-
-	export type ChartType = keyof ChartData;
+	export type ChartType = 'bar' | 'bubble' | 'doughnut' | 'horizontalBar' | 'line' | 'pie' | 'polarArea' | 'radar' | 'scatter';
 
 	export interface ModelBuilder {
-		chart<T extends ChartType>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
+		chart<T extends ChartOptions>(): ComponentBuilder<ChartComponent<T>, ChartComponentProperties<T>>;
 	}
 
-	export interface ChartComponentProperties<T extends ChartType> extends ComponentProperties {
-		chartType: T | undefined;
-		chartData: ChartData[T] | undefined;
+	export interface ChartComponentProperties<T extends ChartOptions> extends ComponentProperties {
+		chartType: ChartType;
+		data: ChartData;
+		options?: T;
+	}
+
+	export interface BubbleChartPoint {
+		x: number;
+		y: number;
+		r: number;
+	}
+
+	export interface ScatterChartPoint {
+		x: number;
+		y: number;
+	}
+
+	export interface ChartData {
+		label?: string;
+		dataset: number[] | BubbleChartPoint[] | ScatterChartPoint[];
+		labels?: string[];
+		colors?: string[];
+		borderColor?: string[];
+	}
+
+	export interface ChartOptions {
+
+	}
+
+	export interface ScaleOptions {
+		beginAtZero?: boolean;
+		min?: number;
+		max?: number;
+		offset?: boolean;
+		stacked?: boolean;
+	}
+	export interface BarChartOptions extends ChartOptions {
+		scales?: {
+			x?: ScaleOptions;
+			y?: ScaleOptions;
+		}
+	}
+	export interface BubbleChartOptions extends ChartOptions {
+
+	}
+
+
+	export interface DoughnutChartOptions extends ChartOptions {
+		circumference?: number;
+		cutout?: number | string;
+		radius?: number | string;
+		rotation?: number;
+	}
+
+	export interface HorizontalBarChartOptions extends ChartOptions {
+		scales?: {
+			x?: ScaleOptions;
+			y?: ScaleOptions;
+		}
+	}
+
+	export interface LineChartOptions extends ChartOptions {
+		indexAxis?: string;
+		cubicInterpolationMode?: 'default' | 'monotone';
+		stepped?: 'before' | 'after' | 'middle' | boolean;
+		scales?: {
+			x?: ScaleOptions;
+			y?: ScaleOptions;
+		}
+		tension?: number;
+	}
+
+	export interface PieChartOptions extends ChartOptions {
+		circumference?: number;
+		cutout?: number | string;
+		radius?: number | string;
+		rotation?: number;
+	}
+
+	export interface PolarAreaChartOptions extends ChartOptions {
+		circular?: boolean;
+	}
+
+	export interface RadarChartOptions extends ChartOptions {
+		scales?: {
+			r?: {
+				startAngle?: number;
+				angleLines?: {
+					display?: boolean;
+					color?: string;
+					lineWidth?: number;
+				};
+				beginAtZero?: boolean;
+				min?: number;
+				max?: number;
+				suggestedMax?: number;
+				suggestedMin?: number;
+			}
+		}
+		tension?: number;
+	}
+
+	export interface ScatterChartOptions extends ChartOptions {
+		scales?: {
+			x?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+			y?: ScaleOptions & { position?: 'left' | 'top' | 'right' | 'bottom' | 'center' };
+		}
 	}
 
 	export type ChartClickEvent = { label: string };
 
-	export interface ChartComponent<T extends ChartType> extends Component, ChartComponentProperties<T> {
+	export interface ChartComponent<T extends ChartOptions> extends Component, ChartComponentProperties<T> {
 		onDidClick: vscode.Event<ChartClickEvent>;
 	}
 

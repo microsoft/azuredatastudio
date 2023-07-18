@@ -281,7 +281,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	chart<T extends azdata.ChartType>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
+	chart<T extends azdata.ChartOptions>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> = this.getComponentBuilder(new ChartComponentWrapper<T>(this._proxy, this._handle, id, this.logService), id);
 		this._componentBuilders.set(id, builder);
@@ -2246,7 +2246,7 @@ class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
-class ChartComponentWrapper<T extends azdata.ChartType> extends ComponentWrapper implements azdata.ChartComponent<T> {
+class ChartComponentWrapper<T extends azdata.ChartOptions> extends ComponentWrapper implements azdata.ChartComponent<T> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, logService: ILogService) {
 		super(proxy, handle, ModelComponentTypes.Chart, id, logService);
 		this.properties = {};
@@ -2254,20 +2254,28 @@ class ChartComponentWrapper<T extends azdata.ChartType> extends ComponentWrapper
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ChartClickEvent>());
 	}
 
-	public set chartType(v: T) {
+	public set chartType(v: azdata.ChartType) {
 		this.setProperty('chartType', v);
 	}
 
-	public get chartType(): T {
+	public get chartType(): azdata.ChartType {
 		return this.properties['chartType'];
 	}
 
-	public set chartData(v: azdata.ChartData[T]) {
-		this.setProperty('chartData', v);
+	public set data(v: azdata.ChartData) {
+		this.setProperty('data', v);
 	}
 
-	public get chartData(): azdata.ChartData[T] {
-		return this.properties['chartData'];
+	public get data(): azdata.ChartData {
+		return this.properties['data'];
+	}
+
+	public set options(v: T) {
+		this.setProperty('options', v);
+	}
+
+	public get options(): T {
+		return this.properties['options'];
 	}
 
 	public get onDidClick(): vscode.Event<azdata.ChartClickEvent> {

@@ -3,30 +3,30 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Component, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
-import { ChartOptions } from 'chart.js';
-import { } from 'ng2-charts';
+import * as chartjs from 'chart.js/auto';
+import { mixin } from 'sql/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ChartType } from 'azdata';
+import { BubbleChartPoint, ChartOptions, ScatterChartPoint } from 'azdata';
 
 @Component({
 	selector: 'chart-component',
 	templateUrl: decodeURI(require.toUrl('./chart.component.html'))
 })
-export class Chart<T extends ChartType> extends Disposable {
+export class Chart<T extends ChartOptions> extends Disposable {
 
-	public chartDataset: any[] = [
-		{
-			data: [],
-			label: ''
-		}
-	];
-	public chartLabels: string[] = [];
-	public chartColors: any[] = [];
-	//Need to provide some default chart type to avoid rendering error
-	public chartType: ChartType = 'line';
-	public _data: number[] = [];
-	public _colors: string | string[] = [];
-	public _label: string = '';
+	public _labels: string[];
+	public _type: any;
+	public _data: number[] | BubbleChartPoint | ScatterChartPoint;
+	public _colors: string | string[];
+	public _label: string;
+	public _borderColor: string | string[];
+	public _chart: any;
+
+	public _options: any = {
+		events: ['click', 'keyup'],
+		responsive: true,
+		maintainAspectRatio: false
+	};
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
@@ -34,73 +34,120 @@ export class Chart<T extends ChartType> extends Disposable {
 		super();
 	}
 
-	public set type(val: ChartType) {
-		this.chartType = val;
+	ngAfterViewInit(): void {
+
+	}
+
+	public set type(val: any) {
+		if (val === 'horizontalBar') {
+			this._type = 'bar';
+			this._options = mixin({}, mixin(this._options, { indexAxis: 'y' }));
+		}
+		else {
+			this._type = val;
+		}
 		this._changeRef.detectChanges();
 	}
 
 	public set data(val: any) {
-		if (this.chartType === 'doughnut' || this.chartType === 'pie' || this.chartType === 'polarArea') {
-			this._data = val.dataset;
-			this.chartLabels = val.labels;
-
-			if (val.colors) {
-				this._colors = val.colors;
-				this.chartColors = [
-					{
-						backgroundColor: this._colors
-					}
-				];
-			}
+		this._data = val.dataset;
+		if (val.labels) {
+			this._labels = val.labels;
 		}
-
-		else if (this.chartType === 'bar' || this.chartType === 'horizontalBar') {
-			this._data = val.dataset;
-			this._label = val.datasetLabel;
-
-			this.chartLabels = val.labels;
-
-			if (val.colors) {
-				this._colors = val.colors;
-				this.chartColors = [
-					{
-						backgroundColor: this._colors
-					}
-				];
-				this._changeRef.detectChanges();
-			}
+		if (val.colors) {
+			this._colors = val.colors;
 		}
-
-		else if (this.chartType === 'line' || this.chartType === 'radar') {
-			this._data = val.dataset;
-			this._label = val.datasetLabel;
-
-			if (val.backgroundColor) {
-				this._colors = val.backgroundColor;
-				this.chartColors = [
-					{
-						backgroundColor: this._colors
-					}
-				];
-			}
+		if (val.label) {
+			this._label = val.label;
 		}
-		this._changeRef.detectChanges();
-		this.chartDataset = [{
-			data: this._data,
-			label: this._label
-		}];
+		if (val.borderColor) {
+			this._borderColor = val.borderColor;
+		}
 	}
 
-	public chartOptions: ChartOptions = {
-		responsive: true,
-		maintainAspectRatio: false
-	};
-
-	public chartClicked(e: any): void {
-		//
+	public set options(val: any) {
+		if (val) {
+			this._options = mixin({}, mixin(this._options, val));
+		}
+		this.drawChart();
 	}
 
-	public chartHovered(e: any): void {
-		//
+	drawChart() {
+		this._chart = new chartjs.Chart("MyChart", {
+			type: this._type,
+			plugins: [plugin],
+			data: {
+				labels: this._labels,
+				datasets: [
+					{
+						label: this._label,
+						data: this._data,
+						backgroundColor: this._colors,
+						borderColor: this._borderColor
+					}
+				]
+			},
+			options: this._options
+		});
 	}
 }
+
+const setActiveElements = function (chart, index) {
+	chart.setActiveElements([
+		{
+			datasetIndex: 0,
+			index,
+		}
+	]);
+	chart.update();
+};
+
+const currentActiveElement = function (elements) {
+	if (elements.length) {
+		return elements[0].index;
+	}
+	return -1;
+};
+
+const dispatchClick = function (chart, point) {
+	const node = chart.canvas;
+	const rect = node.getBoundingClientRect();
+	const event = new MouseEvent('click', {
+		clientX: rect.left + point.x,
+		clientY: rect.top + point.y,
+		cancelable: true,
+		bubbles: true,
+		//view: window
+	});
+	node.dispatchEvent(event);
+}
+
+const plugin = {
+	id: 'keyup',
+	defaults: {
+		events: ['keyup']
+	},
+	beforeEvent(chart, args, options) {
+		const event = args.event;
+		const code = event.native.code;
+		const activeElements = chart.getActiveElements();
+		const tooltip = chart.tooltip;
+		if (code === 'ArrowRight') {
+			const pos = currentActiveElement(activeElements) + 1;
+			const index = pos === chart.data.datasets[0].data.length ? 0 : pos;
+			setActiveElements(chart, index);
+			setActiveElements(tooltip, index);
+		} else if (code === 'ArrowLeft') {
+			const pos = currentActiveElement(activeElements) - 1;
+			const index = pos < 0 ? chart.data.datasets[0].data.length - 1 : pos;
+			setActiveElements(chart, index);
+			setActiveElements(tooltip, index);
+		} else if (code === 'Enter' && activeElements.length) {
+			const el = activeElements[0];
+			const meta = chart.getDatasetMeta(el.datasetIndex);
+			const data = meta.data[el.index];
+			dispatchClick(chart, data);
+		}
+		return false;
+	}
+};
