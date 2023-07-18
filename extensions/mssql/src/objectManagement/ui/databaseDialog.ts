@@ -285,7 +285,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Collation
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
 			this.objectInfo.collationName = newValue as string;
-		}, this.viewInfo.collationNames, this.objectInfo.collationName);
+		}, this.viewInfo.collationNames, this.objectInfo.collationName, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
 		// Recovery Model
