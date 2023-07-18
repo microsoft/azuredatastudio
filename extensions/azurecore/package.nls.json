@@ -44,7 +44,7 @@
 	"config.providerSettings.endpoints.azureKeyVaultResource": "Azure KeyVault Resource Endpoint",
 	"config.providerSettings.endpoints.logAnalytics": "Azure Log Analytics Endpoint",
 	"config.providerSettings.endpoints.azureStorageResource": "Azure Storage Resource Endpoint",
-	"config.providerSettings.endpoints.azureStorageResourceSuffix": "Azure Stroage Resource Endpoint Suffix",
+	"config.providerSettings.endpoints.azureStorageResourceSuffix": "Azure Storage Resource Endpoint Suffix",
 	"config.providerSettings.endpoints.azureKustoResource": "Azure Kusto Resource Endpoint",
 	"config.providerSettings.endpoints.powerBiResource": "Power BI Resource Endpoint",
 	"config.providerSettings.endpoints.scopes": "Scopes Endpoint",
