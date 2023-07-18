@@ -63,7 +63,9 @@ export const location = localize('azurecore.location', "Location");
 export const subscription = localize('azurecore.subscription', "Subscription");
 export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 
-export const reloadPrompt = localize('azurecore.reloadPrompt', "Authentication Library has changed, please reload Azure Data Studio.");
+export function reloadPrompt(sectionName: string): string {
+	return localize('azurecore.reloadPrompt', "{0} setting changed, please reload Azure Data Studio.", sectionName);
+}
 export const reloadPromptCacheClear = localize('azurecore.reloadPromptCacheClear', "Token cache has been cleared successfully, please reload Azure Data Studio.");
 export const reloadChoice = localize('azurecore.reloadChoice', "Reload Azure Data Studio");
 
