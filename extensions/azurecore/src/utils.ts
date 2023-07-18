@@ -167,11 +167,11 @@ export async function updateTenantIgnoreList(tenantIgnoreList: string[]): Promis
 }
 
 export function updateCustomCloudProviderSettings(defaultSettings: ProviderSettings[]): ProviderSettings[] {
-	let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(constants.AzureSection).get(constants.ProviderSettingsJson) as ProviderSettingsJson[];
+	let providerSettingsJson: ProviderSettingsJson[] | undefined = vscode.workspace.getConfiguration(constants.AzureSection).get(constants.CustomProviderSettings) as ProviderSettingsJson[];
 	vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
-		const impactProvider = changeEvent.affectsConfiguration(constants.ProviderSettingsJsonSection);
+		const impactProvider = changeEvent.affectsConfiguration(constants.CustomProviderSettingsSection);
 		if (impactProvider === true) {
-			await displayReloadAds(constants.ProviderSettingsJsonSection);
+			await displayReloadAds(constants.CustomProviderSettingsSection);
 		}
 	});
 	if (providerSettingsJson && providerSettingsJson.length > 0) {
@@ -193,87 +193,87 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 	return defaultSettings;
 }
 
-function buildCustomCloudProviderSettings(cloudProvider: ProviderSettingsJson): ProviderSettings {
+function buildCustomCloudProviderSettings(customProvider: ProviderSettingsJson): ProviderSettings {
 	// build provider setting
 	let newSettings: ProviderSettings = {
-		configKey: 'enable' + cloudProvider.settings.metadata.id,
+		configKey: 'enable' + customProvider.settings.metadata.id,
 		metadata: {
-			displayName: cloudProvider.settings.metadata.displayName,
-			id: cloudProvider.settings.metadata.id,
+			displayName: customProvider.settings.metadata.displayName,
+			id: customProvider.settings.metadata.id,
 			settings: {
-				host: cloudProvider.settings.metadata.endpoints.host,
-				clientId: cloudProvider.settings.metadata.endpoints.clientId,
+				host: customProvider.settings.metadata.endpoints.host,
+				clientId: customProvider.settings.metadata.endpoints.clientId,
 				microsoftResource: {
 					id: SettingIds.marm,
-					endpoint: cloudProvider.settings.metadata.endpoints.microsoftResource,
+					endpoint: customProvider.settings.metadata.endpoints.microsoftResource,
 					azureResourceId: AzureResource.MicrosoftResourceManagement
 				},
 				armResource: {
 					id: SettingIds.arm,
-					endpoint: cloudProvider.settings.metadata.endpoints.armResource,
+					endpoint: customProvider.settings.metadata.endpoints.armResource,
 					azureResourceId: AzureResource.ResourceManagement
 				},
 				graphResource: {
 					id: SettingIds.graph,
-					endpoint: cloudProvider.settings.metadata.endpoints.graphResource,
+					endpoint: customProvider.settings.metadata.endpoints.graphResource,
 					azureResourceId: AzureResource.Graph
 				},
 				azureStorageResource: {
 					id: SettingIds.storage,
-					endpoint: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpoint,
-					endpointSuffix: cloudProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
+					endpoint: customProvider.settings.metadata.endpoints.azureStorageResource.endpoint,
+					endpointSuffix: customProvider.settings.metadata.endpoints.azureStorageResource.endpointSuffix,
 					azureResourceId: AzureResource.AzureStorage
 				},
 				sqlResource: {
 					id: SettingIds.sql,
-					endpoint: cloudProvider.settings.metadata.endpoints.sqlResource,
+					endpoint: customProvider.settings.metadata.endpoints.sqlResource,
 					azureResourceId: AzureResource.Sql
 				},
 				redirectUri: 'http://localhost',
 				scopes: [
 					'openid', 'email', 'profile', 'offline_access',
-					cloudProvider.settings.metadata.endpoints.scopes
+					customProvider.settings.metadata.endpoints.scopes
 				],
 			}
 		}
 	};
-	if (cloudProvider.settings.metadata.endpoints.msGraphResource) {
+	if (customProvider.settings.metadata.endpoints.msGraphResource) {
 		newSettings.metadata.settings.msGraphResource = {
 			id: SettingIds.msgraph,
-			endpoint: cloudProvider.settings.metadata.endpoints.msGraphResource,
+			endpoint: customProvider.settings.metadata.endpoints.msGraphResource,
 			azureResourceId: AzureResource.MsGraph
 		};
 	}
-	if (cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource) {
+	if (customProvider.settings.metadata.endpoints.azureLogAnalyticsResource) {
 		newSettings.metadata.settings.azureLogAnalyticsResource = {
 			id: SettingIds.ala,
-			endpoint: cloudProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
+			endpoint: customProvider.settings.metadata.endpoints.azureLogAnalyticsResource,
 			azureResourceId: AzureResource.AzureLogAnalytics
 		};
 	}
-	if (cloudProvider.settings.metadata.endpoints.azureKustoResource) {
+	if (customProvider.settings.metadata.endpoints.azureKustoResource) {
 		newSettings.metadata.settings.azureKustoResource = {
 			id: SettingIds.kusto,
-			endpoint: cloudProvider.settings.metadata.endpoints.azureKustoResource,
+			endpoint: customProvider.settings.metadata.endpoints.azureKustoResource,
 			azureResourceId: AzureResource.AzureKusto
 		};
 	}
-	if (cloudProvider.settings.metadata.endpoints.azureKeyVaultResource) {
+	if (customProvider.settings.metadata.endpoints.azureKeyVaultResource) {
 		newSettings.metadata.settings.azureKeyVaultResource = {
 			id: SettingIds.vault,
-			endpoint: cloudProvider.settings.metadata.endpoints.azureKeyVaultResource,
+			endpoint: customProvider.settings.metadata.endpoints.azureKeyVaultResource,
 			azureResourceId: AzureResource.AzureKeyVault
 		};
 	}
-	if (cloudProvider.settings.metadata.endpoints.powerBiResource) {
+	if (customProvider.settings.metadata.endpoints.powerBiResource) {
 		newSettings.metadata.settings.powerBiResource = {
 			id: SettingIds.powerbi,
-			endpoint: cloudProvider.settings.metadata.endpoints.powerBiResource,
+			endpoint: customProvider.settings.metadata.endpoints.powerBiResource,
 			azureResourceId: AzureResource.PowerBi
 		};
 	}
-	if (cloudProvider.settings.metadata.endpoints.portalEndpoint) {
-		newSettings.metadata.settings.portalEndpoint = cloudProvider.settings.metadata.endpoints.portalEndpoint;
+	if (customProvider.settings.metadata.endpoints.portalEndpoint) {
+		newSettings.metadata.settings.portalEndpoint = customProvider.settings.metadata.endpoints.portalEndpoint;
 	}
 	return newSettings;
 }
