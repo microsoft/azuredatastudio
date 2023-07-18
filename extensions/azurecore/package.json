@@ -129,9 +129,9 @@
             ],
             "deprecationMessage": "Warning: ADAL has been deprecated, and is scheduled to be removed in a future release. Please use MSAL (default option) instead."
           },
-          "azure.providerSettingsJson": {
+          "azure.customProviderSettings": {
             "type": "array",
-            "description": "%config.providerSettingsJson%",
+            "description": "%config.customProviderSettings%",
             "scope": "resource",
             "items": {
               "type": "object",
