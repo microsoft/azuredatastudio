@@ -196,7 +196,7 @@ export function updateCustomCloudProviderSettings(defaultSettings: ProviderSetti
 function buildCustomCloudProviderSettings(customProvider: ProviderSettingsJson): ProviderSettings {
 	// build provider setting
 	let newSettings: ProviderSettings = {
-		configKey: 'enable' + customProvider.settings.metadata.id,
+		configKey: 'enableCustom' + customProvider.settings.metadata.id,
 		metadata: {
 			displayName: customProvider.settings.metadata.displayName,
 			id: customProvider.settings.metadata.id,
