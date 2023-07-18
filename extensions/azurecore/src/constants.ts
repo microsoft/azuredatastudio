@@ -43,6 +43,10 @@ export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
 
 export const piiLogging = 'piiLogging';
 
+export const CustomProviderSettings = 'customProviderSettings';
+
+export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
+
 /** MSAL Account version */
 export const AccountVersion = '2.0';
 
