@@ -359,7 +359,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		};
 
 		Object.keys(connectionInfo.options).forEach(element => {
-			if (connectionInfo.options[element] && connectionInfo.options[element] !== null && connectionInfo.options[element] !== '') {
+			// Allow empty strings to ensure "user": "" is populated if empty << Required by SSMS 19.2
+			// Do not change this design until SSMS 19 goes out of support.
+			if (connectionInfo.options[element] === '' || (connectionInfo.options[element] && connectionInfo.options[element] !== null)) {
 				profile.options[element] = connectionInfo.options[element];
 			}
 		});
