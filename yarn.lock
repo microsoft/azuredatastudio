@@ -10493,9 +10493,9 @@ xtend@~2.1.1:
   dependencies:
     object-keys "~0.4.0"
 
-"xterm-addon-canvas@github:lewis-sanchez/xterm.js#0.4.1":
-  version "0.4.1"
-  resolved "https://codeload.github.com/lewis-sanchez/xterm.js/tar.gz/042f2153f231a37f76bdd6ac68259da1e5d8cc06"
+"xterm-addon-canvas@github:lewis-sanchez/xterm.js#0.4.2":
+  version "0.4.2"
+  resolved "https://codeload.github.com/lewis-sanchez/xterm.js/tar.gz/ec9cfa65116e378f54cbbc01612c83b13521afca"
 
 xterm-addon-image@0.4.0:
   version "0.4.0"
