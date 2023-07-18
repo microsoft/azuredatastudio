@@ -134,6 +134,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
+	protected override async validateInput(): Promise<string[]> {
+		let errors = await super.validateInput();
+		if (this.viewInfo.collationNames?.length > 0 && !this.viewInfo.collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
+			errors.push(localizedConstants.CollationNotValidError(this.objectInfo.collationName ?? ''));
+		}
+		return errors;
+	}
+
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
