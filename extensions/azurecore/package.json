@@ -240,7 +240,7 @@
                             "scopes": {
                               "type": "string",
                               "default": "https://management.azure.com/user_impersonation",
-                              "description": "%config.providerSettings.endpoints.powerBiResource%"
+                              "description": "%config.providerSettings.endpoints.scopes%"
                             },
                             "portalEndpoint": {
                               "type": "string",
