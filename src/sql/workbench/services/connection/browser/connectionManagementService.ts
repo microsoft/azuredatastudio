@@ -682,8 +682,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						connection.options = connectionErrorHandleResult.options;
 					}
 					if (connectionErrorHandleResult.reconnect) {
-						// Attempt reconnect if requested by provider
-						return this.connectWithOptions(connection, uri, options, callbacks);
+						// Attempt reconnect if requested by provider and reset URI to be regenerated.
+						return this.connectWithOptions(connection, undefined, options, callbacks);
 					} else {
 						if (callbacks.onConnectCanceled) {
 							callbacks.onConnectCanceled();

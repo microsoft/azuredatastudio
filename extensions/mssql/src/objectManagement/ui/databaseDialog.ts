@@ -137,10 +137,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async () => {
+		// The max length for database names is 128 characters: https://learn.microsoft.com/sql/t-sql/functions/db-name-transact-sql
+		const maxLengthDatabaseName: number = 128;
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.NameText,
+			required: true,
+			maxLength: maxLengthDatabaseName
+		};
+
+		this.nameInput = this.createInputBoxWithProperties(async () => {
 			this.objectInfo.name = this.nameInput.value;
-			await this.runValidation(false);
-		});
+		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
