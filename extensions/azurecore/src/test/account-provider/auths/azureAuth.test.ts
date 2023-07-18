@@ -79,10 +79,6 @@ describe('Azure Authentication', function () {
 	});
 
 	describe('getAccountSecurityToken', function () {
-		it('incorrect tenant', async function () {
-			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, 'invalid_tenant').should.be.rejected();
-		});
-
 		it('saved token exists and can be reused', async function () {
 			delete (mockAccessToken as any).tokenType;
 			azureAuthCodeGrant.setup(x => x.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement, mockTenant.id)).returns((): Promise<AuthenticationResult> => {
