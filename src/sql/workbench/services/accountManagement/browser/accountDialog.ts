@@ -47,7 +47,6 @@ import { Iterable } from 'vs/base/common/iterator';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { ADAL_AUTH_LIBRARY, AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/common/utils';
 import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
