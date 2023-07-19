@@ -1608,13 +1608,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return;
 		}
 		this._connectionStatusManager.changeConnectionUri(newUri, oldUri);
-		if (!this._uriToProvider[oldUri]) {
-			this._logService.error(`No provider found for old URI : '${oldUri}'`);
-			throw new Error(nls.localize('connectionManagementService.noProviderForUri', 'Could not find provider for uri: {0}', oldUri));
+		if (this._uriToProvider[oldUri]) {
+			// Provider will persist after disconnect, it is okay to overwrite the map if it exists from a previously deleted connection.
+			this._uriToProvider[newUri] = this._uriToProvider[oldUri];
+			delete this._uriToProvider[oldUri];
 		}
-		// Provider will persist after disconnect, it is okay to overwrite the map if it exists from a previously deleted connection.
-		this._uriToProvider[newUri] = this._uriToProvider[oldUri];
-		delete this._uriToProvider[oldUri];
 	}
 
 	/**
