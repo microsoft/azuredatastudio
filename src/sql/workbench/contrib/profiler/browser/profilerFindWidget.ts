@@ -155,9 +155,6 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		});
 
 		this._tableController.addOverlayWidget(this);
-
-		this._applyTheme(themeService.getColorTheme());
-		this._register(themeService.onDidColorThemeChange(this._applyTheme.bind(this)));
 	}
 
 	// ----- IOverlayWidget API
@@ -288,23 +285,6 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			}
 			this._tableController.layoutOverlayWidget(this);
 		}
-	}
-
-	private _applyTheme(theme: IColorTheme) {
-		// {{SQL CARBON TODO}} - styles
-		// let inputStyles: IFindInputStyles = {
-		// 	inputActiveOptionBorder: theme.getColor(colors.inputActiveOptionBorder),
-		// 	inputBackground: theme.getColor(colors.inputBackground),
-		// 	inputForeground: theme.getColor(colors.inputForeground),
-		// 	inputBorder: theme.getColor(colors.inputBorder),
-		// 	inputValidationInfoBackground: theme.getColor(colors.inputValidationInfoBackground),
-		// 	inputValidationInfoBorder: theme.getColor(colors.inputValidationInfoBorder),
-		// 	inputValidationWarningBackground: theme.getColor(colors.inputValidationWarningBackground),
-		// 	inputValidationWarningBorder: theme.getColor(colors.inputValidationWarningBorder),
-		// 	inputValidationErrorBackground: theme.getColor(colors.inputValidationErrorBackground),
-		// 	inputValidationErrorBorder: theme.getColor(colors.inputValidationErrorBorder)
-		// };
-		// this._findInput.style(inputStyles);
 	}
 
 	// ----- Public

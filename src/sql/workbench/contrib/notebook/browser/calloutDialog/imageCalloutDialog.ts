@@ -101,7 +101,6 @@ export class ImageCalloutDialog extends Modal {
 
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
-		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -192,12 +191,6 @@ export class ImageCalloutDialog extends Modal {
 			this._imageUrlLabel.innerText = constants.pathPlaceholder;
 			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
 		}));
-	}
-
-	private registerListeners(): void {
-		// {{SQL CARBON TODO}} - attach styles?
-		// this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
-		// this._register(styler.attachToggleStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
 	public insert(): void {
