@@ -235,7 +235,7 @@ steps:
       artifactName: logs-macos-$(VSCODE_ARCH)-$(System.JobAttempt)
     displayName: "Publish Log Files"
     continueOnError: true
-    condition: succeededOrFailed()
+    condition: condition: and(succeededOrFailed(), or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')))
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
