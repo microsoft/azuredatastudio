@@ -9,7 +9,7 @@ import { DefaultInputWidth, DefaultTableWidth, getTableHeight } from '../../ui/d
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
-import { Database, DatabaseViewInfo } from '../interfaces';
+import { Database, DatabaseViewInfo, DatabaseScopedConfigurationsInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 
@@ -54,6 +54,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private readonly dscTabId: string = 'dscDatabaseId';
 	private dscTabSectionsContainer: azdata.Component[] = [];
 	private dscTable: azdata.TableComponent;
+	private valueForPrimaryInput: azdata.DropDownComponent;
+	private valueForSecondaryInput: azdata.DropDownComponent;
+	private valuesContainerGroup: azdata.GroupContainer;
+	private setSecondaryCheckbox: azdata.CheckBoxComponent;
+	private currentRowId: number;
 
 	private activeTabId: string;
 
@@ -109,7 +114,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeStateSection();
 
 			//Initilaize DSC Tab section
-			this.initializeDatabaseScopedConfigurationSection();
+			await this.initializeDatabaseScopedConfigurationSection();
 
 			// Initilaize general Tab
 			this.generalTab = {
@@ -426,7 +431,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#endregion
 
 	//#region Database Properties - Data Scoped configurations Tab
-	private initializeDatabaseScopedConfigurationSection(): void {
+	private async initializeDatabaseScopedConfigurationSection(): Promise<void> {
 		const isValueDefaultAvailable = this.objectInfo.databaseScopedConfigurations.length > 0 && this.objectInfo.databaseScopedConfigurations[0].isDefaultValue !== null;
 		const dscNameColumn: azdata.TableColumn = {
 			type: azdata.ColumnType.text,
@@ -471,8 +476,58 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultTableWidth + 10
 		}).component();
 
-		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable], true));
+		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, await this.updateValuesSectionGroup()], true));
+		this.disposables.push(
+			this.dscTable.onRowSelected(
+				async (selectedRow) => {
+					await this.valuesContainerGroup.updateCssStyles({ 'visibility': 'visible' });
+					const row = this.dscTable.data[this.dscTable.selectedRows[0]];
+
+					// Update the primary and secondary dropdown options based on the selected database scoped configuration
+					if (row[0] === localizedConstants.ELEVATE_ONLINE_DSC_OptionText || row[0] === localizedConstants.ELEVATE_RESUMABLE_DSC_OptionText) {
+						this.valueForPrimaryInput.values = this.viewInfo.dscElevateOptions;
+						this.valueForSecondaryInput.values = [];
+					} else {
+						this.valueForPrimaryInput.values = this.viewInfo.dscOnOffOptions;
+						this.valueForSecondaryInput.values = this.viewInfo.dscOnOffPrimaryOptions;
+					}
+
+					// Update the values of primary and secondary dropdowns based on the selected database scoped configuration
+					this.valueForPrimaryInput.value = isValueDefaultAvailable ? row[2] : row[1];
+					this.valueForSecondaryInput.value = isValueDefaultAvailable ? row[3] : row[2];
+					this.currentRowId = this.dscTable.selectedRows[0];
+					this.setSecondaryCheckbox.checked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].applyPrimaryToSecondary;
+				}
+			)
+		);
 	}
+
+	private async updateValuesSectionGroup(): Promise<azdata.GroupContainer> {
+		let containers: azdata.Component[] = [];
+		this.valueForPrimaryInput = this.createDropdown(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
+			// this.objectInfo = newValue;
+		}, this.viewInfo.dscOnOffOptions, '', true, 150)
+		containers.push(this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput));
+
+		this.setSecondaryCheckbox = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
+			// Disable secondary dropdown and apply PRIMARY value as selected value
+			this.valueForSecondaryInput.enabled = !checked;
+			this.valueForSecondaryInput.value = this.viewInfo.dscOnOffPrimaryOptions[2];
+			this.objectInfo.databaseScopedConfigurations[this.currentRowId].applyPrimaryToSecondary = checked;
+		}, false);
+		containers.push(this.createLabelInputContainer(localizedConstants.SetSecondaryText, this.setSecondaryCheckbox));
+
+		this.valueForSecondaryInput = this.createDropdown(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
+			// this.objectInfo.restrictAccess = newValue;
+		}, this.viewInfo.dscOnOffPrimaryOptions, '', true, 150);
+		containers.push(this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput));
+
+		this.valuesContainerGroup = this.createGroup('', containers, true, true);
+		await this.valuesContainerGroup.updateCssStyles({ 'visibility': 'hidden' });
+
+		return this.valuesContainerGroup;
+	}
+	// #endregion
 
 	private initializeConfigureSLOSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];

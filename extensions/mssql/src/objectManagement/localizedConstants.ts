@@ -294,11 +294,14 @@ export const DatabaseReadOnlyText = localize('objectManagement.databasePropertie
 export const DatabaseStateText = localize('objectManagement.databaseProperties.databaseStateText', "Database State");
 export const EncryptionEnabledText = localize('objectManagement.databaseProperties.encryptionEnabledText', "Encryption Enabled");
 export const RestrictAccessText = localize('objectManagement.databaseProperties.restrictAccessText', "Restrict Access");
-export const DatabaseScopedConfigurationTabHeader = localize('objectManagement.databaseProperties.databaseScopedConfigurationTabHeader', "Database Scoped Configuration");
-export const DatabaseScopedOptionsColumnHeader = localize('objectManagement.databaseScopedOptionsColumnHeader', "Database Scoped Options");
-export const IsDefaultValueColumnHeader = localize('objectManagement.isDefaultValueColumnHeader', "Is Default Value");
-export const ValueForPrimaryColumnHeader = localize('objectManagement.valueForPrimaryColumnHeader', "Value for Primary");
-export const ValueForSecondaryColumnHeader = localize('objectManagement.valueForSecondaryColumnHeader', "Value for Secondary");
+export const DatabaseScopedConfigurationTabHeader = localize('objectManagement.databaseProperties.databaseProperties.databaseScopedConfigurationTabHeader', "Database Scoped Configuration");
+export const DatabaseScopedOptionsColumnHeader = localize('objectManagement.databaseProperties.databaseScopedOptionsColumnHeader', "Database Scoped Options");
+export const IsDefaultValueColumnHeader = localize('objectManagement.databaseProperties.isDefaultValueColumnHeader', "Is Default Value");
+export const ValueForPrimaryColumnHeader = localize('objectManagement.databaseProperties.valueForPrimaryColumnHeader', "Value for Primary");
+export const ValueForSecondaryColumnHeader = localize('objectManagement.databaseProperties.valueForSecondaryColumnHeader', "Value for Secondary");
+export const SetSecondaryText = localize('objectManagement.databaseProperties.setSecondaryText', "Set Secondary same as Primary");
+export const ELEVATE_ONLINE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_online_dsc_option', "ELEVATE_ONLINE");
+export const ELEVATE_RESUMABLE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_resumable_dsc_option', "ELEVATE_RESUMABLE");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

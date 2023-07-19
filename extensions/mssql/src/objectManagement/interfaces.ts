@@ -471,6 +471,9 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureMaxSizes: AzureEditionDetails[];
 	pageVerifyOptions: string[];
 	restrictAccessOptions: string[];
+	dscOnOffPrimaryOptions: string[];
+	dscOnOffOptions: string[];
+	dscElevateOptions: string[];
 }
 
 export interface DatabaseScopedConfigurationsInfo {
@@ -478,6 +481,7 @@ export interface DatabaseScopedConfigurationsInfo {
 	isDefaultValue?: boolean;
 	valueForPrimary: string;
 	valueForSecondary: string;
+	applyPrimaryToSecondary: boolean;
 }
 
 export interface AzureEditionDetails {
