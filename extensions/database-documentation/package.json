@@ -14,7 +14,10 @@
 	],
 	"activationEvents": [
 		"onCommand:database-documentation.viewDocumentation",
-	    "onLanguage:sql"
+		"onLanguage:sql"
+	],
+	"extensionDependencies": [
+		"Microsoft.mssql"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

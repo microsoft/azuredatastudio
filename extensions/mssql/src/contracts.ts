@@ -111,6 +111,35 @@ export namespace TokenRefreshedNotification {
 
 // ------------------------------- </ Token Refreshed Notification > -------------------------------
 
+// ------------------------------- < Identification > ------------------------------------
+
+/**
+* Interface representing position, analogous to vscode.Position
+*/
+export interface Position {
+	line: number;
+	character: number;
+}
+
+/**
+* Interface representing params passed into an identification request
+*/
+export interface IdentificationParams {
+	// URI of the document the object is in
+	documentUri: string;
+	// Position in the document the object is at
+	position: Position;
+	// Word to identify
+	word: string;
+}
+
+export namespace IdentificationRequest {
+	export const type = new RequestType<IdentificationParams, string, void, void>('textDocument/identification');
+}
+
+// ------------------------------- </ Identification > ------------------------------------
+
+
 
 // ------------------------------- < Agent Management > ------------------------------------
 // Job management parameters

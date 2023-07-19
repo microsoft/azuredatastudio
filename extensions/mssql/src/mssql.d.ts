@@ -6,6 +6,7 @@
 // This is the place for extensions to expose APIs.
 declare module 'mssql' {
 	import * as azdata from 'azdata';
+	import * as vscode from 'vscode';
 
 	/**
 	 * Covers defining what the mssql extension exports to other extensions
@@ -45,6 +46,8 @@ declare module 'mssql' {
 		readonly sqlAssessment: ISqlAssessmentService;
 
 		readonly azureBlob: IAzureBlobService;
+
+		readonly identification: IIdentificationService;
 	}
 
 	/**
@@ -999,4 +1002,20 @@ declare module 'mssql' {
 		search(contextId: string, objectTypes: string[], searchText?: string, schema?: string): Thenable<ObjectManagement.SearchResultItem[]>;
 	}
 	// Object Management - End.
+
+	//#region --- SQL object identification: used by database documentation
+
+	/**
+	* Interface representing params passed into an identification request
+	*/
+	export interface IIdentificationService {
+		/**
+		 * Identify an object from its document position
+		 * @param string  The URI of the documetn
+		 *
+		 */
+		identify(documentUri: string, position: vscode.Position, word: string): Thenable<string>;
+	}
+
+	//#endregion
 }
