@@ -338,8 +338,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const movedConnection = <ConnectionProfile>e.source;
 				const oldParent = <ConnectionProfileGroup>this._tree.getElementById(e.oldGroupId);
 				const newParent = <ConnectionProfileGroup>this._tree.getElementById(e.newGroupId);
-				// Storing the expanded state of children of the moved connection so that they can be expanded after the move.
-				const profileExpandedState = this._tree.getExpandedState(movedConnection);
 				if (oldParent) {
 					oldParent.removeConnections([movedConnection]);
 					await this._tree.updateChildren(oldParent);
@@ -355,8 +353,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const newConnection = this._tree.getElementById(movedConnection.id);
 				if (newConnection) {
 					await this._tree.revealSelectFocusElement(newConnection);
-					// Expanding the previously expanded children of the moved connection after the move.
-					await this._tree.expandElements(profileExpandedState);
 				}
 			}
 		}));
@@ -411,8 +407,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				const movedGroup = <ConnectionProfileGroup>e.source;
 				const oldParent = <ConnectionProfileGroup>this._tree.getElementById(e.oldGroupId);
 				const newParent = <ConnectionProfileGroup>this._tree.getElementById(e.newGroupId);
-				// Storing the expanded state of children of the moved group so that they can be expanded after the move.
-				const profileExpandedState = this._tree.getExpandedState(movedGroup);
 				oldParent.children = oldParent.children.filter(c => c.id !== movedGroup.id);
 				await this._tree.updateChildren(oldParent);
 				newParent.children.push(movedGroup);
@@ -421,8 +415,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				await this._tree.updateChildren(newParent);
 				await this.refreshConnectionTreeTitles();
 				await this._tree.revealSelectFocusElement(movedGroup);
-				// Expanding the previously expanded children of the moved group after the move.
-				this._tree.expandElements(profileExpandedState);
 			}
 		}));
 
