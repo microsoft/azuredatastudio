@@ -302,6 +302,7 @@ export abstract class DialogBase<DialogResult> {
 			width: width,
 			enabled: enabled,
 			editable: editable,
+			fireOnTextChange: editable,
 			strictSelection: strictSelection
 		}).component();
 		this.disposables.push(dropdown.onValueChanged(async () => {
