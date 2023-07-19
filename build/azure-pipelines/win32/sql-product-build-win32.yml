@@ -144,7 +144,7 @@ steps:
   - powershell: |
       Get-ChildItem -Path $(agent.builddirectory) -Recurse
     displayName: 'List files in $(agent.builddirectory)'
-    condition: and (succeeded())
+    condition: succeeded()
 
   - powershell: |
       # Figure out the full absolute path of the product we just built
