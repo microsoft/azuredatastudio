@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.46.0",
-  "distro": "72f281cdcc5d92e168d3ce089814978e9701a67e",
+  "distro": "59a21179dd72bec006286a8cab9587e68acfcbb0",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -117,7 +117,7 @@
     "vscode-regexpp": "^3.1.0",
     "vscode-textmate": "9.0.0",
     "xterm": "5.2.0-beta.49",
-    "xterm-addon-canvas": "0.4.0-beta.14",
+    "xterm-addon-canvas": "0.5.0-beta.3",
     "xterm-addon-image": "0.4.0",
     "xterm-addon-search": "0.12.0-beta.5",
     "xterm-addon-serialize": "0.10.0-beta.2",
