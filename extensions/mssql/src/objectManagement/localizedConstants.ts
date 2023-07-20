@@ -304,6 +304,9 @@ export const ELEVATE_ONLINE_DSC_OptionText = localize('objectManagement.database
 export const ELEVATE_RESUMABLE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_resumable_dsc_option', "ELEVATE_RESUMABLE");
 export const MAXDOP = localize('objectManagement.databaseProperties.maxdop', "MAXDOP");
 export const IDENTITY_CACHE = localize('objectManagement.databaseProperties.identity_cache', "IDENTITY_CACHE");
+export const DW_COMPATIBILITY_LEVEL = localize('objectManagement.databaseProperties.dw_compatibility_level', "DW_COMPATIBILITY_LEVEL");
+export const DSCOptionEnabled = localize('objectManagement.databaseProperties.dSCOptionEnabled', "ENABLED");
+export const DSCOptionDisabled = localize('objectManagement.databaseProperties.dSCOptionDisabled', "DISABLED");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
