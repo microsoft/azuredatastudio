@@ -228,6 +228,8 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
+import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { AllServerMetadataService } from 'sql/workbench/services/metadata/common/allServerMetadataService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
@@ -275,6 +277,7 @@ registerSingleton(IAssessmentService, AssessmentService, InstantiationType.Eager
 registerSingleton(IDataGridProviderService, DataGridProviderService, InstantiationType.Eager);
 registerSingleton(ITableDesignerService, TableDesignerService, InstantiationType.Eager);
 registerSingleton(IExecutionPlanService, ExecutionPlanService, InstantiationType.Eager);
+registerSingleton(IAllServerMetadataService, AllServerMetadataService, InstantiationType.Eager);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService, InstantiationType.Eager);
 registerSingleton(IComponentContextService, ComponentContextService, InstantiationType.Eager);
 //#endregion
