@@ -302,6 +302,8 @@ export const ValueForSecondaryColumnHeader = localize('objectManagement.database
 export const SetSecondaryText = localize('objectManagement.databaseProperties.setSecondaryText', "Set Secondary same as Primary");
 export const ELEVATE_ONLINE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_online_dsc_option', "ELEVATE_ONLINE");
 export const ELEVATE_RESUMABLE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_resumable_dsc_option', "ELEVATE_RESUMABLE");
+export const MAXDOP = localize('objectManagement.databaseProperties.maxdop', "MAXDOP");
+export const IDENTITY_CACHE = localize('objectManagement.databaseProperties.identity_cache', "IDENTITY_CACHE");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
