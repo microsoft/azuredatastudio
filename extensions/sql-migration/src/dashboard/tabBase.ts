@@ -9,10 +9,12 @@ import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
+import { Page, SavedInfo } from '../models/stateMachine';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
 import * as utils from '../api/utils';
 import * as fs from 'fs';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
 
 export const EmptySettingValue = '-';
 
@@ -47,6 +49,8 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	protected openMigrationsFcn!: (status: AdsMigrationStatus) => Promise<void>;
 	protected serviceContextChangedEvent!: vscode.EventEmitter<ServiceContextChangeEvent>;
 	protected statusBar!: DashboardStatusBar;
+
+	private mementoToken: string = 'sqlmigration.databaseMigrations';
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
@@ -154,11 +158,14 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
 				if (filepath) {
 					try {
-						const jsonString = fs.readFileSync(filepath, 'utf-8');
-						const assessmentReport = JSON.parse(jsonString);
-						void vscode.window.showInformationMessage("Status: " + assessmentReport.Status);
+						const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
+						const assessmentReport = JSON.parse(assessmentReportJson);
+
+						const serverName = (await getSourceConnectionProfile()).serverName;
+						const saveInfo = await this.createSavedInfo(assessmentReport);
+						await this.context.globalState.update(`${this.mementoToken}.${serverName}`, saveInfo);
 					} catch (err) {
-						void vscode.window.showInformationMessage("Selected invalid import file: " + filepath);
+						void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
 					}
 				}
 				const actionId = MenuCommands.StartMigration;
@@ -211,6 +218,42 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				return await vscode.commands.executeCommand(actionId, args);
 			}));
 		return feedbackButton;
+	}
+
+	protected async createSavedInfo(assessmentReport: any): Promise<any> {
+		const saveInfo: SavedInfo = {
+			closedPage: Page.DatabaseSelector,
+			databaseAssessment: [],
+			databaseList: [],
+			databaseInfoList: [],
+			migrationTargetType: null,
+			azureAccount: null,
+			azureTenant: null,
+			subscription: null,
+			location: null,
+			resourceGroup: null,
+			targetServerInstance: null,
+			migrationMode: null,
+			networkContainerType: null,
+			networkShares: [],
+			blobs: [],
+			targetDatabaseNames: [],
+			sqlMigrationService: undefined,
+			serverAssessment: null,
+			skuRecommendation: null,
+			serviceResourceGroup: null,
+			serviceSubscription: null,
+		};
+		const databaseAssessments: string[] = [];
+		const server = assessmentReport.Servers[0];
+		server.Databases.array.forEach((database: any) => {
+			const databaseAssessment = database.DatabaseAssessments[0];
+			databaseAssessments.push(databaseAssessment.DatabaseName);
+		});
+
+		saveInfo.databaseAssessment = databaseAssessments;
+
+		return saveInfo;
 	}
 
 	protected showDialogMessage(
