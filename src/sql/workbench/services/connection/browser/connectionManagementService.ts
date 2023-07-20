@@ -1062,9 +1062,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
 			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
-			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-			// The OR case can be removed once we no longer support ADAL
-			let account = azureAccounts.find(account => account.key.accountId === accountId || account.key.accountId.split('.')[0] === accountId);
+			let account = azureAccounts.find(account => account.key.accountId === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
@@ -1431,13 +1429,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return;
 		}
 		this._connectionStatusManager.changeConnectionUri(newUri, oldUri);
-		if (!this._uriToProvider[oldUri]) {
-			this._logService.error(`No provider found for old URI : '${oldUri}'`);
-			throw new Error(nls.localize('connectionManagementService.noProviderForUri', 'Could not find provider for uri: {0}', oldUri));
+		if (this._uriToProvider[oldUri]) {
+			// Provider will persist after disconnect, it is okay to overwrite the map if it exists from a previously deleted connection.
+			this._uriToProvider[newUri] = this._uriToProvider[oldUri];
+			delete this._uriToProvider[oldUri];
 		}
-		// Provider will persist after disconnect, it is okay to overwrite the map if it exists from a previously deleted connection.
-		this._uriToProvider[newUri] = this._uriToProvider[oldUri];
-		delete this._uriToProvider[oldUri];
 	}
 
 	/**
