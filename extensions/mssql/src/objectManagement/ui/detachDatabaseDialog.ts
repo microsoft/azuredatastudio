@@ -7,7 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DetachDatabaseDocUrl } from '../constants';
-import { DatabaseFileGroupLabel, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DetachDatabaseDialogTitle, DetachDatabaseOptions, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
+import { DatabaseFileGroupLabel, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DetachButtonLabel, DetachDatabaseDialogTitle, DetachDatabaseOptions, DetachDropConnections, DetachUpdateStatistics } from '../localizedConstants';
 
 export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections = false;
@@ -15,6 +15,7 @@ export class DetachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, DetachDatabaseDialogTitle(options.database), 'DetachDatabase');
+		this.dialogObject.okButton.label = DetachButtonLabel;
 	}
 
 	protected override get isDirty(): boolean {

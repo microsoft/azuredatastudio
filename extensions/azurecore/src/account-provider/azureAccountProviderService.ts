@@ -20,6 +20,8 @@ import { Configuration, PublicClientApplication } from '@azure/msal-node';
 import * as Constants from '../constants';
 import { Logger } from '../utils/Logger';
 import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
+import { displayReloadAds } from '../utils';
+import { reloadPromptCacheClear } from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
@@ -108,8 +110,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return Promise.all(promises)
 			.then(
 				() => {
-					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					void vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
+					void displayReloadAds(reloadPromptCacheClear);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");
@@ -147,6 +148,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			// Case 3: Provider was disabled and is now enabled - register provider
 			if (!oldConfigValue && newConfigValue) {
+				providerChanges.push(this.registerAccountProvider(provider));
+			}
+
+			// Case 4: Provider was added from JSON - register provider
+			if (provider.configKey !== 'enablePublicCloud' && provider.configKey !== 'enableUsGovCloud' && provider.configKey !== 'enableChinaCloud') {
 				providerChanges.push(this.registerAccountProvider(provider));
 			}
 		}

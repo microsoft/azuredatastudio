@@ -27,9 +27,9 @@ import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { FileQueryEditorSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorSerializer } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';

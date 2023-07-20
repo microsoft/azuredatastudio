@@ -21,7 +21,7 @@ import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference
 import { FIND_IDS, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/browser/findModel';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { defaultInputBoxStyles, defaultToggleStyles } from 'vs/platform/theme/browser/defaultStyles';
@@ -159,9 +159,6 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 
 		this._notebookController.addOverlayWidget(this);
 
-		this._applyTheme(themeService.getColorTheme());
-		this._register(themeService.onDidColorThemeChange(this._applyTheme.bind(this)));
-
 		this.onkeyup(this._domNode, e => {
 			if (e.equals(KeyCode.Escape)) {
 				this._state.change({ isRevealed: false, searchScope: null }, false);
@@ -297,23 +294,6 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			}
 			this._notebookController.layoutOverlayWidget(this);
 		}
-	}
-
-	private _applyTheme(theme: IColorTheme) {
-		// {{SQL CARBON TODO}} - reenable styles
-		// let inputStyles: IFindInputStyles = {
-		// 	inputActiveOptionBorder: theme.getColor(colors.inputActiveOptionBorder),
-		// 	inputBackground: theme.getColor(colors.inputBackground),
-		// 	inputForeground: theme.getColor(colors.inputForeground),
-		// 	inputBorder: theme.getColor(colors.inputBorder),
-		// 	inputValidationInfoBackground: theme.getColor(colors.inputValidationInfoBackground),
-		// 	inputValidationInfoBorder: theme.getColor(colors.inputValidationInfoBorder),
-		// 	inputValidationWarningBackground: theme.getColor(colors.inputValidationWarningBackground),
-		// 	inputValidationWarningBorder: theme.getColor(colors.inputValidationWarningBorder),
-		// 	inputValidationErrorBackground: theme.getColor(colors.inputValidationErrorBackground),
-		// 	inputValidationErrorBorder: theme.getColor(colors.inputValidationErrorBorder)
-		// };
-		//this._findInput.style(inputStyles);
 	}
 
 	// ----- Public
