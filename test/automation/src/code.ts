@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 // import { join } from 'path'; // {SQL CARBON EDIT} - This import is longer needed because we're not needing to copy the vscode-notebook-test extension
+import * as cp from 'child_process';
 import * as os from 'os';
 import * as treekill from 'tree-kill';
 import { IElement, ILocaleInfo, ILocalizedStrings, ILogFile } from './driver';
