@@ -458,51 +458,57 @@ export class AccountDialog extends Modal {
 		this.layout();
 	}
 
-	private registerActions(viewId: string) {
+	private registerActions(providerId: string) {
 		const that = this;
 		registerAction2(class extends Action2 {
 			constructor() {
 				super({
-					id: `workbench.actions.accountDialog.${viewId}.addAccount`,
+					id: `workbench.actions.accountDialog.${providerId}.addAccount`,
 					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
 					f1: true,
 					icon: { id: Codicon.add.id },
 					menu: {
 						id: MenuId.ViewTitle,
 						group: 'navigation',
-						when: ContextKeyEqualsExpr.create('view', viewId),
+						when: ContextKeyEqualsExpr.create('view', providerId),
 						order: 1
 					}
 				});
 			}
 
 			async run() {
-				await that.runAddAccountAction();
+				await that.runAddAccountAction(providerId);
 			}
 		});
 	}
 
-	private async runAddAccountAction() {
+	private async runAddAccountAction(providerId?: string) {
 		this.logService.debug(`Adding account - providers ${JSON.stringify(Iterable.consume(this._providerViewsMap.keys()))}`);
 		const vals = Iterable.consume(this._providerViewsMap.values())[0];
 		let pickedValue: string | undefined;
-		if (vals.length === 0) {
-			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
-			return;
-		}
-		if (vals.length > 1) {
-			const buttons: IQuickPickItem[] = vals.map(v => {
-				return { label: v.view.title } as IQuickPickItem;
-			});
-
-			const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
-
-			pickedValue = picked?.label;
+		let v: IProviderViewUiComponent | undefined;
+		if (providerId) {
+			pickedValue = providerId;
+			v = vals.filter(v => v.view.id === pickedValue)?.[0];
 		} else {
-			pickedValue = vals[0].view.title;
-		}
+			let pickedValue: string | undefined;
+			if (vals.length === 0) {
+				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+				return;
+			}
+			if (vals.length > 1) {
+				const buttons: IQuickPickItem[] = vals.map(v => {
+					return { label: v.view.title } as IQuickPickItem;
+				});
 
-		const v = vals.filter(v => v.view.title === pickedValue)?.[0];
+				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+				pickedValue = picked?.label;
+			} else {
+				pickedValue = vals[0].view.title;
+			}
+			v = vals.filter(v => v.view.title === pickedValue)?.[0];
+		}
 
 		if (!v) {
 			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
