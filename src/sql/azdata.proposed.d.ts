@@ -903,12 +903,14 @@ declare module 'azdata' {
 
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
-		ExecutionPlanProvider = 'ExecutionPlanProvider'
+		ExecutionPlanProvider = 'ExecutionPlanProvider',
+		AllServerMetadataProvider = 'AllServerMetadataProvider'
 	}
 
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
 		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
+		export function registerAllServerMetadataProvider(provider: metadata.AllServerMetadataProvider): vscode.Disposable
 	}
 
 	export namespace designers {

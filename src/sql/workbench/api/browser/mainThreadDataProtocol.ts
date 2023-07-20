@@ -33,6 +33,7 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -64,7 +65,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
-		@IExecutionPlanService private _executionPlanService: IExecutionPlanService
+		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
+		@IAllServerMetadataService private _allServerMetadataService: IAllServerMetadataService
 	) {
 		super();
 		if (extHostContext) {
@@ -568,6 +570,13 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile),
 			compareExecutionPlanGraph: (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$compareExecutionPlanGraph(handle, firstPlanFile, secondPlanFile),
 			isExecutionPlan: (value: string) => this._proxy.$isExecutionPlan(handle, value)
+		});
+	}
+
+	// All server metadata handler
+	public $registerAllServerMetadataProvider(providerId: string, handle: number): void {
+		this._allServerMetadataService.registerProvider(providerId, <azdata.metadata.AllServerMetadataProvider>{
+			getAllServerMetadata: (ownerUri: string) => this._proxy.$getAllServerMetadata(handle, ownerUri)
 		});
 	}
 

@@ -212,7 +212,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$registerAllServerMetadataProvider(provider: azdata.metadata.AllServerMetadataProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
-		this._proxy.$registerMetadataProvider(provider.providerId, provider.handle);
+		this._proxy.$registerAllServerMetadataProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -968,5 +968,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public override $isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> {
 		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).isExecutionPlan(value);
+	}
+
+	// Server Metadata API
+
+	public override $getAllServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.AllServerMetadataResult> {
+		return this._resolveProvider<azdata.metadata.AllServerMetadataProvider>(handle).getAllServerMetadata(ownerUri);
 	}
 }

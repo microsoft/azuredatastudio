@@ -421,7 +421,8 @@ export enum DataProviderType {
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
 	DataGridProvider = 'DataGridProvider',
 	TableDesignerProvider = 'TableDesignerProvider',
-	ExecutionPlanProvider = 'ExecutionPlanProvider'
+	ExecutionPlanProvider = 'ExecutionPlanProvider',
+	AllServerMetadataProvider = 'AllServerMetadataProvider'
 }
 
 export enum DeclarativeDataType {
