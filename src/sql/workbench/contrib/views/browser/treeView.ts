@@ -60,6 +60,7 @@ import { AriaRole } from 'vs/base/browser/ui/aria/aria';
 import { API_OPEN_EDITOR_COMMAND_ID, API_OPEN_DIFF_EDITOR_COMMAND_ID } from 'vs/workbench/browser/parts/editor/editorCommands';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { isCancellationError } from 'vs/base/common/errors';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class Root implements ITreeItem {
 	label = { label: 'root' };
@@ -770,7 +771,9 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 				}
 			},
 
-			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle }),
+			getActionsContext: () => node.childProvider === mssqlProviderName // tracked change - need to pass treeItem for Data Explorer nodes
+				? (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle, $treeItem: node })
+				: (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle }),
 
 			actionRunner
 		});
