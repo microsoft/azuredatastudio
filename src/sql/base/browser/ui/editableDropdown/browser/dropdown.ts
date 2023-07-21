@@ -116,9 +116,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input.select-container'));
 		this._inputContainer.style.width = '100%';
 		this._inputContainer.style.height = '100%';
+
 		this._selectListContainer = DOM.$('div');
 		this._selectListContainer.style.backgroundColor = opt.contextBackground;
 		this._selectListContainer.style.outline = `1px solid ${opt.contextBorder}`;
+
 		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
 				// @SQLTODO
