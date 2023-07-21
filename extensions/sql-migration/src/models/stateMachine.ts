@@ -89,7 +89,8 @@ export enum Page {
 	TargetSelection,
 	IntegrationRuntime,
 	DatabaseBackup,
-	Summary
+	Summary,
+	ImportAssessment
 }
 
 export enum WizardEntryPoint {
@@ -440,7 +441,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					errors: response?.errors ?? [],
 				};
 			}
-
 		} catch (error) {
 			this._assessmentResults = {
 				issues: [],
