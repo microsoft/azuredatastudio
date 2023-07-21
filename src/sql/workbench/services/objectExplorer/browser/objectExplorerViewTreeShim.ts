@@ -37,7 +37,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 	_serviceBrand: undefined;
 
 	private nodeHandleMap = new Map<number, string>();
-	private nodeInfoMap = new Map<string, azdata.NodeInfo>();
+	private nodeInfoMap = new Map<ITreeItem, azdata.NodeInfo>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -197,7 +197,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			sessionId: parentNode.sessionId
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
-		this.nodeInfoMap.set(newTreeItem.handle, nodeInfo);
+		this.nodeInfoMap.set(newTreeItem, nodeInfo);
 		return newTreeItem;
 	}
 
@@ -210,9 +210,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 	}
 
 	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined {
-		const handle = treeItem.handle;
-		if (this.nodeInfoMap.has(handle)) {
-			return this.nodeInfoMap.get(handle);
+		if (this.nodeInfoMap.has(treeItem)) {
+			return this.nodeInfoMap.get(treeItem);
 		}
 		return undefined;
 	}

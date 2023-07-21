@@ -786,8 +786,10 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 
 				// Have to remove parent, this was added in a VS Code merge to ITreeItem instances, but isn't meant to be serializable over JSON RPC,
 				// so passing it directly will cause the command to fail as there's a loop (child -> parent -> child -> parent ...)
-				const safeNode = mixin({ parent: undefined }, node, false);
-				const treeItem = node.childProvider ? safeNode : undefined;
+				// Note: Do NOT make a new object here - the core tree logic expects the tree items to stay as the same object so returning a
+				// different object here will break functionality such as scripting.
+				delete node.parent;
+				const treeItem = node.childProvider ? node : undefined;
 				return (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle, $treeItem: treeItem })
 			},
 
