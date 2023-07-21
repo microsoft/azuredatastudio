@@ -171,14 +171,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 					break;
 				case KeyCode.Escape:
 					if (this._isDropDownVisible) {
-						this._input.validate();
 						this._onBlur.fire();
 						this._hideList();
 						e.stopPropagation();
 					}
 					break;
 				case KeyCode.Tab:
-					this._input.validate();
 					this._onBlur.fire();
 					this._hideList();
 					break;
@@ -258,9 +256,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			if (this.fireOnTextChange) {
 				this.value = e;
 			}
-			if (this._options.validateOnTextChange) {
-				this.input.validate();
-			}
 		});
 
 		this.onBlur(() => {
@@ -323,6 +318,10 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	private _hideList(): void {
 		this.contextViewService.hideContextView();
 		this._inputContainer.setAttribute('aria-expanded', 'false');
+		// Show error for input box in case the user closed the dropdown without selecting anything, like by hitting Escape
+		if (this._options.validateOnTextChange) {
+			this.input.validate();
+		}
 	}
 
 	private _updateDropDownList(): void {
@@ -385,7 +384,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._dataSource.values.some(i => i === value)) {
+		if (this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._isDropDownVisible && !this._dataSource.values.some(i => i === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,
