@@ -473,15 +473,16 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultTableWidth + 10
 		}).component();
 
-		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, await this.InitializeDscPrimaryValueGroup(), await this.InitializeDscSecondaryValueGroup(), await this.InitilaizeDscMaxDopPrimarySection()], true));
+		const dscPrimaryValueGroup = await this.InitializeDscPrimaryValueGroup();
+		const dscSecondaryValueGroup = await this.InitializeDscSecondaryValueGroup();
+		// const dscMaxDopPrimaryValueGroup = await this.InitilaizeDscMaxDopPrimarySection();
+		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, dscPrimaryValueGroup, dscSecondaryValueGroup/*, dscMaxDopPrimaryValueGroup*/], true));
 		this.disposables.push(
 			this.dscTable.onRowSelected(
 				async (selectedRow) => {
 					this.currentRowId = this.dscTable.selectedRows[0];
 					const row = this.dscTable.data[this.dscTable.selectedRows[0]];
 
-					// Update the values of primary and secondary dropdown based on the selected database scoped configuration
-					this.setSecondaryCheckbox.checked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].applyPrimaryToSecondary;
 					await this.validateUpdateToggleDscPrimaryAndSecondaryOptions(row);
 				}
 			)
@@ -494,12 +495,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 */
 	private async validateUpdateToggleDscPrimaryAndSecondaryOptions(row: any[]): Promise<void> {
 		// Update the primary and secondary dropdown options based on the selected database scoped configuration
-		//
+		this.setSecondaryCheckbox.checked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].applyPrimaryToSecondary;
+		// TODO:await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important' });
+		await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'inline !important' });
+		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important' });
 		// Elevate online and Elevate resumable options have diff set of drodpdown options and do not support secondary value update
 		if (row[0] === localizedConstants.ELEVATE_ONLINE_DSC_OptionText || row[0] === localizedConstants.ELEVATE_RESUMABLE_DSC_OptionText) {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
-			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
 			await this.valueForPrimaryInput.updateProperties({
 				values: this.viewInfo.dscElevateOptions
 				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
@@ -507,20 +509,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
 		}
 		// MAXDOP option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
-		else if (row[0] === localizedConstants.MAXDOP) {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
-			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
-			await this.valueForSecondaryInput.updateProperties({
-				values: this.viewInfo.dscOnOffPrimaryOptions[2]
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
-			});
-		}
+		// else if (row[0] === localizedConstants.MAXDOP) {
+		// 	await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
+		// 	await this.valueForMaxDopPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
+		// 	await this.valueForSecondaryInput.updateProperties({
+		// 		values: this.viewInfo.dscOnOffPrimaryOptions[2]
+		// 		, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
+		// 	});
+		// }
 		// Identity cache option accepts only primary value updates, and do not support secondary value update
 		else if (row[0] === localizedConstants.IDENTITY_CACHE) {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
-			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
 			await this.valueForPrimaryInput.updateProperties({
 				values: this.viewInfo.dscOnOffOptions
 				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
@@ -529,9 +528,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// DW compatibily level options accepts 1(Enabled) or 0(Disabled) values as primary and secondary values
 		else if (row[0] === localizedConstants.DW_COMPATIBILITY_LEVEL) {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
-			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
+			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
+			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
 			await this.valueForPrimaryInput.updateProperties({
 				values: this.viewInfo.dscEnableDisableOptions
 				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
@@ -543,9 +541,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// All other options accepts primary and seconday values as ON/OFF/PRIMARY(only secondary)
 		else {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
-			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
+			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
+			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
 			await this.valueForPrimaryInput.updateProperties({
 				values: this.viewInfo.dscOnOffOptions
 				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
@@ -561,19 +558,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Max limt for the MAXDOP primary value is a 16bit signed integer - 32767
 	 * @returns GroupContainer for MAXDOP primary value
 	 */
-	private async InitilaizeDscMaxDopPrimarySection(): Promise<azdata.GroupContainer> {
-		this.valueForMaxDopPrimaryInput = this.createInputBox(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
-			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue as string;
-			this.dscTable.data[this.currentRowId][this.isValueDefaultAvailable ? 2 : 1] = newValue;
-			await this.updateDscTable(this.dscTable.data);
-		}, '', true, 'number', DefaultInputWidth - 17, true, 0, 32767);
-		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForMaxDopPrimaryInput);
+	// private async InitilaizeDscMaxDopPrimarySection(): Promise<azdata.GroupContainer> {
+	// 	this.valueForMaxDopPrimaryInput = this.createInputBox(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
+	// 		if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary !== newValue) {
+	// 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
+	// 			this.dscTable.data[this.currentRowId][this.isValueDefaultAvailable ? 2 : 1] = newValue;
+	// 			await this.updateDscTable(this.dscTable.data);
+	// 		}
+	// 	}, '', true, 'number', DefaultInputWidth - 17, true, 0, 32767);
+	// 	const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForMaxDopPrimaryInput);
 
-		this.dscMaxDopPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
-		await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin': '-160px 0px 0px -8px' });
+	// 	this.dscMaxDopPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
+	// 	await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important', 'margin-top': '-132px' });
 
-		return this.dscMaxDopPrimaryValueGroup;
-	}
+	// 	return this.dscMaxDopPrimaryValueGroup;
+	// }
 
 	private async InitializeDscPrimaryValueGroup(): Promise<azdata.GroupContainer> {
 		// Value for Primary
@@ -585,7 +584,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
 
 		this.dscPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
-		await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+		await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important', });
 
 		return this.dscPrimaryValueGroup;
 	}
@@ -600,7 +599,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].applyPrimaryToSecondary = checked;
 			await this.updateDscTable(this.dscTable.data);
 		}, false);
-		const applyPrimaryToSecondaryContainer = this.createLabelInputContainer(localizedConstants.SetSecondaryText, this.setSecondaryCheckbox);
+		const applyPrimaryToSecondaryContainer = this.createLabelInputContainer('', this.setSecondaryCheckbox);
 
 		// Value for Secondary
 		this.valueForSecondaryInput = this.createDropdown(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
@@ -613,7 +612,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
 
 		this.dscSecondaryValueGroup = this.createGroup('', [applyPrimaryToSecondaryContainer, secondaryContainer], true, true);
-		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '-13px' });
+		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important', 'margin-top': '-13px' });
 
 		return this.dscSecondaryValueGroup;
 	}
