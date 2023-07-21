@@ -222,7 +222,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 
 	protected async createSavedInfo(assessmentReport: any): Promise<any> {
 		const saveInfo: SavedInfo = {
-			closedPage: Page.DatabaseSelector,
+			closedPage: Page.ImportAssessment,
 			databaseAssessment: [],
 			databaseList: [],
 			databaseInfoList: [],
@@ -244,14 +244,54 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 			serviceResourceGroup: null,
 			serviceSubscription: null,
 		};
-		const databaseAssessments: string[] = [];
-		const server = assessmentReport.Servers[0];
-		server.Databases.array.forEach((database: any) => {
-			const databaseAssessment = database.DatabaseAssessments[0];
-			databaseAssessments.push(databaseAssessment.DatabaseName);
-		});
 
-		saveInfo.databaseAssessment = databaseAssessments;
+		if (assessmentReport.DmaVersion !== undefined) { //DMA assessment format import
+			saveInfo.serverAssessment = {
+				issues: assessmentReport.ServerInstances[0].AssessmentRecommendations || [],
+				databaseAssessments: assessmentReport.Databases?.map((d: any) => {
+					return {
+						name: d.Name,
+						issues: d.AssessmentRecommendations,
+						errors: d.Errors || [],
+					};
+				}),
+				errors: assessmentReport.Errors ?? [],
+			};
+		} else { //ADS assessment format import
+			const server = assessmentReport.Servers[0];
+			saveInfo.serverAssessment = {
+				issues: server.ServerAssessments.map((assessment: any) => {
+					return {
+						rulesetVersion: "",
+						rulesetName: "",
+						ruleId: assessment.RuleMetadata.Id,
+						targetType: assessment.AppliesToMigrationTargetPlatform,
+						checkId: "",
+						tags: assessment.RuleMetadata.Tags,
+						displayName: assessment.RuleMetadata.Id,
+						description: assessment.RuleMetadata.Description,
+						helpLink: assessment.RuleMetadata.HelpLink,
+						level: assessment.RuleMetadata.Level,
+						timestamp: assessment.Timestamp,
+						kind: assessment.IssueCategory,
+						message: assessment.RuleMetadata.Message,
+						appliesToMigrationTargetPlatform: assessment.AppliesToMigrationTargetPlatform,
+						issueCategory: assessment.IssueCategory,
+						databaseName: assessment.DatabaseName,
+						impactedObjects: assessment.ImpactedObjects,
+						databaseRestoreFails: assessment.DatabaseRestoreFails,
+					}
+				}) ?? [], // server issues
+				databaseAssessments: server.Databases.map((d: any) => {
+					return {
+						name: d.Properties.Name,
+						issues: d.DatabaseAssessments,
+						errors: d.Errors || [],
+					}
+				}) ?? [], //database issues
+				errors: assessmentReport.Errors ?? [],
+			};
+		}
 
 		return saveInfo;
 	}

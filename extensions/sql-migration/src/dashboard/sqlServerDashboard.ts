@@ -29,6 +29,11 @@ import { migrationServiceProvider } from '../service/provider';
 import { ApiType, SqlMigrationService } from '../service/features';
 import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUtils';
 import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
+import { Page } from '../models/stateMachine';
+import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
+import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
+import * as constants from '../constants/strings';
+import { MigrationTargetType } from '../api/utils';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -536,11 +541,22 @@ export class DashboardWidget {
 				if (savedInfo) {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
-					const savedAssessmentDialog = new SavedAssessmentDialog(
-						this._context,
-						this.stateModel,
-						this._onServiceContextChanged);
-					await savedAssessmentDialog.openDialog();
+
+					if (savedInfo.closedPage === Page.ImportAssessment) {
+						const wizardObject = azdata.window.createWizard(
+							loc.WIZARD_TITLE(serverName),
+							'MigrationWizard',
+							'wide');
+						const page = new SKURecommendationPage(wizardObject, this.stateModel);
+						const dbDialog = new AssessmentResultsDialog('ownerUri', this.stateModel, constants.ASSESSMENT_TITLE(serverName), page, MigrationTargetType.SQLDB);
+						await dbDialog.openDialog();
+					} else {
+						const savedAssessmentDialog = new SavedAssessmentDialog(
+							this._context,
+							this.stateModel,
+							this._onServiceContextChanged);
+						await savedAssessmentDialog.openDialog();
+					}
 				} else {
 					const wizardController = new WizardController(
 						this._context,
