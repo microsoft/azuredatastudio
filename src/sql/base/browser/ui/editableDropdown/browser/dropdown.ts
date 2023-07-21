@@ -53,6 +53,10 @@ export interface IDropdownOptions extends Partial<IEditableDropdownStyles> {
 	 * Value to use as aria-description for the input box
 	 */
 	ariaDescription?: string;
+	/**
+	 * Whether to validate the text input every time it changes.
+	 */
+	validateOnTextChange?: boolean;
 }
 
 export interface IEditableDropdownStyles extends IInputBoxStyles, IListStyles {
@@ -254,6 +258,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			if (this.fireOnTextChange) {
 				this.value = e;
 			}
+			if (this._options.validateOnTextChange) {
+				this.input.validate();
+			}
 		});
 
 		this.onBlur(() => {
@@ -378,7 +385,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (!this._input.hasFocus() && this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._dataSource.values.some(i => i === value)) {
+		if (this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._dataSource.values.some(i => i === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,
@@ -421,5 +428,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	public set strictSelection(val: boolean | undefined) {
 		this._options.strictSelection = val;
+	}
+
+	public set validateOnTextChange(val: boolean | undefined) {
+		this._options.validateOnTextChange = val;
 	}
 }
