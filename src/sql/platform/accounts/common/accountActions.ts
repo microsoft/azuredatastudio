@@ -51,10 +51,8 @@ export class AddAccountAction extends Action {
 		this._addAccountStartEmitter.fire();
 		try {
 			if (!this._providerId) {
-				this._providerId = await this._accountManagementService.promptProvider();
-				await this._accountManagementService.addAccount(this._providerId);
-				// Reset the provider ID if it was undefined before
-				this._providerId = undefined;
+				let providerId = await this._accountManagementService.promptProvider();
+				await this._accountManagementService.addAccount(providerId);
 			} else {
 				await this._accountManagementService.addAccount(this._providerId);
 			}
