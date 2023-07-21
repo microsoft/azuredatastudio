@@ -13,7 +13,6 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { ipcRenderer as ipc } from 'electron';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
@@ -29,6 +28,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
+import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 
 //#region decorators
 
@@ -64,8 +64,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		@IURLService urlService: IURLService,
 		@IDialogService private readonly dialogService: IDialogService
 	) {
-		if (ipc) {
-			ipc.on('ads:processCommandLine', (event: any, args: NativeParsedArgs) => this.onLaunched(args));
+		if (ipcRenderer) {
+			ipcRenderer.on('ads:processCommandLine', (event: any, args: NativeParsedArgs) => this.onLaunched(args));
 		}
 		// we only get the ipc from main during window reuse
 		if (environmentService) {

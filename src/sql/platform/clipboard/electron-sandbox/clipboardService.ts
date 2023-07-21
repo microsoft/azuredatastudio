@@ -6,6 +6,8 @@
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { BrowserClipboardService } from 'sql/platform/clipboard/browser/clipboardService';
+// These are ok for the non-sandbox renderer https://github.com/electron/electron/tree/main/docs#modules-for-both-processes
+// eslint-disable-next-line local/code-import-patterns
 import { clipboard, nativeImage } from 'electron';
 
 export class ClipboardService extends BrowserClipboardService {

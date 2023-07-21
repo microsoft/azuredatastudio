@@ -177,8 +177,6 @@ import 'sql/workbench/contrib/telemetry/electron-sandbox/telemetryOptOut.contrib
 export { main } from 'vs/workbench/electron-sandbox/desktop.main';
 
 // {{SQL CARBON EDIT}} - SQL-specific services
-import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
-import { SqlOAuthService } from 'sql/platform/oAuth/electron-sandbox/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-sandbox/clipboardService';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
@@ -186,7 +184,6 @@ import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azure
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 
-registerSingleton(ISqlOAuthService, SqlOAuthService, InstantiationType.Delayed);
 registerSingleton(sqlIClipboardService, sqlClipboardService, InstantiationType.Delayed);
 registerSingleton(IAzureBlobService, AzureBlobService, InstantiationType.Delayed);
 registerSingleton(IAzureAccountService, AzureAccountService, InstantiationType.Delayed);
