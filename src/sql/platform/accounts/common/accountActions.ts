@@ -50,7 +50,12 @@ export class AddAccountAction extends Action {
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
 		try {
-			await this._accountManagementService.addAccount(this._providerId);
+			if (!this._providerId) {
+				let providerId = await this._accountManagementService.promptProvider();
+				await this._accountManagementService.addAccount(providerId);
+			} else {
+				await this._accountManagementService.addAccount(this._providerId);
+			}
 			this._addAccountCompleteEmitter.fire();
 		} catch (err) {
 			this.logService.error(`Error while adding account: ${err}`);
