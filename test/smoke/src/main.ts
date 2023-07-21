@@ -4,18 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
+import { gracefulify } from 'graceful-fs';
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as os from 'os';
 import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
+import * as vscodetest from '@vscode/test-electron';
 import { ncp } from 'ncp';
-import * as vscodetest from 'vscode-test';
 import fetch from 'node-fetch';
-import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
+import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog } from '../../automation';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
+import { retry } from './utils';
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
@@ -29,6 +31,8 @@ import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.te
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';
 import { setup as setupTaskTests } from './areas/task/task.test';*/
+
+const rootPath = path.join(__dirname, '..', '..', '..');
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
@@ -60,8 +64,12 @@ const opts = minimist(args, {
 	tracing?: boolean;
 	build?: string;
 	'stable-build'?: string;
-	browser?: string;
+	browser?: 'webkit' | 'chromium' | 'firefox' | undefined;
 	electronArgs?: string;
+	extensionsDir?: string; // {{SQL CARBON EDIT}}
+	log?: string; // {{SQL CARBON EDIT}}
+	screenshots?: string; // {{SQL CARBON EDIT}}
+	_: string[]
 };
 
 const logsRootPath = (() => {
@@ -132,24 +140,6 @@ process.once('exit', () => {
 		// noop
 	}
 });
-
-// {{ SQL CARBON EDIT }} START - get rootPath and define logsRootPath
-const rootPath = path.join(__dirname, '..', '..', '..');
-const logsRootPath = (() => {
-	const logsParentPath = path.join(rootPath, '.build', 'logs');
-
-	let logsName: string;
-	if (opts.web) {
-		logsName = 'smoke-tests-browser';
-	} else if (opts.remote) {
-		logsName = 'smoke-tests-remote';
-	} else {
-		logsName = 'smoke-tests-electron';
-	}
-
-	return path.join(logsParentPath, logsName);
-})();
-// {{ SQL CARBON EDIT }} END
 
 const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
@@ -447,8 +437,7 @@ function createOptions(): ApplicationOptions {
 		codePath: opts.build,
 		workspacePath,
 		userDataDir,
-		extensionsPath,
-		waitTime: parseInt(opts['wait-time'] || '0') || 20,
+		extensionsPath: extensionsPath ?? '',
 		logger,
 		logsPath: path.join(logsRootPath, 'suite_unknown'),
 		crashesPath: path.join(crashesRootPath, 'suite_unknown'),
