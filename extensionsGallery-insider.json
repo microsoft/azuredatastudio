@@ -769,7 +769,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/LICENSE"
 								}
 							],
 							"properties": [
