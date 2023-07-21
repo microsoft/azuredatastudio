@@ -82,6 +82,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Prevent the cell submission function from being called multiple times.
 	private cellSubmitInProgress: boolean;
 
+	// Prevent the tab focus from doing any damage to the table while its being reverted.
+	private cellRevertInProgress: boolean;
+
 	// Manually submit the cell after edit end if it's the null row.
 	private isInNullRow: boolean;
 
@@ -190,6 +193,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
+
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
@@ -338,11 +342,12 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
-		if (row === undefined || column === undefined) {
-			return;
-		}
-
-		if (this.cellSubmitInProgress) {
+		// Also skip when cell updates are happening as we don't want to affect other cells while this is going on.
+		// (focus should shift back to current cell if it is set)
+		if (row === undefined || column === undefined || this.cellSubmitInProgress || this.cellRevertInProgress) {
+			if (this.currentCell) {
+				this.focusCell(this.currentCell.row, this.currentCell.column);
+			}
 			return;
 		}
 
@@ -665,6 +670,34 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
+	private async revertCurrentCell(): Promise<void> {
+		this.cellRevertInProgress = true;
+		this.updateEnabledState(false);
+		this.dataService.revertCell(this.currentCell.row, this.currentCell.column)
+			.then(() => {
+				// Need to reset data to what it was before in order for slickgrid to recognize the change.
+				this.dataSet.dataRows = new VirtualizedCollection(
+					this.windowSize,
+					index => { return {}; },
+					this.dataSet.totalRows,
+					this.loadDataFunction,
+				);
+				this.gridDataProvider = new AsyncDataProvider(this.dataSet.dataRows);
+				return this.refreshGrid();
+			}).then(() => {
+				// Restore cell value after deleting/refreshing new row.
+				if (this.currentCell && this.lastEnteredString) {
+					this.updateEnabledState(true);
+					this.focusCell(this.currentCell.row, this.currentCell.column);
+					document.execCommand('selectAll');
+					document.execCommand('delete');
+					document.execCommand('insertText', false, this.lastEnteredString);
+					this.cellRevertInProgress = false;
+				}
+			});
+	}
+
+
 	private submitCurrentCellChange(resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
@@ -706,6 +739,9 @@ export class EditDataGridPanel extends GridParentComponent {
 					let refreshPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
 						refreshPromise = this.revertCurrentRow();
+					}
+					else {
+						refreshPromise = this.revertCurrentCell()
 					}
 					return refreshPromise.then(() => {
 						return errorHandler(error);
