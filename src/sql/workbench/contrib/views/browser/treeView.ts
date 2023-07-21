@@ -60,7 +60,6 @@ import { AriaRole } from 'vs/base/browser/ui/aria/aria';
 import { API_OPEN_EDITOR_COMMAND_ID, API_OPEN_DIFF_EDITOR_COMMAND_ID } from 'vs/workbench/browser/parts/editor/editorCommands';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { isCancellationError } from 'vs/base/common/errors';
-import { mixin } from 'vs/base/common/objects';
 
 class Root implements ITreeItem {
 	label = { label: 'root' };
