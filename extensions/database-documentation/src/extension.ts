@@ -111,16 +111,22 @@ export async function activate(context: vscode.ExtensionContext) {
         const document = contextVariables[3];
 
         const markdownSave = document.getText();
-        const markdownJSON = convertMarkdownToJSON(markdownSave);
-        await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
+        const markdownJSON = convertMarkdownToJSON(context, markdownSave);
 
-        vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved markdown to master database!"));
+        const didSave = await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
+
+        if (didSave) {
+            vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved documentation to database!"));
+        }
+        else {
+            vscode.window.showInformationMessage(localize('database-documentation.didNotSaveMarkdown', "There was a problem saving documentation to database. Try saving again."));
+        }
+
     }));
 
-    
     vscode.languages.registerHoverProvider('sql', {
-        provideHover(document, position) {
-           return getHoverContent(document, position);
+        async provideHover(document, position) {
+            return getHoverContent(document, position);
         }
     });
 }
