@@ -27,6 +27,8 @@ import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryError, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { Iterable } from 'vs/base/common/iterator';
+import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -39,6 +41,7 @@ export class AccountManagementService implements IAccountManagementService {
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
+	public providerMap = new Map<string, azdata.AccountProviderMetadata>();
 	protected readonly disposables = new DisposableStore();
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
@@ -59,7 +62,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@IQuickInputService private _quickInputService: IQuickInputService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
@@ -111,6 +115,34 @@ export class AccountManagementService implements IAccountManagementService {
 				});
 		});
 
+	}
+
+	public async promptProvider(): Promise<string | undefined> {
+		const vals = Iterable.consume(this.providerMap.values())[0];
+
+		let pickedValue: string | undefined;
+		if (vals.length === 0) {
+			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+		}
+		if (vals.length > 1) {
+			const buttons: IQuickPickItem[] = vals.map(v => {
+				return { label: v.displayName } as IQuickPickItem;
+			});
+
+			const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+			pickedValue = picked?.label;
+		} else {
+			pickedValue = vals[0].displayName;
+		}
+
+		const v = vals.filter(v => v.displayName === pickedValue)?.[0];
+
+		if (!v) {
+			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+			return undefined;
+		}
+		return v.id;
 	}
 
 	/**
@@ -453,6 +485,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
+		this.providerMap.set(providerMetadata.id, providerMetadata);
 		this._providers[providerMetadata.id] = {
 			metadata: providerMetadata,
 			provider: provider,
@@ -502,6 +535,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	public unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void {
+		this.providerMap.delete(providerMetadata.id);
 		const p = this._providers[providerMetadata.id];
 		this.fireAccountListUpdate(p, false);
 		// Delete this account provider

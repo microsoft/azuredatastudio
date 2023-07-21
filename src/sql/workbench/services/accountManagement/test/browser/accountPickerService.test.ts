@@ -91,20 +91,19 @@ suite('Account picker service tests', () => {
 
 function createInstantiationService(): InstantiationService {
 	// Create a mock account picker view model
-	let providerId = 'azure';
-	let accountPickerViewModel = new AccountPickerViewModel(providerId, new TestAccountManagementService());
+	let accountPickerViewModel = new AccountPickerViewModel(new TestAccountManagementService());
 	let mockAccountViewModel = TypeMoq.Mock.ofInstance(accountPickerViewModel);
 	let mockEvent = new Emitter<any>();
 	mockAccountViewModel.setup(x => x.updateAccountListEvent).returns(() => mockEvent.event);
 
 	// Create a mocked out instantiation service
 	let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
-	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountPickerViewModel), TypeMoq.It.isAny()))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountPickerViewModel)))
 		.returns(() => mockAccountViewModel.object);
 
 	// Create a mock account picker
 
-	let accountPicker = new AccountPicker('provider', new TestThemeService(), instantiationService.object, undefined!);
+	let accountPicker = new AccountPicker(new TestThemeService(), instantiationService.object, undefined!);
 	let mockAccountDialog = TypeMoq.Mock.ofInstance(accountPicker);
 
 	mockAccountDialog.setup(x => x.addAccountCompleteEvent)
@@ -121,7 +120,7 @@ function createInstantiationService(): InstantiationService {
 		.returns((container) => undefined);
 	mockAccountDialog.setup(x => x.createAccountPickerComponent());
 
-	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountPicker), TypeMoq.It.isAny()))
+	instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountPicker)))
 		.returns(() => mockAccountDialog.object);
 
 	return instantiationService.object;
