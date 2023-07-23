@@ -4,7 +4,7 @@
 [![Build Status](https://dev.azure.com/ms/azuredatastudio/_apis/build/status/AzureDataStudio-Localization-CI?branchName=main)](https://dev.azure.com/ms/azuredatastudio/_build/latest?definitionId=453&branchName=main)
 [![Twitter Follow](https://img.shields.io/twitter/follow/azuredatastudio?style=social)](https://twitter.com/azuredatastudio)
 
-Azure Data Studio is a data management and development tool with connectivity to popular cloud and on-premises databases. Azure Data Studio supports Windows, macOS, and Linux, with immediate capability to connect to Azure SQL and SQL Server.  Browse the [extension library](wiki/List-of-Extensions) for additional database support options including MySQL, PostreSQL, and MongoDB.
+Azure Data Studio is a data management and development tool with connectivity to popular cloud and on-premises databases. Azure Data Studio supports Windows, macOS, and Linux, with immediate capability to connect to Azure SQL and SQL Server.  Browse the [extension library](https://github.com/microsoft/azuredatastudio/wiki/List-of-Extensions) for additional database support options including MySQL, PostreSQL, and MongoDB.
 
 ## **Download the latest Azure Data Studio release**
 
