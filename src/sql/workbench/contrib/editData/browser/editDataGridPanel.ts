@@ -345,9 +345,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Also skip when cell updates are happening as we don't want to affect other cells while this is going on.
 		// (focus should shift back to current cell if it is set)
 		if (row === undefined || column === undefined || this.cellSubmitInProgress || this.cellRevertInProgress) {
-			if (this.currentCell) {
-				this.focusCell(this.currentCell.row, this.currentCell.column);
-			}
 			return;
 		}
 
@@ -355,7 +352,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
 		this.lastClickedCell = { row, column };
 
-		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
+		// Skip processing if the cell hasn't moved or is marked not dirty.
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
 		}
@@ -673,7 +670,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private async revertCurrentCell(): Promise<void> {
 		this.cellRevertInProgress = true;
 		this.updateEnabledState(false);
-		this.dataService.revertCell(this.currentCell.row, this.currentCell.column)
+		this.dataService.revertCell(this.currentCell.row, this.currentCell.column - 1)
 			.then(() => {
 				// Need to reset data to what it was before in order for slickgrid to recognize the change.
 				this.dataSet.dataRows = new VirtualizedCollection(
@@ -736,6 +733,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					// save the user's current input so that it can be restored after revert.
 					self.lastEnteredString = self.currentEditCellValue;
 					self.currentEditCellValue = undefined;
+					self.currentCell.isDirty = false;
 					let refreshPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
 						refreshPromise = this.revertCurrentRow();
