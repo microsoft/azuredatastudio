@@ -9,12 +9,13 @@ import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
-import { Page, SavedInfo } from '../models/stateMachine';
+//import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
 import * as utils from '../api/utils';
 import * as fs from 'fs';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { Page, SavedInfo } from '../models/stateMachine';
 
 export const EmptySettingValue = '-';
 
@@ -50,7 +51,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	protected serviceContextChangedEvent!: vscode.EventEmitter<ServiceContextChangeEvent>;
 	protected statusBar!: DashboardStatusBar;
 
-	private mementoToken: string = 'sqlmigration.databaseMigrations';
+	private mementoToken: string = 'sqlMigration.assessmentResults';
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
@@ -167,13 +168,14 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 					} catch (err) {
 						void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
 					}
+
+					const actionId = MenuCommands.StartMigration;
+					const args = {
+						extensionId: SqlMigrationExtensionId,
+						issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
+					};
+					await vscode.commands.executeCommand(actionId, args);
 				}
-				const actionId = MenuCommands.StartMigration;
-				const args = {
-					extensionId: SqlMigrationExtensionId,
-					issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
-				};
-				await vscode.commands.executeCommand(actionId, args);
 			}));
 		return importMigrationButton;
 	}
@@ -220,7 +222,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		return feedbackButton;
 	}
 
-	protected async createSavedInfo(assessmentReport: any): Promise<any> {
+	public async createSavedInfo(assessmentReport: any): Promise<any> {
 		const saveInfo: SavedInfo = {
 			closedPage: Page.ImportAssessment,
 			databaseAssessment: [],
@@ -260,32 +262,60 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		} else { //ADS assessment format import
 			const server = assessmentReport.Servers[0];
 			saveInfo.serverAssessment = {
-				issues: server.ServerAssessments.map((assessment: any) => {
+				issues: server.ServerAssessments.map((a: any) => {
 					return {
 						rulesetVersion: "",
 						rulesetName: "",
-						ruleId: assessment.RuleMetadata.Id,
-						targetType: assessment.AppliesToMigrationTargetPlatform,
-						checkId: "",
-						tags: assessment.RuleMetadata.Tags,
-						displayName: assessment.RuleMetadata.Id,
-						description: assessment.RuleMetadata.Description,
-						helpLink: assessment.RuleMetadata.HelpLink,
-						level: assessment.RuleMetadata.Level,
-						timestamp: assessment.Timestamp,
-						kind: assessment.IssueCategory,
-						message: assessment.RuleMetadata.Message,
-						appliesToMigrationTargetPlatform: assessment.AppliesToMigrationTargetPlatform,
-						issueCategory: assessment.IssueCategory,
-						databaseName: assessment.DatabaseName,
-						impactedObjects: assessment.ImpactedObjects,
-						databaseRestoreFails: assessment.DatabaseRestoreFails,
+						ruleId: "",
+						targetType: a.AppliesToMigrationTargetPlatform,
+						checkId: a.RuleMetadata.Id,
+						tags: a.RuleMetadata.Tags,
+						displayName: a.RuleMetadata.Id,
+						description: a.RuleMetadata.Description,
+						helpLink: a.RuleMetadata.HelpLink,
+						level: a.RuleMetadata.Level,
+						timestamp: a.Timestamp,
+						kind: a.IssueCategory,
+						message: a.RuleMetadata.Message,
+						appliesToMigrationTargetPlatform: a.AppliesToMigrationTargetPlatform,
+						issueCategory: a.IssueCategory,
+						databaseName: a.DatabaseName,
+						impactedObjects: a.ImpactedObjects,
+						databaseRestoreFails: a.DatabaseRestoreFails,
 					}
 				}) ?? [], // server issues
 				databaseAssessments: server.Databases.map((d: any) => {
 					return {
 						name: d.Properties.Name,
-						issues: d.DatabaseAssessments,
+						issues: d.DatabaseAssessments.map((a: any) => {
+							return {
+								rulesetVersion: "",
+								rulesetName: "",
+								ruleId: "",
+								targetType: a.AppliesToMigrationTargetPlatform,
+								checkId: a.RuleMetadata.Id,
+								tags: a.RuleMetadata.Tags,
+								displayName: a.RuleMetadata.Id,
+								description: a.RuleMetadata.Description,
+								helpLink: a.RuleMetadata.HelpLink,
+								level: a.RuleMetadata.Level,
+								timestamp: a.Timestamp,
+								kind: a.IssueCategory,
+								message: a.RuleMetadata.Message,
+								appliesToMigrationTargetPlatform: a.AppliesToMigrationTargetPlatform,
+								issueCategory: a.IssueCategory,
+								databaseName: a.DatabaseName,
+								impactedObjects: a.ImpactedObjects.map((io: any) => {
+									return {
+										name: io.Name,
+										objectType: io.ObjectType,
+										impactDetail: io.ImpactDetail,
+										databaseObjectType: io.DatabaseObjectType,
+									}
+								}),
+								databaseRestoreFails: a.DatabaseRestoreFails,
+							}
+						}),
 						errors: d.Errors || [],
 					}
 				}) ?? [], //database issues
