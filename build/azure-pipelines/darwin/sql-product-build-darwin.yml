@@ -222,12 +222,6 @@ steps:
     displayName: 'Publish Artifact: drop'
     condition: always()
 
-  - script: |
-      set -e
-      ls -lahR $(agent.builddirectory)
-    displayName: List all files in $(agent.buildDirectory)
-    condition: always()
-
   - task: PublishPipelineArtifact@0
     inputs:
       targetPath: .build/logs
