@@ -770,7 +770,27 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 				}
 			},
 
-			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle }),
+			getActionsContext: () => {
+				// This context is used in two ways - one is for the original Data Explorer tree view that extensions can register. Items
+				// for the tree view itself don't have a childProvider so are routed directly to the extension. In this case we want to have
+				// the actions behave like VS Code expects them to behave - so we don't pass in a $treeItem at all so it gets handled by the
+				// VS Code logic here :
+				// https://github.com/microsoft/azuredatastudio/blob/f5bed289affca2fce04fee6dd2db3ce02a8f5c83/src/vs/workbench/api/common/extHostTreeViews.ts#L65
+
+				// The other is for the "childProvider" nodes - which come from a registered provider directly. These currently expect that
+				// the node (with its payload) is passed, which gets handled by processors such as https://github.com/microsoft/azuredatastudio/blob/f5bed289affca2fce04fee6dd2db3ce02a8f5c83/src/sql/workbench/api/common/extHostObjectExplorer.ts#L27
+
+				// This should be a temporary fix until further investigation can be done and a fix to the core data explorer logic can be made
+				// (which will likely involve that logic using the treeItemHandle to look up the treeItem itself like VS Code seems to be doing)
+
+				// Have to remove parent, this was added in a VS Code merge to ITreeItem instances, but isn't meant to be serializable over JSON RPC,
+				// so passing it directly will cause the command to fail as there's a loop (child -> parent -> child -> parent ...)
+				// Note: Do NOT make a new object here - the core tree logic expects the tree items to stay as the same object so returning a
+				// different object here will break functionality such as scripting.
+				delete node.parent;
+				const treeItem = node.childProvider ? node : undefined;
+				return (<TreeViewItemHandleArg>{ $treeViewId: this.id, $treeItemHandle: node.handle, $treeItem: treeItem })
+			},
 
 			actionRunner
 		});
