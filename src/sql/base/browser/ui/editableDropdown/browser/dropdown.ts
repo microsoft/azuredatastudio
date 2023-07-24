@@ -324,17 +324,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		const selectedIndex = this._dataSource.filteredValues.indexOf(this.value);
 		this._selectList.setSelection(selectedIndex !== -1 ? [selectedIndex] : []);
 
-		let width = this._inputContainer.clientWidth;
-
-		// Find the longest option in the list and set our width to that (max 500px)
-		const longestOption = this._dataSource.filteredValues.reduce((previous, current) => {
-			return previous.length > current.length ? previous : current;
-		}, '');
-		this._widthControlElement.innerText = longestOption;
-
 		const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
 		const longestOptionWidth = DOM.getTotalWidth(this._widthControlElement);
-		width = clamp(longestOptionWidth, inputContainerWidth, 500);
+		let width = clamp(longestOptionWidth, inputContainerWidth, 500);
 
 		const height = Math.min(this._dataSource.filteredValues.length * this.getHeight(), this._options.maxHeight ?? 500);
 		this._selectListContainer.style.width = `${width}px`;
@@ -346,6 +338,13 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		if (vals) {
 			this._dataSource.filter = undefined;
 			this._dataSource.values = vals;
+
+			// Find the longest option in the list to set the width of the dropdown
+			let longestOption = this._dataSource.values.reduce((previous, current) => {
+				return previous.length > current.length ? previous : current;
+			}, '');
+			this._widthControlElement.innerText = longestOption;
+
 			if (this._isDropDownVisible) {
 				this._updateDropDownList();
 			}
