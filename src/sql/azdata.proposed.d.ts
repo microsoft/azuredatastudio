@@ -1841,10 +1841,6 @@ declare module 'azdata' {
 		 * Whether or not an option in the list must be selected or a "new" option can be set. Only applicable when 'editable' is true. Default false.
 		 */
 		strictSelection?: boolean;
-		/**
-		 * Whether to validate the text input every time it changes. Only applicable when 'editable' is true. Default false.
-		 */
-		validateOnTextChange?: boolean;
 	}
 
 	export interface NodeInfo {

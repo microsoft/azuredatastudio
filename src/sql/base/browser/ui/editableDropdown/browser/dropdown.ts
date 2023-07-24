@@ -53,10 +53,6 @@ export interface IDropdownOptions extends Partial<IEditableDropdownStyles> {
 	 * Value to use as aria-description for the input box
 	 */
 	ariaDescription?: string;
-	/**
-	 * Whether to validate the text input every time it changes.
-	 */
-	validateOnTextChange?: boolean;
 }
 
 export interface IEditableDropdownStyles extends IInputBoxStyles, IListStyles {
@@ -321,9 +317,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this.contextViewService.hideContextView();
 		this._inputContainer.setAttribute('aria-expanded', 'false');
 		// Show error for input box in case the user closed the dropdown without selecting anything, like by hitting Escape
-		if (this._options.validateOnTextChange) {
-			this.input.validate();
-		}
+		this.input.validate();
 	}
 
 	private _updateDropDownList(): void {
@@ -429,9 +423,5 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	public set strictSelection(val: boolean | undefined) {
 		this._options.strictSelection = val;
-	}
-
-	public set validateOnTextChange(val: boolean | undefined) {
-		this._options.validateOnTextChange = val;
 	}
 }

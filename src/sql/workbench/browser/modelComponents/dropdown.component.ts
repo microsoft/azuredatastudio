@@ -82,7 +82,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
 				strictSelection: this.strictSelection ?? false,
-				validateOnTextChange: this.validateOnTextChange ?? false,
 				placeholder: this.placeholder,
 				maxHeight: 125,
 				ariaLabel: '',
@@ -180,7 +179,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
 			this._editableDropdown.strictSelection = this.strictSelection;
-			this._editableDropdown.validateOnTextChange = this.validateOnTextChange;
 			if (this.placeholder) {
 				this._editableDropdown.input.setPlaceHolder(this.placeholder);
 			}
@@ -345,10 +343,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public get strictSelection(): boolean | undefined {
 		return this.getPropertyOrDefault<boolean | undefined>((props) => props.strictSelection, undefined);
-	}
-
-	public get validateOnTextChange(): boolean | undefined {
-		return this.getPropertyOrDefault<boolean | undefined>((props) => props.validateOnTextChange, undefined);
 	}
 
 	public get validationErrorMessages(): string[] | undefined {
