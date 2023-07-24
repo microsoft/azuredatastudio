@@ -111,9 +111,6 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 			}));
 
 			this._register(this.backButton);
-
-			// {{SQL CARBON TODO}} - style
-			//this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 		}
 
 		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.url-table-content'));

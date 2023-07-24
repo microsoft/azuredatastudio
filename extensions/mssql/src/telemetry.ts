@@ -83,7 +83,8 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 }
 
 export enum TelemetryViews {
-	MssqlObjectExplorer = 'mssqlObjectExplorer'
+	MssqlObjectExplorer = 'mssqlObjectExplorer',
+	MssqlConnections = 'mssqlConnections'
 }
 
 export enum TelemetryActions {
@@ -93,4 +94,7 @@ export enum TelemetryActions {
 	DisableGroupBySchemaContextMenu = 'objectExplorerDisableGroupBySchemaContextMenu',
 	EnableGroupByServerViewTitleAction = 'objectExplorerEnableGroupByServerViewTitleAction',
 	DisableGroupByServerViewTitleAction = 'objectExplorerDisableGroupByServerViewTitleAction',
+	EnableFeatureAsyncParallelProcessing = 'enableFeatureAsyncParallelProcessing',
+	EnableFeatureSqlAuthenticationProvider = 'enableFeatureSqlAuthenticationProvider',
+	EnableFeatureConnectionPooling = 'enableFeatureConnectionPooling',
 }

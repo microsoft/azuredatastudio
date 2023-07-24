@@ -15,7 +15,7 @@ import * as uiLoc from '../ui/localizedConstants';
 import { UserDialog } from './ui/userDialog';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import * as constants from '../constants';
-import { refreshParentNode } from './utils';
+import { refreshParentNode, escapeSingleQuotes } from './utils';
 import { TelemetryReporter } from '../telemetry';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './ui/objectManagementDialogBase';
 import { ServerRoleDialog } from './ui/serverRoleDialog';
@@ -30,6 +30,9 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	// Notes: Change the second parameter to false to use the actual object management service.
 	const service = getObjectManagementService(appContext, false);
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newObject', async (context: azdata.ObjectExplorerContext) => {
+		await handleNewObjectDialogCommand(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleNewObjectDialogCommand(context, service);
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
@@ -82,8 +85,21 @@ async function handleNewObjectDialogCommand(context: azdata.ObjectExplorerContex
 		case FolderType.Databases:
 			objectType = ObjectManagement.NodeType.Database;
 			break;
-		default:
-			throw new Error(`Unsupported folder type: ${context.nodeInfo!.objectType}`);
+	}
+	// Fall back to node type in case the user right clicked on an object instead of a folder
+	if (!objectType) {
+		switch (context.nodeInfo!.nodeType) {
+			case ObjectManagement.NodeType.ApplicationRole:
+			case ObjectManagement.NodeType.DatabaseRole:
+			case ObjectManagement.NodeType.ServerLevelLogin:
+			case ObjectManagement.NodeType.ServerLevelServerRole:
+			case ObjectManagement.NodeType.User:
+			case ObjectManagement.NodeType.Database:
+				objectType = context.nodeInfo!.nodeType as ObjectManagement.NodeType;
+				break;
+			default:
+				throw new Error(objectManagementLoc.NoDialogFoundError(context.nodeInfo!.nodeType, context.nodeInfo!.objectType));
+		}
 	}
 
 	try {
@@ -115,10 +131,10 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 		return;
 	}
 	try {
-		const parentUrn = context.nodeInfo ? await getParentUrn(context) : undefined;
+		const parentUrn = context.isConnectionNode ? undefined : await getParentUrn(context);
 		const objectType = context.nodeInfo ? context.nodeInfo.nodeType as ObjectManagement.NodeType : (context.connectionProfile.databaseName === '' ? ObjectManagement.NodeType.Server : ObjectManagement.NodeType.Database);
-		const objectName = context.nodeInfo ? context.nodeInfo.label : objectManagementLoc.PropertiesHeader;
-		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : undefined;
+		const objectName = context.nodeInfo ? context.nodeInfo.label : (!context.connectionProfile.databaseName ? context.connectionProfile.serverName : context.connectionProfile.databaseName);
+		const objectUrn = context.nodeInfo ? context.nodeInfo!.metadata!.urn : (context.connectionProfile.databaseName === '' ? 'Server' : `Server/Database[@Name='${escapeSingleQuotes(context.connectionProfile.databaseName)}']`);
 
 		const options: ObjectManagementDialogOptions = {
 			connectionUri: connectionUri,

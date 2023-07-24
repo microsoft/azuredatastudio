@@ -102,7 +102,7 @@ jobs:
           sudo update-rc.d xvfb defaults
           sudo service xvfb start
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       # {{SQL CARBON EDIT}} Skip caching for now
@@ -152,7 +152,7 @@ jobs:
       - name: Combine code coverage files
         run: node test/combineCoverage
       - name: Upload Code Coverage
-        uses: coverallsapp/github-action@v2.2.0
+        uses: coverallsapp/github-action@v2.2.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: "test/coverage/lcov.info"
@@ -175,7 +175,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 

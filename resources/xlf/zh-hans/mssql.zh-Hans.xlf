@@ -106,6 +106,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">database</source>
         <target state="translated">数据库</target>
       </trans-unit>
+      <trans-unit id="objectManagement.DatabaseDisplayNameInTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
       <trans-unit id="objectManagement.DatabaseRoleTypeDisplayName">
         <source xml:lang="en">database role</source>
         <target state="translated">数据库角色</target>
@@ -122,9 +126,33 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Login</source>
         <target state="translated">登录</target>
       </trans-unit>
-      <trans-unit id="objectManagement.OkText">
-        <source xml:lang="en">OK</source>
-        <target state="translated">确定</target>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfSchema">
+        <source xml:lang="en">All objects belonging to a schema</source>
+        <target state="translated">属于架构的所有对象</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_AllObjectsOfTypes">
+        <source xml:lang="en">All objects of certain types</source>
+        <target state="translated">特定类型的所有对象</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SelectSchemaDropdownLabel">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">架构</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_SpecificObjects">
+        <source xml:lang="en">Specific objects…</source>
+        <target state="translated">特定对象...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ObjectSelectionMethodDialog_TypeLabel">
+        <source xml:lang="en">How do you want to add objects?</source>
+        <target state="translated">你希望如何添加对象?</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.SearchTextLabel">
+        <source xml:lang="en">Search Text</source>
+        <target state="translated">搜索文本</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.ServerDisplayName">
+        <source xml:lang="en">Server</source>
+        <target state="translated">服务器</target>
       </trans-unit>
       <trans-unit id="objectManagement.ServerRoleTypeDisplayName">
         <source xml:lang="en">server role</source>
@@ -150,17 +178,25 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">view</source>
         <target state="translated">视图</target>
       </trans-unit>
-      <trans-unit id="objectManagement.addMemberText">
-        <source xml:lang="en">Add a member</source>
+      <trans-unit id="objectManagement.addMembersText">
+        <source xml:lang="en">Add members</source>
         <target state="translated">添加成员</target>
       </trans-unit>
-      <trans-unit id="objectManagement.addText">
-        <source xml:lang="en">Add…</source>
-        <target state="translated">添加...</target>
+      <trans-unit id="objectManagement.addSecurablesText">
+        <source xml:lang="en">Add securables</source>
+        <target state="translated">添加安全对象</target>
       </trans-unit>
       <trans-unit id="objectManagement.advancedSectionHeader">
         <source xml:lang="en">Advanced</source>
         <target state="translated">高级</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.azurePricingLink">
+        <source xml:lang="en">Azure SQL Database pricing calculator</source>
+        <target state="translated">Azure SQL 数据库定价计算器</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.backupRedundancyLabel">
+        <source xml:lang="en">Backup Storage Redundancy</source>
+        <target state="translated">备份存储冗余</target>
       </trans-unit>
       <trans-unit id="objectManagement.blankPasswordConfirmation">
         <source xml:lang="en">Creating a login with a blank password is a security risk.  Are you sure you want to continue?</source>
@@ -174,14 +210,86 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Browse…</source>
         <target state="translated">浏览...</target>
       </trans-unit>
+      <trans-unit id="objectManagement.collationLabel">
+        <source xml:lang="en">Collation</source>
+        <target state="translated">排序规则</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.compatibilityLevelLabel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">兼容级别</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.configureSLOSectionHeader">
+        <source xml:lang="en">Configure SLO</source>
+        <target state="translated">配置 SLO</target>
+      </trans-unit>
       <trans-unit id="objectManagement.confirmPasswordLabel">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">确认密码</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.containmentTypeLabel">
+        <source xml:lang="en">Containment Type</source>
+        <target state="translated">包含类型</target>
       </trans-unit>
       <trans-unit id="objectManagement.createObjectOperationName">
         <source xml:lang="en">Create {0}</source>
         <note>{0} object type</note>
         <target state="translated">创建 {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.currentSLOLabel">
+        <source xml:lang="en">Current Service Level Objective</source>
+        <target state="translated">当前服务级别目标</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseExistsError">
+        <source xml:lang="en">Database '{0}' already exists. Choose a different database name.</source>
+        <target state="translated">数据库 '{0}' 已存在。请选择其他数据库名称。</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.backupSectionHeader">
+        <source xml:lang="en">Backup</source>
+        <target state="translated">备份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.databaseSectionHeader">
+        <source xml:lang="en">Database</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.dateCreated">
+        <source xml:lang="en">Date Created</source>
+        <target state="translated">创建日期</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.mbUnitText">
+        <source xml:lang="en">{0} MB</source>
+        <target state="translated">{0} MB</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.memoryAllocated">
+        <source xml:lang="en">Memory Allocated To Memory Optimized Objects</source>
+        <target state="translated">分配给内存优化对象的内存</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.memoryUsed">
+        <source xml:lang="en">Memory Used By Memory Optimized Objects</source>
+        <target state="translated">内存优化对象使用的内存</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.numberOfUsers">
+        <source xml:lang="en">Number of Users</source>
+        <target state="translated">用户数</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">所有者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.size">
+        <source xml:lang="en">Size</source>
+        <target state="translated">大小</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.spaceAvailable">
+        <source xml:lang="en">Space Available</source>
+        <target state="translated">可用空间</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.databaseProperties.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状态</target>
       </trans-unit>
       <trans-unit id="objectManagement.databaseRole.SelectMemberDialogTitle">
         <source xml:lang="en">Select Database Role Members</source>
@@ -210,12 +318,36 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">删除 {0} "{1}"</target>
       </trans-unit>
+      <trans-unit id="objectManagement.denyColumnHeader">
+        <source xml:lang="en">Deny</source>
+        <target state="translated">拒绝</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.editionLabel">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.effectivePermissionsTableLabel">
+        <source xml:lang="en">Effective permissions for selected securable</source>
+        <target state="translated">所选安全对象的有效权限</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.effectivePermissionsTableLabelSelected">
+        <source xml:lang="en">Effective permissions for: {0}</source>
+        <target state="translated">有效权限: {0}</target>
+      </trans-unit>
       <trans-unit id="objectManagement.enabledLabel">
         <source xml:lang="en">Enabled</source>
         <target state="translated">已启用</target>
       </trans-unit>
-      <trans-unit id="objectManagement.filterText">
-        <source xml:lang="en">Filter</source>
+      <trans-unit id="objectManagement.explicitPermissionsTableLabel">
+        <source xml:lang="en">Explicit permissions for selected securable</source>
+        <target state="translated">所选安全对象的显式权限</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.explicitPermissionsTableLabelSelected">
+        <source xml:lang="en">Explicit permissions for: {0}</source>
+        <target state="translated">显式权限: {0}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.filterSectionTitle">
+        <source xml:lang="en">Filters</source>
         <target state="translated">筛选器</target>
       </trans-unit>
       <trans-unit id="objectManagement.findText">
@@ -226,17 +358,49 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">General</source>
         <target state="translated">常规</target>
       </trans-unit>
-      <trans-unit id="objectManagement.helpText">
-        <source xml:lang="en">Help</source>
-        <target state="translated">帮助</target>
+      <trans-unit id="objectManagement.grantColumnHeader">
+        <source xml:lang="en">Grant</source>
+        <target state="translated">授予</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.grantorColumnHeader">
+        <source xml:lang="en">Grantor</source>
+        <target state="translated">授权者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.hardwareGeneration">
+        <source xml:lang="en">Hardware Generation</source>
+        <target state="translated">硬件生成</target>
       </trans-unit>
       <trans-unit id="objectManagement.invalidPasswordError">
         <source xml:lang="en">Password doesn't meet the complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
         <target state="translated">密码不符合复杂性要求。有关详细信息，请访问: https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
       </trans-unit>
-      <trans-unit id="objectManagement.loadingDialog">
-        <source xml:lang="en">Loading dialog...</source>
-        <target state="translated">正在加载对话框...</target>
+      <trans-unit id="objectManagement.isClustered">
+        <source xml:lang="en">Is Clustered</source>
+        <target state="translated">是否群集化</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.isHadrEnabled">
+        <source xml:lang="en">Is HADR Enabled</source>
+        <target state="translated">是否启用 HADR</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.isPolyBaseInstalled">
+        <source xml:lang="en">Is PolyBase Installed</source>
+        <target state="translated">已安装 PolyBase</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.isXTPSupported">
+        <source xml:lang="en">Is XTP Supported</source>
+        <target state="translated">是否支持 XTP</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.language">
+        <source xml:lang="en">Language</source>
+        <target state="translated">语言</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.lastDatabaseBackup">
+        <source xml:lang="en">Last Database Backup</source>
+        <target state="translated">上次数据库备份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.lastDatabaseLogBackup">
+        <source xml:lang="en">Last Database Log Backup</source>
+        <target state="translated">数据库日志上次备份时间</target>
       </trans-unit>
       <trans-unit id="objectManagement.loadingObjectsCompletedLabel">
         <source xml:lang="en">Loading objects completed, {0} objects found</source>
@@ -314,6 +478,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Login is not selected.</source>
         <target state="translated">未选择登录名。</target>
       </trans-unit>
+      <trans-unit id="objectManagement.maxServerMemoryText">
+        <source xml:lang="en">Maximum Server Memory (MB)</source>
+        <target state="translated">最大服务器内存(MB)</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.maxSizeLabel">
+        <source xml:lang="en">Max Size</source>
+        <target state="translated">最大大小</target>
+      </trans-unit>
       <trans-unit id="objectManagement.membersLabel">
         <source xml:lang="en">Members</source>
         <target state="translated">成员</target>
@@ -321,6 +493,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.membershipLabel">
         <source xml:lang="en">Membership</source>
         <target state="translated">成员身份</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.memory">
+        <source xml:lang="en">Memory</source>
+        <target state="translated">内存</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.minServerMemoryText">
+        <source xml:lang="en">Minimum Server Memory (MB)</source>
+        <target state="translated">最小服务器内存(MB)</target>
       </trans-unit>
       <trans-unit id="objectManagement.nameCannotBeEmptyError">
         <source xml:lang="en">Name cannot be empty.</source>
@@ -335,10 +515,6 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type.</note>
         <target state="translated">{0}–新建(预览)</target>
       </trans-unit>
-      <trans-unit id="objectManagement.noActionScriptedMessage">
-        <source xml:lang="en">There is no action to be scripted.</source>
-        <target state="translated">没有要编写脚本的操作。</target>
-      </trans-unit>
       <trans-unit id="objectManagement.noConnectionUriError">
         <source xml:lang="en">Failed to retrieve the connection information, please reconnect and try again.</source>
         <target state="translated">无法检索连接信息，请重新连接，然后重试。</target>
@@ -348,8 +524,16 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: object name.</note>
         <target state="translated">{0} - {1} (预览)</target>
       </trans-unit>
+      <trans-unit id="objectManagement.objectSelectionMethodDialogTitle">
+        <source xml:lang="en">Add Objects</source>
+        <target state="translated">添加对象</target>
+      </trans-unit>
       <trans-unit id="objectManagement.objectTypeLabel">
         <source xml:lang="en">Object Type</source>
+        <target state="translated">对象类型</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.objectTypesLabel">
+        <source xml:lang="en">Object Types</source>
         <target state="translated">对象类型</target>
       </trans-unit>
       <trans-unit id="objectManagement.objectsLabel">
@@ -365,6 +549,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">An error occurred while opening the properties dialog for {0}: {1}. {2}</source>
         <note>{0} object type, {1}: object name, {2}: error message.</note>
         <target state="translated">打开 {0}: {1} 的属性对话框时出错。{2}</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.operatingSystem">
+        <source xml:lang="en">Operating System</source>
+        <target state="translated">操作系统</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.optionsSectionHeader">
+        <source xml:lang="en">Options</source>
+        <target state="translated">选项</target>
       </trans-unit>
       <trans-unit id="objectManagement.ownerText">
         <source xml:lang="en">Owner</source>
@@ -382,8 +574,32 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Password must match the confirm password.</source>
         <target state="translated">密码必须与确认密码匹配。</target>
       </trans-unit>
+      <trans-unit id="objectManagement.permissionColumnHeader">
+        <source xml:lang="en">Permission</source>
+        <target state="translated">权限</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.platform">
+        <source xml:lang="en">Platform</source>
+        <target state="translated">平台</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.processors">
+        <source xml:lang="en">Processors</source>
+        <target state="translated">处理器</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.product">
+        <source xml:lang="en">Product</source>
+        <target state="translated">产品</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">属性</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.recoveryModelLabel">
+        <source xml:lang="en">Recovery Model</source>
+        <target state="translated">恢复模式</target>
+      </trans-unit>
       <trans-unit id="objectManagement.refreshOEError">
-        <source xml:lang="en">An error occurred while while refreshing the object explorer. {0}</source>
+        <source xml:lang="en">An error occurred while refreshing the object explorer. {0}</source>
         <note>{0}: error message.</note>
         <target state="translated">刷新对象资源管理器时出错。{0}</target>
       </trans-unit>
@@ -391,9 +607,9 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Remove selected member</source>
         <target state="translated">删除所选成员</target>
       </trans-unit>
-      <trans-unit id="objectManagement.removeText">
-        <source xml:lang="en">Remove</source>
-        <target state="translated">删除</target>
+      <trans-unit id="objectManagement.removeSecurablesText">
+        <source xml:lang="en">Remove selected securable</source>
+        <target state="translated">删除所选安全对象</target>
       </trans-unit>
       <trans-unit id="objectManagement.renameObjectDialogTitle">
         <source xml:lang="en">Enter new name</source>
@@ -409,29 +625,33 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <note>{0} object type, {1}: original name, {2}: new name</note>
         <target state="translated">将 {0} "{1}" 重命名为 "{2}"</target>
       </trans-unit>
+      <trans-unit id="objectManagement.reservedStorageSizeInMB">
+        <source xml:lang="en">Reserved Storage Size</source>
+        <target state="translated">预留的存储大小</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.rootDirectory">
+        <source xml:lang="en">Root Directory</source>
+        <target state="translated">根目录</target>
+      </trans-unit>
       <trans-unit id="objectManagement.schemaLabel">
         <source xml:lang="en">Schema</source>
         <target state="translated">架构</target>
       </trans-unit>
-      <trans-unit id="objectManagement.scriptError">
-        <source xml:lang="en">An error occurred while generating script. {0}</source>
-        <target state="translated">生成脚本时出错。{0}</target>
+      <trans-unit id="objectManagement.securablesText">
+        <source xml:lang="en">Securables</source>
+        <target state="translated">安全对象</target>
       </trans-unit>
-      <trans-unit id="objectManagement.scriptGenerated">
-        <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
-        <target state="translated">已成功生成脚本。可以关闭对话框以在新打开的编辑器中查看。</target>
-      </trans-unit>
-      <trans-unit id="objectManagement.scriptText">
-        <source xml:lang="en">Script</source>
-        <target state="translated">脚本</target>
+      <trans-unit id="objectManagement.selectSecurablesDialogTitle">
+        <source xml:lang="en">Select Securables</source>
+        <target state="translated">选择安全对象</target>
       </trans-unit>
       <trans-unit id="objectManagement.selectText">
         <source xml:lang="en">Select</source>
         <target state="translated">选择</target>
       </trans-unit>
-      <trans-unit id="objectManagement.selectedLabel">
-        <source xml:lang="en">Selected</source>
-        <target state="translated">已选择</target>
+      <trans-unit id="objectManagement.serverCollation">
+        <source xml:lang="en">Server Collation</source>
+        <target state="translated">服务器排序规则</target>
       </trans-unit>
       <trans-unit id="objectManagement.serverRole.SelectMemberDialogTitle">
         <source xml:lang="en">Select Server Role Members</source>
@@ -440,6 +660,14 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="objectManagement.serverRole.SelectOwnerDialogTitle">
         <source xml:lang="en">Select Server Role Owner</source>
         <target state="translated">选择服务器角色所有者</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.serviceTier">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">服务层</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.storageSpaceUsageInGB">
+        <source xml:lang="en">Storage Space Usage</source>
+        <target state="translated">存储空间使用情况</target>
       </trans-unit>
       <trans-unit id="objectManagement.updateObjectOperationName">
         <source xml:lang="en">Update {0} '{1}'</source>
@@ -482,9 +710,13 @@ Note: A self-signed certificate offers only limited protection and is not a reco
         <source xml:lang="en">Mapped to a Windows user/group</source>
         <target state="translated">映射到 Windows 用户/组</target>
       </trans-unit>
-      <trans-unit id="objectManagement.yesText">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
+      <trans-unit id="objectManagement.versionText">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.withGrantColumnHeader">
+        <source xml:lang="en">With Grant</source>
+        <target state="translated">具有授予权限</target>
       </trans-unit>
     </body>
   </file>
@@ -569,6 +801,62 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="viewKnownIssuesText">
         <source xml:lang="en">View Known Issues</source>
         <target state="translated">查看已知问题</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/ui/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="mssql.ui.OkText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">确定</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.generatingScript">
+        <source xml:lang="en">Generating script...</source>
+        <target state="translated">正在生成脚本...</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.generatingScriptCompleted">
+        <source xml:lang="en">Script generated</source>
+        <target state="translated">生成的脚本</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.helpText">
+        <source xml:lang="en">Help</source>
+        <target state="translated">帮助</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.loadingDialog">
+        <source xml:lang="en">Loading dialog...</source>
+        <target state="translated">正在加载对话框...</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.noActionScriptedMessage">
+        <source xml:lang="en">There is no action to be scripted.</source>
+        <target state="translated">没有要编写脚本的操作。</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.scriptError">
+        <source xml:lang="en">An error occurred while generating the script. {0}</source>
+        <target state="translated">生成脚本时出错。{0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.scriptGenerated">
+        <source xml:lang="en">Script has been generated successfully. You can close the dialog to view it in the newly opened editor.</source>
+        <target state="translated">已成功生成脚本。可以关闭对话框以在新打开的编辑器中查看。</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.scriptText">
+        <source xml:lang="en">Script</source>
+        <target state="translated">脚本</target>
+      </trans-unit>
+      <trans-unit id="mssql.ui.yesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.addText">
+        <source xml:lang="en">Add…</source>
+        <target state="translated">添加...</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.removeText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">删除</target>
+      </trans-unit>
+      <trans-unit id="objectManagement.selectLabel">
+        <source xml:lang="en">Select</source>
+        <target state="translated">选择</target>
       </trans-unit>
     </body>
   </file>
@@ -1233,6 +1521,10 @@ Note: A self-signed certificate offers only limited protection and is not a reco
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
         <target state="translated">启用 SET XACT_ABORT ON 选项</target>
+      </trans-unit>
+      <trans-unit id="mssql.tableDesigner.allowDisableAndReenableDdlTriggers">
+        <source xml:lang="en">Whether to allow table designer to disable and re-enable DDL triggers during publish</source>
+        <target state="translated">是否允许表设计器在发布期间禁用和重新启用 DDL 触发器</target>
       </trans-unit>
       <trans-unit id="mssql.tableDesigner.preloadDatabaseModel">
         <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>

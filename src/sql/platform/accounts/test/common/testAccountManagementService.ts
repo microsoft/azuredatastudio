@@ -35,8 +35,8 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return undefined;
 	}
 
-	async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void> {
-		return;
+	async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<boolean> {
+		return true;
 	}
 
 	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]> {
@@ -57,6 +57,10 @@ export class TestAccountManagementService implements IAccountManagementService {
 
 	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken> {
 		return Promise.resolve(undefined!);
+	}
+
+	promptProvider() {
+		return Promise.resolve('');
 	}
 
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean> {

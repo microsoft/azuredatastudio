@@ -20,10 +20,9 @@ const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
+const enableConnectionPoolingConfig = 'enableConnectionPooling';
 const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
-const azureExtensionConfigName = 'azure';
-const azureAuthenticationLibraryConfig = 'authenticationLibrary';
 /**
  *
  * @returns Whether the current OS is linux or not
@@ -65,16 +64,6 @@ export function removeOldLogFiles(logPath: string, prefix: string): JSON {
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(config);
-}
-/**
- * We need Azure core extension configuration for fetching Authentication Library setting in use.
- * This is required for 'enableSqlAuthenticationProvider' to be enabled (as it applies to MSAL only).
- * This can be removed in future when ADAL support is dropped.
- * @param config Azure core extension configuration section name
- * @returns Azure core extension config section
- */
-export function getAzureCoreExtConfiguration(config: string = azureExtensionConfigName): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(config);
 }
 
@@ -143,6 +132,10 @@ export function setConfigPreloadDatabaseModel(enable: boolean): void {
 	}
 }
 
+/**
+ * Retrieves configuration `mssql:parallelMessageProcessing` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
 export function getParallelMessageProcessingConfig(): boolean {
 	const config = getConfiguration();
 	if (!config) {
@@ -152,16 +145,10 @@ export function getParallelMessageProcessingConfig(): boolean {
 	return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
-export function getAzureAuthenticationLibraryConfig(): string {
-	const config = getAzureCoreExtConfiguration();
-	if (config) {
-		return config.get<string>(azureAuthenticationLibraryConfig, 'MSAL'); // default Auth library
-	}
-	else {
-		return 'MSAL';
-	}
-}
-
+/**
+ * Retrieves configuration `mssql:enableSqlAuthenticationProvider` from settings file.
+ * @returns true if setting is enabled in ADS, false otherwise.
+ */
 export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	const config = getConfiguration();
 	if (config) {
@@ -169,6 +156,21 @@ export function getEnableSqlAuthenticationProviderConfig(): boolean {
 	}
 	else {
 		return true;
+	}
+}
+
+/**
+ * Retrieves configuration `mssql:enableConnectionPooling` from settings file.
+ * @returns true if setting is enabled in ADS or running ADS in dev mode.
+ */
+export function getEnableConnectionPoolingConfig(): boolean {
+	const config = getConfiguration();
+	if (config) {
+		const setting = config.inspect(enableConnectionPoolingConfig);
+		return (azdata.env.quality === azdata.env.AppQuality.dev && setting?.globalValue === undefined && setting?.workspaceValue === undefined) ? true : config[enableConnectionPoolingConfig];
+	}
+	else {
+		return true; // enabled by default
 	}
 }
 

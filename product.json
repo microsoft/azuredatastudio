@@ -32,7 +32,7 @@
 	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new",
 	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
 	"privacyStatementUrl": "https://privacy.microsoft.com/privacystatement",
-	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
+	"telemetryOptOutUrl": "https://go.microsoft.com/fwlink/?linkid=2241254",
 	"urlProtocol": "azuredatastudio-oss",
 	"enableTelemetry": false,
 	"webviewContentExternalBaseUrlTemplate": "https://{{uuid}}.vscode-cdn.net/insider/3c8520fab514b9f56070214496b26ff68d1b1cb5/out/vs/workbench/contrib/webview/browser/pre/",
@@ -92,11 +92,16 @@
 	],
 	"extensionEnabledApiProposals": {
 		"GitHub.copilot": [
-			"inlineCompletionsAdditions",
-			"terminalDataWriteEvent"
+			"inlineCompletionsAdditions"
 		],
 		"GitHub.copilot-nightly": [
-			"inlineCompletionsAdditions",
+			"inlineCompletionsAdditions"
+		],
+		"GitHub.copilot-chat": [
+			"handleIssueUri",
+			"interactive",
+			"interactiveUserActions",
+			"semanticSimilarity",
 			"terminalDataWriteEvent"
 		]
 	},

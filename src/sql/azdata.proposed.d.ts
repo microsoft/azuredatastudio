@@ -508,15 +508,6 @@ declare module 'azdata' {
 		 * @returns The new password that is returned from the operation or undefined if unsuccessful.
 		 */
 		export function openChangePasswordDialog(profile: IConnectionProfile): Thenable<string | undefined>;
-
-		/**
-		 * Gets the formatted title of the connection profile for display
-		 * @param profile The connection profile we want to get the full display info for.
-		 * @param getOptionsOnly Provide if you only want to get the differing advanced options (for some titles).
-		 * @param includeGroupName Provide if you want to include the groupName as well (in areas that do not display the groupName).
-		 * @returns The title formatted with server info in front, with non default options at the end.
-		 */
-		export function getEditorConnectionProfileTitle(profile: IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string>;
 	}
 
 	/*
@@ -670,13 +661,6 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
-	export interface AccountKey {
-		/**
-		 * Auth Library used to add the account
-		 */
-		authLibrary?: string;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -701,6 +685,25 @@ declare module 'azdata' {
 		 * Specifies whether to use headerFilter plugin
 		 */
 		headerFilter?: boolean,
+	}
+
+	export type ExecutionPlanData = executionPlan.ExecutionPlanGraphInfo | executionPlan.ExecutionPlanGraph[];
+
+	export interface ExecutionPlanComponentProperties extends ComponentProperties {
+		/**
+		 * Provide the execution plan file to be displayed. In case of execution plan graph info, the file type will determine the provider to be used to generate execution plan graphs
+		 */
+		data?: ExecutionPlanData;
+	}
+
+	/**
+	 * Defines the executionPlan component
+	 */
+	export interface ExecutionPlanComponent extends Component, ExecutionPlanComponentProperties {
+	}
+
+	export interface ModelBuilder {
+		executionPlan(): ComponentBuilder<ExecutionPlanComponent, ExecutionPlanComponentProperties>;
 	}
 
 	export interface ListViewOption {
@@ -2008,5 +2011,22 @@ declare module 'azdata' {
 		 * Set active cell.
 		 */
 		setActiveCell(row: number, column: number): void;
+	}
+
+	export interface ProfilerProvider {
+		startSession(sessionId: string, sessionName: string, sessionType?: ProfilingSessionType): Thenable<boolean>;
+	}
+
+	export enum ProfilingSessionType {
+		RemoteSession = 0,
+		LocalFile = 1
+	}
+
+	export interface SplitViewLayout extends FlexLayout {
+		/**
+		 * SplitView size. Height if the orientation is vertical, width if the orientation is horizontal
+		 * If undefined, the size of the model view container is used
+		 */
+		splitViewSize?: number | string | undefined;
 	}
 }

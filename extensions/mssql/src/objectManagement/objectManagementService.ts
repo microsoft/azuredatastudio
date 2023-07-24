@@ -479,7 +479,18 @@ export class TestObjectManagementService implements IObjectManagementService {
 				owner: 'databaseProperties 1',
 				sizeInMb: 16.00,
 				spaceAvailableInMb: 1.15,
-				status: 'Normal'
+				status: 'Normal',
+				autoCreateIncrementalStatistics: false,
+				autoCreateStatistics: true,
+				autoShrink: false,
+				autoUpdateStatistics: true,
+				autoUpdateStatisticsAsynchronously: false,
+				isLedgerDatabase: false,
+				pageVerify: 'CHECKSUM',
+				targetRecoveryTimeInSec: 60,
+				databaseReadOnly: true,
+				encryptionEnabled: false,
+				restrictAccess: 'SINGLE_USER',
 			}
 		};
 	}
