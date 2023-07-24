@@ -467,7 +467,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const dscPrimaryValueGroup = await this.InitializeDscPrimaryValueGroup();
 		const dscSecondaryValueGroup = await this.InitializeDscSecondaryValueGroup();
 		const dscSecondaryCheckboxValueGroup = await this.InitializeDscSecondaryCheckboxValueGroup();
-		// const dscMaxDopPrimaryValueGroup = await this.InitilaizeDscMaxDopPrimarySection();
 		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, dscPrimaryValueGroup, dscSecondaryCheckboxValueGroup, dscSecondaryValueGroup/*, dscMaxDopPrimaryValueGroup*/], true));
 		this.disposables.push(
 			this.dscTable.onRowSelected(
@@ -503,15 +502,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			});
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
 		}
-		// MAXDOP option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
-		// else if (row[0] === localizedConstants.MAXDOP) {
-		// 	await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'display': 'inline !important' });
-		// 	await this.valueForMaxDopPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
-		// 	await this.valueForSecondaryInput.updateProperties({
-		// 		values: this.viewInfo.dscOnOffPrimaryOptions[2]
-		// 		, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
-		// 	});
-		// }
 		// Cannot set the 'IDENTITY_CACHE' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (row[0] === localizedConstants.IDENTITY_CACHE) {
 			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
@@ -554,26 +544,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			});
 		}
 	}
-
-	/**
-	 * Max limt for the MAXDOP primary value is a 16bit signed integer - 32767
-	 * @returns GroupContainer for MAXDOP primary value
-	 */
-	// private async InitilaizeDscMaxDopPrimarySection(): Promise<azdata.GroupContainer> {
-	// 	this.valueForMaxDopPrimaryInput = this.createInputBox(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
-	// 		if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary !== newValue) {
-	// 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
-	// 			this.dscTable.data[this.currentRowId][this.isValueDefaultAvailable ? 2 : 1] = newValue;
-	// 			await this.updateDscTable(this.dscTable.data);
-	// 		}
-	// 	}, '', true, 'number', DefaultInputWidth - 17, true, 0, 32767);
-	// 	const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForMaxDopPrimaryInput);
-
-	// 	this.dscMaxDopPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
-	// 	await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important', 'margin-top': '-132px' });
-
-	// 	return this.dscMaxDopPrimaryValueGroup;
-	// }
 
 	private async InitializeDscPrimaryValueGroup(): Promise<azdata.GroupContainer> {
 		// Value for Primary
