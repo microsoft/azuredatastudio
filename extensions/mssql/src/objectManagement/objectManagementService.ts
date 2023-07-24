@@ -464,6 +464,9 @@ export class TestObjectManagementService implements IObjectManagementService {
 			restrictAccessOptions: ['MULTI_USER', 'RESTRICTED_USER', 'SINGLE_USER'],
 			pageVerifyOptions: ['CHECKSUM', 'NONE', 'TORN_PAGE_DETECTION'],
 			recoveryModels: ['FULL', 'SIMPLE', 'BULK_LOGGED'],
+			dscElevateOptions: ['OFF', 'WHEN_SUPPORTED', 'FAIL_UNSUPPORTED'],
+			dscEnableDisableOptions: ['ENABLED', 'DISABLED'],
+			dscOnOffOptions: ['ON', 'OFF'],
 			objectInfo: {
 				name: 'Database Properties1',
 				collationName: 'Latin1_General_100_CI_AS_KS_WS',
@@ -489,15 +492,15 @@ export class TestObjectManagementService implements IObjectManagementService {
 				encryptionEnabled: false,
 				restrictAccess: 'SINGLE_USER',
 				databaseScopedConfigurations: [
-					{ name: 'MAXDOP', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'legacy_cardinality_estimation', isDefaultValue: false, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'parameter_sniffing', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'query_optimizer_hotfixes', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'identity_cache', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'interleaved_execution_tvf', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'batch_mode_memory_grant_feedback', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'batch_mode_adaptive_joins', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' },
-					{ name: 'tsql_scalar_udf_inlining', isDefaultValue: true, valueForPrimary: '', valueForSecondary: '' }
+					{ name: 'MAXDOP', valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'legacy_cardinality_estimation', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'parameter_sniffing', valueForPrimary: 'ON', valueForSecondary: 'OFF' },
+					{ name: 'query_optimizer_hotfixes', valueForPrimary: 'ON', valueForSecondary: 'OFF' },
+					{ name: 'identity_cache', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'interleaved_execution_tvf', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'batch_mode_memory_grant_feedback', valueForPrimary: 'OFF', valueForSecondary: 'OFF' },
+					{ name: 'batch_mode_adaptive_joins', valueForPrimary: 'OFF', valueForSecondary: 'ON' },
+					{ name: 'tsql_scalar_udf_inlining', valueForPrimary: 'ON', valueForSecondary: 'ON' }
 				]
 			}
 		}

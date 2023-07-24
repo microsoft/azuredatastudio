@@ -59,10 +59,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private valueForPrimaryInput: azdata.DropDownComponent;
 	private valueForSecondaryInput: azdata.DropDownComponent;
 	private setSecondaryCheckbox: azdata.CheckBoxComponent;
-	// private valueForMaxDopPrimaryInput: azdata.InputBoxComponent;
-	// private dscMaxDopPrimaryValueGroup: azdata.GroupContainer;
 	private currentRowId: number;
-	private isValueDefaultAvailable: boolean;
 	private dscPrimaryValueGroup: azdata.GroupContainer;
 	private dscSecondaryValueGroup: azdata.GroupContainer;
 	private dscSecondaryCheckboxValueGroup: azdata.GroupContainer;
