@@ -31,8 +31,6 @@ import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUti
 import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { Page } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
-import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import * as constants from '../constants/strings';
 import { MigrationTargetType } from '../api/utils';
 
 export interface MenuCommandArgs {
@@ -537,18 +535,25 @@ export class DashboardWidget {
 			if (migrationService) {
 				this.stateModel = new MigrationStateModel(this._context, migrationService);
 				this._context.subscriptions.push(this.stateModel);
+
+				const wizardController = new WizardController(
+					this._context,
+					this.stateModel,
+					this._onServiceContextChanged);
+
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
 
 					if (savedInfo.closedPage === Page.ImportAssessment) {
-						const wizardObject = azdata.window.createWizard(
-							loc.WIZARD_TITLE(serverName),
-							'MigrationWizard',
-							'wide');
-						const page = new SKURecommendationPage(wizardObject, this.stateModel);
-						const dbDialog = new AssessmentResultsDialog('ownerUri', this.stateModel, constants.ASSESSMENT_TITLE(serverName), page, MigrationTargetType.SQLDB);
+						await this.clearSavedInfo(serverName);
+						if (savedInfo.serverAssessment !== null) {
+							this.stateModel._assessmentResults = savedInfo.serverAssessment;
+							await this.stateModel.loadSavedInfo();
+						}
+
+						const dbDialog = new AssessmentResultsDialog('ownerUri', this.stateModel, serverName, wizardController.skuRecommendationPage, MigrationTargetType.SQLDB);
 						await dbDialog.openDialog();
 					} else {
 						const savedAssessmentDialog = new SavedAssessmentDialog(
@@ -558,10 +563,6 @@ export class DashboardWidget {
 						await savedAssessmentDialog.openDialog();
 					}
 				} else {
-					const wizardController = new WizardController(
-						this._context,
-						this.stateModel,
-						this._onServiceContextChanged);
 					await wizardController.openWizard();
 				}
 			}
@@ -595,6 +596,10 @@ export class DashboardWidget {
 
 	private checkSavedInfo(serverName: string): SavedInfo | undefined {
 		return this._context.globalState.get<SavedInfo>(`${this.stateModel.mementoString}.${serverName}`);
+	}
+
+	private async clearSavedInfo(serverName: string) {
+		await this._context.globalState.update(`${this.stateModel.mementoString}.${serverName}`, {});
 	}
 
 	public async launchNewSupportRequest(): Promise<void> {
