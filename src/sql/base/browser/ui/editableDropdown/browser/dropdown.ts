@@ -258,7 +258,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 		this.onBlur(() => {
 			this._hideList();
-			this._input.validate();
 		});
 
 		this._register(this._selectList);
