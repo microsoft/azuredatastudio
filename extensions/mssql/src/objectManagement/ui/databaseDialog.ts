@@ -439,15 +439,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const dscNameColumn: azdata.TableColumn = {
 			type: azdata.ColumnType.text,
 			value: localizedConstants.DatabaseScopedOptionsColumnHeader,
-			width: 215
+			width: 220
 		};
 		const primaryValueColumn: azdata.TableColumn = {
 			type: azdata.ColumnType.text,
-			value: localizedConstants.ValueForPrimaryColumnHeader
+			value: localizedConstants.ValueForPrimaryColumnHeader,
+			width: 105
 		};
 		const secondaryValueColumn: azdata.TableColumn = {
 			type: azdata.ColumnType.text,
-			value: localizedConstants.ValueForSecondaryColumnHeader
+			value: localizedConstants.ValueForSecondaryColumnHeader,
+			width: 105
 		};
 
 		this.dscTable = this.modelView.modelBuilder.table().withProps({
