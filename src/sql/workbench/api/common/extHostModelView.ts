@@ -288,7 +288,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
-  
+
 	chart<T extends azdata.ChartOptions>(): azdata.ComponentBuilder<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.ChartComponent<T>, azdata.ChartComponentProperties<T>> = this.getComponentBuilder(new ChartComponentWrapper<T>(this._proxy, this._handle, id, this.logService), id);
