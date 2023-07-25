@@ -8,10 +8,13 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
+import { ConfigureDialog } from '../settings/configureDialog';
 
 export abstract class BaseQueryStoreReport {
 	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
+
+	//public configureDialog: ConfigureDialog;
 
 	constructor(reportName: string, private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
 		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
@@ -111,13 +114,11 @@ export abstract class BaseQueryStoreReport {
 				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
 			}
 		}).component();
+		configureButton.enabled = true;
 
-		// TODO: enable after the configuration dialog is implemented
-		configureButton.enabled = false;
-
-		configureButton.onDidClick(() => {
-			// TODO: implement configuration dialog
-			console.error('configuration dialog not implemented')
+		configureButton.onDidClick(async () => {
+			let configureDialog = new ConfigureDialog();
+			await configureDialog.openDialog();
 		});
 
 		await configureButton.updateCssStyles({ 'margin-top': '5px' });
