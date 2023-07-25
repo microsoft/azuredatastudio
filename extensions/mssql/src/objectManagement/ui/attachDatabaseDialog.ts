@@ -8,13 +8,15 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DatabaseFileData, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { AttachDatabaseDocUrl } from '../constants';
-import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseFileGroupLabel, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
+import { AddFileAriaLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
+import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
 	private _databasesTable: azdata.TableComponent;
-	private _associatedFilesTable: azdata.TableComponent;
+	// private _associatedFilesTable: azdata.TableComponent;
+	private _databaseFiles: any[];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, AttachDatabaseDialogTitle, 'AttachDatabase');
@@ -22,8 +24,8 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	protected async initializeUI(): Promise<void> {
 		let filesSection = this.initializeAttachSection();
-		let associatedFilesSection = this.initializeAssociatedFilesSection();
-		this.formContainer.addItems([filesSection, associatedFilesSection]);
+		// let associatedFilesSection = this.initializeAssociatedFilesSection();
+		this.formContainer.addItems([filesSection]);
 	}
 
 	private initializeAttachSection(): azdata.GroupContainer {
@@ -32,27 +34,43 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this.disposables.push(this._databasesTable.onRowSelected(() => this.onFileRowSelected()))
 
 		const buttonContainer = this.addButtonsForTable(this._databasesTable, AddFileAriaLabel, RemoveText,
-			() => this.onAddFilesButtonClicked(), () => this.onRemoveFilesButtonClicked());
+			async () => await this.onAddFilesButtonClicked(), async () => await this.onRemoveFilesButtonClicked());
 
 		return this.createGroup(DatabasesToAttachLabel, [this._databasesTable, buttonContainer], false);
 	}
 
-	private initializeAssociatedFilesSection(): azdata.GroupContainer {
-		const columns = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
-		this._associatedFilesTable = this.createTable(DatabaseFilesLabel, columns, []);
-		return this.createGroup(AssociatedFilesLabel, [this._associatedFilesTable], false);
-	}
+	// private initializeAssociatedFilesSection(): azdata.GroupContainer {
+	// 	const columns = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
+	// 	this._associatedFilesTable = this.createTable(DatabaseFilesLabel, columns, []);
+	// 	return this.createGroup(AssociatedFilesLabel, [this._associatedFilesTable], false);
+	// }
 
 	private onFileRowSelected(): void {
-
+		// TODO: load selected file's data
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
-		throw new Error('Not implemented.');
+		this._databaseFiles.push(['Test1', 'Test2', 'Test3', 'Test4']);
+		await this._databasesTable.updateProperties({
+			data: this._databaseFiles,
+			height: getTableHeight(this._databaseFiles.length, DefaultMinTableRowCount)
+		});
+		this.onFormFieldChange();
 	}
 
 	private async onRemoveFilesButtonClicked(): Promise<void> {
-		throw new Error('Not implemented.');
+		let selectedRows = this._databasesTable.selectedRows;
+		let deletedRowCount = 0;
+		for (let row of selectedRows) {
+			let index = row - deletedRowCount;
+			this._databaseFiles.splice(index);
+			deletedRowCount++;
+		}
+		await this._databasesTable.updateProperties({
+			data: this._databaseFiles,
+			height: getTableHeight(this._databaseFiles.length, DefaultMinTableRowCount)
+		});
+		this.onFormFieldChange();
 	}
 
 	protected override get helpUrl(): string {
@@ -68,10 +86,11 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, false);
+		// await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, true);
+		// return await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, true);
+		return '';
 	}
 }
