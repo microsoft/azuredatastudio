@@ -417,21 +417,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._serverName = this.migrationStateModel.serverName || (await getSourceConnectionProfile()).serverName;
 
-		const assessmentTitle = constants.ASSESSMENT_TITLE(this._serverName);
-		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLMI);
-		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLVM);
-		const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, assessmentTitle, this, MigrationTargetType.SQLDB);
-
 		this._disposables.push(button.onDidClick(async (e) => {
 			switch (this._rbg.selectedCardId) {
 				case MigrationTargetType.SQLVM:
 					this._rbg.selectedCardId = MigrationTargetType.SQLVM;
+					const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, this._serverName, this, MigrationTargetType.SQLVM);
 					return await vmDialog.openDialog();
 				case MigrationTargetType.SQLMI:
 					this._rbg.selectedCardId = MigrationTargetType.SQLMI;
+					const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, this._serverName, this, MigrationTargetType.SQLMI);
 					return await miDialog.openDialog();
 				case MigrationTargetType.SQLDB:
 					this._rbg.selectedCardId = MigrationTargetType.SQLDB;
+					const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, this._serverName, this, MigrationTargetType.SQLDB);
 					return await dbDialog.openDialog();
 			}
 		}));

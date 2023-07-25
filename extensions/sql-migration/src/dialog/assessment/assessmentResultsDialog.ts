@@ -25,25 +25,29 @@ export class AssessmentResultsDialog {
 
 	private static readonly SelectButtonText: string = 'Select';
 	private static readonly CancelButtonText: string = 'Cancel';
+	private static readonly OkButtonText: string = 'OK';
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
 	private _model: MigrationStateModel;
 	private _saveButton!: azdata.window.Button;
 	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
+	private _title: string;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
 	private _tree: SqlDatabaseTree;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
+	constructor(public ownerUri: string, public model: MigrationStateModel, public serverName: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType?: MigrationTargetType, private _readOnly = false) {
 		this._model = model;
+		this._title = constants.ASSESSMENT_TITLE(serverName);
 		this._tree = new SqlDatabaseTree(this._model, this._targetType);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
+			this._tree = new SqlDatabaseTree(this._model, this._targetType);
 			dialog.registerContent(async (view) => {
 				try {
 					const flex = view.modelBuilder.flexContainer().withLayout({
@@ -70,13 +74,21 @@ export class AssessmentResultsDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(this.title, 'AssessmentResults', 'wide');
+			this.dialog = azdata.window.createModelViewDialog(this._title, 'AssessmentResults', 'wide');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this.dialog.okButton.position = 'left';
-			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+			if (this._readOnly) {
+				this.dialog.okButton.enabled = false;
+				this.dialog.okButton.hidden = true;
 
-			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
+				this.dialog.cancelButton.label = AssessmentResultsDialog.OkButtonText;
+			} else {
+				this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+
+				this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
+			}
+
 			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
