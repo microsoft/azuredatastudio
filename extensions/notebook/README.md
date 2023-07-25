@@ -6,7 +6,7 @@ Welcome to the Notebook extension for Azure Data Studio! This extension supports
 
 Jupyter Book allows opening a single "Book" of related notebooks and markdown files. This feature will work if you open any Book folder in Azure Data Studio.
 
-Download a [sample book](https://github.com/jupyter/jupyter-book) and open folder in Azure Data Studio to get started. You can learn more about Books on the [Jupyter Book homepage](https://jupyter.org/jupyter-book/intro.html).
+Download a [sample book](https://github.com/jupyter/jupyter-book) and open folder in Azure Data Studio to get started. You can learn more about Books on the [Jupyter Book homepage](https://docs.jupyter.org/en/latest/#what-is-a-notebook).
 
 ## Code of Conduct
 
