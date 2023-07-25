@@ -16,7 +16,8 @@ export enum HttpMethod {
 	GET = 'get',
 	POST = 'post',
 	PUT = 'put',
-	DELETE = 'delete'
+	DELETE = 'delete',
+	PATCH = 'patch'
 }
 
 export enum HttpStatus {
@@ -115,6 +116,23 @@ export class HttpClient {
 			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.DELETE, options, this.customAgentOptions as http.AgentOptions);
 		} else {
 			return networkRequestViaHttps(url, HttpMethod.DELETE, options, this.customAgentOptions as https.AgentOptions);
+		}
+	}
+
+	/**
+	 * Http Patch request
+	 * @param url
+	 * @param options
+	 */
+	async sendPatchRequestAsync<T>(
+		url: string,
+		options?: NetworkRequestOptions,
+		cancellationToken?: number
+	): Promise<AzureNetworkResponse<T>> {
+		if (this.proxyUrl) {
+			return networkRequestViaProxy(url, this.proxyUrl, HttpMethod.PATCH, options, this.customAgentOptions as http.AgentOptions, cancellationToken);
+		} else {
+			return networkRequestViaHttps(url, HttpMethod.PATCH, options, this.customAgentOptions as https.AgentOptions, cancellationToken);
 		}
 	}
 
@@ -228,26 +246,7 @@ const networkRequestViaProxy = <T>(
 					 * there may be more than one ':' if the value of the header is supposed to be a JSON object
 					 */
 					const headerKeyValue = header.split(new RegExp(/:\s(.*)/s));
-					const headerKey = headerKeyValue[0];
-					let headerValue = headerKeyValue[1];
-
-					// check if the value of the header is supposed to be a JSON object
-					try {
-						// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						const object = JSON.parse(headerValue);
-
-						// if it is, then convert it from a string to a JSON object
-						if (object && (typeof object === 'object')) {
-							// TODO: Investigate this - https://github.com/microsoft/azuredatastudio/issues/22835
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-							headerValue = object;
-						}
-					} catch (e) {
-						// otherwise, leave it as a string
-					}
-
-					entries.set(headerKey, headerValue);
+					entries.set(headerKeyValue[0], headerKeyValue[1]);
 				});
 
 				const parsedHeaders = Object.fromEntries(entries) as Record<string, string>;
@@ -256,7 +255,6 @@ const networkRequestViaProxy = <T>(
 					data: parseBody(httpStatusCode, statusMessage, parsedHeaders, body) as T,
 					status: httpStatusCode
 				};
-
 
 				if (((httpStatusCode < HttpStatus.SUCCESS_RANGE_START) || (httpStatusCode > HttpStatus.SUCCESS_RANGE_END)) &&
 					// do not destroy the request for the device code flow
@@ -290,6 +288,7 @@ const networkRequestViaHttps = <T>(
 ): Promise<AzureNetworkResponse<T>> => {
 	const isPostRequest = httpMethod === HttpMethod.POST;
 	const isPutRequest = httpMethod === HttpMethod.PUT;
+	const isPatchRequest = httpMethod === HttpMethod.PATCH;
 	// Note: Text Encoder is necessary here because otherwise it was not able to handle Chinese characters in table names.
 	const body = (new TextEncoder()).encode(options?.body || '');
 	const url = new URL(urlString);
@@ -308,7 +307,7 @@ const networkRequestViaHttps = <T>(
 		customOptions.agent = new https.Agent(agentOptions);
 	}
 
-	if (isPostRequest || isPutRequest) {
+	if (isPostRequest || isPutRequest || isPatchRequest) {
 		// needed for post request to work
 		customOptions.headers = {
 			...customOptions.headers,
@@ -326,7 +325,7 @@ const networkRequestViaHttps = <T>(
 			});
 		}
 
-		if (isPostRequest || isPutRequest) {
+		if (isPostRequest || isPutRequest || isPatchRequest) {
 			request.write(body);
 		}
 

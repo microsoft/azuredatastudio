@@ -111,13 +111,13 @@ function updateMainI18nFile(existingTranslationFilePath: string, originalFilePat
 export function modifyI18nPackFiles(existingTranslationFolder: string, resultingTranslationPaths: i18n.TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
 	let parsePromises: Promise<i18n.ParsedXLF[]>[] = [];
 	let mainPack: i18n.I18nPack = { version: i18n.i18nPackVersion, contents: {} };
-	let extensionsPacks: i18n.Map<i18n.I18nPack> = {};
+	let extensionsPacks: i18n.StringMap<i18n.I18nPack> = {};
 	let errors: any[] = [];
 	return es.through(function (this: es.ThroughStream, xlf: File) {
 		let rawResource = path.basename(xlf.relative, '.xlf');
 		let resource = rawResource.substring(0, rawResource.lastIndexOf('.'));
 		let contents = xlf.contents.toString();
-		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);
+		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.org_parse(contents);
 		parsePromises.push(parsePromise);
 		parsePromise.then(
 			resolvedFiles => {
@@ -183,28 +183,23 @@ const textFields = {
 //list of extensions from vscode that are to be included with ADS.
 const VSCODEExtensions = [
 	"bat",
+	"builtin-notebook-renderers", // notebook renderers
 	"configuration-editing",
-	"csharp",
-	"dart",
 	"docker",
-	"fsharp",
 	"git",
 	"git-base",
 	"github",
 	"github-authentication",
-	"html",
 	"image-preview",
 	"ipynb",
-	"javascript",
 	"json",
 	"json-language-features",
-	"julia",
-	"markdown-basics",
+	"markdown", // markdown-basics
 	"markdown-language-features",
 	"markdown-math",
+	"media-preview",
 	"merge-conflict",
 	"microsoft-authentication",
-	"notebook-renderers",
 	"powershell",
 	"python",
 	"r",
@@ -218,7 +213,7 @@ const VSCODEExtensions = [
 	"theme-monokai-dimmed",
 	"theme-quietlight",
 	"theme-red",
-	"theme-seti",
+	"vscode-theme-seti", // theme-seti
 	"theme-solarized-dark",
 	"theme-solarized-light",
 	"theme-tomorrow-night-blue",
@@ -324,10 +319,6 @@ export function refreshLangpacks(): Promise<void> {
 						let nonExistantExtensions = [];
 						for (let curr of localization.translations) {
 							try {
-								if (curr.id === 'vscode.theme-seti') {
-									//handle edge case where 'theme-seti' has a different id.
-									curr.id = 'vscode.vscode-theme-seti';
-								}
 								fs.statSync(path.join(translationDataFolder, curr.path.replace('./translations', '')));
 							}
 							catch {
@@ -403,8 +394,9 @@ export function renameVscodeLangpacks(): Promise<void> {
 			let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
 			for (let extensionTag in totalExtensions) {
 				let extensionFileName = totalExtensions[extensionTag];
-				let xlfPath = path.join(xlfFolder, `${langId}`, extensionFileName.replace('.i18n.json', '.xlf'));
-				if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(extensionFileName.replace('.i18n.json', '')) !== -1)) {
+				let shortExtensionFileName = extensionFileName.replace('ms-vscode.', 'vscode.').replace('vscode.', '');
+				let xlfPath = path.join(xlfFolder, `${langId}`, shortExtensionFileName.replace('.i18n.json', '.xlf'));
+				if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(shortExtensionFileName.replace('.i18n.json', '')) !== -1)) {
 					let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
 					rimraf.sync(filePath);
 				}
@@ -414,10 +406,18 @@ export function renameVscodeLangpacks(): Promise<void> {
 		//Get list of md files in ADS langpack, to copy to vscode langpack prior to renaming.
 		let globMDArray = glob.sync(path.join(locADSFolder, '*.md'));
 
-		//Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
+		//Copy MD files to vscode langpack.
 		globMDArray.forEach(element => {
 			fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
 		});
+
+		//Copy yarn.lock (required for packaging task)
+		let yarnLockPath = path.join(locADSFolder, 'yarn.lock');
+		if (fs.existsSync(yarnLockPath)) {
+			fs.copyFileSync(yarnLockPath, path.join(locVSCODEFolder, 'yarn.lock'));
+		}
+
+		//remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
 		rimraf.sync(locADSFolder);
 		fs.renameSync(locVSCODEFolder, locADSFolder);
 	}

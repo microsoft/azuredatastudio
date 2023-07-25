@@ -22,7 +22,7 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { TestFileService, TestTextResourceConfigurationService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestQueryModelService } from 'sql/workbench/services/query/test/common/testQueryModelService';
 import { URI } from 'vs/base/common/uri';
@@ -84,7 +84,7 @@ suite('SQL QueryAction Tests', () => {
 		testQueryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Strict);
 		testQueryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
 
-		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 		testQueryInput.setup(x => x.state).returns(() => testQueryInputState.object);
@@ -93,7 +93,7 @@ suite('SQL QueryAction Tests', () => {
 
 	test('setClass sets child CSS class correctly', () => {
 		// If I create a RunQueryAction
-		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, undefined, undefined);
+		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, undefined, undefined, undefined);
 
 		// "class should automatically get set to include the base class and the RunQueryAction class
 		let className = RunQueryAction.EnabledClass;
@@ -115,7 +115,7 @@ suite('SQL QueryAction Tests', () => {
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
-		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, connectionManagementService.object, undefined);
+		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, connectionManagementService.object, undefined, undefined);
 		let connected: boolean = queryAction.isConnected(editor.object);
 
 		// I should get an unconnected state
@@ -150,7 +150,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Loose);
 		queryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
 
-		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
@@ -168,7 +168,7 @@ suite('SQL QueryAction Tests', () => {
 		queryEditor.setup(x => x.getSelections()).returns(() => [undefined]);
 
 		// If I call run on RunQueryAction when I have a non empty selection
-		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined);
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined, undefined);
 		isSelectionEmpty = false;
 		await queryAction.run();
 
@@ -205,7 +205,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Loose);
 		queryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
 
-		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: IRange) => {
 			runQuerySelection = selection;
@@ -245,7 +245,7 @@ suite('SQL QueryAction Tests', () => {
 		/// End Setup Test ///
 
 		////// If I call run on RunQueryAction while disconnected and with an undefined selection
-		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, undefined, connectionManagementService.object, undefined);
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, undefined, connectionManagementService.object, undefined, undefined);
 		isConnected = false;
 		selectionToReturnInGetSelection = undefined;
 		await queryAction.run();
@@ -572,7 +572,7 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 
 		// Calling runCurrent with no open connection
-		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined);
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined, undefined);
 		calledRunQueryStatementOnInput = false;
 		await queryAction.runCurrent();
 
@@ -629,7 +629,7 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny()));
 		queryModelService.setup(x => x.runQueryStatement(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 
-		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined);
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined, undefined);
 
 		// setting up queryEditor with only a cursor. This case should call runQueryStatement
 		queryEditor.setup(x => x.getSelection(false)).returns(() => { return predefinedCursorSelection; });

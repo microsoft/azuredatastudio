@@ -12,13 +12,11 @@ import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IInputOptions, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as nls from 'vs/nls';
-import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
+import { asCssVariable, inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegistry';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
@@ -27,6 +25,7 @@ import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { getInputBoxStyle } from 'vs/platform/theme/browser/defaultStyles';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -45,7 +44,6 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService
@@ -69,7 +67,11 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 					}
 				}
 			},
-			useDefaultValidation: true
+			useDefaultValidation: true,
+			inputBoxStyles: getInputBoxStyle({
+				inputValidationInfoBackground: asCssVariable(inputBackground),
+				inputValidationInfoBorder: asCssVariable(inputBorder),
+			})
 		};
 		if (this._inputContainer) {
 			inputOptions.requireForceValidations = true; // Non-text area input boxes handle our own validations when the text changes so don't run the base ones
@@ -130,10 +132,6 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this._validations.push(() => !input.inputElement.validationMessage);
 
 			this._register(input);
-			this._register(attachInputBoxStyler(input, this.themeService, {
-				inputValidationInfoBackground: inputBackground,
-				inputValidationInfoBorder: inputBorder,
-			}));
 			this._register(input.onDidChange(async e => {
 				if (checkOption()) {
 					this.value = input.value;

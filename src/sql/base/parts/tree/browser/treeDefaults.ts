@@ -14,7 +14,7 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as _ from 'sql/base/parts/tree/browser/tree';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { createKeybinding, Keybinding, SimpleKeybinding } from 'vs/base/common/keybindings';
+import { Keybinding, decodeKeybinding } from 'vs/base/common/keybindings';
 
 export interface IKeyBindingCallback {
 	(tree: _.ITree, event: IKeyboardEvent): void;
@@ -63,7 +63,7 @@ export class KeybindingDispatcher {
 	}
 
 	public has(keybinding: KeyCode): boolean {
-		let target = createKeybinding(keybinding, platform.OS);
+		let target = decodeKeybinding(keybinding, platform.OS);
 		if (target !== null) {
 			for (const a of this._arr) {
 				if (target.equals(a.keybinding)) {
@@ -76,16 +76,16 @@ export class KeybindingDispatcher {
 
 	public set(keybinding: number, callback: IKeyBindingCallback) {
 		this._arr.push({
-			keybinding: createKeybinding(keybinding, platform.OS),
+			keybinding: decodeKeybinding(keybinding, platform.OS),
 			callback: callback
 		});
 	}
 
-	public dispatch(keybinding: SimpleKeybinding): IKeyBindingCallback | null {
+	public dispatch(keybinding: Keybinding): IKeyBindingCallback | null {
 		// Loop from the last to the first to handle overwrites
 		for (let i = this._arr.length - 1; i >= 0; i--) {
 			let item = this._arr[i];
-			if (keybinding.toChord().equals(item.keybinding)) {
+			if (keybinding.equals(item.keybinding)) {
 				return item.callback;
 			}
 		}
@@ -266,7 +266,7 @@ export class DefaultController implements _.IController {
 	}
 
 	private onKey(bindings: KeybindingDispatcher, tree: _.ITree, event: IKeyboardEvent): boolean {
-		const handler: any = bindings.dispatch(event.toKeybinding());
+		const handler: any = bindings.dispatch(event.toKeyCodeChord().toKeybinding());
 		if (handler) {
 			// TODO: TS 3.1 upgrade. Why are we checking against void?
 			if (handler(tree, event)) {

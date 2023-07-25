@@ -7,7 +7,6 @@ import 'vs/css!./media/flavorStatus';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { Action } from 'vs/base/common/actions';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 
@@ -20,6 +19,8 @@ import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/commo
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor, IStatusbarEntry } from 'vs/workbench/services/statusbar/browser/statusbar';
+import { Action2 } from 'vs/platform/actions/common/actions';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 
 export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
@@ -171,57 +172,60 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 	}
 }
 
-export class ChangeFlavorAction extends Action {
+export class ChangeFlavorAction extends Action2 {
 
 	public static ID = 'sql.action.editor.changeProvider';
+	public static LABEL_ORG = 'Change SQL Engine Provider';
 	public static LABEL = nls.localize('changeSqlProvider', "Change SQL Engine Provider");
 
-	constructor(
-		actionId: string,
-		actionLabel: string,
-		@IEditorService private _editorService: IEditorService,
-		@IQuickInputService private _quickInputService: IQuickInputService,
-		@INotificationService private _notificationService: INotificationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
-	) {
-		super(actionId, actionLabel);
+	constructor() {
+		super({
+			id: ChangeFlavorAction.ID,
+			title: { value: ChangeFlavorAction.LABEL, original: ChangeFlavorAction.LABEL_ORG },
+			f1: true
+		});
 	}
 
-	public override run(): Promise<any> {
-		let activeEditor = this._editorService.activeEditorPane;
+	override async run(accessor: ServicesAccessor): Promise<void> {
+		const editorService = accessor.get(IEditorService);
+		const quickInputService = accessor.get(IQuickInputService);
+		const notificationService = accessor.get(INotificationService);
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+
+		let activeEditor = editorService.activeEditorPane;
 		let currentUri = activeEditor?.input.resource?.toString(true);
-		if (this._connectionManagementService.isConnected(currentUri)) {
-			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
-			return this._showMessage(Severity.Info, nls.localize('alreadyConnected',
+		if (connectionManagementService.isConnected(currentUri)) {
+			let currentProvider = connectionManagementService.getProviderIdFromUri(currentUri);
+			return this._showMessage(notificationService, Severity.Info, nls.localize('alreadyConnected',
 				"A connection using engine {0} exists. To change please disconnect or change connection", currentProvider));
 		}
 
 		const editorWidget = getCodeEditor(activeEditor.getControl());
 		if (!editorWidget) {
-			return this._showMessage(Severity.Info, nls.localize('noEditor', "No text editor active at this time"));
+			return this._showMessage(notificationService, Severity.Info, nls.localize('noEditor', "No text editor active at this time"));
 		}
 
 		// TODO #1334 use connectionManagementService.GetProviderNames here. The challenge is that the credentials provider is returned
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
 
-		let providerNameToDisplayNameMap = this._connectionManagementService.providerNameToDisplayNameMap;
-		let providerOptions = Object.keys(this._connectionManagementService.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
+		let providerNameToDisplayNameMap = connectionManagementService.providerNameToDisplayNameMap;
+		let providerOptions = Object.keys(connectionManagementService.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
 
-		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select Language Provider") }).then(provider => {
+		return quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select Language Provider") }).then(provider => {
 			if (provider) {
-				let activeEditor = this._editorService.activeEditorPane.getControl();
+				let activeEditor = editorService.activeEditorPane.getControl();
 				const editorWidget = getCodeEditor(activeEditor);
 				if (editorWidget) {
 					if (currentUri) {
-						this._connectionManagementService.doChangeLanguageFlavor(currentUri, 'sql', provider.providerId);
+						connectionManagementService.doChangeLanguageFlavor(currentUri, 'sql', provider.providerId);
 					}
 				}
 			}
 		});
 	}
 
-	private _showMessage(sev: Severity, message: string): Promise<any> {
-		this._notificationService.notify({
+	private _showMessage(notificationService: INotificationService, sev: Severity, message: string): Promise<any> {
+		notificationService.notify({
 			severity: sev,
 			message: message
 		});

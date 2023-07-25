@@ -28,6 +28,11 @@ export const AlterApplicationRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql
 export const CreateDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-role-transact-sql';
 export const AlterDatabaseRoleDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-role-transact-sql';
 export const CreateDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/create-database-transact-sql';
+export const ViewGeneralServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/functions/serverproperty-transact-sql';
+export const ViewMemoryServerPropertiesDocUrl = 'https://learn.microsoft.com/sql/database-engine/configure-windows/server-properties-memory-page';
+export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
+export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
+export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
@@ -35,7 +40,8 @@ export const enum TelemetryActions {
 	OpenNewObjectDialog = 'OpenNewObjectDialog',
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
-	UpdateObject = 'UpdateObject'
+	UpdateObject = 'UpdateObject',
+	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';

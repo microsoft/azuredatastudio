@@ -59,7 +59,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 	private _position: string;
 	private _splitView: SplitView;
 	private _orientation: Orientation;
-	private _splitViewHeight: number;
+	private _splitViewSize: number;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -103,8 +103,27 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		this._position = layout.position ? layout.position : '';
 		this._height = convertSize(layout.height);
 		this._width = convertSize(layout.width);
-		this._orientation = layout.orientation.toLowerCase() === 'vertical' ? Orientation.VERTICAL : Orientation.HORIZONTAL;
-		this._splitViewHeight = convertSizeToNumber(layout.splitViewHeight);
+
+		if (!layout.splitViewSize) {
+			// if no size was passed in for the split view, use the dimensions of the model view container
+			const modelViewContainer = document.getElementsByClassName('model-view-container')[0] as HTMLDivElement;
+			const modelViewContainerRect = modelViewContainer.getBoundingClientRect();
+			this._splitViewSize = layout.orientation.toLowerCase() === 'vertical' ? modelViewContainerRect.height : modelViewContainerRect.width;
+		} else {
+			this._splitViewSize = convertSizeToNumber(layout.splitViewSize);
+		}
+
+		const layoutOrientation = layout.orientation.toLowerCase() === 'vertical' ? Orientation.VERTICAL : Orientation.HORIZONTAL;
+
+		if (this._orientation !== layoutOrientation) {
+			// have to recreate the splitview if the orientation changed because the SplitView needs the orientation when it's constructed for knowing
+			// which direction everyting should be (scrollbars, sashes, CSS classes), and these can't be swapped to the other orientation afterwards
+			this._splitView.el.remove();
+			this._splitView.dispose();
+
+			this._splitView = this._register(new SplitView(this._el.nativeElement, { orientation: layoutOrientation }));
+			this._orientation = layoutOrientation;
+		}
 
 		if (this._componentWrappers) {
 			this._componentWrappers.forEach(item => {
@@ -120,7 +139,8 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 				});
 			});
 		}
-		this._splitView.layout(this._splitViewHeight);
+
+		this._splitView.layout(this._splitViewSize);
 	}
 
 	// CSS-bound properties

@@ -91,7 +91,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Microsoft resource management resource
 		 */
-		microsoftResource?: Resource
+		microsoftResource: Resource
 
 		/**
 		 * Information that describes the AAD graph resource
@@ -121,7 +121,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Key Vault resource
 		 */
-		azureKeyVaultResource: Resource;
+		azureKeyVaultResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Dev Ops resource
@@ -274,7 +274,8 @@ declare module 'azurecore' {
 		GET,
 		PUT,
 		POST,
-		DELETE
+		DELETE,
+		PATCH
 	}
 
 	/**
@@ -314,8 +315,8 @@ declare module 'azurecore' {
 		 * @param account The azure account used to acquire access token
 		 * @param subscription The subscription under azure account where the service will perform operations.
 		 * @param path The path for the service starting from '/subscription/..'. See https://docs.microsoft.com/rest/api/azure/.
-		 * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
-		 * @param requestBody Optional request body to be used in PUT and POST requests.
+		 * @param requestType Http request method. Currently GET, PUT, POST, DELETE, and PATCH methods are supported.
+		 * @param requestBody Optional request body to be used in PUT, POST, and PATCH requests.
 		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
 		 * @param host Use this to override the host. The default host is https://management.azure.com
 		 * @param requestHeaders Provide additional request headers
@@ -378,12 +379,17 @@ declare module 'azurecore' {
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
 			postgresServer = 'microsoft.dbforpostgresql/servers',
+			postgresServerv2 = 'microsoft.dbforpostgresql/serversv2',
+			postgresSingleServer = 'microsoft.dbforpostgresql/singleservers',
 			postgresFlexibleServer = 'microsoft.dbforpostgresql/flexibleservers',
+			postgresServerGroup = 'microsoft.dbforpostgresql/servergroups',
+			postgresServerGroupv2 = 'microsoft.dbforpostgresql/servergroupsv2',
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
 			logAnalytics = 'microsoft.operationalinsights/workspaces',
 			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts',
-			cosmosDbCluster = 'microsoft.documentdb/mongoclusters',
+			cosmosDbPostgresCluster = 'microsoft.documentdb/postgresclusters',
+			cosmosDbMongoCluster = 'microsoft.documentdb/mongoclusters',
 			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
@@ -406,9 +412,9 @@ declare module 'azurecore' {
 			getService(): azureResource.IAzureResourceService;
 			/**
 			 * Gets the root tree item nodes for this provider - these will be used as
-			 * direct children of the Account node in the Azure tree view.
+			 * direct children of the Tenant node in the Azure tree view.
 			 */
-			getRootChildren(): Promise<azdata.TreeItem[]>;
+			getRootChild(): Promise<azdata.TreeItem>;
 			/**
 			 * Gets the children for a given {@link IAzureResourceNode}
 			 * @param element The parent node to get the children for
@@ -427,6 +433,7 @@ declare module 'azurecore' {
 			readonly account: AzureAccount;
 			readonly subscription: AzureResourceSubscription;
 			readonly tenantId: string;
+			readonly resourceProviderId: string;
 			readonly treeItem: azdata.TreeItem;
 		}
 

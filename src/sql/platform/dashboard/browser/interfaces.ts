@@ -151,5 +151,6 @@ export enum ModelComponentTypes {
 	PropertiesContainer,
 	InfoBox,
 	Slider,
+	ExecutionPlan,
 	Chart
 }

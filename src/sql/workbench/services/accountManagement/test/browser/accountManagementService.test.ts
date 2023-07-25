@@ -18,7 +18,6 @@ import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { Emitter } from 'vs/base/common/event';
-import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
@@ -34,8 +33,7 @@ const noAccountProvider: azdata.AccountProviderMetadata = {
 const account: azdata.Account = {
 	key: {
 		providerId: hasAccountProvider.id,
-		accountId: 'testAccount1',
-		authLibrary: 'MSAL'
+		accountId: 'testAccount1'
 	},
 	displayInfo: {
 		displayName: 'Test Account 1',
@@ -535,15 +533,14 @@ function getTestState(): AccountManagementState {
 	// Create instantiation service
 	let mockInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 	mockInstantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountStore), TypeMoq.It.isAny()))
-		.returns(() => mockAccountStore.object);
+		.returns(() => <any>mockAccountStore.object);
 
 	const testNotificationService = new TestNotificationService();
-	const testConfigurationService = new TestConfigurationService();
 	const mockTelemetryService = new NullAdsTelemetryService();
 
 	// Create the account management service
 	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(),
-		undefined, undefined, undefined, testNotificationService, testConfigurationService, mockTelemetryService);
+		undefined, undefined, undefined, testNotificationService, mockTelemetryService, undefined);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

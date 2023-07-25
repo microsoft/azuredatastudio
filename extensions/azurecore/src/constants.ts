@@ -9,8 +9,6 @@ export const AccountsSection = 'accounts';
 
 export const AuthSection = 'auth';
 
-export const AuthenticationLibrarySection = 'authenticationLibrary';
-
 export const AzureSection = 'azure';
 
 export const AzureAccountProviderCredentials = 'azureAccountProviderCredentials';
@@ -26,8 +24,6 @@ export const AccountsClearTokenCacheCommand = AccountsSection + '.' + ClearToken
 export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '.' + AuthSection;
 
 export const AccountsAzureCloudSection = AccountsSection + '.' + AzureSection + '.' + CloudSection;
-
-export const AzureAuthenticationLibrarySection = AzureSection + '.' + AuthenticationLibrarySection;
 
 export const EnableArcFeaturesSection = 'enableArcFeatures';
 
@@ -46,6 +42,10 @@ export const NoSystemKeyChainSection = 'noSystemKeychain';
 export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
 
 export const piiLogging = 'piiLogging';
+
+export const CustomProviderSettings = 'customProviderSettings';
+
+export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
 
 /** MSAL Account version */
 export const AccountVersion = '2.0';
@@ -74,8 +74,6 @@ export const AzureTokenFolderName = 'Azure Accounts';
 
 export const MSALCacheName = 'accessTokenCache';
 
-export const DefaultAuthLibrary = 'MSAL';
-
 export const LocalCacheSuffix = '.local';
 
 export const LockFileSuffix = '.lockfile';
@@ -93,16 +91,16 @@ export const AADSTS70043 = 'AADSTS70043';
  */
 export const AADSTS50173 = 'AADSTS50173';
 
+/**
+ * multiple_matching_tokens error can occur in scenarios when users try to run ADS as different users, reference issue:
+ * https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5134
+ * Error message: multiple_matching_tokens The cache contains multiple tokens satisfying the requirements.
+ * Call AcquireToken again providing more requirements such as authority or account.
+ */
+export const multiple_matching_tokens_error = 'multiple_matching_tokens';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
-}
-
-/**
- * AAD Auth library as selected.
- */
-export enum AuthLibrary {
-	MSAL = 'MSAL',
-	ADAL = 'ADAL'
 }
 
 /**
@@ -138,6 +136,7 @@ export enum Platform {
 /////////////// Azure Resource provider Ids
 export const AZURE_MONITOR_PROVIDER_ID = 'azure.resource.providers.azureMonitor';
 export const COSMOSDB_MONGO_PROVIDER_ID = 'azure.resource.providers.cosmosDbMongo';
+export const COSMOSDB_POSTGRES_PROVIDER_ID = 'azure.resource.providers.cosmosDbPostgres';
 export const DATABASE_PROVIDER_ID = 'azure.resource.providers.database';
 export const DATABASE_SERVER_PROVIDER_ID = 'azure.resource.providers.databaseServer';
 export const KUSTO_PROVIDER_ID = 'azure.resource.providers.azureDataExplorer';

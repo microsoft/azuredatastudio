@@ -10,17 +10,17 @@ const localize = nls.loadMessageBundle();
 
 import { TreeNode } from './treeNode';
 import { AzureResourceService } from './resourceService';
-import { IAzureResourceNodeWithProviderId } from './interfaces';
 import { AzureResourceMessageTreeNode } from './messageTreeNode';
 import { AzureResourceErrorMessageUtil } from './utils';
 import { AppContext } from '../appContext';
 import { AzureResourceServiceNames } from './constants';
+import { azureResource } from 'azurecore';
 
 export class AzureResourceResourceTreeNode extends TreeNode {
 	private _resourceService: AzureResourceService;
 
 	public constructor(
-		public readonly resourceNodeWithProviderId: IAzureResourceNodeWithProviderId,
+		public readonly resourceNode: azureResource.IAzureResourceNode,
 		parent: TreeNode,
 		private appContext: AppContext
 	) {
@@ -31,19 +31,19 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 
 	public async getChildren(): Promise<TreeNode[]> {
 		// It is a leaf node.
-		if (this.resourceNodeWithProviderId.resourceNode.treeItem.collapsibleState === TreeItemCollapsibleState.None) {
+		if (this.resourceNode.treeItem.collapsibleState === TreeItemCollapsibleState.None) {
 			return <TreeNode[]>[];
 		}
 
 		try {
-			const children = await this._resourceService.getChildren(this.resourceNodeWithProviderId.resourceProviderId, this.resourceNodeWithProviderId.resourceNode);
+			const children = await this._resourceService.getChildren(this.resourceNode.resourceProviderId, this.resourceNode);
 
 			if (children.length === 0) {
 				return [AzureResourceMessageTreeNode.create(localize('azure.resource.resourceTreeNode.noResourcesLabel', "No Resources found"), this)];
 			} else {
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
-					child.resourceNode.treeItem.id = `${this.resourceNodeWithProviderId.resourceNode.treeItem.id}.${child.resourceNode.treeItem.id}`;
+					child.treeItem.id = `${this.resourceNode.treeItem.id}.${child.treeItem.id}`;
 					return new AzureResourceResourceTreeNode(child, this, this.appContext);
 				});
 			}
@@ -53,11 +53,11 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		return this.resourceNodeWithProviderId.resourceNode.treeItem;
+		return this.resourceNode.treeItem;
 	}
 
 	public getNodeInfo(): NodeInfo {
-		const treeItem = this.resourceNodeWithProviderId.resourceNode.treeItem;
+		const treeItem = this.resourceNode.treeItem;
 
 		return {
 			label: typeof treeItem.label === 'object' ? treeItem.label.label : treeItem.label || '',
@@ -74,7 +74,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public get nodePathValue(): string {
-		return this.resourceNodeWithProviderId.resourceNode.treeItem.id || '';
+		return this.resourceNode.treeItem.id || '';
 	}
 
 }

@@ -12,9 +12,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IViewDescriptorService, IViewsService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/common/searchModel';
+import { ISearchWorkbenchService, Match, FileMatch, SearchModel, IChangeEvent, searchMatchComparer, RenderableMatch, FolderMatch, SearchResult } from 'vs/workbench/contrib/search/browser/searchModel';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IReplaceService } from 'vs/workbench/contrib/search/common/replace';
+import { IReplaceService } from 'vs/workbench/contrib/search/browser/replace';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -30,14 +30,15 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as dom from 'vs/base/browser/dom';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import { ISearchComplete, SearchCompletionExitCode, ITextQuery, SearchSortOrder, ISearchConfigurationProperties } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as errors from 'vs/base/common/errors';
 import { NotebookSearchWidget } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
-import { ITreeElement, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
+import { ICompressedTreeElement } from 'vs/base/browser/ui/tree/compressedObjectTreeModel';
+import { ITreeContextMenuEvent, ObjectTreeElementCollapseState } from 'vs/base/browser/ui/tree/tree';
 import { Iterable } from 'vs/base/common/iterator';
 import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
 import { Action, IAction } from 'vs/base/common/actions';
@@ -47,6 +48,8 @@ import { SearchUIState } from 'vs/workbench/contrib/search/common/search';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const $ = dom.$;
 
@@ -87,10 +90,17 @@ export class NotebookSearchView extends SearchView {
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@ICommandService commandService: ICommandService,
+		@INotebookService notebookService: INotebookService,
+		@ILogService logService: ILogService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
-		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, commandService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
+		super(options, fileService, editorService, codeEditorService, progressService,
+			notificationService, dialogService, commandService, contextViewService, instantiationService,
+			viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService,
+			replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService,
+			menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService,
+			notebookService, logService);
 
 		this.memento = new Memento(this.id, storageService);
 		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
@@ -148,13 +158,13 @@ export class NotebookSearchView extends SearchView {
 		e.browserEvent.stopPropagation();
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
+		createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => actions,
 			getActionsContext: () => e.element,
-			onHide: () => dispose(actionsDisposable)
+			onHide: () => { }
 		});
 	}
 
@@ -184,7 +194,7 @@ export class NotebookSearchView extends SearchView {
 		}
 	}
 
-	override renderBody(parent: HTMLElement): void {
+	protected override renderBody(parent: HTMLElement): void {
 		super.callRenderBody(parent);
 
 		this.container = dom.append(parent, dom.$('.search-view'));
@@ -421,45 +431,49 @@ export class NotebookSearchView extends SearchView {
 		return false;
 	}
 
-	private createSearchResultIterator(collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchResultIterator(collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		const folderMatches = this.searchResult.folderMatches()
 			.filter(fm => !fm.isEmpty())
 			.sort(searchMatchComparer);
 
 		if (folderMatches.length === 1) {
-			return this.createSearchFolderIterator(folderMatches[0], collapseResults);
+			return this.createSearchFolderIterator(folderMatches[0], collapseResults, true);
 		}
 
 		return Iterable.map(folderMatches, folderMatch => {
-			const children = this.createSearchFolderIterator(folderMatch, collapseResults);
-			return <ITreeElement<RenderableMatch>>{ element: folderMatch, children };
+			const children = this.createSearchFolderIterator(folderMatch, collapseResults, true);
+			return <ICompressedTreeElement<RenderableMatch>>{ element: folderMatch, children };
 		});
 	}
 
-	private createSearchFolderIterator(folderMatch: FolderMatch, collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchFolderIterator(folderMatch: FolderMatch, collapseResults: ISearchConfigurationProperties['collapseResults'], childFolderIncompressible: boolean): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		const sortOrder = this.searchConfig.sortOrder;
-		const matches = folderMatch.matches().sort((a, b) => searchMatchComparer(a, b, sortOrder));
 
-		return Iterable.map(matches, fileMatch => {
-			//const children = this.createFileIterator(fileMatch);
-			let nodeExists = true;
-			try { this.tree.getNode(fileMatch); } catch (e) { nodeExists = false; }
+		const matchArray = this.isTreeLayoutViewVisible ? folderMatch.matches() : folderMatch.allDownstreamFileMatches();
+		const matches = matchArray.sort((a, b) => searchMatchComparer(a, b, sortOrder));
 
-			const collapsed = nodeExists ? undefined :
-				(collapseResults === 'alwaysCollapse' || (fileMatch.matches().length > 10 && collapseResults !== 'alwaysExpand'));
+		return Iterable.map(matches, match => {
+			let children;
+			if (match instanceof FileMatch) {
+				children = this.createSearchFileIterator(match);
+			} else {
+				children = this.createSearchFolderIterator(match, collapseResults, false);
+			}
 
-			return <ITreeElement<RenderableMatch>>{ element: fileMatch, undefined, collapsed, collapsible: false };
+			const collapsed = (collapseResults === 'alwaysCollapse' || (match.count() > 10 && collapseResults !== 'alwaysExpand')) ? ObjectTreeElementCollapseState.PreserveOrCollapsed : ObjectTreeElementCollapseState.PreserveOrExpanded;
+
+			return <ICompressedTreeElement<RenderableMatch>>{ element: match, children, collapsed, incompressible: (match instanceof FileMatch) ? true : childFolderIncompressible };
 		});
 	}
 
-	private createSearchFileIterator(fileMatch: FileMatch): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchFileIterator(fileMatch: FileMatch): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		const matches = fileMatch.matches().sort(searchMatchComparer);
-		return Iterable.map(matches, r => (<ITreeElement<RenderableMatch>>{ element: r }));
+		return Iterable.map(matches, r => (<ICompressedTreeElement<RenderableMatch>>{ element: r }));
 	}
 
-	private createSearchIterator(match: FolderMatch | FileMatch | SearchResult, collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ITreeElement<RenderableMatch>> {
+	private createSearchIterator(match: FolderMatch | FileMatch | SearchResult, collapseResults: ISearchConfigurationProperties['collapseResults']): Iterable<ICompressedTreeElement<RenderableMatch>> {
 		return match instanceof SearchResult ? this.createSearchResultIterator(collapseResults) :
-			match instanceof FolderMatch ? this.createSearchFolderIterator(match, collapseResults) :
+			match instanceof FolderMatch ? this.createSearchFolderIterator(match, collapseResults, false) :
 				this.createSearchFileIterator(match);
 	}
 

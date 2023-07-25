@@ -50,7 +50,12 @@ export class AddAccountAction extends Action {
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
 		try {
-			await this._accountManagementService.addAccount(this._providerId);
+			if (!this._providerId) {
+				let providerId = await this._accountManagementService.promptProvider();
+				await this._accountManagementService.addAccount(providerId);
+			} else {
+				await this._accountManagementService.addAccount(this._providerId);
+			}
 			this._addAccountCompleteEmitter.fire();
 		} catch (err) {
 			this.logService.error(`Error while adding account: ${err}`);
@@ -81,7 +86,7 @@ export class RemoveAccountAction extends Action {
 		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
 			primaryButton: localize('accountActions.yes', "Yes"),
-			secondaryButton: localize('accountActions.no', "No"),
+			cancelButton: localize('accountActions.no', "No"),
 			type: 'question'
 		};
 

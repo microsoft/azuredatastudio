@@ -213,7 +213,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets this editor and the sub-editors to visible.
 	 */
-	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
+	protected override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		if (this._resultsEditor) {
 			this._resultsEditor.setVisible(visible, group);
 		}

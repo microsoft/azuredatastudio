@@ -82,7 +82,7 @@ suite('ConnectionConfig', () => {
 				databaseName: 'database',
 				userName: 'user',
 				password: 'password',
-				authenticationType: ''
+				authenticationType: 'SqlLogin'
 			},
 			providerName: 'MSSQL',
 			groupId: 'test',
@@ -95,7 +95,7 @@ suite('ConnectionConfig', () => {
 				databaseName: 'database',
 				userName: 'user',
 				password: 'password',
-				authenticationType: ''
+				authenticationType: 'SqlLogin'
 			},
 			providerName: 'MSSQL',
 			groupId: 'test',
@@ -108,7 +108,7 @@ suite('ConnectionConfig', () => {
 				databaseName: 'database',
 				userName: 'user',
 				password: 'password',
-				authenticationType: ''
+				authenticationType: 'SqlLogin'
 			},
 			providerName: 'MSSQL',
 			groupId: 'g3',
@@ -181,6 +181,30 @@ suite('ConnectionConfig', () => {
 					isRequired: true,
 					specialValueType: ConnectionOptionSpecialType.password,
 					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'testProperty1',
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: "default",
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: undefined!,
+					valueType: ServiceOptionType.string
+				},
+				{
+					name: 'testProperty2',
+					displayName: undefined!,
+					description: undefined!,
+					groupName: undefined!,
+					categoryValues: undefined!,
+					defaultValue: "10",
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: undefined!,
+					valueType: ServiceOptionType.number
 				}
 			]
 		};
@@ -272,7 +296,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: undefined,
 			groupId: undefined,
@@ -340,7 +364,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g2/g2-2',
 			groupId: undefined,
@@ -485,7 +509,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
@@ -517,7 +541,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
@@ -556,7 +580,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'newid',
@@ -638,7 +662,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
@@ -657,7 +681,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'test',
 			groupId: 'test',
@@ -693,13 +717,205 @@ suite('ConnectionConfig', () => {
 		}
 	});
 
+	test('change group for connection should accept similar connection with different options', async () => {
+		let changingProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {
+				'testProperty1': 'nonDefault',
+				'testProperty2': '10',
+			},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { 'testProperty2': '15' },
+			saveProfile: true,
+			id: 'server3',
+			connectionName: undefined!
+		});
+
+		let _testConnections = [...deepClone(testConnections), existingProfile, changingProfile];
+
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
+
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changingProfile);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+
+		await config.changeGroupIdForConnection(connectionProfile, 'test');
+
+		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
+
+		assert.strictEqual(editedConnections.length, _testConnections.length);
+		let editedConnection = editedConnections.find(con => con.id === 'server3-2');
+		assert.ok(editedConnection);
+		assert.strictEqual(editedConnection!.groupId, 'test');
+	});
+
+	test('change group for connection should not accept similar connection with default options same as another', async () => {
+		let changingProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {
+				'testProperty1': 'nonDefault',
+				'testProperty2': '10',
+			},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {
+				'testProperty1': 'nonDefault',
+				'testProperty2': '10'
+			},
+			saveProfile: true,
+			id: 'server3',
+			connectionName: undefined!
+		});
+
+		let _testConnections = [...deepClone(testConnections), existingProfile, changingProfile];
+
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
+
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changingProfile);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+
+		try {
+			await config.changeGroupIdForConnection(connectionProfile, 'test');
+			assert.fail();
+		} catch (e) {
+			let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
+			// two
+			assert.strictEqual(editedConnections.length, _testConnections.length);
+			let editedConnection = editedConnections.find(con => con.id === 'server3-2');
+			assert.ok(!!editedConnection);
+			assert.strictEqual(editedConnection!.groupId, 'g3');
+		}
+	});
+
+	test('change group for connection should accept similar connection with a distinguishing option', async () => {
+		let changingProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'g3',
+			groupId: 'g3',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {
+				'testProperty1': 'nonDefault',
+				'testProperty2': '15',
+			},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: { 'testProperty2': '15' },
+			saveProfile: true,
+			id: 'server3',
+			connectionName: undefined!
+		});
+
+		let _testConnections = [...deepClone(testConnections), existingProfile, changingProfile];
+
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
+
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changingProfile);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+
+		await config.changeGroupIdForConnection(connectionProfile, 'test');
+
+		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
+
+		assert.strictEqual(editedConnections.length, _testConnections.length);
+		let editedConnection = editedConnections.find(con => con.id === 'server3-2');
+		assert.ok(editedConnection);
+		assert.strictEqual(editedConnection!.groupId, 'test');
+	});
+
 	test('change group(parent) for connection', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'server3',
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
@@ -803,12 +1019,12 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'g3',
 			groupId: 'g3',
-			getOptionsKey: () => { return 'connectionId'; },
 			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
 			getOptionKeyIdNames: undefined!,
 			matches: undefined!,
 			providerName: 'MSSQL',
@@ -822,12 +1038,12 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'test',
 			groupId: 'test',
-			getOptionsKey: () => { return 'connectionId'; },
 			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
 			getOptionKeyIdNames: undefined!,
 			matches: undefined!,
 			providerName: 'MSSQL',
@@ -841,7 +1057,7 @@ suite('ConnectionConfig', () => {
 			databaseName: 'database',
 			userName: 'user',
 			password: 'password',
-			authenticationType: '',
+			authenticationType: 'SqlLogin',
 			savePassword: true,
 			groupFullName: 'test',
 			groupId: 'test',
@@ -869,5 +1085,79 @@ suite('ConnectionConfig', () => {
 		let result = await config.isDuplicateEdit(connectionProfile, matcher);
 
 		assert(result, 'Matcher did not find a match for identical edit');
+	});
+
+	test('isDuplicateEdit should return false if an edit profile has different properties', async () => {
+		let originalProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let changedProfile: IConnectionProfile = {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'Integrated',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'server3-2',
+			connectionName: undefined!
+		};
+		let existingProfile = ConnectionProfile.convertToProfileStore(capabilitiesService.object, {
+			serverName: 'server3',
+			databaseName: 'database',
+			userName: 'user',
+			password: 'password',
+			authenticationType: 'SqlLogin',
+			savePassword: true,
+			groupFullName: 'test',
+			groupId: 'test',
+			serverCapabilities: undefined,
+			getOptionsKey: () => { return 'connectionId'; },
+			getOptionKeyIdNames: undefined!,
+			matches: undefined!,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: 'server3',
+			connectionName: undefined!
+		});
+
+		let _testConnections = [...deepClone(testConnections), existingProfile, originalProfile];
+
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
+
+		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changedProfile);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+
+		let matcher = (a: IConnectionProfile, b: IConnectionProfile) => a.id === originalProfile.id;
+		let result = await config.isDuplicateEdit(connectionProfile, matcher);
+
+		assert(!result, 'Matcher matched the profile even when it had a different property');
 	});
 });

@@ -57,13 +57,13 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: SqlInstanceArcTreeDataProvider.containerId,
 			label: SqlInstanceArcTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/azureArcSqlManagedInstance.svg'),
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServerContainer
-		}];
+		};
 	}
 }

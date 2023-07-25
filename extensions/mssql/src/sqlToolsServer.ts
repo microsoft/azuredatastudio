@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
 import * as azurecore from 'azurecore';
-import { getAzureAuthenticationLibraryConfig, getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getEnableConnectionPoolingConfig, getEnableSqlAuthenticationProviderConfig, getOrDownloadServer, getParallelMessageProcessingConfig, logDebug, TracingLevel } from './utils';
 import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -99,7 +99,7 @@ export class SqlToolsServer {
 	 * @param client SqlOpsDataClient instance
 	 */
 	private async handleEncryptionKeyEventNotification(client: SqlOpsDataClient) {
-		if (getAzureAuthenticationLibraryConfig() === 'MSAL' && getEnableSqlAuthenticationProviderConfig()) {
+		if (getEnableSqlAuthenticationProviderConfig()) {
 			let azureCoreApi = await this.getAzureCoreAPI();
 			let onDidEncryptionKeysChanged = azureCoreApi.onEncryptionKeysUpdated;
 			// Register event listener from Azure Core extension and
@@ -163,9 +163,12 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 		launchArgs.push('--parallel-message-processing');
 	}
 	const enableSqlAuthenticationProvider = getEnableSqlAuthenticationProviderConfig();
-	const azureAuthLibrary = getAzureAuthenticationLibraryConfig();
-	if (azureAuthLibrary === 'MSAL' && enableSqlAuthenticationProvider === true) {
+	if (enableSqlAuthenticationProvider === true) {
 		launchArgs.push('--enable-sql-authentication-provider');
+	}
+	const enableConnectionPooling = getEnableConnectionPoolingConfig()
+	if (enableConnectionPooling) {
+		launchArgs.push('--enable-connection-pooling');
 	}
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
@@ -219,7 +222,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 		synchronize: {
 			configurationSection: [
 				Constants.extensionConfigSectionName,
-				Constants.telemetryConfigSectionName
+				Constants.telemetryConfigSectionName,
+				Constants.queryEditorConfigSectionName,
 			]
 		},
 		providerId: Constants.providerId,

@@ -254,13 +254,6 @@
 	position: relative;
 }
 
-.monaco-list-row .connection-profile .connection-profile-container .server-group-color {
-	width: 5px;
-	height: 18px;
-	border-radius: 2.5px;
-	margin-top: 2.5px;
-}
-
 .monaco-list-row .connection-profile .connection-profile-container .icon .connection-status-badge {
 	position: absolute;
 	bottom: 0;

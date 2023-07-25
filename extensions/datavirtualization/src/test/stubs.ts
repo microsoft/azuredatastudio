@@ -480,6 +480,9 @@ export class MockComponentBuilder implements azdata.ComponentBuilder<any, any> {
 }
 
 export class MockModelBuilder implements azdata.ModelBuilder {
+	executionPlan(): azdata.ComponentBuilder<azdata.ExecutionPlanComponent, azdata.ExecutionPlanComponentProperties> {
+		throw new Error('Method not implemented.');
+	}
 	infoBox(): azdata.ComponentBuilder<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> {
 		throw new Error('Method not implemented.');
 	}

@@ -56,13 +56,13 @@ export class AzureResourceSynapseWorkspaceTreeDataProvider extends ResourceTreeD
 		};
 	}
 
-	public async getRootChildren(): Promise<TreeItem[]> {
-		return [{
+	public async getRootChild(): Promise<TreeItem> {
+		return {
 			id: AzureResourceSynapseWorkspaceTreeDataProvider.containerId,
 			label: AzureResourceSynapseWorkspaceTreeDataProvider.containerLabel,
 			iconPath: this._extensionContext.asAbsolutePath('resources/azureSynapseAnalytics.svg'),
 			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.synapseWorkspaceContainer
-		}];
+		};
 	}
 }

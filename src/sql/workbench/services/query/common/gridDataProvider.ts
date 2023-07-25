@@ -46,6 +46,8 @@ export interface IGridDataProvider {
 
 	shouldRemoveNewLines(): boolean;
 
+	shouldSkipNewLineAfterTrailingLineBreak(): boolean;
+
 	getColumnHeaders(range: Slick.Range): string[] | undefined;
 
 	readonly canSerialize: boolean;
@@ -101,6 +103,7 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 		const eol = provider.getEolString();
 		const valueSeparator = '\t';
 		const shouldRemoveNewLines = provider.shouldRemoveNewLines();
+		const shouldSkipNewLineAfterTrailingLineBreak = provider.shouldSkipNewLineAfterTrailingLineBreak();
 
 		// Merge the selections to get the unique columns and unique rows.
 		const gridRanges = GridRange.fromSlickRanges(selections);
@@ -154,7 +157,9 @@ export async function copySelectionToClipboard(clipboardService: IClipboardServi
 			});
 		}
 		if (!cancellationTokenSource.token.isCancellationRequested) {
-			resultString += rowValues.join(eol);
+			resultString += rowValues.reduce(
+				(prevVal, currVal, idx) => prevVal + (idx > 0 && (!prevVal?.endsWith(eol) || !shouldSkipNewLineAfterTrailingLineBreak) ? eol : '') + currVal,
+			);
 			await clipboardService.writeText(resultString);
 		}
 	}, cancellationTokenSource);

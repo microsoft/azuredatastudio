@@ -304,7 +304,8 @@ describe('Manage Package Dialog', () => {
 				separator: undefined!,
 				propertiesContainer: undefined!,
 				infoBox: undefined!,
-				slider: undefined!
+				slider: undefined!,
+				executionPlan: undefined!,
 			}
 		};
 
