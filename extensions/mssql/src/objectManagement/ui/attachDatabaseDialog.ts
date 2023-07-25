@@ -16,7 +16,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _databasesToAttach: DatabaseFileData[] = [];
 	private _databasesTable: azdata.TableComponent;
 	// private _associatedFilesTable: azdata.TableComponent;
-	private _databaseFiles: any[];
+	private _databaseFiles: any[] = [];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, AttachDatabaseDialogTitle, 'AttachDatabase');
@@ -50,12 +50,9 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
-		this._databaseFiles.push(['Test1', 'Test2', 'Test3', 'Test4']);
-		await this._databasesTable.updateProperties({
-			data: this._databaseFiles,
-			height: getTableHeight(this._databaseFiles.length, DefaultMinTableRowCount)
-		});
-		this.onFormFieldChange();
+		let testLabel = `Test${this._databaseFiles.length}`;
+		this._databaseFiles.push([testLabel, testLabel, testLabel, testLabel]);
+		await this.updateTableData();
 	}
 
 	private async onRemoveFilesButtonClicked(): Promise<void> {
@@ -63,9 +60,13 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let deletedRowCount = 0;
 		for (let row of selectedRows) {
 			let index = row - deletedRowCount;
-			this._databaseFiles.splice(index);
+			this._databaseFiles.splice(index, 1);
 			deletedRowCount++;
 		}
+		await this.updateTableData();
+	}
+
+	private async updateTableData(): Promise<void> {
 		await this._databasesTable.updateProperties({
 			data: this._databaseFiles,
 			height: getTableHeight(this._databaseFiles.length, DefaultMinTableRowCount)
