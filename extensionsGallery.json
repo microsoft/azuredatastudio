@@ -5099,7 +5099,7 @@
 						"fallbackAssetUri": "fallbackAssetUri",
 						"files": [
 							{
-								"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+								"assetType": "Microsoft.SQLOps.DownloadPage",
 								"source": "https://github.com/MikhailProfile/SearchEverywhere/releases/download/ads/ads-searcheverywhere-1.0.0.vsix"
 							},
 							{
@@ -5149,7 +5149,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 83
+							"count": 100
 						}
 					]
 				}
