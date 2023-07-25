@@ -1429,8 +1429,8 @@ export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.serv
 
 // Desktop tabs
 export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.migration.label', 'New migration');
-export const DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.import.migration.label', 'Import migration');
-export const DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.import.migration.description', 'Import migration to Azure SQL');
+export const DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.import.migration.label', 'Import assessment');
+export const DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.import.migration.description', 'Import assessment to Azure SQL');
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');

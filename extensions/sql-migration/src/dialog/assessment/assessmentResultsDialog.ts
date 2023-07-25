@@ -14,7 +14,8 @@ import { MigrationTargetType } from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
 import { SqlMigrationImpactedObjectInfo } from '../../service/contracts';
-import { Page, SavedInfo } from '../../models/stateMachine';
+import { parseAssessmentReport } from './assessmentUtils';
+
 
 export type Issues = {
 	description: string,
@@ -79,6 +80,7 @@ export class AssessmentResultsDialog {
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this.dialog.okButton.position = 'left';
+			//if (disabled) this.dialog.okButton.enabled = false;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
@@ -97,7 +99,7 @@ export class AssessmentResultsDialog {
 							const assessmentReport = JSON.parse(assessmentReportJson);
 
 							this._title = constants.ASSESSMENT_TITLE(this.serverName);
-							const savedInfo = await AssessmentResultsDialog.createSavedInfo(assessmentReport);
+							const savedInfo = parseAssessmentReport(assessmentReport);
 							this._model.savedInfo = savedInfo;
 							await this._model.loadSavedInfo();
 
@@ -183,109 +185,5 @@ export class AssessmentResultsDialog {
 
 	public get isOpen(): boolean {
 		return this._isOpen;
-	}
-
-	public static async createSavedInfo(assessmentReport: any): Promise<any> {
-		const saveInfo: SavedInfo = {
-			closedPage: Page.ImportAssessment,
-			databaseAssessment: [],
-			databaseList: [],
-			databaseInfoList: [],
-			migrationTargetType: null,
-			azureAccount: null,
-			azureTenant: null,
-			subscription: null,
-			location: null,
-			resourceGroup: null,
-			targetServerInstance: null,
-			migrationMode: null,
-			networkContainerType: null,
-			networkShares: [],
-			blobs: [],
-			targetDatabaseNames: [],
-			sqlMigrationService: undefined,
-			serverAssessment: null,
-			skuRecommendation: null,
-			serviceResourceGroup: null,
-			serviceSubscription: null,
-		};
-
-		if (assessmentReport.DmaVersion !== undefined) { //DMA assessment format import
-			saveInfo.serverAssessment = {
-				issues: assessmentReport.ServerInstances[0].AssessmentRecommendations || [],
-				databaseAssessments: assessmentReport.Databases?.map((d: any) => {
-					return {
-						name: d.Name,
-						issues: d.AssessmentRecommendations,
-						errors: d.Errors || [],
-					};
-				}),
-				errors: assessmentReport.Errors ?? [],
-			};
-		} else { //ADS assessment format import
-			const server = assessmentReport.Servers[0];
-			saveInfo.serverAssessment = {
-				issues: server.ServerAssessments.map((a: any) => {
-					return {
-						rulesetVersion: "",
-						rulesetName: "",
-						ruleId: "",
-						targetType: a.AppliesToMigrationTargetPlatform,
-						checkId: a.RuleMetadata.Id,
-						tags: a.RuleMetadata.Tags,
-						displayName: a.RuleMetadata.Id,
-						description: a.RuleMetadata.Description,
-						helpLink: a.RuleMetadata.HelpLink,
-						level: a.RuleMetadata.Level,
-						timestamp: a.Timestamp,
-						kind: a.IssueCategory,
-						message: a.RuleMetadata.Message,
-						appliesToMigrationTargetPlatform: a.AppliesToMigrationTargetPlatform,
-						issueCategory: a.IssueCategory,
-						databaseName: a.DatabaseName,
-						impactedObjects: a.ImpactedObjects,
-						databaseRestoreFails: a.DatabaseRestoreFails,
-					}
-				}) ?? [], // server issues
-				databaseAssessments: server.Databases.map((d: any) => {
-					return {
-						name: d.Properties.Name,
-						issues: d.DatabaseAssessments.map((a: any) => {
-							return {
-								rulesetVersion: "",
-								rulesetName: "",
-								ruleId: "",
-								targetType: a.AppliesToMigrationTargetPlatform,
-								checkId: a.RuleMetadata.Id,
-								tags: a.RuleMetadata.Tags,
-								displayName: a.RuleMetadata.Id,
-								description: a.RuleMetadata.Description,
-								helpLink: a.RuleMetadata.HelpLink,
-								level: a.RuleMetadata.Level,
-								timestamp: a.Timestamp,
-								kind: a.IssueCategory,
-								message: a.RuleMetadata.Message,
-								appliesToMigrationTargetPlatform: a.AppliesToMigrationTargetPlatform,
-								issueCategory: a.IssueCategory,
-								databaseName: a.DatabaseName,
-								impactedObjects: a.ImpactedObjects.map((io: any) => {
-									return {
-										name: io.Name,
-										objectType: io.ObjectType,
-										impactDetail: io.ImpactDetail,
-										databaseObjectType: io.DatabaseObjectType,
-									}
-								}),
-								databaseRestoreFails: a.DatabaseRestoreFails,
-							}
-						}),
-						errors: d.Errors || [],
-					}
-				}) ?? [], //database issues
-				errors: assessmentReport.Errors ?? [],
-			};
-		}
-
-		return saveInfo;
 	}
 }

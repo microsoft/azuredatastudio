@@ -9,13 +9,12 @@ import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
-//import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
 import * as utils from '../api/utils';
 import * as fs from 'fs';
 import { getSourceConnectionProfile } from '../api/sqlUtils';
-import { Page, SavedInfo } from '../models/stateMachine';
+import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
 
 export const EmptySettingValue = '-';
 
@@ -163,7 +162,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 						const assessmentReport = JSON.parse(assessmentReportJson);
 
 						const serverName = (await getSourceConnectionProfile()).serverName;
-						const saveInfo = await this.createSavedInfo(assessmentReport);
+						const saveInfo = parseAssessmentReport(assessmentReport);
 						await this.context.globalState.update(`${this.mementoToken}.${serverName}`, saveInfo);
 					} catch (err) {
 						void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
@@ -220,110 +219,6 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				return await vscode.commands.executeCommand(actionId, args);
 			}));
 		return feedbackButton;
-	}
-
-	public async createSavedInfo(assessmentReport: any): Promise<any> {
-		const saveInfo: SavedInfo = {
-			closedPage: Page.ImportAssessment,
-			databaseAssessment: [],
-			databaseList: [],
-			databaseInfoList: [],
-			migrationTargetType: null,
-			azureAccount: null,
-			azureTenant: null,
-			subscription: null,
-			location: null,
-			resourceGroup: null,
-			targetServerInstance: null,
-			migrationMode: null,
-			networkContainerType: null,
-			networkShares: [],
-			blobs: [],
-			targetDatabaseNames: [],
-			sqlMigrationService: undefined,
-			serverAssessment: null,
-			skuRecommendation: null,
-			serviceResourceGroup: null,
-			serviceSubscription: null,
-		};
-
-		if (assessmentReport.DmaVersion !== undefined) { //DMA assessment format import
-			saveInfo.serverAssessment = {
-				issues: assessmentReport.ServerInstances[0].AssessmentRecommendations || [],
-				databaseAssessments: assessmentReport.Databases?.map((d: any) => {
-					return {
-						name: d.Name,
-						issues: d.AssessmentRecommendations,
-						errors: d.Errors || [],
-					};
-				}),
-				errors: assessmentReport.Errors ?? [],
-			};
-		} else { //ADS assessment format import
-			const server = assessmentReport.Servers[0];
-			saveInfo.serverAssessment = {
-				issues: server.ServerAssessments.map((a: any) => {
-					return {
-						rulesetVersion: "",
-						rulesetName: "",
-						ruleId: "",
-						targetType: a.AppliesToMigrationTargetPlatform,
-						checkId: a.RuleMetadata.Id,
-						tags: a.RuleMetadata.Tags,
-						displayName: a.RuleMetadata.Id,
-						description: a.RuleMetadata.Description,
-						helpLink: a.RuleMetadata.HelpLink,
-						level: a.RuleMetadata.Level,
-						timestamp: a.Timestamp,
-						kind: a.IssueCategory,
-						message: a.RuleMetadata.Message,
-						appliesToMigrationTargetPlatform: a.AppliesToMigrationTargetPlatform,
-						issueCategory: a.IssueCategory,
-						databaseName: a.DatabaseName,
-						impactedObjects: a.ImpactedObjects,
-						databaseRestoreFails: a.DatabaseRestoreFails,
-					}
-				}) ?? [], // server issues
-				databaseAssessments: server.Databases.map((d: any) => {
-					return {
-						name: d.Properties.Name,
-						issues: d.DatabaseAssessments.map((a: any) => {
-							return {
-								rulesetVersion: "",
-								rulesetName: "",
-								ruleId: "",
-								targetType: a.AppliesToMigrationTargetPlatform,
-								checkId: a.RuleMetadata.Id,
-								tags: a.RuleMetadata.Tags,
-								displayName: a.RuleMetadata.Id,
-								description: a.RuleMetadata.Description,
-								helpLink: a.RuleMetadata.HelpLink,
-								level: a.RuleMetadata.Level,
-								timestamp: a.Timestamp,
-								kind: a.IssueCategory,
-								message: a.RuleMetadata.Message,
-								appliesToMigrationTargetPlatform: a.AppliesToMigrationTargetPlatform,
-								issueCategory: a.IssueCategory,
-								databaseName: a.DatabaseName,
-								impactedObjects: a.ImpactedObjects.map((io: any) => {
-									return {
-										name: io.Name,
-										objectType: io.ObjectType,
-										impactDetail: io.ImpactDetail,
-										databaseObjectType: io.DatabaseObjectType,
-									}
-								}),
-								databaseRestoreFails: a.DatabaseRestoreFails,
-							}
-						}),
-						errors: d.Errors || [],
-					}
-				}) ?? [], //database issues
-				errors: assessmentReport.Errors ?? [],
-			};
-		}
-
-		return saveInfo;
 	}
 
 	protected showDialogMessage(
