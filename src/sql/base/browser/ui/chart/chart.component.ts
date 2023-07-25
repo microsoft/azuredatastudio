@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Component, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
-import * as chartjs from 'chart.js/auto';
+import * as chartjs from 'chart.js';
 import { mixin } from 'sql/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { BubbleChartPoint, ChartOptions, ScatterChartPoint } from 'azdata';
@@ -31,6 +31,7 @@ export class Chart<T extends ChartOptions> extends Disposable {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
+		chartjs.Chart.register(...chartjs.registerables);
 		super();
 	}
 
