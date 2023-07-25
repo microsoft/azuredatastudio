@@ -27,6 +27,8 @@ export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
 	private _disposables: vscode.Disposable[] = [];
+
+	public skuRecommendationPage!: SKURecommendationPage;
 	constructor(
 		private readonly extensionContext: vscode.ExtensionContext,
 		private readonly _model: MigrationStateModel,
@@ -81,7 +83,7 @@ export class WizardController {
 
 		this._wizardObject.customButtons = [validateButton, tdeMigrateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
-		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
+		this.skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
@@ -89,7 +91,7 @@ export class WizardController {
 
 		const pages: MigrationWizardPage[] = [
 			databaseSelectorPage,
-			skuRecommendationPage,
+			this.skuRecommendationPage,
 			targetSelectionPage,
 			integrationRuntimePage,
 			databaseBackupPage,

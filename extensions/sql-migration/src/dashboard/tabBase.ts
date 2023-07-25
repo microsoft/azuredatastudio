@@ -11,6 +11,10 @@ import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
 import { ShowStatusMessageDialog } from '../dialog/generic/genericDialogs';
+import * as utils from '../api/utils';
+import * as fs from 'fs';
+import { getSourceConnectionProfile } from '../api/sqlUtils';
+import { parseAssessmentReport } from '../dialog/assessment/assessmentUtils';
 
 export const EmptySettingValue = '-';
 
@@ -45,6 +49,8 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	protected openMigrationsFcn!: (status: AdsMigrationStatus) => Promise<void>;
 	protected serviceContextChangedEvent!: vscode.EventEmitter<ServiceContextChangeEvent>;
 	protected statusBar!: DashboardStatusBar;
+
+	private mementoToken: string = 'sqlMigration.assessmentResults';
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
@@ -134,6 +140,43 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 				return await vscode.commands.executeCommand(actionId, args);
 			}));
 		return newMigrationButton;
+	}
+
+	protected createImportMigrationButton(): azdata.ButtonComponent {
+		const importMigrationButton = this.view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: loc.DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL,
+				description: loc.DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION,
+				height: 24,
+				iconHeight: 24,
+				iconWidth: 24,
+				iconPath: IconPathHelper.addNew,
+			}).component();
+		this.disposables.push(
+			importMigrationButton.onDidClick(async () => {
+				const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
+				if (filepath) {
+					try {
+						const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
+						const assessmentReport = JSON.parse(assessmentReportJson);
+
+						const serverName = (await getSourceConnectionProfile()).serverName;
+						const saveInfo = parseAssessmentReport(assessmentReport);
+						await this.context.globalState.update(`${this.mementoToken}.${serverName}`, saveInfo);
+					} catch (err) {
+						void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
+					}
+
+					const actionId = MenuCommands.StartMigration;
+					const args = {
+						extensionId: SqlMigrationExtensionId,
+						issueTitle: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
+					};
+					await vscode.commands.executeCommand(actionId, args);
+				}
+			}));
+		return importMigrationButton;
 	}
 
 	protected createNewSupportRequestButton(): azdata.ButtonComponent {
