@@ -153,6 +153,7 @@ export const ASSESSMENT_MIGRATION_WARNING_SQLDB = localize('sql.migration.assess
 export const ASSESSMENT_MIGRATION_WARNING_SQLMI = localize('sql.migration.assessment.migration.warning.sqlmi', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+export const LOAD_ASSESSMENT_REPORT = localize('sql.migration.load.assessment.report', "Load assessment report");
 export const SAVE_ASSESSMENT_REPORT = localize('sql.migration.save.assessment.report', "Save assessment report");
 export const SAVE_RECOMMENDATION_REPORT = localize('sql.migration.save.recommendation.report', "Save recommendation report");
 export function SAVE_ASSESSMENT_REPORT_SUCCESS(filePath: string): string {
@@ -1427,6 +1428,8 @@ export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.serv
 
 // Desktop tabs
 export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.migration.label', 'New migration');
+export const DESKTOP_IMPORT_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.import.migration.label', 'Import assessment');
+export const DESKTOP_IMPORT_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.import.migration.description', 'Import assessment to Azure SQL');
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
