@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl } from '../constants';
+import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
@@ -43,6 +43,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private engineEdition: azdata.DatabaseEngineEdition;
 
 	private processorsTab: azdata.Tab;
+	private readonly processorsTabId: string = 'processorsId';
 	private processorsSection: azdata.GroupContainer;
 	private autoSetProcessorAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
 	private autoSetProcessorIOAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
@@ -62,6 +63,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				break;
 			case this.memoryTabId:
 				helpUrl = ViewMemoryServerPropertiesDocUrl;
+			case this.processorsTabId:
+				helpUrl = ViewProcessorsServerPropertiesDocUrl;
 			default:
 				break;
 		}
@@ -279,6 +282,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			tableGroup
 		], false);
 
-		this.processorsTab = this.createTab('processorsId', localizedConstants.ProcessorsText, this.processorsSection);
+		this.processorsTab = this.createTab(this.processorsTabId, localizedConstants.ProcessorsText, this.processorsSection);
 	}
 }
