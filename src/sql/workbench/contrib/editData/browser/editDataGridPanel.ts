@@ -193,7 +193,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
-
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
@@ -352,7 +351,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
 		this.lastClickedCell = { row, column };
 
-		// Skip processing if the cell hasn't moved or is marked not dirty.
+		// Skip processing if the cell hasn't moved and is marked not dirty. (Need to handle last cell on the last row)
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
 		}
