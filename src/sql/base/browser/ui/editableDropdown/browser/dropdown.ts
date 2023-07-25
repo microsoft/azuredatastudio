@@ -142,11 +142,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		}));
 
 		const inputTracker = this._register(DOM.trackFocus(this._input.inputElement));
-		inputTracker.onDidBlur(() => {
+		this._register(inputTracker.onDidBlur(() => {
 			if (!this._selectList.isDOMFocused()) {
 				this._onBlur.fire();
 			}
-		});
+		}));
 
 		/*
 			This event listener is intended to close the expanded drop down when the ADS shell window is resized
@@ -243,7 +243,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 		}));
 
-		this._input.onDidChange(e => {
+		this._register(this._input.onDidChange(e => {
 			if (this._dataSource.values.length > 0) {
 				this._dataSource.filter = e;
 				if (this._isDropDownVisible) {
@@ -253,7 +253,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			if (this.fireOnTextChange) {
 				this.value = e;
 			}
-		});
+		}));
 
 		this.onBlur(() => {
 			this._hideList();
