@@ -10,6 +10,7 @@ Azure Data Studio 1.45.0 is the latest general availability (GA) release.
 ### What's new in 1.45.0
 
 | New Item | Details |
+| --- | --- |
 | Connection | Introduced support for Tenant hierarchy in the Azure tree |
 | Connection | Updated Azure tree icons |
 | Connection | Updated the Azure tree in the Connection Pane to show only available resource types |
