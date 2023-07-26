@@ -300,15 +300,8 @@ export const RestrictAccessText = localize('objectManagement.databaseProperties.
 export const DatabaseScopedConfigurationTabHeader = localize('objectManagement.databaseProperties.databaseProperties.databaseScopedConfigurationTabHeader', "Database Scoped Configuration");
 export const DatabaseScopedOptionsColumnHeader = localize('objectManagement.databaseProperties.databaseScopedOptionsColumnHeader', "Database Scoped Options");
 export const ValueForPrimaryColumnHeader = localize('objectManagement.databaseProperties.valueForPrimaryColumnHeader', "Value for Primary");
-export const PrimaryValueResetToDefaultButtonText = localize('objectManagement.databaseProperties.primaryValueResetToDefaultButtonText', "Reset to default");
 export const ValueForSecondaryColumnHeader = localize('objectManagement.databaseProperties.valueForSecondaryColumnHeader', "Value for Secondary");
 export const SetSecondaryText = localize('objectManagement.databaseProperties.setSecondaryText', "Set Secondary same as Primary");
-export const ELEVATE_ONLINE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_online_dsc_option', "ELEVATE_ONLINE");
-export const ELEVATE_RESUMABLE_DSC_OptionText = localize('objectManagement.databaseProperties.elevate_resumable_dsc_option', "ELEVATE_RESUMABLE");
-export const MAXDOP = localize('objectManagement.databaseProperties.maxdop', "MAXDOP");
-export const IDENTITY_CACHE = localize('objectManagement.databaseProperties.identity_cache', "IDENTITY_CACHE");
-export const DW_COMPATIBILITY_LEVEL = localize('objectManagement.databaseProperties.dw_compatibility_level', "DW_COMPATIBILITY_LEVEL");
-export const PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES = localize('objectManagement.databaseProperties.paused_resumable_index_abort_duration_minutes', "PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

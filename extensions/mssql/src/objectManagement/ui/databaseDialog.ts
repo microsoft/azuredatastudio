@@ -13,6 +13,7 @@ import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '..
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
+import { ids } from 'webpack';
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -474,19 +475,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const dscPrimaryValueGroup = await this.InitializeDscValueSection();
 		const dscMaxDopPrimaryValueGroup = await this.InitilaizeDscMaxDopValueSection();
 		const dscPausedResumableIndexPrimaryValueGroup = await this.InitilaizeDscPausedResumableIndexPrimarySection();
-		this.dscTabSectionsContainer.push(this.createGroup('', [
-			this.dscTable,
-			dscPrimaryValueGroup,
-			dscMaxDopPrimaryValueGroup,
-			dscPausedResumableIndexPrimaryValueGroup]
-			, true));
+		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, dscPrimaryValueGroup, dscMaxDopPrimaryValueGroup, dscPausedResumableIndexPrimaryValueGroup], true));
 		this.disposables.push(
 			this.dscTable.onRowSelected(
 				async (selectedRow) => {
 					this.currentRowId = this.dscTable.selectedRows[0];
-					const row = this.dscTable.data[this.currentRowId];
-
-					await this.validateUpdateToggleDscPrimaryAndSecondaryOptions(row);
+					await this.validateUpdateToggleDscPrimaryAndSecondaryOptions();
 				}
 			)
 		);
@@ -494,9 +488,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	/**
 	 * Validating the selected database scoped configuration and updating the primary and secondary dropdown options and their selected values
-	 * @param row selected row in the database scoped configuration table
 	 */
-	private async validateUpdateToggleDscPrimaryAndSecondaryOptions(row: any[]): Promise<void> {
+	private async validateUpdateToggleDscPrimaryAndSecondaryOptions(): Promise<void> {
 		// Update the primary and secondary dropdown options based on the selected database scoped configuration
 		const isSecondaryCheckboxChecked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary === this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
 
@@ -508,8 +501,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		await this.dscSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
-		//  Cannot set the 'ELEVATE_RESUMABLE' option for the secondaries replica while this option is only allowed to be set for the primary
-		if (row[0] === localizedConstants.ELEVATE_ONLINE_DSC_OptionText || row[0] === localizedConstants.ELEVATE_RESUMABLE_DSC_OptionText) {
+		//  Cannot set the 'ELEVATE_ONLINE (11) and ELEVATE_RESUMABLE (12)' option for the secondaries replica while this option is only allowed to be set for the primary
+		if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 11 || this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 12) {
 			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
 			await this.valueForPrimaryInput.updateProperties({
 				values: this.viewInfo.dscElevateOptions
@@ -517,8 +510,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			});
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
 		}
-		// MAXDOP option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
-		else if (row[0] === localizedConstants.MAXDOP) {
+		// MAXDOP (1) option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
+		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 1) {
 			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
 			await this.dscMaxDopSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-120px' });
 			this.setMaxDopSecondaryCheckbox.checked = isSecondaryCheckboxChecked;
@@ -526,13 +519,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.maxDopPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
 			await this.maxDopSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
 		}
-		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX' option for the secondaries replica while this option is only allowed to be set for the primary.
-		else if (row[0] === localizedConstants.PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES) {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-174px' });
+		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
+		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 25) {
+			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
 			await this.valueForPausedResumableIndexPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
 		}
-		// Cannot set the 'IDENTITY_CACHE' option for the secondaries replica while this option is only allowed to be set for the primary.
-		else if (row[0] === localizedConstants.IDENTITY_CACHE) {
+		// Cannot set the 'IDENTITY_CACHE (6)' option for the secondaries replica while this option is only allowed to be set for the primary.
+		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 6) {
 			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
 			await this.valueForPrimaryInput.updateProperties({
 				values: this.viewInfo.dscOnOffOptions
@@ -540,8 +533,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			});
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
 		}
-		// DW compatibily level options accepts 1(Enabled) or 0(Disabled) values as primary and secondary values
-		else if (row[0] === localizedConstants.DW_COMPATIBILITY_LEVEL) {
+		// DW_COMPATIBILITY_LEVEL (26) options accepts 1(Enabled) or 0(Disabled) values as primary and secondary values
+		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 26) {
 			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
 			await this.dscSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'visible' });
 			this.setSecondaryCheckbox.checked = isSecondaryCheckboxChecked;
@@ -648,9 +641,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.dscTable.data[this.currentRowId][1] = newValue;
 			// Update the secondary value with the primary, when the set seconadry checkbox is checked
 			if (this.setSecondaryCheckbox.checked
-				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].name !== localizedConstants.IDENTITY_CACHE
-				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].name !== localizedConstants.ELEVATE_ONLINE_DSC_OptionText
-				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].name !== localizedConstants.ELEVATE_RESUMABLE_DSC_OptionText) {
+				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 6
+				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 11
+				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 12) {
 				this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 				this.dscTable.data[this.currentRowId][2] = newValue;
 			}
