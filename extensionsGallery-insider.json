@@ -5169,7 +5169,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://github.com/MikhailProfile/SearchEverywhere/blob/main/png/search.png?raw=true"
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/png/search.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
