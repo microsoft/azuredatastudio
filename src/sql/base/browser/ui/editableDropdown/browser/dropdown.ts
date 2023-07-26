@@ -112,9 +112,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input.select-container'));
 		this._inputContainer.style.width = '100%';
 		this._inputContainer.style.height = '100%';
+
 		this._selectListContainer = DOM.$('div');
 		this._selectListContainer.style.backgroundColor = opt.contextBackground;
 		this._selectListContainer.style.outline = `1px solid ${opt.contextBorder}`;
+
 		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
 				// @SQLTODO
@@ -141,11 +143,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		}));
 
 		const inputTracker = this._register(DOM.trackFocus(this._input.inputElement));
-		inputTracker.onDidBlur(() => {
+		this._register(inputTracker.onDidBlur(() => {
 			if (!this._selectList.isDOMFocused()) {
 				this._onBlur.fire();
 			}
-		});
+		}));
 
 		/*
 			This event listener is intended to close the expanded drop down when the ADS shell window is resized
@@ -167,14 +169,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 					break;
 				case KeyCode.Escape:
 					if (this._isDropDownVisible) {
-						this._input.validate();
 						this._onBlur.fire();
 						this._hideList();
 						e.stopPropagation();
 					}
 					break;
 				case KeyCode.Tab:
-					this._input.validate();
 					this._onBlur.fire();
 					this._hideList();
 					break;
@@ -244,7 +244,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 		}));
 
-		this._input.onDidChange(e => {
+		this._register(this._input.onDidChange(e => {
 			if (this._dataSource.values.length > 0) {
 				this._dataSource.filter = e;
 				if (this._isDropDownVisible) {
@@ -254,12 +254,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			if (this.fireOnTextChange) {
 				this.value = e;
 			}
-		});
+		}));
 
-		this.onBlur(() => {
+		this._register(this.onBlur(() => {
 			this._hideList();
-			this._input.validate();
-		});
+		}));
 
 		this._register(this._selectList);
 		this._register(this._input);
@@ -316,6 +315,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	private _hideList(): void {
 		this.contextViewService.hideContextView();
 		this._inputContainer.setAttribute('aria-expanded', 'false');
+		// Show error for input box in case the user closed the dropdown without selecting anything, like by hitting Escape
+		this.input.validate();
 	}
 
 	private _updateDropDownList(): void {
@@ -323,17 +324,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		const selectedIndex = this._dataSource.filteredValues.indexOf(this.value);
 		this._selectList.setSelection(selectedIndex !== -1 ? [selectedIndex] : []);
 
-		let width = this._inputContainer.clientWidth;
-
-		// Find the longest option in the list and set our width to that (max 500px)
-		const longestOption = this._dataSource.filteredValues.reduce((previous, current) => {
-			return previous.length > current.length ? previous : current;
-		}, '');
-		this._widthControlElement.innerText = longestOption;
-
 		const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
 		const longestOptionWidth = DOM.getTotalWidth(this._widthControlElement);
-		width = clamp(longestOptionWidth, inputContainerWidth, 500);
+		let width = clamp(longestOptionWidth, inputContainerWidth, 500);
 
 		const height = Math.min(this._dataSource.filteredValues.length * this.getHeight(), this._options.maxHeight ?? 500);
 		this._selectListContainer.style.width = `${width}px`;
@@ -345,6 +338,13 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		if (vals) {
 			this._dataSource.filter = undefined;
 			this._dataSource.values = vals;
+
+			// Find the longest option in the list to set the width of the dropdown
+			let longestOption = this._dataSource.values.reduce((previous, current) => {
+				return previous.length > current.length ? previous : current;
+			}, '');
+			this._widthControlElement.innerText = longestOption;
+
 			if (this._isDropDownVisible) {
 				this._updateDropDownList();
 			}
@@ -357,9 +357,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public set value(val: string) {
-		this._input.value = val;
-		if (this._previousValue !== val) {
+		// A value can be changed either by selecting an option from the dropdown list or editing the text field directly.
+		// If you try to select the same dropdown value again after changing the text field directly, that change should
+		// still be applied, which is why we check both _previousValue and _input.value.
+		if (this._previousValue !== val || this._input.value !== val) {
 			this._previousValue = val;
+			this._input.value = val;
 			this._onValueChange.fire(val);
 		}
 	}
@@ -378,7 +381,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (!this._input.hasFocus() && this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._dataSource.values.some(i => i === value)) {
+		if (this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._isDropDownVisible && !this._dataSource.values.some(i => i === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,
@@ -417,5 +420,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	public get options(): IDropdownOptions {
 		return this._options;
+	}
+
+	public set strictSelection(val: boolean | undefined) {
+		this._options.strictSelection = val;
 	}
 }
