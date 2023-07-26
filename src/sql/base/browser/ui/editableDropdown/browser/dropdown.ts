@@ -77,6 +77,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	private _options: IDropdownOptions;
 	private _dataSource = new DropdownDataSource();
 	public fireOnTextChange?: boolean;
+	private _previousValue: string;
 
 	private _onBlur = this._register(new Emitter<void>());
 	public onBlur: Event<void> = this._onBlur.event;
@@ -356,8 +357,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public set value(val: string) {
-		if (this._input.value !== val) {
-			this._input.value = val;
+		this._input.value = val;
+		if (this._previousValue !== val) {
+			this._previousValue = val;
 			this._onValueChange.fire(val);
 		}
 	}
