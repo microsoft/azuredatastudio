@@ -49,8 +49,8 @@
 }
 
 .monaco-workbench.vs input, .monaco-workbench.hc-black input, .monaco-workbench.hc-light input, .monaco-workbench.vs-dark input {
-	color: var(--color-input-text, #000);
-	background-color: var(--color-input-background, #e2e2e2);
+	color: var(--color-input-text, #000000);
+	background-color: var(--color-input-background, #E5E5E5);
 }
 
 .editDataGrid .slick-cell.selected {
@@ -155,8 +155,8 @@ slick-grid.active .editDataGrid .slick-cell.selected {
 	--color-grid-link-hover: #ff8033;
 	--color-grid-dirty-background: #FFF;
 	--color-grid-dirty-text: #000;
-	--color-input-background: #e2e2e2;
-	--color-input-text: #000;
+	--color-input-background: var(--vscode-input-background);
+	--color-input-text: var(--color-content);
 }
 
 .hc-light .slickgridContainer {
@@ -173,8 +173,8 @@ slick-grid.active .editDataGrid .slick-cell.selected {
 	--color-grid-link-hover: #0b93ff;
 	--color-grid-dirty-background: #FFF;
 	--color-grid-dirty-text: #000;
-	--color-input-background: var(--background-color, #e2e2e2);
-	--color-input-text: var(--color-content, #000);
+	--color-input-background: var(--vscode-input-background);
+	--color-input-text: var(--color-content);
 }
 
 .vs-dark .slickgridContainer {
@@ -191,8 +191,8 @@ slick-grid.active .editDataGrid .slick-cell.selected {
 	--color-grid-link-hover: #ff8033;
 	--color-grid-dirty-background: #4d4d4d;
 	--color-grid-dirty-text: #E5E5E5;
-	--color-input-background: #e2e2e2;
-	--color-input-text: #000;
+	--color-input-background: var(--vscode-input-background);
+	--color-input-text: var(--color-content);
 }
 
 .vs .slickgridContainer {
@@ -209,8 +209,8 @@ slick-grid.active .editDataGrid .slick-cell.selected {
 	--color-grid-link-hover: #0b93ff;
 	--color-grid-dirty-background: #CCC;
 	--color-grid-dirty-text: #101010;
-	--color-input-background: var(--background-color, #e2e2e2);
-	--color-input-text: var(--color-content, #000);
+	--color-input-background: var(--vscode-input-background);
+	--color-input-text: var(--color-content);
 }
 
 
