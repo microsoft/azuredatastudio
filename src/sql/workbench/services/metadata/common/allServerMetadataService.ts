@@ -5,13 +5,20 @@
 
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
+import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export class AllServerMetadataService implements IAllServerMetadataService {
+export class AllServerMetadataService extends Disposable implements IAllServerMetadataService {
 	public _serviceBrand: undefined;
 	private _providers = new Map<string, azdata.metadata.AllServerMetadataProvider>();
 
-	constructor() {
+	constructor(
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService
+	) {
+		super();
+
+		this._register(this._connectionManagementService.onConnect(async (e) => await this.getAllServerMetadata(e)));
 	}
 
 	/**
@@ -46,12 +53,13 @@ export class AllServerMetadataService implements IAllServerMetadataService {
 
 	/**
 	 * Gets all database server metadata in the form of create table scripts for all tables
-	 * @param providerId The ID of the registered provider
-	 * @param ownerUri Connection's owner URI
+	 * @param connectionParams Connection params of the server to get metadata for.
 	 */
-	public async getAllServerMetadata(providerId: string, ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult> {
-		const handler = this.getProvider(providerId);
+	public async getAllServerMetadata(connectionParams: IConnectionParams): Promise<azdata.metadata.AllServerMetadataResult> {
+		const providerName = connectionParams.connectionProfile.providerName;
+		const handler = this.getProvider(providerName);
 		if (handler) {
+			const ownerUri = connectionParams.connectionUri;
 			return await handler.getAllServerMetadata(ownerUri);
 		}
 		else {
