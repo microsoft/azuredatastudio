@@ -136,7 +136,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	protected override async validateInput(): Promise<string[]> {
 		let errors = await super.validateInput();
-		if (this.viewInfo.collationNames?.length > 0 && !this.viewInfo.collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
+		let collationNames = this.viewInfo.collationNames?.options;
+		if (collationNames?.length > 0 && !collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
 			errors.push(localizedConstants.CollationNotValidError(this.objectInfo.collationName ?? ''));
 		}
 		return errors;
@@ -158,11 +159,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
-		if (this.viewInfo.loginNames?.length > 0) {
-			this.objectInfo.owner = this.viewInfo.loginNames[0];
+		let loginNames = this.viewInfo.loginNames?.options;
+		if (loginNames?.length > 0) {
+			let defaultIndex = this.viewInfo.loginNames.defaultValueIndex;
+			this.objectInfo.owner = loginNames[defaultIndex];
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value as string;
-			}, this.viewInfo.loginNames, this.viewInfo.loginNames[0]);
+			}, loginNames, loginNames[defaultIndex]);
 			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
 		}
 
@@ -171,35 +174,43 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	private initializeOptionsSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		if (this.viewInfo.collationNames?.length > 0) {
-			this.objectInfo.collationName = this.viewInfo.collationNames[0];
+		let collationNames = this.viewInfo.collationNames?.options;
+		if (collationNames?.length > 0) {
+			let defaultIndex = this.viewInfo.collationNames.defaultValueIndex;
+			this.objectInfo.collationName = collationNames[defaultIndex];
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
-			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0], true, DefaultInputWidth, true, true);
+			}, collationNames, collationNames[defaultIndex], true, DefaultInputWidth, true, true);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
 
-		if (this.viewInfo.recoveryModels?.length > 0) {
-			this.objectInfo.recoveryModel = this.viewInfo.recoveryModels[0];
+		let recoveryModels = this.viewInfo.recoveryModels?.options;
+		if (recoveryModels?.length > 0) {
+			let defaultIndex = this.viewInfo.recoveryModels.defaultValueIndex;
+			this.objectInfo.recoveryModel = recoveryModels[defaultIndex];
 			let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async () => {
 				this.objectInfo.recoveryModel = recoveryDropbox.value as string;
-			}, this.viewInfo.recoveryModels, this.viewInfo.recoveryModels[0]);
+			}, recoveryModels, recoveryModels[defaultIndex]);
 			containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 		}
 
-		if (this.viewInfo.compatibilityLevels?.length > 0) {
-			this.objectInfo.compatibilityLevel = this.viewInfo.compatibilityLevels[0];
+		let compatibilityLevels = this.viewInfo.compatibilityLevels?.options;
+		if (compatibilityLevels?.length > 0) {
+			let defaultIndex = this.viewInfo.compatibilityLevels.defaultValueIndex;
+			this.objectInfo.compatibilityLevel = compatibilityLevels[defaultIndex];
 			let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async () => {
 				this.objectInfo.compatibilityLevel = compatibilityDropbox.value as string;
-			}, this.viewInfo.compatibilityLevels, this.viewInfo.compatibilityLevels[0]);
+			}, compatibilityLevels, compatibilityLevels[defaultIndex]);
 			containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
 		}
 
-		if (this.viewInfo.containmentTypes?.length > 0) {
-			this.objectInfo.containmentType = this.viewInfo.containmentTypes[0];
+		let containmentTypes = this.viewInfo.containmentTypes?.options;
+		if (containmentTypes?.length > 0) {
+			let defaultIndex = this.viewInfo.containmentTypes.defaultValueIndex;
+			this.objectInfo.containmentType = containmentTypes[defaultIndex];
 			let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async () => {
 				this.objectInfo.containmentType = containmentDropbox.value as string;
-			}, this.viewInfo.containmentTypes, this.viewInfo.containmentTypes[0]);
+			}, containmentTypes, containmentTypes[defaultIndex]);
 			containers.push(this.createLabelInputContainer(localizedConstants.ContainmentTypeText, containmentDropbox));
 		}
 
@@ -282,29 +293,34 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Database Properties - Options Tab
 	private initializeOptionsGeneralSection(): void {
 		let containers: azdata.Component[] = [];
+
 		// Collation
+		let collationNames = this.viewInfo.collationNames.options;
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
 			this.objectInfo.collationName = newValue as string;
-		}, this.viewInfo.collationNames, this.objectInfo.collationName, true, DefaultInputWidth, true, true);
+		}, collationNames, this.objectInfo.collationName, true, DefaultInputWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
 		// Recovery Model
-		let displayOptionsArray = this.viewInfo.recoveryModels.length === 0 ? [this.objectInfo.recoveryModel] : this.viewInfo.recoveryModels;
-		let isEnabled = this.viewInfo.recoveryModels.length === 0 ? false : true;
+		let recoveryModels = this.viewInfo.recoveryModels.options;
+		let displayOptionsArray = recoveryModels.length === 0 ? [this.objectInfo.recoveryModel] : recoveryModels;
+		let isEnabled = recoveryModels.length === 0 ? false : true;
 		let recoveryDropbox = this.createDropdown(localizedConstants.RecoveryModelText, async (newValue) => {
 			this.objectInfo.recoveryModel = newValue as string;
 		}, displayOptionsArray, this.objectInfo.recoveryModel, isEnabled);
 		containers.push(this.createLabelInputContainer(localizedConstants.RecoveryModelText, recoveryDropbox));
 
 		// Compatibility Level
+		let compatibilityLevels = this.viewInfo.compatibilityLevels.options;
 		let compatibilityDropbox = this.createDropdown(localizedConstants.CompatibilityLevelText, async (newValue) => {
 			this.objectInfo.compatibilityLevel = newValue as string;
-		}, this.viewInfo.compatibilityLevels, this.objectInfo.compatibilityLevel);
+		}, compatibilityLevels, this.objectInfo.compatibilityLevel);
 		containers.push(this.createLabelInputContainer(localizedConstants.CompatibilityLevelText, compatibilityDropbox));
 
 		// Containment Type
-		displayOptionsArray = this.viewInfo.containmentTypes.length === 0 ? [this.objectInfo.containmentType] : this.viewInfo.containmentTypes;
-		isEnabled = this.viewInfo.containmentTypes.length === 0 ? false : true;
+		let containmentTypes = this.viewInfo.containmentTypes.options;
+		displayOptionsArray = containmentTypes.length === 0 ? [this.objectInfo.containmentType] : containmentTypes;
+		isEnabled = containmentTypes.length === 0 ? false : true;
 		let containmentDropbox = this.createDropdown(localizedConstants.ContainmentTypeText, async (newValue) => {
 			this.objectInfo.containmentType = newValue as string;
 		}, displayOptionsArray, this.objectInfo.containmentType, isEnabled);
@@ -422,20 +438,22 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.azureEdition = defaultEdition;
 
 			// Service Level Objective options
-			let sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === defaultEdition);
-			let serviceLevels = sloDetails?.details ?? [];
-			this.objectInfo.azureServiceLevelObjective = serviceLevels[0];
+			let sloDetails = this.viewInfo.azureServiceLevelObjectives.find(details => details.editionDisplayName === defaultEdition);
+			let serviceLevels = sloDetails?.editionOptions.options ?? [];
+			let defaultIndex = sloDetails?.editionOptions.defaultValueIndex ?? 0;
+			this.objectInfo.azureServiceLevelObjective = serviceLevels[defaultIndex];
 			let serviceLevelDropbox = this.createDropdown(localizedConstants.CurrentSLOText, async () => {
 				this.objectInfo.azureServiceLevelObjective = serviceLevelDropbox.value as string;
-			}, serviceLevels, serviceLevels[0]);
+			}, serviceLevels, serviceLevels[defaultIndex]);
 
 			// Maximum Database Size options
-			let sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === defaultEdition);
-			let maxSizes = sizeDetails?.details ?? [];
-			this.objectInfo.azureMaxSize = maxSizes[0];
+			let sizeDetails = this.viewInfo.azureMaxSizes.find(details => details.editionDisplayName === defaultEdition);
+			let maxSizes = sizeDetails?.editionOptions.options ?? [];
+			defaultIndex = sizeDetails?.editionOptions.defaultValueIndex ?? 0;
+			this.objectInfo.azureMaxSize = maxSizes[defaultIndex];
 			let sizeDropbox = this.createDropdown(localizedConstants.MaxSizeText, async () => {
 				this.objectInfo.azureMaxSize = sizeDropbox.value as string;
-			}, maxSizes, maxSizes[0]);
+			}, maxSizes, maxSizes[defaultIndex]);
 
 			// Azure Database Edition options
 			let editionDropbox = this.createDropdown(localizedConstants.EditionText, async () => {
@@ -444,15 +462,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 				// Update dropboxes for SLO and Size, since they're edition specific
 				sloDetails = this.viewInfo.azureServiceLevelObjectives?.find(details => details.editionDisplayName === edition);
-				serviceLevels = sloDetails?.details ?? [];
+				serviceLevels = sloDetails?.editionOptions.options ?? [];
+				defaultIndex = sloDetails?.editionOptions.defaultValueIndex ?? 0;
 				serviceLevelDropbox.loading = true;
-				await serviceLevelDropbox.updateProperties({ value: serviceLevels[0], values: serviceLevels });
+				await serviceLevelDropbox.updateProperties({ value: serviceLevels[defaultIndex], values: serviceLevels });
 				serviceLevelDropbox.loading = false;
 
 				sizeDetails = this.viewInfo.azureMaxSizes?.find(details => details.editionDisplayName === edition);
-				maxSizes = sizeDetails?.details ?? [];
+				maxSizes = sizeDetails?.editionOptions.options ?? [];
+				defaultIndex = sizeDetails?.editionOptions.defaultValueIndex ?? 0;
 				sizeDropbox.loading = true;
-				await sizeDropbox.updateProperties({ value: maxSizes[0], values: maxSizes });
+				await sizeDropbox.updateProperties({ value: maxSizes[defaultIndex], values: maxSizes });
 				sizeDropbox.loading = false;
 			}, this.viewInfo.azureEditions, defaultEdition);
 
