@@ -493,10 +493,11 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Update the primary and secondary dropdown options based on the selected database scoped configuration
 		const isSecondaryCheckboxChecked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary === this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
 
-		// TODO:await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important' });
+		// Set all primary and secondary groups to hidden and then show the required group
 		await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
 		await this.dscMaxDopSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
 		await this.dscMaxDopSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
+		await this.dscPausedResumableIndexPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
 		await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 		await this.dscSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -504,10 +505,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		//  Cannot set the 'ELEVATE_ONLINE (11) and ELEVATE_RESUMABLE (12)' option for the secondaries replica while this option is only allowed to be set for the primary
 		if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 11 || this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 12) {
 			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.valueForPrimaryInput.updateProperties({
-				values: this.viewInfo.dscElevateOptions
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
-			});
+			if (JSON.stringify(this.valueForPrimaryInput.values) !== JSON.stringify(this.viewInfo.dscElevateOptions) ||
+				this.valueForPrimaryInput.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
+				await this.valueForPrimaryInput.updateProperties({
+					values: this.viewInfo.dscElevateOptions
+					, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
+				});
+			}
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
 		}
 		// MAXDOP (1) option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
@@ -521,16 +525,19 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 25) {
-			await this.dscPausedResumableIndexPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
+			await this.dscPausedResumableIndexPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-345px' });
 			await this.valueForPausedResumableIndexPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
 		}
 		// Cannot set the 'IDENTITY_CACHE (6)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 6) {
 			await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.valueForPrimaryInput.updateProperties({
-				values: this.viewInfo.dscOnOffOptions
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
-			});
+			if (JSON.stringify(this.valueForPrimaryInput.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
+				this.valueForPrimaryInput.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
+				await this.valueForPrimaryInput.updateProperties({
+					values: this.viewInfo.dscOnOffOptions
+					, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
+				});
+			}
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
 		}
 		// DW_COMPATIBILITY_LEVEL (26) options accepts 1(Enabled) or 0(Disabled) values as primary and secondary values
@@ -540,14 +547,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.setSecondaryCheckbox.checked = isSecondaryCheckboxChecked;
 			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
 
-			await this.valueForPrimaryInput.updateProperties({
-				values: this.viewInfo.dscEnableDisableOptions
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
-			});
-			await this.valueForSecondaryInput.updateProperties({
-				values: this.viewInfo.dscEnableDisableOptions
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
-			});
+			if (JSON.stringify(this.valueForPrimaryInput.values) !== JSON.stringify(this.viewInfo.dscEnableDisableOptions) ||
+				this.valueForPrimaryInput.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
+				await this.valueForPrimaryInput.updateProperties({
+					values: this.viewInfo.dscEnableDisableOptions
+					, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
+				});
+			}
+			if (JSON.stringify(this.valueForSecondaryInput.values) !== JSON.stringify(this.viewInfo.dscEnableDisableOptions) ||
+				this.valueForSecondaryInput.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary) {
+				await this.valueForSecondaryInput.updateProperties({
+					values: this.viewInfo.dscEnableDisableOptions
+					, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
+				});
+			}
 		}
 		// All other options accepts primary and seconday values as ON/OFF/PRIMARY(only secondary)
 		else {
@@ -556,14 +569,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.setSecondaryCheckbox.checked = isSecondaryCheckboxChecked;
 			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
 
-			await this.valueForPrimaryInput.updateProperties({
-				values: this.viewInfo.dscOnOffOptions
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
-			});
-			await this.valueForSecondaryInput.updateProperties({
-				values: this.viewInfo.dscOnOffOptions
-				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
-			});
+			if (JSON.stringify(this.valueForPrimaryInput.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
+				this.valueForPrimaryInput.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
+				await this.valueForPrimaryInput.updateProperties({
+					values: this.viewInfo.dscOnOffOptions
+					, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
+				});
+			}
+			if (JSON.stringify(this.valueForSecondaryInput.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
+				this.valueForSecondaryInput.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary) {
+				await this.valueForSecondaryInput.updateProperties({
+					values: this.viewInfo.dscOnOffOptions
+					, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
+				});
+			}
 		}
 	}
 
