@@ -521,7 +521,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 25) {
-			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
+			await this.dscPausedResumableIndexPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
 			await this.valueForPausedResumableIndexPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
 		}
 		// Cannot set the 'IDENTITY_CACHE (6)' option for the secondaries replica while this option is only allowed to be set for the primary.
@@ -579,9 +579,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.dscTable.data[this.currentRowId][1] = newValue;
 				await this.updateDscTable(this.dscTable.data);
 			}
-		}, '', true, 'number', 150, true, 0, 32767);
+		}, '', true, 'number', 150, false, 0, 32767);
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.maxDopPrimaryInput);
-		this.dscMaxDopPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
+		this.dscMaxDopPrimaryValueGroup = this.createGroup('', [primaryContainer], false, true);
 		await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
 		// Apply Primary To Secondary checkbox
@@ -592,7 +592,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				: this.dscOriginalData[this.currentRowId].valueForSecondary;
 			await this.maxDopSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
 		}, true);
-		this.dscMaxDopSecondaryCheckboxValueGroup = this.createGroup('', [this.setMaxDopSecondaryCheckbox], true, true);
+		this.dscMaxDopSecondaryCheckboxValueGroup = this.createGroup('', [this.setMaxDopSecondaryCheckbox], false, true);
 		await this.dscMaxDopSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
 		// Value for Secondary
@@ -602,12 +602,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.dscTable.data[this.currentRowId][2] = newValue;
 				await this.updateDscTable(this.dscTable.data);
 			}
-		}, '', true, 'number', 150, true, 0, 32767);
+		}, '', true, 'number', 150, false, 0, 32767);
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.maxDopSecondaryInput);
-		this.dscMaxDopSecondaryValueGroup = this.createGroup('', [secondaryContainer], true, true);
+		this.dscMaxDopSecondaryValueGroup = this.createGroup('', [secondaryContainer], false, true);
 		await this.dscMaxDopSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
-		const maxDopGroup = this.createGroup('', [this.dscMaxDopPrimaryValueGroup, this.dscMaxDopSecondaryCheckboxValueGroup, this.dscMaxDopSecondaryValueGroup], true, true);
+		const maxDopGroup = this.createGroup('', [this.dscMaxDopPrimaryValueGroup, this.dscMaxDopSecondaryCheckboxValueGroup, this.dscMaxDopSecondaryValueGroup], false, true);
 		await maxDopGroup.updateCssStyles({ 'margin-left': '-10px' });
 		return maxDopGroup;
 	}
@@ -623,9 +623,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.dscTable.data[this.currentRowId][1] = newValue;
 				await this.updateDscTable(this.dscTable.data);
 			}
-		}, '', true, 'number', 150, true, 0, 71582);
+		}, '', true, 'number', 150, false, 0, 71582);
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPausedResumableIndexPrimaryInput);
-		this.dscPausedResumableIndexPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
+		this.dscPausedResumableIndexPrimaryValueGroup = this.createGroup('', [primaryContainer], false, true);
 		await this.dscPausedResumableIndexPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 		return this.dscPausedResumableIndexPrimaryValueGroup;
 	}
