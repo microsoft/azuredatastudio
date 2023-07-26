@@ -20,6 +20,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private optionsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
+	private activeTabId: string;
 
 	// Database properties options
 	// General Tab
@@ -56,14 +57,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private dscTabSectionsContainer: azdata.Component[] = [];
 	private dscTable: azdata.TableComponent;
 	private dscOriginalData: DatabaseScopedConfigurationsInfo[];
+	private currentRowId: number;
 	private valueForPrimaryInput: azdata.DropDownComponent;
 	private valueForSecondaryInput: azdata.DropDownComponent;
 	private setSecondaryCheckbox: azdata.CheckBoxComponent;
-	private currentRowId: number;
+	private maxDopPrimaryInput: azdata.InputBoxComponent;
+	private maxDopSecondaryInput: azdata.InputBoxComponent;
+	private setMaxDopSecondaryCheckbox: azdata.CheckBoxComponent;
+	private valueForPausedResumableIndexPrimaryInput: azdata.InputBoxComponent;
 	private dscPrimaryValueGroup: azdata.GroupContainer;
 	private dscSecondaryValueGroup: azdata.GroupContainer;
 	private dscSecondaryCheckboxValueGroup: azdata.GroupContainer;
-	private activeTabId: string;
+	private dscMaxDopPrimaryValueGroup: azdata.GroupContainer;
+	private dscMaxDopSecondaryValueGroup: azdata.GroupContainer;
+	private dscMaxDopSecondaryCheckboxValueGroup: azdata.GroupContainer;
+	private dscPausedResumableIndexPrimaryValueGroup: azdata.GroupContainer;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -463,10 +471,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultTableWidth
 		}).component();
 
-		const dscPrimaryValueGroup = await this.InitializeDscPrimaryValueGroup();
-		const dscSecondaryValueGroup = await this.InitializeDscSecondaryValueGroup();
-		const dscSecondaryCheckboxValueGroup = await this.InitializeDscSecondaryCheckboxValueGroup();
-		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, dscPrimaryValueGroup, dscSecondaryCheckboxValueGroup, dscSecondaryValueGroup/*, dscMaxDopPrimaryValueGroup*/], true));
+		const dscPrimaryValueGroup = await this.InitializeDscValueSection();
+		const dscMaxDopPrimaryValueGroup = await this.InitilaizeDscMaxDopValueSection();
+		const dscPausedResumableIndexPrimaryValueGroup = await this.InitilaizeDscPausedResumableIndexPrimarySection();
+		this.dscTabSectionsContainer.push(this.createGroup('', [
+			this.dscTable,
+			dscPrimaryValueGroup,
+			dscMaxDopPrimaryValueGroup,
+			dscPausedResumableIndexPrimaryValueGroup]
+			, true));
 		this.disposables.push(
 			this.dscTable.onRowSelected(
 				async (selectedRow) => {
@@ -488,6 +501,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const isSecondaryCheckboxChecked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary === this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
 
 		// TODO:await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'display': 'none !important' });
+		await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
+		await this.dscMaxDopSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
+		await this.dscMaxDopSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
 		await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 		await this.dscSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -500,6 +516,20 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				, value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 			});
 			await this.valueForSecondaryInput.updateProperties({ values: [], value: undefined });
+		}
+		// MAXDOP option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
+		else if (row[0] === localizedConstants.MAXDOP) {
+			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
+			await this.dscMaxDopSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-120px' });
+			this.setMaxDopSecondaryCheckbox.checked = isSecondaryCheckboxChecked;
+			await this.dscMaxDopSecondaryValueGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible', 'margin-top': '-85px' });
+			await this.maxDopPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
+			await this.maxDopSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
+		}
+		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX' option for the secondaries replica while this option is only allowed to be set for the primary.
+		else if (row[0] === localizedConstants.PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES) {
+			await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-174px' });
+			await this.valueForPausedResumableIndexPrimaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary });
 		}
 		// Cannot set the 'IDENTITY_CACHE' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (row[0] === localizedConstants.IDENTITY_CACHE) {
@@ -544,7 +574,74 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
-	private async InitializeDscPrimaryValueGroup(): Promise<azdata.GroupContainer> {
+	/**
+	 * Max limt for the MAXDOP primary value is a 16bit signed integer - 32767
+	 * @returns GroupContainer for MAXDOP primary value
+	 */
+	private async InitilaizeDscMaxDopValueSection(): Promise<azdata.GroupContainer> {
+		// Primary value
+		this.maxDopPrimaryInput = this.createInputBox(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
+			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
+			if (this.dscTable.data[this.currentRowId][1] !== newValue) {
+				this.dscTable.data[this.currentRowId][1] = newValue;
+				await this.updateDscTable(this.dscTable.data);
+			}
+		}, '', true, 'number', 150, true, 0, 32767);
+		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.maxDopPrimaryInput);
+		this.dscMaxDopPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
+		await this.dscMaxDopPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+
+		// Apply Primary To Secondary checkbox
+		this.setMaxDopSecondaryCheckbox = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
+			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
+			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = checked
+				? this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
+				: this.dscOriginalData[this.currentRowId].valueForSecondary;
+			await this.maxDopSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
+		}, true);
+		this.dscMaxDopSecondaryCheckboxValueGroup = this.createGroup('', [this.setMaxDopSecondaryCheckbox], true, true);
+		await this.dscMaxDopSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+
+		// Value for Secondary
+		this.maxDopSecondaryInput = this.createInputBox(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
+			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
+			if (this.dscTable.data[this.currentRowId][2] !== newValue) {
+				this.dscTable.data[this.currentRowId][2] = newValue;
+				await this.updateDscTable(this.dscTable.data);
+			}
+		}, '', true, 'number', 150, true, 0, 32767);
+		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.maxDopSecondaryInput);
+		this.dscMaxDopSecondaryValueGroup = this.createGroup('', [secondaryContainer], true, true);
+		await this.dscMaxDopSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+
+		const maxDopGroup = this.createGroup('', [this.dscMaxDopPrimaryValueGroup, this.dscMaxDopSecondaryCheckboxValueGroup, this.dscMaxDopSecondaryValueGroup], true, true);
+		await maxDopGroup.updateCssStyles({ 'margin-left': '-10px' });
+		return maxDopGroup;
+	}
+
+	/**
+	 * PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES wait time must be greater or equal to 0 and less or equal to 71582
+	 * @returns GroupContainer for Paused resumable index abort duration minutes primary value
+	 */
+	private async InitilaizeDscPausedResumableIndexPrimarySection(): Promise<azdata.GroupContainer> {
+		this.valueForPausedResumableIndexPrimaryInput = this.createInputBox(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
+			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
+			if (this.dscTable.data[this.currentRowId][1] !== newValue) {
+				this.dscTable.data[this.currentRowId][1] = newValue;
+				await this.updateDscTable(this.dscTable.data);
+			}
+		}, '', true, 'number', 150, true, 0, 71582);
+		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPausedResumableIndexPrimaryInput);
+		this.dscPausedResumableIndexPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
+		await this.dscPausedResumableIndexPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
+		return this.dscPausedResumableIndexPrimaryValueGroup;
+	}
+
+	/**
+	 * This method returns the primary and secondary values for all other database scoped configurations except the MAXDOP and Pause resumable index options
+	 * @returns GroupContainer
+	 */
+	private async InitializeDscValueSection(): Promise<azdata.GroupContainer> {
 		// Value for Primary
 		this.valueForPrimaryInput = this.createDropdown(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
@@ -560,14 +657,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.updateDscTable(this.dscTable.data);
 		}, [], '', true, 150)
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
-
 		this.dscPrimaryValueGroup = this.createGroup('', [primaryContainer], true, true);
 		await this.dscPrimaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
-		return this.dscPrimaryValueGroup;
-	}
-
-	private async InitializeDscSecondaryCheckboxValueGroup(): Promise<azdata.GroupContainer> {
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckbox = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
 			await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
@@ -576,14 +668,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				: this.dscOriginalData[this.currentRowId].valueForSecondary;
 			await this.valueForSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
 		}, true);
-
 		this.dscSecondaryCheckboxValueGroup = this.createGroup('', [this.setSecondaryCheckbox], true, true);
-		await this.dscSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '-13px' });
+		await this.dscSecondaryCheckboxValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
-		return this.dscSecondaryCheckboxValueGroup;
-	}
-
-	private async InitializeDscSecondaryValueGroup(): Promise<azdata.GroupContainer> {
 		// Value for Secondary
 		this.valueForSecondaryInput = this.createDropdown(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
 			if (!isUndefinedOrNull(newValue)) {
@@ -593,11 +680,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 		}, [], '', true, 150);
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
-
 		this.dscSecondaryValueGroup = this.createGroup('', [secondaryContainer], true, true);
-		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '-13px' });
+		await this.dscSecondaryValueGroup.updateCssStyles({ 'visibility': 'hidden' });
 
-		return this.dscSecondaryValueGroup;
+		const valueGroup = this.createGroup('', [this.dscPrimaryValueGroup, this.dscSecondaryCheckboxValueGroup, this.dscSecondaryValueGroup], true, true);
+		await valueGroup.updateCssStyles({ 'margin-left': '-10px' });
+		return valueGroup;
 	}
 
 	private async updateDscTable(data: any[][]): Promise<void> {

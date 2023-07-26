@@ -308,8 +308,7 @@ export const ELEVATE_RESUMABLE_DSC_OptionText = localize('objectManagement.datab
 export const MAXDOP = localize('objectManagement.databaseProperties.maxdop', "MAXDOP");
 export const IDENTITY_CACHE = localize('objectManagement.databaseProperties.identity_cache', "IDENTITY_CACHE");
 export const DW_COMPATIBILITY_LEVEL = localize('objectManagement.databaseProperties.dw_compatibility_level', "DW_COMPATIBILITY_LEVEL");
-export const DSCOptionEnabled = localize('objectManagement.databaseProperties.dSCOptionEnabled', "ENABLED");
-export const DSCOptionDisabled = localize('objectManagement.databaseProperties.dSCOptionDisabled', "DISABLED");
+export const PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES = localize('objectManagement.databaseProperties.paused_resumable_index_abort_duration_minutes', "PAUSED_RESUMABLE_INDEX_ABORT_DURATION_MINUTES");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
