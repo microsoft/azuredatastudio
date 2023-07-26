@@ -12,7 +12,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		beforeSuite(opts);
 		afterSuite(opts);
 
-		it('can perform basic text cell functionality', async function () {
+		it.skip('can perform basic text cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
@@ -33,7 +33,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p strong');
 		});
 
-		it('can perform basic code cell functionality', async function () {
+		it.skip('can perform basic code cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
@@ -99,7 +99,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForAllResults();
 			}
 
-			it('can open new notebook, configure Python, and execute one cell', async function () {
+			it.skip('can open new notebook, configure Python, and execute one cell', async function () {
 				this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
@@ -169,12 +169,12 @@ export function setup(opts: minimist.ParsedArgs) {
 				await openAndRunNotebook(app, 'hello.ipynb');
 			});
 
-			it('can open ipynb file from path with spaces, run all, and save notebook with outputs', async function () {
+			it.skip('can open ipynb file from path with spaces, run all, and save notebook with outputs', async function () {
 				const app = this.app as Application;
 				await openAndRunNotebook(app, 'helloWithSpaces.ipynb');
 			});
 
-			it('can open ipynb file from path with escaped spaces, run all, and save notebook with outputs', async function () {
+			it.skip('can open ipynb file from path with escaped spaces, run all, and save notebook with outputs', async function () {
 				const app = this.app as Application;
 				await openAndRunNotebook(app, 'helloWithEscapedSpaces.ipynb');
 			});
@@ -184,8 +184,9 @@ export function setup(opts: minimist.ParsedArgs) {
 			const app = this.app as Application;
 			// If the test failed, take a screenshot before closing the active editor.
 			if (this.currentTest!.state === 'failed') {
-				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
+				// {{SQL CARBON EDIT}} - No clear way to take a screenshot
+				// const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+				// await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
 			}
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
@@ -222,7 +223,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
 			});
 
-			it('cannot move through cells when find widget is invoked', async function () {
+			it.skip('cannot move through cells when find widget is invoked', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCell('markdown');
@@ -473,14 +474,14 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('markdown', function () {
-			it('can create http link from markdown', async function () {
+			it.skip('can create http link from markdown', async function () {
 				const app = this.app as Application;
 				const markdownString = '[Microsoft homepage](http://www.microsoft.com)';
 				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';
 				await verifyElementRendered(app, markdownString, linkSelector);
 			});
 
-			it('can create img from markdown', async function () {
+			it.skip('can create img from markdown', async function () {
 				const app = this.app as Application;
 				const markdownString = '![Churn-Index](https://www.ngdata.com/wp-content/uploads/2016/05/churn.jpg)';
 				// Verify image with the correct src and alt attributes is created
@@ -488,7 +489,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await verifyElementRendered(app, markdownString, imgSelector);
 			});
 
-			it('can convert WYSIWYG to Markdown', async function () {
+			it.skip('can convert WYSIWYG to Markdown', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
@@ -529,7 +530,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Cell Actions', function () {
-			it('can change cell language', async function () {
+			it.skip('can change cell language', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');

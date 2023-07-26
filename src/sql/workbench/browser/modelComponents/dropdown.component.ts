@@ -81,7 +81,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		if (this._editableDropDownContainer) {
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
-				strictSelection: false,
+				strictSelection: this.strictSelection ?? false,
 				placeholder: this.placeholder,
 				maxHeight: 125,
 				ariaLabel: '',
@@ -178,7 +178,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
-
+			this._editableDropdown.strictSelection = this.strictSelection;
 			if (this.placeholder) {
 				this._editableDropdown.input.setPlaceHolder(this.placeholder);
 			}
@@ -338,7 +338,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	}
 
 	public get placeholder(): string | undefined {
-		return this.getPropertyOrDefault<string>((props) => props.placeholder, undefined);
+		return this.getPropertyOrDefault<string | undefined>((props) => props.placeholder, undefined);
+	}
+
+	public get strictSelection(): boolean | undefined {
+		return this.getPropertyOrDefault<boolean | undefined>((props) => props.strictSelection, undefined);
 	}
 
 	public get validationErrorMessages(): string[] | undefined {
