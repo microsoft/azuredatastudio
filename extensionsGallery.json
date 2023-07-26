@@ -5082,7 +5082,7 @@
 					"flags": ""
 				},
 				{
-				"extensionId": "100",
+				"extensionId": "101",
 				"extensionName": "ads-searcheverywhere",
 				"displayName": "Search Everywhere",
 				"shortDescription": "Search tables, views, stored procedures, functions by name or code.",
