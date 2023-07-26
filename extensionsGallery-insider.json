@@ -5145,7 +5145,68 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				},
+				{
+					"extensionId": "101",
+					"extensionName": "ads-searcheverywhere",
+					"displayName": "Search Everywhere",
+					"shortDescription": "Search tables, views, stored procedures, functions by name or code.",
+					"publisher": {
+						"displayName": "MikhailT",
+						"publisherId": "MikhailT",
+						"publisherName": "MikhailT"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "07/23/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/MikhailProfile/SearchEverywhere/releases/tag/ads"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://github.com/MikhailProfile/SearchEverywhere/blob/main/png/search.png?raw=true"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/MikhailProfile/SearchEverywhere"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+			}
 			],
 			"resultMetadata": [
 				{
@@ -5153,7 +5214,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 84
+							"count": 85
 						}
 					]
 				}
