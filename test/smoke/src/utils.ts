@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import minimist = require('minimist');
+import minimist = require('minimist'); // {{SQL CARBON EDIT}} - import minimist
 import { Suite, Context } from 'mocha';
 import { dirname, join } from 'path';
 import { Application, ApplicationOptions, Logger } from '../../automation';
@@ -131,7 +131,7 @@ export function getRandomUserDataDir(options: ApplicationOptions): string {
 
 export function installCommonAfterHandlers(opts: minimist.ParsedArgs, appFn?: () => Application | undefined, joinFn?: () => Promise<unknown>) {
 	afterEach(async function () {
-		// {{ SQL CARBON EDIT }} - No clear way to take a screenshot
+		// {{SQL CARBON EDIT}} - No clear way to take a screenshot
 		// const app: Application = appFn?.() ?? this.app;
 
 		if (this.currentTest?.state === 'failed' && opts.screenshots) {
@@ -161,7 +161,7 @@ export function installCommonAfterHandlers(opts: minimist.ParsedArgs, appFn?: ()
 	});
 }
 
-// {{ SQL CARBON EDIT }} defined beforeSuite
+// {{SQL CARBON EDIT}} - defined beforeSuite
 export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>) {
 	beforeEach(async function () {
 		const app = this.app as Application;
@@ -192,7 +192,7 @@ export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts:
 	});
 }
 
-// {{ SQL CARBON EDIT }} defined afterSuite
+// {{SQL CARBON EDIT}} - defined afterSuite
 export function afterSuite(opts: minimist.ParsedArgs) {
 	afterEach(async function () {
 		const app = this.app as Application;

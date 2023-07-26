@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
-import { gracefulify } from 'graceful-fs';
+import { gracefulify } from 'graceful-fs'; // {{SQL CARBON EDIT}} - import graceful-fs
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as os from 'os';
 import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
-import * as vscodetest from '@vscode/test-electron';
+import * as vscodetest from '@vscode/test-electron'; // {{SQL CARBON EDIT}} - import @vscode/test-electron
 import { ncp } from 'ncp';
 import fetch from 'node-fetch';
-import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog } from '../../automation';
+import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog } from '../../automation'; // {{SQL CARBON EDIT}} - import measureAndLog
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
-import { retry } from './utils';
+import { retry } from './utils'; // {{SQL CARBON EDIT}} - import retry from utils
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
@@ -64,7 +64,7 @@ const opts = minimist(args, {
 	tracing?: boolean;
 	build?: string;
 	'stable-build'?: string;
-	browser?: 'webkit' | 'chromium' | 'firefox' | undefined;
+	browser?: 'webkit' | 'chromium' | 'firefox' | undefined; // {{SQL CARBON EDIT}} - string literal types
 	electronArgs?: string;
 	extensionsDir?: string; // {{SQL CARBON EDIT}}
 	log?: string; // {{SQL CARBON EDIT}}
@@ -437,7 +437,7 @@ function createOptions(): ApplicationOptions {
 		codePath: opts.build,
 		workspacePath,
 		userDataDir,
-		extensionsPath: extensionsPath ?? '',
+		extensionsPath: extensionsPath ?? '', // {{SQL CARBON EDIT}} null coalescing
 		logger,
 		logsPath: path.join(logsRootPath, 'suite_unknown'),
 		crashesPath: path.join(crashesRootPath, 'suite_unknown'),

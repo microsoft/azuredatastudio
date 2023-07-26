@@ -187,7 +187,7 @@ export class PlaywrightDriver {
 		await this.page.mouse.click(x + (xoffset ? xoffset : 0), y + (yoffset ? yoffset : 0));
 	}
 
-	// {{ SQL CARBON EDIT }} - defined doubleClick method
+	// {{SQL CARBON EDIT}} - defined doubleClick
 	async doubleClick(selector: string) {
 		await this.click(selector, 0, 0);
 		await this.timeout(60);

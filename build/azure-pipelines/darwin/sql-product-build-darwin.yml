@@ -150,7 +150,6 @@ steps:
     displayName: Run core smoke tests (Fail on Error)
     condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
-# lewissanchez TODO -- Should this be re-enabled too?
   # - script: |
   #     set -e
   #     node ./node_modules/playwright/install.js

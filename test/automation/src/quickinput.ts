@@ -17,7 +17,7 @@ export class QuickInput {
 
 	constructor(private code: Code) { }
 
-	// {{ SQL CARBON EDIT }} defined submit
+	// {{SQL CARBON EDIT}} - defined submit
 	async submit(text: string): Promise<void> {
 		await this.code.waitForSetValue(QuickInput.QUICK_INPUT_INPUT, text);
 		await this.code.dispatchKeybinding('enter');

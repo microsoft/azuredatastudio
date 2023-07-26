@@ -8,7 +8,7 @@ import { Code } from './code';
 import { QuickInput } from './quickinput';
 import { basename, isAbsolute } from 'path';
 
-// {{ SQL CARBON EDIT }} exporting enum for openQuickAccessWithRetry call to work in other test files
+// {{SQL CARBON EDIT}} - exporting enum for openQuickAccessWithRetry call to work in other test files
 export enum QuickAccessKind {
 	Files = 1,
 	Commands,

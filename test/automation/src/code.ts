@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import { join } from 'path'; // {SQL CARBON EDIT} - This import is longer needed because we're not needing to copy the vscode-notebook-test extension
+// import { join } from 'path'; // {{SQL CARBON EDIT}} - not used
 import * as cp from 'child_process';
 import * as os from 'os';
 import * as treekill from 'tree-kill';
@@ -205,9 +205,6 @@ export class Code {
 			`get text content '${selector}'`,
 			retryCount
 		);
-		// lewissanchez todo - Get rid of this commented out code because it's unreachable
-		// this.logger.log(`got text content element ${JSON.stringify(element)}`);
-		// return element.textContent;
 	}
 
 	async waitAndClick(selector: string, xoffset?: number, yoffset?: number, retryCount: number = 200): Promise<void> {
@@ -226,9 +223,6 @@ export class Code {
 	async waitForElements(selector: string, recursive: boolean, accept: (result: IElement[]) => boolean = result => result.length > 0): Promise<IElement[]> {
 		// {{SQL CARBON EDIT}} Print out found element
 		return await this.poll(() => this.driver.getElements(selector, recursive), accept, `get elements '${selector}'`);
-		// lewissanchez todo - Get rid of this commented out code below because it's unreachable
-		// this.logger.log(`got elements ${elements.map(element => JSON.stringify(element)).join('\n')}`);
-		// return elements;
 	}
 
 	async waitForElement(selector: string, accept: (result: IElement | undefined) => boolean = result => !!result, retryCount: number = 200): Promise<IElement> {
@@ -238,7 +232,7 @@ export class Code {
 		return element;
 	}
 
-	// {{SQL CARBON EDIT}} - Wait for element gone
+	// {{SQL CARBON EDIT}} - defined waitForElementGone
 	async waitForElementGone(selector: string, accept: (result: IElement | undefined) => boolean = result => !result, retryCount: number = 200): Promise<IElement> {
 		return await this.poll<IElement>(() => this.driver.getElements(selector).then(els => els[0]), accept, `get element gone '${selector}'`, retryCount);
 	}

@@ -71,7 +71,7 @@ export function setup(logger: Logger) {
 			await app.workbench.notebook.executeCellAction('.notebook-editor .monaco-list-row.focused div.monaco-toolbar .codicon-debug');
 			await app.workbench.notebook.waitForActiveCellEditorContents('test');
 		});
-		{{ SQL CARBON EDIT }} END
+		{{SQL CARBON EDIT}} END
 		*/
 	});
 }
