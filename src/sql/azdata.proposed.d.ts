@@ -1826,14 +1826,21 @@ declare module 'azdata' {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: AriaLiveValue
+		ariaLive?: AriaLiveValue;
 	}
 
 	export interface ContainerProperties extends ComponentProperties {
 		/**
 		 * Corresponds to the aria-live accessibility attribute for this component
 		 */
-		ariaLive?: AriaLiveValue
+		ariaLive?: AriaLiveValue;
+	}
+
+	export interface DropDownProperties {
+		/**
+		 * Whether or not an option in the list must be selected or a "new" option can be set. Only applicable when 'editable' is true. Default false.
+		 */
+		strictSelection?: boolean;
 	}
 
 	export interface NodeInfo {

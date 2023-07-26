@@ -169,6 +169,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
+	protected override async validateInput(): Promise<string[]> {
+		let errors = await super.validateInput();
+		if (this.viewInfo.collationNames?.length > 0 && !this.viewInfo.collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
+			errors.push(localizedConstants.CollationNotValidError(this.objectInfo.collationName ?? ''));
+		}
+		return errors;
+	}
+
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
@@ -202,7 +210,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.collationName = this.viewInfo.collationNames[0];
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
-			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
+			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0], true, DefaultInputWidth, true, true);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
 
@@ -312,7 +320,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Collation
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
 			this.objectInfo.collationName = newValue as string;
-		}, this.viewInfo.collationNames, this.objectInfo.collationName);
+		}, this.viewInfo.collationNames, this.objectInfo.collationName, true, DefaultInputWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
 		// Recovery Model

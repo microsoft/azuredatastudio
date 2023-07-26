@@ -161,7 +161,7 @@ export const MemberSectionHeader = localize('objectManagement.membersLabel', "Me
 export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
 
 // Database
-export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
+export const CollationNotValidError = (collationName: string) => localize('objectManagement.collationNotValidError', "The selected collation '{0}' is not valid. Please choose a different collation.", collationName);
 export const CollationText = localize('objectManagement.collationLabel', "Collation");
 export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
 export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");

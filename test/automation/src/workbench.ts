@@ -19,7 +19,7 @@ import { KeybindingsEditor } from './keybindings';
 import { Editors } from './editors';
 import { Code } from './code';
 import { Terminal } from './terminal';
-import { Notebook } from './notebook';
+// import { Notebook } from './notebook'; // {{SQL CARBON EDIT}} - This is for VSCode notebooks and not SQL notebooks
 import { Localization } from './localization';
 import { Task } from './task';
 
@@ -58,7 +58,7 @@ export class Workbench {
 	readonly settingsEditor: SettingsEditor;
 	readonly keybindingsEditor: KeybindingsEditor;
 	readonly terminal: Terminal;
-	readonly notebook: Notebook;
+	// readonly notebook: Notebook; // {{SQL CARBON EDIT}} - This is for VSCode notebooks and not SQL notebooks
 	readonly localization: Localization;
 	readonly task: Task;
 
@@ -105,7 +105,7 @@ export class Workbench {
 		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
 		this.taskPanel = new TaskPanel(code, this.quickaccess);
 		// {{END}}
-		this.notebook = new Notebook(this.quickaccess, this.quickinput, code);
+		// this.notebook = new Notebook(this.quickaccess, code); // {{SQL CARBON EDIT}} - This is for VSCode notebooks and not SQL notebooks
 		this.localization = new Localization(code);
 		this.task = new Task(code, this.editor, this.editors, this.quickaccess, this.quickinput, this.terminal);
 	}

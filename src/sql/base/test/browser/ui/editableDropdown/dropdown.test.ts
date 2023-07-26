@@ -68,4 +68,12 @@ suite('Editable dropdown tests', () => {
 		dropdown.input.value = options.values[0];
 		assert.strictEqual(count, 3, 'onValueChange event was fired with input box value change even after setting the fireOnTextChange to false');
 	});
+
+	test('selecting same dropdown value again after changing text field should update text field', () => {
+		const dropdown = new Dropdown(container, undefined, options);
+		dropdown.value = options.values[0];
+		dropdown.input.value = 'NotARealValue';
+		dropdown.value = options.values[0];
+		assert.strictEqual(dropdown.input.value, options.values[0]);
+	});
 });
