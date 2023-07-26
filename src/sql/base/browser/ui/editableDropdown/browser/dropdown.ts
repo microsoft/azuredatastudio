@@ -357,9 +357,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public set value(val: string) {
-		this._input.value = val;
-		if (this._previousValue !== val) {
+		// A value can be changed either by selecting an option from the dropdown list or editing the text field directly.
+		// If you try to select the same dropdown value again after changing the text field directly, that change should
+		// still be applied, which is why we check both _previousValue and _input.value.
+		if (this._previousValue !== val || this._input.value !== val) {
 			this._previousValue = val;
+			this._input.value = val;
 			this._onValueChange.fire(val);
 		}
 	}
