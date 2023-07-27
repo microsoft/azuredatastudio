@@ -631,19 +631,19 @@ export class EditDataGridPanel extends GridParentComponent {
 			// revert our last new row
 			this.removingNewRow = true;
 
-			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
-				.then(() => {
-					return this.removeRow(currentNewRowIndex);
-				}).then(() => {
-					// Restore cell value after deleting/refreshing new row.
-					if (this.currentCell && this.isNullRow(this.currentCell.row) && this.lastEnteredString) {
-						this.focusCell(this.currentCell.row, this.currentCell.column);
-						document.execCommand('selectAll');
-						document.execCommand('delete');
-						document.execCommand('insertText', false, this.lastEnteredString);
-					}
-					this.newRowVisible = false;
-				});
+			await this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex]);
+
+			await this.removeRow(currentNewRowIndex);
+
+			// Restore cell value after deleting/refreshing new row.
+			if (this.currentCell && this.isNullRow(this.currentCell.row) && this.lastEnteredString) {
+				this.focusCell(this.currentCell.row, this.currentCell.column);
+				document.execCommand('selectAll');
+				document.execCommand('delete');
+				document.execCommand('insertText', false, this.lastEnteredString);
+			}
+			this.newRowVisible = false;
+
 		} else {
 			try {
 				// Perform a revert row operation
@@ -669,28 +669,26 @@ export class EditDataGridPanel extends GridParentComponent {
 	private async revertCurrentCell(): Promise<void> {
 		this.cellRevertInProgress = true;
 		this.updateEnabledState(false);
-		this.dataService.revertCell(this.currentCell.row, this.currentCell.column - 1)
-			.then(() => {
-				// Need to reset data to what it was before in order for slickgrid to recognize the change.
-				this.dataSet.dataRows = new VirtualizedCollection(
-					this.windowSize,
-					index => { return {}; },
-					this.dataSet.totalRows,
-					this.loadDataFunction,
-				);
-				this.gridDataProvider = new AsyncDataProvider(this.dataSet.dataRows);
-				return this.refreshGrid();
-			}).then(() => {
-				// Restore cell value after deleting/refreshing new row.
-				if (this.currentCell && this.lastEnteredString) {
-					this.updateEnabledState(true);
-					this.focusCell(this.currentCell.row, this.currentCell.column);
-					document.execCommand('selectAll');
-					document.execCommand('delete');
-					document.execCommand('insertText', false, this.lastEnteredString);
-					this.cellRevertInProgress = false;
-				}
-			});
+		await this.dataService.revertCell(this.currentCell.row, this.currentCell.column - 1);
+
+		// Need to reset data to what it was before in order for slickgrid to recognize the change.
+		this.dataSet.dataRows = new VirtualizedCollection(
+			this.windowSize,
+			index => { return {}; },
+			this.dataSet.totalRows,
+			this.loadDataFunction,
+		);
+		this.gridDataProvider = new AsyncDataProvider(this.dataSet.dataRows);
+		await this.refreshGrid();
+		// Restore cell value after deleting/refreshing new row.
+		if (this.currentCell && this.lastEnteredString) {
+			this.updateEnabledState(true);
+			this.focusCell(this.currentCell.row, this.currentCell.column);
+			document.execCommand('selectAll');
+			document.execCommand('delete');
+			document.execCommand('insertText', false, this.lastEnteredString);
+			this.cellRevertInProgress = false;
+		}
 	}
 
 
