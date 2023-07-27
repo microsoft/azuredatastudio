@@ -634,8 +634,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
 			if (this.dscTable.data[this.currentRowId][1] !== newValue) {
 				this.dscTable.data[this.currentRowId][1] = newValue;
-				await this.updateDscTable(this.dscTable.data);
 			}
+			// Update the secondary value with the primary, when the set seconadry checkbox is checked
+			if (this.setSecondaryCheckboxForDropdowns.checked
+				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 25) {
+				this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
+				this.dscTable.data[this.currentRowId][2] = newValue;
+			}
+			await this.updateDscTable(this.dscTable.data);
 		}, '', true, 'number', 150, false, 0, 0);
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
 		this.dscPrimaryValueInputGroup = this.createGroup('', [primaryContainer], false, true);
