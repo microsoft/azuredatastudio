@@ -31,8 +31,7 @@ export interface IAllServerMetadataService {
 
 	/**
 	 * Gets all database server metadata in the form of create table scripts for all tables
-	 * @param providerName The name of the provider to get metadata for
 	 * @param ownerUri The URI of the connection to get metadata for
 	 */
-	getAllServerMetadata(providerName: string, ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult>;
+	getAllServerMetadata(ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult>;
 }
