@@ -477,10 +477,15 @@ export interface AzureEditionDetails {
 	details: string[];
 }
 
-export interface ProcessorDetails {
+export interface ProcessorAffinity {
 	processor: string;
 	processorAffinity: boolean;
 	processorIOAffinity: boolean;
+}
+
+export interface NumaNode {
+	numaNode: string,
+	processors: ProcessorAffinity[]
 }
 
 export interface Server extends ObjectManagement.SqlObject {
@@ -505,7 +510,7 @@ export interface Server extends ObjectManagement.SqlObject {
 	maxServerMemory: NumericServerProperty;
 	autoSetProcessorAffinityMaskForAll: boolean;
 	autoSetProcessorAffinityIOMaskForAll: boolean;
-	processorList: ProcessorDetails[];
+	processorList: NumaNode[];
 }
 
 export interface NumericServerProperty {
@@ -516,7 +521,7 @@ export interface NumericServerProperty {
 
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
-	processorList: ProcessorDetails[];
+	processorList: NumaNode[];
 }
 
 export interface DatabaseFile {

@@ -9,7 +9,7 @@ import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo } from '../interfaces';
+import { Server, ServerViewInfo, NumaNode } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -223,9 +223,54 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	private initializeProcessorsSection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
+		let nodes: NumaNode[] = this.objectInfo.processorList;
+		let nodeTableList: azdata.TableComponent[] = [];
+		let tableGroups: azdata.GroupContainer[] = [];
+		for (let node of nodes) {
+			let table = this.createProcessorTable(node);
+			nodeTableList.push(table);
+			tableGroups.push(this.createGroup(node.numaNode, [table], true));
+		}
+		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
+			this.objectInfo.autoSetProcessorAffinityMaskForAll = newValue;
+			for (let table of nodeTableList) {
+				let newData = table.data;
+				for (let i = 0; i < table.data.length; i++) {
+					if (newValue) {
+						// if affinity mask for all is checked, then uncheck the individual processors
+						newData[i][1] = false;
+					}
+				}
+				await this.setTableData(table, newData);
+			}
+		}, this.objectInfo.autoSetProcessorAffinityMaskForAll, isEnabled);
+
+		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
+			this.objectInfo.autoSetProcessorAffinityIOMaskForAll = newValue;
+			for (let table of nodeTableList) {
+				let newData = table.data;
+				for (let i = 0; i < table.data.length; i++) {
+					if (newValue) {
+						// if IO affinity mask for all is checked, then uncheck the individual processors
+						newData[i][2] = false;
+					}
+				}
+				await this.setTableData(table, newData);
+			}
+		}, this.objectInfo.autoSetProcessorAffinityIOMaskForAll, isEnabled);
+
+		this.processorsSection = this.createGroup('', [
+			this.autoSetProcessorAffinityMaskForAllCheckbox,
+			this.autoSetProcessorIOAffinityMaskForAllCheckbox,
+		], false);
+
+		this.processorsSection.addItems(tableGroups);
+		this.processorsTab = this.createTab(this.processorsTabId, localizedConstants.ProcessorsText, this.processorsSection);
+	}
+
+	private createProcessorTable(numaNode: NumaNode): azdata.TableComponent {
 		const cssClass = 'no-borders';
-		//let tableData = this.objectInfo.processorList.map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
-		let tableData = [{ processor: 'CPU 1', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 2', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 3', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 4', processorAffinity: true, processorIOAffinity: false }].map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
+		let tableData = numaNode.processors.map(row => [row.processor, row.processorAffinity, row.processorIOAffinity]);
 		let processorTable = this.createTable(localizedConstants.processorLabel,
 			[
 				<azdata.TableColumn>{
@@ -273,41 +318,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				}
 			}
 		}));
-
-		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
-			this.objectInfo.autoSetProcessorAffinityMaskForAll = newValue;
-			for (let i = 0; i < processorTable.data.length; i++) {
-				if (newValue) {
-					let newData = processorTable.data;
-					// if affinity mask for all is checked, then uncheck the individual processors
-					newData[i][1] = false;
-					processorTable.updateCells = newData[i][1];
-				}
-			}
-		}, this.objectInfo.autoSetProcessorAffinityMaskForAll, isEnabled);
-		const autoProcessorAffinityContainer = this.createLabelInputContainer(localizedConstants.autoSetProcessorAffinityMaskForAllText, this.autoSetProcessorAffinityMaskForAllCheckbox);
-
-		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
-			this.objectInfo.autoSetProcessorAffinityIOMaskForAll = newValue;
-			for (let i = 0; i < processorTable.data.length; i++) {
-				if (newValue) {
-					let newData = processorTable.data;
-					// if affinity mask for all is checked, then uncheck the individual processors
-					newData[i][2] = false;
-					processorTable.updateCells = newData[i][2];
-				}
-			}
-		}, this.objectInfo.autoSetProcessorAffinityIOMaskForAll, isEnabled);
-		const autoProcessorIOAffinityContainer = this.createLabelInputContainer(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, this.autoSetProcessorIOAffinityMaskForAllCheckbox);
-
-		let tableGroup = this.createGroup('', [processorTable], false);
-
-		this.processorsSection = this.createGroup('', [
-			autoProcessorAffinityContainer,
-			autoProcessorIOAffinityContainer,
-			tableGroup
-		], false);
-
-		this.processorsTab = this.createTab(this.processorsTabId, localizedConstants.ProcessorsText, this.processorsSection);
+		return processorTable;
 	}
 }
