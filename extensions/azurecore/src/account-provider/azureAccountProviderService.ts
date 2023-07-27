@@ -153,7 +153,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			}
 
 			// Case 4: Provider was added from JSON - register provider
-			if (provider.configKey !== loc.enablePublicCloudCamel && provider.configKey !== loc.enableUsGovCloudCamel && provider.configKey !== loc.enableChinaCloudCamel) {
+			if (provider.configKey !== Constants.enablePublicCloud && provider.configKey !== Constants.enableUsGovCloud && provider.configKey !== Constants.enableChinaCloud) {
 				providerChanges.push(this.registerAccountProvider(provider));
 				this.activeProviderCount++;
 			}

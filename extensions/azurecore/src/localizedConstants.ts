@@ -13,8 +13,6 @@ export const reload = localize('azurecore.reload', "Reload");
 export const cancel = localize('azurecore.reload', "Cancel");
 export const enablePublicCloud = localize('azurecore.enablePublicCloud', "Enable Public Cloud");
 export const enablePublicCloudCamel = localize('azurecore.enablePublicCloud', "enablePublicCloud");
-export const enableUsGovCloudCamel = localize('azurecore.enableUsGovCloud', "enableUsGovCloud");
-export const enableChinaCloudCamel = localize('azurecore.enableChinaCloud', "enableChinaCloud");
 
 export const australiaCentral = localize('azurecore.australiacentral', "Australia Central");
 export const australiaCentral2 = localize('azurecore.australiacentral2', "Australia Central 2");
