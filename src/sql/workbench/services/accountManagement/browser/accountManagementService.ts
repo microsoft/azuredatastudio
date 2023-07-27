@@ -25,11 +25,10 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
-import { ADAL_AUTH_LIBRARY, MSAL_AUTH_LIBRARY, AuthLibrary, AZURE_AUTH_LIBRARY_CONFIG, getAuthLibrary } from 'sql/workbench/services/accountManagement/common/utils';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { TelemetryAction, TelemetryError, TelemetryPropertyName, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryAction, TelemetryError, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { Iterable } from 'vs/base/common/iterator';
+import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -39,10 +38,10 @@ export class AccountManagementService implements IAccountManagementService {
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
 	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
-	private _authLibrary: AuthLibrary;
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
+	public providerMap = new Map<string, azdata.AccountProviderMetadata>();
 	protected readonly disposables = new DisposableStore();
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
@@ -63,8 +62,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@IQuickInputService private _quickInputService: IQuickInputService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.APPLICATION, StorageTarget.MACHINE);
@@ -75,12 +74,7 @@ export class AccountManagementService implements IAccountManagementService {
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
-		// Determine authentication library in use, to support filtering accounts respectively.
-		// When this value is changed a restart is required so there isn't a need to dynamically update this value at runtime.
-		this._authLibrary = getAuthLibrary(this._configurationService);
-
 		_storageService.onWillSaveState(() => this.shutdown());
-		this.registerListeners();
 	}
 
 	private get autoOAuthDialogController(): AutoOAuthDialogController {
@@ -123,6 +117,34 @@ export class AccountManagementService implements IAccountManagementService {
 
 	}
 
+	public async promptProvider(): Promise<string | undefined> {
+		const vals = Iterable.consume(this.providerMap.values())[0];
+
+		let pickedValue: string | undefined;
+		if (vals.length === 0) {
+			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+		}
+		if (vals.length > 1) {
+			const buttons: IQuickPickItem[] = vals.map(v => {
+				return { label: v.displayName } as IQuickPickItem;
+			});
+
+			const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+			pickedValue = picked?.label;
+		} else {
+			pickedValue = vals[0].displayName;
+		}
+
+		const v = vals.filter(v => v.displayName === pickedValue)?.[0];
+
+		if (!v) {
+			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+			return undefined;
+		}
+		return v.id;
+	}
+
 	/**
 	 * Asks the requested provider to prompt for an account
 	 * @param providerId ID of the provider to ask to prompt for an account
@@ -152,9 +174,6 @@ export class AccountManagementService implements IAccountManagementService {
 					} else {
 						this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountError, accountResult.errorCode,
 							this.getErrorType(accountResult.errorMessage))
-							.withAdditionalProperties({
-								[TelemetryPropertyName.AuthLibrary]: this._authLibrary
-							})
 							.send();
 						if (accountResult.errorCode && accountResult.errorMessage) {
 							throw new Error(localize('addAccountFailedCodeMessage', `{0} \nError Message: {1}`, accountResult.errorCode, accountResult.errorMessage));
@@ -168,9 +187,6 @@ export class AccountManagementService implements IAccountManagementService {
 					this._logService.error('Adding account failed, no result received.');
 					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.AddAzureAccountErrorNoResult, '-1',
 						this.getErrorType())
-						.withAdditionalProperties({
-							[TelemetryPropertyName.AuthLibrary]: this._authLibrary
-						})
 						.send();
 					throw new Error(genericAccountErrorMessage);
 				}
@@ -182,9 +198,6 @@ export class AccountManagementService implements IAccountManagementService {
 					this.spliceModifiedAccount(provider, result.changedAccount);
 				}
 				this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.AddAzureAccount)
-					.withAdditionalProperties({
-						[TelemetryPropertyName.AuthLibrary]: this._authLibrary
-					})
 					.send();
 				this.fireAccountListUpdate(provider, result.accountAdded);
 			} finally {
@@ -235,9 +248,6 @@ export class AccountManagementService implements IAccountManagementService {
 				} else {
 					this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountError, refreshedAccount.errorCode,
 						this.getErrorType(refreshedAccount.errorMessage))
-						.withAdditionalProperties({
-							[TelemetryPropertyName.AuthLibrary]: this._authLibrary
-						})
 						.send();
 					if (refreshedAccount.errorCode && refreshedAccount.errorMessage) {
 						throw new Error(localize('refreshFailed', `{0} \nError Message: {1}`, refreshedAccount.errorCode, refreshedAccount.errorMessage));
@@ -254,9 +264,6 @@ export class AccountManagementService implements IAccountManagementService {
 				this._logService.error('Refreshing account failed, no result received.');
 				this._telemetryService.createErrorEvent(TelemetryView.LinkedAccounts, TelemetryError.RefreshAzureAccountErrorNoResult, '-1',
 					this.getErrorType())
-					.withAdditionalProperties({
-						[TelemetryPropertyName.AuthLibrary]: this._authLibrary
-					})
 					.send();
 				throw new Error(genericAccountErrorMessage);
 			}
@@ -281,9 +288,6 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 
 			this._telemetryService.createActionEvent(TelemetryView.LinkedAccounts, TelemetryAction.RefreshAzureAccount)
-				.withAdditionalProperties({
-					[TelemetryPropertyName.AuthLibrary]: this._authLibrary
-				})
 				.send();
 			this.fireAccountListUpdate(provider, result.accountAdded);
 			return result.changedAccount!;
@@ -325,7 +329,6 @@ export class AccountManagementService implements IAccountManagementService {
 		// 3) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
 			return self._accountStore.getAccountsByProvider(provider.metadata.id)
-				.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts)
 				.then(accounts => {
 					self._providers[providerId].accounts = accounts;
 					return accounts;
@@ -337,8 +340,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Retrieves all the accounts registered with ADS based on auth library in use.
 	 */
 	public getAccounts(): Promise<azdata.Account[]> {
-		return this._accountStore.getAllAccounts()
-			.then(accounts => this._authLibrary ? filterAccounts(accounts, this._authLibrary) : accounts);
+		return this._accountStore.getAllAccounts();
 	}
 
 	/**
@@ -483,6 +485,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
+		this.providerMap.set(providerMetadata.id, providerMetadata);
 		this._providers[providerMetadata.id] = {
 			metadata: providerMetadata,
 			provider: provider,
@@ -532,6 +535,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	public unregisterProvider(providerMetadata: azdata.AccountProviderMetadata): void {
+		this.providerMap.delete(providerMetadata.id);
 		const p = this._providers[providerMetadata.id];
 		this.fireAccountListUpdate(p, false);
 		// Delete this account provider
@@ -575,15 +579,10 @@ export class AccountManagementService implements IAccountManagementService {
 			});
 		}
 
-		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService)
-		let updatedAccounts: azdata.Account[]
-		if (authLibrary) {
-			updatedAccounts = filterAccounts(provider.accounts, authLibrary);
-		}
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
 			providerId: provider.metadata.id,
-			accountList: updatedAccounts ?? provider.accounts
+			accountList: provider.accounts
 		};
 		this._updateAccountListEmitter.fire(eventArg);
 	}
@@ -598,62 +597,6 @@ export class AccountManagementService implements IAccountManagementService {
 		}
 	}
 
-	private registerListeners(): void {
-		this.disposables.add(this._configurationService.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration(AZURE_AUTH_LIBRARY_CONFIG)) {
-				const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
-				let accounts = await this._accountStore.getAllAccounts();
-				if (accounts) {
-					let updatedAccounts = await this.filterAndMergeAccounts(accounts, authLibrary);
-					let eventArg: UpdateAccountListEventParams;
-					if (updatedAccounts.length > 0) {
-						updatedAccounts.forEach(account => {
-							if (account.key.authLibrary === MSAL_AUTH_LIBRARY) {
-								account.isStale = false;
-							}
-						});
-						eventArg = {
-							providerId: updatedAccounts[0].key.providerId,
-							accountList: updatedAccounts
-						};
-					} else { // default to public cloud if no accounts
-						eventArg = {
-							providerId: 'azure_publicCloud',
-							accountList: updatedAccounts
-						};
-					}
-					this._updateAccountListEmitter.fire(eventArg);
-				}
-			}
-		}));
-	}
-
-	// Filters and merges accounts from both authentication libraries
-	private async filterAndMergeAccounts(accounts: azdata.Account[], currentAuthLibrary: AuthLibrary): Promise<azdata.Account[]> {
-		// Fetch accounts for alternate authenticationLibrary
-		const altLibrary = currentAuthLibrary === MSAL_AUTH_LIBRARY ? ADAL_AUTH_LIBRARY : MSAL_AUTH_LIBRARY;
-		const altLibraryAccounts = filterAccounts(accounts, altLibrary);
-
-		// Fetch accounts for current authenticationLibrary
-		const currentLibraryAccounts = filterAccounts(accounts, currentAuthLibrary);
-
-		// In the list of alternate accounts, check if the accounts are present in the current library cache,
-		// if not, add the account and mark it stale. The original account is marked as taken so its not picked again.
-		for (let account of altLibraryAccounts) {
-			await this.removeAccount(account.key);
-			if (this.findAccountIndex(currentLibraryAccounts, account) >= 0) {
-				continue;
-			} else {
-				// TODO: Refresh access token for the account if feasible.
-				account.isStale = true;
-				account.key.authLibrary = currentAuthLibrary;
-				currentLibraryAccounts.push(account);
-				await this.addAccountWithoutPrompt(account);
-			}
-		}
-		return currentLibraryAccounts;
-	}
-
 	public findAccountIndex(accounts: azdata.Account[], accountToFind: azdata.Account): number {
 		let indexToRemove: number = accounts.findIndex(account => {
 			// corner case handling for personal accounts
@@ -663,10 +606,6 @@ export class AccountManagementService implements IAccountManagementService {
 			// MSAL account added
 			if (accountToFind.key.accountId.includes('.')) {
 				return account.key.accountId === accountToFind!.key.accountId.split('.')[0];
-			}
-			// ADAL account added
-			if (account.key.accountId.includes('.')) {
-				return account.key.accountId.split('.')[0] === accountToFind!.key.accountId;
 			}
 			return account.key.accountId === accountToFind!.key.accountId;
 		});

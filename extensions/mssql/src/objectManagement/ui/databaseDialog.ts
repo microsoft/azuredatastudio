@@ -134,13 +134,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
+	protected override async validateInput(): Promise<string[]> {
+		let errors = await super.validateInput();
+		if (this.viewInfo.collationNames?.length > 0 && !this.viewInfo.collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
+			errors.push(localizedConstants.CollationNotValidError(this.objectInfo.collationName ?? ''));
+		}
+		return errors;
+	}
+
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async () => {
+		// The max length for database names is 128 characters: https://learn.microsoft.com/sql/t-sql/functions/db-name-transact-sql
+		const maxLengthDatabaseName: number = 128;
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.NameText,
+			required: true,
+			maxLength: maxLengthDatabaseName
+		};
+
+		this.nameInput = this.createInputBoxWithProperties(async () => {
 			this.objectInfo.name = this.nameInput.value;
-			await this.runValidation(false);
-		});
+		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
@@ -160,7 +175,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.collationName = this.viewInfo.collationNames[0];
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
-			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
+			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0], true, DefaultInputWidth, true, true);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
 
@@ -270,7 +285,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Collation
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
 			this.objectInfo.collationName = newValue as string;
-		}, this.viewInfo.collationNames, this.objectInfo.collationName);
+		}, this.viewInfo.collationNames, this.objectInfo.collationName, true, DefaultInputWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
 		// Recovery Model

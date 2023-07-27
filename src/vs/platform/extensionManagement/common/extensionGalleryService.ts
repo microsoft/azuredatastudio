@@ -1126,7 +1126,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 		if (result) {
 			const r = result.results[0];
 			const galleryExtensions = r.extensions;
-			// {{SQL CARBON TODO}}
+			// {{SQL CARBON EDIT}}
 			galleryExtensions.forEach(e => sortExtensionVersions(e.versions, TargetPlatform.UNIVERSAL));
 			// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
 			// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused

@@ -20,7 +20,7 @@ import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorType } from 'vs/editor/common/editorCommon';

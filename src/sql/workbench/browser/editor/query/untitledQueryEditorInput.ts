@@ -14,11 +14,11 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { GroupIdentifier, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput, DEFAULT_EDITOR_ASSOCIATION, isEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
-import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
+import { IUntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 import { Uri } from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';

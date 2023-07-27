@@ -8,33 +8,15 @@ import * as vscode from 'vscode';
 const mssqlExtensionConfigName = 'mssql';
 const enableSqlAuthenticationProviderConfig = 'enableSqlAuthenticationProvider';
 
-const azureExtensionConfigName = 'azure';
-const azureAuthenticationLibraryConfig = 'authenticationLibrary';
-const MSAL = 'MSAL';
-
 /**
- * @returns 'True' if MSAL auth library is in use and SQL Auth provider is enabled.
+ * @returns 'True' if SQL Auth provider is enabled.
  */
 export function isMssqlAuthProviderEnabled(): boolean {
-	return getAzureAuthenticationLibraryConfig() === MSAL && getEnableSqlAuthenticationProviderConfig();
+	return getEnableSqlAuthenticationProviderConfig();
 }
 
 export function getConfiguration(config: string): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(config);
-}
-
-/**
- * Reads setting 'azure.AuthenticationLibrary' and returns the library name enabled.
- * @returns MSAL | ADAL
- */
-export function getAzureAuthenticationLibraryConfig(): string {
-	const config = getConfiguration(azureExtensionConfigName);
-	if (config) {
-		return config.get<string>(azureAuthenticationLibraryConfig, MSAL); // default Auth library
-	}
-	else {
-		return MSAL; // default Auth library
-	}
 }
 
 /**
