@@ -245,6 +245,19 @@ export abstract class DialogBase<DialogResult> {
 		return table;
 	}
 
+	protected createTable2(ariaLabel: string, columns: azdata.DeclarativeTableColumn[], data: any[][], maxRowCount: number = DefaultMaxTableRowCount): azdata.DeclarativeTableComponent {
+		const table = this.modelView.modelBuilder.declarativeTable().withProps(
+			{
+				ariaLabel: ariaLabel,
+				data: data,
+				columns: columns,
+				width: DefaultTableWidth,
+				height: getTableHeight(data.length, DefaultMinTableRowCount, maxRowCount)
+			}
+		).component();
+		return table;
+	}
+
 	protected addButtonsForTable(table: azdata.TableComponent, addButtonAriaLabel: string, removeButtonAriaLabel: string, addHandler: (button: azdata.ButtonComponent) => Promise<void>, removeHandler: (button: azdata.ButtonComponent) => Promise<void>): azdata.FlexContainer {
 		let addButton: azdata.ButtonComponent;
 		let removeButton: azdata.ButtonComponent;
