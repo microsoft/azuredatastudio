@@ -22,6 +22,7 @@ import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEd
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 import { Uri } from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
@@ -36,9 +37,10 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService,
-		@IEditorResolverService private readonly editorResolverService: IEditorResolverService
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
+		@IAllServerMetadataService allServerMetadataService: IAllServerMetadataService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService, allServerMetadataService);
 		// Set the mode explicitely to stop the auto language detection service from changing the mode unexpectedly.
 		// the auto language detection service won't do the language change only if the mode is explicitely set.
 		// if the mode (e.g. kusto, sql) do not exist for whatever reason, we will default it to sql.

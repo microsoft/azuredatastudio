@@ -18,7 +18,11 @@ export class AllServerMetadataService extends Disposable implements IAllServerMe
 	) {
 		super();
 
-		this._register(this._connectionManagementService.onConnect(async (e) => await this.getAllServerMetadata(e)));
+		this._register(this._connectionManagementService.onConnect(async (e: IConnectionParams) => {
+			const providerName = e.connectionProfile.providerName;
+			const ownerUri = e.connectionUri;
+			await this.getAllServerMetadata(providerName, ownerUri);
+		}));
 	}
 
 	/**
@@ -55,11 +59,9 @@ export class AllServerMetadataService extends Disposable implements IAllServerMe
 	 * Gets all database server metadata in the form of create table scripts for all tables
 	 * @param connectionParams Connection params of the server to get metadata for.
 	 */
-	public async getAllServerMetadata(connectionParams: IConnectionParams): Promise<azdata.metadata.AllServerMetadataResult> {
-		const providerName = connectionParams.connectionProfile.providerName;
+	public async getAllServerMetadata(providerName: string, ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult> {
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			const ownerUri = connectionParams.connectionUri;
 			return await handler.getAllServerMetadata(ownerUri);
 		}
 		else {

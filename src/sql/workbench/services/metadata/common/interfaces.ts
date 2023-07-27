@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 
@@ -32,7 +31,8 @@ export interface IAllServerMetadataService {
 
 	/**
 	 * Gets all database server metadata in the form of create table scripts for all tables
-	 * @param connectionParams Connection params of the server to get metadata for.
+	 * @param providerName The name of the provider to get metadata for
+	 * @param ownerUri The URI of the connection to get metadata for
 	 */
-	getAllServerMetadata(connectionParams: IConnectionParams): Promise<azdata.metadata.AllServerMetadataResult>;
+	getAllServerMetadata(providerName: string, ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult>;
 }

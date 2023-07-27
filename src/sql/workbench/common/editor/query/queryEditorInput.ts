@@ -20,6 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 
 const MAX_SIZE = 13;
 
@@ -142,6 +143,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
+	private _serverMetadata: string;
+
 	constructor(
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
@@ -149,7 +152,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService protected readonly instantiationService: IInstantiationService
+		@IInstantiationService protected readonly instantiationService: IInstantiationService,
+		@IAllServerMetadataService private readonly allServerMetadataService: IAllServerMetadataService
 	) {
 		super();
 
@@ -234,6 +238,16 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	// Forwarding resource functions to the inline sql file editor
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
+
+	public async getServerMetadata(): Promise<string> {
+		if (!this._serverMetadata) {
+			const providerId = this.connectionManagementService.getProviderIdFromUri(this.uri);
+			const allServerMetadata = await this.allServerMetadataService.getAllServerMetadata(providerId, this.uri);
+			this._serverMetadata = allServerMetadata.scripts;
+		}
+
+		return this._serverMetadata;
+	}
 
 	public override getName(longForm?: boolean): string {
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').showConnectionInfoInTitle) {
