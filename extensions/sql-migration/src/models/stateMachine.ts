@@ -972,7 +972,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				this._targetSubscription?.id,
 				this._resourceGroup?.name,
 				this._targetServerInstance.name,
-				this.tdeMigrationConfig._networkPath,
+				this.tdeMigrationConfig.getAppliedNetworkPath(),
 				accessToken,
 				reportUpdate);
 

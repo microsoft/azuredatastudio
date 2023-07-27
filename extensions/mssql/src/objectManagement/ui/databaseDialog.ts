@@ -5,9 +5,10 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabasePropertiesDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl } from '../constants';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
@@ -20,6 +21,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	// Database properties options
 	// General Tab
+	private readonly generalTabId: string = 'generalDatabaseId';
 	private nameInput: azdata.InputBoxComponent;
 	private backupSection: azdata.GroupContainer;
 	private lastDatabaseBackupInput: azdata.InputBoxComponent;
@@ -35,6 +37,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private memoryUsedInput: azdata.InputBoxComponent;
 	private collationInput: azdata.InputBoxComponent;
 	// Options Tab
+	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
 	private autoCreateStatisticsInput: azdata.CheckBoxComponent;
 	private autoShrinkInput: azdata.CheckBoxComponent;
@@ -47,12 +50,28 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private encryptionEnabledInput: azdata.CheckBoxComponent;
 	private restrictAccessInput!: azdata.DropDownComponent;
 
+	private activeTabId: string;
+
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
 	}
 
 	protected override get helpUrl(): string {
-		return this.options.isNewObject ? CreateDatabaseDocUrl : DatabasePropertiesDocUrl;
+		return this.options.isNewObject ? CreateDatabaseDocUrl : this.getDatabasePropertiesDocUrl();
+	}
+
+	private getDatabasePropertiesDocUrl(): string {
+		let helpUrl = '';
+		switch (this.activeTabId) {
+			case this.generalTabId:
+				helpUrl = DatabaseGeneralPropertiesDocUrl;
+				break;
+			case this.optionsTabId:
+				helpUrl = DatabaseOptionsPropertiesDocUrl;
+			default:
+				break;
+		}
+		return helpUrl;
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -83,7 +102,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
-				id: 'general',
+				id: this.generalTabId,
 				content: this.createGroup('', [
 					this.databaseSection,
 					this.backupSection
@@ -93,7 +112,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			// Initilaize Options Tab
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
-				id: 'options',
+				id: this.optionsTabId,
 				content: this.createGroup('', this.optionsTabSectionsContainer, false)
 			};
 
@@ -107,17 +126,36 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					}
 				})
 				.component();
+			this.disposables.push(
+				propertiesTabbedPannel.onTabChanged(async tabId => {
+					this.activeTabId = tabId;
+				}));
 			this.formContainer.addItem(propertiesTabbedPannel);
 		}
+	}
+
+	protected override async validateInput(): Promise<string[]> {
+		let errors = await super.validateInput();
+		if (this.viewInfo.collationNames?.length > 0 && !this.viewInfo.collationNames.some(name => name.toLowerCase() === this.objectInfo.collationName?.toLowerCase())) {
+			errors.push(localizedConstants.CollationNotValidError(this.objectInfo.collationName ?? ''));
+		}
+		return errors;
 	}
 
 	//#region Create Database
 	private initializeGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async () => {
+		// The max length for database names is 128 characters: https://learn.microsoft.com/sql/t-sql/functions/db-name-transact-sql
+		const maxLengthDatabaseName: number = 128;
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.NameText,
+			required: true,
+			maxLength: maxLengthDatabaseName
+		};
+
+		this.nameInput = this.createInputBoxWithProperties(async () => {
 			this.objectInfo.name = this.nameInput.value;
-			await this.runValidation(false);
-		});
+		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
 
 		if (this.viewInfo.loginNames?.length > 0) {
@@ -137,7 +175,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.collationName = this.viewInfo.collationNames[0];
 			let collationDropbox = this.createDropdown(localizedConstants.CollationText, async () => {
 				this.objectInfo.collationName = collationDropbox.value as string;
-			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0]);
+			}, this.viewInfo.collationNames, this.viewInfo.collationNames[0], true, DefaultInputWidth, true, true);
 			containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 		}
 
@@ -247,7 +285,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Collation
 		let collationDropbox = this.createDropdown(localizedConstants.CollationText, async (newValue) => {
 			this.objectInfo.collationName = newValue as string;
-		}, this.viewInfo.collationNames, this.objectInfo.collationName);
+		}, this.viewInfo.collationNames, this.objectInfo.collationName, true, DefaultInputWidth, true, true);
 		containers.push(this.createLabelInputContainer(localizedConstants.CollationText, collationDropbox));
 
 		// Recovery Model
@@ -313,10 +351,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private initializeLedgerSection(): void {
-		// Ledger Database
-		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async (checked) => {
-			this.objectInfo.isLedgerDatabase = checked;
-		}, this.objectInfo.isLedgerDatabase);
+		// Ledger Database - ReadOnly (This can only be set during creation and not changed afterwards)
+		this.isLedgerDatabaseInput = this.createCheckbox(localizedConstants.IsLedgerDatabaseText, async () => { }, this.objectInfo.isLedgerDatabase, false);
 
 		const ledgerSection = this.createGroup(localizedConstants.LedgerSectionHeader, [
 			this.isLedgerDatabaseInput
@@ -335,7 +371,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		// Recovery Time In Seconds
 		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
 			this.objectInfo.targetRecoveryTimeInSec = Number(newValue);
-		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number');
+		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number', DefaultInputWidth, true, 0);
 		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
 
 		const recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [

@@ -141,9 +141,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined> {
 					return extHostConnectionManagement.$openChangePasswordDialog(profile);
 				},
-				getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string> {
-					return extHostConnectionManagement.$getEditorConnectionProfileTitle(profile, getOptionsOnly, includeGroupName);
-				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
@@ -687,7 +684,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				designers: designers,
 				executionPlan: executionPlan,
 				diagnostics: diagnostics,
-				env
+				env,
+				ProfilingSessionType: sqlExtHostTypes.ProfilingSessionType
 			};
 		}
 	};

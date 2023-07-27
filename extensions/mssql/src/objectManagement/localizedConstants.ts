@@ -47,6 +47,8 @@ export const GrantColumnHeader = localize('objectManagement.grantColumnHeader', 
 export const WithGrantColumnHeader = localize('objectManagement.withGrantColumnHeader', "With Grant");
 export const DenyColumnHeader = localize('objectManagement.denyColumnHeader', "Deny");
 export const SelectSecurablesDialogTitle = localize('objectManagement.selectSecurablesDialogTitle', "Select Securables");
+export const CreateObjectLabel = localize('objectManagement.createObjectLabel', "Create");
+export const ApplyUpdatesLabel = localize('objectManagement.applyUpdatesLabel', "Apply");
 
 export function ExplicitPermissionsTableLabelSelected(name: string): string { return localize('objectManagement.explicitPermissionsTableLabelSelected', "Explicit permissions for: {0}", name); }
 export function EffectivePermissionsTableLabelSelected(name: string): string { return localize('objectManagement.effectivePermissionsTableLabelSelected', "Effective permissions for: {0}", name); }
@@ -125,7 +127,7 @@ export function ObjectPropertiesDialogTitle(objectType: string, objectName: stri
 	return localize({
 		key: 'objectManagement.objectPropertiesDialogTitle',
 		comment: ['{0} object type, {1}: object name.']
-	}, '{0} - {1} (Preview)', objectType, objectName);
+	}, '{0} Properties (Preview) - {1}', objectType, objectName);
 }
 
 export function RenameObjectOperationDisplayName(objectType: string, originalName: string, newName: string): string {
@@ -159,7 +161,7 @@ export const MemberSectionHeader = localize('objectManagement.membersLabel', "Me
 export const SchemaText = localize('objectManagement.schemaLabel', "Schema");
 
 // Database
-export const DatabaseExistsError = (dbName: string) => localize('objectManagement.databaseExistsError', "Database '{0}' already exists. Choose a different database name.", dbName);
+export const CollationNotValidError = (collationName: string) => localize('objectManagement.collationNotValidError', "The selected collation '{0}' is not valid. Please choose a different collation.", collationName);
 export const CollationText = localize('objectManagement.collationLabel', "Collation");
 export const RecoveryModelText = localize('objectManagement.recoveryModelLabel', "Recovery Model");
 export const CompatibilityLevelText = localize('objectManagement.compatibilityLevelLabel', "Compatibility Level");
@@ -179,6 +181,7 @@ export const DatabaseFileTypeLabel = localize('objectManagement.databaseFileType
 export const DatabaseFilePathLabel = localize('objectManagement.databaseFilePath', "Path");
 export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGroup', "File Group");
 export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
+export const DetachButtonLabel = localize('objectManagement.detachButtonLabel', "Detach");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

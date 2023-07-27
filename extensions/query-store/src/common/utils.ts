@@ -36,7 +36,7 @@ export async function createOneComponentFlexContainer(view: azdata.ModelView, co
  * @param flexFlow row or column
  * @returns Flex container containing the two components
  */
-export async function createTwoComponentFlexContainer(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, flexFlow: string): Promise<azdata.FlexContainer> {
+export function createTwoComponentFlexContainer(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, flexFlow: string): azdata.FlexContainer {
 	const flexContainer = view.modelBuilder.flexContainer().component();
 
 	if (flexFlow === 'row') {
@@ -57,21 +57,19 @@ export async function createTwoComponentFlexContainer(view: azdata.ModelView, fi
 /**
  * Creates a vertical splitview
  * @param view
- * @param topComponent
- * @param bottomComponent
- * @param splitViewHeight
+ * @param firstComponent
+ * @param secondComponent
+ * @param orientation orientation of the split view - horizontal or vertical
  * @returns Vertical SplitViewContainer with the top and bottom components
  */
-export function createVerticalSplitView(view: azdata.ModelView, topComponent: azdata.Component, bottomComponent: azdata.Component, splitViewHeight: number): azdata.SplitViewContainer {
-	// TODO: figure out why the horizontal spliview isn't working
-
+export function createSplitView(view: azdata.ModelView, firstComponent: azdata.Component, secondComponent: azdata.Component, orientation: string): azdata.SplitViewContainer {
 	const splitview = <azdata.SplitViewContainer>view.modelBuilder.splitViewContainer().component();
-	splitview.addItem(topComponent);
-	splitview.addItem(bottomComponent);
+	splitview.addItem(firstComponent);
+	splitview.addItem(secondComponent);
 
 	splitview.setLayout({
-		orientation: 'vertical',
-		splitViewHeight: splitViewHeight
+		orientation: orientation,
+		splitViewSize: undefined // setting this to undefined will default the splitview size to use the model view container's size
 	});
 
 	return splitview;

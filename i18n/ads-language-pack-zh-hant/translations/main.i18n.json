@@ -14606,8 +14606,8 @@
 			"enablePreviewFeatures.yes": "是 (建議)"
 		},
 		"sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted": {
-			"miGettingStarted": "Getting &&Started",
-			"showReleaseNotes": "Show Getting Started"
+			"miGettingStarted": "使用者入門(&&S)",
+			"showReleaseNotes": "顯示使用者入門"
 		},
 		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
 			"welcomePage.createConnection": "建立連線",

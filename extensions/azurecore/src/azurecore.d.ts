@@ -91,7 +91,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Microsoft resource management resource
 		 */
-		microsoftResource?: Resource
+		microsoftResource: Resource
 
 		/**
 		 * Information that describes the AAD graph resource
@@ -121,7 +121,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Key Vault resource
 		 */
-		azureKeyVaultResource: Resource;
+		azureKeyVaultResource?: Resource;
 
 		/**
 		 * Information that describes the Azure Dev Ops resource

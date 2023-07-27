@@ -549,11 +549,13 @@ export class ProfilerEditor extends EditorPane {
 				// Launch the create session dialog if openning a new window.
 				let uiState = this._profilerService.getSessionViewState(this.input.id);
 				let previousSessionName = uiState && uiState.previousSessionName;
-				if (!this.input.sessionName && !previousSessionName) {
+				if (!this.input.sessionName && !previousSessionName && !this.input.isFileSession) {
 					this._profilerService.launchCreateSessionDialog(this.input);
 				}
 
-				this._updateSessionSelector(previousSessionName);
+				if (previousSessionName) {		// skip updating session selector if there is no previous session name
+					this._updateSessionSelector(previousSessionName);
+				}
 			} else {
 				this._startAction.enabled = false;
 				this._stopAction.enabled = false;
@@ -579,7 +581,9 @@ export class ProfilerEditor extends EditorPane {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				this._updateSessionSelector();
+				if (!this.input.isFileSession) {		// skip updating session selector for File sessions
+					this._updateSessionSelector();
+				}
 			}
 		}
 	}

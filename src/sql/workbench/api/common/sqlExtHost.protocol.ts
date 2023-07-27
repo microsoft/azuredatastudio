@@ -385,7 +385,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string, sessionType?: azdata.ProfilingSessionType): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session
@@ -729,7 +729,6 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$openChangePasswordDialog(profile: azdata.IConnectionProfile): Thenable<string | undefined>;
-	$getEditorConnectionProfileTitle(profile: azdata.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName?: boolean): Thenable<string>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;

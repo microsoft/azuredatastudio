@@ -5419,6 +5419,12 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountManagementService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="accountDialog.didNotPickAuthProvider">
+      <source xml:lang="en">You didn't select any authentication provider. Please try again.</source>
+    </trans-unit>
+    <trans-unit id="accountDialog.noCloudsRegistered">
+      <source xml:lang="en">You have no clouds enabled. Go to Settings -&gt; Search Azure Account Configuration -&gt; Enable at least one cloud</source>
+    </trans-unit>
     <trans-unit id="accountManagementService.close">
       <source xml:lang="en">Close</source>
     </trans-unit>
@@ -5455,6 +5461,9 @@ Error Message: {1}</source>
     <trans-unit id="copyAndOpen">
       <source xml:lang="en">Copy &amp; Open</source>
     </trans-unit>
+    <trans-unit id="deviceCodeAuthDialogTitle">
+      <source xml:lang="en">Azure Auth: Device Code</source>
+    </trans-unit>
     <trans-unit id="oauthDialog.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -5468,6 +5477,9 @@ Error Message: {1}</source>
   <file original="src/sql/workbench/services/accountManagement/browser/autoOAuthDialogController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="oauthFlyoutIsAlreadyOpen">
       <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+    </trans-unit>
+    <trans-unit id="selfHelpMessage">
+      <source xml:lang="en">A web browser cannot be launched in this environment, please launch a browser, navigate to the URL above and enter code manually.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/admin/common/adminService" source-language="en" datatype="plaintext"><body>
@@ -5656,9 +5668,6 @@ Error Message: {1}</source>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
     </trans-unit>
-    <trans-unit id="connection.connTitleGroupSection">
-      <source xml:lang="en"> (Group: {0})</source>
-    </trans-unit>
     <trans-unit id="connection.duplicateEditErrorMessage">
       <source xml:lang="en">Cannot save profile, the selected connection matches an existing profile with the same server info in the same group: 
 
@@ -5676,6 +5685,9 @@ Error Message: {1}</source>
     <trans-unit id="connection.noAzureAccount">
       <source xml:lang="en">Failed to get Azure account token for connection</source>
     </trans-unit>
+    <trans-unit id="connection.providerNotFound">
+      <source xml:lang="en">Connection provider '{0}' not found</source>
+    </trans-unit>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
     </trans-unit>
@@ -5687,9 +5699,6 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="connectionDialog.connectionProviderNotSupported">
       <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?</source>
-    </trans-unit>
-    <trans-unit id="connectionManagementService.noProviderForUri">
-      <source xml:lang="en">Could not find provider for uri: {0}</source>
     </trans-unit>
     <trans-unit id="connectionNotAcceptedError">
       <source xml:lang="en">Connection Not Accepted</source>
@@ -6541,6 +6550,17 @@ Error Message: {1}</source>
     </trans-unit>
     <trans-unit id="profilerFilterDialog.valueColumn">
       <source xml:lang="en">Value</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/profiler/browser/profilerService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="FileFilterDescription">
+      <source xml:lang="en">XEL Files</source>
+    </trans-unit>
+    <trans-unit id="FileTooLarge">
+      <source xml:lang="en">The file is too large to open in profiler. The profiler can open files that are less than 1GB.</source>
+    </trans-unit>
+    <trans-unit id="LargeFileWait">
+      <source xml:lang="en">Loading the file might take a moment due to the file size.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/query/common/gridDataProvider" source-language="en" datatype="plaintext"><body>

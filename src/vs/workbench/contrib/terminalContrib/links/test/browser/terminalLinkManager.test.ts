@@ -94,7 +94,7 @@ suite('TerminalLinkManager', () => {
 		} as Partial<ITerminalCapabilityStore> as any, instantiationService.createInstance(TerminalLinkResolver));
 	});
 
-	suite.skip('getLinks and open recent link', () => { // {{SQL CARBON EDIT}} skip failing suite
+	suite('getLinks and open recent link', () => {
 		test('should return no links', async () => {
 			const links = await linkManager.getLinks();
 			equals(links.webLinks, []);

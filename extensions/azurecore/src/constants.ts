@@ -9,8 +9,6 @@ export const AccountsSection = 'accounts';
 
 export const AuthSection = 'auth';
 
-export const AuthenticationLibrarySection = 'authenticationLibrary';
-
 export const AzureSection = 'azure';
 
 export const AzureAccountProviderCredentials = 'azureAccountProviderCredentials';
@@ -26,8 +24,6 @@ export const AccountsClearTokenCacheCommand = AccountsSection + '.' + ClearToken
 export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '.' + AuthSection;
 
 export const AccountsAzureCloudSection = AccountsSection + '.' + AzureSection + '.' + CloudSection;
-
-export const AzureAuthenticationLibrarySection = AzureSection + '.' + AuthenticationLibrarySection;
 
 export const EnableArcFeaturesSection = 'enableArcFeatures';
 
@@ -46,6 +42,10 @@ export const NoSystemKeyChainSection = 'noSystemKeychain';
 export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
 
 export const piiLogging = 'piiLogging';
+
+export const CustomProviderSettings = 'customProviderSettings';
+
+export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
 
 /** MSAL Account version */
 export const AccountVersion = '2.0';
@@ -74,8 +74,6 @@ export const AzureTokenFolderName = 'Azure Accounts';
 
 export const MSALCacheName = 'accessTokenCache';
 
-export const DefaultAuthLibrary = 'MSAL';
-
 export const LocalCacheSuffix = '.local';
 
 export const LockFileSuffix = '.lockfile';
@@ -103,14 +101,6 @@ export const multiple_matching_tokens_error = 'multiple_matching_tokens';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
-}
-
-/**
- * AAD Auth library as selected.
- */
-export enum AuthLibrary {
-	MSAL = 'MSAL',
-	ADAL = 'ADAL'
 }
 
 /**
