@@ -46,8 +46,8 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
 		const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
 
-		let tableQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
-		let viewQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW'`;
+		let tableQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND NOT TABLE_SCHEMA = 'db_documentation'`;
+		let viewQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' AND NOT TABLE_SCHEMA = 'db_documentation'`;
 
 		if (context.nodeInfo.nodeType === 'Schema') {
 			tableQuery += ` AND TABLE_SCHEMA = '${validate(context.nodeInfo.metadata.name)}'`;
@@ -58,6 +58,17 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		views = (await queryProvider.runQueryAndReturn(connectionUri, viewQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 	}
 
+	// Change threshhold
+	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 100) {
+		const tableNames: string[] = tables.map(([firstElement, _]) => firstElement);
+		const viewNames: string[] = views.map(([firstElement, _]) => firstElement);
+
+		let databaseSummary = await getObjectOverviewText(context.nodeInfo.metadata.name, tableNames.concat(viewNames), context.nodeInfo.nodeType);
+		databaseSummary += await getDatabaseSummary(context, connection);
+
+		return databaseSummary;
+	}
+
 	const isDatabaseOrSchema = (context.nodeInfo.nodeType === 'Database' || context.nodeInfo.nodeType === 'Schema');
 
 	let diagram = '```mermaid\nclassDiagram\n';
@@ -66,6 +77,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	// Tables
 	for (let i = 0; i < tables.length; i++) {
 		const tableAttributes = await tableToText(connection, databaseName, tables[i][0], tables[i][1]);
+		vscode.window.showInformationMessage(JSON.stringify(tableAttributes));
 		const tableResult = getMermaidDiagramForTable(tables[i][0], tables[i][1], tableAttributes);
 		diagram += tableResult[0];
 		if (isDatabaseOrSchema) {
@@ -156,7 +168,7 @@ async function getObjectOverviewText(objectName: string, objectsList: string[], 
 
 	const openai = new OpenAIApi(configuration);
 	const prompt = localize("database-documentation.objectOverviewPrompt",
-		` Give a brief, couple sentence overview of this ${type}, which stores these tables and views: ${JSON.stringify(objectsList)}`)
+		` Give a brief, couple sentence overview of this ${type}, which stores these tables and views: ${JSON.stringify(objectsList)}. Do not just list the different tables and views, provide an overview of the ${type}`)
 
 	const promptResponse = await
 		openai.createChatCompletion({
@@ -166,6 +178,49 @@ async function getObjectOverviewText(objectName: string, objectsList: string[], 
 		})
 
 	return `## ${objectName}  \n` + promptResponse.data.choices[0].message.content + `  \n\n`;
+}
+
+async function getDatabaseSummary(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+
+	const numConnectionsQuery = `SELECT s.session_id FROM sys.dm_exec_connections c JOIN sys.dm_exec_sessions s ON c.session_id = s.session_id WHERE s.database_id = DB_ID();`;
+	const numConnections = (await queryProvider.runQueryAndReturn(connectionUri, numConnectionsQuery)).rows.length.toString();
+
+	const storageBreakdownQuery = `USE ${validate(context.nodeInfo.metadata.name)}; SELECT size * 8.0 / 1024 AS 'Size_MB', type_desc AS 'File_Type' FROM sys.master_files WHERE database_id = DB_ID();`;
+	const storageBreakdownResult = (await queryProvider.runQueryAndReturn(connectionUri, storageBreakdownQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
+	const totalSize = storageBreakdownResult.reduce(function (sum, row) { return sum + parseFloat(row[0]) }, 0);
+	let storageSummary = ``;
+	for (let i = 0; i < storageBreakdownResult.length; i++) {
+		const mem = parseFloat(storageBreakdownResult[i][0]);
+		const type = storageBreakdownResult[i][1];
+
+		if (type == 'ROWS') {
+			storageSummary += `\tData file size: ${mem.toString()} MB  \n`;
+		}
+		if (type == 'LOG') {
+			storageSummary += `\tTransaction Log file size: ${mem.toString()} MB  \n`;
+		}
+	}
+
+	const tablesQuery = `SELECT [name], [object_id] FROM sys.tables WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
+	const tablesResult = (await queryProvider.runQueryAndReturn(connectionUri, tablesQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
+
+	const viewsQuery = `SELECT [name], [object_id] FROM sys.views WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
+	const viewsResult = (await queryProvider.runQueryAndReturn(connectionUri, viewsQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
+
+	const sprocQuery = `SELECT [name], [object_id] FROM sys.procedures WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
+	const sprocResult = (await queryProvider.runQueryAndReturn(connectionUri, sprocQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
+
+	const statsQuery = `USE ${validate(context.nodeInfo.metadata.name)}; SELECT OBJECT_NAME(object_id) AS 'Object_Name', SUM(user_seeks) AS 'User_Seeks', SUM(user_scans) AS 'User_Scans', SUM(user_lookups) AS 'User_Lookups', SUM(user_updates) AS 'User_Updates' FROM sys.dm_db_index_usage_stats GROUP BY object_id HAVING OBJECT_NAME(object_id) IS NOT NULL;`;
+	const statsResult = (await queryProvider.runQueryAndReturn(connectionUri, statsQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue, row[2].displayValue, row[3].displayValue, row[4].displayValue]);
+	let statsTable = `|Object Name|Seeks|Scans|Lookups|Updates|  \n|-|-|-|-|-|  \n`;
+	for (let i = 0; i < statsResult.length; i++) {
+		statsTable += `|${statsResult[i][0]}|${statsResult[i][1]}|${statsResult[i][2]}|${statsResult[i][3]}|${statsResult[i][4]}|  \n`;
+	}
+
+	return localize(`database-documentation.databaseSummary`,
+		`**Number of Connections to Database**  \n${numConnections}  \n\n**Database Memory Usage**  \nTotal Size:${totalSize} MB  \n${storageSummary}\n**Database Objects Overview**  \n\tTotal Tables: ${tablesResult.length.toString()}  \n\tTotal Views: ${viewsResult.length.toString()}  \n\tTotal Stored Procedures: ${sprocResult.length.toString()}  \n\n**Database Object Stats**  \n${validate(statsTable)}`);
 }
 
 async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][], schema: string, type: string): Promise<string> {
@@ -315,9 +370,10 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 	const nodeType = context.nodeInfo.nodeType;
 	const json = JSON.parse(markdownJSON);
 	const text = json['Text'];
+	const mermaid = json['Mermaid'];
 
 	// If documentation contains multiple other objects, extract them and save them into the database
-	if (nodeType === 'Database' || nodeType === 'Schema') {
+	if ((nodeType === 'Database' || nodeType === 'Schema') && mermaid !== '') {
 		const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
 		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
 
@@ -326,7 +382,6 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 			objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
 		}
 
-		const mermaid = json['Mermaid'];
 		const keys = Object.keys(text);
 
 		for (let i = 0; i < keys.length; i++) {
@@ -370,7 +425,7 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 			}
 		}
 	}
-	else {
+	else if (mermaid !== '') {
 		const fields = text[getLabel(context)]['Fields'];
 		for (const fieldName in fields) {
 			const currentFieldText = `- ${fieldName}: ${fields[fieldName]}  \n`;
@@ -422,11 +477,15 @@ export function convertMarkdownToJSON(context: azdata.ObjectExplorerContext, mar
 
 	const lines = markdown.split('\n');
 	const json: any = {};
+	json['Mermaid'] = {};
+	json['Text'] = {};
 
-	let regex = /```mermaid[\s\S]*?```/g
+	let regex = /```mermaid[\s\S]*?```/g;
 	let match = markdown.match(regex);
 	if (!match) {
-		throw new Error("Mermaid code isn't formatted correctly");
+		json['Mermaid'] = '';
+		json['Text'] = markdown;
+		return JSON.stringify(json);
 	}
 	const mermaid = match[0];
 
@@ -438,9 +497,6 @@ export function convertMarkdownToJSON(context: azdata.ObjectExplorerContext, mar
 	}
 
 	const expectedValue = mermaid.match(/class /g)!.length;
-
-	json['Mermaid'] = {};
-	json['Text'] = {};
 
 	// Format Check count variables
 	let objectNameCount = 0;
@@ -593,6 +649,12 @@ export async function getHoverContent(document: vscode.TextDocument, position: v
 
 		if (objectNames.has(objectName)) {
 			const matchingRow = objectNamesResult.rows.find(row => row[0].displayValue === objectName);
+			const regex = /(?<=```  \n\n)[\s\S]*/g;
+
+			let match = matchingRow[1].displayValue.match(regex);
+			if (match) {
+				return new vscode.Hover(new vscode.MarkdownString(match[0]));
+			}
 
 			return new vscode.Hover(new vscode.MarkdownString(matchingRow[1].displayValue));
 		}
