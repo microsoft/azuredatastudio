@@ -502,14 +502,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.2",
-							"lastUpdated": "01/20/2023",
+							"version": "0.14.0",
+							"lastUpdated": "7/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.12.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.14.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -535,11 +535,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "0.10.x"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": "*"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -746,14 +746,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.5.4",
-							"lastUpdated": "12/9/2022",
+							"version": "1.5.5",
+							"lastUpdated": "5/25/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.5.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.5.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -769,7 +769,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/LICENSE"
 								}
 							],
 							"properties": [
@@ -1230,14 +1230,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.13.0",
-							"lastUpdated": "2/15/2023",
+							"version": "1.14.0",
+							"lastUpdated": "7/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-1.13.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-1.14.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1291,14 +1291,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.7",
-							"lastUpdated": "11/24/2020",
+							"version": "0.4.3",
+							"lastUpdated": "7/25/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.2.7.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.4.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1328,7 +1328,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.16.0"
+									"value": ">=1.40.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1352,14 +1352,14 @@
 					},
 					"versions": [
 						{
-							"version": "2023.2.1",
-							"lastUpdated": "3/7/2023",
+							"version": "2023.6.0",
+							"lastUpdated": "6/6/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2023.2.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2023.6.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1474,14 +1474,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.19.0",
-							"lastUpdated": "5/17/2023",
+							"version": "1.20.0",
+							"lastUpdated": "7/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.19.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.20.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1718,14 +1718,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.2",
-							"lastUpdated": "1/30/2023",
+							"version": "0.1.3",
+							"lastUpdated": "7/5/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.1.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.1.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1779,14 +1779,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-de-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-de-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1816,7 +1816,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1844,14 +1844,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-es-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-es-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1881,7 +1881,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1909,14 +1909,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-fr-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-fr-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1946,7 +1946,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1974,14 +1974,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-it-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-it-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2011,7 +2011,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2039,14 +2039,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-ko-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-ko-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2076,7 +2076,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2104,14 +2104,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-pt-br-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-pt-br-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2141,7 +2141,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2169,14 +2169,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-ru-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-ru-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2206,7 +2206,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2234,14 +2234,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-zh-hans-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-zh-hans-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2271,7 +2271,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2299,14 +2299,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-zh-hant-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-zh-hant-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2336,7 +2336,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2364,14 +2364,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.44.0",
-							"lastUpdated": "5/8/2023",
+							"version": "1.45.0",
+							"lastUpdated": "7/10/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.44.0/ads-language-pack-ja-1.44.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.45.0/ads-language-pack-ja-1.45.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2401,7 +2401,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.44.0"
+									"value": ">=1.45.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -3434,14 +3434,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.1",
-							"lastUpdated": "5/17/2023",
+							"version": "1.2.0",
+							"lastUpdated": "7/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-1.1.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-1.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4036,14 +4036,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.4.5",
-							"lastUpdated": "05/12/2023",
+							"version": "1.4.9",
+							"lastUpdated": "07/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.4.5.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.4.9.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4073,7 +4073,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.41.0"
+									"value": ">=1.44.1"
 								}
 							]
 						}
@@ -4329,34 +4329,34 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.2",
-							"lastUpdated": "12/15/2022",
+							"version": "0.1.3",
+							"lastUpdated": "05/22/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22349.1/azuredatastudio-oracle-0.1.2.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23142.1/azuredatastudio-oracle-0.1.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22349.1/icon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23142.1/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22349.1/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23142.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22349.1/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23142.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/22349.1/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/23142.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-oracle/LICENSE.htm"
 								}
 							],
 							"properties": [
@@ -4394,30 +4394,30 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.1",
-							"lastUpdated": "04/25/2023",
+							"version": "0.6.0",
+							"lastUpdated": "07/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/dsct-oracle-to-ms-sql-0.4.1.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/dsct-oracle-to-ms-sql-0.6.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/dsctIcon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/dsctIcon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23110.1/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/23198.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -4520,34 +4520,34 @@
 					},
 					"versions": [
 						{
-							"version": "4.1.2",
-							"lastUpdated": "05/02/2023",
+							"version": "4.2.1",
+							"lastUpdated": "06/27/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/azuredatastudio-dma-oracle-4.1.2.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.2.1/azuredatastudio-dma-oracle-4.2.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/extension.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.2.1/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.2.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.2.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.2.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.1.2/LICENSE.html"
+									"source": "https://dsct.blob.core.windows.net/extensions/azuredatastudio-dma-oracle/4.2.1/LICENSE.html"
 								}
 							],
 							"properties": [
@@ -4585,14 +4585,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.3",
-							"lastUpdated": "5/9/2023",
+							"version": "0.3.4",
+							"lastUpdated": "5/22/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.3.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.3.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4650,14 +4650,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.9",
-							"lastUpdated": "04/26/2023",
+							"version": "1.0.0",
+							"lastUpdated": "06/22/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.9.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-1.0.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4697,7 +4697,7 @@
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				},
 				{
 					"extensionId": "94",
@@ -4906,34 +4906,34 @@
 					},
 					"versions": [
 						{
-							"version": "2.0.5",
-							"lastUpdated": "04/03/2023",
+							"version": "2.0.6",
+							"lastUpdated": "07/17/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.5/postgresql-migration-2.0.5.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.6/postgresql-migration-2.0.6.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.5/postgreSQLMigrationIcon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.6/postgreSQLMigrationIcon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.5/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.6/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.5/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.6/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.5/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.6/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.5/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/postgresql-migration/2.0.6/LICENSE.rtf"
 								}
 							],
 							"properties": [
@@ -4971,14 +4971,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.1",
-							"lastUpdated": "05/08/2023",
+							"version": "1.1.0",
+							"lastUpdated": "06/26/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-1.0.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ads-extension-mongo-migration/ads-extension-mongo-migration-1.1.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -5036,14 +5036,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.83.41",
-							"lastUpdated": "05/08/2023",
+							"version": "1.95.239",
+							"lastUpdated": "07/06/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/GitHub.copilot-1.83.41.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.95.239/GitHub.copilot-1.95.239.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -5051,15 +5051,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/README.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.95.239/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/CHANGELOG.md"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.95.239/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.83.41/package.json"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/copilot/1.95.239/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -5069,7 +5069,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.68.0"
+									"value": ">=1.75.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -5080,7 +5080,133 @@
 					],
 					"statistics": [],
 					"flags": ""
-				}
+				},
+				{
+					"extensionId": "100",
+					"extensionName": "oracle-datamigration",
+					"displayName": "Data Migration for Oracle",
+					"shortDescription": "Data Migration for Oracle extension to migrate data from Oracle to Azure SQL",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "07/21/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/oracle-datamigration-1.0.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/LICENSE.html"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": "Microsoft.net-6-runtime,Microsoft.azuredatastudio-oracle"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.41.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "101",
+					"extensionName": "ads-searcheverywhere",
+					"displayName": "Search Everywhere",
+					"shortDescription": "Search tables, views, stored procedures, functions by name or code.",
+					"publisher": {
+						"displayName": "MikhailT",
+						"publisherId": "MikhailT",
+						"publisherName": "MikhailT"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "07/23/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/MikhailProfile/SearchEverywhere/releases/tag/ads"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/png/search.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/MikhailProfile/SearchEverywhere/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/MikhailProfile/SearchEverywhere"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+			}
 			],
 			"resultMetadata": [
 				{
@@ -5088,7 +5214,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 83
+							"count": 85
 						}
 					]
 				}
