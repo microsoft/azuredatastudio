@@ -642,7 +642,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.dscTable.data[this.currentRowId][1] = newValue;
 			}
 			// Update the secondary value with the primary, when the set seconadry checkbox is checked
-			if (this.setSecondaryCheckboxForDropdowns.checked
+			if (this.setSecondaryCheckboxForInputType.checked
 				&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 25) {
 				this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 				this.dscTable.data[this.currentRowId][2] = newValue;
@@ -655,7 +655,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Apply Primary To Secondary checkbox
 		this.setSecondaryCheckboxForInputType = this.createCheckbox(localizedConstants.SetSecondaryText, async (checked) => {
-			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
+			await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': checked ? 'hidden' : 'visible' });
 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = checked
 				? this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 				: this.dscOriginalData[this.currentRowId].valueForSecondary;
