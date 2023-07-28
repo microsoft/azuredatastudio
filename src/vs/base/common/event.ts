@@ -947,6 +947,7 @@ export class Emitter<T> {
 					this._listeners = new LinkedList();
 				}
 
+				// {{SQL CARBON EDIT}} Disabling threshold to unblock model view components to register more listeners. Due to the threshold, the components were not able to register listeners and were not able to handle click events.
 				// if (this._leakageMon && this._listeners.size > this._leakageMon.threshold * 3) {
 				// 	console.warn(`[${this._leakageMon.name}] REFUSES to accept new listeners because it exceeded its threshold by far`);
 				// 	return Disposable.None;
