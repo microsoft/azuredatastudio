@@ -553,7 +553,7 @@ export class ProfilerEditor extends EditorPane {
 					this._profilerService.launchCreateSessionDialog(this.input);
 				}
 
-				if (previousSessionName) {		// skip updating session selector if there is no previous session name
+				if (!this.input.isFileSession) {		// skip updating session selector for File session
 					this._updateSessionSelector(previousSessionName);
 				}
 			} else {
