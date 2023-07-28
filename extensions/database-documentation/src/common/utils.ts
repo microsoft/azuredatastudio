@@ -36,16 +36,13 @@ export async function getIdentificationService(): Promise<mssql.IIdentificationS
 
 export async function generateMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
 	const databaseName = context.connectionProfile!.databaseName;
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+	const isDatabaseOrSchema = (context.nodeInfo.nodeType === 'Database' || context.nodeInfo.nodeType === 'Schema');
 
 	let tables: [string, string][] = [];
 	let views: [string, string][] = [];
-	if (context.nodeInfo.nodeType === 'Table' || context.nodeInfo.nodeType === 'View') {
-		tables = [[context.nodeInfo.metadata.name, context.nodeInfo.metadata.schema]];
-	}
-	else {
-		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-		const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
-
+	if (isDatabaseOrSchema) {
 		let tableQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND NOT TABLE_SCHEMA = 'db_documentation'`;
 		let viewQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' AND NOT TABLE_SCHEMA = 'db_documentation'`;
 
@@ -57,27 +54,47 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		tables = (await queryProvider.runQueryAndReturn(connectionUri, tableQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 		views = (await queryProvider.runQueryAndReturn(connectionUri, viewQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 	}
-
-	// Change threshhold
-	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 100) {
-		const tableNames: string[] = tables.map(([firstElement, _]) => firstElement);
-		const viewNames: string[] = views.map(([firstElement, _]) => firstElement);
-
-		let databaseSummary = await getObjectOverviewText(context.nodeInfo.metadata.name, tableNames.concat(viewNames), context.nodeInfo.nodeType);
-		databaseSummary += await getDatabaseSummary(context, connection);
-
-		return databaseSummary;
+	else {
+		tables = [[context.nodeInfo.metadata.name, context.nodeInfo.metadata.schema]];
 	}
-
-	const isDatabaseOrSchema = (context.nodeInfo.nodeType === 'Database' || context.nodeInfo.nodeType === 'Schema');
 
 	let diagram = '```mermaid\nclassDiagram\n';
 	let references = ``;
 	let documentation = ``;
+
+	if (isDatabaseOrSchema) {
+		const tableNames: string[] = tables.map(([firstElement, _]) => firstElement);
+		const viewNames: string[] = views.map(([firstElement, _]) => firstElement);
+
+		documentation += await getObjectOverviewText(context.nodeInfo.metadata.name, tableNames.concat(viewNames), context.nodeInfo.nodeType);
+	}
+
+	// Change threshhold
+	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 100) {
+		let databaseSummary = documentation;
+		databaseSummary += await getDatabaseSummary(context, connection);
+
+		const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
+		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+
+		let objectNames = new Set([]);
+		if (objectNamesResult.rowCount) {
+			objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
+		}
+
+		for (let i = 0; i < tables.length; i++) {
+			databaseSummary += getLink(context, objectNames, tables[i][0], tables[i][1]);
+		}
+		for (let i = 0; i < views.length; i++) {
+			databaseSummary += getLink(context, objectNames, views[i][0], views[i][1]);
+		}
+
+		return databaseSummary;
+	}
+
 	// Tables
 	for (let i = 0; i < tables.length; i++) {
 		const tableAttributes = await tableToText(connection, databaseName, tables[i][0], tables[i][1]);
-		vscode.window.showInformationMessage(JSON.stringify(tableAttributes));
 		const tableResult = getMermaidDiagramForTable(tables[i][0], tables[i][1], tableAttributes);
 		diagram += tableResult[0];
 		if (isDatabaseOrSchema) {
@@ -96,16 +113,17 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		documentation += await getDocumentationText(views[i][0], tableAttributes.map(row => [row[0], row[1], row[2]]), views[i][1], 'View');
 	}
 
-	if (isDatabaseOrSchema) {
-		const tableNames: string[] = tables.map(([firstElement, _]) => firstElement);
-		const viewNames: string[] = views.map(([firstElement, _]) => firstElement);
-
-		documentation = await getObjectOverviewText(context.nodeInfo.metadata.name, tableNames.concat(viewNames), context.nodeInfo.nodeType) + documentation;
-	}
-
 	diagram += references;
 
 	return diagram + '```  \n\n' + documentation;
+}
+
+function getLink(context: azdata.ObjectExplorerContext, objectNames: Set<string>, table: string, schema: string): string {
+	const label = `${context.connectionProfile.databaseName}.${schema}.${table}`;
+	if (objectNames.has(label)) {
+		return `## ${table}  \nLink to documentation: [${label}](#)  \n\n`;
+	}
+	return "";
 }
 
 async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string, schema: string): Promise<[string, string, string, string][]> {
@@ -220,7 +238,7 @@ async function getDatabaseSummary(context: azdata.ObjectExplorerContext, connect
 	}
 
 	return localize(`database-documentation.databaseSummary`,
-		`**Number of Connections to Database**  \n${numConnections}  \n\n**Database Memory Usage**  \nTotal Size:${totalSize} MB  \n${storageSummary}\n**Database Objects Overview**  \n\tTotal Tables: ${tablesResult.length.toString()}  \n\tTotal Views: ${viewsResult.length.toString()}  \n\tTotal Stored Procedures: ${sprocResult.length.toString()}  \n\n**Database Object Stats**  \n${validate(statsTable)}`);
+		`**Number of Connections to Database**  \n${numConnections}  \n\n**Database Memory Usage**  \nTotal Size:${totalSize} MB  \n${storageSummary}\n**Database Objects Overview**  \n\tTotal Tables: ${tablesResult.length.toString()}  \n\tTotal Views: ${viewsResult.length.toString()}  \n\tTotal Stored Procedures: ${sprocResult.length.toString()}  \n\n**Database Object Stats**  \n${validate(statsTable)}  \n\n`);
 }
 
 async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][], schema: string, type: string): Promise<string> {

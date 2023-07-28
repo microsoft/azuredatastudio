@@ -47,7 +47,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // Register the event listener for the tab switch event
         vscode.window.onDidChangeActiveTextEditor(() => {
-            vscode.commands.executeCommand('setContext', 'documentOpen', vscode.window.visibleTextEditors.some((editor) => editor.document === document));
+            vscode.commands.executeCommand('setContext', 'documentOpen', vsc
+            ode.window.visibleTextEditors.some((editor) => editor.document === document));
         });
 
         // Register the event listener for user saving the documentation locally
@@ -127,6 +128,42 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerHoverProvider('sql', {
         async provideHover(document, position) {
             return getHoverContent(document, position);
+        }
+    });
+
+    vscode.window.onDidChangeTextEditorSelection(async (event: vscode.TextEditorSelectionChangeEvent) => {
+        if (event.textEditor.document.languageId !== 'markdown') {
+            return; // Not a markdown document
+        }
+        const selectedPosition = event.textEditor.selection.start;
+        const wordRange = event.textEditor.document.getWordRangeAtPosition(selectedPosition, /(?<=\[).*(?=\])/);
+        let word = event.textEditor.document.getText(wordRange);
+
+        if (word === event.textEditor.document.getText()) {
+            return;
+        }
+
+        word = word.substring(1, word.length - 1);
+
+        const connection = getContextVariables()[1];
+
+        const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
+        const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+        const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [master].[db_documentation].[DatabaseDocumentation]`;
+        const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+
+        if (objectNamesResult.rowCount) {
+            const objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
+            if (objectNames.has(word)) {
+                const matchingRow = objectNamesResult.rows.find(row => row[0].displayValue === word);
+
+                const newPosition = new vscode.Position(0, 0);
+                const newSelection = new vscode.Selection(newPosition, newPosition);
+                event.textEditor.selection = newSelection;
+
+                const document = await vscode.workspace.openTextDocument({ language: "markdown", content: matchingRow[1].displayValue });
+                await vscode.window.showTextDocument(document);
+            }
         }
     });
 }
