@@ -947,10 +947,10 @@ export class Emitter<T> {
 					this._listeners = new LinkedList();
 				}
 
-				if (this._leakageMon && this._listeners.size > this._leakageMon.threshold * 3) {
-					console.warn(`[${this._leakageMon.name}] REFUSES to accept new listeners because it exceeded its threshold by far`);
-					return Disposable.None;
-				}
+				// if (this._leakageMon && this._listeners.size > this._leakageMon.threshold * 3) {
+				// 	console.warn(`[${this._leakageMon.name}] REFUSES to accept new listeners because it exceeded its threshold by far`);
+				// 	return Disposable.None;
+				// }
 
 				const firstListener = this._listeners.isEmpty();
 
