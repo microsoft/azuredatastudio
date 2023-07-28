@@ -458,19 +458,19 @@ export interface Database extends ObjectManagement.SqlObject {
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
-	loginNames: string[];
-	collationNames: string[];
-	compatibilityLevels: string[];
-	containmentTypes: string[];
-	recoveryModels: string[];
-	files: DatabaseFile[];
 	isAzureDB: boolean;
-	azureBackupRedundancyLevels: string[];
-	azureServiceLevelObjectives: AzureEditionDetails[];
-	azureEditions: string[];
-	azureMaxSizes: AzureEditionDetails[];
-	pageVerifyOptions: string[];
-	restrictAccessOptions: string[];
+	loginNames?: OptionsCollection;
+	collationNames?: OptionsCollection;
+	compatibilityLevels?: OptionsCollection;
+	containmentTypes?: OptionsCollection;
+	recoveryModels?: OptionsCollection;
+	files?: DatabaseFile[];
+	azureBackupRedundancyLevels?: string[];
+	azureServiceLevelObjectives?: AzureEditionDetails[];
+	azureEditions?: string[];
+	azureMaxSizes?: AzureEditionDetails[];
+	pageVerifyOptions?: string[];
+	restrictAccessOptions?: string[];
 	dscOnOffOptions: string[];
 	dscElevateOptions: string[];
 	dscEnableDisableOptions: string[];
@@ -483,9 +483,14 @@ export interface DatabaseScopedConfigurationsInfo {
 	valueForSecondary: string;
 }
 
+export interface OptionsCollection {
+	options: string[];
+	defaultValueIndex: number;
+}
+
 export interface AzureEditionDetails {
 	editionDisplayName: string;
-	details: string[];
+	editionOptions: OptionsCollection;
 }
 
 export interface Server extends ObjectManagement.SqlObject {
