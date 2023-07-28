@@ -20,7 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 
 const MAX_SIZE = 13;
 
@@ -153,7 +153,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
-		@IAllServerMetadataService private readonly allServerMetadataService: IAllServerMetadataService
+		@IServerMetadataService private readonly serverMetadataService: IServerMetadataService
 	) {
 		super();
 
@@ -241,8 +241,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public async getServerMetadata(): Promise<string> {
 		if (!this._serverMetadata) {
-			const allServerMetadata = await this.allServerMetadataService.getAllServerMetadata(this.uri);
-			this._serverMetadata = allServerMetadata.scripts;
+			await this.serverMetadataService.generateServerMetadata(this.uri);
 		}
 
 		return this._serverMetadata;

@@ -6,12 +6,12 @@
 import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-export class AllServerMetadataService extends Disposable implements IAllServerMetadataService {
+export class ServerMetadataService extends Disposable implements IServerMetadataService {
 	public _serviceBrand: undefined;
-	private _providers = new Map<string, azdata.metadata.AllServerMetadataProvider>();
+	private _providers = new Map<string, azdata.metadata.ServerMetadataProvider>();
 
 	constructor(
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService
@@ -20,14 +20,14 @@ export class AllServerMetadataService extends Disposable implements IAllServerMe
 
 		this._register(this._connectionManagementService.onConnect(async (e: IConnectionParams) => {
 			const ownerUri = e.connectionUri;
-			await this.getAllServerMetadata(ownerUri);
+			await this.generateServerMetadata(ownerUri);
 		}));
 	}
 
 	/**
-	 * Register an all server metadata service provider
+	 * Register a server metadata service provider
 	 */
-	public registerProvider(providerId: string, provider: azdata.metadata.AllServerMetadataProvider): void {
+	public registerProvider(providerId: string, provider: azdata.metadata.ServerMetadataProvider): void {
 		if (this._providers.has(providerId)) {
 			throw new Error(`An all server metadata provider with ID "${providerId}" is already registered`);
 		}
@@ -35,17 +35,17 @@ export class AllServerMetadataService extends Disposable implements IAllServerMe
 	}
 
 	/**
-	 * Unregister an all server metadata service provider
+	 * Unregister a server metadata service provider
 	 */
 	public unregisterProvider(providerId: string): void {
 		this._providers.delete(providerId);
 	}
 
 	/**
-	 * Gets a registered all server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
+	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
 	 * @param providerId The ID of the registered provider
 	 */
-	public getProvider(providerId: string): azdata.metadata.AllServerMetadataProvider {
+	public getProvider(providerId: string): azdata.metadata.ServerMetadataProvider {
 		const provider = this._providers.get(providerId);
 		if (provider) {
 			return provider;
@@ -55,18 +55,18 @@ export class AllServerMetadataService extends Disposable implements IAllServerMe
 	}
 
 	/**
-	 * Gets all database server metadata in the form of create table scripts for all tables
+	 * Generates all database server metadata in the form of create table scripts for all tables
 	 * @param connectionParams Connection params of the server to get metadata for.
 	 */
-	public async getAllServerMetadata(ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult> {
+	public async generateServerMetadata(ownerUri: string): Promise<azdata.metadata.GenerateServerMetadataResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			return await handler.getAllServerMetadata(ownerUri);
+			return await handler.generateServerMetadata(ownerUri);
 		}
 		else {
 			return Promise.resolve({
-				scripts: ''
+				success: false
 			});
 		}
 	}

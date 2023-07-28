@@ -18,7 +18,7 @@ import { FILE_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
-import { IAllServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -32,9 +32,9 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IAllServerMetadataService allServerMetadataService: IAllServerMetadataService
+		@IServerMetadataService serverMetadataService: IServerMetadataService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService, allServerMetadataService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService, serverMetadataService);
 	}
 
 	public override resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {

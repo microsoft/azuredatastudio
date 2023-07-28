@@ -1306,15 +1306,15 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 }
 
 /**
- * All Server Metadata Service Feature
+ * Server Metadata Service Feature
  */
-export class AllServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
+export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.AllServerMetadataRequest.type
+		contracts.GenerateServerMetadataRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
-		super(client, AllServerMetadataServiceFeature.messagesTypes);
+		super(client, ServerMetadataServiceFeature.messagesTypes);
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -1330,23 +1330,23 @@ export class AllServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const getAllServerMetadata = (ownerUri: string): Thenable<azdata.metadata.AllServerMetadataResult> => {
-			const params: contracts.AllServerMetadataParams = {
+		const generateServerMetadata = (ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> => {
+			const params: contracts.ServerMetadataParams = {
 				ownerUri: ownerUri
 			};
 
-			return client.sendRequest(contracts.AllServerMetadataRequest.type, params).then(
+			return client.sendRequest(contracts.GenerateServerMetadataRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.AllServerMetadataRequest.type, e);
+					client.logFailedRequest(contracts.GenerateServerMetadataRequest.type, e);
 					return Promise.reject(e);
 				}
 			);
 		};
 
-		return azdata.dataprotocol.registerAllServerMetadataProvider({
+		return azdata.dataprotocol.registerServerMetadataProvider({
 			providerId: client.providerId,
-			getAllServerMetadata
+			generateServerMetadata
 		});
 	}
 }

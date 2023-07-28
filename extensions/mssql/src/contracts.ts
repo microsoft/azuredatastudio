@@ -1562,12 +1562,12 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Metadata API > ------------------------------------
 
-export interface AllServerMetadataParams {
+export interface ServerMetadataParams {
 	ownerUri: string;
 }
 
-export namespace AllServerMetadataRequest {
-	export const type = new RequestType<AllServerMetadataParams, azdata.metadata.AllServerMetadataResult, void, void>('metadata/allServerMetadata');
+export namespace GenerateServerMetadataRequest {
+	export const type = new RequestType<ServerMetadataParams, azdata.metadata.GenerateServerMetadataResult, void, void>('metadata/generateServerMetadata');
 }
 
 // ------------------------------- < Metadata API > ------------------------------------

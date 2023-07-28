@@ -210,9 +210,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerAllServerMetadataProvider(provider: azdata.metadata.AllServerMetadataProvider): vscode.Disposable {
+	$registerServerMetadataProvider(provider: azdata.metadata.ServerMetadataProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
-		this._proxy.$registerAllServerMetadataProvider(provider.providerId, provider.handle);
+		this._proxy.$registerServerMetadataProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -972,7 +972,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Server Metadata API
 
-	public override $getAllServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.AllServerMetadataResult> {
-		return this._resolveProvider<azdata.metadata.AllServerMetadataProvider>(handle).getAllServerMetadata(ownerUri);
+	public override $generateServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> {
+		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).generateServerMetadata(ownerUri);
 	}
 }

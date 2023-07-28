@@ -894,7 +894,7 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
 		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
-		export function registerAllServerMetadataProvider(provider: metadata.AllServerMetadataProvider): vscode.Disposable
+		export function registerServerMetadataProvider(provider: metadata.ServerMetadataProvider): vscode.Disposable
 	}
 
 	export namespace designers {
@@ -1776,26 +1776,26 @@ declare module 'azdata' {
 	}
 
 	export namespace metadata {
-		export interface AllServerMetadataResult {
+		export interface GenerateServerMetadataResult {
 			/**
-			 * The generated create scripts for all tables in every database for a single server.
+			 * Indicates the success or failure of the metadata generation call.
 			 */
-			scripts: string;
+			success: boolean;
 		}
 
-		export interface AllServerMetadataProvider extends DataProvider {
+		export interface ServerMetadataProvider extends DataProvider {
 			// metadata service methods
 
 			/**
-			 * Gets create scripts for all tables in every database for a single server.
-			 * @param ownerUri Query editor the metadata will be retrieved for.
+			 * Generates create scripts for all tables in every database for a single server.
+			 * @param ownerUri Owner URI specifying the server for which metadata will be generated for.
 			 */
-			getAllServerMetadata(ownerUri: string): Thenable<AllServerMetadataResult>;
+			generateServerMetadata(ownerUri: string): Thenable<GenerateServerMetadataResult>;
 		}
 	}
 
 	export namespace dataprotocol {
-		export function registerAllServerMetadataProvider(provider: metadata.AllServerMetadataProvider): vscode.Disposable;
+		export function registerServerMetadataProvider(provider: metadata.ServerMetadataProvider): vscode.Disposable;
 	}
 
 	/**

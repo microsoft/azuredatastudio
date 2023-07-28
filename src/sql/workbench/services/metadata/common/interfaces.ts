@@ -7,16 +7,16 @@ import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 
-export const SERVICE_ID = 'allServerMetadataService';
-export const IAllServerMetadataService = createDecorator<IAllServerMetadataService>(SERVICE_ID);
+export const SERVICE_ID = 'serverMetadataService';
+export const IServerMetadataService = createDecorator<IServerMetadataService>(SERVICE_ID);
 
-export interface IAllServerMetadataService {
+export interface IServerMetadataService {
 	_serviceBrand: undefined;
 
 	/**
 	 * Register an all server metadata service provider
 	 */
-	registerProvider(providerId: string, provider: azdata.metadata.AllServerMetadataProvider): void;
+	registerProvider(providerId: string, provider: azdata.metadata.ServerMetadataProvider): void;
 
 	/**
 	 * Unregister an all server metadata service provider
@@ -27,11 +27,11 @@ export interface IAllServerMetadataService {
 	 * Gets a registered all server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
 	 * @param providerId The ID of the registered provider
 	 */
-	getProvider(providerId: string): azdata.metadata.AllServerMetadataProvider;
+	getProvider(providerId: string): azdata.metadata.ServerMetadataProvider;
 
 	/**
-	 * Gets all database server metadata in the form of create table scripts for all tables
+	 * Generates all database server metadata in the form of create table scripts for all tables
 	 * @param ownerUri The URI of the connection to get metadata for
 	 */
-	getAllServerMetadata(ownerUri: string): Promise<azdata.metadata.AllServerMetadataResult>;
+	generateServerMetadata(ownerUri: string): Promise<azdata.metadata.GenerateServerMetadataResult>;
 }
