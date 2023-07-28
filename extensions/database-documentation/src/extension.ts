@@ -47,8 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // Register the event listener for the tab switch event
         vscode.window.onDidChangeActiveTextEditor(() => {
-            vscode.commands.executeCommand('setContext', 'documentOpen', vsc
-            ode.window.visibleTextEditors.some((editor) => editor.document === document));
+            vscode.commands.executeCommand('setContext', 'documentOpen', vscode.window.visibleTextEditors.some((editor) => editor.document === document));
         });
 
         // Register the event listener for user saving the documentation locally
