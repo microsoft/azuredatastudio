@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+
 import { spawnSync } from 'child_process';
 import path = require('path');
 import { generatePackageDeps as generatePackageDepsDebian } from './debian/calculate-deps';
 import { generatePackageDeps as generatePackageDepsRpm } from './rpm/calculate-deps';
-// import { referenceGeneratedDepsByArch as debianGeneratedDeps } from './debian/dep-lists';  // {{SQL CARBON EDIT}} remove unused import
-// import { referenceGeneratedDepsByArch as rpmGeneratedDeps } from './rpm/dep-lists';
+import { referenceGeneratedDepsByArch as debianGeneratedDeps } from './debian/dep-lists';
+import { referenceGeneratedDepsByArch as rpmGeneratedDeps } from './rpm/dep-lists';
 import { DebianArchString, isDebianArchString } from './debian/types';
-import { isRpmArchString, /*RpmArchString*/ } from './rpm/types'; // {{SQL CARBON EDIT}} remove unused import
+import { isRpmArchString, RpmArchString } from './rpm/types';
 
 // A flag that can easily be toggled.
 // Make sure to compile the build directory after toggling the value.
@@ -20,7 +21,7 @@ import { isRpmArchString, /*RpmArchString*/ } from './rpm/types'; // {{SQL CARBO
 // If true, we fail the build if there are new dependencies found during that task.
 // The reference dependencies, which one has to update when the new dependencies
 // are valid, are in dep-lists.ts
-// const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = false; // {{SQL CARBON EDIT}} Not needed
+const FAIL_BUILD_FOR_NEW_DEPENDENCIES: boolean = true;
 
 // Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/108.0.5359.215:chrome/installer/linux/BUILD.gn;l=64-80
 // and the Linux Archive build
@@ -77,19 +78,19 @@ export function getDependencies(packageType: 'deb' | 'rpm', buildDir: string, ap
 		return !bundledDeps.some(bundledDep => dependency.startsWith(bundledDep));
 	}).sort();
 
-	/* {{SQL CARBON EDIT}} Not needed
-	const referenceGeneratedDeps = referenceGeneratedDepsByArch[arch];
+	const referenceGeneratedDeps = packageType === 'deb' ?
+		debianGeneratedDeps[arch as DebianArchString] :
+		rpmGeneratedDeps[arch as RpmArchString];
 	if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
-		const failMessage = 'The dependencies list has changed. '
-			+ 'Printing newer dependencies list that one can use to compare against referenceGeneratedDeps:\n'
-			+ sortedDependencies.join('\n');
+		const failMessage = 'The dependencies list has changed.'
+			+ '\nOld:\n' + referenceGeneratedDeps.join('\n')
+			+ '\nNew:\n' + sortedDependencies.join('\n');
 		if (FAIL_BUILD_FOR_NEW_DEPENDENCIES) {
 			throw new Error(failMessage);
 		} else {
 			console.warn(failMessage);
 		}
 	}
-	*/
 
 	return sortedDependencies;
 }
