@@ -64,6 +64,7 @@ export class SchemaCompareDialog {
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
 	private textBoxWidth: number = 280;
+	private seqNumber: number = 1;
 
 	public promise;
 	public promise2;
@@ -79,15 +80,18 @@ export class SchemaCompareDialog {
 	}
 
 	protected async initializeDialog(): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " initializeDialog method call");
 		this.schemaCompareTab = azdata.window.createTab(loc.SchemaCompareLabel);
 		await this.initializeSchemaCompareTab();
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
 	public async openDialog(): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " openDialog method call");
 		// connection to use if schema compare wasn't launched from a database or no previous source/target
 		let connection = await azdata.connection.getCurrentConnection();
 		if (connection) {
+			console.log("SCBug23473: ", this.seqNumber, " openDialog: Connection already exists.");
 			this.connectionId = connection.connectionId;	// current active connection
 		}
 
@@ -106,7 +110,9 @@ export class SchemaCompareDialog {
 	}
 
 	public async execute(): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute method call.");
 		if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Database) {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: SourceType is Database.");
 			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
 			const ownerUri = await azdata.connection.getUriForConnection(sourceServerDropdownValue.connection.connectionId);
 
@@ -125,6 +131,7 @@ export class SchemaCompareDialog {
 				connectionName: sourceServerDropdownValue.connection.options.connectionName
 			};
 		} else if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: SourceType is Dacpac.");
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
@@ -139,6 +146,7 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: SourceType is Project.");
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.sourceTextBox.value,
@@ -155,6 +163,7 @@ export class SchemaCompareDialog {
 		}
 
 		if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Database) {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: TargetType is Database.");
 			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
 			const ownerUri = await azdata.connection.getUriForConnection(targetServerDropdownValue.connection.connectionId);
 
@@ -173,6 +182,7 @@ export class SchemaCompareDialog {
 				connectionName: targetServerDropdownValue.connection.options.connectionName
 			};
 		} else if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: TargetType is Dacpac.");
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
@@ -187,6 +197,7 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: TargetType is Project.");
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.targetTextBox.value,
@@ -217,6 +228,7 @@ export class SchemaCompareDialog {
 		// show recompare message if it isn't the initial population of source and target
 		if (this.previousSource && this.previousTarget
 			&& (sourceEndpointChanged || targetEndpointChanged)) {
+			console.log("SCBug23473: ", this.seqNumber, " handleOkButtonClick execute: Recompare message setting.");
 			this.schemaCompareMainWindow.setButtonsForRecompare();
 
 			let message = loc.differentSourceMessage;
@@ -235,18 +247,23 @@ export class SchemaCompareDialog {
 	}
 
 	private endpointChanged(previousEndpoint: mssql.SchemaCompareEndpointInfo, updatedEndpoint: mssql.SchemaCompareEndpointInfo): boolean {
+		console.log("SCBug23473: ", this.seqNumber, " endpointChanged method call.");
 		if (previousEndpoint && updatedEndpoint) {
+			console.log("SCBug23473: ", this.seqNumber, " endpointChanged: Endpoints upated.");
 			return getEndpointName(previousEndpoint).toLowerCase() !== getEndpointName(updatedEndpoint).toLowerCase()
 				|| (previousEndpoint.serverDisplayName && updatedEndpoint.serverDisplayName && previousEndpoint.serverDisplayName.toLowerCase() !== updatedEndpoint.serverDisplayName.toLowerCase());
 		}
+		console.log("SCBug23473: ", this.seqNumber, " endpointChanged: Endpoints not updated.");
 		return false;
 	}
 
 	protected async cancel(): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " cancel method call.");
 		this.dispose();
 	}
 
 	private async initializeSchemaCompareTab(): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " initializeSchemaCompareTab method call.");
 		this.schemaCompareTab.registerContent(async view => {
 			if (isNullOrUndefined(this.view)) {
 				this.view = view;
@@ -267,6 +284,7 @@ export class SchemaCompareDialog {
 			}).component();
 
 			this.sourceTextBox.onTextChanged(async (e) => {
+				console.log("SCBug23473: ", this.seqNumber, " initializeSchemaCompareTab: sourceTextBox text changed.");
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 
 				if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
@@ -291,6 +309,7 @@ export class SchemaCompareDialog {
 			}).component();
 
 			this.targetTextBox.onTextChanged(async (e) => {
+				console.log("SCBug23473: ", this.seqNumber, " initializeSchemaCompareTab: targetTextBox text changed.");
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 
 				if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac) {
@@ -414,6 +433,7 @@ export class SchemaCompareDialog {
 		const filter = dacpac ? 'dacpac' : 'sqlproj';
 
 		currentButton.onDidClick(async () => {
+			console.log("SCBug23473: ", this.seqNumber, " createFileBrowser: fileButton clicked.");
 			// file browser should open where the current dacpac is or the appropriate default folder
 			let rootPath = getRootPath();
 			let defaultUri = endpoint && endpoint.packageFilePath && await exists(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
@@ -636,12 +656,30 @@ export class SchemaCompareDialog {
 	}
 
 	private async shouldEnableOkayButton(): Promise<boolean> {
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton method call.");
 		let sourcefilled = (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac && await this.existsDacpac(this.sourceTextBox.value))
 			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project && await this.existsProjectFile(this.sourceTextBox.value))
 			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Database && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac && await this.existsDacpac(this.targetTextBox.value))
 			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project && await this.existsProjectFile(this.targetTextBox.value))
 			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Database && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
+
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: Ok Button enabled: ", sourcefilled && targetfilled);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: sourcefilled: ", sourcefilled);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: targetfilled: ", targetfilled);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: sourceEndpointType: ", this.sourceEndpointType);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: targetEndpointType: ", this.targetEndpointType);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: sourceTextBox: ", this.sourceTextBox.value);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: targetTextBox: ", this.targetTextBox.value);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: sourceDatabaseDropdown: ", this.sourceDatabaseDropdown.value);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: targetDatabaseDropdown: ", this.targetDatabaseDropdown.value);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: sourceDbEditable: ", this.sourceDbEditable);
+		console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: targetDbEditable: ", this.targetDbEditable);
+		if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Database || this.targetEndpointType === mssql.SchemaCompareEndpointType.Database) {
+			console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: sourceDatabaseDropdown Index: ", this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)));
+			console.log("SCBug23473: ", this.seqNumber, " shouldEnableOkayButton: targetDatabaseDropdown Index: ", this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)));
+		}
+		this.seqNumber++;
 
 		return sourcefilled && targetfilled;
 	}
@@ -733,13 +771,16 @@ export class SchemaCompareDialog {
 		this.sourceConnectionButton = this.createConnectionButton(false);
 
 		this.sourceServerDropdown.onValueChanged(async (value) => {
+			console.log("SCBug23473: ", this.seqNumber, " createSourceServerDropdown: sourceServerDropdown value changed");
 			if (value.selected && this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
+				console.log("SCBug23473: ", this.seqNumber, " createSourceServerDropdown: sourceServerDropdown new server added");
 				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				console.log("SCBug23473: ", this.seqNumber, " createSourceServerDropdown: sourceServerDropdown server picked from list");
 				this.sourceConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
 			}
@@ -764,6 +805,7 @@ export class SchemaCompareDialog {
 		}).component();
 
 		selectConnectionButton.onDidClick(async () => {
+			console.log("SCBug23473: ", this.seqNumber, " createConnectionButton: selectConnectionButton clicked.");
 			await this.connectionButtonClick(isTarget);
 			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 		});
@@ -774,6 +816,7 @@ export class SchemaCompareDialog {
 	public async connectionButtonClick(isTarget: boolean): Promise<void> {
 		let connection = await azdata.connection.openConnectionDialog();
 		if (connection) {
+			console.log("SCBug23473: ", this.seqNumber, " connectionButtonClick: new connection added.");
 			this.connectionId = connection.connectionId;
 			this.promise = this.populateServerDropdown(isTarget);
 			this.promise2 = this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
@@ -791,13 +834,16 @@ export class SchemaCompareDialog {
 		).component();
 		this.targetConnectionButton = this.createConnectionButton(true);
 		this.targetServerDropdown.onValueChanged(async (value) => {
+			console.log("SCBug23473: ", this.seqNumber, " createTargetServerDropdown: targetServerDropdown clicked.");
 			if (value.selected && this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
+				console.log("SCBug23473: ", this.seqNumber, " createTargetServerDropdown: targetServerDropdown new server added");
 				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				console.log("SCBug23473: ", this.seqNumber, " createTargetServerDropdown: targetServerDropdown server picked from list");
 				this.targetConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
@@ -812,6 +858,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async populateServerDropdown(isTarget: boolean, passivelyPopulate: boolean = false): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " populateServerDropdown method call.");
 		const currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
 
 		if (passivelyPopulate && isNullOrUndefined(currentDropdown.value)) {
@@ -842,6 +889,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {
+		console.log("SCBug23473: ", this.seqNumber, " getServerValues method call.");
 		let cons = await azdata.connection.getConnections(/* activeConnectionsOnly */ true);
 		// This user has no active connections
 		if (!cons || cons.length === 0) {
@@ -920,6 +968,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
+			console.log("SCBug23473: ", this.seqNumber, " createSourceDatabaseDropdown: sourceDatabaseDropdown value changed.");
 			this.sourceDbEditable = value as string;
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
@@ -940,6 +989,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
+			console.log("SCBug23473: ", this.seqNumber, " createTargetDatabaseDropdown: targetDatabaseDropdown value changed.");
 			this.targetDbEditable = value as string;
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
@@ -955,6 +1005,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
+		console.log("SCBug23473: ", this.seqNumber, " populateDatabaseDropdown method call.");
 		const currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.loading = true;
 		await currentDropdown.updateProperties({
@@ -982,6 +1033,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<string[]> {
+		console.log("SCBug23473: ", this.seqNumber, " getDatabaseValues method call.");
 		let endpointInfo = isTarget ? this.schemaCompareMainWindow.targetEndpointInfo : this.schemaCompareMainWindow.sourceEndpointInfo;
 
 		let idx = -1;
