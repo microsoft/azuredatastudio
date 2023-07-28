@@ -25,6 +25,12 @@ export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '
 
 export const AccountsAzureCloudSection = AccountsSection + '.' + AzureSection + '.' + CloudSection;
 
+export const enablePublicCloud = 'enablePublicCloud';
+
+export const enableUsGovCloud = 'enableUsGovCloud';
+
+export const enableChinaCloud = 'enableChinaCloud';
+
 export const EnableArcFeaturesSection = 'enableArcFeatures';
 
 export const ServiceName = 'azuredatastudio';
