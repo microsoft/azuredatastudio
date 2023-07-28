@@ -74,6 +74,9 @@ export class CreateProjectFromDatabaseDialog {
 						this.profile.serverName = connection.options['server'];
 						this.profile.userName = connection.options['user'];
 					}
+				} else {
+					// Successfully connectted, update connection Id as received.
+					this.profile.id = result.connectionId!;
 				}
 			}
 		}
