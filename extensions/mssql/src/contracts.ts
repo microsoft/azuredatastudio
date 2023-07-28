@@ -1570,6 +1570,10 @@ export namespace GenerateServerMetadataRequest {
 	export const type = new RequestType<ServerMetadataParams, azdata.metadata.GenerateServerMetadataResult, void, void>('metadata/generateServerMetadata');
 }
 
+export namespace GetServerMetadataRequest {
+	export const type = new RequestType<ServerMetadataParams, azdata.metadata.GetServerMetadataResult, void, void>('metadata/getServerMetadata');
+}
+
 // ------------------------------- < Metadata API > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------

@@ -241,7 +241,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public async getServerMetadata(): Promise<string> {
 		if (!this._serverMetadata) {
-			await this.serverMetadataService.generateServerMetadata(this.uri);
+			const result = await this.serverMetadataService.getServerMetadata(this.uri);
+			this._serverMetadata = result.scripts;
 		}
 
 		return this._serverMetadata;

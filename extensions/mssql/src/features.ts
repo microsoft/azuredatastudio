@@ -1344,9 +1344,24 @@ export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		const getServerMetadata = (ownerUri: string): Thenable<azdata.metadata.GetServerMetadataResult> => {
+			const params: contracts.ServerMetadataParams = {
+				ownerUri: ownerUri
+			};
+
+			return client.sendRequest(contracts.GetServerMetadataRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.GetServerMetadataRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
 		return azdata.dataprotocol.registerServerMetadataProvider({
 			providerId: client.providerId,
-			generateServerMetadata
+			generateServerMetadata,
+			getServerMetadata
 		});
 	}
 }

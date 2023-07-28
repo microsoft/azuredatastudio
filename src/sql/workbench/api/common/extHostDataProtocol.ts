@@ -975,4 +975,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	public override $generateServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> {
 		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).generateServerMetadata(ownerUri);
 	}
+
+	public override $getServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerMetadataResult> {
+		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).getServerMetadata(ownerUri);
+	}
 }

@@ -1783,6 +1783,17 @@ declare module 'azdata' {
 			success: boolean;
 		}
 
+		export interface GetServerMetadataResult {
+			/**
+			 * Indicates the success or failure of the get server metadata call.
+			 */
+			success: boolean;
+			/**
+			 * The generated create scripts for all tables in every database for a single server.
+			 */
+			scripts: string;
+		}
+
 		export interface ServerMetadataProvider extends DataProvider {
 			// metadata service methods
 
@@ -1791,6 +1802,12 @@ declare module 'azdata' {
 			 * @param ownerUri Owner URI specifying the server for which metadata will be generated for.
 			 */
 			generateServerMetadata(ownerUri: string): Thenable<GenerateServerMetadataResult>;
+
+			/**
+			 * Gets the create scripts for all tables in every database for a single server.
+			 * @param ownerUri Owner URI specifying the server for which metadata will be retrieved for.
+			 */
+			getServerMetadata(ownerUri: string): Thenable<GetServerMetadataResult>;
 		}
 	}
 

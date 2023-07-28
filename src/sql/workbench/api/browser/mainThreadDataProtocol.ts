@@ -576,7 +576,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	// All server metadata handler
 	public $registerServerMetadataProvider(providerId: string, handle: number): void {
 		this._serverMetadataService.registerProvider(providerId, <azdata.metadata.ServerMetadataProvider>{
-			generateServerMetadata: (ownerUri: string) => this._proxy.$generateServerMetadata(handle, ownerUri)
+			generateServerMetadata: (ownerUri: string) => this._proxy.$generateServerMetadata(handle, ownerUri),
+			getServerMetadata: (ownerUri: string) => this._proxy.$getServerMetadata(handle, ownerUri)
 		});
 	}
 

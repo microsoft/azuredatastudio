@@ -70,4 +70,22 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 			});
 		}
 	}
+
+	/**
+	 * Gets all database server metadata in the form of create table scripts for all tables in a server
+	 * @param ownerUri The URI of the connection to get metadata for
+	 */
+	public async getServerMetadata(ownerUri: string): Promise<azdata.metadata.GetServerMetadataResult> {
+		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
+		const handler = this.getProvider(providerName);
+		if (handler) {
+			return await handler.getServerMetadata(ownerUri);
+		}
+		else {
+			return Promise.resolve({
+				success: false,
+				scripts: ''
+			});
+		}
+	}
 }

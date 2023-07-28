@@ -596,9 +596,13 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
 	/**
-	 * Generates database server metadata in the form of create table scripts for all tables
+	 * Generates database server metadata in the form of create table scripts for all tables in the server.
 	 */
 	$generateServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> { throw ni(); }
+	/**
+	 * Gets database server metadata in the form of create table scripts for all tables in the server.
+	 */
+	$getServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerMetadataResult> { throw ni(); }
 }
 
 /**
