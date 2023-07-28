@@ -14,17 +14,17 @@ export interface IServerMetadataService {
 	_serviceBrand: undefined;
 
 	/**
-	 * Register an all server metadata service provider
+	 * Register a server metadata service provider
 	 */
 	registerProvider(providerId: string, provider: azdata.metadata.ServerMetadataProvider): void;
 
 	/**
-	 * Unregister an all server metadata service provider
+	 * Unregister a server metadata service provider
 	 */
 	unregisterProvider(providerId: string): void;
 
 	/**
-	 * Gets a registered all server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
+	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
 	 * @param providerId The ID of the registered provider
 	 */
 	getProvider(providerId: string): azdata.metadata.ServerMetadataProvider;
