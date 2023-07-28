@@ -43,6 +43,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
 	private _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>;
+	public activeProviderCount: number = 0;
 
 	constructor(private _context: vscode.ExtensionContext,
 		private _userStoragePath: string) {
@@ -142,17 +143,27 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			// Case 2: Provider was enabled and is now disabled - unregister provider
 			if (oldConfigValue && !newConfigValue) {
 				providerChanges.push(this.unregisterAccountProvider(provider));
+				this.activeProviderCount--;
 			}
 
 			// Case 3: Provider was disabled and is now enabled - register provider
 			if (!oldConfigValue && newConfigValue) {
 				providerChanges.push(this.registerAccountProvider(provider));
+				this.activeProviderCount++;
 			}
 
 			// Case 4: Provider was added from JSON - register provider
-			if (provider.configKey !== 'enablePublicCloud' && provider.configKey !== 'enableUsGovCloud' && provider.configKey !== 'enableChinaCloud') {
+			if (provider.configKey !== Constants.enablePublicCloud && provider.configKey !== Constants.enableUsGovCloud && provider.configKey !== Constants.enableChinaCloud) {
 				providerChanges.push(this.registerAccountProvider(provider));
+				this.activeProviderCount++;
 			}
+		}
+		if (this.activeProviderCount === 0) {
+			void vscode.window.showWarningMessage(loc.noCloudsEnabled, loc.enablePublicCloud, loc.dismiss).then(async (result) => {
+				if (result === loc.enablePublicCloud) {
+					await vscode.workspace.getConfiguration(Constants.AccountsAzureCloudSection).update(loc.enablePublicCloudCamel, true, vscode.ConfigurationTarget.Global);
+				}
+			});
 		}
 
 		// Process all the changes before continuing
