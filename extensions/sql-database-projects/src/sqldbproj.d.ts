@@ -322,7 +322,7 @@ declare module 'sqldbproj' {
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse SQL Pool',
 		sqlEdge = 'Azure SQL Edge',
-		SqlDwUnified = 'Synapse Data Warehouse in Microsoft Fabric'
+		sqlDwUnified = 'Synapse Data Warehouse in Microsoft Fabric'
 	}
 
 	export interface ISqlConnectionProperties {

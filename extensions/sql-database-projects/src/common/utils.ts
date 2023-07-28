@@ -730,14 +730,14 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 		if (azdataApi) {
 			// TODO: Update this when Fabric DW gets its own engine edition
 			if (engineEdition === azdataApi.DatabaseEngineEdition.SqlOnDemand && isSqlDwUnifiedServer(serverName)) {
-				targetPlatform = SqlTargetPlatform.SqlDwUnified;
+				targetPlatform = SqlTargetPlatform.sqlDwUnified;
 			} else {
 				targetPlatform = engineEdition === azdataApi.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
 			}
 		} else {
 			// TODO: Update this when Fabric DW gets its own engine edition
 			if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlOnDemand && isSqlDwUnifiedServer(serverName)) {
-				targetPlatform = SqlTargetPlatform.SqlDwUnified;
+				targetPlatform = SqlTargetPlatform.sqlDwUnified;
 			} else {
 				targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
 			}
