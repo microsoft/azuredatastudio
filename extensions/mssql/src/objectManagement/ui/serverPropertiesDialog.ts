@@ -223,13 +223,15 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	private initializeProcessorsSection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
-		let nodes: NumaNode[] = this.objectInfo.processorList;
+		//let processorAffinity: ProcessorAffinity[] = [{ processor: 'CPU 0', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 1', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 2', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 3', processorAffinity: true, processorIOAffinity: false }];
+		//let nodes: NumaNode[] = [{ numaNode: 'Node 0', processors: processorAffinity }, { numaNode: 'Node 1', processors: processorAffinity }, { numaNode: 'Node 2', processors: processorAffinity }];
+		let nodes: NumaNode[] = this.objectInfo.numaNodes;
 		let nodeTableList: azdata.TableComponent[] = [];
 		let tableGroups: azdata.GroupContainer[] = [];
 		for (let node of nodes) {
 			let table = this.createProcessorTable(node);
 			nodeTableList.push(table);
-			tableGroups.push(this.createGroup(node.numaNode, [table], true));
+			tableGroups.push(this.createGroup(node.name, [table], true));
 		}
 		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
 			this.objectInfo.autoSetProcessorAffinityMaskForAll = newValue;
