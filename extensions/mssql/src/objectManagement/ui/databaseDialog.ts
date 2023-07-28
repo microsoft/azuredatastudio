@@ -125,9 +125,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			}
 			this.initializeStateSection();
 
-			//Initilaize DSC Tab section
-			await this.initializeDatabaseScopedConfigurationSection();
 
+			const tabs: azdata.Tab[] = [];
 			// Initilaize general Tab
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
@@ -137,6 +136,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					this.backupSection
 				], false)
 			};
+			tabs.push(this.generalTab);
 
 			// Initilaize Options Tab
 			this.optionsTab = {
@@ -144,15 +144,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				id: this.optionsTabId,
 				content: this.createGroup('', this.optionsTabSectionsContainer, false)
 			};
+			tabs.push(this.optionsTab);
 
-			this.dscTab = {
-				title: localizedConstants.DatabaseScopedConfigurationTabHeader,
-				id: this.dscTabId,
-				content: this.createGroup('', this.dscTabSectionsContainer, false)
+			//Initilaize DSC Tab section
+			if (!isUndefinedOrNull(this.objectInfo.databaseScopedConfigurations)) {
+				await this.initializeDatabaseScopedConfigurationSection();
+				this.dscTab = {
+					title: localizedConstants.DatabaseScopedConfigurationTabHeader,
+					id: this.dscTabId,
+					content: this.createGroup('', this.dscTabSectionsContainer, false)
+				}
+				tabs.push(this.dscTab);
 			}
 
 			// Initilaize tab group with tabbed panel
-			const propertiesTabGroup = { title: '', tabs: [this.generalTab, this.optionsTab, this.dscTab] };
+			const propertiesTabGroup = { title: '', tabs: tabs };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
 				.withProps({
