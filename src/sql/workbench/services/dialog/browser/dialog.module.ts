@@ -3,13 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/dialogModal';
+
 import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { DialogContainer } from 'sql/workbench/contrib/dialog/browser/dialogContainer.component';
-import { WizardNavigation } from 'sql/workbench/contrib/dialog/browser/wizardNavigation.component';
+import { DialogContainer } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
+import { WizardNavigation } from 'sql/workbench/services/dialog/browser/wizardNavigation.component';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';

@@ -11,8 +11,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { DialogModal } from 'sql/workbench/contrib/dialog/browser/dialogModal';
-import { Dialog } from 'sql/workbench/contrib/dialog/common/dialogTypes';
+import { DialogModal } from 'sql/workbench/services/dialog/browser/dialogModal';
+import { Dialog } from 'sql/workbench/services/dialog/common/dialogTypes';
 
 export class TestDialogModal extends DialogModal {
 

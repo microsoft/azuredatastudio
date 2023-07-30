@@ -8,11 +8,11 @@ import 'vs/css!./media/dialogModal';
 import { NgModuleRef } from '@angular/core';
 
 import { IModalDialogStyles } from 'sql/workbench/browser/modal/modal';
-import { DialogTab } from 'sql/workbench/contrib/dialog/common/dialogTypes';
+import { DialogTab } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
-import { DialogModule } from 'sql/workbench/contrib/dialog/browser/dialog.module';
-import { DialogComponentParams, LayoutRequestParams } from 'sql/workbench/contrib/dialog/browser/dialogContainer.component';
+import { DialogModule } from 'sql/workbench/services/dialog/browser/dialog.module';
+import { DialogComponentParams, LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
 
 import * as DOM from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';

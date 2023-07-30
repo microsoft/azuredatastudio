@@ -5,8 +5,8 @@
 
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions, HideReason } from 'sql/workbench/browser/modal/modal';
-import { Dialog, DialogButton } from 'sql/workbench/contrib/dialog/common/dialogTypes';
-import { DialogPane } from 'sql/workbench/contrib/dialog/browser/dialogPane';
+import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialogTypes';
+import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

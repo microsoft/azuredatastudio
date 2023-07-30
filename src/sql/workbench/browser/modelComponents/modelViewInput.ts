@@ -9,7 +9,7 @@ import { IEditorModel, IEditorOptions } from 'vs/platform/editor/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { DialogPane } from 'sql/workbench/contrib/dialog/browser/dialogPane';
+import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';

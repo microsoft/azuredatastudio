@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Dialog, DialogTab } from 'sql/workbench/contrib/dialog/common/dialogTypes';
-import { DialogPane } from 'sql/workbench/contrib/dialog/browser/dialogPane';
-import { DialogComponentParams } from 'sql/workbench/contrib/dialog/browser/dialogContainer.component';
+import { Dialog, DialogTab } from 'sql/workbench/services/dialog/common/dialogTypes';
+import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
+import { DialogComponentParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { workbenchInstantiationService } from 'vs/workbench/test/electron-sandbox/workbenchTestServices';
