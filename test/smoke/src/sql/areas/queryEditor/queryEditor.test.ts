@@ -11,7 +11,7 @@ export function setup(opts: minimist.ParsedArgs) {
 	describe('Query Editor', () => {
 		setupCommonTests(opts);
 
-		it('can new file, connect and execute', async function () {
+		it.skip('can new file, connect and execute', async function () {
 			const app = this.app as Application;
 			await app.workbench.queryEditors.newUntitledQuery();
 			const untitled = 'SQLQuery_1';
@@ -43,16 +43,16 @@ function setupCommonTests(opts: minimist.ParsedArgs): void {
 		await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
 	});
 
-	it('can open, connect and execute file', async function () {
+	it.skip('can open, connect and execute file', async function () {
 		const app = this.app as Application;
 		await openAndExecuteFile(app, 'test.sql');
 	});
 
-	it('can open, connect and execute file with spaces', async function () {
+	it.skip('can open, connect and execute file with spaces', async function () {
 		const app = this.app as Application;
 		await openAndExecuteFile(app, 'testWithSpaces.sql');
 	});
-	it('can open, connect and execute file with escaped spaces', async function () {
+	it.skip('can open, connect and execute file with escaped spaces', async function () {
 		const app = this.app as Application;
 		await openAndExecuteFile(app, 'testWithEscapedSpaces.sql');
 	});

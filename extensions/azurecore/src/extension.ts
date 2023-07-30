@@ -73,16 +73,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
 	}
 
-	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
-		?? Constants.DefaultAuthLibrary;
-
-	if (authLibrary !== Constants.DefaultAuthLibrary) {
-		void vscode.window.showWarningMessage(loc.deprecatedOption, loc.switchMsal, loc.dismiss).then(async (value) => {
-			if (value === loc.switchMsal) {
-				await vscode.workspace.getConfiguration(Constants.AzureSection).update(Constants.AuthenticationLibrarySection, Constants.DefaultAuthLibrary, vscode.ConfigurationTarget.Global);
-			}
-		});
-	}
 	const piiLogging = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.piiLogging, false)
 	if (piiLogging) {
 		void vscode.window.showWarningMessage(loc.piiWarning, loc.disable, loc.dismiss).then(async (value) => {
@@ -96,18 +86,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	let eventEmitter: vscode.EventEmitter<azurecore.CacheEncryptionKeys>;
 	// Create the provider service and activate
-	let providerService = await initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => Logger.error(err));
+	let providerService = await initAzureAccountProvider(extensionContext, storagePath).catch((err) => Logger.error(err));
 	if (providerService) {
 		eventEmitter = providerService.getEncryptionKeysEmitter();
 
 		registerAzureServices(appContext);
-		const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
-		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
+		const azureResourceTree = new AzureResourceTreeProvider(appContext);
+		const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
 		pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 		pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 		pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
-		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
+		registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
+		azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 		vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 			const portalEndpoint = item.portalEndpoint;
 			const subscriptionId = item.subscriptionId;
@@ -263,9 +253,9 @@ async function findOrMakeStoragePath() {
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<AzureAccountProviderService | undefined> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<AzureAccountProviderService | undefined> {
 	try {
-		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
+		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
 		return accountProviderService;
@@ -288,12 +278,6 @@ function registerAzureServices(appContext: AppContext): void {
 async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Promise<void> {
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
-	}
-	if (e.affectsConfiguration('azure.authenticationLibrary')) {
-		if (vscode.workspace.getConfiguration(Constants.AzureSection).get('authenticationLibrary') === 'ADAL') {
-			void vscode.window.showInformationMessage(loc.deprecatedOption);
-		}
-		await utils.displayReloadAds(loc.reloadPrompt);
 	}
 }
 

@@ -21,7 +21,6 @@ export class AccountPickerViewModel {
 	public selectedTenantId: string | undefined;
 
 	constructor(
-		_providerId: string,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		// Create our event emitters

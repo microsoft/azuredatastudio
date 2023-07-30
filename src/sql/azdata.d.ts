@@ -3387,8 +3387,9 @@ declare module 'azdata' {
 
 		/**
 		 * SplitView height
+		 * @deprecated use splitViewSize instead
 		 */
-		splitViewHeight: number | string;
+		splitViewHeight?: number | string;
 	}
 
 	export interface FlexItemLayout {

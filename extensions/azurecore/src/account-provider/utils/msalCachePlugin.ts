@@ -10,7 +10,7 @@ import * as lockFile from 'lockfile';
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { AccountsClearTokenCacheCommand, AuthLibrary, LocalCacheSuffix, LockFileSuffix } from '../../constants';
+import { AccountsClearTokenCacheCommand, LocalCacheSuffix, LockFileSuffix } from '../../constants';
 import { Logger } from '../../utils/Logger';
 import { FileEncryptionHelper } from './fileEncryptionHelper';
 import { CacheEncryptionKeys } from 'azurecore';
@@ -34,7 +34,7 @@ export class MsalCachePluginProvider {
 		private readonly _credentialService: azdata.CredentialProvider,
 		private readonly _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>
 	) {
-		this._fileEncryptionHelper = new FileEncryptionHelper(AuthLibrary.MSAL, this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
+		this._fileEncryptionHelper = new FileEncryptionHelper(this._credentialService, this._serviceName, this._onEncryptionKeysUpdated);
 		this._msalCacheConfiguration = {
 			name: 'MSAL',
 			cacheFilePath: path.join(msalFilePath, this._serviceName),
