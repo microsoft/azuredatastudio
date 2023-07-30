@@ -11,20 +11,20 @@ import { Configuration, OpenAIApi } from "openai";
 
 const localize = nls.loadMessageBundle();
 let identificationService: mssql.IIdentificationService;
-let connection: azdata.connection.ConnectionProfile;
+let connectionUri: string;
 let context: azdata.ObjectExplorerContext;
 let version: number;
 let document: vscode.TextDocument;
 
-export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnection: azdata.connection.ConnectionProfile, docsVersion: number, extensionDocument: vscode.TextDocument) {
+export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnectionUri: string, docsVersion: number, extensionDocument: vscode.TextDocument) {
 	context = extensionContext;
-	connection = extensionConnection;
+	connectionUri = extensionConnectionUri;
 	version = docsVersion;
 	document = extensionDocument;
 }
 
-export function getContextVariables(): [azdata.ObjectExplorerContext, azdata.connection.ConnectionProfile, number, vscode.TextDocument] {
-	return [context, connection, version, document];
+export function getContextVariables(): [azdata.ObjectExplorerContext, string, number, vscode.TextDocument] {
+	return [context, connectionUri, version, document];
 }
 
 export async function getIdentificationService(): Promise<mssql.IIdentificationService> {
@@ -34,17 +34,16 @@ export async function getIdentificationService(): Promise<mssql.IIdentificationS
 	return identificationService;
 }
 
-export async function generateMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
-	const databaseName = context.connectionProfile!.databaseName;
+export async function generateMarkdown(context: azdata.ObjectExplorerContext, connectionUri: string): Promise<string> {
+	const databaseName = validate(context.connectionProfile!.databaseName);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
 	const isDatabaseOrSchema = (context.nodeInfo.nodeType === 'Database' || context.nodeInfo.nodeType === 'Schema');
 
 	let tables: [string, string][] = [];
 	let views: [string, string][] = [];
 	if (isDatabaseOrSchema) {
-		let tableQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND NOT TABLE_SCHEMA = 'db_documentation'`;
-		let viewQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' AND NOT TABLE_SCHEMA = 'db_documentation'`;
+		let tableQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${databaseName}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND NOT TABLE_SCHEMA = 'db_documentation'`;
+		let viewQuery = `SELECT TABLE_NAME, TABLE_SCHEMA FROM [${databaseName}].INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'VIEW' AND NOT TABLE_SCHEMA = 'db_documentation'`;
 
 		if (context.nodeInfo.nodeType === 'Schema') {
 			tableQuery += ` AND TABLE_SCHEMA = '${validate(context.nodeInfo.metadata.name)}'`;
@@ -72,9 +71,9 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	// Change threshhold
 	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 100) {
 		let databaseSummary = documentation;
-		databaseSummary += await getDatabaseSummary(context, connection);
+		databaseSummary += await getDatabaseSummary(context, connectionUri);
 
-		const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
+		const objectNamesQuery = `SELECT [ObjectName] FROM [${databaseName}].[db_documentation].[DatabaseDocumentation]`;
 		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
 
 		let objectNames = new Set([]);
@@ -94,7 +93,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 
 	// Tables
 	for (let i = 0; i < tables.length; i++) {
-		const tableAttributes = await tableToText(connection, databaseName, tables[i][0], tables[i][1]);
+		const tableAttributes = await tableToText(connectionUri, databaseName, tables[i][0], tables[i][1]);
 		const tableResult = getMermaidDiagramForTable(tables[i][0], tables[i][1], tableAttributes);
 		diagram += tableResult[0];
 		if (isDatabaseOrSchema) {
@@ -104,7 +103,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	}
 	// Views
 	for (let i = 0; i < views.length; i++) {
-		const tableAttributes = await tableToText(connection, databaseName, views[i][0], views[i][1]);
+		const tableAttributes = await tableToText(connectionUri, databaseName, views[i][0], views[i][1]);
 		const tableResult = getMermaidDiagramForTable(views[i][0], views[i][1], tableAttributes);
 		diagram += tableResult[0];
 		if (isDatabaseOrSchema) {
@@ -126,12 +125,11 @@ function getLink(context: azdata.ObjectExplorerContext, objectNames: Set<string>
 	return "";
 }
 
-async function tableToText(connection: azdata.connection.ConnectionProfile, databaseName: string, tableName: string, schema: string): Promise<[string, string, string, string][]> {
+async function tableToText(connectionUri: string, databaseName: string, tableName: string, schema: string): Promise<[string, string, string, string][]> {
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
 
-	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
-	const baseQuery = `SELECT COLUMN_NAME, DATA_TYPE FROM [${validate(databaseName)}].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${validate(tableName)}' AND TABLE_SCHEMA = '${schema}';`;
-	const referenceQuery = `SELECT COLUMN_NAME, CONSTRAINT_NAME, CONSTRAINT_SCHEMA FROM [${validate(databaseName)}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '${validate(tableName)}' AND TABLE_SCHEMA = '${schema}';`;
+	const baseQuery = `SELECT COLUMN_NAME, DATA_TYPE FROM [${databaseName}].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${validate(tableName)}' AND TABLE_SCHEMA = '${schema}';`;
+	const referenceQuery = `SELECT COLUMN_NAME, CONSTRAINT_NAME, CONSTRAINT_SCHEMA FROM [${databaseName}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '${validate(tableName)}' AND TABLE_SCHEMA = '${schema}';`;
 
 	const baseResult = await queryProvider.runQueryAndReturn(connectionUri, baseQuery);
 	const referenceResult = await queryProvider.runQueryAndReturn(connectionUri, referenceQuery);
@@ -198,9 +196,8 @@ async function getObjectOverviewText(objectName: string, objectsList: string[], 
 	return `## ${objectName}  \n` + promptResponse.data.choices[0].message.content + `  \n\n`;
 }
 
-async function getDatabaseSummary(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<string> {
+async function getDatabaseSummary(context: azdata.ObjectExplorerContext, connectionUri: string): Promise<string> {
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
 
 	const numConnectionsQuery = `SELECT s.session_id FROM sys.dm_exec_connections c JOIN sys.dm_exec_sessions s ON c.session_id = s.session_id WHERE s.database_id = DB_ID();`;
 	const numConnections = (await queryProvider.runQueryAndReturn(connectionUri, numConnectionsQuery)).rows.length.toString();
@@ -321,27 +318,29 @@ function getLabel(context: azdata.ObjectExplorerContext): string {
 	}
 }
 
-export async function setupGeneration(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile): Promise<[number, string]> {
+export async function setupGeneration(context: azdata.ObjectExplorerContext, connectionUri: string): Promise<[number, string]> {
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+	const databaseName = validate(context.connectionProfile.databaseName);
+
+	queryProvider.runQueryString(connectionUri, `USE ${databaseName};`);
 
 	// Try to get schema
 	const schemaExists = await queryProvider.runQueryAndReturn(connectionUri,
-		`SELECT schema_name FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'db_documentation';`);
+		`SELECT schema_name FROM [${databaseName}].INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'db_documentation';`);
 
 	// If schema does not exist, create the schema
 	if (!schemaExists.rowCount) {
-		await queryProvider.runQueryString(connectionUri, `CREATE SCHEMA db_documentation`);
+		await queryProvider.runQueryString(connectionUri, `CREATE SCHEMA db_documentation;`);
 	}
 
 	const tableExists = await queryProvider.runQueryAndReturn(connectionUri,
-		`SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DatabaseDocumentation'`);
+		`SELECT TABLE_NAME FROM [${databaseName}].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DatabaseDocumentation';`);
 
 	// If table does not exist, create it
 	if (!tableExists.rowCount) {
 		// Create table
 		const createTableQuery = `
-		CREATE TABLE [db_documentation].[DatabaseDocumentation] (\n
+		CREATE TABLE [${databaseName}].[db_documentation].[DatabaseDocumentation] (\n
 		\t[ObjectName]    NVARCHAR(MAX) NOT NULL,\n
 		\t[Version]   INT NOT NULL,\n
 		\t[Markdown]   NVARCHAR(MAX) NOT NULL,\n
@@ -354,7 +353,7 @@ export async function setupGeneration(context: azdata.ObjectExplorerContext, con
 	// Same deal; if an entry with the ObjectName already exists, get it's version and markdown to show,
 	// otherwise, put it into the table for future use
 	const objectExists = await queryProvider.runQueryAndReturn(connectionUri,
-		`SELECT [Version],[Markdown] FROM [master].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(getLabel(context))}'`);
+		`SELECT [Version],[Markdown] FROM [${databaseName}].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(getLabel(context))}'`);
 
 	if (objectExists.rowCount) {
 		return [parseInt(objectExists.rows[0][0].displayValue), objectExists.rows[0][1].displayValue];
@@ -362,7 +361,7 @@ export async function setupGeneration(context: azdata.ObjectExplorerContext, con
 	// Otherwise, insert new entry into table
 	else {
 		const insertQuery = `
-		INSERT INTO [db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
+		INSERT INTO [${databaseName}].[db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
 		VALUES ('${validate(getLabel(context))}', ${0}, '', '');\n
 		`
 		// Insert data into table
@@ -372,16 +371,16 @@ export async function setupGeneration(context: azdata.ObjectExplorerContext, con
 	}
 }
 
-export async function saveMarkdown(context: azdata.ObjectExplorerContext, connection: azdata.connection.ConnectionProfile, version: number, markdown: string, markdownJSON: string): Promise<boolean> {
+export async function saveMarkdown(context: azdata.ObjectExplorerContext, connectionUri: string, version: number, markdown: string, markdownJSON: string): Promise<boolean> {
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
+	const databaseName = validate(context.connectionProfile.databaseName);
 
 	// Set updated version of object
 	const newVersion = version + 1;
 
 	// New version, markdown, and markdown JSON are all generated by this extension
-	let insertQuery = `
-	UPDATE [db_documentation].[DatabaseDocumentation]
+	let insertQuery = `USE ${databaseName};
+	UPDATE [${databaseName}].[db_documentation].[DatabaseDocumentation]
 	SET [Version] = ${newVersion}, [Markdown] = '${validate(markdown)}', [JSONMarkdown] = '${validate(markdownJSON)}' WHERE [ObjectName] = '${validate(getLabel(context))}';
 	`
 
@@ -392,7 +391,7 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 
 	// If documentation contains multiple other objects, extract them and save them into the database
 	if ((nodeType === 'Database' || nodeType === 'Schema') && mermaid !== '') {
-		const objectNamesQuery = `SELECT [ObjectName] FROM [master].[db_documentation].[DatabaseDocumentation]`;
+		const objectNamesQuery = `USE ${databaseName}; SELECT [ObjectName] FROM [${databaseName}].[db_documentation].[DatabaseDocumentation]`;
 		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
 
 		let objectNames = new Set([]);
@@ -421,7 +420,7 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 					};
 
 					insertQuery += `
-					INSERT INTO [db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
+					INSERT INTO [${databaseName}].[db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
 					VALUES ('${fieldLabel}', ${1}, '${validate(currentFieldText)}', '${validate(JSON.stringify(fieldJson))}');\n
 					`;
 				}
@@ -437,7 +436,7 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 				const tableMarkdownJSON = JSON.stringify(tableJson);
 
 				insertQuery += `
-				INSERT INTO [db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
+				INSERT INTO [${databaseName}].[db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
 				VALUES ('${validate(tableName)}', ${1}, '${validate(tableMarkdown)}', '${validate(tableMarkdownJSON)}');\n
 				`
 			}
@@ -454,7 +453,7 @@ export async function saveMarkdown(context: azdata.ObjectExplorerContext, connec
 			};
 
 			insertQuery += `
-			INSERT INTO [db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
+			INSERT INTO [${databaseName}].[db_documentation].[DatabaseDocumentation] ([ObjectName], [Version], [Markdown], [JSONMarkdown])\n
 			VALUES ('${fieldLabel}', ${1}, '${validate(currentFieldText)}', '${validate(JSON.stringify(fieldJson))}');\n
 			`;
 		}
@@ -654,31 +653,37 @@ export async function getHoverContent(document: vscode.TextDocument, position: v
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
 	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
 
-	const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [master].[db_documentation].[DatabaseDocumentation]`;
-	const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+	try {
+		const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(connection.databaseName)}].[db_documentation].[DatabaseDocumentation]`;
+		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
 
-	if (objectNamesResult.rowCount) {
-		const objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
-		const range = document.getWordRangeAtPosition(position);
-		const word = document.getText(range);
+		if (objectNamesResult.rowCount) {
+			const objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
+			const range = document.getWordRangeAtPosition(position);
+			const word = document.getText(range);
 
-		const identificationService: mssql.IIdentificationService = await getIdentificationService();
-		const objectName: string = await identificationService.identify(document.uri.toString(), position, word);
+			const identificationService: mssql.IIdentificationService = await getIdentificationService();
+			const objectName: string = await identificationService.identify(document.uri.toString(), position, word);
+			vscode.window.showInformationMessage(objectName);
 
-		if (objectNames.has(objectName)) {
-			const matchingRow = objectNamesResult.rows.find(row => row[0].displayValue === objectName);
-			const regex = /(?<=```  \n\n)[\s\S]*/g;
+			if (objectNames.has(objectName)) {
+				const matchingRow = objectNamesResult.rows.find(row => row[0].displayValue === objectName);
+				const regex = /(?<=```  \n\n)[\s\S]*/g;
 
-			let match = matchingRow[1].displayValue.match(regex);
-			if (match) {
-				return new vscode.Hover(new vscode.MarkdownString(match[0]));
+				let match = matchingRow[1].displayValue.match(regex);
+				if (match) {
+					return new vscode.Hover(new vscode.MarkdownString(match[0]));
+				}
+
+				return new vscode.Hover(new vscode.MarkdownString(matchingRow[1].displayValue));
 			}
-
-			return new vscode.Hover(new vscode.MarkdownString(matchingRow[1].displayValue));
+			return null;
 		}
-		return null;
+		else {
+			return null;
+		}
 	}
-	else {
+	catch {
 		return null;
 	}
 }

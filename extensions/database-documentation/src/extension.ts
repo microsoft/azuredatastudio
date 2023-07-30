@@ -18,21 +18,29 @@ export async function activate(context: vscode.ExtensionContext) {
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.viewDocumentation', async (context: azdata.ObjectExplorerContext) => {
-        // The code you place here will be executed every time your command is executed
-        const connection = (await azdata.connection.getCurrentConnection());
+        let connectionId = "";
+        if (!context.connectionProfile) {
+            const connection = (await azdata.connection.getCurrentConnection());
+            if (!connection) {
+                vscode.window.showInformationMessage(localize('database-documentation.connectionError', 'No active connection found.'));
+                throw new Error('No active connection found.');
+            }
 
-        if (!connection) {
-            vscode.window.showInformationMessage(localize('database-documentation.connectionError', 'No active connection found.'));
-            throw new Error('No active connection found.');
+            connectionId = connection.connectionId;
+        }
+        else {
+            connectionId = context.connectionProfile.id;
         }
 
-        const result = await setupGeneration(context, connection);
+        const connectionUri = await azdata.connection.getUriForConnection(connectionId);
+
+        const result = await setupGeneration(context, connectionUri);
         const version = result[0];
         let md = result[1];
 
         if (!version) {
             vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
-            md = await generateMarkdown(context, connection);
+            md = await generateMarkdown(context, connectionUri);
             vscode.window.showInformationMessage(localize('database-documentation.finishedGen', "Documentation Generated!"));
         }
 
@@ -40,7 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
-        await setContextVariables(context, connection, version, document);
+        await setContextVariables(context, connectionUri, version, document);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
@@ -67,11 +75,11 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.regenerateDocumentation', async () => {
         const contextVariables = getContextVariables();
         const context = contextVariables[0];
-        const connection = contextVariables[1];
+        const connectionUri = contextVariables[1];
         const version = contextVariables[2];
 
         vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
-        const md = await generateMarkdown(context, connection);
+        const md = await generateMarkdown(context, connectionUri);
         vscode.window.showInformationMessage(localize('database-documentation.finishedGen', "Documentation Generated!"));
 
         await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
@@ -80,7 +88,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
-        setContextVariables(context, connection, version, document);
+        setContextVariables(context, connectionUri, version, document);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
@@ -106,14 +114,14 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.saveDocumentationToDatabase', async () => {
         const contextVariables = getContextVariables();
         const context = contextVariables[0];
-        const connection = contextVariables[1];
+        const connectionUri = contextVariables[1];
         const version = contextVariables[2];
         const document = contextVariables[3];
 
         const markdownSave = document.getText();
         const markdownJSON = convertMarkdownToJSON(context, markdownSave);
 
-        const didSave = await saveMarkdown(context, connection, version, markdownSave, markdownJSON);
+        const didSave = await saveMarkdown(context, connectionUri, version, markdownSave, markdownJSON);
 
         if (didSave) {
             vscode.window.showInformationMessage(localize('database-documentation.savedMarkdown', "Saved documentation to database!"));
@@ -144,10 +152,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
         word = word.substring(1, word.length - 1);
 
-        const connection = getContextVariables()[1];
+        const connectionUri = getContextVariables()[0].connectionProfile.id;
 
         const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-        const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
         const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [master].[db_documentation].[DatabaseDocumentation]`;
         const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
 
