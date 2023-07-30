@@ -43,7 +43,7 @@ import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants'
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
-import { MediaDeviceType } from 'sql/workbench/common/restore/constants';
+import { MediaDeviceType } from 'sql/workbench/common/backup/constants';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MediaDeviceType } from 'sql/workbench/common/restore/constants';
+import { MediaDeviceType } from 'sql/workbench/common/backup/constants';
 
 export class MssqlRestoreInfo implements azdata.RestoreInfo {
 

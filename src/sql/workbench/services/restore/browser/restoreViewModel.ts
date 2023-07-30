@@ -10,7 +10,7 @@ import * as types from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { coalesce } from 'vs/base/common/arrays';
-import { MediaDeviceType } from 'sql/workbench/common/restore/constants';
+import { MediaDeviceType } from 'sql/workbench/common/backup/constants';
 
 export interface RestoreOptionsElement {
 	optionMetadata: azdata.ServiceOption;
