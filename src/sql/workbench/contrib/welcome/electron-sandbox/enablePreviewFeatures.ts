@@ -3,26 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AbstractEnablePreviewFeatures } from 'sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures';
+import { AbstractEnablePreviewFeatures } from 'sql/workbench/contrib/welcome/browser/abstractEnablePreviewFeatures';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { INativeHostService } from 'vs/platform/native/common/native';
 
-export class BrowserEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
+export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 
 	constructor(
 		@IStorageService storageService: IStorageService,
 		@INotificationService notificationService: INotificationService,
 		@IHostService hostService: IHostService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@INativeHostService private readonly electronService: INativeHostService
 	) {
 		super(storageService, notificationService, hostService, configurationService);
 
 		this.handlePreviewFeatures();
 	}
 
-	protected async getWindowCount(): Promise<number> {
-		return 1;
+	protected getWindowCount(): Promise<number> {
+		return this.electronService.getWindowCount();
 	}
 }

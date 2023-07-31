@@ -9,7 +9,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
-import { AbstractTelemetryOptOut } from 'sql/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut';
+import { AbstractTelemetryOptOut } from 'sql/workbench/contrib/telemetry/browser/telemetryOptOut';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INativeHostService } from 'vs/platform/native/common/native';
 
