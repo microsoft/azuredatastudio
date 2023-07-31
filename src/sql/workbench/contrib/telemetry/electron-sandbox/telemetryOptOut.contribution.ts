@@ -6,8 +6,6 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { BrowserEnablePreviewFeatures } from 'sql/workbench/contrib/welcome/gettingStarted/browser/enablePreviewFeatures';
+import { NativeTelemetryOptOut } from 'sql/workbench/contrib/telemetry/electron-sandbox/telemetryOptOut';
 
-Registry
-	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(BrowserEnablePreviewFeatures, LifecyclePhase.Eventually);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(NativeTelemetryOptOut, LifecyclePhase.Eventually);

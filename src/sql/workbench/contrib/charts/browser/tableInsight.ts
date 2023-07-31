@@ -10,7 +10,7 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 
 import { $, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';

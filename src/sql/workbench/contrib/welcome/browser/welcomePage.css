@@ -405,9 +405,9 @@
 	height: 12px;
 	margin-left: 6px;
 	margin-top: 3px;
-	-webkit-mask: url(../../media/info.svg) no-repeat;
+	-webkit-mask: url(../media/info.svg) no-repeat;
 	-webkit-mask-size: 12px 12px;
-	mask: url(../../media/info.svg) no-repeat;
+	mask: url(../media/info.svg) no-repeat;
 	mask-size: 12px 12px
 }
 
@@ -455,9 +455,9 @@
 	display: inline-block;
 	width: 11px;
 	margin-left: 4px;
-	-webkit-mask: url(../../media/link_icon.svg) no-repeat;
+	-webkit-mask: url(../media/link_icon.svg) no-repeat;
 	-webkit-mask-size: 11px 11px;
-	mask: url(../../media/link_icon.svg) no-repeat;
+	mask: url(../media/link_icon.svg) no-repeat;
 	mask-size: 11px 11px;
 	height: 11px;
 }
@@ -610,7 +610,7 @@
 .ads-homepage-section.hero {
 	background-size: 1128px 467px;
 	background-repeat: no-repeat;
-	background-image: url(../../media/homeBanner_icon.svg);
+	background-image: url(../media/homeBanner_icon.svg);
 	padding: 0 16px 40px;
 }
 
@@ -636,7 +636,7 @@
 
 .hc-black .ads-homepage-section.hero, .vs-dark .ads-homepage-section.hero {
 	background-size: 1128px 467px;
-	background-image: url(../../media/homeBanner_icon_dark.svg);
+	background-image: url(../media/homeBanner_icon_dark.svg);
 	background-repeat: no-repeat
 }
 
@@ -703,7 +703,7 @@
 .ads-homepage .header-top-nav .icon {
 	min-width: 92px;
 	min-height: 92px;
-	background-image: url(../../media/dataStudioIcon.svg);
+	background-image: url(../media/dataStudioIcon.svg);
 	background-size: contain;
 	margin-right: 20px;
 	background-repeat: no-repeat
@@ -805,25 +805,25 @@
 }
 
 .ads-homepage .header-bottom-nav-tile .icon.connection {
-	background-image: url(../../media/createConnectionIcon.svg);
+	background-image: url(../media/createConnectionIcon.svg);
 	background-size: contain;
 	background-repeat: no-repeat
 }
 
 .ads-homepage .header-bottom-nav-tile .icon.query {
-	background-image: url(../../media/databaseIcon.svg);
+	background-image: url(../media/databaseIcon.svg);
 	background-size: contain;
 	background-repeat: no-repeat
 }
 
 .ads-homepage .header-bottom-nav-tile .icon.notebook {
-	background-image: url(../../media/notebookIcon.svg);
+	background-image: url(../media/notebookIcon.svg);
 	background-size: contain;
 	background-repeat: no-repeat
 }
 
 .ads-homepage .header-bottom-nav-tile .icon.server {
-	background-image: url(../../media/serverIcon.svg);
+	background-image: url(../media/serverIcon.svg);
 	background-size: contain;
 	background-repeat: no-repeat
 }
@@ -923,36 +923,36 @@
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i, .ads-homepage .ads-homepage-section .pinned .list li i, .ads-homepage .icon-document {
-	-webkit-mask: url(../../media/icon_file_document.svg) no-repeat;
+	-webkit-mask: url(../media/icon_file_document.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon_file_document.svg) no-repeat;
+	mask: url(../media/icon_file_document.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".ipynb"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".ipynb"] {
-	-webkit-mask: url(../../media/icon_file_ipynb.svg) no-repeat;
+	-webkit-mask: url(../media/icon_file_ipynb.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon_file_ipynb.svg) no-repeat;
+	mask: url(../media/icon_file_ipynb.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".sql"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) i[title$=".sql"] {
-	-webkit-mask: url(../../media/icon_file_sql.svg) no-repeat;
+	-webkit-mask: url(../media/icon_file_sql.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon_file_sql.svg) no-repeat;
+	mask: url(../media/icon_file_sql.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
 }
 
 .ads-homepage .ads-homepage-section .history .list li:not(.moreRecent) i[title$=".csv"], .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent) a[title$=".csv"] {
-	-webkit-mask: url(../../media/icon_file_csv.svg) no-repeat;
+	-webkit-mask: url(../media/icon_file_csv.svg) no-repeat;
 	-webkit-mask-size: 13px 16px;
-	mask: url(../../media/icon_file_csv.svg) no-repeat;
+	mask: url(../media/icon_file_csv.svg) no-repeat;
 	mask-size: 13px 16px;
 	height: 16px;
 	width: 16px
@@ -1060,7 +1060,7 @@
 }
 
 .ads-homepage .extension-pack-description {
-	background: url(../../media/extension_pack_img.svg);
+	background: url(../media/extension_pack_img.svg);
 	background-position: center;
 	position: relative;
 	background-size: cover;
@@ -1257,7 +1257,7 @@
 
 .file-icons-enabled .show-file-icons .az-data-welcome-page-name-file-icon.file-icon::before {
 	content: " ";
-	background-image: url('../../../../../../vs/workbench/browser/media/code-icon.svg');
+	background-image: url('../../../../../vs/workbench/browser/media/code-icon.svg');
 }
 
 .monaco-workbench .part.editor>.content .welcomePage .linux-only, .monaco-workbench .part.editor>.content .welcomePage .mac-only, .monaco-workbench .part.editor>.content .welcomePage .windows-only {

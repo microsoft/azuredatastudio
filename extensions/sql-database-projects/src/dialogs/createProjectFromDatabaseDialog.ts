@@ -64,7 +64,12 @@ export class CreateProjectFromDatabaseDialog {
 
 				if (!result.connected) {
 					// if can't connect automatically, open connection dialog with the info from the profile
-					const connection = await getAzdataApi()!.connection.openConnectionDialog(undefined, this.profile);
+					const connection = await getAzdataApi()!.connection.openConnectionDialog(undefined, this.profile, {
+						saveConnection: false,
+						showDashboard: false,
+						showConnectionDialogOnError: true,
+						showFirewallRuleOnError: true
+					});
 					connected = !!connection;
 
 					// update these fields if connection was successful, to ensure they match the connection made
@@ -74,6 +79,9 @@ export class CreateProjectFromDatabaseDialog {
 						this.profile.serverName = connection.options['server'];
 						this.profile.userName = connection.options['user'];
 					}
+				} else {
+					// Successfully connectted, update connection Id as received.
+					this.profile.id = result.connectionId!;
 				}
 			}
 		}
@@ -248,7 +256,12 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		this.selectConnectionButton.onDidClick(async () => {
-			let connection = await getAzdataApi()!.connection.openConnectionDialog();
+			let connection = await getAzdataApi()!.connection.openConnectionDialog(undefined, undefined, {
+				saveConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
 			this.connectionId = connection.connectionId;
 
 			let connectionTextboxValue: string;
