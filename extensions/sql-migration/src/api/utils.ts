@@ -963,6 +963,21 @@ export async function promptUserForFile(filters: { [name: string]: string[] }): 
 	return '';
 }
 
+export async function promptUserForFileSave(filename: string, filters: { [name: string]: string[] }) {
+	const options: vscode.SaveDialogOptions = {
+		defaultUri: vscode.Uri.file(path.join(getUserHome()!, filename)),
+		//saveLabel: "Save",
+		filters: filters,
+		//title: "Save file dialog"
+	}
+	const fileUri = await vscode.window.showSaveDialog(options);
+	if (fileUri) {
+		return fileUri.fsPath;
+	}
+
+	return '';
+}
+
 export function isWindows(): boolean { return (os.platform() === 'win32') }
 
 export async function isAdmin(): Promise<boolean> {
