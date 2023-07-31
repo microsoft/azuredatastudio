@@ -90,6 +90,8 @@ export async function executeCopyWithNotification(notificationService: INotifica
 			});
 			notificationHandle.updateMessage(nls.localize('gridDataProvider.copyResultsCompleted', "Selected data has been copied to the clipboard. Row count: {0}.", rowCount));
 		}
+		// Auto-close notification after 3 seconds.
+		setTimeout(() => notificationHandle.close(), 3000);
 	}
 	catch (err) {
 		notificationHandle.close();
