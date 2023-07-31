@@ -30,7 +30,7 @@ export class AssessmentResultsDialog {
 	private dialog: azdata.window.Dialog | undefined;
 	private _model: MigrationStateModel;
 	private _saveButton!: azdata.window.Button;
-	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
+	private _title: string;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -85,17 +85,33 @@ export class AssessmentResultsDialog {
 				'right');
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
-					const folder = await utils.promptUserForFolder();
-					if (folder) {
-						const destinationFilePath = path.join(folder, AssessmentResultsDialog._assessmentReportName);
-						if (this.model._assessmentReportFilePath) {
-							fs.copyFile(this.model._assessmentReportFilePath, destinationFilePath, (err) => {
-								if (err) {
-									console.log(err);
-								} else {
-									void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
+					if (this.model._assessmentReportFilePath) {
+						const basename = path.basename(this.model._assessmentReportFilePath);
+						const filepath = await utils.promptUserForFileSave(basename, { 'Json': ['json'], 'PDF': ['pdf'], 'HTML': ['html'] });
+						if (filepath) {
+							var extension = path.extname(filepath).toLowerCase();
+							if (extension.length > 0) {
+								extension = extension.substring(1);
+							}
+							switch (extension) {
+								case 'json': {
+									fs.copyFile(this.model._assessmentReportFilePath, filepath, (err) => {
+										if (err) {
+											console.log(err);
+										} else {
+											void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(filepath));
+										}
+									});
+									break;
 								}
-							});
+								case 'pdf': {
+
+								}
+								case 'html':
+								default: {
+									void vscode.window.showInformationMessage(`Export format '${extension}' is not supported yet.`);
+								}
+							}
 						} else {
 							console.log('assessment report not found');
 						}

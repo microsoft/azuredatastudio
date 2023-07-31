@@ -16,6 +16,7 @@ import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestor
 import * as os from 'os';
 import * as styles from '../constants/styles';
 import { SqlMigrationService, getSqlMigrationServiceAuthKeys, regenerateSqlMigrationServiceAuthKey } from './azure';
+import path = require('path');
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -935,6 +936,23 @@ export async function promptUserForFolder(): Promise<string> {
 		canSelectFiles: false,
 		canSelectFolders: true,
 		canSelectMany: false,
+	};
+
+	const fileUris = await vscode.window.showOpenDialog(options);
+	if (fileUris && fileUris.length > 0 && fileUris[0]) {
+		return fileUris[0].fsPath;
+	}
+
+	return '';
+}
+
+export async function promptUserForFile(filters: { [name: string]: string[] }): Promise<string> {
+	const options: vscode.OpenDialogOptions = {
+		defaultUri: vscode.Uri.file(getUserHome()!),
+		canSelectFiles: true,
+		canSelectFolders: false,
+		canSelectMany: false,
+		filters: filters,
 	};
 
 	const fileUris = await vscode.window.showOpenDialog(options);
