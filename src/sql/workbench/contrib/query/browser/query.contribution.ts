@@ -303,6 +303,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
+		'queryEditor.results.dataCopyNotifications': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.copyNotifications', "Enables notifications for data copy operations."),
+			'default': true
+		},
 		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.skipNewLineAfterTrailingLineBreak', "Whether to skip adding a line break between rows when copying results if the previous row already has a trailing line break. The default value is false."),
