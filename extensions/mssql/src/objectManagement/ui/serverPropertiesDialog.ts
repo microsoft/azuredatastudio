@@ -223,8 +223,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	private initializeProcessorsSection(): void {
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
-		//let processorAffinity: ProcessorAffinity[] = [{ processor: 'CPU 0', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 1', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 2', processorAffinity: true, processorIOAffinity: false }, { processor: 'CPU 3', processorAffinity: true, processorIOAffinity: false }];
-		//let nodes: NumaNode[] = [{ numaNode: 'Node 0', processors: processorAffinity }, { numaNode: 'Node 1', processors: processorAffinity }, { numaNode: 'Node 2', processors: processorAffinity }];
 		let nodes: NumaNode[] = this.objectInfo.numaNodes;
 		let nodeTableList: azdata.TableComponent[] = [];
 		let tableGroups: azdata.GroupContainer[] = [];
@@ -234,7 +232,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			tableGroups.push(this.createGroup(node.name, [table], true));
 		}
 		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
-			this.objectInfo.autoSetProcessorAffinityMaskForAll = newValue;
+			this.objectInfo.autoProcessorAffinityMaskForAll = newValue;
 			for (let table of nodeTableList) {
 				let newData = table.data;
 				for (let i = 0; i < table.data.length; i++) {
@@ -245,10 +243,10 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				}
 				await this.setTableData(table, newData);
 			}
-		}, this.objectInfo.autoSetProcessorAffinityMaskForAll, isEnabled);
+		}, this.objectInfo.autoProcessorAffinityMaskForAll, isEnabled);
 
 		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
-			this.objectInfo.autoSetProcessorAffinityIOMaskForAll = newValue;
+			this.objectInfo.autoProcessorAffinityIOMaskForAll = newValue;
 			for (let table of nodeTableList) {
 				let newData = table.data;
 				for (let i = 0; i < table.data.length; i++) {
@@ -259,7 +257,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				}
 				await this.setTableData(table, newData);
 			}
-		}, this.objectInfo.autoSetProcessorAffinityIOMaskForAll, isEnabled);
+		}, this.objectInfo.autoProcessorAffinityIOMaskForAll, isEnabled);
 
 		this.processorsSection = this.createGroup('', [
 			this.autoSetProcessorAffinityMaskForAllCheckbox,

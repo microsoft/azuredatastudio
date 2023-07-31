@@ -484,7 +484,7 @@ export interface ProcessorAffinity {
 }
 
 export interface NumaNode {
-	name: string,
+	name: string
 	processors: ProcessorAffinity[]
 }
 
@@ -508,8 +508,8 @@ export interface Server extends ObjectManagement.SqlObject {
 	storageSpaceUsageInMB: number;
 	minServerMemory: NumericServerProperty;
 	maxServerMemory: NumericServerProperty;
-	autoSetProcessorAffinityMaskForAll: boolean;
-	autoSetProcessorAffinityIOMaskForAll: boolean;
+	autoProcessorAffinityMaskForAll: boolean;
+	autoProcessorAffinityIOMaskForAll: boolean;
 	numaNodes: NumaNode[];
 }
 
