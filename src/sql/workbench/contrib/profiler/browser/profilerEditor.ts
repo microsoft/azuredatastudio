@@ -553,7 +553,7 @@ export class ProfilerEditor extends EditorPane {
 					this._profilerService.launchCreateSessionDialog(this.input);
 				}
 
-				if (previousSessionName) {		// skip updating session selector if there is no previous session name
+				if (!this.input.isFileSession) {		// skip updating session selector for File session to block starting another session from a non-connected file session
 					this._updateSessionSelector(previousSessionName);
 				}
 			} else {
@@ -581,7 +581,7 @@ export class ProfilerEditor extends EditorPane {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				if (!this.input.isFileSession) {		// skip updating session selector for File sessions
+				if (!this.input.isFileSession) {		// skip updating session selector for File sessions to block starting another session from a non-connected file session
 					this._updateSessionSelector();
 				}
 			}
