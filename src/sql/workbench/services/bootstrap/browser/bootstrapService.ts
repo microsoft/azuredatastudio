@@ -17,7 +17,7 @@ const selectorCounter = new Map<string, number>();
 export function providerIterator(service: IInstantiationService): Provider[] {
 	return Array.from(_util.serviceIds.values()).map(v => {
 		let factory = () => {
-			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(v));
+			return (<any>service)._getOrCreateServiceInstance(v, Trace.traceCreation(false, v));
 		};
 		factory.prototype = factory;
 		return {

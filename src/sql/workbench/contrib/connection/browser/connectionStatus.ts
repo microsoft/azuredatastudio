@@ -77,8 +77,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 			}
 		}
 
-		let tooltip: string =
-			'Server: ' + connectionProfile.serverName + '\r\n' +
+		let tooltip = 'Server: ' + connectionProfile.serverName + '\r\n' +
 			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {

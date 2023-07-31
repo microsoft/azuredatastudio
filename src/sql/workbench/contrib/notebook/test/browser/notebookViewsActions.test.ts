@@ -10,8 +10,8 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { DeleteViewAction, InsertCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
-import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/browser/emptySessionClasses';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/browser/stubs';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICellModel, INotebookModelOptions, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -35,9 +35,10 @@ import { INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ILanguageService } from 'vs/editor/common/languages/language';
+import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{

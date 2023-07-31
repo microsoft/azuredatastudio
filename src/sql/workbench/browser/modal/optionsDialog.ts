@@ -12,12 +12,12 @@ import * as OptionsDialogHelper from './optionsDialogHelper';
 import * as azdata from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+//import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import * as styler from 'vs/platform/theme/common/styler';
+//import * as styler from 'sql/platform/theme/common/vsstyler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -26,7 +26,6 @@ import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeServic
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
@@ -75,13 +74,9 @@ export class OptionsDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 		if (this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
-			styler.attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
-		let okButton = this.addFooterButton(localize('optionsDialog.ok', "OK"), () => this.ok());
-		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
-		// Theme styler
-		styler.attachButtonStyler(okButton, this._themeService);
-		styler.attachButtonStyler(closeButton, this._themeService);
+		this.addFooterButton(localize('optionsDialog.ok', "OK"), () => this.ok());
+		this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', "Cancel"), () => this.cancel(), 'right', true);
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
 	}
@@ -129,24 +124,6 @@ export class OptionsDialog extends Modal {
 			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input', `option-${option.name}`, option.isRequired);
 			const optionElement = OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
 			this.disposableStore.add(optionElement.optionWidget);
-		}
-	}
-
-	private registerStyling(): void {
-		// Theme styler
-		for (let optionName in this._optionElements) {
-			let widget: Widget = this._optionElements[optionName].optionWidget;
-			let option = this._optionElements[optionName].option;
-			switch (option.valueType) {
-				case ServiceOptionType.category:
-				case ServiceOptionType.boolean:
-					this.disposableStore.add(styler.attachSelectBoxStyler(<SelectBox>widget, this._themeService));
-					break;
-				case ServiceOptionType.string:
-				case ServiceOptionType.password:
-				case ServiceOptionType.number:
-					this.disposableStore.add(styler.attachInputBoxStyler(<InputBox>widget, this._themeService));
-			}
 		}
 	}
 
@@ -211,7 +188,6 @@ export class OptionsDialog extends Modal {
 			append(this._optionGroupsContainer!, bodyContainer);
 		}
 		this.updateTheme(this._themeService.getColorTheme());
-		this.registerStyling();
 		this.show();
 	}
 

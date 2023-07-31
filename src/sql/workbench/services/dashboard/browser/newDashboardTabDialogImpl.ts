@@ -10,7 +10,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -147,7 +147,6 @@ export class NewDashboardTabDialog extends Modal {
 
 		this._addNewTabButton = this.addFooterButton(localize('newDashboardTab.ok', "OK"), () => this.addNewTabs());
 		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', "Cancel"), () => this.cancel(), 'right', true);
-		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -183,12 +182,6 @@ export class NewDashboardTabDialog extends Modal {
 		DOM.append(container, extensionTabViewContainer);
 
 		this._register(attachListStyler(this._extensionList, this._themeService));
-	}
-
-	private registerListeners(): void {
-		// Theme styler
-		this._register(attachButtonStyler(this._cancelButton!, this._themeService));
-		this._register(attachButtonStyler(this._addNewTabButton!, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */

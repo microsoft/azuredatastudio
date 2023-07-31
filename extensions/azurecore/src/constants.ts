@@ -9,8 +9,6 @@ export const AccountsSection = 'accounts';
 
 export const AuthSection = 'auth';
 
-export const AuthenticationLibrarySection = 'authenticationLibrary';
-
 export const AzureSection = 'azure';
 
 export const AzureAccountProviderCredentials = 'azureAccountProviderCredentials';
@@ -27,7 +25,11 @@ export const AccountsAzureAuthSection = AccountsSection + '.' + AzureSection + '
 
 export const AccountsAzureCloudSection = AccountsSection + '.' + AzureSection + '.' + CloudSection;
 
-export const AzureAuthenticationLibrarySection = AzureSection + '.' + AuthenticationLibrarySection;
+export const enablePublicCloud = 'enablePublicCloud';
+
+export const enableUsGovCloud = 'enableUsGovCloud';
+
+export const enableChinaCloud = 'enableChinaCloud';
 
 export const EnableArcFeaturesSection = 'enableArcFeatures';
 
@@ -46,6 +48,10 @@ export const NoSystemKeyChainSection = 'noSystemKeychain';
 export const oldMsalCacheFileName = 'azureTokenCacheMsal-azure_publicCloud';
 
 export const piiLogging = 'piiLogging';
+
+export const CustomProviderSettings = 'customProviderSettings';
+
+export const CustomProviderSettingsSection = AzureSection + '.' + CustomProviderSettings;
 
 /** MSAL Account version */
 export const AccountVersion = '2.0';
@@ -74,8 +80,6 @@ export const AzureTokenFolderName = 'Azure Accounts';
 
 export const MSALCacheName = 'accessTokenCache';
 
-export const DefaultAuthLibrary = 'MSAL';
-
 export const LocalCacheSuffix = '.local';
 
 export const LockFileSuffix = '.lockfile';
@@ -92,17 +96,36 @@ export const AADSTS70043 = 'AADSTS70043';
  * require reauthentication. Have the user sign in again.
  */
 export const AADSTS50173 = 'AADSTS50173';
+/**
+ * UserStrongAuthExpired- Presented multi-factor authentication has expired due to policies configured by your administrator,
+ * you must refresh your multi-factor authentication to access '{resource}'.
+ */
+export const AADSTS50078 = 'AADSTS50078';
+/**
+ * Refresh token needs social IDP login. Have user try signing-in again with username -password
+ */
+export const AADSTS50085 = 'AADSTS50085';
+/**
+ * Authentication failed due to flow token expired. Expected - auth codes, refresh tokens, and sessions expire over time
+ * or are revoked by the user or an admin. The app will request a new login from the user.
+ */
+export const AADSTS50089 = 'AADSTS50089';
+/**
+ * The refresh token was issued to a single page app (SPA), and therefore has a fixed, limited lifetime of {time}, which can't be extended.
+ * It is now expired and a new sign in request must be sent by the SPA to the sign in page. The token was issued on {issueDate}.
+ */
+export const AADSTS700084 = 'AADSTS700084';
+
+/**
+ * multiple_matching_tokens error can occur in scenarios when users try to run ADS as different users, reference issue:
+ * https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5134
+ * Error message: multiple_matching_tokens The cache contains multiple tokens satisfying the requirements.
+ * Call AcquireToken again providing more requirements such as authority or account.
+ */
+export const multiple_matching_tokens_error = 'multiple_matching_tokens';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
-}
-
-/**
- * AAD Auth library as selected.
- */
-export enum AuthLibrary {
-	MSAL = 'MSAL',
-	ADAL = 'ADAL'
 }
 
 /**
@@ -138,6 +161,7 @@ export enum Platform {
 /////////////// Azure Resource provider Ids
 export const AZURE_MONITOR_PROVIDER_ID = 'azure.resource.providers.azureMonitor';
 export const COSMOSDB_MONGO_PROVIDER_ID = 'azure.resource.providers.cosmosDbMongo';
+export const COSMOSDB_POSTGRES_PROVIDER_ID = 'azure.resource.providers.cosmosDbPostgres';
 export const DATABASE_PROVIDER_ID = 'azure.resource.providers.database';
 export const DATABASE_SERVER_PROVIDER_ID = 'azure.resource.providers.databaseServer';
 export const KUSTO_PROVIDER_ID = 'azure.resource.providers.azureDataExplorer';

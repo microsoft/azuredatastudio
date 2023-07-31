@@ -27,7 +27,6 @@ export const DefaultTableListItemEnabledStateGetter: TableListItemEnabledStateGe
 export const DefaultTableListItemValueGetter: TableListItemValueGetter<any> = (item: any) => [item?.toString() ?? ''];
 export const DefaultTableListItemComparer: TableListItemComparer<any> = (item1: any, item2: any) => item1 === item2;
 
-
 export abstract class DialogBase<DialogResult> {
 	protected readonly disposables: vscode.Disposable[] = [];
 	protected readonly dialogObject: azdata.window.Dialog;
@@ -147,8 +146,26 @@ export abstract class DialogBase<DialogResult> {
 		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
 	}
 
-	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth): azdata.InputBoxComponent {
-		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width }).component();
+	protected createInputBoxWithProperties(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
+		properties.width = properties.width ?? DefaultInputWidth;
+		properties.inputType = properties.inputType ?? 'text';
+		properties.value = properties.value ?? '';
+		properties.enabled = properties.enabled ?? true;
+		const inputbox = this.modelView.modelBuilder.inputBox().withProps(properties);
+		if (customValidation) {
+			inputbox.withValidation(customValidation);
+		}
+		const inputBoxComponent = inputbox.component();
+		this.disposables.push(inputBoxComponent.onTextChanged(async () => {
+			await textChangeHandler(inputBoxComponent.value!);
+			this.onFormFieldChange();
+			await this.runValidation(false);
+		}));
+		return inputBoxComponent;
+	}
+
+	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number): azdata.InputBoxComponent {
+		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, required: required, min: min, max: max }).component();
 		this.disposables.push(inputbox.onTextChanged(async () => {
 			await textChangeHandler(inputbox.value!);
 			this.onFormFieldChange();
@@ -163,6 +180,14 @@ export abstract class DialogBase<DialogResult> {
 			collapsible: collapsible,
 			collapsed: collapsed
 		}).withItems(items).component();
+	}
+
+	protected createTab(id: string, title: string, content?: azdata.Component): azdata.Tab {
+		return {
+			title: title,
+			content: content,
+			id: id
+		};
 	}
 
 	protected createTableList<T>(ariaLabel: string,
@@ -261,7 +286,7 @@ export abstract class DialogBase<DialogResult> {
 		return this.createButtonContainer([addButton, removeButton]);
 	}
 
-	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth): azdata.DropDownComponent {
+	protected createDropdown(ariaLabel: string, handler: (newValue: string) => Promise<void>, values: string[], value: string | undefined, enabled: boolean = true, width: number = DefaultInputWidth, editable?: boolean, strictSelection?: boolean): azdata.DropDownComponent {
 		// Automatically add an empty item to the beginning of the list if the current value is not specified.
 		// This is needed when no meaningful default value can be provided.
 		// Create a new array so that the original array isn't modified.
@@ -275,7 +300,9 @@ export abstract class DialogBase<DialogResult> {
 			values: dropdownValues,
 			value: value,
 			width: width,
-			enabled: enabled
+			enabled: enabled,
+			editable: editable,
+			strictSelection: strictSelection
 		}).component();
 		this.disposables.push(dropdown.onValueChanged(async () => {
 			await handler(<string>dropdown.value!);

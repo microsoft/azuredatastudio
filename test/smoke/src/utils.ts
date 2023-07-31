@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import minimist = require('minimist'); // {{SQL CARBON EDIT}} - import minimist
 import { Suite, Context } from 'mocha';
 import { dirname, join } from 'path';
 import { Application, ApplicationOptions, Logger } from '../../automation';
@@ -17,25 +18,6 @@ export function itRepeat(n: number, description: string, callback: (this: Contex
 	for (let i = 0; i < n; i++) {
 		it(`${description} (iteration ${i})`, callback);
 	}
-}
-
-/**
- * Defines a test-case that will run but will be skips it if it throws an exception. This is useful
- * to get some runs in CI when trying to stabilize a flaky test, without failing the build. Note
- * that this only works if something inside the test throws, so a test's overall timeout won't work
- * but throwing due to a polling timeout will.
- * @param title The test-case title.
- * @param callback The test-case callback.
- */
-export function itSkipOnFail(title: string, callback: (this: Context) => any): void {
-	it(title, function () {
-		return Promise.resolve().then(() => {
-			return callback.apply(this, arguments);
-		}).catch(e => {
-			console.warn(`Test "${title}" failed but was marked as skip on fail:`, e);
-			this.skip();
-		});
-	});
 }
 
 export function installAllHandlers(logger: Logger, optionsTransform?: (opts: ApplicationOptions) => ApplicationOptions) {
@@ -149,15 +131,16 @@ export function getRandomUserDataDir(options: ApplicationOptions): string {
 
 export function installCommonAfterHandlers(opts: minimist.ParsedArgs, appFn?: () => Application | undefined, joinFn?: () => Promise<unknown>) {
 	afterEach(async function () {
-		const app: Application = appFn?.() ?? this.app;
+		// {{SQL CARBON EDIT}} - No clear way to take a screenshot
+		// const app: Application = appFn?.() ?? this.app;
 
 		if (this.currentTest?.state === 'failed' && opts.screenshots) {
-			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-			try {
-				await app.captureScreenshot(name);
-			} catch (error) {
-				// ignore
-			}
+			// const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+			// try {
+			// 	await app.captureScreenshot(name);
+			// } catch (error) {
+			// 	// ignore
+			// }
 		}
 	});
 
@@ -175,6 +158,61 @@ export function installCommonAfterHandlers(opts: minimist.ParsedArgs, appFn?: ()
 
 	afterEach(async function () {
 		await this.app?.stopTracing(this.currentTest?.title, this.currentTest?.state === 'failed');
+	});
+}
+
+// {{SQL CARBON EDIT}} - defined beforeSuite
+export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>) {
+	beforeEach(async function () {
+		const app = this.app as Application;
+
+		const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+		await app.code.driver.startTracing(name);
+	});
+
+	before(async function () {
+		let options: ApplicationOptions = { ...this.defaultOptions };
+
+		if (optionsTransform) {
+			options = await optionsTransform(options);
+		}
+
+		// https://github.com/microsoft/vscode/issues/34988
+		const userDataPathSuffix = [...Array(8)].map(() => Math.random().toString(36)[3]).join('');
+		const userDataDir = options.userDataDir.concat(`-${userDataPathSuffix}`);
+
+		const app = new Application({ ...options, userDataDir });
+		await app.start();
+		this.app = app;
+
+		if (opts.log) {
+			const title = this.currentTest!.fullTitle();
+			app.logger.log('*** Test start:', title);
+		}
+	});
+}
+
+// {{SQL CARBON EDIT}} - defined afterSuite
+export function afterSuite(opts: minimist.ParsedArgs) {
+	afterEach(async function () {
+		const app = this.app as Application;
+
+		const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+
+		if (this.currentTest?.state === 'failed' && opts.screenshots) {
+			await app.code.driver.stopTracing(name, true); // True, captures screenshots.
+		}
+		else {
+			await app.code.driver.stopTracing(name, false); // False, doesn't capture screenshots
+		}
+	});
+
+	after(async function () {
+		const app = this.app as Application;
+
+		if (app) {
+			await app.stop();
+		}
 	});
 }
 
@@ -226,7 +264,7 @@ export async function retry<T>(task: ITask<Promise<T>>, delay: number, retries: 
 
 			return await task();
 		} catch (error) {
-			lastError = error;
+			lastError = error as Error;
 
 			await timeout(delay);
 		}

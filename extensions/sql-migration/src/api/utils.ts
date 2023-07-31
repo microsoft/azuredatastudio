@@ -241,9 +241,9 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 		if (value) {
 			const searchValue = value.toLowerCase();
 			if (useDisplayName) {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === searchValue);
+				selectedIndex = dropDown.values?.findIndex((v: any) => (v as CategoryValue)?.displayName?.toLowerCase() === searchValue);
 			} else {
-				selectedIndex = dropDown.values.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === searchValue);
+				selectedIndex = dropDown.values?.findIndex((v: any) => (v as CategoryValue)?.name?.toLowerCase() === searchValue);
 			}
 		} else {
 			selectedIndex = -1;
@@ -302,10 +302,6 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 
 		descriptor[fnKey] = decorator(fn, key);
 	};
-}
-
-export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
-	return { 'SqlMigrationSessionId': sessionId };
 }
 
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
@@ -1169,7 +1165,7 @@ export function createRegistrationInstructions(view: ModelView, testConnectionBu
 	}).component();
 }
 
-export function clearDropDown(dropDown: DropDownComponent): void {
-	dropDown.values = [];
-	dropDown.value = undefined;
+export async function clearDropDown(dropDown: DropDownComponent): Promise<void> {
+	await dropDown.updateProperty('value', undefined);
+	await dropDown.updateProperty('values', []);
 }

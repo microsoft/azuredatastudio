@@ -44,7 +44,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _filter: ProfilerFilter = { clauses: [] };
 
 	constructor(
-		public connection: IConnectionProfile,
+		public connection: IConnectionProfile | undefined,
+		public fileURI: URI | undefined,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
@@ -63,6 +64,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
+
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
@@ -156,6 +158,16 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		}
 	}
 
+	public get isFileSession(): boolean {
+		return !!this.fileURI;
+	}
+
+	public setConnectionState(isConnected: boolean): void {
+		this.state.change({
+			isConnected: isConnected
+		});
+	}
+
 	public setColumns(columns: Array<string>) {
 		this._columns = columns;
 		this._onColumnsChanged.fire(this.columns);
@@ -193,7 +205,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public onSessionStopped(notification: azdata.ProfilerSessionStoppedParams) {
-		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
+		if (!this.isFileSession) {	// File session do not have serverName, so ignore notification error based off of server
+			this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
+		}
 
 		this.state.change({
 			isStopped: true,

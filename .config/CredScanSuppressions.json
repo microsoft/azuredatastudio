@@ -14,12 +14,16 @@
             "_justification": "False positive from webpacked code"
         },
         {
-          "file": ".devcontainer\\devcontainer.json",
-          "_justification": "Local development environment - not used in production"
+            "file": ".devcontainer\\devcontainer.json",
+            "_justification": "Local development environment - not used in production"
         },
         {
-          "file": "extensions\\asde-deployment\\notebooks\\edge\\deploy-sql-edge-remote.ipynb",
-          "_justification": "Deployment Notebook - usernames/passwords are entered by user"
+            "file": "extensions\\asde-deployment\\notebooks\\edge\\deploy-sql-edge-remote.ipynb",
+            "_justification": "Deployment Notebook - usernames/passwords are entered by user"
+        },
+        {
+            "file": "src\\vs\\workbench\\api\\test\\browser\\extHostTelemetry.test.ts",
+            "_justification": "External code"
         }
     ]
 }

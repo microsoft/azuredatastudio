@@ -8,8 +8,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
-import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/workbench/browser/editor/query/untitledQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
@@ -67,7 +67,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		if (activeEditor instanceof FileEditorInput) {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
-			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput, undefined);
+			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
 			return undefined;
 		}
@@ -146,7 +146,7 @@ export class UntitledQueryEditorSerializer implements IEditorSerializer {
 		const factory = editorFactoryRegistry.getEditorSerializer(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.resource.toString());
-		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput, undefined);
+		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput);
 	}
 
 	canSerialize(): boolean { // we can always serialize query inputs

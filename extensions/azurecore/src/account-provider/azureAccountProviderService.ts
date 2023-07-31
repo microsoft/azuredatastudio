@@ -9,7 +9,6 @@ import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { promises as fsPromises } from 'fs';
-import { SimpleTokenCache } from './utils/simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata, CacheEncryptionKeys } from 'azurecore';
@@ -20,6 +19,8 @@ import { Configuration, PublicClientApplication } from '@azure/msal-node';
 import * as Constants from '../constants';
 import { Logger } from '../utils/Logger';
 import { ILoggerCallback, LogLevel as MsalLogLevel } from "@azure/msal-common";
+import { displayReloadAds } from '../utils';
+import { reloadPromptCacheClear } from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();
 
@@ -42,10 +43,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
 	private _onEncryptionKeysUpdated: vscode.EventEmitter<CacheEncryptionKeys>;
+	public activeProviderCount: number = 0;
 
 	constructor(private _context: vscode.ExtensionContext,
-		private _userStoragePath: string,
-		private _authLibrary: string) {
+		private _userStoragePath: string) {
 		this._onEncryptionKeysUpdated = new vscode.EventEmitter<CacheEncryptionKeys>();
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
@@ -108,8 +109,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		return Promise.all(promises)
 			.then(
 				() => {
-					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					void vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
+					void displayReloadAds(reloadPromptCacheClear);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");
@@ -143,12 +143,27 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			// Case 2: Provider was enabled and is now disabled - unregister provider
 			if (oldConfigValue && !newConfigValue) {
 				providerChanges.push(this.unregisterAccountProvider(provider));
+				this.activeProviderCount--;
 			}
 
 			// Case 3: Provider was disabled and is now enabled - register provider
 			if (!oldConfigValue && newConfigValue) {
 				providerChanges.push(this.registerAccountProvider(provider));
+				this.activeProviderCount++;
 			}
+
+			// Case 4: Provider was added from JSON - register provider
+			if (provider.configKey !== Constants.enablePublicCloud && provider.configKey !== Constants.enableUsGovCloud && provider.configKey !== Constants.enableChinaCloud) {
+				providerChanges.push(this.registerAccountProvider(provider));
+				this.activeProviderCount++;
+			}
+		}
+		if (this.activeProviderCount === 0) {
+			void vscode.window.showWarningMessage(loc.noCloudsEnabled, loc.enablePublicCloud, loc.dismiss).then(async (result) => {
+				if (result === loc.enablePublicCloud) {
+					await vscode.workspace.getConfiguration(Constants.AccountsAzureCloudSection).update(loc.enablePublicCloudCamel, true, vscode.ConfigurationTarget.Global);
+				}
+			});
 		}
 
 		// Process all the changes before continuing
@@ -157,8 +172,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
-		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
-		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 		const tokenCacheKeyMsal = Constants.MSALCacheName;
 		await this.clearOldCacheIfExists();
 		try {
@@ -166,18 +179,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				throw new Error('Credential provider not registered');
 			}
 
-			// ADAL Token Cache
-			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
-			if (this._authLibrary === Constants.AuthLibrary.ADAL) {
-				await simpleTokenCache.init();
-			}
-
 			// MSAL Cache Plugin
 			this._cachePluginProvider = new MsalCachePluginProvider(tokenCacheKeyMsal, this._userStoragePath, this._credentialProvider, this._onEncryptionKeysUpdated);
-			if (this._authLibrary === Constants.AuthLibrary.MSAL) {
-				// Initialize cache provider and encryption keys
-				await this._cachePluginProvider.init();
-			}
+			// Initialize cache provider and encryption keys
+			await this._cachePluginProvider.init();
 
 			const msalConfiguration: Configuration = {
 				auth: {
@@ -198,8 +203,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 			this.clientApplication = new PublicClientApplication(msalConfiguration);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
-				simpleTokenCache, this._context, this.clientApplication, this._cachePluginProvider,
-				this._uriEventHandler, this._authLibrary, isSaw);
+				this._context, this.clientApplication, this._cachePluginProvider,
+				this._uriEventHandler, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {

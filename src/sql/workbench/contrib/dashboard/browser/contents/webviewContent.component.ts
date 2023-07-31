@@ -79,7 +79,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public setHtml(html: string): void {
 		this._html = html;
 		if (this._webview) {
-			this._webview.html = html;
+			this._webview.setHtml(html);
 		}
 	}
 
@@ -99,7 +99,8 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 		}
 
 		this._webview = this.webviewService.createWebviewElement({
-			id: this.id,
+			providedViewType: this.id,
+			title: this.id,
 			contentOptions: {
 				allowScripts: true,
 			},
@@ -113,7 +114,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessage.fire(e.message);
 		});
 		if (this._html) {
-			this._webview.html = this._html;
+			this._webview.setHtml(this._html);
 		}
 	}
 }

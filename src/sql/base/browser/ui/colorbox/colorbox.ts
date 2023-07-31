@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/colorbox';
-
-import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import * as DOM from 'vs/base/browser/dom';
@@ -13,18 +11,13 @@ import { generateUuid } from 'vs/base/common/uuid';
 export interface ColorboxOptions {
 	name: string;
 	class?: string[];
-	label: string;
-}
-
-export interface ColorboxStyle {
-	backgroundColor?: Color;
+	color: string;
 }
 
 export class Colorbox extends Widget {
 	readonly radioButton: HTMLInputElement;
 	readonly colorElement: HTMLDivElement;
 	private labelNode: HTMLLabelElement;
-	private backgroundColor?: Color;
 
 	private _onSelect = new Emitter<void>();
 	public readonly onSelect: Event<void> = this._onSelect.event;
@@ -34,6 +27,7 @@ export class Colorbox extends Widget {
 		const colorboxContainer = DOM.$('.colorbox-container');
 		this.colorElement = DOM.$('.color-element');
 		const radiobuttonContainer = DOM.$('.color-selector-container');
+		this.colorElement.style.background = opts.color;
 		this.radioButton = DOM.$('input');
 		this.radioButton.type = 'radio';
 		this.radioButton.name = opts.name;
@@ -43,10 +37,10 @@ export class Colorbox extends Widget {
 		if (opts.class) {
 			this.radioButton.classList.add(...opts.class);
 		}
-		this.radioButton.setAttribute('aria-label', opts.label);
+		this.radioButton.setAttribute('aria-label', opts.color);
 		this.labelNode = DOM.$('label.colorbox-label');
 		this.labelNode.setAttribute('for', this.radioButton.id);
-		this.labelNode.innerText = opts.label;
+		this.labelNode.innerText = opts.color;
 
 		radiobuttonContainer.appendChild(this.radioButton);
 		radiobuttonContainer.appendChild(this.labelNode);
@@ -58,17 +52,6 @@ export class Colorbox extends Widget {
 			this._onSelect.fire();
 		});
 
-	}
-
-	public style(styles: ColorboxStyle): void {
-		if (styles.backgroundColor) {
-			this.backgroundColor = styles.backgroundColor;
-		}
-		this.updateStyle();
-	}
-
-	private updateStyle(): void {
-		this.colorElement.style.background = this.backgroundColor ? this.backgroundColor.toString() : this.radioButton.style.background;
 	}
 
 	public get checked(): boolean {

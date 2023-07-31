@@ -68,6 +68,12 @@ export interface ConnectionProviderProperties {
 	displayName: string;
 
 	/**
+	 * Enable to use all connection properties for URI generation (ServiceLayer requires the same options as well.)
+	 * If not specified, only IsIdentity options will be used instead (URI with basic info).
+	 */
+	useFullOptions?: boolean;
+
+	/**
 	 * Alias to be used for the kernel in notebooks
 	 */
 	notebookKernelAlias?: string;

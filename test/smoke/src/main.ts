@@ -4,18 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
+import { gracefulify } from 'graceful-fs'; // {{SQL CARBON EDIT}} - import graceful-fs
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as os from 'os';
 import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
+import * as vscodetest from '@vscode/test-electron'; // {{SQL CARBON EDIT}} - import @vscode/test-electron
 import { ncp } from 'ncp';
-import * as vscodetest from 'vscode-test';
 import fetch from 'node-fetch';
-import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
+import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog } from '../../automation'; // {{SQL CARBON EDIT}} - import measureAndLog
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
+import { retry } from './utils'; // {{SQL CARBON EDIT}} - import retry from utils
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
@@ -29,6 +31,8 @@ import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.te
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';
 import { setup as setupTaskTests } from './areas/task/task.test';*/
+
+const rootPath = path.join(__dirname, '..', '..', '..');
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
@@ -60,8 +64,12 @@ const opts = minimist(args, {
 	tracing?: boolean;
 	build?: string;
 	'stable-build'?: string;
-	browser?: string;
+	browser?: 'webkit' | 'chromium' | 'firefox' | undefined; // {{SQL CARBON EDIT}} - string literal types
 	electronArgs?: string;
+	extensionsDir?: string; // {{SQL CARBON EDIT}}
+	log?: string; // {{SQL CARBON EDIT}}
+	screenshots?: string; // {{SQL CARBON EDIT}}
+	_: string[]
 };
 
 const logsRootPath = (() => {
@@ -329,28 +337,58 @@ async function ensureStableCode(): Promise<void> {
 
 	let stableCodePath = opts['stable-build'];
 	if (!stableCodePath) {
-		const { major, minor } = parseVersion(version!);
-		const majorMinorVersion = `${major}.${minor - 1}`;
-		const versionsReq = await fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } });
+		const current = parseVersion(version!);
+		const versionsReq = await retry(() => measureAndLog(() => fetch('https://update.code.visualstudio.com/api/releases/stable'), 'versionReq', logger), 1000, 20);
 
 		if (!versionsReq.ok) {
 			throw new Error('Could not fetch releases from update server');
 		}
 
-		const versions: { version: string }[] = await versionsReq.json();
-		const prefix = `${majorMinorVersion}.`;
-		const previousVersion = versions.find(v => v.version.startsWith(prefix));
+		const versions: string[] = await measureAndLog(() => versionsReq.json(), 'versionReq.json()', logger);
+		const stableVersion = versions.find(raw => {
+			const version = parseVersion(raw);
+			return version.major < current.major || (version.major === current.major && version.minor < current.minor);
+		});
 
-		if (!previousVersion) {
-			throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
+		if (!stableVersion) {
+			throw new Error(`Could not find suitable stable version for ${version}`);
 		}
 
-		console.log(`*** Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
+		logger.log(`Found VS Code v${version}, downloading previous VS Code version ${stableVersion}...`);
 
-		const stableCodeExecutable = await vscodetest.download({
-			cachePath: path.join(os.tmpdir(), 'vscode-test'),
-			version: previousVersion.version
-		});
+		let lastProgressMessage: string | undefined = undefined;
+		let lastProgressReportedAt = 0;
+		const stableCodeDestination = path.join(testDataPath, 's');
+		const stableCodeExecutable = await retry(() => measureAndLog(() => vscodetest.download({
+			cachePath: stableCodeDestination,
+			version: stableVersion,
+			extractSync: true,
+			reporter: {
+				report: report => {
+					let progressMessage = `download stable code progress: ${report.stage}`;
+					const now = Date.now();
+					if (progressMessage !== lastProgressMessage || now - lastProgressReportedAt > 10000) {
+						lastProgressMessage = progressMessage;
+						lastProgressReportedAt = now;
+
+						if (report.stage === 'downloading') {
+							progressMessage += ` (${report.bytesSoFar}/${report.totalBytes})`;
+						}
+
+						logger.log(progressMessage);
+					}
+				},
+				error: error => logger.log(`download stable code error: ${error}`)
+			}
+		}), 'download stable code', logger), 1000, 3, () => new Promise<void>((resolve, reject) => {
+			rimraf(stableCodeDestination, { maxBusyTries: 10 }, error => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		}));
 
 		if (process.platform === 'darwin') {
 			// Visual Studio Code.app/Contents/MacOS/Electron
@@ -365,7 +403,7 @@ async function ensureStableCode(): Promise<void> {
 		throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
 	}
 
-	console.log(`*** Using stable build ${stableCodePath} for migration tests`);
+	logger.log(`Using stable build ${stableCodePath} for migration tests`);
 
 	opts['stable-build'] = stableCodePath;
 }
@@ -387,25 +425,26 @@ function createOptions(): ApplicationOptions {
 		loggers.push(new ConsoleLogger());
 	}
 
-	let log: string | undefined = undefined;
+	// Prepare logs root path
+	fs.rmSync(logsRootPath, { recursive: true, force: true, maxRetries: 3 });
+	mkdirp.sync(logsRootPath);
 
-	if (opts.log) {
-		loggers.push(new FileLogger(opts.log));
-		log = 'trace';
-	}
+	// Always log to log file
+	loggers.push(new FileLogger(path.join(logsRootPath, 'smoke-test-runner.log')));
 
 	return {
 		quality,
 		codePath: opts.build,
 		workspacePath,
 		userDataDir,
-		extensionsPath,
+		extensionsPath: extensionsPath ?? '', // {{SQL CARBON EDIT}} null coalescing
 		logger,
 		logsPath: path.join(logsRootPath, 'suite_unknown'),
 		crashesPath: path.join(crashesRootPath, 'suite_unknown'),
 		verbose: opts.verbose,
 		remote: opts.remote,
 		web: opts.web,
+		tracing: opts.tracing,
 		headless: opts.headless,
 		browser: opts.browser,
 		extraArgs: (opts.electronArgs || '').split(' ').map(a => a.trim()).filter(a => !!a)

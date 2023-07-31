@@ -13,7 +13,8 @@
   "icon": "images/extension.png",
   "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "activationEvents": [
-    "*"
+    "onCommand:queryStore.topResourceConsumingQueriesOpen",
+    "onCommand:queryStore.overallResourceConsumptionOpen"
   ],
   "main": "./out/extension",
   "repository": {
@@ -31,6 +32,16 @@
   ],
   "contributes": {
     "commands": [
+      {
+        "command": "queryStore.topResourceConsumingQueriesOpen",
+        "title": "%queryStore.topResourceConsumingQueriesOpen%",
+        "category": "%queryStore.category%"
+      },
+      {
+        "command": "queryStore.overallResourceConsumptionOpen",
+        "title": "%queryStore.overallResourceConsumptionOpen%",
+        "category": "%queryStore.category%"
+      }
     ],
     "menus": {
       "objectExplorer/item/context": [
@@ -45,5 +56,10 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
+    "@microsoft/azdata-test": "^3.0.1",
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@types/mocha": "^7.0.2",
+    "should": "^13.2.1",
+    "typemoq": "^2.1.0"
   }
 }

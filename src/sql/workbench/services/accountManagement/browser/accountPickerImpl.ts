@@ -8,23 +8,23 @@ import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { List } from 'vs/base/browser/ui/list/listWidget';
-import { IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IListEvent } from 'vs/base/browser/ui/list/list';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachListStyler } from 'sql/platform/theme/common/vsstyler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import * as azdata from 'azdata';
-import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
-import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
+import { DropdownList, IDropdownOptions } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { AddAccountAction, RefreshAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { Tenant, TenantListDelegate, TenantPickerListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
+import { defaultButtonStyles } from 'vs/platform/theme/browser/defaultStyles';
+import { defaultDropdownStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 export class AccountPicker extends Disposable {
 	public static ACCOUNTPICKERLIST_HEIGHT = 47;
@@ -62,7 +62,6 @@ export class AccountPicker extends Disposable {
 	public get onTenantSelectionChangeEvent(): Event<string | undefined> { return this._onTenantSelectionChangeEvent.event; }
 
 	constructor(
-		private _providerId: string,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService
@@ -77,11 +76,9 @@ export class AccountPicker extends Disposable {
 		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 
 		// Create the view model, wire up the events, and initialize with baseline data
-		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel, this._providerId);
+		this.viewModel = this._instantiationService.createInstance(AccountPickerViewModel);
 		this.viewModel.updateAccountListEvent(arg => {
-			if (arg.providerId === this._providerId) {
-				this.updateAccountList(arg.accountList);
-			}
+			this.updateAccountList(arg.accountList);
 		});
 	}
 
@@ -136,25 +133,26 @@ export class AccountPicker extends Disposable {
 		// Create dropdowns for account and tenant pickers
 		const accountOptions: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
-			labelRenderer: (container) => this.renderAccountLabel(container)
+			labelRenderer: (container) => this.renderAccountLabel(container),
+			buttonStyles: defaultButtonStyles,
+			dropdownStyles: defaultDropdownStyles
 		};
 
 		const tenantOption: IDropdownOptions = {
 			contextViewProvider: this._contextViewService,
-			labelRenderer: (container) => this.renderTenantLabel(container)
+			labelRenderer: (container) => this.renderTenantLabel(container),
+			buttonStyles: defaultButtonStyles,
+			dropdownStyles: defaultDropdownStyles
 		};
 
 		// Create the add account action
-		const addAccountAction = this._instantiationService.createInstance(AddAccountAction, this._providerId);
+		const addAccountAction = this._instantiationService.createInstance(AddAccountAction, undefined);
 		addAccountAction.addAccountCompleteEvent(() => this._addAccountCompleteEmitter.fire());
 		addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg));
 		addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire());
 
 		this._dropdown = this._register(new DropdownList(this._accountContainer, accountOptions, this._accountListContainer, this._accountList, addAccountAction));
 		this._tenantDropdown = this._register(new DropdownList(this._tenantContainer, tenantOption, this._tenantListContainer, this._tenantList));
-
-		this._register(attachDropdownStyler(this._dropdown, this._themeService));
-		this._register(attachDropdownStyler(this._tenantDropdown, this._themeService));
 
 		this._register(this._accountList.onDidChangeSelection((e: IListEvent<azdata.Account>) => {
 			if (e.elements.length === 1) {

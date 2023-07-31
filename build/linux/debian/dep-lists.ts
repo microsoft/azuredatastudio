@@ -20,23 +20,10 @@ export const recommendedDeps = [
 	'libvulkan1' // Move to additionalDeps once support for Trusty and Jessie are dropped.
 ];
 
-// Based on https://source.chromium.org/chromium/chromium/src/+/refs/tags/98.0.4758.109:chrome/installer/linux/BUILD.gn;l=64-80
-// and the Linux Archive build
-// Shared library dependencies that we already bundle.
-export const bundledDeps = [
-	'libEGL.so',
-	'libGLESv2.so',
-	'libvulkan.so.1',
-	'swiftshader_libEGL.so',
-	'swiftshader_libGLESv2.so',
-	'libvk_swiftshader.so',
-	'libffmpeg.so'
-];
-
 export const referenceGeneratedDepsByArch = {
 	'amd64': [
 		'ca-certificates',
-		'libasound2 (>= 1.0.16)',
+		'libasound2 (>= 1.0.17)',
 		'libatk-bridge2.0-0 (>= 2.5.3)',
 		'libatk1.0-0 (>= 2.2.0)',
 		'libatspi2.0-0 (>= 2.9.90)',
@@ -46,10 +33,9 @@ export const referenceGeneratedDepsByArch = {
 		'libcairo2 (>= 1.6.0)',
 		'libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3',
 		'libdbus-1-3 (>= 1.5.12)',
-		'libdrm2 (>= 2.4.38)',
+		'libdrm2 (>= 2.4.60)',
 		'libexpat1 (>= 2.0.1)',
-		'libgbm1 (>= 8.1~0)',
-		'libgcc1 (>= 1:3.0)',
+		'libgbm1 (>= 17.1.0~rc2)',
 		'libglib2.0-0 (>= 2.16.0)',
 		'libglib2.0-0 (>= 2.39.4)',
 		'libgtk-3-0 (>= 3.9.10)',
@@ -73,21 +59,20 @@ export const referenceGeneratedDepsByArch = {
 	],
 	'armhf': [
 		'ca-certificates',
-		'libasound2 (>= 1.0.16)',
+		'libasound2 (>= 1.0.17)',
 		'libatk-bridge2.0-0 (>= 2.5.3)',
 		'libatk1.0-0 (>= 2.2.0)',
 		'libatspi2.0-0 (>= 2.9.90)',
 		'libc6 (>= 2.17)',
+		'libc6 (>= 2.28)',
 		'libc6 (>= 2.4)',
 		'libc6 (>= 2.9)',
 		'libcairo2 (>= 1.6.0)',
 		'libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3',
 		'libdbus-1-3 (>= 1.5.12)',
-		'libdrm2 (>= 2.4.38)',
+		'libdrm2 (>= 2.4.60)',
 		'libexpat1 (>= 2.0.1)',
-		'libgbm1 (>= 8.1~0)',
-		'libgcc1 (>= 1:3.0)',
-		'libgcc1 (>= 1:3.5)',
+		'libgbm1 (>= 17.1.0~rc2)',
 		'libglib2.0-0 (>= 2.16.0)',
 		'libglib2.0-0 (>= 2.39.4)',
 		'libgtk-3-0 (>= 3.9.10)',
@@ -115,20 +100,18 @@ export const referenceGeneratedDepsByArch = {
 	],
 	'arm64': [
 		'ca-certificates',
-		'libasound2 (>= 1.0.16)',
+		'libasound2 (>= 1.0.17)',
 		'libatk-bridge2.0-0 (>= 2.5.3)',
 		'libatk1.0-0 (>= 2.2.0)',
 		'libatspi2.0-0 (>= 2.9.90)',
 		'libc6 (>= 2.17)',
+		'libc6 (>= 2.28)',
 		'libcairo2 (>= 1.6.0)',
 		'libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3',
 		'libdbus-1-3 (>= 1.0.2)',
-		'libdrm2 (>= 2.4.38)',
+		'libdrm2 (>= 2.4.60)',
 		'libexpat1 (>= 2.0.1)',
-		'libgbm1 (>= 8.1~0)',
-		'libgcc1 (>= 1:3.0)',
-		'libgcc1 (>= 1:4.2)',
-		'libgcc1 (>= 1:4.5)',
+		'libgbm1 (>= 17.1.0~rc2)',
 		'libglib2.0-0 (>= 2.16.0)',
 		'libglib2.0-0 (>= 2.39.4)',
 		'libgtk-3-0 (>= 3.9.10)',

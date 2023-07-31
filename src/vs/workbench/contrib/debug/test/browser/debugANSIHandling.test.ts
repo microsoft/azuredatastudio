@@ -15,9 +15,9 @@ import { TestThemeService, TestColorTheme } from 'vs/platform/theme/test/common/
 import { ansiColorMap } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 import { DebugModel } from 'vs/workbench/contrib/debug/common/debugModel';
 import { DebugSession } from 'vs/workbench/contrib/debug/browser/debugSession';
-import { createMockDebugModel } from 'vs/workbench/contrib/debug/test/browser/mockDebug';
-import { createMockSession } from 'vs/workbench/contrib/debug/test/browser/callStack.test';
+import { createTestSession } from 'vs/workbench/contrib/debug/test/browser/callStack.test';
 import { DisposableStore } from 'vs/base/common/lifecycle';
+import { createMockDebugModel } from 'vs/workbench/contrib/debug/test/browser/mockDebugModel';
 
 suite.skip('Debug - ANSI Handling', () => { // {{SQL CARBON EDIT}} Skip test
 
@@ -33,7 +33,7 @@ suite.skip('Debug - ANSI Handling', () => { // {{SQL CARBON EDIT}} Skip test
 	setup(() => {
 		disposables = new DisposableStore();
 		model = createMockDebugModel();
-		session = createMockSession(model);
+		session = createTestSession(model);
 
 		const instantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService(undefined, disposables);
 		linkDetector = instantiationService.createInstance(LinkDetector);

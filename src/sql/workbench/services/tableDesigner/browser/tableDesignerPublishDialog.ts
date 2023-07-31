@@ -11,7 +11,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -21,9 +20,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Mimes } from 'vs/base/common/mime';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import * as azdata from 'azdata';
-import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { MarkdownRenderer } from 'vs/editor/contrib/markdownRenderer/browser/markdownRenderer';
+import { defaultCheckboxStyles } from 'sql/platform/theme/browser/defaultStyles';
 
 const OkText: string = localize('tableDesigner.UpdateDatabase', "Update Database");
 const CancelText: string = localize('tableDesigner.cancel', "Cancel");
@@ -78,9 +77,9 @@ export class TableDesignerPublishDialog extends Modal {
 		const requireConfirmation = this._report.requireConfirmation === true;
 		this._okButton.enabled = !requireConfirmation;
 		this._generateScriptButton.enabled = !requireConfirmation;
-		this._register(attachButtonStyler(this._okButton, this._themeService));
-		this._register(attachButtonStyler(this._generateScriptButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
+		this._register(this._okButton);
+		this._register(this._generateScriptButton);
+		this._register(this._cancelButton);
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -96,6 +95,7 @@ export class TableDesignerPublishDialog extends Modal {
 		if (this._report.requireConfirmation && this._report.confirmationText) {
 			const checkboxContainer = DOM.append(body, DOM.$('div'));
 			const checkbox = new Checkbox(checkboxContainer, {
+				...defaultCheckboxStyles,
 				label: this._report.confirmationText,
 				checked: false
 			});
@@ -103,7 +103,6 @@ export class TableDesignerPublishDialog extends Modal {
 				this._okButton.enabled = checked;
 				this._generateScriptButton.enabled = checked;
 			}));
-			this._register(attachCheckboxStyler(checkbox, this._themeService));
 		}
 	}
 
