@@ -60,7 +60,7 @@ export interface IGridDataProvider {
 export async function executeCopyWithNotification(notificationService: INotificationService, configurationService: IConfigurationService, selections: Slick.Range[], copyHandler: (notification: INotificationHandle, rowCount: number) => Promise<void>, cancellationTokenSource?: CancellationTokenSource): Promise<void> {
 	const rowRanges = GridRange.getUniqueRows(GridRange.fromSlickRanges(selections));
 	const rowCount = rowRanges.map(range => range.end - range.start + 1).reduce((p, c) => p + c);
-	const showCopyNotifications = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.dataCopyNotifications;
+	const showCopyNotifications = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.showCopyCompletedNotification;
 	const notificationHandle = notificationService.notify({
 		message: nls.localize('gridDataProvider.copying', "Copying..."),
 		severity: Severity.Info,
@@ -97,7 +97,7 @@ export async function executeCopyWithNotification(notificationService: INotifica
 							run: () => {
 								updateConfigTurnOffCopyNotifications(configurationService);
 								notificationService.info(nls.localize('gridDataProvider.turnOnCopyNotificationsMessage',
-									'Copy notifications are now disabled. To re-enable, modify the setting: queryEditor.results.dataCopyNotifications'))
+									'Copy notifications are now disabled. To re-enable, modify the setting: queryEditor.results.showCopyCompletedNotification'))
 							}
 						})]
 				});
@@ -238,5 +238,5 @@ function removeNewLines(inputString: string): string {
  * Disables data copy configuration setting.
  */
 function updateConfigTurnOffCopyNotifications(configurationService: IConfigurationService) {
-	configurationService.updateValue('queryEditor.results.dataCopyNotifications', false);
+	configurationService.updateValue('queryEditor.results.showCopyCompletedNotification', false);
 }

@@ -303,9 +303,9 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
-		'queryEditor.results.dataCopyNotifications': {
+		'queryEditor.results.showCopyCompletedNotification': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.copyNotifications', "Enables notifications for data copy operations."),
+			'description': localize('queryEditor.results.showCopyCompletedNotification', "Enables notifications for data copy operations."),
 			'default': true
 		},
 		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
