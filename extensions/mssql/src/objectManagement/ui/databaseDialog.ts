@@ -684,8 +684,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Value for Secondary
 		this.valueForSecondaryInput = this.createInputBox(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
-			if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary !== newValue) {
-				this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
+			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
+			if (this.dscTable.data[this.currentRowId][2] !== newValue) {
 				this.dscTable.data[this.currentRowId][2] = newValue;
 				await this.updateDscTable(this.dscTable.data);
 			}
@@ -738,10 +738,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Value for Secondary
 		this.valueForSecondaryDropdown = this.createDropdown(localizedConstants.ValueForSecondaryColumnHeader, async (newValue) => {
-			if (!isUndefinedOrNull(newValue) && this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary !== newValue) {
+			if (!isUndefinedOrNull(newValue)) {
 				this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue as string;
-				this.dscTable.data[this.currentRowId][2] = newValue;
-				await this.updateDscTable(this.dscTable.data);
+				if (this.dscTable.data[this.currentRowId][2] !== newValue) {
+					this.dscTable.data[this.currentRowId][2] = newValue;
+					await this.updateDscTable(this.dscTable.data);
+				}
 			}
 		}, [], '', true, 150);
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryDropdown);
