@@ -365,7 +365,12 @@ export class UpdateProjectFromDatabaseDialog {
 	}
 
 	private async connectionButtonClick() {
-		let connection = await getAzdataApi()!.connection.openConnectionDialog();
+		let connection = await getAzdataApi()!.connection.openConnectionDialog(undefined, undefined, {
+			saveConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		});
 		if (connection) {
 			this.connectionId = connection.connectionId;
 			await this.populateServerDropdown();
