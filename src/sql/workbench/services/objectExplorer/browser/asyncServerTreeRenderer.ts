@@ -78,6 +78,8 @@ class ConnectionProfileGroupTemplate extends Disposable {
 			this._actionBar.context = serverTreeView.getActionContext(element);
 			this._actionBar.clear();
 			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
 		}
 	}
 }
@@ -168,6 +170,8 @@ class ConnectionProfileTemplate extends Disposable {
 				this._actionBar.clear();
 				this._actionBar.pushAction(actions, { icon: true, label: false });
 			}
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
 		}
 	}
 }
@@ -261,6 +265,8 @@ class TreeNodeTemplate extends Disposable {
 			this._actionBar.context = serverTreeView.getActionContext(element);
 			this._actionBar.clear();
 			this._actionBar.pushAction(actions, { icon: true, label: false });
+		} else {
+			console.log('Server Tree view not loaded, action bar will not be populated.');
 		}
 	}
 }
