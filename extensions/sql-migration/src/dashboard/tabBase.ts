@@ -155,7 +155,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 			}).component();
 		this.disposables.push(
 			importMigrationButton.onDidClick(async () => {
-				const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
+				const filepath = await utils.promptUserForFile({ JSON_FORMAT_LABEL: ['json'] });
 				if (filepath) {
 					try {
 						const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
