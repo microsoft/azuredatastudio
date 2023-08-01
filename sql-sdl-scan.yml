@@ -121,6 +121,13 @@ stages:
           - powershell: |
               . build/azure-pipelines/win32/exec.ps1
               $ErrorActionPreference = "Stop"
+              exec { yarn postinstall }
+            displayName: Run postinstall scripts
+            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
               exec { node build/azure-pipelines/sql-mixin }
             displayName: Mix in quality
 
