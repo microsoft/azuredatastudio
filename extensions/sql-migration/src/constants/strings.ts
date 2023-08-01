@@ -1348,7 +1348,6 @@ export const WARNINGS = localize('sql.migration.warnings', "Warnings");
 export const IMPACTED_OBJECTS = localize('sql.migration.impacted.objects', "Impacted objects");
 export const OBJECT_DETAILS = localize('sql.migration.object.details', "Object details");
 export const ASSESSMENT_RESULTS = localize('sql.migration.assessment.results', "Assessment results");
-export const JSON_FORMAT_LABEL = localize('sql.migration.assessment.json.format.label', 'Json (*.json)');
 export const TYPES_LABEL = localize('sql.migration.type.label', "Type:");
 export const NAMES_LABEL = localize('sql.migration.name.label', "Names:");
 export const DESCRIPTION = localize('sql.migration.description', "Description");

@@ -92,7 +92,7 @@ export class AssessmentResultsDialog {
 				'right');
 			this._disposables.push(
 				this._loadButton.onClick(async () => {
-					const filepath = await utils.promptUserForFile({ JSON_FORMAT_LABEL: ['json'] });
+					const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
 					if (filepath) {
 						try {
 							const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
