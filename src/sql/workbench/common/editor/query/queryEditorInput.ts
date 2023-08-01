@@ -143,7 +143,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
-	private _serverMetadata: string;
+	private _serverMetadata: string[];
 
 	constructor(
 		private _description: string | undefined,
@@ -239,7 +239,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
 
-	public async getServerMetadata(): Promise<string> {
+	public async getServerMetadata(): Promise<string[]> {
 		if (!this._serverMetadata) {
 			const result = await this.serverMetadataService.getServerMetadata(this.uri);
 			this._serverMetadata = result.scripts;

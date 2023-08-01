@@ -1791,7 +1791,7 @@ declare module 'azdata' {
 			/**
 			 * The generated create scripts for all tables in every database for a single server.
 			 */
-			scripts: string;
+			scripts: string[];
 		}
 
 		export interface ServerMetadataProvider extends DataProvider {

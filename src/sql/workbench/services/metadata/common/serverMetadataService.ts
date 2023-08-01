@@ -84,7 +84,7 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 		else {
 			return Promise.resolve({
 				success: false,
-				scripts: ''
+				scripts: []
 			});
 		}
 	}
