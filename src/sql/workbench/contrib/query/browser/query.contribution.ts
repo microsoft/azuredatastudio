@@ -305,7 +305,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.showCopyCompletedNotification': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.showCopyCompletedNotification', "Enables showing notifications for copy complete operations."),
+			'description': localize('queryEditor.results.showCopyCompletedNotification', "Whether to show notifications when a results grid copy operation is completed."),
 			'default': true
 		},
 		'queryEditor.results.skipNewLineAfterTrailingLineBreak': {
