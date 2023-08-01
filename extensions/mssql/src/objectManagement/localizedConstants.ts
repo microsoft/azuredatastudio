@@ -148,6 +148,7 @@ export const NameText = localize('objectManagement.nameLabel', "Name");
 export const GeneralSectionHeader = localize('objectManagement.generalSectionHeader', "General");
 export const AdvancedSectionHeader = localize('objectManagement.advancedSectionHeader', "Advanced");
 export const OptionsSectionHeader = localize('objectManagement.optionsSectionHeader', "Options");
+export const FilesSectionHeader = localize('objectManagement.optionsSectionHeader', "Files");
 export const PasswordText = localize('objectManagement.passwordLabel', "Password");
 export const ConfirmPasswordText = localize('objectManagement.confirmPasswordLabel', "Confirm password");
 export const EnabledText = localize('objectManagement.enabledLabel', "Enabled");
@@ -302,6 +303,8 @@ export const DatabaseScopedOptionsColumnHeader = localize('objectManagement.data
 export const ValueForPrimaryColumnHeader = localize('objectManagement.databaseProperties.valueForPrimaryColumnHeader', "Value for Primary");
 export const ValueForSecondaryColumnHeader = localize('objectManagement.databaseProperties.valueForSecondaryColumnHeader', "Value for Secondary");
 export const SetSecondaryText = localize('objectManagement.databaseProperties.setSecondaryText', "Set Secondary same as Primary");
+export const DatabaseNameText = localize('objectManagement.databaseProperties.databaseNameLabel', "Database Name");
+export const UseFullTextIndexingText = localize('objectManagement.databaseProperties.useFullTextIndexingText', "Use full-text indexing");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

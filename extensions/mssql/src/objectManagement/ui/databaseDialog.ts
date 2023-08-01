@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DefaultInputWidth, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
+import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
 import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
@@ -23,6 +23,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private optionsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
+	private filesTabSectionsContainer: azdata.Component[] = [];
 	private activeTabId: string;
 
 	// Database properties options
@@ -42,6 +43,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private memoryAllocatedInput: azdata.InputBoxComponent;
 	private memoryUsedInput: azdata.InputBoxComponent;
 	private collationInput: azdata.InputBoxComponent;
+	// Files Tab
+	private readonly filesTabId: string = 'filesDatabaseId';
+
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -88,6 +92,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			case this.generalTabId:
 				helpUrl = DatabaseGeneralPropertiesDocUrl;
 				break;
+			case this.filesTabId:
+				helpUrl = DatabaseFilesPropertiesDocUrl;
+				break;
 			case this.optionsTabId:
 				helpUrl = DatabaseOptionsPropertiesDocUrl;
 				break;
@@ -114,6 +121,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeBackupSection();
 			this.initializeDatabaseSection();
 
+			//Initilailize files tab sections
+
 			//Initilaize options Tab sections
 			this.initializeOptionsGeneralSection();
 			this.initializeAutomaticSection();
@@ -137,6 +146,15 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				], false)
 			};
 			tabs.push(this.generalTab);
+
+			// Initilaize Files Tab
+			this.initializeFilesGeneralSection();
+			this.optionsTab = {
+				title: localizedConstants.FilesSectionHeader,
+				id: this.filesTabId,
+				content: this.createGroup('', this.filesTabSectionsContainer, false)
+			};
+			tabs.push(this.optionsTab);
 
 			// Initilaize Options Tab
 			this.optionsTab = {
@@ -328,6 +346,31 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			memoryAllocatedContainer,
 			memoryUsedContainer
 		], true);
+	}
+	//#endregion
+
+	//#region Database Properties - Files Tab
+	private initializeFilesGeneralSection(): void {
+		let containers: azdata.Component[] = [];
+		// Database name
+		this.nameInput = this.createInputBox(localizedConstants.DatabaseNameText, async () => { }, this.objectInfo.name, this.options.isNewObject);
+		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseNameText, this.nameInput));
+
+		// Owner
+		let loginNames = this.viewInfo.loginNames?.options;
+		loginNames.push(this.objectInfo.owner);
+		if (loginNames?.length > 0) {
+			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
+				this.objectInfo.owner = ownerDropbox.value as string;
+			}, loginNames, this.objectInfo.owner);
+			containers.push(this.createLabelInputContainer(localizedConstants.OwnerText, ownerDropbox));
+		}
+
+		// This check box is checked and disabled because full-text indexing is always enabled in SQL Server
+		const useFullTextIndexing = this.createCheckbox(localizedConstants.UseFullTextIndexingText, async () => { }, true, false);
+		containers.push(useFullTextIndexing);
+
+		this.filesTabSectionsContainer.push(this.createGroup('', containers, false));
 	}
 	//#endregion
 
