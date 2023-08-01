@@ -17,8 +17,8 @@
 	"notifyAlways": true,
 	"template": "TFSDEVDIV",
 	"tools": [
-			"BinSkim",
-			"CredScan",
-			"CodeQL"
+		"BinSkim",
+		"CredScan",
+		"CodeQL"
 	]
 }
