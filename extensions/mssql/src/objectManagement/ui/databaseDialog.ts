@@ -521,14 +521,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private async validateUpdateToggleDscPrimaryAndSecondaryOptions(): Promise<void> {
 		// Update the primary and secondary dropdown options based on the selected database scoped configuration
 		const isSecondaryCheckboxChecked = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary === this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
-
-		// Set all primary and secondary groups to hidden and then show the required group
-		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
-		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
-		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
-		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		await this.hideDropdownAndInputSections();
 
 		//  Cannot set the 'ELEVATE_ONLINE (11) and ELEVATE_RESUMABLE (12)' option for the secondaries replica while this option is only allowed to be set for the primary
 		if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 11 || this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 12) {
@@ -543,10 +536,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// MAXDOP (1) option accepts both number and 'OFF' as primary values, and  secondary value accepts only PRIMARY as value
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 1) {
-			await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
-			await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-120px' });
-			this.setSecondaryCheckboxForInputType.checked = isSecondaryCheckboxChecked;
-			await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible', 'margin-top': '-85px' });
+			await this.showInputSection(isSecondaryCheckboxChecked);
 			await this.valueForPrimaryInput.updateProperties({
 				value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 				, max: MAXDOP_Max_Limit
@@ -566,11 +556,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// Can only set OFF/Azure blob storage endpoint to the 'LEDGER_DIGEST_STORAGE_ENDPOINT (38)'s primary and secondary values
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 38) {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			this.setSecondaryCheckboxForDropdowns.checked = isSecondaryCheckboxChecked;
-			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
-
+			await this.showDropdownsSection(isSecondaryCheckboxChecked);
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify([this.viewInfo.dscOnOffOptions[1]]) ||
 				this.valueForPrimaryDropdown.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -602,11 +588,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// DW_COMPATIBILITY_LEVEL (26) options accepts 1(Enabled) or 0(Disabled) values as primary and secondary values
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 26) {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			this.setSecondaryCheckboxForDropdowns.checked = isSecondaryCheckboxChecked;
-			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
-
+			await this.showDropdownsSection(isSecondaryCheckboxChecked);
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.dscEnableDisableOptions) ||
 				this.valueForPrimaryDropdown.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -624,11 +606,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 		// All other options accepts primary and seconday values as ON/OFF/PRIMARY(only secondary)
 		else {
-			await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
-			this.setSecondaryCheckboxForDropdowns.checked = isSecondaryCheckboxChecked;
-			await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
-
+			await this.showDropdownsSection(isSecondaryCheckboxChecked);
 			if (JSON.stringify(this.valueForPrimaryDropdown.values) !== JSON.stringify(this.viewInfo.dscOnOffOptions) ||
 				this.valueForPrimaryDropdown.value !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary) {
 				await this.valueForPrimaryDropdown.updateProperties({
@@ -753,6 +731,40 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const valueGroup = this.createGroup('', [this.dscPrimaryValueDropdownGroup, this.dscSecondaryCheckboxForDropdownGroup, this.dscSecondaryValueDropdownGroup], true, true);
 		await valueGroup.updateCssStyles({ 'margin-left': '-10px' });
 		return valueGroup;
+	}
+
+	/**
+	 * Make the dropdowns section for the selected database scoped configuration visible
+	 * @param isSecondaryCheckboxChecked - Whether the secondary checkbox is checked or not
+	 */
+	private async showDropdownsSection(isSecondaryCheckboxChecked: boolean): Promise<void> {
+		this.setSecondaryCheckboxForDropdowns.checked = isSecondaryCheckboxChecked;
+		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
+		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'visible' });
+		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible' });
+	}
+
+	/**
+	 * Make the input section for the selected database scoped configuration visible
+	 * @param isSecondaryCheckboxChecked - Whether the secondary checkbox is checked or not
+	 */
+	private async showInputSection(isSecondaryCheckboxChecked: boolean): Promise<void> {
+		this.setSecondaryCheckboxForInputType.checked = isSecondaryCheckboxChecked;
+		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-175px' });
+		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'visible', 'margin-top': '-120px' });
+		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': isSecondaryCheckboxChecked ? 'hidden' : 'visible', 'margin-top': '-85px' });
+	}
+
+	/**
+	 * Set all primary and secondary groups to hidden
+	 */
+	private async hideDropdownAndInputSections(): Promise<void> {
+		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
+		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
+		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden', 'margin-top': '0px' });
+		await this.dscPrimaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		await this.dscSecondaryCheckboxForDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
+		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
 	}
 
 	private async updateDscTable(data: any[][]): Promise<void> {
