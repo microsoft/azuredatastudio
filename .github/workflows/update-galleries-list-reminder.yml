@@ -15,7 +15,7 @@ jobs:
           message: |
             **MSFT Gallery Maintainer Only**
             This is a reminder to update the Extensions Gallery list at https://github.com/Microsoft/azuredatastudio/wiki/List-of-Extensions once this PR has been merged in.
-            Instructions for doing this can be found [here](https://github.com/microsoft/azuredatastudio-docs/blob/main/Guides/UpdateExtensionGallery.md#guide-for-extension-release-dri).
+            Instructions for doing this can be found [here](https://mssqltools.visualstudio.com/_git/azuredatastudio-docs?path=/Guides/UpdateExtensionGallery.md&version=GBmain&_a=preview&anchor=guide-for-extension/release-dri).
 
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
