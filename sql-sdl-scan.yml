@@ -1,0 +1,286 @@
+trigger: none
+pr: none
+
+parameters:
+  - name: SCAN_WINDOWS
+    displayName: "Scan Windows"
+    type: boolean
+    default: true
+  - name: SCAN_LINUX
+    displayName: "Scan Linux"
+    type: boolean
+    default: false
+
+variables:
+  - name: SCAN_WINDOWS
+    value: ${{ eq(parameters.SCAN_WINDOWS, true) }}
+  - name: SCAN_LINUX
+    value: ${{ eq(parameters.SCAN_LINUX, true) }}
+  - name: VSCODE_MIXIN_REPO
+    value: microsoft/vscode-distro
+  - name: skipComponentGovernanceDetection
+    value: true
+  - name: NPM_ARCH
+    value: x64
+  - name: VSCODE_ARCH
+    value: x64
+  - name: Codeql.enabled
+    value: true
+  - name: Codeql.TSAEnabled
+    value: true
+  - name: Codeql.TSAOptionsPath
+    value: '$(Build.SourcesDirectory)\build\azure-pipelines\config\tsaoptions.json'
+
+stages:
+  - stage: Windows
+    condition: eq(variables.SCAN_WINDOWS, 'true')
+    pool: 1es-windows-2019-x64
+    jobs:
+      - job: WindowsJob
+        timeoutInMinutes: 0
+        steps:
+          - task: CredScan@3
+            continueOnError: true
+            inputs:
+              scanFolder: "$(Build.SourcesDirectory)"
+              outputFormat: "pre"
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "16.x"
+
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+              KeyVaultName: ado-secrets
+              SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri'
+            displayName: 'Azure Key Vault: Get Secrets'
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              "machine github.com`nlogin azuredatastudio`npassword $(github-distro-mixin-password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
+
+              exec { git config user.email "sqltools@service.microsoft.com" }
+              exec { git config user.name "AzureDataStudio" }
+            displayName: Prepare tooling
+
+          - task: CodeQL3000Init@0
+            displayName: CodeQL Initialize
+            condition: eq(variables['Codeql.enabled'], 'True')
+
+          - powershell: |
+              git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+              git fetch distro
+              git merge $(node -p "require('./package.json').distro")
+            displayName: Merge distro
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(VSCODE_ARCH) > .build/yarnlockhash }
+            displayName: Prepare yarn cache key
+
+          - task: Cache@2
+            inputs:
+              key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+              path: .build/node_modules_cache
+              cacheHitVar: NODE_MODULES_RESTORED
+            displayName: Restore Cache - Node Modules
+            continueOnError: true
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              exec { 7z.exe x .build/node_modules_cache/cache.7z -aos }
+            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+            displayName: Extract node_modules archive
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              $env:npm_config_arch="$(VSCODE_ARCH)"
+              $env:CHILD_CONCURRENCY="1"
+              exec { yarn --frozen-lockfile }
+            env:
+              GITHUB_TOKEN: $(github-distro-mixin-password)
+            condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+            displayName: Install dependencies
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              exec { node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt }
+              exec { mkdir -Force .build/node_modules_cache }
+              exec { 7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt }
+            condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+            displayName: Create node_modules archive
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              exec { yarn postinstall }
+            displayName: Run postinstall scripts
+            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              exec { node build/azure-pipelines/sql-mixin }
+            displayName: Mix in quality
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              exec { yarn gulp "package-rebuild-extensions" }
+              exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-min-ci" }
+              exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
+            displayName: Build
+            env:
+              VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+
+          - powershell: yarn compile
+            displayName: Compile
+
+          - task: CodeQL3000Finalize@0
+            displayName: CodeQL Finalize
+            condition: eq(variables['Codeql.enabled'], 'True')
+
+          - powershell: yarn gulp "vscode-symbols-win32-$(VSCODE_ARCH)"
+            env:
+              GITHUB_TOKEN: "$(github-distro-mixin-password)"
+            displayName: Download Symbols
+
+          - task: BinSkim@4
+            inputs:
+              InputType: "Basic"
+              Function: "analyze"
+              TargetPattern: "guardianGlob"
+              AnalyzeTargetGlob: '$(agent.builddirectory)\scanbin\**.dll;$(agent.builddirectory)\scanbin\**.exe;$(agent.builddirectory)\scanbin\**.node'
+              AnalyzeLocalSymbolDirectories: '$(agent.builddirectory)\scanbin\VSCode-win32-$(VSCODE_ARCH)\pdb'
+
+          - task: AntiMalware@4
+            inputs:
+              InputType: Basic
+              ScanType: CustomScan
+              FileDirPath: '$(Build.SourcesDirectory)'
+              EnableServices: true
+              SupportLogOnError: false
+              TreatSignatureUpdateFailureAs: 'Warning'
+              SignatureFreshness: 'OneDay'
+              TreatStaleSignatureAs: 'Error'
+
+          # - task: TSAUpload@2
+          #   inputs:
+          #     GdnPublishTsaOnboard: true
+          #     GdnPublishTsaConfigFile: '$(Build.SourcesDirectory)\build\azure-pipelines\config\tsaoptions.json'
+
+  - stage: Linux
+    dependsOn: []
+    condition: eq(variables.SCAN_LINUX, 'true')
+    pool:
+      vmImage: "Ubuntu-18.04"
+    jobs:
+      - job: LinuxJob
+        steps:
+          - task: CredScan@2
+            inputs:
+              toolMajorVersion: "V2"
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "16.x"
+
+          - task: AzureKeyVault@1
+            displayName: 'Azure Key Vault: Get Secrets'
+            inputs:
+              azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+              KeyVaultName: ado-secrets
+              SecretsFilter: 'github-distro-mixin-password'
+
+          - script: |
+              set -e
+              cat << EOF > ~/.netrc
+              machine github.com
+              login azuredatastudio
+              password $(github-distro-mixin-password)
+              EOF
+
+              git config user.email "sqltools@service.microsoft.com"
+              git config user.name "AzureDataStudio"
+            displayName: Prepare tooling
+
+          - script: |
+              set -e
+              git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+              git fetch distro
+              git merge $(node -p "require('./package.json').distro")
+            displayName: Merge distro
+
+          - script: |
+              mkdir -p .build
+              node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+            displayName: Prepare yarn cache key
+
+          - task: Cache@2
+            displayName: Restore Cache - Node Modules
+            inputs:
+              key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+              path: .build/node_modules_cache
+              cacheHitVar: NODE_MODULES_RESTORED
+            continueOnError: true
+
+          - script: |
+              set -e
+              tar -xzf .build/node_modules_cache/cache.tgz
+            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+            displayName: Extract node_modules archive
+
+          - script: |
+              set -e
+              CHILD_CONCURRENCY=1 yarn --frozen-lockfile
+            displayName: Install dependencies
+            env:
+              GITHUB_TOKEN: $(github-distro-mixin-password)
+            condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+
+          - script: |
+              set -e
+              node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+              mkdir -p .build/node_modules_cache
+              tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+            condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+            displayName: Create node_modules archive
+
+          - script: |
+              set -e
+              yarn postinstall
+            displayName: Run postinstall scripts
+            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+
+          - script: |
+              set -e
+              node build/azure-pipelines/sql-mixin
+            displayName: Mix in quality
+
+          - script: |
+              set -e
+              yarn gulp vscode-linux-x64-min-ci
+            displayName: Build
+            env:
+              VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+
+          - script: |
+              set -e
+              yarn gulp vscode-symbols-linux-$(VSCODE_ARCH)
+            displayName: Build
+            env:
+              VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+
+          - task: BinSkim@3
+            inputs:
+              toolVersion: Latest
+              InputType: CommandLine
+              arguments: analyze $(agent.builddirectory)\scanbin\exe\*.* --recurse --local-symbol-directories $(agent.builddirectory)\scanbin\VSCode-linux-$(VSCODE_ARCH)\pdb
+
+          # - task: TSAUpload@2
+          #   inputs:
+          #     GdnPublishTsaConfigFile: '$(Build.SourceDirectory)\build\azure-pipelines\config\tsaoptions.json'
