@@ -17,7 +17,7 @@ variables:
   - name: SCAN_LINUX
     value: ${{ eq(parameters.SCAN_LINUX, true) }}
   - name: VSCODE_MIXIN_REPO
-    value: microsoft/azuredatastudio-distro
+    value: microsoft/azuredatastudio-release
   - name: skipComponentGovernanceDetection
     value: true
   - name: NPM_ARCH
@@ -48,6 +48,10 @@ stages:
           - task: NodeTool@0
             inputs:
               versionSpec: "16.x"
+
+          - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+            inputs:
+              versionSpec: "1.x"
 
           - task: AzureKeyVault@1
             displayName: 'Azure Key Vault: Get Secrets'
@@ -141,9 +145,9 @@ stages:
           - powershell: yarn compile
             displayName: Compile
 
-          - task: CodeQL3000Finalize@0
-            displayName: CodeQL Finalize
-            condition: eq(variables['Codeql.enabled'], 'True')
+          # - task: CodeQL3000Finalize@0
+          #   displayName: CodeQL Finalize
+          #   condition: eq(variables['Codeql.enabled'], 'True')
 
           - powershell: yarn gulp "vscode-symbols-win32-$(VSCODE_ARCH)"
             env:
