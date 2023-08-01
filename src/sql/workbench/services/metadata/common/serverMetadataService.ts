@@ -35,15 +35,15 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	}
 
 	/**
-	 * Unregister a server metadata service provider
+	 * Unregister a server metadata service provider.
 	 */
 	public unregisterProvider(providerId: string): void {
 		this._providers.delete(providerId);
 	}
 
 	/**
-	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
-	 * @param providerId The ID of the registered provider
+	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID.
+	 * @param providerId The ID of the registered provider.
 	 */
 	public getProvider(providerId: string): azdata.metadata.ServerMetadataProvider {
 		const provider = this._providers.get(providerId);
@@ -55,8 +55,8 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	}
 
 	/**
-	 * Generates all database server metadata in the form of create table scripts for all tables
-	 * @param connectionParams Connection params of the server to get metadata for.
+	 * Generates all database server metadata in the form of create table scripts for all tables.
+	 * @param ownerUri The URI of the connection to generate metadata for.
 	 */
 	public async generateServerMetadata(ownerUri: string): Promise<azdata.metadata.GenerateServerMetadataResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
@@ -72,8 +72,8 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	}
 
 	/**
-	 * Gets all database server metadata in the form of create table scripts for all tables in a server
-	 * @param ownerUri The URI of the connection to get metadata for
+	 * Gets all database server metadata in the form of create table scripts for all tables in a server.
+	 * @param ownerUri The URI of the connection to get metadata for.
 	 */
 	public async getServerMetadata(ownerUri: string): Promise<azdata.metadata.GetServerMetadataResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
