@@ -80,35 +80,33 @@ stages:
             condition: eq(variables['Codeql.enabled'], 'True')
 
           - powershell: |
-              . build/azure-pipelines/win32/exec.ps1
-              $ErrorActionPreference = "Stop"
-              exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(VSCODE_ARCH) > .build/yarnlockhash }
-            displayName: Prepare yarn cache key
-
-          - task: Cache@2
-            inputs:
-              key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
-              path: .build/node_modules_cache
-              cacheHitVar: NODE_MODULES_RESTORED
-            displayName: Restore Cache - Node Modules
-            continueOnError: true
-
-          - powershell: |
-              . build/azure-pipelines/win32/exec.ps1
-              $ErrorActionPreference = "Stop"
-              exec { 7z.exe x .build/node_modules_cache/cache.7z -aos }
-            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
-            displayName: Extract node_modules archive
-
-          - powershell: |
-              . build/azure-pipelines/win32/exec.ps1
-              $ErrorActionPreference = "Stop"
-              $env:npm_config_arch="$(VSCODE_ARCH)"
-              $env:CHILD_CONCURRENCY="1"
-              exec { yarn --frozen-lockfile }
-            env:
-              GITHUB_TOKEN: $(github-distro-mixin-password)
+              mkdir -Force .build/node-gyp
+            displayName: Create custom node-gyp directory
             condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+
+          - powershell: |
+              . ../../build/azure-pipelines/win32/exec.ps1
+              $ErrorActionPreference = "Stop"
+              # TODO: Should be replaced with upstream URL once https://github.com/nodejs/node-gyp/pull/2825
+              # gets merged.
+              exec { git clone https://github.com/rzhao271/node-gyp.git . } "Cloning rzhao271/node-gyp failed"
+              exec { git checkout 102b347da0c92c29f9c67df22e864e70249cf086 } "Checking out 102b347 failed"
+              exec { npm install } "Building rzhao271/node-gyp failed"
+            displayName: Install custom node-gyp
+            workingDirectory: .build/node-gyp
+            condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+
+          - powershell: |
+              . build/azure-pipelines/win32/exec.ps1
+              . build/azure-pipelines/win32/retry.ps1
+              $ErrorActionPreference = "Stop"
+              $env:npm_config_node_gyp = "$(Join-Path $pwd.Path '.build/node-gyp/bin/node-gyp.js')"
+              $env:npm_config_arch = "$(NPM_ARCH)"
+              retry { exec { yarn --frozen-lockfile --check-files } }
+            env:
+              PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+              GITHUB_TOKEN: "$(github-distro-mixin-password)"
+              CHILD_CONCURRENCY: 1
             displayName: Install dependencies
 
           - powershell: |
@@ -119,13 +117,6 @@ stages:
               exec { 7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt }
             condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
             displayName: Create node_modules archive
-
-          - powershell: |
-              . build/azure-pipelines/win32/exec.ps1
-              $ErrorActionPreference = "Stop"
-              exec { yarn postinstall }
-            displayName: Run postinstall scripts
-            condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
 
           - powershell: |
               . build/azure-pipelines/win32/exec.ps1
