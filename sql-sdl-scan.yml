@@ -68,11 +68,12 @@ stages:
               exec { git config user.name "AzureDataStudio" }
             displayName: Prepare tooling
 
-          - powershell: |
-              git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
-              git fetch distro
-              git merge $(node -p "require('./package.json').distro")
-            displayName: Merge distro
+          # TODO: @cheenamalhotra a Get this working again.
+          # - powershell: |
+          #     git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+          #     git fetch distro
+          #     git merge $(node -p "require('./package.json').distro")
+          #   displayName: Merge distro
 
           - task: CodeQL3000Init@0
             displayName: CodeQL Initialize
