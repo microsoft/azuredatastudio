@@ -17,7 +17,7 @@ variables:
   - name: SCAN_LINUX
     value: ${{ eq(parameters.SCAN_LINUX, true) }}
   - name: VSCODE_MIXIN_REPO
-    value: microsoft/vscode-distro
+    value: microsoft/azuredatastudio-distro
   - name: skipComponentGovernanceDetection
     value: true
   - name: NPM_ARCH
@@ -35,7 +35,7 @@ stages:
   - stage: Windows
     condition: eq(variables.SCAN_WINDOWS, 'true')
     pool:
-      vmImage: VS2017-Win2016
+      vmImage: 'windows-2019'
     jobs:
       - job: WindowsJob
         timeoutInMinutes: 0
@@ -50,11 +50,10 @@ stages:
               versionSpec: "16.x"
 
           - task: AzureKeyVault@1
+            displayName: 'Azure Key Vault: Get Secrets'
             inputs:
               azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
               KeyVaultName: ado-secrets
-              SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri'
-            displayName: 'Azure Key Vault: Get Secrets'
 
           - powershell: |
               . build/azure-pipelines/win32/exec.ps1
@@ -65,15 +64,15 @@ stages:
               exec { git config user.name "AzureDataStudio" }
             displayName: Prepare tooling
 
-          - task: CodeQL3000Init@0
-            displayName: CodeQL Initialize
-            condition: eq(variables['Codeql.enabled'], 'True')
-
           - powershell: |
               git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
               git fetch distro
               git merge $(node -p "require('./package.json').distro")
             displayName: Merge distro
+
+          - task: CodeQL3000Init@0
+            displayName: CodeQL Initialize
+            condition: eq(variables['Codeql.enabled'], 'True')
 
           - powershell: |
               . build/azure-pipelines/win32/exec.ps1
@@ -179,7 +178,7 @@ stages:
     dependsOn: []
     condition: eq(variables.SCAN_LINUX, 'true')
     pool:
-      vmImage: "Ubuntu-18.04"
+      vmImage: 'Ubuntu-20.04'
     jobs:
       - job: LinuxJob
         steps:
