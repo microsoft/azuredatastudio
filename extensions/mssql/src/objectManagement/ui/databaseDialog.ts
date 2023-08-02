@@ -687,7 +687,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				}
 				await this.updateDscTable(this.dscTable.data);
 			}
-		}, '', true, 'number', 150, false, 0, 0);
+		}, '', true, 'number', 150, false, 0, 0, true);
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
 		this.dscPrimaryValueInputGroup = this.createGroup('', [primaryContainer], false, true);
 		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -710,7 +710,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				this.dscTable.data[this.currentRowId][2] = newValue;
 				await this.updateDscTable(this.dscTable.data);
 			}
-		}, '', true, 'number', 150, false, 0, 0);
+		}, '', true, 'number', 150, false, 0, 0, true);
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
 		this.dscSecondaryValueInputGroup = this.createGroup('', [secondaryContainer], false, true);
 		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -814,6 +814,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		await this.dscTable.updateProperties({
 			'data': data
 		});
+		// Restore the focus to previously selected row.
+		this.dscTable.setActiveCell(this.currentRowId, 0);
 	}
 	// #endregion
 
