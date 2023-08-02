@@ -13,7 +13,7 @@ import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsight, customMixin } from './interfaces';
-import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType, ChartTypeToChartJsType, LegendPositionToChartJsPosition } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType, ChartTypeToChartJsType, LegendPositionToChartJsPosition } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { values } from 'vs/base/common/collections';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
