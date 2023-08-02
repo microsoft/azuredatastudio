@@ -1,4 +1,9 @@
 steps:
+- checkout: self
+  persistCredentials: true
+- checkout: azuredatastudio-release
+- checkout: azuredatastudio
+
 - task: NodeTool@0
   inputs:
     versionSpec: "16.x"
@@ -7,22 +12,7 @@ steps:
   inputs:
     versionSpec: "1.x"
 
-- task: AzureKeyVault@1
-  displayName: 'Azure Key Vault: Get Secrets'
-  inputs:
-    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
-    KeyVaultName: ado-secrets
-
 - script: |
-    set -e
-    cat << EOF > ~/.netrc
-    machine github.com
-    login azuredatastudio
-    password $(github-distro-mixin-password)
-    EOF
-
-    git config user.email "sqltools@service.microsoft.com"
-    git config user.name "AzureDataStudio"
   displayName: Prepare tooling
 
 - script: |
