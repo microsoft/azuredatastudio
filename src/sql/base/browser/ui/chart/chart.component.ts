@@ -14,15 +14,15 @@ import { BubbleChartPoint, ChartOptions, ScatterChartPoint } from 'azdata';
 })
 export class Chart<T extends ChartOptions> extends Disposable {
 
-	public _labels: string[];
-	public _type: any;
-	public _data: number[] | BubbleChartPoint | ScatterChartPoint;
-	public _colors: string | string[];
-	public _label: string;
-	public _borderColor: string | string[];
-	public _chart: any;
+	private _labels: string[];
+	private _type: any;
+	private _data: number[] | BubbleChartPoint[] | ScatterChartPoint[];
+	private _colors: string | string[];
+	private _label: string;
+	private _borderColor: string | string[];
+	public chart: any;
 
-	public _options: any = {
+	private _options: any = {
 		events: ['click', 'keyup'],
 		responsive: true,
 		maintainAspectRatio: false
@@ -73,8 +73,8 @@ export class Chart<T extends ChartOptions> extends Disposable {
 		this.drawChart();
 	}
 
-	drawChart() {
-		this._chart = new chartjs.Chart("MyChart", {
+	public drawChart() {
+		this.chart = new chartjs.Chart("MyChart", {
 			type: this._type,
 			plugins: [plugin],
 			data: {
