@@ -164,9 +164,9 @@ export abstract class DialogBase<DialogResult> {
 		return inputBoxComponent;
 	}
 
-	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number, enterKeyPropogationOnly: boolean = false): azdata.InputBoxComponent {
+	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number, enterKeyPropagationOnly: boolean = false): azdata.InputBoxComponent {
 		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, required: required, min: min, max: max }).component();
-		if (enterKeyPropogationOnly) {
+		if (enterKeyPropagationOnly) {
 			this.disposables.push(inputbox.onEnterKeyPressed(async () => {
 				await textChangeHandler(inputbox.value!);
 				this.onFormFieldChange();

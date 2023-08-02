@@ -771,6 +771,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		await this.dscTable.updateProperties({
 			'data': data
 		});
+		// Restore the focus to previously selected row.
+		this.dscTable.setActiveCell(this.currentRowId, 0);
 	}
 	// #endregion
 
