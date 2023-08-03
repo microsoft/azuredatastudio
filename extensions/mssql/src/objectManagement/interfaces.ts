@@ -529,4 +529,7 @@ export interface DatabaseFile {
 	type: string;
 	path: string;
 	fileGroup: string;
+	fileNameWithExtension: string;
+	sizeInMb: number;
+	autoGrowthAndMaxSizeInMb: number;
 }

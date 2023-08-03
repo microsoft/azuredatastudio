@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth, DefaultTableWidth, getTableHeight } from '../../ui/dialogBase';
+import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultMaxTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
@@ -23,7 +23,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private optionsTab: azdata.Tab;
 	private dscTab: azdata.Tab;
 	private optionsTabSectionsContainer: azdata.Component[] = [];
-	private filesTabSectionsContainer: azdata.Component[] = [];
 	private activeTabId: string;
 
 	// Database properties options
@@ -45,7 +44,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private collationInput: azdata.InputBoxComponent;
 	// Files Tab
 	private readonly filesTabId: string = 'filesDatabaseId';
-
+	private databaseFilesTable: azdata.TableComponent;;
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -148,11 +147,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			tabs.push(this.generalTab);
 
 			// Initilaize Files Tab
-			this.initializeFilesGeneralSection();
+			const filesGeneralSection = this.initializeFilesGeneralSection();
+			const databaseFilesSection = this.initializeDatabaseFilesSection();
 			this.optionsTab = {
 				title: localizedConstants.FilesSectionHeader,
 				id: this.filesTabId,
-				content: this.createGroup('', this.filesTabSectionsContainer, false)
+				content: this.createGroup('', [filesGeneralSection, databaseFilesSection], false)
 			};
 			tabs.push(this.optionsTab);
 
@@ -350,7 +350,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#endregion
 
 	//#region Database Properties - Files Tab
-	private initializeFilesGeneralSection(): void {
+	private initializeFilesGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 		// Database name
 		this.nameInput = this.createInputBox(localizedConstants.DatabaseNameText, async () => { }, this.objectInfo.name, this.options.isNewObject);
@@ -370,7 +370,69 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const useFullTextIndexing = this.createCheckbox(localizedConstants.UseFullTextIndexingText, async () => { }, true, false);
 		containers.push(useFullTextIndexing);
 
-		this.filesTabSectionsContainer.push(this.createGroup('', containers, false));
+		return this.createGroup('', containers, false);
+	}
+
+	private initializeDatabaseFilesSection(): azdata.GroupContainer {
+		this.databaseFilesTable = this.modelView.modelBuilder.table().withProps({
+			columns: [{
+				type: azdata.ColumnType.text,
+				value: localizedConstants.LogicalNameText,
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FileTypeText,
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FilegroupText,
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.SizeText,
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.AutogrowthMaxsizeText,
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.PathText,
+			}, {
+				type: azdata.ColumnType.text,
+				value: localizedConstants.FileNameText,
+			}],
+			data: this.viewInfo.files?.map(file => {
+				return [file.name,
+				file.type,
+				file.fileGroup,
+				file.sizeInMb,
+				file.autoGrowthAndMaxSizeInMb,
+				file.path,
+				file.fileNameWithExtension]
+			}),
+			height: getTableHeight(this.viewInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			width: DefaultTableWidth,
+			forceFitColumns: azdata.ColumnSizingMode.DataFit,
+			CSSStyles: {
+				'table-layout': 'fixed',
+				'overflow': 'scroll',
+				'margin-left': '10px'
+			}
+		}).component();
+
+		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
+		// this.disposables.push(
+		// 	this.dscTable.onRowSelected(
+		// 		async () => {
+		// 		}
+		// 	)
+		// );
+		const databaseFilesContainer = this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
+
+		return databaseFilesContainer;
+	}
+
+	private async onAddDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+	}
+
+	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
 	}
 	//#endregion
 

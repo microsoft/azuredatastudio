@@ -305,6 +305,15 @@ export const ValueForSecondaryColumnHeader = localize('objectManagement.database
 export const SetSecondaryText = localize('objectManagement.databaseProperties.setSecondaryText', "Set Secondary same as Primary");
 export const DatabaseNameText = localize('objectManagement.databaseProperties.databaseNameLabel', "Database Name");
 export const UseFullTextIndexingText = localize('objectManagement.databaseProperties.useFullTextIndexingText', "Use full-text indexing");
+export const LogicalNameText = localize('objectManagement.databaseProperties.logicalNameText', "Logical Name");
+export const FileTypeText = localize('objectManagement.databaseProperties.fileTypeText', "File Type");
+export const FilegroupText = localize('objectManagement.databaseProperties.filegroupText', "Filegroup");
+export const AutogrowthMaxsizeText = localize('objectManagement.databaseProperties.autogrowthMaxsizeText', "Autogrowth / Maxsize");
+export const PathText = localize('objectManagement.databaseProperties.pathText', "Path");
+export const FileNameText = localize('objectManagement.databaseProperties.fileNameText', "File Name");
+export const DatabaseFilesText = localize('objectManagement.databaseProperties.databaseFilesText', "Database files");
+export const AddButton = localize('objectManagement.databaseProperties.addButton', "Add");
+export const RemoveButton = localize('objectManagement.databaseProperties.removeButton', "Remove");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
