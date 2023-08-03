@@ -16,6 +16,7 @@ import { deepClone } from '../../util/objects';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
+const DscTableRowLength = 15;
 
 export class DatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	// Database Properties tabs
@@ -603,7 +604,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				metaData.valueForPrimary,
 				metaData.valueForSecondary]
 			}),
-			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, 15),
+			height: getTableHeight(this.objectInfo.databaseScopedConfigurations.length, 1, DscTableRowLength),
 			width: DefaultTableWidth
 		}).component();
 
@@ -872,10 +873,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		await this.dscSecondaryValueDropdownGroup.updateCssStyles({ 'visibility': 'hidden' });
 	}
 
+	/**
+	 * Updates the data to the table and sets the focus to the selected row
+	 * @param data - Modified data to be set in the table
+	 */
 	private async updateDscTable(data: any[][]): Promise<void> {
-		await this.dscTable.updateProperties({
-			'data': data
-		});
+		await this.setTableData(this.dscTable, data, DscTableRowLength);
 		// Restore the focus to previously selected row.
 		this.dscTable.setActiveCell(this.currentRowId, 0);
 	}
