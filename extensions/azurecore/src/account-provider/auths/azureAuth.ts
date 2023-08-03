@@ -29,7 +29,7 @@ import { HttpClient } from './httpClient';
 import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList } from '../../utils';
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
-import { AzureListOperationResponse, ErrorResponseBodyWithError, isErrorResponseBodyWithError } from '../../azureResource/utils';
+import { isErrorResponseBodyWithError } from '../../azureResource/utils';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -483,18 +483,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 
-			const tenantResponse = await this.httpClient.sendGetRequestAsync<AzureListOperationResponse<TenantResponse[]> | ErrorResponseBodyWithError>(tenantUri, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`
-				}
-			});
+			const tenantResponse = await this.makeGetRequest(tenantUri, token);
 
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const data = tenantResponse.data;
 			if (isErrorResponseBodyWithError(data)) {
 				Logger.error(`Error fetching tenants :${data.error?.code} - ${data.error?.message}`);
 				throw new Error(`${data.error?.code} - ${data.error?.message}`);
 			}
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const tenants: Tenant[] = data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
