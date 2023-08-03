@@ -29,7 +29,7 @@ steps:
     set -e
     git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
     echo "distro repo added as a remote"
-    git config --global https.postBuffer 1048576000
+    apt-get install libssl-dev
     git fetch distro
     echo "fetched distro repo"
     git merge $(node -p "require('./package.json').distro")
