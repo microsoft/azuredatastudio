@@ -84,7 +84,8 @@ export function getDependencies(packageType: 'deb' | 'rpm', buildDir: string, ap
 	if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
 		const failMessage = 'The dependencies list has changed.'
 			+ '\nOld:\n' + referenceGeneratedDeps.join('\n')
-			+ '\nNew:\n' + sortedDependencies.join('\n');
+			+ '\nArch:\n' + rpmGeneratedDeps[arch as RpmArchString].join('\n')
+			+ '\nNew:\n' + sortedDependencies.join('\n')
 		if (FAIL_BUILD_FOR_NEW_DEPENDENCIES) {
 			throw new Error(failMessage);
 		} else {
