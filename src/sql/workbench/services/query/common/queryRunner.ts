@@ -581,7 +581,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 			if (preferProvidersCopyHandler && providerSupportCopyResults && (tableView === undefined || !tableView.isDataInMemory)) {
 				await this.handleCopyRequestByProvider(selections, includeHeaders);
 			} else {
-				await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selections, includeHeaders, tableView);
+				await copySelectionToClipboard(this._clipboardService, this._notificationService, this._configurationService, this, selections, includeHeaders, tableView);
 			}
 		} catch (error) {
 			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
@@ -589,7 +589,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	private async handleCopyRequestByProvider(selections: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		executeCopyWithNotification(this._notificationService, selections, async () => {
+		executeCopyWithNotification(this._notificationService, this._configurationService, selections, async () => {
 			await this.queryRunner.copyResults(selections, this.batchId, this.resultSetId, this.shouldIncludeHeaders(includeHeaders));
 		});
 	}

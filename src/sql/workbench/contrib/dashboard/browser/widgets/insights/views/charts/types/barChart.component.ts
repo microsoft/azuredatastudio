@@ -14,7 +14,7 @@ import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { customMixin } from 'sql/workbench/contrib/charts/browser/interfaces';
-import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartType } from 'sql/workbench/contrib/charts/browser/interfaces';
 
 export interface IBarChartConfig extends IChartConfig {
 	yAxisMin: number;
