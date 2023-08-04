@@ -932,7 +932,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					let value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
 					if (value !== '') {
 						if (widget instanceof SelectBox) {
-							widget.selectWithOptionName(value?.toString());
+							widget.selectWithOptionName(value);
 						} else if (widget instanceof InputBox) {
 							widget.value = value;
 						}

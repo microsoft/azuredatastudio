@@ -150,10 +150,10 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		this._dialogOptions = options;
 	}
 
-	public selectWithOptionName(optionName?: string, selectFirstByDefault: boolean = true, forceSelectionEvent: boolean = false): void {
+	public selectWithOptionName(optionName?: any, selectFirstByDefault: boolean = true, forceSelectionEvent: boolean = false): void {
 		let option: number | undefined;
 		if (optionName !== undefined) {
-			option = this._optionsDictionary.get(optionName);
+			option = this._optionsDictionary.get(optionName.toString());
 		}
 		if (option !== undefined) {
 			this.select(option, forceSelectionEvent);
