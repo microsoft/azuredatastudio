@@ -33,11 +33,11 @@ export interface IServerMetadataService {
 	 * Generates all database server metadata in the form of create table scripts for all tables
 	 * @param ownerUri The URI of the connection to get metadata for
 	 */
-	generateServerMetadata(ownerUri: string): Promise<azdata.metadata.GenerateServerMetadataResult>;
+	generateServerTableMetadata(ownerUri: string): Promise<boolean>;
 
 	/**
 	 * Gets all database server metadata in the form of create table scripts for all tables in a server
 	 * @param ownerUri The URI of the connection to get metadata for
 	 */
-	getServerMetadata(ownerUri: string): Promise<azdata.metadata.GetServerMetadataResult>;
+	getServerTableMetadata(ownerUri: string): Promise<azdata.metadata.GetServerTableMetadataResult>;
 }

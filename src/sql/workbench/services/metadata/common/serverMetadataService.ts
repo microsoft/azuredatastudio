@@ -20,7 +20,7 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 
 		this._register(this._connectionManagementService.onConnect(async (e: IConnectionParams) => {
 			const ownerUri = e.connectionUri;
-			await this.generateServerMetadata(ownerUri);
+			await this.generateServerTableMetadata(ownerUri);
 		}));
 	}
 
@@ -58,16 +58,14 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	 * Generates all database server metadata in the form of create table scripts for all tables.
 	 * @param ownerUri The URI of the connection to generate metadata for.
 	 */
-	public async generateServerMetadata(ownerUri: string): Promise<azdata.metadata.GenerateServerMetadataResult> {
+	public async generateServerTableMetadata(ownerUri: string): Promise<boolean> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			return await handler.generateServerMetadata(ownerUri);
+			return await handler.generateServerTableMetadata(ownerUri);
 		}
 		else {
-			return Promise.resolve({
-				success: false
-			});
+			return Promise.resolve(false);
 		}
 	}
 
@@ -75,15 +73,14 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	 * Gets all database server metadata in the form of create table scripts for all tables in a server.
 	 * @param ownerUri The URI of the connection to get metadata for.
 	 */
-	public async getServerMetadata(ownerUri: string): Promise<azdata.metadata.GetServerMetadataResult> {
+	public async getServerTableMetadata(ownerUri: string): Promise<azdata.metadata.GetServerTableMetadataResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			return await handler.getServerMetadata(ownerUri);
+			return await handler.getServerTableMetadata(ownerUri);
 		}
 		else {
 			return Promise.resolve({
-				success: false,
 				scripts: []
 			});
 		}

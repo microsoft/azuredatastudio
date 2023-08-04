@@ -972,11 +972,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Server Metadata API
 
-	public override $generateServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> {
-		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).generateServerMetadata(ownerUri);
+	public override $generateServerTableMetadata(handle: number, ownerUri: string): Thenable<boolean> {
+		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).generateServerTableMetadata(ownerUri);
 	}
 
-	public override $getServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerMetadataResult> {
-		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).getServerMetadata(ownerUri);
+	public override $getServerTableMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerTableMetadataResult> {
+		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).getServerTableMetadata(ownerUri);
 	}
 }

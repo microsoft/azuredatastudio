@@ -598,11 +598,11 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Generates database server metadata in the form of create table scripts for all tables in the server.
 	 */
-	$generateServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> { throw ni(); }
+	$generateServerTableMetadata(handle: number, ownerUri: string): Thenable<boolean> { throw ni(); }
 	/**
 	 * Gets database server metadata in the form of create table scripts for all tables in the server.
 	 */
-	$getServerMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerMetadataResult> { throw ni(); }
+	$getServerTableMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerTableMetadataResult> { throw ni(); }
 }
 
 /**

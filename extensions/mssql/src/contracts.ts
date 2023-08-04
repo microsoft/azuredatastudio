@@ -1562,16 +1562,16 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Metadata API > ------------------------------------
 
-export interface ServerMetadataParams {
+export interface ServerTableMetadataParams {
 	ownerUri: string;
 }
 
-export namespace GenerateServerMetadataRequest {
-	export const type = new RequestType<ServerMetadataParams, azdata.metadata.GenerateServerMetadataResult, void, void>('metadata/generateServerMetadata');
+export namespace GenerateServerTableMetadataRequest {
+	export const type = new RequestType<ServerTableMetadataParams, boolean, void, void>('metadata/generateServerTableMetadata');
 }
 
-export namespace GetServerMetadataRequest {
-	export const type = new RequestType<ServerMetadataParams, azdata.metadata.GetServerMetadataResult, void, void>('metadata/getServerMetadata');
+export namespace GetServerTableMetadataRequest {
+	export const type = new RequestType<ServerTableMetadataParams, azdata.metadata.GetServerTableMetadataResult, void, void>('metadata/getServerTableMetadata');
 }
 
 // ------------------------------- < Metadata API > ------------------------------------

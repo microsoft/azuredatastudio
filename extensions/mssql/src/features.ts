@@ -1310,7 +1310,7 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
  */
 export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.GenerateServerMetadataRequest.type
+		contracts.GenerateServerTableMetadataRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -1330,29 +1330,29 @@ export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const generateServerMetadata = (ownerUri: string): Thenable<azdata.metadata.GenerateServerMetadataResult> => {
-			const params: contracts.ServerMetadataParams = {
+		const generateServerTableMetadata = (ownerUri: string): Thenable<boolean> => {
+			const params: contracts.ServerTableMetadataParams = {
 				ownerUri: ownerUri
 			};
 
-			return client.sendRequest(contracts.GenerateServerMetadataRequest.type, params).then(
+			return client.sendRequest(contracts.GenerateServerTableMetadataRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.GenerateServerMetadataRequest.type, e);
+					client.logFailedRequest(contracts.GenerateServerTableMetadataRequest.type, e);
 					return Promise.reject(e);
 				}
 			);
 		};
 
-		const getServerMetadata = (ownerUri: string): Thenable<azdata.metadata.GetServerMetadataResult> => {
-			const params: contracts.ServerMetadataParams = {
+		const getServerTableMetadata = (ownerUri: string): Thenable<azdata.metadata.GetServerTableMetadataResult> => {
+			const params: contracts.ServerTableMetadataParams = {
 				ownerUri: ownerUri
 			};
 
-			return client.sendRequest(contracts.GetServerMetadataRequest.type, params).then(
+			return client.sendRequest(contracts.GetServerTableMetadataRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.GetServerMetadataRequest.type, e);
+					client.logFailedRequest(contracts.GetServerTableMetadataRequest.type, e);
 					return Promise.reject(e);
 				}
 			);
@@ -1360,8 +1360,8 @@ export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 
 		return azdata.dataprotocol.registerServerMetadataProvider({
 			providerId: client.providerId,
-			generateServerMetadata,
-			getServerMetadata
+			generateServerTableMetadata,
+			getServerTableMetadata
 		});
 	}
 }
