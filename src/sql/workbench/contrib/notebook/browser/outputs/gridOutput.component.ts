@@ -413,7 +413,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			await copySelectionToClipboard(this._clipboardService, this._notificationService, this, selection, includeHeaders, tableView);
+			await copySelectionToClipboard(this._clipboardService, this._notificationService, this._configurationService, this, selection, includeHeaders, tableView);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error: {0}", getErrorMessage(error)));
 		}

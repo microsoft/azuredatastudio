@@ -11,7 +11,7 @@ import { Extensions, IInsightData, IInsightRegistry } from 'sql/platform/dashboa
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import { ConfigureChartAction, CopyAction, CreateInsightAction, IChartActionContext, SaveImageAction } from 'sql/workbench/contrib/charts/browser/actions';
 import { getChartMaxRowCount } from 'sql/workbench/contrib/charts/browser/utils';
-import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as DOM from 'vs/base/browser/dom';
