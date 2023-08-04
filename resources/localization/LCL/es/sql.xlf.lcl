@@ -13602,6 +13602,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.showCopyCompletedNotification" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether to show notifications when a results grid copy operation is completed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica si se deben mostrar notificaciones cuando se completa una operación de copia de cuadrícula de resultados.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -18666,6 +18669,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/gridDataProvider.gridDataProvider.turnOnCopyNotificationsMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy completed notifications are now disabled. To re-enable, modify the setting: queryEditor.results.showCopyCompletedNotification]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Las notificaciones de copia completada ahora están deshabilitadas. Para volver a habilitarlas, modifique la opción de configuración: queryEditor.results.showCopyCompletedNotification]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
