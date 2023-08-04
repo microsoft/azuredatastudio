@@ -13,6 +13,7 @@ import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '..
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
+import { DatabaseFileDialog, DatabaseFileDialogResult } from './databaseFileDialog';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -148,14 +149,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			tabs.push(this.generalTab);
 
 			// Initilaize Files Tab
-			const filesGeneralSection = this.initializeFilesGeneralSection();
-			const databaseFilesSection = this.initializeDatabaseFilesSection();
-			this.optionsTab = {
-				title: localizedConstants.FilesSectionHeader,
-				id: this.filesTabId,
-				content: this.createGroup('', [filesGeneralSection, databaseFilesSection], false)
-			};
-			tabs.push(this.optionsTab);
+			// Full text Indexing is only enabled for SQL Server
+			if (!isUndefinedOrNull(this.objectInfo.fullTextIndexing)) {
+				const filesGeneralSection = this.initializeFilesGeneralSection();
+				const databaseFilesSection = this.initializeDatabaseFilesSection();
+				this.optionsTab = {
+					title: localizedConstants.FilesSectionHeader,
+					id: this.filesTabId,
+					content: this.createGroup('', [filesGeneralSection, databaseFilesSection], false)
+				};
+				tabs.push(this.optionsTab);
+			}
 
 			// Initilaize Options Tab
 			this.optionsTab = {
@@ -359,7 +363,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Owner
 		let loginNames = this.viewInfo.loginNames?.options;
-		loginNames.push(this.objectInfo.owner);
+		loginNames[0] = this.objectInfo.owner;
 		if (loginNames?.length > 0) {
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value as string;
@@ -368,7 +372,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 
 		// This check box is checked and disabled because full-text indexing is always enabled in SQL Server
-		const useFullTextIndexing = this.createCheckbox(localizedConstants.UseFullTextIndexingText, async () => { }, true, false);
+		const useFullTextIndexing = this.createCheckbox(localizedConstants.UseFullTextIndexingText, async () => { }, this.objectInfo.fullTextIndexing, false);
 		containers.push(useFullTextIndexing);
 
 		return this.createGroup('', containers, false);
@@ -379,6 +383,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			columns: [{
 				type: azdata.ColumnType.text,
 				value: localizedConstants.LogicalNameText,
+				width: 120
 			}, {
 				type: azdata.ColumnType.text,
 				value: localizedConstants.FileTypeText,
@@ -387,7 +392,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				value: localizedConstants.FilegroupText,
 			}, {
 				type: azdata.ColumnType.text,
-				value: localizedConstants.SizeText,
+				value: localizedConstants.SizeInMbText,
 			}, {
 				type: azdata.ColumnType.text,
 				value: localizedConstants.AutogrowthMaxsizeText,
@@ -411,8 +416,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultTableWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
-				'table-layout': 'fixed',
-				'overflow': 'scroll',
+				// 'table-layout': 'fixed',
+				// 'overflow': 'scroll',
 				'margin-left': '10px'
 			}
 		}).component();
@@ -431,10 +436,26 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	}
 
 	private async onAddDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+		// Open file dialog to create file
+		const result = await this.openDatabaseFileDialog();
+		if (result) {
+			this.objectInfo.files?.push(...result.newDatabaseFile);
+		}
 	}
 
 	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
 	}
+
+	private async openDatabaseFileDialog(): Promise<DatabaseFileDialogResult> {
+		const dialog = new DatabaseFileDialog(this.objectManagementService, {
+			objectTypes: this.viewInfo.files,
+			contextId: this.contextId,
+			title: localizedConstants.AddDatabaseFilesText,
+		});
+		await dialog.open();
+		return await dialog.waitForClose();
+	}
+
 	//#endregion
 
 	//#region Database Properties - Options Tab

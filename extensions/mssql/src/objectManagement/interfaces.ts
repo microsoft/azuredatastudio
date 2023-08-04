@@ -455,6 +455,8 @@ export interface Database extends ObjectManagement.SqlObject {
 	encryptionEnabled: boolean;
 	restrictAccess?: string;
 	databaseScopedConfigurations: DatabaseScopedConfigurationsInfo[];
+	fullTextIndexing?: boolean;
+	files?: DatabaseFile[];
 }
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {

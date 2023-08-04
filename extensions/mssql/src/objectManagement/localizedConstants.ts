@@ -312,8 +312,17 @@ export const AutogrowthMaxsizeText = localize('objectManagement.databaseProperti
 export const PathText = localize('objectManagement.databaseProperties.pathText', "Path");
 export const FileNameText = localize('objectManagement.databaseProperties.fileNameText', "File Name");
 export const DatabaseFilesText = localize('objectManagement.databaseProperties.databaseFilesText', "Database files");
+export const AddDatabaseFilesText = localize('objectManagement.databaseProperties.addDatabaseFilesText', "Add Database file");
 export const AddButton = localize('objectManagement.databaseProperties.addButton', "Add");
 export const RemoveButton = localize('objectManagement.databaseProperties.removeButton', "Remove");
+export const SizeInMbText = localize('objectManagement.databaseProperties.size', "Size (MB)");
+export const EnableAutogrowthText = localize('objectManagement.databaseProperties.enableAutogrowthText', "Enable Autogrowth");
+export const FileGrowthText = localize('objectManagement.databaseProperties.fileGrowthText', "File Growth");
+export const MaximumFileSizeText = localize('objectManagement.databaseProperties.maximumFileSizeText', "Maximum File Size");
+export const InPercentAutogrowthText = localize('objectManagement.databaseProperties.inPercentAutogrowthText', "In Percent");
+export const InMegabytesAutogrowthText = localize('objectManagement.databaseProperties.inMegabytesAutogrowthText', "In Megabytes");
+export const LimitedToMBFileSizeText = localize('objectManagement.databaseProperties.limitedToMBFileSizeText', "Limited to (MB)");
+export const UnlimitedFileSizeText = localize('objectManagement.databaseProperties.unlimitedFileSizeText', "Unlimited");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
