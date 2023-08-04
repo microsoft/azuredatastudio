@@ -94,7 +94,12 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 				if (azdataApi) {
 					const connectionResult = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
 					if (!connectionResult.connected) {
-						const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
+						const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile, {
+							saveConnection: false,
+							showDashboard: false,
+							showConnectionDialogOnError: true,
+							showFirewallRuleOnError: true
+						});
 						connId = connection.connectionId;
 					} else {
 						connId = connectionResult.connectionId!;
@@ -107,7 +112,12 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 			}
 			else {
 				if (azdataApi) {
-					const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
+					const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile, {
+						saveConnection: false,
+						showDashboard: false,
+						showConnectionDialogOnError: true,
+						showFirewallRuleOnError: true
+					});
 					connId = connection.connectionId;
 					server = connection.options['server'];
 					username = connection.options['user'];

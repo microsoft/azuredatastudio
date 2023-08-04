@@ -26,7 +26,6 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	isNewObject: boolean;
 	parentUrn: string;
 	objectUrn?: string;
-	objectExplorerContext?: azdata.ObjectExplorerContext;
 	objectName?: string;
 }
 

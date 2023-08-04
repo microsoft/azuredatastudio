@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
-import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams, IConnectionManagementService, IConnectionCallbacks } from 'sql/platform/connection/common/connectionManagement';
 import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/testErrorMessageService';
 
 import * as TypeMoq from 'typemoq';
@@ -54,6 +54,8 @@ import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { Emitter } from 'vs/base/common/event';
 import { NullCommandService } from 'vs/platform/commands/test/common/nullCommandService';
+import { delay } from 'sql/platform/connection/common/utils';
+import { IConnectionCompletionOptions } from 'azdata';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -322,7 +324,8 @@ suite('ConnectionDialogService tests', () => {
 		assert(!!returnedModel);
 
 		assert.strictEqual(returnedModel._groupName, 'testGroup');
-		assert(called);
+		await delay(200);
+		assert(called, 'fillInConnectionInputs was not called as expected.');
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {
@@ -339,8 +342,32 @@ suite('ConnectionDialogService tests', () => {
 			(connectionDialogService as any)._connectionDialog.connectButtonState = true;
 			((connectionDialogService as any)._connectionDialog as any).connect(connectionProfile);
 		});
+		await delay(200);
+		assert(called, 'connectAndSaveProfile was not called as expected.');
+	});
 
-		setTimeout(() => { assert(called); }, 200);
+	test('handleOnConnect does not save connection for editor type connection', async () => {
+		let called = false;
+		let saveConnection = true;
+		mockConnectionManagementService.setup(x => x.connectAndSaveProfile(TypeMoq.It.isAny(), TypeMoq.It.isAnyString(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.callback((connection: IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks) => {
+				saveConnection = options.saveConnection;
+			})
+			.returns(() => {
+				called = true;
+				return Promise.resolve(<IConnectionResult>{ connected: true, errorMessage: undefined, errorCode: undefined });
+			});
+		testConnectionParams.connectionType = ConnectionType.editor;
+		(connectionDialogService as any)._connectionDialog = undefined;
+		(connectionDialogService as any)._dialogDeferredPromise = new Deferred<IConnectionProfile>();
+		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
+		((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model = connectionProfile;
+		(connectionDialogService as any)._connectionDialog.connectButtonState = true;
+		((connectionDialogService as any)._connectionDialog as any).connect(connectionProfile);
+
+		await delay(200);
+		assert(called, 'connectAndSaveProfile was not called as expected.');
+		assert(!saveConnection, 'Must not save connection for editor connection type');
 	});
 
 	test('handleOnConnect calls connectAndSaveProfile when called without profile', async () => {
@@ -356,7 +383,8 @@ suite('ConnectionDialogService tests', () => {
 		((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model = connectionProfile;
 		(connectionDialogService as any)._connectionDialog.connectButtonState = true;
 		((connectionDialogService as any)._connectionDialog as any).connect();
-		setTimeout(() => { assert(called); }, 200);
+		await delay(200);
+		assert(called, 'connectAndSaveProfile was not called as expected.');
 	});
 
 	test('handleOnCancel calls cancelEditorConnection', async () => {
@@ -373,6 +401,7 @@ suite('ConnectionDialogService tests', () => {
 			((connectionDialogService as any)._connectionDialog as any).cancel();
 		});
 		mockWidget.verify(x => x.databaseDropdownExpanded = false, TypeMoq.Times.atLeastOnce());
-		assert(called);
+		await delay(200);
+		assert(called, 'cancelEditorConnection was not called as expected.');
 	});
 });
