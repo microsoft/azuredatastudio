@@ -19,6 +19,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // The commandId parameter must match the command field in package.json
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.viewDocumentation', async (context: azdata.ObjectExplorerContext) => {
         let connectionId = "";
+        let databaseName = "";
         if (!context.connectionProfile) {
             const connection = (await azdata.connection.getCurrentConnection());
             if (!connection) {
@@ -27,9 +28,11 @@ export async function activate(context: vscode.ExtensionContext) {
             }
 
             connectionId = connection.connectionId;
+            databaseName = connection.databaseName;
         }
         else {
             connectionId = context.connectionProfile.id;
+            databaseName = context.connectionProfile.databaseName;
         }
 
         const connectionUri = await azdata.connection.getUriForConnection(connectionId);
@@ -48,7 +51,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
-        await setContextVariables(context, connectionUri, version, document);
+        await setContextVariables(context, connectionUri, version, document, databaseName);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
@@ -59,16 +62,18 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
         // Register the event listener for user saving the documentation locally
-        vscode.workspace.onDidSaveTextDocument(async () => {
-            const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
-            const yes = localize('database-documentation.yes', 'Yes');
-            const no = localize('database-documentation.no', 'No');
-            const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+        vscode.workspace.onDidSaveTextDocument(async (savedDocument: vscode.TextDocument) => {
+            if (savedDocument === document) {
+                const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+                const yes = localize('database-documentation.yes', 'Yes');
+                const no = localize('database-documentation.no', 'No');
+                const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
-            if (choice === yes) {
-                await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
+                if (choice === yes) {
+                    await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
+                }
             }
-        })
+        });
 
     }));
 
@@ -77,6 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const context = contextVariables[0];
         const connectionUri = contextVariables[1];
         const version = contextVariables[2];
+        const databaseName = contextVariables[4];
 
         vscode.window.showInformationMessage(localize('database-documentation.startedGen', "Generating Documentation, this may take a while..."));
         const md = await generateMarkdown(context, connectionUri);
@@ -88,7 +94,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const document = await vscode.workspace.openTextDocument({ language: "markdown", content: md });
         await vscode.window.showTextDocument(document);
 
-        setContextVariables(context, connectionUri, version, document);
+        setContextVariables(context, connectionUri, version, document, databaseName);
 
         // Show markdown preview
         await vscode.commands.executeCommand('markdown.showPreviewToSide');
@@ -99,16 +105,18 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
         // Register the event listener for user saving the documentation locally
-        vscode.workspace.onDidSaveTextDocument(async () => {
-            const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
-            const yes = localize('database-documentation.yes', 'Yes');
-            const no = localize('database-documentation.no', 'No');
-            const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+        vscode.workspace.onDidSaveTextDocument(async (savedDocument: vscode.TextDocument) => {
+            if (savedDocument === document) {
+                const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+                const yes = localize('database-documentation.yes', 'Yes');
+                const no = localize('database-documentation.no', 'No');
+                const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
-            if (choice === yes) {
-                await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
+                if (choice === yes) {
+                    await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
+                }
             }
-        })
+        });
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('database-documentation.saveDocumentationToDatabase', async () => {
@@ -152,7 +160,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         word = word.substring(1, word.length - 1);
 
-        const connectionUri = getContextVariables()[0].connectionProfile.id;
+        const connectionUri = getContextVariables()[1];
 
         const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
         const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [master].[db_documentation].[DatabaseDocumentation]`;

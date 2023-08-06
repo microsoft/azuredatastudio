@@ -15,16 +15,18 @@ let connectionUri: string;
 let context: azdata.ObjectExplorerContext;
 let version: number;
 let document: vscode.TextDocument;
+let databaseName: string;
 
-export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnectionUri: string, docsVersion: number, extensionDocument: vscode.TextDocument) {
+export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnectionUri: string, docsVersion: number, extensionDocument: vscode.TextDocument, extensionDatabaseName: string) {
 	context = extensionContext;
 	connectionUri = extensionConnectionUri;
 	version = docsVersion;
 	document = extensionDocument;
+	databaseName = extensionDatabaseName;
 }
 
-export function getContextVariables(): [azdata.ObjectExplorerContext, string, number, vscode.TextDocument] {
-	return [context, connectionUri, version, document];
+export function getContextVariables(): [azdata.ObjectExplorerContext, string, number, vscode.TextDocument, string] {
+	return [context, connectionUri, version, document, databaseName];
 }
 
 export async function getIdentificationService(): Promise<mssql.IIdentificationService> {
