@@ -8,7 +8,7 @@ import 'vs/css!./media/countInsight';
 import { IInsight } from './interfaces';
 
 import { $, clearNode } from 'vs/base/browser/dom';
-import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export class CountInsight implements IInsight {
