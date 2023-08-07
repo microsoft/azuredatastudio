@@ -229,7 +229,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		for (let node of nodes) {
 			let table = this.createProcessorTable(node);
 			nodeTableList.push(table);
-			tableGroups.push(this.createGroup(node.numaNodeId, [table], true));
+			tableGroups.push(this.createGroup(localizedConstants.serverNumaNodeLabel(node.numaNodeId), [table], true));
 		}
 		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
 			this.objectInfo.autoProcessorAffinityMaskForAll = newValue;
@@ -270,7 +270,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 
 	private createProcessorTable(numaNode: NumaNode): azdata.TableComponent {
 		const cssClass = 'no-borders';
-		let tableData = numaNode.processors.map(row => [row.processorId, row.affinity, row.ioAffinity]);
+		let tableData = numaNode.processors.map(row => [localizedConstants.serverCPULabel(row.processorId), row.affinity, row.ioAffinity]);
 		let processorTable = this.createTable(localizedConstants.processorLabel,
 			[
 				<azdata.TableColumn>{

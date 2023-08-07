@@ -270,7 +270,9 @@ export const processorColumnText = localize('objectManagement.processorColumn', 
 export const processorAffinityColumnText = localize('objectManagement.processorAffinityColumn', "Processor Affinity");
 export const processorIOAffinityColumnText = localize('objectManagement.processorIOAffinityColumn', "I/O Affinity");
 export const processorLabel = localize('objectManagement.processorLabel', "Processor Affinity Table");
-export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower than minimum server memory")
+export const serverMemoryMaxLowerThanMinInputError: string = localize('objectManagement.serverMemoryMaxLowerThanMinInputError', "Maximum server memory cannot be lower than minimum server memory");
+export const serverNumaNodeLabel = (value: string) => localize('objectManagement.serverNumaNodeLabel', "Numa Node {0}", value);
+export const serverCPULabel = (value: string) => localize('objectManagement.serverCPULabel', "CPU {0}", value);
 
 //Database properties Dialog
 export const LastDatabaseBackupText = localize('objectManagement.lastDatabaseBackup', "Last Database Backup");
