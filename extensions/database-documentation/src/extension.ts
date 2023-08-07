@@ -184,7 +184,9 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        word = word.substring(1, word.length - 1);
+        if  (word.startsWith("[")) {
+            word = word.substring(1, word.length - 1);
+        }
         const databaseName = word.substring(0, word.indexOf("."));
 
         const connectionUri = getContextVariables()[1];
