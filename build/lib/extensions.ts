@@ -304,6 +304,7 @@ const externalExtensions = [
 	'azuremonitor',
 	'cms',
 	'dacpac',
+	'database-documentation',
 	'datavirtualization',
 	'import',
 	'kusto',

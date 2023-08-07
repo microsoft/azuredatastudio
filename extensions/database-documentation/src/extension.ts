@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { convertMarkdownToJSON, generateMarkdown, getContextVariables, getHoverContent, saveMarkdown, setContextVariables, setupGeneration, validate} from './common/utils';
+import { convertMarkdownToJSON, generateMarkdown, getContextVariables, getHoverContent, saveMarkdown, setContextVariables, setupGeneration, validate } from './common/utils';
 import * as nls from 'vscode-nls';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -13,6 +13,16 @@ export async function activate(context: vscode.ExtensionContext) {
     const localize = nls.loadMessageBundle();
 
     vscode.window.showInformationMessage("Activated Extension");
+
+    let choiceMessage = localize('database-documentation.choiceMessageInstall', 'Do you want to install a mermaid rendering extension? This will allow you to see the rendered mermaid diagrams within generated documentation.');
+    const yes = localize('database-documentation.yes', 'Yes');
+    const no = localize('database-documentation.no', 'No');
+    let choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+
+    if (choice === yes) {
+        await vscode.commands.executeCommand('workbench.extensions.installExtension', vscode.Uri.file(context.asAbsolutePath('markdown-mermaid')));
+        vscode.window.showInformationMessage(localize('database-documentation.doneInstallingMermaid', 'Done Installing Mermaid extension!'));
+    }
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
@@ -61,10 +71,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register the event listener for user saving the documentation locally
         vscode.workspace.onDidSaveTextDocument(async (savedDocument: vscode.TextDocument) => {
             if (savedDocument === document) {
-                const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
-                const yes = localize('database-documentation.yes', 'Yes');
-                const no = localize('database-documentation.no', 'No');
-                const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+                choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+                choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
                 if (choice === yes) {
                     await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
@@ -103,10 +111,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register the event listener for user saving the documentation locally
         vscode.workspace.onDidSaveTextDocument(async (savedDocument: vscode.TextDocument) => {
             if (savedDocument === document) {
-                const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
-                const yes = localize('database-documentation.yes', 'Yes');
-                const no = localize('database-documentation.no', 'No');
-                const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+                choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+                choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
                 if (choice === yes) {
                     await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');

@@ -269,6 +269,7 @@ const externalExtensions = [
     'cms',
     'dacpac',
     'datavirtualization',
+    'database-documentation',
     'import',
     'kusto',
     'machine-learning',
