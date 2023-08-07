@@ -4852,7 +4852,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -4860,7 +4860,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/AzureDataStudioExtension/CHANGELOG.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
@@ -5082,6 +5082,71 @@
 					"flags": ""
 				},
 				{
+					"extensionId": "100",
+					"extensionName": "oracle-datamigration",
+					"displayName": "Data Migration for Oracle",
+					"shortDescription": "Data Migration for Oracle extension to migrate data from Oracle to Azure SQL",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "07/21/2023",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/oracle-datamigration-1.0.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/oracle-datamigration/1.0.0/LICENSE.html"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": "Microsoft.net-6-runtime,Microsoft.azuredatastudio-oracle"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.41.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
 				"extensionId": "101",
 				"extensionName": "ads-searcheverywhere",
 				"displayName": "Search Everywhere",
@@ -5149,7 +5214,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 84
+							"count": 85
 						}
 					]
 				}
