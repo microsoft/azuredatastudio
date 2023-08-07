@@ -15,18 +15,16 @@ let connectionUri: string;
 let context: azdata.ObjectExplorerContext;
 let version: number;
 let document: vscode.TextDocument;
-let databaseName: string;
 
-export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnectionUri: string, docsVersion: number, extensionDocument: vscode.TextDocument, extensionDatabaseName: string) {
+export async function setContextVariables(extensionContext: azdata.ObjectExplorerContext, extensionConnectionUri: string, docsVersion: number, extensionDocument: vscode.TextDocument) {
 	context = extensionContext;
 	connectionUri = extensionConnectionUri;
 	version = docsVersion;
 	document = extensionDocument;
-	databaseName = extensionDatabaseName;
 }
 
-export function getContextVariables(): [azdata.ObjectExplorerContext, string, number, vscode.TextDocument, string] {
-	return [context, connectionUri, version, document, databaseName];
+export function getContextVariables(): [azdata.ObjectExplorerContext, string, number, vscode.TextDocument] {
+	return [context, connectionUri, version, document];
 }
 
 export async function getIdentificationService(): Promise<mssql.IIdentificationService> {
@@ -71,7 +69,7 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	}
 
 	// Change threshhold
-	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 100) {
+	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 30) {
 		let databaseSummary = documentation;
 		databaseSummary += await getDatabaseSummary(context, connectionUri);
 
@@ -629,7 +627,7 @@ export function convertMarkdownToJSON(context: azdata.ObjectExplorerContext, mar
 	return JSON.stringify(json);
 }
 
-function validate(input: string): string {
+export function validate(input: string): string {
 	// Escape single quotes by doubling them
 	const escapedQuotes = input.replace(/'/g, "''");
 
