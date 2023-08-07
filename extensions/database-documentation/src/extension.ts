@@ -156,7 +156,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const wordRange = event.textEditor.document.getWordRangeAtPosition(selectedPosition, /(?<=\[).*(?=\])/);
         let word = event.textEditor.document.getText(wordRange);
 
-        if (word === event.textEditor.document.getText()) {
+        if (wordRange.contains(new vscode.Position(0, 0))) {
             return;
         }
 
@@ -166,7 +166,24 @@ export async function activate(context: vscode.ExtensionContext) {
         const connectionUri = getContextVariables()[1];
 
         const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-        const objectNameQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(databaseName)}].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(word)}'`;
+        const objectNameQuery = `
+            IF EXISTS (
+                SELECT 1
+                FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_SCHEMA = 'db_documentation'
+                AND TABLE_NAME = 'DatabaseDocumentation'
+            )
+            BEGIN
+                SELECT [ObjectName], [Markdown]
+                FROM [${validate(databaseName)}].[db_documentation].[DatabaseDocumentation]
+                WHERE [ObjectName] = '${validate(word)}';
+            END
+            ELSE
+			BEGIN
+				SELECT NULL AS [ObjectName], NULL AS [Markdown]
+				WHERE 1 = 0; -- This condition will always be false, resulting in an empty result set
+			END;
+        `;
         const objectNameResult = await queryProvider.runQueryAndReturn(connectionUri, objectNameQuery);
 
         if (objectNameResult.rowCount) {

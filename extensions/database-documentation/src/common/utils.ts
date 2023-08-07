@@ -662,7 +662,24 @@ export async function getHoverContent(document: vscode.TextDocument, position: v
 
 		vscode.window.showInformationMessage(objectName);
 
-		const objectNameQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(connection.databaseName)}].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(objectName)}'`;
+		const objectNameQuery = `
+            IF EXISTS (
+                SELECT 1
+                FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_SCHEMA = 'db_documentation'
+                AND TABLE_NAME = 'DatabaseDocumentation'
+            )
+            BEGIN
+                SELECT [ObjectName], [Markdown]
+                FROM [${validate(connection.databaseName)}].[db_documentation].[DatabaseDocumentation]
+                WHERE [ObjectName] = '${validate(word)}';
+            END
+			ELSE
+			BEGIN
+				SELECT NULL AS [ObjectName], NULL AS [Markdown]
+				WHERE 1 = 0; -- This condition will always be false, resulting in an empty result set
+			END;
+        `;
 		const objectNameResult = await queryProvider.runQueryAndReturn(connectionUri, objectNameQuery);
 
 		if (objectNameResult.rowCount) {
