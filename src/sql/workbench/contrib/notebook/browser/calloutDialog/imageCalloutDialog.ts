@@ -115,16 +115,16 @@ export class ImageCalloutDialog extends Modal {
 		DOM.append(locationRow, this._imageLocationLabel);
 
 		let radioButtonGroup = DOM.$('.radio-group');
-		this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
+		this._imageLocalRadioButton = this._register(new RadioButton(radioButtonGroup, {
 			label: constants.localImageLabel,
 			enabled: true,
 			checked: true
-		});
-		this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
+		}));
+		this._imageRemoteRadioButton = this._register(new RadioButton(radioButtonGroup, {
 			label: constants.remoteImageLabel,
 			enabled: true,
 			checked: false
-		});
+		}));
 		this._imageLocalRadioButton.name = this._editorImageLocationGroup;
 		this._imageLocalRadioButton.value = constants.locationLocal;
 		this._imageRemoteRadioButton.name = this._editorImageLocationGroup;
