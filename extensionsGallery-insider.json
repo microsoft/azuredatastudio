@@ -4852,7 +4852,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -4860,7 +4860,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/AzureDataStudioExtension/CHANGELOG.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
