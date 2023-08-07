@@ -68,8 +68,9 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		documentation += await getObjectOverviewText(context.nodeInfo.metadata.name, tableNames.concat(viewNames), context.nodeInfo.nodeType);
 	}
 
-	// Change threshhold
-	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > 30) {
+	// Change threshold
+	vscode.window.showInformationMessage("Max Objects: " + (await getMaxObjects()).toString() + " Num Objects:" + (tables.length + views.length).toString());
+	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > (await getMaxObjects())) {
 		let databaseSummary = documentation;
 		databaseSummary += await getDatabaseSummary(context, connectionUri);
 
@@ -487,6 +488,17 @@ async function getOpenApiKey(): Promise<string> {
 	apiKey = await vscode.workspace.getConfiguration("openAI").get<string>("apiKey");
 
 	return apiKey;
+}
+
+async function getMaxObjects(): Promise<number> {
+	const configuration = vscode.workspace.getConfiguration('database-documentation');
+	let maxObjects = await configuration.get<number>('maxObjectsForDatabaseDocs');
+
+	if (!maxObjects) {
+		maxObjects = 100;
+	}
+
+	return maxObjects;
 }
 
 export function convertMarkdownToJSON(context: azdata.ObjectExplorerContext, markdown: string): string {

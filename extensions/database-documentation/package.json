@@ -41,6 +41,10 @@
 					"light": "images/upload-light.svg",
 					"dark": "images/upload-dark.svg"
 				}
+			},
+			{
+				"command": "database-documentation.setMaxObjects",
+				"title": "%database-documentation.setMaxObjects%"
 			}
 		],
 		"menus": {
@@ -72,6 +76,11 @@
 					"type": "string",
 					"default": "",
 					"description": "API key for OpenAI"
+				},
+				"database-documentation.maxObjectsForDatabaseDocs": {
+					"type": "number",
+					"default": 100,
+					"description": "%database-documentation.setMaxObjects%"
 				}
 			}
 		}

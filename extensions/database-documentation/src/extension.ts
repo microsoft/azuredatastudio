@@ -146,6 +146,28 @@ export async function activate(context: vscode.ExtensionContext) {
 
     }));
 
+    context.subscriptions.push(vscode.commands.registerCommand('database-documentation.setMaxObjects', async () => {
+        const configuration = vscode.workspace.getConfiguration('database-documentation');
+
+        let maxObjectsInput = await vscode.window.showInputBox({
+            prompt: localize('database-documentation.setMaxObjectsInput', 'What is the max number of objects you would like to individually document?'),
+            ignoreFocusOut: true,
+        });
+
+        if (maxObjectsInput) {
+            let maxObjects = Number(maxObjectsInput);
+            if (!isNaN(maxObjects)) {
+                try {
+                    await configuration.update('maxObjectsForDatabaseDocs', maxObjects, vscode.ConfigurationTarget.Global);
+                }
+                catch (err) {
+                }
+            }
+
+        }
+    }));
+
+
     vscode.languages.registerHoverProvider('sql', {
         async provideHover(document, position) {
             return getHoverContent(document, position);
