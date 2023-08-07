@@ -146,7 +146,7 @@ export class AccountPicker extends Disposable {
 		};
 
 		// Create the add account action
-		const addAccountAction = this._instantiationService.createInstance(AddAccountAction, undefined);
+		const addAccountAction = this._register(this._instantiationService.createInstance(AddAccountAction, undefined));
 		this._register(addAccountAction.addAccountCompleteEvent(() => this._addAccountCompleteEmitter.fire()));
 		this._register(addAccountAction.addAccountErrorEvent((msg) => this._addAccountErrorEmitter.fire(msg)));
 		this._register(addAccountAction.addAccountStartEvent(() => this._addAccountStartEmitter.fire()));

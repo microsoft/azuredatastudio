@@ -192,11 +192,10 @@ export class ServerGroupDialog extends Modal {
 		for (let i = 0; i < this.withViewModel.colors.length; i++) {
 			const color = this.withViewModel.colors[i];
 
-			const colorBox = new Colorbox(container, {
+			const colorBox = this._register(new Colorbox(container, {
 				name: 'server-group-color',
 				color: color
-			});
-			this._register(colorBox);
+			}));
 			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
