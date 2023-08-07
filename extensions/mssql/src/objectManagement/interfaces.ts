@@ -478,13 +478,13 @@ export interface AzureEditionDetails {
 }
 
 export interface ProcessorAffinity {
-	processor: string;
-	processorAffinity: boolean;
-	processorIOAffinity: boolean;
+	processorId: string;
+	affinity: boolean;
+	ioAffinity: boolean;
 }
 
 export interface NumaNode {
-	name: string
+	numaNodeId: string
 	processors: ProcessorAffinity[]
 }
 
