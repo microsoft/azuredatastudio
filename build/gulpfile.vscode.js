@@ -460,7 +460,6 @@ function patchWin32DependenciesTask(destinationFolderName) {
 
 const fileLengthFilter = filter([
 	'**',
-	'!extensions/import/*.docx',
 	'!extensions/admin-tool-ext-win/license/**'
 ], { restore: true });
 

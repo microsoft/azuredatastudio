@@ -14,7 +14,7 @@ import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { getRootPath, resolveCurrentDirectory } from 'sql/platform/common/pathUtilities';
+import { getRootPath, resolveCurrentDirectory } from 'sql/platform/workspace/common/pathUtilities';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IOpenerService } from 'vs/platform/opener/common/opener';

@@ -71,9 +71,7 @@ export class AccountPickerService implements IAccountPickerService {
 	 */
 	public renderAccountPicker(rootContainer: HTMLElement): void {
 		if (!this._accountPicker) {
-			// TODO: expand support to multiple providers
-			const providerId: string = 'azure_publicCloud';
-			this._accountPicker = this._instantiationService.createInstance(AccountPicker, providerId);
+			this._accountPicker = this._instantiationService.createInstance(AccountPicker);
 			this._accountPicker.createAccountPickerComponent();
 		}
 

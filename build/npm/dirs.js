@@ -29,6 +29,7 @@ const dirs = [
 	'extensions/import',
 	'extensions/integration-tests',
 	'extensions/ipynb',
+	'extensions/javascript',
 	'extensions/json-language-features',
 	'extensions/json-language-features/server',
 	'extensions/kusto',

@@ -26,12 +26,11 @@ export interface ObjectManagementDialogOptions extends ScriptableDialogOptions {
 	isNewObject: boolean;
 	parentUrn: string;
 	objectUrn?: string;
-	objectExplorerContext?: azdata.ObjectExplorerContext;
 	objectName?: string;
 }
 
 export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectManagement.SqlObject, ViewInfoType extends ObjectManagement.ObjectViewInfo<ObjectInfoType>> extends ScriptableDialogBase<ObjectManagementDialogOptions> {
-	private _contextId: string;
+	private readonly _contextId: string;
 	private _viewInfo: ViewInfoType;
 	private _originalObjectInfo: ObjectInfoType;
 
@@ -46,6 +45,7 @@ export abstract class ObjectManagementDialogBase<ObjectInfoType extends ObjectMa
 		}
 		super(dialogTitle, dialogName, options);
 		this._contextId = generateUuid();
+		this.dialogObject.okButton.label = options.isNewObject ? localizedConstants.CreateObjectLabel : localizedConstants.ApplyUpdatesLabel;
 	}
 
 	protected postInitializeData(): void { }

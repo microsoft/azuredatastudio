@@ -35,11 +35,9 @@ import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { AuthenticationType, Actions, mssqlApplicationNameOption, applicationName, mssqlProviderName, mssqlCmsProviderName } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 import { createCSSRule } from 'vs/base/browser/dom';
-import { AuthLibrary, getAuthLibrary } from 'sql/workbench/services/accountManagement/common/utils';
 import { adjustForMssqlAppName } from 'sql/platform/connection/common/utils';
 import { isMssqlAuthProviderEnabled } from 'sql/workbench/services/connection/browser/utils';
 import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
@@ -69,7 +67,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _azureAccountList: azdata.Account[];
 	private _callbacks: IConnectionComponentCallbacks;
 	private _focusedBeforeHandleOnConnection: HTMLElement;
-	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
@@ -711,11 +708,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
-		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		const authLibrary: AuthLibrary = getAuthLibrary(this._configurationService);
-		if (authLibrary) {
-			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
-		}
+		this._azureAccountList = accounts.filter(a => a.key.providerId.startsWith('azure'));
 
 		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
 			return {
@@ -734,10 +727,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private updateRefreshCredentialsLink(): void {
-		// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-		// The OR case can be removed once we no longer support ADAL
-		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
-			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
+		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			this._tableContainer.classList.remove('hide-refresh-link');
 		} else {
@@ -758,10 +748,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			await this.fillInAzureAccountOptions();
 
 			// If a new account was added find it and select it, otherwise select the first account
-			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-			// The OR case can be removed once we no longer support ADAL
-			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId
-				|| oldId.split('.')[0] === option.key.accountId));
+			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
 			if (newAccount) {
 				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
 			} else {
@@ -773,10 +760,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		// Display the tenant select box if needed
 		const hideTenantsClassName = 'hide-azure-tenants';
-		// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-		// The OR case can be removed once we no longer support ADAL
-		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value
-			|| account.key.accountId.split('.')[0] === this._azureAccountDropdown.value);
+		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (!selectedAccount && selectFirstByDefault && this._azureAccountList.length > 0) {
 			selectedAccount = this._azureAccountList[0];
 		}
@@ -894,8 +878,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._connectionStringInputBox?.hideMessage();
 	}
 
-	private getModelValue(value: string): string {
-		return value !== undefined ? value : '';
+	private getModelValue(value: any): string {
+		return value !== undefined ? value.toString() : '';
 	}
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
@@ -908,20 +892,15 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
 			this._passwordInputBox.value = this.getModelValue(connectionInfo.password);
-			this._saveProfile = connectionInfo.saveProfile;
 			this._azureTenantId = connectionInfo.azureTenantId;
 			if (this._databaseNameInputBox) {
 				this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
 			}
 			let groupName: string;
-			if (this._saveProfile) {
-				if (!connectionInfo.groupFullName) {
-					groupName = this.DefaultServerGroup.name;
-				} else {
-					groupName = connectionInfo.groupFullName.replace('root/', '');
-				}
+			if (!connectionInfo.groupFullName) {
+				groupName = this.DefaultServerGroup.name;
 			} else {
-				groupName = this.NoneServerGroup.name;
+				groupName = connectionInfo.groupFullName.replace('root/', '');
 			}
 			if (this._serverGroupSelectBox) {
 				this._serverGroupSelectBox.selectWithOptionName(groupName);
@@ -967,10 +946,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						? connectionInfo.azureAccount : connectionInfo.userName;
 					let account: azdata.Account;
 					if (accountName) {
-						// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-						// The OR case can be removed once we no longer support ADAL
-						account = this._azureAccountList?.find(account => account.key.accountId === this.getModelValue(accountName)
-							|| account.key.accountId.split('.')[0] === this.getModelValue(accountName));
+						account = this._azureAccountList?.find(account => account.key.accountId === this.getModelValue(accountName));
 						if (account) {
 							if (!account.properties.tenants?.find(tenant => tenant.id === this._azureTenantId)) {
 								this._azureTenantId = account.properties.tenants[0].id;

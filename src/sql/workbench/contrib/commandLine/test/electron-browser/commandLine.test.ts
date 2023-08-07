@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { CommandLineWorkbenchContribution } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
+import { CommandLineWorkbenchContribution } from 'sql/workbench/contrib/commandLine/electron-sandbox/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
@@ -31,7 +31,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/browser/editor/query/fileQueryEditorInput';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 

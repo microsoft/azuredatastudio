@@ -235,7 +235,7 @@ export class ServerTreeRenderer implements IRenderer {
 			const treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 			let label = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.title;
 			templateData.label.textContent = label;
-			templateData.root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.title) : connection.serverInfo;
+			templateData.root.title = treeNode?.filters?.length > 0 ? getLabelWithFilteredSuffix(connection.serverInfo) : connection.serverInfo;
 			templateData.connectionProfile = connection;
 		}
 	}

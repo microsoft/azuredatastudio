@@ -22,6 +22,7 @@ import { ProfilerFilterDialog } from 'sql/workbench/services/profiler/browser/pr
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { ByteSize, IFileService } from 'vs/platform/files/common/files';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -160,7 +161,7 @@ export class ProfilerService implements IProfilerService {
 			this.updateMemento(id, { previousSessionName: sessionName });
 			try {
 				await this._runAction(id, provider => provider.startSession(this._idMap.get(id)!, sessionName, sessionType));
-				let isRunning = sessionType === ProfilingSessionType.RemoteSession ? true : false;		// Reading session stops when the file reading completes
+				let isRunning = sessionType === ProfilingSessionType.LocalFile ? false : true;		// Reading session stops when the file reading completes
 				this._sessionMap.get(this._idMap.reverseGet(id)!)!.onSessionStateChanged({ isRunning: isRunning, isStopped: false, isPaused: false });
 
 				return true;
@@ -303,7 +304,7 @@ export class ProfilerService implements IProfilerService {
 		await this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
 	}
 
-	public async openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService): Promise<boolean> {
+	public async openFile(fileDialogService: IFileDialogService, editorService: IEditorService, instantiationService: IInstantiationService, fileService: IFileService): Promise<boolean> {
 		const fileURIs = await fileDialogService.showOpenDialog({
 			filters: [
 				{
@@ -316,6 +317,21 @@ export class ProfilerService implements IProfilerService {
 
 		if (fileURIs?.length === 1) {
 			const fileURI = fileURIs[0];
+
+			try {
+				const fileSize = (await fileService.stat(fileURI)).size;
+				const fileLimitSize = 1 * ByteSize.GB;
+				const fileOpenWarningSize = 100 * ByteSize.MB;
+
+				if (fileSize > fileLimitSize) {
+					this._notificationService.error(nls.localize('FileTooLarge', "The file is too large to open in profiler. The profiler can open files that are less than 1GB."));
+					return false;
+				} else if (fileSize > fileOpenWarningSize) {
+					this._notificationService.info(nls.localize('LargeFileWait', "Loading the file might take a moment due to the file size."));
+				}
+			} catch (err) {
+				this._notificationService.error(err.message);
+			}
 
 			let profilerInput: ProfilerInput = instantiationService.createInstance(ProfilerInput, undefined, fileURI);
 			await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);

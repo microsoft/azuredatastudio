@@ -682,8 +682,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						connection.options = connectionErrorHandleResult.options;
 					}
 					if (connectionErrorHandleResult.reconnect) {
-						// Attempt reconnect if requested by provider
-						return this.connectWithOptions(connection, uri, options, callbacks);
+						// Attempt reconnect if requested by provider and reset URI to be regenerated.
+						return this.connectWithOptions(connection, undefined, options, callbacks);
 					} else {
 						if (callbacks.onConnectCanceled) {
 							callbacks.onConnectCanceled();
@@ -722,183 +722,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
 		let result = await dialog.open(profile);
 		return result;
-	}
-
-	public getEditorConnectionProfileTitle(profile: interfaces.IConnectionProfile, getOptionsOnly?: boolean, includeGroupName: boolean = true): string {
-		let result = '';
-		if (profile) {
-			let tempProfile = new ConnectionProfile(this._capabilitiesService, profile);
-			let trimTitle = tempProfile.getOriginalTitle();
-			let idToFind = tempProfile.id;
-			let isChild = false;
-			let totalConnections: ConnectionProfile[] = [];
-			let allConnections = this.getConnections();
-
-			totalConnections = totalConnections.concat(allConnections);
-
-			let initialSearch = totalConnections.filter(inputProfile => {
-				return inputProfile.id === tempProfile.id;
-			});
-
-			let secondarySearch = totalConnections.filter(inputProfile => {
-				return inputProfile.matches(tempProfile)
-			});
-
-			if (initialSearch.length === 0) {
-				if (secondarySearch.length === 1) {
-					// Sometimes the connection id will change for an object explorer connection, especially when connecting from dashboard,
-					// and it will identify as different from the stored one even without changes. Get the info for the stored version as it's the same profile.
-					idToFind = secondarySearch[0].id;
-				}
-			}
-
-			// Handle case where a profile may have been an edited existing connection (the one retrieved may not be up to date)
-			if (initialSearch.length === 1 && !initialSearch[0].matches(tempProfile)) {
-				// Remove the old profile with outdated information.
-				totalConnections = totalConnections.filter(inputProfile => {
-					return inputProfile.id !== tempProfile.id;
-				});
-				// Replace with up to date version of the profile.
-				totalConnections = totalConnections.concat(tempProfile);
-			}
-
-			let newConnectionTitles = [];
-
-			this.generateEditorConnectionTitles(totalConnections);
-			if (includeGroupName) {
-				this.appendGroupName(totalConnections);
-			}
-			newConnectionTitles = totalConnections;
-
-			let searchResult = newConnectionTitles.filter(inputProfile => inputProfile.id === idToFind);
-			let finalTitle = searchResult[0]?.title;
-			if (finalTitle) {
-				let optionsAppend = finalTitle.substring(trimTitle.length);
-				if (getOptionsOnly) {
-					finalTitle = optionsAppend;
-				}
-				else if (!getOptionsOnly && isChild) {
-					finalTitle = tempProfile.getOriginalTitle() + optionsAppend;
-				}
-				else {
-					finalTitle = searchResult[0].getOriginalTitle() + optionsAppend;
-				}
-				result = finalTitle;
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Change the connection title to display only the unique properties among profiles provided. (used for editors)
-	 */
-	private generateEditorConnectionTitles(inputList: ConnectionProfile[]): void {
-		let profileListMap = new Map<string, number[]>();
-		// Need to reset title to when it was before (as it may have contained a previously generated title)
-		for (let i = 0; i < inputList.length; i++) {
-			inputList[i].title = inputList[i].getOriginalTitle();
-		}
-
-		// Map the indices of profiles that share the same server info
-		for (let i = 0; i < inputList.length; i++) {
-			// do not add if the profile is still loading as that will result in erroneous entries.
-			if (inputList[i].serverCapabilities && inputList[i].hasLoaded()) {
-				let titleKey = inputList[i].getOriginalTitle();
-				if (profileListMap.has(titleKey)) {
-					let profilesForKey = profileListMap.get(titleKey);
-					profilesForKey.push(i);
-					profileListMap.set(titleKey, profilesForKey);
-				}
-				else {
-					profileListMap.set(titleKey, [i]);
-				}
-			}
-		}
-
-		profileListMap.forEach(function (indexes, titleString) {
-			if (profileListMap.get(titleString)?.length > 1) {
-				let combinedOptions = [];
-				let needSpecial = false;
-				if (titleString === inputList[indexes[0]].connectionName) {
-					// check for potential connections with the same name but technically different connections.
-					let listOfDuplicates = indexes.filter(item => inputList[item].getOptionsKey() !== inputList[indexes[0]].getOptionsKey());
-					if (listOfDuplicates.length > 0) {
-						// if we do find duplicates, we will need to include the special properties.
-						needSpecial = true;
-					}
-				}
-				indexes.forEach((indexValue) => {
-					// Add all possible options across all profiles with the same title to an option list.
-					let valueOptions = inputList[indexValue].getConnectionOptionsList(needSpecial, false);
-					combinedOptions = combinedOptions.concat(valueOptions.filter(item => combinedOptions.indexOf(item) < 0));
-				});
-
-				// Generate list of non default option keys for each profile that shares the same server info.
-				let optionKeyMap = new Map<ConnectionProfile, string[]>();
-				let optionValueOccuranceMap = new Map<string, number>();
-				for (let p = 0; p < indexes.length; p++) {
-					optionKeyMap.set(inputList[indexes[p]], []);
-					for (let i = 0; i < combinedOptions.length; i++) {
-						// See if the option is not default for the inputList profile or is.
-						if (inputList[indexes[p]].getConnectionOptionsList(needSpecial, true).indexOf(combinedOptions[i]) > -1) {
-							let optionValue = inputList[indexes[p]].getOptionValue(combinedOptions[i].name);
-							let currentArray = optionKeyMap.get(inputList[indexes[p]]);
-							let valueString = combinedOptions[i].name + ConnectionProfile.displayNameValueSeparator + optionValue;
-							if (!optionValueOccuranceMap.get(valueString)) {
-								optionValueOccuranceMap.set(valueString, 0);
-							}
-							optionValueOccuranceMap.set(valueString, optionValueOccuranceMap.get(valueString) + 1);
-							currentArray.push(valueString);
-							optionKeyMap.set(inputList[indexes[p]], currentArray);
-						}
-					}
-				}
-
-				// Filter out options that are found in ALL the entries with the same server info.
-				optionValueOccuranceMap.forEach(function (count, optionValue) {
-					optionKeyMap.forEach(function (connOptionValues, profile) {
-						if (count === optionKeyMap.size) {
-							optionKeyMap.set(profile, connOptionValues.filter(value => value !== optionValue));
-						}
-					});
-				});
-
-				// Generate the final unique connection string for each profile in the list.
-				optionKeyMap.forEach(function (connOptionValues, profile) {
-					let uniqueOptionString = connOptionValues.join(ConnectionProfile.displayIdSeparator);
-					if (uniqueOptionString.length > 0) {
-						profile.title = profile.getOriginalTitle() + ' (' + uniqueOptionString + ')';
-					}
-				});
-			}
-		});
-	}
-
-	private appendGroupName(inputList: ConnectionProfile[]): void {
-		let profileListMap = new Map<string, number[]>();
-
-		// Map the indices of profiles that share the same server group
-		for (let i = 0; i < inputList.length; i++) {
-			let groupName = inputList[i].groupFullName;
-			if (profileListMap.has(groupName)) {
-				let profilesForKey = profileListMap.get(groupName);
-				profilesForKey.push(i);
-				profileListMap.set(groupName, profilesForKey);
-			}
-			else {
-				profileListMap.set(groupName, [i]);
-			}
-		}
-
-		if (profileListMap.size > 1) {
-			profileListMap.forEach(function (indexes, groupName) {
-				for (let t = 0; t < indexes.length; t++) {
-					if (groupName !== '') {
-						inputList[indexes[t]].title += nls.localize('connection.connTitleGroupSection', ' (Group: {0})', groupName);
-					}
-				}
-			});
-		}
 	}
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
@@ -1239,9 +1062,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
 			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
-			// For backwards compatibility with ADAL, we need to check if the account ID matches with tenant Id or just the account ID
-			// The OR case can be removed once we no longer support ADAL
-			let account = azureAccounts.find(account => account.key.accountId === accountId || account.key.accountId.split('.')[0] === accountId);
+			let account = azureAccounts.find(account => account.key.accountId === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
@@ -1608,13 +1429,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return;
 		}
 		this._connectionStatusManager.changeConnectionUri(newUri, oldUri);
-		if (!this._uriToProvider[oldUri]) {
-			this._logService.error(`No provider found for old URI : '${oldUri}'`);
-			throw new Error(nls.localize('connectionManagementService.noProviderForUri', 'Could not find provider for uri: {0}', oldUri));
+		if (this._uriToProvider[oldUri]) {
+			// Provider will persist after disconnect, it is okay to overwrite the map if it exists from a previously deleted connection.
+			this._uriToProvider[newUri] = this._uriToProvider[oldUri];
+			delete this._uriToProvider[oldUri];
 		}
-		// Provider will persist after disconnect, it is okay to overwrite the map if it exists from a previously deleted connection.
-		this._uriToProvider[newUri] = this._uriToProvider[oldUri];
-		delete this._uriToProvider[oldUri];
 	}
 
 	/**

@@ -59,19 +59,17 @@ export abstract class BaseQueryStoreReport {
 				break;
 			}
 			case 2: {
-				// TODO: replace 800 to have the number be based on how big the window is
 				// one container on top, one on the bottom
-				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, containers[0], containers[1], 800) : utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'column');
+				mainContainer = this.resizeable ? utils.createSplitView(view, containers[0], containers[1], 'vertical') : utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'column');
 				break;
 			} case 3: {
 				// 2 containers on top, one on the bottom
-				// TODO: support portrait and landscape view. Right now it's landscape view only
-				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), containers[2], 800)
+				mainContainer = this.resizeable ? utils.createSplitView(view, utils.createSplitView(view, containers[0], containers[1], 'horizontal'), containers[2], 'vertical')
 					: utils.createTwoComponentFlexContainer(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), containers[2], 'column');
 				break;
 			} case 4: {
 				// 2 containers on top, 2 on the bottom
-				mainContainer = this.resizeable ? utils.createVerticalSplitView(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 800)
+				mainContainer = this.resizeable ? utils.createSplitView(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 'vertical')
 					: utils.createTwoComponentFlexContainer(view, utils.createTwoComponentFlexContainer(view, containers[0], containers[1], 'row'), utils.createTwoComponentFlexContainer(view, containers[2], containers[3], 'row'), 'column');
 				break;
 			} default: {
