@@ -14,14 +14,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
     vscode.window.showInformationMessage("Activated Extension");
 
-    let choiceMessage = localize('database-documentation.choiceMessageInstall', 'Do you want to install a mermaid rendering extension? This will allow you to see the rendered mermaid diagrams within generated documentation.');
     const yes = localize('database-documentation.yes', 'Yes');
     const no = localize('database-documentation.no', 'No');
-    let choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+    const extensionInstalled = (vscode.extensions.all).filter(extension => extension.id === 'bierner.markdown-mermaid').length;
 
-    if (choice === yes) {
-        await vscode.commands.executeCommand('workbench.extensions.installExtension', vscode.Uri.file(context.asAbsolutePath('markdown-mermaid')));
-        vscode.window.showInformationMessage(localize('database-documentation.doneInstallingMermaid', 'Done Installing Mermaid extension!'));
+    if (!extensionInstalled) {
+        const choiceMessage = localize('database-documentation.choiceMessageInstall', 'Do you want to install a mermaid rendering extension? This will allow you to see the rendered mermaid diagrams within generated documentation.');
+        const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+
+        if (choice === yes) {
+            await vscode.commands.executeCommand('workbench.extensions.installExtension', vscode.Uri.file(context.asAbsolutePath('markdown-mermaid')));
+            vscode.window.showInformationMessage(localize('database-documentation.doneInstallingMermaid', 'Done Installing Mermaid extension!'));
+        }
     }
 
     // The command has been defined in the package.json file
@@ -71,8 +75,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register the event listener for user saving the documentation locally
         vscode.workspace.onDidSaveTextDocument(async (savedDocument: vscode.TextDocument) => {
             if (savedDocument === document) {
-                choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
-                choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+                const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+                const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
                 if (choice === yes) {
                     await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
@@ -111,8 +115,8 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register the event listener for user saving the documentation locally
         vscode.workspace.onDidSaveTextDocument(async (savedDocument: vscode.TextDocument) => {
             if (savedDocument === document) {
-                choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
-                choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
+                const choiceMessage = localize('database-documentation.choiceMessage', 'Do you want to save the documentation to the database as well? This will allow others to access it, and allow us to integrate it with IntelliSense and Tooltips');
+                const choice = await vscode.window.showInformationMessage(choiceMessage, yes, no);
 
                 if (choice === yes) {
                     await vscode.commands.executeCommand('database-documentation.saveDocumentationToDatabase');
@@ -167,18 +171,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
         const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
         const objectNameQuery = `
-            IF EXISTS (
-                SELECT 1
-                FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_SCHEMA = 'db_documentation'
-                AND TABLE_NAME = 'DatabaseDocumentation'
-            )
-            BEGIN
-                SELECT [ObjectName], [Markdown]
-                FROM [${validate(databaseName)}].[db_documentation].[DatabaseDocumentation]
-                WHERE [ObjectName] = '${validate(word)}';
-            END
-            ELSE
+			IF EXISTS (
+				SELECT 1
+				FROM [${validate(databaseName)}].INFORMATION_SCHEMA.TABLES
+				WHERE TABLE_SCHEMA = 'db_documentation'
+				AND TABLE_NAME = 'DatabaseDocumentation'
+			)
+			BEGIN
+				SELECT [ObjectName], [Markdown]
+				FROM [${validate(databaseName)}].[db_documentation].[DatabaseDocumentation]
+				WHERE [ObjectName] = '${validate(word)}'
+			END
+			ELSE
 			BEGIN
 				SELECT NULL AS [ObjectName], NULL AS [Markdown]
 				WHERE 1 = 0; -- This condition will always be false, resulting in an empty result set
