@@ -12,8 +12,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const localize = nls.loadMessageBundle();
 
-    vscode.window.showInformationMessage("Activated Extension");
-
     const yes = localize('database-documentation.yes', 'Yes');
     const no = localize('database-documentation.no', 'No');
     const extensionInstalled = (vscode.extensions.all).filter(extension => extension.id === 'bierner.markdown-mermaid').length;

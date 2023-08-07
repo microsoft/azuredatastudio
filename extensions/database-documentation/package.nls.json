@@ -2,5 +2,5 @@
 	"displayName": "Database Documentation and Diagrams",
 	"description": "Generate Documentation and Diagrams for Databases, Schemas, and Tables for Microsoft SQL Server and SQL Database",
 	"database-documentation.start": "View Documentation",
-	"database-documentation.setMaxObjects": "Database Documentation: Set max Number of tables to document"
+	"database-documentation.setMaxObjects": "Database Documentation: Set Max Number of Objects to Document"
 }

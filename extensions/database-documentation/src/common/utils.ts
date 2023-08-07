@@ -69,7 +69,6 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 	}
 
 	// Change threshold
-	vscode.window.showInformationMessage("Max Objects: " + (await getMaxObjects()).toString() + " Num Objects:" + (tables.length + views.length).toString());
 	if (context.nodeInfo.nodeType === 'Database' && (tables.length + views.length) > (await getMaxObjects())) {
 		let databaseSummary = documentation;
 		databaseSummary += await getDatabaseSummary(context, connectionUri);
