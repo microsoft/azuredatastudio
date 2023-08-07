@@ -654,30 +654,26 @@ export async function getHoverContent(document: vscode.TextDocument, position: v
 	const connectionUri = await azdata.connection.getUriForConnection(connection.connectionId);
 
 	try {
-		const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(connection.databaseName)}].[db_documentation].[DatabaseDocumentation]`;
-		const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+		const range = document.getWordRangeAtPosition(position);
+		const word = document.getText(range);
 
-		if (objectNamesResult.rowCount) {
-			const objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
-			const range = document.getWordRangeAtPosition(position);
-			const word = document.getText(range);
+		const identificationService: mssql.IIdentificationService = await getIdentificationService();
+		const objectName: string = await identificationService.identify(document.uri.toString(), position, word);
 
-			const identificationService: mssql.IIdentificationService = await getIdentificationService();
-			const objectName: string = await identificationService.identify(document.uri.toString(), position, word);
-			vscode.window.showInformationMessage(objectName);
+		vscode.window.showInformationMessage(objectName);
 
-			if (objectNames.has(objectName)) {
-				const matchingRow = objectNamesResult.rows.find(row => row[0].displayValue === objectName);
-				const regex = /(?<=```  \n\n)[\s\S]*/g;
+		const objectNameQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(connection.databaseName)}].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(objectName)}'`;
+		const objectNameResult = await queryProvider.runQueryAndReturn(connectionUri, objectNameQuery);
 
-				let match = matchingRow[1].displayValue.match(regex);
-				if (match) {
-					return new vscode.Hover(new vscode.MarkdownString(match[0]));
-				}
+		if (objectNameResult.rowCount) {
+			const regex = /(?<=```  \n\n)[\s\S]*/g;
 
-				return new vscode.Hover(new vscode.MarkdownString(matchingRow[1].displayValue));
+			let match = objectNameResult.rows[0][1].displayValue.match(regex);
+			if (match) {
+				return new vscode.Hover(new vscode.MarkdownString(match[0]));
 			}
-			return null;
+
+			return new vscode.Hover(new vscode.MarkdownString(objectNameResult.rows[0][1].displayValue));
 		}
 		else {
 			return null;

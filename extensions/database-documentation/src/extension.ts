@@ -150,7 +150,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     vscode.window.onDidChangeTextEditorSelection(async (event: vscode.TextEditorSelectionChangeEvent) => {
         if (event.textEditor.document.languageId !== 'markdown') {
-            return; // Not a markdown document
+            return;
         }
         const selectedPosition = event.textEditor.selection.start;
         const wordRange = event.textEditor.document.getWordRangeAtPosition(selectedPosition, /(?<=\[).*(?=\])/);
@@ -166,21 +166,16 @@ export async function activate(context: vscode.ExtensionContext) {
         const connectionUri = getContextVariables()[1];
 
         const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>("MSSQL", azdata.DataProviderType.QueryProvider);
-        const objectNamesQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(databaseName)}].[db_documentation].[DatabaseDocumentation]`;
-        const objectNamesResult = await queryProvider.runQueryAndReturn(connectionUri, objectNamesQuery);
+        const objectNameQuery = `SELECT [ObjectName], [Markdown] FROM [${validate(databaseName)}].[db_documentation].[DatabaseDocumentation] WHERE [ObjectName] = '${validate(word)}'`;
+        const objectNameResult = await queryProvider.runQueryAndReturn(connectionUri, objectNameQuery);
 
-        if (objectNamesResult.rowCount) {
-            const objectNames = new Set(objectNamesResult.rows.map(row => row[0].displayValue));
-            if (objectNames.has(word)) {
-                const matchingRow = objectNamesResult.rows.find(row => row[0].displayValue === word);
+        if (objectNameResult.rowCount) {
+            const newPosition = new vscode.Position(0, 0);
+            const newSelection = new vscode.Selection(newPosition, newPosition);
+            event.textEditor.selection = newSelection;
 
-                const newPosition = new vscode.Position(0, 0);
-                const newSelection = new vscode.Selection(newPosition, newPosition);
-                event.textEditor.selection = newSelection;
-
-                const document = await vscode.workspace.openTextDocument({ language: "markdown", content: matchingRow[1].displayValue });
-                await vscode.window.showTextDocument(document);
-            }
+            const document = await vscode.workspace.openTextDocument({ language: "markdown", content: objectNameResult.rows[0][1].displayValue });
+            await vscode.window.showTextDocument(document);
         }
     });
 }
