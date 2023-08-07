@@ -323,6 +323,15 @@ export const InPercentAutogrowthText = localize('objectManagement.databaseProper
 export const InMegabytesAutogrowthText = localize('objectManagement.databaseProperties.inMegabytesAutogrowthText', "In Megabytes");
 export const LimitedToMBFileSizeText = localize('objectManagement.databaseProperties.limitedToMBFileSizeText', "Limited to (MB)");
 export const UnlimitedFileSizeText = localize('objectManagement.databaseProperties.unlimitedFileSizeText', "Unlimited");
+export const PercentText = localize('objectManagement.databaseProperties.percentText', "Percent");
+export const MBText = localize('objectManagement.databaseProperties.mb', "MB");
+export const NoneText = localize('objectManagement.databaseProperties.noneText', "None");
+export function AutoGrowthValueStringGenerator(fileGrowth: string, isFleGrowthInPercent: boolean, maxFileSize: string, isMaxFileSizeLimited: boolean): string {
+	const limitation = isMaxFileSizeLimited
+		? localize('objectManagement.databaseProperties.autoGrowthValueConversion.limitation', "Limited to {0} MB", maxFileSize)
+		: localize('objectManagement.databaseProperties.autoGrowthValueConversion.unlimited', "Unlimited");
+	return localize('objectManagement.databaseProperties.autoGrowthValueConversion', "By {0} {1}, {2}", fileGrowth, isFleGrowthInPercent ? PercentText : MBText, limitation);
+}
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {

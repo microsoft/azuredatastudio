@@ -9,11 +9,11 @@ import { DefaultInputWidth, DefaultTableWidth, DefaultMinTableRowCount, DefaultM
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { CreateDatabaseDocUrl, DatabaseGeneralPropertiesDocUrl, DatabaseFilesPropertiesDocUrl, DatabaseOptionsPropertiesDocUrl, DatabaseScopedConfigurationPropertiesDocUrl } from '../constants';
-import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
+import { Database, DatabaseFile, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '../interfaces';
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
-import { DatabaseFileDialog, DatabaseFileDialogResult } from './databaseFileDialog';
+import { DatabaseFileDialog } from './databaseFileDialog';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -403,21 +403,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				type: azdata.ColumnType.text,
 				value: localizedConstants.FileNameText,
 			}],
-			data: this.viewInfo.files?.map(file => {
-				return [file.name,
-				file.type,
-				file.fileGroup,
-				file.sizeInMb,
-				file.autoGrowthAndMaxSizeInMb,
-				file.path,
-				file.fileNameWithExtension]
+			data: this.objectInfo.files?.map(file => {
+				return this.convertToDataView(file);
+
 			}),
-			height: getTableHeight(this.viewInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
+			height: getTableHeight(this.objectInfo.files?.length, DefaultMinTableRowCount, DefaultMaxTableRowCount),
 			width: DefaultTableWidth,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit,
 			CSSStyles: {
-				// 'table-layout': 'fixed',
-				// 'overflow': 'scroll',
 				'margin-left': '10px'
 			}
 		}).component();
@@ -435,21 +428,30 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		return databaseFilesContainer;
 	}
 
+	private convertToDataView(file: DatabaseFile): any[] {
+		return [file.name,
+		file.type,
+		file.fileGroup,
+		file.sizeInMb,
+		file.autoGrowthAndMaxSizeInMb,
+		file.path,
+		file.fileNameWithExtension];
+	}
+
 	private async onAddDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
 		// Open file dialog to create file
 		const result = await this.openDatabaseFileDialog();
-		if (result) {
-			this.objectInfo.files?.push(...result.newDatabaseFile);
+		if (!isUndefinedOrNull(result)) {
+			this.objectInfo.files?.push(result);
+			await this.databaseFilesTable.appendData(this.convertToDataView(result));
 		}
 	}
 
 	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
 	}
 
-	private async openDatabaseFileDialog(): Promise<DatabaseFileDialogResult> {
-		const dialog = new DatabaseFileDialog(this.objectManagementService, {
-			objectTypes: this.viewInfo.files,
-			contextId: this.contextId,
+	private async openDatabaseFileDialog(): Promise<DatabaseFile> {
+		const dialog = new DatabaseFileDialog({
 			title: localizedConstants.AddDatabaseFilesText,
 		});
 		await dialog.open();

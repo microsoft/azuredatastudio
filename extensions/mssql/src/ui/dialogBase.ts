@@ -344,11 +344,12 @@ export abstract class DialogBase<DialogResult> {
 		}).withItems(items, { flex: '0 0 auto' }).component();
 	}
 
-	protected createRadioButton(label: string, groupName: string, checked: boolean, handler: (checked: boolean) => Promise<void>): azdata.RadioButtonComponent {
+	protected createRadioButton(label: string, groupName: string, checked: boolean, handler: (checked: boolean) => Promise<void>, enabled: boolean = true): azdata.RadioButtonComponent {
 		const radio = this.modelView.modelBuilder.radioButton().withProps({
 			label: label,
 			name: groupName,
-			checked: checked
+			checked: checked,
+			enabled: enabled
 		}).component();
 		this.disposables.push(radio.onDidChangeCheckedState(async checked => {
 			await handler(checked);

@@ -466,7 +466,6 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	compatibilityLevels?: OptionsCollection;
 	containmentTypes?: OptionsCollection;
 	recoveryModels?: OptionsCollection;
-	files?: DatabaseFile[];
 	azureBackupRedundancyLevels?: string[];
 	azureServiceLevelObjectives?: AzureEditionDetails[];
 	azureEditions?: string[];
@@ -533,5 +532,5 @@ export interface DatabaseFile {
 	fileGroup: string;
 	fileNameWithExtension: string;
 	sizeInMb: number;
-	autoGrowthAndMaxSizeInMb: number;
+	autoGrowthAndMaxSizeInMb: string;
 }
