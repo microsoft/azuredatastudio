@@ -192,7 +192,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
-		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: connectTypeLabel });
+		this._providerTypeSelectBox = this._register(new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: connectTypeLabel }));
 		// Recent connection tab
 		const recentConnectionTab = DOM.$('.connection-recent-tab');
 		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
@@ -202,7 +202,7 @@ export class ConnectionDialogWidget extends Modal {
 		this.createRecentConnections();
 		DOM.hide(this._recentConnection);
 
-		this._panel = new TabbedPanel(this._body);
+		this._panel = this._register(new TabbedPanel(this._body));
 		this._panel.element.style.margin = '0px 10px';
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._recentConnectionTabId = this._panel.pushTab({

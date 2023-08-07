@@ -45,11 +45,12 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			...defaultEditableDropdownStyles
 		};
 		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, dropdownOptions);
+		this._register(this._selectbox);
 		this._selectbox.values = this.options;
 		this._selectbox.value = this.selectedOption;
 		this._selectbox.fireOnTextChange = true;
 
-		this._selectbox.onValueChange(e => {
+		this._register(this._selectbox.onValueChange(e => {
 			if (this.onlyEmitOnChange) {
 				if (this._previousVal !== e) {
 					this.onDidSelect.emit(e);
@@ -58,7 +59,7 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			} else {
 				this.onDidSelect.emit(e);
 			}
-		});
+		}));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {

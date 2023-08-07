@@ -196,7 +196,7 @@ export class ServerGroupDialog extends Modal {
 				name: 'server-group-color',
 				color: color
 			});
-
+			this._register(colorBox);
 			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
