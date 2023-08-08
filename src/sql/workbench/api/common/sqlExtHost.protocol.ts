@@ -853,6 +853,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 	$focus(handle: number, componentId: string): Thenable<void>;
 	$doAction(handle: number, componentId: string, action: string, ...args: any[]): Thenable<void>;
+	$destroy(handle: number, componentId: string): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

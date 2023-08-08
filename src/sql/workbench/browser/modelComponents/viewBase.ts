@@ -226,4 +226,12 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 			component.doAction(action, ...args);
 		});
 	}
+
+	public disposeComponent(componentId: string): void {
+		this.logService.debug(`Queuing action to destroy component ${componentId}`);
+		return this.queueAction(componentId, (component) => {
+			this.logService.debug(`Destroying component ${componentId}`);
+			component.destroy();
+		});
+	}
 }

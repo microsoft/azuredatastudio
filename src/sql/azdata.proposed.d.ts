@@ -136,6 +136,13 @@ declare module 'azdata' {
 		loadingCompletedText?: string;
 	}
 
+	export interface Component extends ComponentProperties {
+		/**
+		 * Dispose the component and clean up its resources like listeners and do
+		 */
+		destroy(): void;
+	}
+
 	/**
 	 * The column information of a data set.
 	 */

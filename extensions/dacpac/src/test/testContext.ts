@@ -82,6 +82,7 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
+		destroy: undefined!,
 		focus: () => Promise.resolve()
 	};
 	let button: azdata.ButtonComponent = Object.assign({}, componentBase, {

@@ -20,6 +20,7 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { ILogService } from 'vs/platform/log/common/log';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
@@ -594,7 +595,7 @@ class InternalItemConfig {
 	}
 }
 
-class ComponentWrapper implements azdata.Component {
+class ComponentWrapper extends Disposable implements azdata.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
@@ -613,8 +614,14 @@ class ComponentWrapper implements azdata.Component {
 		protected _id: string,
 		protected _logService: ILogService
 	) {
+		super();
 		this.properties = {};
 		this.itemConfigs = [];
+	}
+
+	destroy(): void {
+		this._proxy.$destroy(this._handle, this._id);
+		super.dispose();
 	}
 
 	public get id(): string {

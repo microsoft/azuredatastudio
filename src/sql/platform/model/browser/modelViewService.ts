@@ -51,4 +51,5 @@ export interface IModelView extends IView {
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
 	doAction(componentId: string, action: string, ...args: any[]): void;
+	destroy(componentId: string): void;
 }

@@ -316,6 +316,16 @@ export class TestKernel implements azdata.nb.IKernel {
 
 //#region test modelView components
 class TestComponentBase implements azdata.Component {
+	height?: string | number;
+	width?: string | number;
+	position?: azdata.PositionType;
+	enabled?: boolean;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
 	id: string = '';
 	updateProperties(properties: { [key: string]: any; }): Thenable<void> {
 		Object.assign(this, properties);
@@ -334,6 +344,9 @@ class TestComponentBase implements azdata.Component {
 	}
 	focus(): Thenable<void> {
 		return Promise.resolve();
+	}
+	destroy(): void {
+		throw new Error('Method not implemented.');
 	}
 }
 

@@ -127,7 +127,8 @@ describe('Manage Package Dialog', () => {
 			onValidityChanged: undefined!,
 			valid: true,
 			validate: undefined!,
-			focus: undefined!
+			focus: undefined!,
+			destroy: undefined!
 		};
 		let button: azdata.ButtonComponent = Object.assign({}, componentBase, {
 			onDidClick: onClick.event

@@ -271,6 +271,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
 	public override setProperties(properties: { [key: string]: any; }): void {
+		this.destroy();
+		this.baseInit();
 		let castProperties = properties as azdata.DeclarativeTableProperties;
 		const basicData: any[][] = castProperties.data ?? [];
 		const complexData: azdata.DeclarativeTableCellValue[][] = castProperties.dataValues ?? [];

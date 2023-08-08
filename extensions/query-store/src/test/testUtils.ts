@@ -19,7 +19,8 @@ export function createViewContext(): TestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: undefined!
+		focus: undefined!,
+		destroy: undefined!,
 	};
 
 	const components: azdata.Component[] = [];

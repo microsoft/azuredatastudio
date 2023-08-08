@@ -221,6 +221,15 @@ export class MockDataSourceService implements DataSourceWizardService {
 }
 
 export class MockUIComponent implements azdata.Component {
+	height?: string | number;
+	width?: string | number;
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
 	id: string;
 	enabled: boolean;
 	onValidityChanged: vscode.Event<boolean>;
@@ -242,9 +251,20 @@ export class MockUIComponent implements azdata.Component {
 	focus(): Thenable<void> {
 		return Promise.resolve();
 	}
+	destroy(): void {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class MockInputBoxComponent extends MockUIComponent implements azdata.InputBoxComponent {
+	display?: azdata.DisplayType;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	validationErrorMessage?: string;
+	readOnly?: boolean;
+	title?: string;
+	maxLength?: number;
 	onEnterKeyPressed: vscode.Event<string>;
 	value?: string;
 	ariaLabel?: string;
@@ -330,6 +350,9 @@ export class MockDeclarativeTableComponent extends MockUIComponent implements az
 	setDataValues(v: azdata.DeclarativeTableCellValue[][]): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
+	destroy(): void {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class MockTreeComponent extends MockUIComponent implements azdata.TreeComponent<any> {
@@ -406,6 +429,7 @@ export class MockToolbarContainer extends MockContainer<any, any> implements azd
 }
 
 export class MockDivContainer extends MockContainer<azdata.DivLayout, azdata.DivItemLayout> implements azdata.DivContainer {
+	ariaLive?: azdata.AriaLiveValue;
 	setItemLayout(component: azdata.Component, layout: azdata.DivItemLayout): void {
 		throw new Error('Method not implemented.');
 	}

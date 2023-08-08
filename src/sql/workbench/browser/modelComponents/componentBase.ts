@@ -5,7 +5,7 @@
 import 'vs/css!./media/flexContainer';
 
 import {
-	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, QueryList, AfterViewInit
+	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, QueryList, AfterViewInit, ViewChild, ViewContainerRef
 } from '@angular/core';
 
 import * as types from 'vs/base/common/types';
@@ -38,6 +38,8 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		protected logService: ILogService) {
 		super();
 	}
+
+	@ViewChild('ref') vcRef: ViewContainerRef;
 
 	/// IComponent implementation
 
@@ -277,6 +279,12 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 
 		return x;
 	}
+
+	public destroy(): void {
+		this.baseDestroy();
+		super.dispose();
+		this.getHtml().remove();
+	}
 }
 
 export abstract class ContainerBase<T, TPropertyBag extends azdata.ContainerProperties = azdata.ContainerProperties> extends ComponentBase<TPropertyBag> {
@@ -402,5 +410,9 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ContainerProp
 
 	public set ariaLive(newValue: string | undefined) {
 		this.setPropertyFromUI<string>((props, value) => props.ariaLive = value, newValue);
+	}
+
+	public override destroy(): void {
+		this.baseDestroy();
 	}
 }

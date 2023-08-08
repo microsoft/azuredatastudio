@@ -114,6 +114,7 @@ export interface IComponent extends IDisposable {
 	refreshDataProvider(item: any): void;
 	focus(): void;
 	doAction(action: string, ...args: any[]): void;
+	destroy(): void;
 }
 
 export enum ModelComponentTypes {
