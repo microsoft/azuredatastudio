@@ -234,7 +234,7 @@ export class ChartView extends Disposable implements IPanelView {
 			if (batch) {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
-					this._queryRunner.getQueryRows(0, Math.min(getChartMaxRowCount(this._configurationService), summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
+					this._queryRunner.getQueryRowsPaged(0, Math.min(getChartMaxRowCount(this._configurationService), summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
 						let rows = d.rows;
 						let columns = summary.columnInfo.map(c => c.columnName);
 						this.setData(rows, columns);
