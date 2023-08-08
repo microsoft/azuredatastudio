@@ -81,7 +81,8 @@ export function createViewContext(): ViewTestContext {
 		onValidityChanged: undefined!,
 		valid: true,
 		validate: undefined!,
-		focus: () => Promise.resolve()
+		focus: () => Promise.resolve(),
+		dispose() { }
 	};
 
 	let container = {

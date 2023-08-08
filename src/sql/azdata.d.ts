@@ -3113,7 +3113,7 @@ declare module 'azdata' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component extends ComponentProperties, vscode.Disposable {
+	export interface Component extends ComponentProperties {
 		readonly id: string;
 
 		/**

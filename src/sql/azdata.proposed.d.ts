@@ -661,6 +661,8 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
+	export interface Component extends vscode.Disposable { }
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
