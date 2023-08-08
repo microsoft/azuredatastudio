@@ -737,6 +737,7 @@ class ComponentWrapper extends Disposable implements azdata.Component {
 				this._logService.warn(`Trying to add duplicate component ${item.id} to container ${this.id}`);
 				return false;
 			}
+			this._register(item);
 			return true;
 		});
 		if (items.length === 0) {
@@ -777,6 +778,7 @@ class ComponentWrapper extends Disposable implements azdata.Component {
 			this._logService.warn(`Trying to add duplicate component ${item.id} to container ${this.id}`);
 			return;
 		}
+		this._register(item);
 		const config = this.createAndAddItemConfig(item, itemLayout, index);
 		this._proxy.$addToContainer(this._handle, this.id, [{ itemConfig: config.toIItemConfig(), index }]).then(undefined, (err) => this.handleError(err));
 	}
@@ -792,6 +794,7 @@ class ComponentWrapper extends Disposable implements azdata.Component {
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
+		this._register(itemImpl);
 		const config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);

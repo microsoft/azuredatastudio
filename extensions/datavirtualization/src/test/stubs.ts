@@ -115,7 +115,7 @@ export class MockWizardPage implements azdata.window.WizardPage {
 	modelView: azdata.ModelView;
 	valid: boolean;
 	onValidityChanged: vscode.Event<boolean>;
-
+	dispose() { }
 	registerContent(handler: (view: azdata.ModelView) => void): void {
 		throw new Error('Method not implemented.');
 	}
@@ -221,6 +221,18 @@ export class MockDataSourceService implements DataSourceWizardService {
 }
 
 export class MockUIComponent implements azdata.Component {
+	height?: string | number;
+	width?: string | number;
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	id: string;
 	enabled: boolean;
 	onValidityChanged: vscode.Event<boolean>;
@@ -245,6 +257,17 @@ export class MockUIComponent implements azdata.Component {
 }
 
 export class MockInputBoxComponent extends MockUIComponent implements azdata.InputBoxComponent {
+	display?: azdata.DisplayType;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
+	validationErrorMessage?: string;
+	readOnly?: boolean;
+	title?: string;
+	maxLength?: number;
 	onEnterKeyPressed: vscode.Event<string>;
 	value?: string;
 	ariaLabel?: string;
@@ -266,6 +289,25 @@ export class MockInputBoxComponent extends MockUIComponent implements azdata.Inp
 }
 
 export class MockDropdownComponent extends MockUIComponent implements azdata.DropDownComponent {
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
+	fireOnTextChange?: boolean;
+	required?: boolean;
+	placeholder?: string;
+	validationErrorMessages?: string[];
+	strictSelection?: boolean;
+	loading?: boolean;
+	showText?: boolean;
+	loadingText?: string;
+	loadingCompletedText?: string;
 	onValueChanged: vscode.Event<any>;
 	value: string | azdata.CategoryValue;
 	values: string[] | azdata.CategoryValue[];
@@ -275,6 +317,9 @@ export class MockDropdownComponent extends MockUIComponent implements azdata.Dro
 }
 
 export class MockTableComponent extends MockUIComponent implements azdata.TableComponent {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	display?: azdata.DisplayType;
 	ariaLabel?: string;
 	ariaSelected?: boolean;
@@ -307,6 +352,9 @@ export class MockTableComponent extends MockUIComponent implements azdata.TableC
 }
 
 export class MockDeclarativeTableComponent extends MockUIComponent implements azdata.DeclarativeTableComponent {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	enableRowSelection?: boolean;
 	selectedRow?: number;
 	onRowSelected: vscode.Event<azdata.DeclarativeTableRowSelectedEvent>;
@@ -333,6 +381,16 @@ export class MockDeclarativeTableComponent extends MockUIComponent implements az
 }
 
 export class MockTreeComponent extends MockUIComponent implements azdata.TreeComponent<any> {
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	withCheckbox: boolean;
 	height?: number | string;
 	width?: number | string;
@@ -349,6 +407,25 @@ export class MockTreeComponentView extends vscode.Disposable implements azdata.T
 }
 
 export class MockTextComponent extends MockUIComponent implements azdata.TextComponent {
+	height?: string | number;
+	width?: string | number;
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
+	links?: azdata.LinkArea[];
+	description?: string;
+	requiredIndicator?: boolean;
+	headingLevel?: azdata.HeadingLevel;
+	textType?: azdata.TextType;
+	ariaLive?: azdata.AriaLiveValue;
+	title?: string;
 	value: string;
 	id: string;
 	enabled: boolean;
@@ -358,6 +435,9 @@ export class MockTextComponent extends MockUIComponent implements azdata.TextCom
 }
 
 export class MockContainer<TLayout, TItemLayout> extends MockUIComponent implements azdata.Container<TLayout, TItemLayout> {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	setItemLayout(component: azdata.Component, layout: TItemLayout): void {
 		throw new Error('Method not implemented.');
 	}
@@ -391,6 +471,9 @@ export class MockContainer<TLayout, TItemLayout> extends MockUIComponent impleme
 	}
 }
 export class MockToolbarContainer extends MockContainer<any, any> implements azdata.ToolbarContainer {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	setItemLayout(component: azdata.Component, layout: any): void {
 		throw new Error('Method not implemented.');
 	}
@@ -406,6 +489,10 @@ export class MockToolbarContainer extends MockContainer<any, any> implements azd
 }
 
 export class MockDivContainer extends MockContainer<azdata.DivLayout, azdata.DivItemLayout> implements azdata.DivContainer {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
+	ariaLive?: azdata.AriaLiveValue;
 	setItemLayout(component: azdata.Component, layout: azdata.DivItemLayout): void {
 		throw new Error('Method not implemented.');
 	}
@@ -425,6 +512,9 @@ export class MockDivContainer extends MockContainer<azdata.DivLayout, azdata.Div
 }
 
 export class MockFlexContainer extends MockContainer<azdata.FlexLayout, azdata.FlexItemLayout> implements azdata.FlexContainer {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	setItemLayout(component: azdata.Component, layout: azdata.FlexItemLayout): void {
 		throw new Error('Method not implemented.');
 	}
@@ -440,6 +530,9 @@ export class MockFlexContainer extends MockContainer<azdata.FlexLayout, azdata.F
 }
 
 export class MockFormContainer extends MockContainer<azdata.FormLayout, azdata.FormItemLayout> implements azdata.FormContainer {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	setItemLayout(component: azdata.Component, layout: azdata.FormItemLayout): void {
 		throw new Error('Method not implemented.');
 	}
@@ -455,6 +548,21 @@ export class MockFormContainer extends MockContainer<azdata.FormLayout, azdata.F
 }
 
 export class MockLoadingComponent extends MockUIComponent implements azdata.LoadingComponent {
+	height?: string | number;
+	width?: string | number;
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
+	showText?: boolean;
+	loadingText?: string;
+	loadingCompletedText?: string;
 	loading: boolean;
 	component: azdata.Component;
 }
@@ -588,6 +696,9 @@ export class MockModelBuilder implements azdata.ModelBuilder {
 }
 
 export class MockModelViewEditor implements azdata.workspace.ModelViewEditor {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	contentHandler: (view: azdata.ModelView) => void;
 	saveHandler: () => Thenable<boolean>;
 	openEditor(position?: vscode.ViewColumn): Thenable<void> {
@@ -606,6 +717,9 @@ export class MockModelViewEditor implements azdata.workspace.ModelViewEditor {
 }
 
 export class MockModelView implements azdata.ModelView {
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	private onClosedEmitter = new vscode.EventEmitter<any>();
 	public get onClosed(): vscode.Event<any> {
 		return this.onClosedEmitter.event;
@@ -634,6 +748,20 @@ export class MockModelView implements azdata.ModelView {
 }
 
 export class MockButtonComponent extends MockUIComponent implements azdata.ButtonComponent {
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	CSSStyles?: azdata.CssStyles;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
+	buttonType?: azdata.ButtonType;
+	description?: string;
+	secondary?: boolean;
+	fileType?: string;
 	label: string;
 	title: string;
 	iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; };
@@ -650,6 +778,17 @@ export class MockButtonComponent extends MockUIComponent implements azdata.Butto
 }
 
 export class MockEditorComponent extends MockUIComponent implements azdata.EditorComponent {
+	height?: string | number;
+	width?: string | number;
+	position?: azdata.PositionType;
+	display?: azdata.DisplayType;
+	ariaLabel?: string;
+	ariaRole?: string;
+	ariaSelected?: boolean;
+	ariaHidden?: boolean;
+	dispose() {
+		throw new Error('Method not implemented.');
+	}
 	content: string;
 	languageMode: string;
 	editorUri: string;

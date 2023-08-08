@@ -15,6 +15,7 @@ import { ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostMod
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, IDialogProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -22,7 +23,7 @@ const GENERATE_SCRIPT_LABEL = nls.localize('generateScriptLabel', "Generate scri
 const NEXT_LABEL = nls.localize('dialogNextLabel', "Next");
 const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', "Previous");
 
-class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
+class ModelViewPanelImpl extends Disposable implements azdata.window.ModelViewPanel {
 	private _modelView: azdata.ModelView;
 	public handle: number;
 	protected _modelViewId: string;
@@ -33,6 +34,7 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 		protected _extHostModelViewDialog: ExtHostModelViewDialog,
 		protected _extHostModelView: ExtHostModelViewShape,
 		protected _extension: IExtensionDescription) {
+		super();
 		this._onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
 		this._onValidityChanged(valid => this._valid = valid);
 	}
@@ -43,6 +45,7 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
+				this._register(this._modelView);
 				handler(modelView);
 			}, this._extension);
 		}

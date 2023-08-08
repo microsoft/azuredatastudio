@@ -68,6 +68,7 @@ export function createViewContext(): TestContext {
 		onValidityChanged: undefined!,
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
+		dispose() { },
 		modelBuilder: {
 			listView: undefined!,
 			radioCardGroup: undefined!,

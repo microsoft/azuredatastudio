@@ -81,6 +81,11 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		return this._el.nativeElement;
 	}
 
+	public override dispose(): void {
+		super.dispose();
+		this.getHtml().remove();
+	}
+
 	public setDataProvider(handle: number, componentId: string, context: any): void {
 	}
 
