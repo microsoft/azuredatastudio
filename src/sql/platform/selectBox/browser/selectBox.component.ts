@@ -39,9 +39,9 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 	}
 
 	ngOnInit(): void {
-		this._selectbox = new sqlSelectBox(this.options, this.selectedOption, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.ariaLabel });
+		this._selectbox = this._register(new sqlSelectBox(this.options, this.selectedOption, defaultSelectBoxStyles, this.contextViewService, undefined, { ariaLabel: this.ariaLabel }));
 		this._selectbox.render(this._el.nativeElement);
-		this._selectbox.onDidSelect(e => {
+		this._register(this._selectbox.onDidSelect(e => {
 			if (this.onlyEmitOnChange) {
 				if (this._previousVal !== e.selected) {
 					this.onDidSelect.emit(e);
@@ -50,7 +50,7 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 			} else {
 				this.onDidSelect.emit(e);
 			}
-		});
+		}));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {

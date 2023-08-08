@@ -59,7 +59,7 @@ export class DialogPane extends Disposable {
 			let modelViewId = typeof this._content === 'string' ? this._content : this._content[0].content;
 			this.initializeModelViewContainer(this._body, modelViewId, undefined, this.setInitialFocus);
 		} else {
-			this._tabbedPanel = new TabbedPanel(this._body);
+			this._tabbedPanel = this._register(new TabbedPanel(this._body));
 			attachTabbedPanelStyler(this._tabbedPanel, this._themeService);
 			this._content.forEach((tab, tabIndex) => {
 				if (this._selectedTabIndex === tabIndex) {

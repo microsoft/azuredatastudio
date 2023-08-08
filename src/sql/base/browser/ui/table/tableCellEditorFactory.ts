@@ -67,15 +67,15 @@ export class TableCellEditorFactory {
 			}
 
 			public init(): void {
-				this._input = new InputBox(this._args.container, self._contextViewProvider, {
+				this._input = this._register(new InputBox(this._args.container, self._contextViewProvider, {
 					type: inputType,
 					inputBoxStyles: defaultInputBoxStyles
-				});
+				}));
 				this._input.element.style.height = '100%';
 				this._input.focus();
-				this._input.onLoseFocus(async () => {
+				this._register(this._input.onLoseFocus(async () => {
 					await this.commitEdit();
-				});
+				}));
 				this._register(this._input);
 				this._input.value = presetValue ?? '';
 			}
@@ -162,19 +162,19 @@ export class TableCellEditorFactory {
 				container.style.width = '100%';
 				if (isEditable) {
 					this._component = new Dropdown(container, self._contextViewProvider, self._options.editableDropdownStyles);
-					this._component.onValueChange(async () => {
+					this._register(this._component.onValueChange(async () => {
 						await this.commitEdit();
-					});
-					this._component.onBlur(async () => {
+					}));
+					this._register(this._component.onBlur(async () => {
 						await this.commitEdit();
-					});
+					}));
 				} else {
 					this._component = new SelectBox([], undefined, self._options.selectBoxStyles, self._contextViewProvider);
 					this._component.render(container);
 					this._component.selectElem.style.height = '100%';
-					this._component.onDidSelect(async () => {
+					this._register(this._component.onDidSelect(async () => {
 						await this.commitEdit();
-					});
+					}));
 				}
 				this._component.focus();
 				this._register(this._component);
