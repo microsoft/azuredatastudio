@@ -58,7 +58,7 @@ suite('Query Runner', () => {
 		const rowResults: ResultSetSubset = { rowCount: 100, rows: range(100).map(r => range(1).map(c => ({ displayValue: `${r}${c}` }))) };
 		const getRowStub = sinon.stub().returns(Promise.resolve(rowResults));
 		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowStub);
-		const resultReturn = await runner.getQueryRows(0, 100, 0, 0);
+		const resultReturn = await runner.getQueryRowsPaged(0, 100, 0, 0);
 		assert(getRowStub.calledWithExactly({ ownerUri: uri, batchIndex: 0, resultSetIndex: 0, rowsStartIndex: 0, rowsCount: 100 }, undefined, undefined));
 		assert.deepStrictEqual(resultReturn, rowResults);
 		// batch complete

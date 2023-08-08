@@ -348,7 +348,7 @@ export default class QueryRunner extends Disposable {
 			if (hasShowPlan && resultSet.rowCount > 0) {
 				this._isQueryPlan = true;
 
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 					if (e.rows) {
 						this._planXml.resolve(e.rows[0][0].displayValue);
 					}
@@ -373,7 +373,7 @@ export default class QueryRunner extends Disposable {
 			let hasShowPlan = !!resultSet.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan) {
 				this._isQueryPlan = true;
-				this.getQueryRows(0, 1, resultSet.batchId, resultSet.id).then(e => {
+				this.getQueryRowsPaged(0, 1, resultSet.batchId, resultSet.id).then(e => {
 
 					if (e.rows) {
 						let planXmlString = e.rows[0][0].displayValue;
@@ -429,7 +429,22 @@ export default class QueryRunner extends Disposable {
 			batchIndex: batchIndex
 		};
 
-		return this.queryManagementService.getQueryRows(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
+		return this.queryManagementService.getQueryRows(rowData);
+	}
+
+	/**
+	 * Get more data rows from the current resultSets from the service layer with paging, fetching row data in batches until all rows are retrieved.
+	 */
+	public getQueryRowsPaged(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
+		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
+			ownerUri: this.uri,
+			resultSetIndex: resultSetIndex,
+			rowsCount: numberOfRows,
+			rowsStartIndex: rowStart,
+			batchIndex: batchIndex
+		};
+
+		return this.queryManagementService.getQueryRowsPaged(rowData, cancellationToken, onProgressCallback).then(r => r, error => {
 			// this._notificationService.notify({
 			// 	severity: Severity.Error,
 			// 	message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
@@ -566,7 +581,7 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	}
 
 	getRowData(rowStart: number, numberOfRows: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
-		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
+		return this.queryRunner.getQueryRowsPaged(rowStart, numberOfRows, this.batchId, this.resultSetId, cancellationToken, onProgressCallback);
 	}
 
 	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
