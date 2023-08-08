@@ -1645,6 +1645,18 @@ export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
 }
 
+export interface DeleteDatabaseRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+	dropConnections: boolean;
+	deleteBackupHistory: boolean;
+	generateScript: boolean;
+}
+
+export namespace DeleteDatabaseRequest {
+	export const type = new RequestType<DeleteDatabaseRequestParams, string, void, void>('objectManagement/deleteDatabase');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------

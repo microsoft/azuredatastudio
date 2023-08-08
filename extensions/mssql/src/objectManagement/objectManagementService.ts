@@ -70,6 +70,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DetachDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, updateStatistics, generateScript };
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
+
+	async deleteDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DeleteDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+		return this.runWithErrorHandling(contracts.DeleteDatabaseRequest.type, params);
+	}
 }
 
 const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
@@ -238,6 +243,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	async detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	deleteDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
 	}
 
