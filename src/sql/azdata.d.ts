@@ -3113,7 +3113,7 @@ declare module 'azdata' {
 		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
-	export interface Component extends ComponentProperties {
+	export interface Component extends ComponentProperties, vscode.Disposable {
 		readonly id: string;
 
 		/**
@@ -3976,7 +3976,7 @@ declare module 'azdata' {
 		enabled?: boolean;
 	}
 
-	export interface DeclarativeTableMenuCellValue {
+	export interface DeclarativeTableMenuCellValue extends vscode.Disposable {
 		/**
 		 * commands for the menu. Use an array for a group and menu separators will be added.
 		 */
