@@ -5,6 +5,24 @@ The Azure Data Studio AI Documentation Generator is an extension designed to aut
 ## How it works
 Within the Azure Data Studio Object Explorer, right click on either a database, schema, table, or view. Choose the "View Documentation" option, and wait for your documentation to be generated!
 
+## Usage
+The entry point for the extension is shown below:
+
+![Right click on database object, and select "View Documentation"](https://github.com/microsoft/azuredatastudio/blob/laurennathan/database-documentation/extensions/database-documentation/images/EntryPoint.png)
+Right click on database object, and select "View Documentation"
+
+![To regenerate documentation, choose the refresh button on the top right of your active editor](https://github.com/microsoft/azuredatastudio/blob/laurennathan/database-documentation/extensions/database-documentation/images/Regenerate.png)
+To regenerate documentation, choose the refresh button on the top right of your active editor
+
+![To save documentation, choose the save button on the top right of your active editor](https://github.com/microsoft/azuredatastudio/blob/laurennathan/database-documentation/extensions/database-documentation/images/Save.png)
+To save documentation, choose the save button on the top right of your active editor
+
+![In the database summary documentation, links to pre-existing documentation are generated. Click them to be taken to the documentation.](https://github.com/microsoft/azuredatastudio/blob/laurennathan/database-documentation/extensions/database-documentation/images/Links.png)
+In the database summary documentation, links to pre-existing documentation are generated. Click them to be taken to the documentation.
+
+![To set a specific number of objects to document in a database before switching over to database summary documentation, use Ctrl + Shift + P and choose Database Documentation: Set Max Number of Objects to Document](https://github.com/microsoft/azuredatastudio/blob/laurennathan/database-documentation/extensions/database-documentation/images/MaxObjects.png)
+To set a specific number of objects to document in a database before switching over to database summary documentation, use Ctrl + Shift + P and choose Database Documentation: Set Max Number of Objects to Document
+
 ## Features
 - Automated Database Documentation: The extension utilizes AI algorithms to automatically generate detailed database documentation, saving significant time and effort.
 - Comprehensive Database Diagrams: The tool creates comprehensive and visually appealing diagrams that represent the structure of the database, including tables, relationships, and fields.
