@@ -7,7 +7,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { DeleteDatabaseDocUrl } from '../constants';
-import { DeleteButtonLabel, DeleteDatabaseDialogTitle, DeleteDropBackupHistory, DeleteDropConnections, DeleteDatabaseOptions } from '../localizedConstants';
+import { DeleteButtonLabel, DeleteDatabaseDialogTitle, DeleteDropBackupHistory, DeleteDropConnections, DeleteDatabaseOptions, NameText, OwnerText, StatusText, DatabaseDetailsLabel } from '../localizedConstants';
 
 export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _dropConnections = false;
@@ -23,6 +23,14 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected async initializeUI(): Promise<void> {
+		let components = [];
+
+		let tableData = [[this.objectInfo.name, this.objectInfo.owner ?? '', this.objectInfo.status ?? '']];
+		let columnNames = [NameText, OwnerText, StatusText];
+		let fileTable = this.createTable(DatabaseDetailsLabel, columnNames, tableData);
+		let tableGroup = this.createGroup(DatabaseDetailsLabel, [fileTable], false);
+		components.push(tableGroup);
+
 		if (!this.viewInfo.isAzureDB && !this.viewInfo.isManagedInstance && !this.viewInfo.isSqlOnDemand) {
 			let connCheckbox = this.createCheckbox(DeleteDropConnections, async checked => {
 				this._dropConnections = checked;
@@ -31,8 +39,9 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, D
 				this._deleteBackupHistory = checked;
 			});
 			let checkboxGroup = this.createGroup(DeleteDatabaseOptions, [connCheckbox, updateCheckbox], false);
-			this.formContainer.addItems([checkboxGroup]);
+			components.push(checkboxGroup);
 		}
+		this.formContainer.addItems(components);
 	}
 
 	protected override get helpUrl(): string {

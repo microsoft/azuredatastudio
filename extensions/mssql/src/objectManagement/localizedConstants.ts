@@ -194,6 +194,7 @@ export const DeleteButtonLabel = localize('objectManagement.deleteButtonLabel', 
 export const DeleteDatabaseOptions = localize('objectManagement.deleteDatabaseOptions', "Delete Database Options");
 export const DeleteDropConnections = localize('objectManagement.deleteDropConnections', "Close existing connections");
 export const DeleteDropBackupHistory = localize('objectManagement.deleteDropBackupHistory', "Delete backup and restore history information for database");
+export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");
