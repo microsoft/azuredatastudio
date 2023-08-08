@@ -53,8 +53,11 @@ export async function generateMarkdown(context: azdata.ObjectExplorerContext, co
 		tables = (await queryProvider.runQueryAndReturn(connectionUri, tableQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 		views = (await queryProvider.runQueryAndReturn(connectionUri, viewQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 	}
-	else {
+	else if (context.nodeInfo.nodeType === 'Table') {
 		tables = [[context.nodeInfo.metadata.name, context.nodeInfo.metadata.schema]];
+	}
+	else {
+		views = [[context.nodeInfo.metadata.name, context.nodeInfo.metadata.schema]];
 	}
 
 	let diagram = '```mermaid\nclassDiagram\n';
@@ -294,7 +297,7 @@ async function getDocumentationText(tableName: string, tableAttributes: [string,
 			return localize("database-documentation.401", "OpenAI request failed because of invalid authentication. Ensure your API Key is current and correct.");
 		}
 		else if (status === "429") {
-			return localize("database-documentation.429", "OpenAI request failed because of rate limiting. Make sure your plan allows at least 15 request per minute.");
+			return localize("database-documentation.429", "OpenAI request failed because of rate limiting. Make sure your plan allows at least 15 requests per minute.");
 		}
 		else if (status === "500") {
 			return localize("database-documentation.500", "OpenAI request failed due to a server error on their side. Try again some other time.");
