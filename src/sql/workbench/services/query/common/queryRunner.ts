@@ -419,6 +419,7 @@ export default class QueryRunner extends Disposable {
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
+	 * @deprecated getQueryRowsPaged should be used instead as it is much more performant
 	 */
 	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number, cancellationToken?: CancellationToken, onProgressCallback?: (availableRows: number) => void): Promise<ResultSetSubset> {
 		let rowData: QueryExecuteSubsetParams = <QueryExecuteSubsetParams>{
