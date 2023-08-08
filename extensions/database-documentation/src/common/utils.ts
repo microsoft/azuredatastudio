@@ -642,19 +642,19 @@ export function convertMarkdownToJSON(context: azdata.ObjectExplorerContext, mar
 }
 
 export function validate(input: string): string {
-	// Escape single quotes by doubling them
-	const escapedQuotes = input.replace(/'/g, "''");
+    // Escape single quotes by doubling them if not already escaped
+    const escapedQuotes = input.replace(/(?<!')'(?!')/g, "''");
 
-	// Escape brackets by doubling them
-	const escapedBrackets = escapedQuotes.replace(/\[/g, '[[').replace(/\]/g, ']]');
+    // Escape brackets by doubling them if not already escaped
+    const escapedBrackets = escapedQuotes.replace(/(?<!\[)\[(?!\[)/g, '[[').replace(/(?<!\])\](?!\])/g, ']]');
 
-	// Remove semicolons
-	const sanitizedSemicolons = escapedBrackets.replace(/;/g, '');
+    // Remove semicolons if not already removed
+    const sanitizedSemicolons = escapedBrackets.replace(/;(?![^\[]*\])/g, '');
 
-	// Remove potentially harmful SQL keywords
-	const sanitizedKeywords = sanitizedSemicolons.replace(/\b(xp_)\w+\b/g, '');
+    // Remove potentially harmful SQL keywords if not already removed
+    const sanitizedKeywords = sanitizedSemicolons.replace(/\b(xp_)\w+\b(?!')/g, '');
 
-	return sanitizedKeywords;
+    return sanitizedKeywords;
 }
 
 export async function getHoverContent(document: vscode.TextDocument, position: vscode.Position): Promise<vscode.Hover> {
