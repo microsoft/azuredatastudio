@@ -80,8 +80,8 @@ export function getDependencies(packageType: 'deb' | 'rpm', buildDir: string, ap
 
 	const referenceGeneratedDeps = packageType === 'deb' ?
 		debianGeneratedDeps[arch as DebianArchString] :
-		rpmGeneratedDeps['aarch64'];
-	const archDeps = rpmGeneratedDeps[arch as RpmArchString];
+		rpmGeneratedDeps[arch as RpmArchString];
+	const archDeps = rpmGeneratedDeps['aarch64'];
 	if (JSON.stringify(sortedDependencies) !== JSON.stringify(referenceGeneratedDeps)) {
 		const failMessage = 'The dependencies list has changed.'
 			+ '\nOld:\n' + referenceGeneratedDeps.join('\n')
