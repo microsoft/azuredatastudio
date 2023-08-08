@@ -221,13 +221,13 @@ async function getDatabaseSummary(context: azdata.ObjectExplorerContext, connect
 		}
 	}
 
-	const tablesQuery = `SELECT [name], [object_id] FROM sys.tables WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
+	const tablesQuery = `USE ${validate(context.nodeInfo.metadata.name)}; SELECT [name], [object_id] FROM sys.tables WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
 	const tablesResult = (await queryProvider.runQueryAndReturn(connectionUri, tablesQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 
-	const viewsQuery = `SELECT [name], [object_id] FROM sys.views WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
+	const viewsQuery = `USE ${validate(context.nodeInfo.metadata.name)}; SELECT [name], [object_id] FROM sys.views WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
 	const viewsResult = (await queryProvider.runQueryAndReturn(connectionUri, viewsQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 
-	const sprocQuery = `SELECT [name], [object_id] FROM sys.procedures WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
+	const sprocQuery = `USE ${validate(context.nodeInfo.metadata.name)}; SELECT [name], [object_id] FROM sys.procedures WHERE SCHEMA_NAME(schema_id) = 'dbo';`;
 	const sprocResult = (await queryProvider.runQueryAndReturn(connectionUri, sprocQuery)).rows.map(row => [row[0].displayValue, row[1].displayValue]);
 
 	const statsQuery = `USE ${validate(context.nodeInfo.metadata.name)}; SELECT OBJECT_NAME(object_id) AS 'Object_Name', SUM(user_seeks) AS 'User_Seeks', SUM(user_scans) AS 'User_Scans', SUM(user_lookups) AS 'User_Lookups', SUM(user_updates) AS 'User_Updates' FROM sys.dm_db_index_usage_stats GROUP BY object_id HAVING OBJECT_NAME(object_id) IS NOT NULL;`;
@@ -238,7 +238,7 @@ async function getDatabaseSummary(context: azdata.ObjectExplorerContext, connect
 	}
 
 	return localize(`database-documentation.databaseSummary`,
-		`**Number of Connections to Database**  \n${numConnections}  \n\n**Database Memory Usage**  \nTotal Size:${totalSize} MB  \n${storageSummary}\n**Database Objects Overview**  \n\tTotal Tables: ${tablesResult.length.toString()}  \n\tTotal Views: ${viewsResult.length.toString()}  \n\tTotal Stored Procedures: ${sprocResult.length.toString()}  \n\n**Database Object Stats**  \n${validate(statsTable)}  \n\n`);
+		`**Number of Connections to Database**  \n${numConnections}  \n\n**Database Memory Usage**  \n\tTotal Size:${totalSize} MB  \n${storageSummary}\n**Database Objects Overview**  \n\tTotal Tables: ${tablesResult.length.toString()}  \n\tTotal Views: ${viewsResult.length.toString()}  \n\tTotal Stored Procedures: ${sprocResult.length.toString()}  \n\n**Database Object Stats**  \n${validate(statsTable)}  \n\n`);
 }
 
 async function getDocumentationText(tableName: string, tableAttributes: [string, string, string][], schema: string, type: string): Promise<string> {
