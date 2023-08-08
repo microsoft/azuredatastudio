@@ -443,7 +443,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const result = await this.openDatabaseFileDialog();
 		if (!isUndefinedOrNull(result)) {
 			this.objectInfo.files?.push(result);
-			await this.databaseFilesTable.appendData(this.convertToDataView(result));
+			var newData = this.objectInfo.files?.map(file => {
+				return this.convertToDataView(file);
+			})
+			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
 		}
 	}
 
@@ -453,6 +456,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private async openDatabaseFileDialog(): Promise<DatabaseFile> {
 		const dialog = new DatabaseFileDialog({
 			title: localizedConstants.AddDatabaseFilesText,
+			viewInfo: this.viewInfo,
 		});
 		await dialog.open();
 		return await dialog.waitForClose();

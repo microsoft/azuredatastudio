@@ -475,6 +475,8 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions: string[];
 	dscElevateOptions: string[];
 	dscEnableDisableOptions: string[];
+	fileGroupsOptions: string[];
+	fileTypesOptions: string[];
 }
 
 export interface DatabaseScopedConfigurationsInfo {

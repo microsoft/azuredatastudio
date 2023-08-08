@@ -6,10 +6,11 @@
 import * as azdata from 'azdata';
 import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
-import { DatabaseFile } from '../interfaces';
+import { DatabaseFile, DatabaseViewInfo } from '../interfaces';
 
 export interface NewDatabaseFileDialogOptions {
 	title: string;
+	viewInfo: DatabaseViewInfo;
 }
 
 const defaultNewFileData: DatabaseFile = {
@@ -34,7 +35,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private unlimitedFileSize: azdata.RadioButtonComponent;
 	private limitedToMbFileSizeInput: azdata.InputBoxComponent;
 
-	constructor(options: NewDatabaseFileDialogOptions) {
+	constructor(private readonly options: NewDatabaseFileDialogOptions) {
 		super(options.title, 'DatabaseFileDialog');
 		this.result = { ...defaultNewFileData };
 	}
@@ -58,14 +59,14 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// File Type
 		const fileType = this.createDropdown(localizedConstants.FileTypeText, async (newValue) => {
 			this.result.type = newValue;
-		}, ['Rows Data', 'Log', 'FileStream Data'], this.result.type, true, DefaultInputWidth);
+		}, this.options.viewInfo.fileTypesOptions, this.options.viewInfo.fileTypesOptions[0], true, DefaultInputWidth);
 		const fileTypeContainer = this.createLabelInputContainer(localizedConstants.FileTypeText, fileType);
 		containers.push(fileTypeContainer);
 
 		// Filegroup
 		const fileGroup = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
-		}, [], '', true, DefaultInputWidth);
+		}, this.options.viewInfo.fileGroupsOptions, this.options.viewInfo.fileGroupsOptions[0], true, DefaultInputWidth);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, fileGroup);
 		containers.push(sizeContainer);
 
