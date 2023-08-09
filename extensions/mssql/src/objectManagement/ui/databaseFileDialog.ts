@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { DatabaseFile, DatabaseViewInfo } from '../interfaces';
@@ -35,13 +36,15 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private limitedToMbFileSize: azdata.RadioButtonComponent;
 	private unlimitedFileSize: azdata.RadioButtonComponent;
 	private limitedToMbFileSizeInput: azdata.InputBoxComponent;
+	protected filePathButton: azdata.ButtonComponent;
+	protected filePathTextBox: azdata.InputBoxComponent;
 
 	constructor(private readonly options: NewDatabaseFileDialogOptions) {
 		super(options.title, 'DatabaseFileDialog');
 		this.defaultNewDatabaseFile = {
 			name: '',
 			type: options.viewInfo.fileTypesOptions[0],
-			path: '',
+			path: options.files[0].path,
 			fileGroup: options.viewInfo.fileGroupsOptions[0],
 			fileNameWithExtension: '',
 			sizeInMb: defaultFileSizeInMb,
@@ -113,10 +116,13 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(autogrowthContainer);
 
 		// Path
-		const path = this.createInputBox(localizedConstants.PathText, async (newValue) => {
+		this.filePathTextBox = this.createInputBox(localizedConstants.PathText, async (newValue) => {
 			this.result.path = newValue;
-		}, '', true, 'text', DefaultInputWidth, true);
-		const pathContainer = this.createLabelInputContainer(localizedConstants.PathText, path);
+		}, this.defaultNewDatabaseFile.path, true, 'text', DefaultInputWidth - 30, true);
+		this.filePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() });
+		this.filePathButton.width = 25;
+		const pathContainer = this.createLabelInputContainer(localizedConstants.PathText, this.filePathTextBox);
+		pathContainer.addItems([this.filePathButton], { flex: '10 0 auto' });
 		containers.push(pathContainer);
 
 		// File Name
@@ -167,7 +173,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				}
 				this.result.autoFileGrowth = this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue : this.autogrowthInMegabytesValue;
 			}
-		}, String(defaultFileGrowthInMb), true, 'number', DefaultInputWidth - 10);
+		}, String(defaultFileGrowthInMb), true, 'number', DefaultInputWidth - 20);
 		const autogrowthContainer = this.createLabelInputContainer(localizedConstants.FileGrowthText, this.autoFilegrowthInput);
 
 		this.fileGrowthGroup = this.createGroup('', [autogrowthContainer, this.inPercentAutogrowth, this.inMegabytesAutogrowth], false);
@@ -183,7 +189,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			if (this.unlimitedFileSize.checked) {
 				this.result.maxSizeLimit = -1;
 			}
-		}, String(defaultMaxFileSizeLimitedToInMb), true, 'number', DefaultInputWidth - 10);
+		}, String(defaultMaxFileSizeLimitedToInMb), true, 'number', DefaultInputWidth - 20);
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
 
 		return this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], false);
@@ -202,6 +208,28 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			this.result.maxSizeLimit = -1; //Unlimited
 		}
 	}
+
+	private async createFileBrowser(): Promise<void> {
+		let fileUris = await vscode.window.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: vscode.Uri.file(this.defaultNewDatabaseFile.path),
+				openLabel: 'Select Path',
+				filters: {}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			return;
+		}
+
+		let fileUri = fileUris[0];
+		this.filePathTextBox.value = fileUri.fsPath;
+		this.result.path = fileUri.fsPath;
+	}
+
 
 	public override async onFormFieldChange(): Promise<void> {
 		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(this.defaultNewDatabaseFile);
