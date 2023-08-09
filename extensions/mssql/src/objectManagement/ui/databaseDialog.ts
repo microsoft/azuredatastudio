@@ -74,6 +74,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private dscPrimaryValueInputGroup: azdata.GroupContainer;
 	private dscSecondaryValueInputGroup: azdata.GroupContainer;
 	private dscSecondaryCheckboxForInputGroup: azdata.GroupContainer;
+	private setFocusToInput: string = null;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -546,6 +547,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
 				, max: MAXDOP_Max_Limit
 			});
+			await this.setFocusToInputBox();
 		}
 		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 25) {
@@ -554,6 +556,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 				, max: PAUSED_RESUMABLE_INDEX_Max_Limit
 			});
+			await this.setFocusToInputBox();
 		}
 		// Can only set OFF/Azure blob storage endpoint to the 'LEDGER_DIGEST_STORAGE_ENDPOINT (38)'s primary and secondary values
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 38) {
@@ -643,9 +646,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 					this.dscTable.data[this.currentRowId][2] = newValue;
 				}
-				await this.updateDscTable(this.dscTable.data);
+				await this.updateDscTable(this.dscTable.data, 'primaryInput');
 			}
-		}, '', true, 'number', 150, false, 0, 0, true);
+		}, '', true, 'number', 150, false, 0, 0);
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
 		this.dscPrimaryValueInputGroup = this.createGroup('', [primaryContainer], false, true);
 		await this.dscPrimaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -670,9 +673,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 			if (this.dscTable.data[this.currentRowId][2] !== newValue) {
 				this.dscTable.data[this.currentRowId][2] = newValue;
-				await this.updateDscTable(this.dscTable.data);
+				await this.updateDscTable(this.dscTable.data, 'secondaryInput');
 			}
-		}, '', true, 'number', 150, false, 0, 0, true);
+		}, '', true, 'number', 150, false, 0, 0);
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
 		this.dscSecondaryValueInputGroup = this.createGroup('', [secondaryContainer], false, true);
 		await this.dscSecondaryValueInputGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -775,10 +778,23 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Updates the data to the table and sets the focus to the selected row
 	 * @param data - Modified data to be set in the table
 	 */
-	private async updateDscTable(data: any[][]): Promise<void> {
+	private async updateDscTable(data: any[][], needFocus: string = null): Promise<void> {
+		// Set the focus to the selected input box
+		this.setFocusToInput = needFocus;
 		await this.setTableData(this.dscTable, data, DscTableRowLength);
 		// Restore the focus to previously selected row.
 		this.dscTable.setActiveCell(this.currentRowId, 0);
+	}
+
+	/**
+	 * Input box types requires focus to be set after refreshing the table data
+	 */
+	private async setFocusToInputBox(): Promise<void> {
+		if (this.setFocusToInput === 'primaryInput') {
+			await this.valueForPrimaryInput.focus();
+		} else if (this.setFocusToInput === 'secondaryInput') {
+			await this.valueForSecondaryInput.focus();
+		}
 	}
 	// #endregion
 
