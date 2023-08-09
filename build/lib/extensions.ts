@@ -278,6 +278,7 @@ const externalExtensions = [
 	'azcli',
 	'azuremonitor',
 	'cms',
+	'context-builder',
 	'dacpac',
 	'datavirtualization',
 	'import',
