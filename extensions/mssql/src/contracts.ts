@@ -1645,7 +1645,7 @@ export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
 }
 
-export interface DeleteDatabaseRequestParams {
+export interface DropDatabaseRequestParams {
 	connectionUri: string;
 	objectUrn: string;
 	dropConnections: boolean;
@@ -1653,8 +1653,8 @@ export interface DeleteDatabaseRequestParams {
 	generateScript: boolean;
 }
 
-export namespace DeleteDatabaseRequest {
-	export const type = new RequestType<DeleteDatabaseRequestParams, string, void, void>('objectManagement/deleteDatabase');
+export namespace DropDatabaseRequest {
+	export const type = new RequestType<DropDatabaseRequestParams, string, void, void>('objectManagement/dropDatabase');
 }
 
 // ------------------------------- < Object Management > ------------------------------------

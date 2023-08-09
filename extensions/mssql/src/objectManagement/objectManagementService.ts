@@ -72,8 +72,8 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 	}
 
 	async deleteDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
-		const params: contracts.DeleteDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
-		return this.runWithErrorHandling(contracts.DeleteDatabaseRequest.type, params);
+		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
 	}
 }
 
