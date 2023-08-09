@@ -46,7 +46,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private collationInput: azdata.InputBoxComponent;
 	// Files Tab
 	private readonly filesTabId: string = 'filesDatabaseId';
-	private databaseFilesTable: azdata.TableComponent;;
+	private databaseFilesTable: azdata.TableComponent;
 	// Options Tab
 	private readonly optionsTabId: string = 'optionsDatabaseId';
 	private autoCreateIncrementalStatisticsInput: azdata.CheckBoxComponent;
@@ -457,6 +457,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const dialog = new DatabaseFileDialog({
 			title: localizedConstants.AddDatabaseFilesText,
 			viewInfo: this.viewInfo,
+			files: this.objectInfo.files
 		});
 		await dialog.open();
 		return await dialog.waitForClose();

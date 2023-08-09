@@ -334,6 +334,7 @@ export function AutoGrowthValueStringGenerator(fileGrowth: string, isFleGrowthIn
 }
 export const FileGroupForLogTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "Not Applicable");
 export const FileGroupForFilestreamTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "No Applicable Filegroup");
+export const DuplicateLogicalNameError = (name: string) => localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "DataFile {0} could not be added to the collection, because it already exists.", name);
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
