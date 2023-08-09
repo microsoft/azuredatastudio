@@ -657,8 +657,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				? this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 				: this.dscOriginalData[this.currentRowId].valueForSecondary;
 			await this.valueForSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
-			this.dscTable.data[this.currentRowId][2] = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
-			await this.updateDscTable(this.dscTable.data);
+			if (this.dscTable.data[this.currentRowId][2] !== this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary) {
+				this.dscTable.data[this.currentRowId][2] = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
+				await this.updateDscTable(this.dscTable.data);
+			}
 		}, true);
 		this.dscSecondaryCheckboxForInputGroup = this.createGroup('', [this.setSecondaryCheckboxForInputType], false, true);
 		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden' });
