@@ -433,7 +433,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		file.type,
 		file.fileGroup,
 		file.sizeInMb,
-		file.autoGrowthAndMaxSizeInMb,
+		localizedConstants.AutoGrowthValueStringGenerator(file.autoFileGrowth.toString(), file.autoFileGrowthType === localizedConstants.PercentText, file.maxSizeLimit),
 		file.path,
 		file.fileNameWithExtension];
 	}

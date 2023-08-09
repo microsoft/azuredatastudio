@@ -534,5 +534,7 @@ export interface DatabaseFile {
 	fileGroup: string;
 	fileNameWithExtension: string;
 	sizeInMb: number;
-	autoGrowthAndMaxSizeInMb: string;
+	autoFileGrowth: number;
+	autoFileGrowthType: string;
+	maxSizeLimit: number
 }

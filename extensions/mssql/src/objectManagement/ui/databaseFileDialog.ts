@@ -7,28 +7,28 @@ import * as azdata from 'azdata';
 import { DefaultInputWidth, DialogBase } from '../../ui/dialogBase';
 import * as localizedConstants from '../localizedConstants';
 import { DatabaseFile, DatabaseViewInfo } from '../interfaces';
+import { isUndefinedOrNull } from '../../types';
+import { deepClone } from '../../util/objects';
 
 export interface NewDatabaseFileDialogOptions {
 	title: string;
 	viewInfo: DatabaseViewInfo;
 }
 
-const defaultNewFileData: DatabaseFile = {
-	name: '',
-	type: 'Rows Data',
-	fileGroup: 'PRIMARY',
-	sizeInMb: 8,
-	autoGrowthAndMaxSizeInMb: 'By 64 MB, Unlimited',
-	path: '',
-	fileNameWithExtension: ''
-}
+const defaultFileSizeInMb: number = 8
+const defaultFileGrowthInMb: number = 64
+const defaultFileGrowthInPercent: number = 10;
+const defaultMaxFileSizeLimitedToInMb: number = 100;
 
 export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private result: DatabaseFile;
+	private defaultNewDatabaseFile: DatabaseFile;
+	private fileGroupDropdown: azdata.DropDownComponent;
+	private fileGrowthGroup: azdata.GroupContainer;
 	private enableAutoGrowthCheckbox: azdata.CheckBoxComponent;
 	private inPercentAutogrowth: azdata.RadioButtonComponent;
 	private inMegabytesAutogrowth: azdata.RadioButtonComponent;
-	private autogrowthInput: azdata.InputBoxComponent;
+	private autoFilegrowthInput: azdata.InputBoxComponent;
 	private autogrowthInPercentValue: number;
 	private autogrowthInMegabytesValue: number;
 	private limitedToMbFileSize: azdata.RadioButtonComponent;
@@ -37,12 +37,25 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 	constructor(private readonly options: NewDatabaseFileDialogOptions) {
 		super(options.title, 'DatabaseFileDialog');
-		this.result = { ...defaultNewFileData };
+		this.defaultNewDatabaseFile = {
+			name: '',
+			type: options.viewInfo.fileTypesOptions[0],
+			path: '',
+			fileGroup: options.viewInfo.fileGroupsOptions[0],
+			fileNameWithExtension: '',
+			sizeInMb: defaultFileSizeInMb,
+			autoFileGrowth: defaultFileGrowthInMb,
+			autoFileGrowthType: 'KB',
+			maxSizeLimit: defaultMaxFileSizeLimitedToInMb
+		}
 	}
 
 	protected override async initialize(): Promise<void> {
 		let components: azdata.Component[] = [];
 		this.dialogObject.okButton.enabled = false;
+		this.autogrowthInPercentValue = defaultFileGrowthInPercent;
+		this.autogrowthInMegabytesValue = defaultFileGrowthInMb;
+		this.result = deepClone(this.defaultNewDatabaseFile);
 		components.push(this.InitializeAddDatabaseFileDialog());
 		this.formContainer.addItems(components);
 	}
@@ -58,22 +71,23 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 		// File Type
 		const fileType = this.createDropdown(localizedConstants.FileTypeText, async (newValue) => {
+			await this.UpdateOptionsForSelectedFileType(newValue);
 			this.result.type = newValue;
 		}, this.options.viewInfo.fileTypesOptions, this.options.viewInfo.fileTypesOptions[0], true, DefaultInputWidth);
 		const fileTypeContainer = this.createLabelInputContainer(localizedConstants.FileTypeText, fileType);
 		containers.push(fileTypeContainer);
 
 		// Filegroup
-		const fileGroup = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
+		this.fileGroupDropdown = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
 		}, this.options.viewInfo.fileGroupsOptions, this.options.viewInfo.fileGroupsOptions[0], true, DefaultInputWidth);
-		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, fileGroup);
+		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, this.fileGroupDropdown);
 		containers.push(sizeContainer);
 
-		// // File Size in MB
+		// File Size in MB
 		const fileSize = this.createInputBox(localizedConstants.SizeInMbText, async (newValue) => {
 			this.result.sizeInMb = Number(newValue);
-		}, '', true, 'number', DefaultInputWidth);
+		}, String(defaultFileSizeInMb), true, 'number', DefaultInputWidth);
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, fileSize);
 		containers.push(fileSizeContainer);
 
@@ -81,7 +95,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.enableAutoGrowthCheckbox = this.createCheckbox(localizedConstants.EnableAutogrowthText, async (checked) => {
 			this.inPercentAutogrowth.enabled = checked;
 			this.inMegabytesAutogrowth.enabled = checked;
-			this.autogrowthInput.enabled = checked;
+			this.autoFilegrowthInput.enabled = checked;
 			this.limitedToMbFileSize.enabled = checked;
 			this.unlimitedFileSize.enabled = checked;
 			this.limitedToMbFileSizeInput.enabled = checked;
@@ -106,29 +120,60 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		return this.createGroup('', containers, false);
 	}
 
+	private async UpdateOptionsForSelectedFileType(selectedOption: string): Promise<void> {
+		// Row Data defaults
+		let fileGroupDdOptions = this.options.viewInfo.fileGroupsOptions;
+		let fileGroupDdValue = this.options.viewInfo.fileGroupsOptions[0];
+		let visibility = 'visible';
+		// Log
+		if (selectedOption === this.options.viewInfo.fileTypesOptions[1]) {
+			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
+			fileGroupDdValue = localizedConstants.FileGroupForLogTypeText;
+		}
+		// File Stream
+		else if (selectedOption === this.options.viewInfo.fileTypesOptions[2]) {
+			fileGroupDdOptions = [localizedConstants.FileGroupForFilestreamTypeText];
+			fileGroupDdValue = localizedConstants.FileGroupForFilestreamTypeText;
+			visibility = 'hidden';
+		}
+
+		// Update the propertie
+		await this.fileGroupDropdown.updateProperties({
+			values: fileGroupDdOptions, value: fileGroupDdValue
+		});
+		await this.enableAutoGrowthCheckbox.updateProperties({ 'visibility': visibility });
+		await this.fileGrowthGroup.updateCssStyles({ 'visibility': visibility });
+	}
+
 	private InitializeAutogrowthSection(): azdata.GroupContainer {
 		const radioGroupName = 'autogrowthRadioGroup';
-		this.inPercentAutogrowth = this.createRadioButton(localizedConstants.InPercentAutogrowthText, radioGroupName, true, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
-		this.inMegabytesAutogrowth = this.createRadioButton(localizedConstants.InMegabytesAutogrowthText, radioGroupName, false, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
-		this.autogrowthInput = this.createInputBox(localizedConstants.FileGrowthText, async (newValue) => {
-			if (this.inPercentAutogrowth.checked) {
-				this.autogrowthInPercentValue = Number(newValue);
-			} else if (this.inMegabytesAutogrowth.checked) {
-				this.autogrowthInMegabytesValue = Number(newValue);
+		this.inPercentAutogrowth = this.createRadioButton(localizedConstants.InPercentAutogrowthText, radioGroupName, false, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
+		this.inMegabytesAutogrowth = this.createRadioButton(localizedConstants.InMegabytesAutogrowthText, radioGroupName, true, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
+		this.autoFilegrowthInput = this.createInputBox(localizedConstants.FileGrowthText, async (newValue) => {
+			if (!isUndefinedOrNull(newValue) && newValue !== '') {
+				if (this.inPercentAutogrowth.checked) {
+					this.autogrowthInPercentValue = Number(newValue);
+				} else if (this.inMegabytesAutogrowth.checked) {
+					this.autogrowthInMegabytesValue = Number(newValue);
+				}
 			}
-		}, '', true, 'number', DefaultInputWidth - 10);
-		const autogrowthContainer = this.createLabelInputContainer(localizedConstants.FileGrowthText, this.autogrowthInput);
+		}, String(defaultFileGrowthInMb), true, 'number', DefaultInputWidth - 10);
+		const autogrowthContainer = this.createLabelInputContainer(localizedConstants.FileGrowthText, this.autoFilegrowthInput);
 
-		return this.createGroup('', [autogrowthContainer, this.inPercentAutogrowth, this.inMegabytesAutogrowth], false);
+		this.fileGrowthGroup = this.createGroup('', [autogrowthContainer, this.inPercentAutogrowth, this.inMegabytesAutogrowth], false);
+		return this.fileGrowthGroup;
 	}
 
 	private InitializeMaxFileSizeSection(): azdata.GroupContainer {
 		const radioGroupName = 'maxFileSizeRadioGroup';
-		this.limitedToMbFileSize = this.createRadioButton(localizedConstants.LimitedToMBFileSizeText, radioGroupName, true, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
-		this.unlimitedFileSize = this.createRadioButton(localizedConstants.UnlimitedFileSizeText, radioGroupName, false, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
+		this.limitedToMbFileSize = this.createRadioButton(localizedConstants.LimitedToMBFileSizeText, radioGroupName, false, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
+		this.unlimitedFileSize = this.createRadioButton(localizedConstants.UnlimitedFileSizeText, radioGroupName, true, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.limitedToMbFileSizeInput = this.createInputBox(localizedConstants.MaximumFileSizeText, async (newValue) => {
-			this.limitedToMbFileSizeInput.value = String(newValue);
-		}, '', true, 'number', DefaultInputWidth - 10);
+			this.result.maxSizeLimit = Number(newValue);
+			if (this.unlimitedFileSize.checked) {
+				this.result.maxSizeLimit = -1;
+			}
+		}, String(defaultMaxFileSizeLimitedToInMb), true, 'number', DefaultInputWidth - 10);
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
 
 		return this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], false);
@@ -136,9 +181,9 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
 		if (this.inPercentAutogrowth.checked) {
-			this.autogrowthInput.value = this.autogrowthInPercentValue?.toString();
+			this.autoFilegrowthInput.value = this.autogrowthInPercentValue?.toString();
 		} else if (this.inMegabytesAutogrowth.checked) {
-			this.autogrowthInput.value = this.autogrowthInMegabytesValue?.toString();
+			this.autoFilegrowthInput.value = this.autogrowthInMegabytesValue?.toString();
 		}
 	}
 
@@ -147,18 +192,15 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			this.limitedToMbFileSizeInput.enabled = true;
 		} else if (this.unlimitedFileSize.checked) {
 			this.limitedToMbFileSizeInput.enabled = false;
+			this.result.maxSizeLimit = -1; //Unlimited
 		}
 	}
 
-
 	public override async onFormFieldChange(): Promise<void> {
-		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(defaultNewFileData);
+		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(this.defaultNewDatabaseFile);
 	}
 
 	protected override get dialogResult(): DatabaseFile | undefined {
-		this.result.autoGrowthAndMaxSizeInMb = !this.enableAutoGrowthCheckbox.checked ? localizedConstants.NoneText :
-			localizedConstants.AutoGrowthValueStringGenerator(this.autogrowthInput.value, this.inPercentAutogrowth.checked, this.limitedToMbFileSizeInput.value, this.limitedToMbFileSize.checked)
-
 		return this.result;
 	}
 }

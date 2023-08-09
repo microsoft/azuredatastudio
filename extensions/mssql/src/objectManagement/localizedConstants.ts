@@ -326,12 +326,14 @@ export const UnlimitedFileSizeText = localize('objectManagement.databaseProperti
 export const PercentText = localize('objectManagement.databaseProperties.percentText', "Percent");
 export const MBText = localize('objectManagement.databaseProperties.mb', "MB");
 export const NoneText = localize('objectManagement.databaseProperties.noneText', "None");
-export function AutoGrowthValueStringGenerator(fileGrowth: string, isFleGrowthInPercent: boolean, maxFileSize: string, isMaxFileSizeLimited: boolean): string {
-	const limitation = isMaxFileSizeLimited
-		? localize('objectManagement.databaseProperties.autoGrowthValueConversion.limitation', "Limited to {0} MB", maxFileSize)
-		: localize('objectManagement.databaseProperties.autoGrowthValueConversion.unlimited', "Unlimited");
+export function AutoGrowthValueStringGenerator(fileGrowth: string, isFleGrowthInPercent: boolean, maxFileSize: number): string {
+	const limitation = maxFileSize === -1
+		? localize('objectManagement.databaseProperties.autoGrowthValueConversion.unlimited', "Unlimited")
+		: localize('objectManagement.databaseProperties.autoGrowthValueConversion.limitation', "Limited to {0} MB", maxFileSize);
 	return localize('objectManagement.databaseProperties.autoGrowthValueConversion', "By {0} {1}, {2}", fileGrowth, isFleGrowthInPercent ? PercentText : MBText, limitation);
 }
+export const FileGroupForLogTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "Not Applicable");
+export const FileGroupForFilestreamTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "No Applicable Filegroup");
 
 // Util functions
 export function getNodeTypeDisplayName(type: string, inTitle: boolean = false): string {
