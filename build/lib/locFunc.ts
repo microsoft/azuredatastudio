@@ -186,12 +186,12 @@ const VSCODEExtensions = [
 	"builtin-notebook-renderers", // notebook renderers
 	"configuration-editing",
 	"docker",
-	"git",
 	"git-base",
 	"github",
 	"github-authentication",
 	"image-preview",
 	"ipynb",
+	"javascript",
 	"json",
 	"json-language-features",
 	"markdown", // markdown-basics
