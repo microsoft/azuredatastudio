@@ -24,7 +24,7 @@ import * as lifecycle from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -44,6 +44,7 @@ import { RequiredIndicatorClassName } from 'sql/base/browser/ui/label/label';
 import { FieldSet } from 'sql/base/browser/ui/fieldset/fieldset';
 import { defaultButtonStyles, defaultInputBoxStyles } from 'vs/platform/theme/browser/defaultStyles';
 import { defaultCheckboxStyles, defaultEditableDropdownStyles, defaultSelectBoxStyles } from 'sql/platform/theme/browser/defaultStyles';
+import { textLinkActiveForeground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -440,9 +441,19 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._azureAccountDropdown = new SelectBox([], undefined, defaultSelectBoxStyles, this._contextViewService, accountDropdown, { ariaLabel: accountLabel });
 		this._register(this._azureAccountDropdown);
 		DialogHelper.appendInputSelectBox(accountDropdown, this._azureAccountDropdown);
+		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const link = theme.getColor(textLinkForeground);
+			if (link) {
+				collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a.ads-welcome-page-link { color: ${link}; }`);
+			}
+			const activeLink = theme.getColor(textLinkActiveForeground);
+			if (activeLink) {
+				collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage a:hover, .monaco-workbench .part.editor > .content .welcomePage a:active { color: ${activeLink}; }`);
+				collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .themed-icon-alt { background-color: ${activeLink}; }`);
+			}
+		}));
 		let refreshCredentials = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', ['azure-account-row', 'refresh-credentials-link']);
-		this._refreshCredentialsLink = DOM.append(refreshCredentials, DOM.$('a'));
-		this._refreshCredentialsLink.href = '#';
+		this._refreshCredentialsLink = DOM.append(refreshCredentials, DOM.$('a class="link"'));
 		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', "Refresh account credentials");
 		// Azure tenant picker
 		let tenantLabel = localize('connection.azureTenantDropdownLabel', "Azure AD tenant");
@@ -728,7 +739,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private updateRefreshCredentialsLink(): void {
 		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
-		if (chosenAccount && chosenAccount.isStale) {
+		if (chosenAccount) {
 			this._tableContainer.classList.remove('hide-refresh-link');
 		} else {
 			this._tableContainer.classList.add('hide-refresh-link');
