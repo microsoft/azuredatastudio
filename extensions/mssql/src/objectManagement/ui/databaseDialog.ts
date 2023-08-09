@@ -503,8 +503,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultTableWidth
 		}).component();
 
-		const dscPrimaryValueDrodpdownTypeGroup = await this.InitializeDscValueDropdownTypeSection();
-		const dscPrimaryValueInputTypeGroup = await this.InitializeDscValueInputTypeSection();
+		const dscPrimaryValueDrodpdownTypeGroup = await this.initializeDscValueDropdownTypeSection();
+		const dscPrimaryValueInputTypeGroup = await this.initializeDscValueInputTypeSection();
 		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, dscPrimaryValueDrodpdownTypeGroup, dscPrimaryValueInputTypeGroup], true));
 		this.disposables.push(
 			this.dscTable.onRowSelected(
@@ -629,7 +629,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Initializes primary and secondary values of Input type
 	 * @returns GroupContainer for primary value and secondary value
 	 */
-	private async InitializeDscValueInputTypeSection(): Promise<azdata.GroupContainer> {
+	private async initializeDscValueInputTypeSection(): Promise<azdata.GroupContainer> {
 		// Primary value
 		this.valueForPrimaryInput = this.createInputBox(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
 			if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary !== newValue) {
@@ -657,6 +657,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				? this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 				: this.dscOriginalData[this.currentRowId].valueForSecondary;
 			await this.valueForSecondaryInput.updateProperties({ value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary });
+			this.dscTable.data[this.currentRowId][2] = this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary;
+			await this.updateDscTable(this.dscTable.data);
 		}, true);
 		this.dscSecondaryCheckboxForInputGroup = this.createGroup('', [this.setSecondaryCheckboxForInputType], false, true);
 		await this.dscSecondaryCheckboxForInputGroup.updateCssStyles({ 'visibility': 'hidden' });
@@ -682,18 +684,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Initializes primary and secondary values of Dropdown type
 	 * @returns GroupContainer of primary and secondary values
 	 */
-	private async InitializeDscValueDropdownTypeSection(): Promise<azdata.GroupContainer> {
+	private async initializeDscValueDropdownTypeSection(): Promise<azdata.GroupContainer> {
+		// Configurations that won't support secondary value update
+		const dscConfigurationsWithoutSecondaryValue = [6, 11, 12, 21];
 		// Value for Primary
 		this.valueForPrimaryDropdown = this.createDropdown(localizedConstants.ValueForPrimaryColumnHeader, async (newValue) => {
 			if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary !== newValue) {
 				this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary = newValue;
 				this.dscTable.data[this.currentRowId][1] = newValue;
 				// Update the secondary value with the primary, when the set seconadry checkbox is checked
-				if (this.setSecondaryCheckboxForDropdowns.checked
-					&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 6
-					&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 11
-					&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 12
-					&& this.objectInfo.databaseScopedConfigurations[this.currentRowId].id !== 21) {
+				if (this.setSecondaryCheckboxForDropdowns.checked &&
+					!dscConfigurationsWithoutSecondaryValue.includes(this.objectInfo.databaseScopedConfigurations[this.currentRowId].id)) {
 					this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 					this.dscTable.data[this.currentRowId][2] = newValue;
 				}
