@@ -143,10 +143,16 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	protected createPasswordInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, width: number = DefaultInputWidth): azdata.InputBoxComponent {
-		return this.createInputBox(ariaLabel, textChangeHandler, value, enabled, 'password', width);
+		return this.createInputBox(textChangeHandler, {
+			ariaLabel: ariaLabel,
+			value: value,
+			enabled: enabled,
+			inputType: 'password',
+			width: width
+		});
 	}
 
-	protected createInputBoxWithProperties(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
+	protected createInputBox(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
 		properties.width = properties.width ?? DefaultInputWidth;
 		properties.inputType = properties.inputType ?? 'text';
 		properties.value = properties.value ?? '';
@@ -162,16 +168,6 @@ export abstract class DialogBase<DialogResult> {
 			await this.runValidation(false);
 		}));
 		return inputBoxComponent;
-	}
-
-	protected createInputBox(ariaLabel: string, textChangeHandler: (newValue: string) => Promise<void>, value: string = '', enabled: boolean = true, type: azdata.InputBoxInputType = 'text', width: number = DefaultInputWidth, required?: boolean, min?: number, max?: number): azdata.InputBoxComponent {
-		const inputbox = this.modelView.modelBuilder.inputBox().withProps({ inputType: type, enabled: enabled, ariaLabel: ariaLabel, value: value, width: width, required: required, min: min, max: max }).component();
-		this.disposables.push(inputbox.onTextChanged(async () => {
-			await textChangeHandler(inputbox.value!);
-			this.onFormFieldChange();
-			await this.runValidation(false);
-		}));
-		return inputbox;
 	}
 
 	protected createGroup(header: string, items: azdata.Component[], collapsible: boolean = true, collapsed: boolean = false): azdata.GroupContainer {

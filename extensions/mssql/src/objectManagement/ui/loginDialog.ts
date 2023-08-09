@@ -107,9 +107,14 @@ export class LoginDialog extends PrincipalDialogBase<Login, LoginViewInfo> {
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.createInputBox(objectManagementLoc.NameText, async (newValue) => {
+		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
-		}, this.objectInfo.name, this.options.isNewObject);
+		}, {
+			ariaLabel: objectManagementLoc.NameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 
 		const nameContainer = this.createLabelInputContainer(objectManagementLoc.NameText, this.nameInput);
 		this.authTypeDropdown = this.createDropdown(objectManagementLoc.AuthTypeText,

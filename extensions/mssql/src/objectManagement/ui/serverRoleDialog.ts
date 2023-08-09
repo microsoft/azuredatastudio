@@ -50,14 +50,25 @@ export class ServerRoleDialog extends PrincipalDialogBase<ServerRoleInfo, Server
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
-		}, this.objectInfo.name, this.options.isNewObject);
+		}, {
+			ariaLabel: localizedConstants.NameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
-		this.ownerInput = this.createInputBox(localizedConstants.OwnerText, async (newValue) => {
+		this.ownerInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.owner = newValue;
-		}, this.objectInfo.owner, !this.viewInfo.isFixedRole, 'text', 210);
+		}, {
+			ariaLabel: localizedConstants.OwnerText,
+			inputType: 'text',
+			enabled: !this.viewInfo.isFixedRole,
+			value: this.objectInfo.owner,
+			width: 210
+		});
 		const browseOwnerButton = this.createButton(localizedConstants.BrowseText, localizedConstants.BrowseOwnerButtonAriaLabel, async () => {
 			const dialog = new FindObjectDialog(this.objectManagementService, {
 				objectTypes: localizedConstants.getObjectTypeInfo([

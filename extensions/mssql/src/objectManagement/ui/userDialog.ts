@@ -76,9 +76,15 @@ export class UserDialog extends PrincipalDialogBase<User, UserViewInfo> {
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.NameText,
+			value: this.objectInfo.name,
+			enabled: this.options.isNewObject
+		};
+
+		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
-		}, this.objectInfo.name, this.options.isNewObject);
+		}, props);
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
 		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, async (newValue) => {
