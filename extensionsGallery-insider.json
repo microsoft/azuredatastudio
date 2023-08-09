@@ -1291,14 +1291,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.3",
-							"lastUpdated": "7/25/2023",
+							"version": "0.5.0",
+							"lastUpdated": "7/31/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.4.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.5.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4585,14 +4585,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.4",
-							"lastUpdated": "5/22/2023",
+							"version": "0.3.5",
+							"lastUpdated": "7/27/2023",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.3.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.3.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4852,7 +4852,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/MarkMpn.Sql4Cds/Images/SQL4CDS%20Icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -4860,7 +4860,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/master/AzureDataStudioExtension/CHANGELOG.md"
+									"source": "https://raw.githubusercontent.com/MarkMpn/Sql4Cds/v7.2.1/AzureDataStudioExtension/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
