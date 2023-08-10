@@ -42,7 +42,13 @@ export class MiaaDashboard extends Dashboard {
 					computeAndStoragePage.tab,
 					miaaBackupsPage.tab,
 					upgradeManagementPage.tab
-				]
+				],
+				dispose: () => {
+					connectionStringsPage.tab.dispose();
+					computeAndStoragePage.tab.dispose();
+					miaaBackupsPage.tab.dispose();
+					upgradeManagementPage.tab.dispose();
+				}
 			},
 		];
 	}

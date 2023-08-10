@@ -72,7 +72,14 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.engineEdition = serverInfo.engineEditionId;
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
+		const serverPropertiesTabGroup = <azdata.TabGroup>{
+			title: '',
+			tabs: [this.generalTab, this.memoryTab],
+			dispose: () => {
+				this.generalTab.dispose();
+				this.memoryTab.dispose();
+			},
+		};
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({
@@ -80,6 +87,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					'margin': '-10px 0px 0px -10px'
 				}
 			}).component();
+		this.disposables.push(serverPropertiesTabbedPannel);
 		this.disposables.push(
 			serverPropertiesTabbedPannel.onTabChanged(async tabId => {
 				this.activeTabId = tabId;

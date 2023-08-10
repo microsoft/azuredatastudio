@@ -28,7 +28,10 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			toolbar: toolbar,
 			content: input1,
 			title: 'Home',
-			icon: context.asAbsolutePath('images/home.svg') // icon can be the path of a svg file
+			icon: context.asAbsolutePath('images/home.svg'), // icon can be the path of a svg file
+			dispose: () => {
+				input1.dispose();
+			}
 		};
 
 		// Tab with nested tabbed Panel

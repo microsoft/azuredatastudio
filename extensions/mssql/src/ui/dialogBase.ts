@@ -186,7 +186,10 @@ export abstract class DialogBase<DialogResult> {
 		return {
 			title: title,
 			content: content,
-			id: id
+			id: id,
+			dispose: () => {
+				content.dispose();
+			}
 		};
 	}
 

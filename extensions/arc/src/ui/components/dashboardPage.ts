@@ -28,7 +28,11 @@ export abstract class DashboardPage extends InitializingComponent {
 			icon: this.icon,
 			// Get toolbar first since things in the container might depend on these being created
 			toolbar: this.toolbarContainer,
-			content: this.container
+			content: this.container,
+			dispose: () => {
+				this.container?.dispose();
+				this.toolbarContainer?.dispose();
+			}
 		};
 	}
 

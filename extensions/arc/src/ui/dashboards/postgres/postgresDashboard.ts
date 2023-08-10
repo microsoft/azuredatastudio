@@ -39,13 +39,21 @@ export class PostgresDashboard extends Dashboard {
 				tabs: [
 					connectionStringsPage.tab,
 					computeAndStoragePage.tab
-				]
+				],
+				dispose: () => {
+					connectionStringsPage.tab.dispose();
+					computeAndStoragePage.tab.dispose();
+				}
 			},
 			{
 				title: loc.supportAndTroubleshooting,
 				tabs: [
 					supportRequestPage.tab
-				]
+				],
+				dispose: () => {
+					supportRequestPage.tab.dispose();
+					supportRequestPage.tab.dispose();
+				}
 			}
 		];
 	}

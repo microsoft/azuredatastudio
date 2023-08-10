@@ -1943,7 +1943,15 @@ declare module 'azdata' {
 		NotEndsWith = 13
 	}
 
+	export interface Tab extends vscode.Disposable { }
+
+	export interface TabGroup extends vscode.Disposable { }
+
+	export interface DashboardTabGroup extends vscode.Disposable { }
+
 	export interface ModelView extends vscode.Disposable { }
+
+	export interface ModelViewDashboard extends vscode.Disposable { }
 
 	export namespace window {
 		export interface Wizard extends LoadingComponentBase {

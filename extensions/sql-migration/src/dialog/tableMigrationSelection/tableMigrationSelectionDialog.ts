@@ -274,6 +274,9 @@ export class TableMigrationSelectionDialog {
 			content: flex,
 			id: 'tableSelectionTab',
 			title: constants.SELECT_TABLES_FOR_MIGRATION,
+			dispose: () => {
+				flex.dispose();
+			}
 		};
 	}
 
@@ -295,6 +298,9 @@ export class TableMigrationSelectionDialog {
 			content: flex,
 			id: 'missingTablesTab',
 			title: constants.MISSING_TARGET_TABLES_COUNT(this._missingTableCount),
+			dispose: () => {
+				flex.dispose();
+			}
 		};
 	}
 

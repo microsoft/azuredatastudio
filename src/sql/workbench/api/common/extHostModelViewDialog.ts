@@ -603,7 +603,7 @@ class WizardImpl implements azdata.window.Wizard {
 	}
 }
 
-class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
+class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelViewDashboard {
 	private _tabbedPanel: azdata.TabbedPanelComponent;
 	private _view: azdata.ModelView;
 
@@ -611,6 +611,8 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 		private _editor: ModelViewEditorImpl,
 		private _options?: azdata.ModelViewDashboardOptions
 	) {
+		super();
+		this._register(this._editor);
 	}
 
 	updateTabs(tabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[]): void {
@@ -631,6 +633,7 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 				showIcon: this._options?.showIcon ?? true,
 				alwaysShowTabs: this._options?.alwaysShowTabs ?? false
 			}).component();
+			this._register(this._tabbedPanel);
 			return view.initializeModel(this._tabbedPanel);
 		});
 	}
@@ -643,20 +646,26 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 		return this._editor.closeEditor();
 	}
 
-	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {
-		if (tab.toolbar) {
+	createTab(dashboardTab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {
+		let tab: azdata.Tab;
+		if (dashboardTab.toolbar) {
 			const flexContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			flexContainer.addItem(tab.toolbar, { flex: '0 0 auto' });
-			flexContainer.addItem(tab.content, { flex: '1 1 auto' });
-			return {
-				title: tab.title,
-				id: tab.id,
+			flexContainer.addItem(dashboardTab.toolbar, { flex: '0 0 auto' });
+			flexContainer.addItem(dashboardTab.content, { flex: '1 1 auto' });
+			tab = {
+				title: dashboardTab.title,
+				id: dashboardTab.id,
 				content: flexContainer,
-				icon: tab.icon
+				icon: dashboardTab.icon,
+				dispose: () => {
+					flexContainer?.dispose();
+				},
 			};
 		} else {
-			return tab;
+			tab = dashboardTab;
 		}
+		this._register(tab);
+		return tab;
 	}
 
 	createTabs(dashboardTabs: (azdata.DashboardTab | azdata.DashboardTabGroup)[], view: azdata.ModelView): (azdata.TabGroup | azdata.Tab)[] {
@@ -667,7 +676,10 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 					title: item.title,
 					tabs: item.tabs.map(tab => {
 						return this.createTab(tab, view);
-					})
+					}),
+					dispose: () => {
+						item.tabs.forEach(t => t.dispose());
+					},
 				});
 			} else {
 				tabs.push(this.createTab(item, view));

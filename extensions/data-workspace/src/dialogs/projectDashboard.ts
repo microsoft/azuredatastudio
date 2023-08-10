@@ -48,12 +48,17 @@ export class ProjectDashboard {
 		this.dashboard = getAzdataApi()!.window.createModelViewDashboard(title, 'ProjectDashboard', { alwaysShowTabs: false });
 		this.dashboard.registerTabs(async (modelView: azdataType.ModelView) => {
 			this.modelView = modelView;
-
+			const container = this.createContainer(title, projectFilePath);
+			const toolbar = this.createToolbarContainer(projectFilePath);
 			this.overviewTab = {
 				title: '',
 				id: 'overview-tab',
-				content: this.createContainer(title, projectFilePath),
-				toolbar: this.createToolbarContainer(projectFilePath)
+				content: container,
+				toolbar: toolbar,
+				dispose: () => {
+					container.dispose();
+					toolbar.dispose();
+				}
 			};
 			return [
 				this.overviewTab
