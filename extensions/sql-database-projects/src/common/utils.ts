@@ -718,9 +718,10 @@ export async function fileContainsCreateTableStatement(fullPath: string, project
 /**
  * Gets target platform based on the server edition/version
  * @param serverInfo server information
+ * @param serverUrl optional server URL, only used to check if it's a known domain for Microsoft Fabric DW
  * @returns target platform for the database project
  */
-export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.IServerInfo, serverName?: string): Promise<SqlTargetPlatform | undefined> {
+export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.IServerInfo, serverUrl?: string): Promise<SqlTargetPlatform | undefined> {
 	const isCloud = serverInfo.isCloud;
 
 	let targetPlatform;
@@ -729,17 +730,23 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 		const azdataApi = getAzdataApi();
 		if (azdataApi) {
 			// TODO: Update this when Fabric DW gets its own engine edition
-			if (engineEdition === azdataApi.DatabaseEngineEdition.SqlOnDemand && isSqlDwUnifiedServer(serverName)) {
+			// https://github.com/microsoft/azuredatastudio/issues/24112
+			if (engineEdition === azdataApi.DatabaseEngineEdition.SqlOnDemand && isSqlDwUnifiedServer(serverUrl)) {
 				targetPlatform = SqlTargetPlatform.sqlDwUnified;
+			} else if (engineEdition === azdataApi.DatabaseEngineEdition.SqlDataWarehouse) {
+				targetPlatform = SqlTargetPlatform.sqlDW;
 			} else {
-				targetPlatform = engineEdition === azdataApi.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+				targetPlatform = SqlTargetPlatform.sqlAzure;
 			}
 		} else {
 			// TODO: Update this when Fabric DW gets its own engine edition
-			if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlOnDemand && isSqlDwUnifiedServer(serverName)) {
+			// https://github.com/microsoft/azuredatastudio/issues/24112
+			if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlOnDemand && isSqlDwUnifiedServer(serverUrl)) {
 				targetPlatform = SqlTargetPlatform.sqlDwUnified;
+			} else if (engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse) {
+				targetPlatform = SqlTargetPlatform.sqlDW;
 			} else {
-				targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+				targetPlatform = SqlTargetPlatform.sqlAzure;
 			}
 		}
 	} else {
@@ -755,12 +762,8 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
  * @param server The server name to check
  * @returns True if the server name matches a known domain for Microsoft Fabric DW, otherwise false
  */
-export function isSqlDwUnifiedServer(server?: string): boolean {
-	if (server) {
-		return server.toLowerCase().includes("datawarehouse.pbidedicated.windows.net") || server.toLowerCase().includes("datawarehouse.fabric.microsoft.com");
-	} else {
-		return false;
-	}
+export function isSqlDwUnifiedServer(server?: string): boolean | undefined {
+	return server?.toLowerCase().includes("datawarehouse.pbidedicated.windows.net") || server?.toLowerCase().includes("datawarehouse.fabric.microsoft.com");
 }
 
 /**
