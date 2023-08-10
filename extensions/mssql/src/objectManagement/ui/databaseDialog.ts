@@ -151,6 +151,8 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			//Initilaize DSC Tab section
 			if (!isUndefinedOrNull(this.objectInfo.databaseScopedConfigurations)) {
 				await this.initializeDatabaseScopedConfigurationSection();
+				this.dscTabSectionsContainer.push(await this.initializeDscValueDropdownTypeSection())
+				this.dscTabSectionsContainer.push(await this.initializeDscValueInputTypeSection())
 				this.dscTab = {
 					title: localizedConstants.DatabaseScopedConfigurationTabHeader,
 					id: this.dscTabId,
@@ -504,14 +506,18 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			width: DefaultTableWidth
 		}).component();
 
-		const dscPrimaryValueDrodpdownTypeGroup = await this.initializeDscValueDropdownTypeSection();
-		const dscPrimaryValueInputTypeGroup = await this.initializeDscValueInputTypeSection();
-		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable, dscPrimaryValueDrodpdownTypeGroup, dscPrimaryValueInputTypeGroup], true));
+		this.dscTabSectionsContainer.push(this.createGroup('', [this.dscTable], true));
 		this.disposables.push(
 			this.dscTable.onRowSelected(
 				async () => {
-					this.currentRowId = this.dscTable.selectedRows[0];
-					await this.validateUpdateToggleDscPrimaryAndSecondaryOptions();
+					// When refreshing the data on primary/secondary updates, we dont need to validate/toggle inputs again
+					if (this.currentRowId !== this.dscTable.selectedRows[0]) {
+						this.currentRowId = this.dscTable.selectedRows[0];
+						await this.validateUpdateToggleDscPrimaryAndSecondaryOptions();
+					}
+
+					// This sets the focus to the primary/secondary inputs on data refresh
+					await this.setFocusToInputBox();
 				}
 			)
 		);
@@ -547,7 +553,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary
 				, max: MAXDOP_Max_Limit
 			});
-			await this.setFocusToInputBox();
 		}
 		// Cannot set the 'AUTO_ABORT_PAUSED_INDEX (25)' option for the secondaries replica while this option is only allowed to be set for the primary.
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 25) {
@@ -556,7 +561,6 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				value: this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForPrimary
 				, max: PAUSED_RESUMABLE_INDEX_Max_Limit
 			});
-			await this.setFocusToInputBox();
 		}
 		// Can only set OFF/Azure blob storage endpoint to the 'LEDGER_DIGEST_STORAGE_ENDPOINT (38)'s primary and secondary values
 		else if (this.objectInfo.databaseScopedConfigurations[this.currentRowId].id === 38) {
