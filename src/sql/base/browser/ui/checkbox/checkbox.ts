@@ -25,10 +25,10 @@ export class Checkbox extends Widget {
 	private _el: HTMLInputElement;
 	private _label: HTMLSpanElement;
 
-	private _onChange = new Emitter<boolean>();
+	private _onChange = this._register(new Emitter<boolean>());
 	public readonly onChange: Event<boolean> = this._onChange.event;
 
-	private _onFocus = new Emitter<void>();
+	private _onFocus = this._register(new Emitter<void>());
 	public readonly onFocus: Event<void> = this._onFocus.event;
 
 	constructor(container: HTMLElement, private readonly _options: ICheckboxOptions) {

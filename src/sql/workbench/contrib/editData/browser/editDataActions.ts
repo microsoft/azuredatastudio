@@ -161,7 +161,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
-		this.selectBox = new SelectBox(this._options, this._options[this._currentOptionsIndex], defaultSelectBoxStyles, contextViewService);
+		this.selectBox = this._register(new SelectBox(this._options, this._options[this._currentOptionsIndex], defaultSelectBoxStyles, contextViewService));
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);

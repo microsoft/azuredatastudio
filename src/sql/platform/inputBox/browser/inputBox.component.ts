@@ -37,18 +37,18 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 	}
 
 	ngOnInit(): void {
-		this._inputbox = new vsInputBox(this._el.nativeElement, this.contextViewService, {
+		this._inputbox = this._register(new vsInputBox(this._el.nativeElement, this.contextViewService, {
 			min: this.min,
 			max: this.max,
 			type: this.type,
 			placeholder: this.placeholder,
 			ariaLabel: this.ariaLabel,
 			inputBoxStyles: defaultInputBoxStyles
-		});
+		}));
 		if (this.value) {
 			this._inputbox.value = this.value;
 		}
-		this._inputbox.onDidChange(e => {
+		this._register(this._inputbox.onDidChange(e => {
 			switch (this.type) {
 				case 'number':
 					if (e) {
@@ -58,7 +58,7 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 				default:
 					this.onDidChange.emit(e);
 			}
-		});
+		}));
 	}
 
 	ngOnChanges(changes: SimpleChanges): void {

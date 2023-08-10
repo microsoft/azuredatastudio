@@ -65,14 +65,14 @@ export class Slider extends Widget {
 	private _datalist: HTMLDataListElement | undefined = undefined;
 	private _showTicks: boolean = false;
 
-	private _onChange = new Emitter<number>();
+	private _onChange = this._register(new Emitter<number>());
 	/**
 	 * Event that is fired every time the user stops dragging the slider.
 	 * Value is the current value of the slider.
 	 */
 	public readonly onChange: Event<number> = this._onChange.event;
 
-	private _onInput = new Emitter<number>();
+	private _onInput = this._register(new Emitter<number>());
 	/**
 	 * Event that is fires every time the value changes while the user is
 	 * dragging the slider. Value is the current value of the slider.

@@ -117,7 +117,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this._selectListContainer.style.backgroundColor = opt.contextBackground;
 		this._selectListContainer.style.outline = `1px solid ${opt.contextBorder}`;
 
-		this._input = new InputBox(this._inputContainer, contextViewService, {
+		this._input = this._register(new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
 				// @SQLTODO
 				// showMessage: false,
@@ -127,7 +127,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			ariaLabel: this._options.ariaLabel,
 			ariaDescription: this._options.ariaDescription,
 			inputBoxStyles: <IInputBoxStyles>this._options
-		});
+		}));
 
 		// Clear title from input box element (defaults to placeholder value) since we don't want a tooltip for the selected value
 		// in the text box - we already have tooltips for each item in the dropdown itself.
