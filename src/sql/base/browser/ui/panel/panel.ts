@@ -74,7 +74,7 @@ export class TabbedPanel extends Disposable {
 	private _headerVisible: boolean;
 	private _styleElement: HTMLStyleElement;
 
-	private _onTabChange = new Emitter<PanelTabIdentifier>();
+	private _onTabChange = this._register(new Emitter<PanelTabIdentifier>());
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
 
 	private tabHistory: string[] = [];

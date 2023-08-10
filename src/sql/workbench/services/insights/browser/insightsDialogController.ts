@@ -161,7 +161,7 @@ export class InsightsDialogController {
 				this._columns = resultset.columnInfo;
 				let rows: ResultSetSubset;
 				try {
-					rows = await this._queryRunner.getQueryRows(0, resultset.rowCount, batch.id, resultset.id);
+					rows = await this._queryRunner.getQueryRowsPaged(0, resultset.rowCount, batch.id, resultset.id);
 				} catch (e) {
 					return Promise.reject(e);
 				}
