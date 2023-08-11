@@ -39,9 +39,21 @@
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
+    	{
+          "SourceFile": "resources\\xlf\\en\\azuremonitor.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\azuremonitor.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\cms.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\cms.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+    	{
+          "SourceFile": "resources\\xlf\\en\\context-builder.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\context-builder.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
@@ -54,6 +66,12 @@
 		{
           "SourceFile": "resources\\xlf\\en\\data-workspace.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\data-workspace.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+    	{
+          "SourceFile": "resources\\xlf\\en\\datavirtualization.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\datavirtualization.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
@@ -105,6 +123,12 @@
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
+    	{
+          "SourceFile": "resources\\xlf\\en\\query-store.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\query-store.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\resource-deployment.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\resource-deployment.xlf.lcl",
@@ -129,6 +153,12 @@
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
+    	{
+          "SourceFile": "resources\\xlf\\en\\sql-bindings.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-bindings.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\sql-database-projects.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-database-projects.xlf.lcl",
@@ -138,18 +168,6 @@
 		{
           "SourceFile": "resources\\xlf\\en\\sql-migration.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-migration.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
-          "SourceFile": "resources\\xlf\\en\\sql.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
-          "SourceFile": "resources\\xlf\\en\\xml-language-features.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\xml-language-features.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         }
