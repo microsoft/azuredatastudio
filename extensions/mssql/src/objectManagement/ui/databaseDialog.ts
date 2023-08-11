@@ -13,7 +13,6 @@ import { Database, DatabaseScopedConfigurationsInfo, DatabaseViewInfo } from '..
 import { convertNumToTwoDecimalStringInMB } from '../utils';
 import { isUndefinedOrNull } from '../../types';
 import { deepClone } from '../../util/objects';
-import { InputBoxComponent } from 'azdata';
 
 const MAXDOP_Max_Limit = 32767;
 const PAUSED_RESUMABLE_INDEX_Max_Limit = 71582;
@@ -785,7 +784,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Updates the data to the table and sets the focus to the selected row
 	 * @param data - Modified data to be set in the table
 	 */
-	private async updateDscTable(data: any[][], inputToBeFocused: InputBoxComponent = undefined): Promise<void> {
+	private async updateDscTable(data: any[][], inputToBeFocused: azdata.InputBoxComponent = undefined): Promise<void> {
 		// Set the focus to the selected input box
 		this.setFocusToInput = inputToBeFocused;
 		await this.setTableData(this.dscTable, data, DscTableRowLength);
