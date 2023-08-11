@@ -163,10 +163,11 @@ const extensionsFilter = filter([
 	'**/azurecore.xlf',
 	'**/azuremonitor.xlf',
 	'**/cms.xlf',
+	'**/context-monitor.xlf',
 	'**/dacpac.xlf',
+	'**/data-workspace.xlf',
 	'**/datavirtualization.xlf',
 	'**/git.xlf',
-	'**/data-workspace.xlf',
 	'**/import.xlf',
 	'**/kusto.xlf',
 	'**/machine-learning.xlf',
@@ -174,14 +175,14 @@ const extensionsFilter = filter([
 	'**/notebook.xlf',
 	'**/profiler.xlf',
 	'**/query-history.xlf',
+	'**/query-store.xlf',
 	'**/resource-deployment.xlf',
 	'**/schema-compare.xlf',
 	'**/server-report.xlf',
 	'**/sql-assessment.xlf',
 	'**/sql-bindings.xlf',
 	'**/sql-database-projects.xlf',
-	'**/sql-migration.xlf',
-	'**/xml-language-features.xlf'
+	'**/sql-migration.xlf'
 ]);
 
 // Copy ADS extension XLFs into English resource folder.

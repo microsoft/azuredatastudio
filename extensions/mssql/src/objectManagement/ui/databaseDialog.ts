@@ -78,7 +78,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private dscPrimaryValueInputGroup: azdata.GroupContainer;
 	private dscSecondaryValueInputGroup: azdata.GroupContainer;
 	private dscSecondaryCheckboxForInputGroup: azdata.GroupContainer;
-	private setFocusToInput: string = null;
+	private setFocusToInput: azdata.InputBoxComponent = undefined;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options);
@@ -653,7 +653,9 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					}
 
 					// This sets the focus to the primary/secondary inputs on data refresh
-					await this.setFocusToInputBox();
+					if (!isUndefinedOrNull(this.setFocusToInput)) {
+						await this.setFocusToInput.focus();
+					}
 				}
 			)
 		);
@@ -786,7 +788,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 					this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 					this.dscTable.data[this.currentRowId][2] = newValue;
 				}
-				await this.updateDscTable(this.dscTable.data, 'primaryInput');
+				await this.updateDscTable(this.dscTable.data, this.valueForPrimaryInput);
 			}
 		}, '', true, 'number', 150, false, 0, 0);
 		const primaryContainer = this.createLabelInputContainer(localizedConstants.ValueForPrimaryColumnHeader, this.valueForPrimaryInput);
@@ -813,7 +815,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.objectInfo.databaseScopedConfigurations[this.currentRowId].valueForSecondary = newValue;
 			if (this.dscTable.data[this.currentRowId][2] !== newValue) {
 				this.dscTable.data[this.currentRowId][2] = newValue;
-				await this.updateDscTable(this.dscTable.data, 'secondaryInput');
+				await this.updateDscTable(this.dscTable.data, this.valueForSecondaryInput);
 			}
 		}, '', true, 'number', 150, false, 0, 0);
 		const secondaryContainer = this.createLabelInputContainer(localizedConstants.ValueForSecondaryColumnHeader, this.valueForSecondaryInput);
@@ -918,23 +920,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	 * Updates the data to the table and sets the focus to the selected row
 	 * @param data - Modified data to be set in the table
 	 */
-	private async updateDscTable(data: any[][], needFocus: string = null): Promise<void> {
+	private async updateDscTable(data: any[][], inputToBeFocused: azdata.InputBoxComponent = undefined): Promise<void> {
 		// Set the focus to the selected input box
-		this.setFocusToInput = needFocus;
+		this.setFocusToInput = inputToBeFocused;
 		await this.setTableData(this.dscTable, data, DscTableRowLength);
 		// Restore the focus to previously selected row.
 		this.dscTable.setActiveCell(this.currentRowId, 0);
-	}
-
-	/**
-	 * Input box types requires focus to be set after refreshing the table data
-	 */
-	private async setFocusToInputBox(): Promise<void> {
-		if (this.setFocusToInput === 'primaryInput') {
-			await this.valueForPrimaryInput.focus();
-		} else if (this.setFocusToInput === 'secondaryInput') {
-			await this.valueForSecondaryInput.focus();
-		}
 	}
 	// #endregion
 
