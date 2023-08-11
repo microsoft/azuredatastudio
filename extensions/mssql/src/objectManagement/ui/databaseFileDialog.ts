@@ -27,6 +27,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private defaultNewDatabaseFile: DatabaseFile;
 	private fileGroupDropdown: azdata.DropDownComponent;
 	private fileGrowthGroup: azdata.GroupContainer;
+	private maxSizeGroup: azdata.GroupContainer;
+	private pathContainer: azdata.FlexContainer;
 	private enableAutoGrowthCheckbox: azdata.CheckBoxComponent;
 	private inPercentAutogrowth: azdata.RadioButtonComponent;
 	private inMegabytesAutogrowth: azdata.RadioButtonComponent;
@@ -42,10 +44,11 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	constructor(private readonly options: NewDatabaseFileDialogOptions) {
 		super(options.title, 'DatabaseFileDialog');
 		this.defaultNewDatabaseFile = {
+			id: undefined,
 			name: '',
 			type: options.viewInfo.fileTypesOptions[0],
 			path: options.files[0].path,
-			fileGroup: options.viewInfo.fileGroupsOptions[0],
+			fileGroup: options.viewInfo.rowDataFileGroupsOptions[0],
 			fileNameWithExtension: '',
 			sizeInMb: defaultFileSizeInMb,
 			autoFileGrowth: defaultFileGrowthInMb,
@@ -92,7 +95,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// Filegroup
 		this.fileGroupDropdown = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
-		}, this.options.viewInfo.fileGroupsOptions, this.options.viewInfo.fileGroupsOptions[0], true, DefaultInputWidth);
+		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.viewInfo.rowDataFileGroupsOptions[0], true, DefaultInputWidth);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, this.fileGroupDropdown);
 		containers.push(sizeContainer);
 
@@ -121,9 +124,9 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}, this.defaultNewDatabaseFile.path, true, 'text', DefaultInputWidth - 30, true);
 		this.filePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() });
 		this.filePathButton.width = 25;
-		const pathContainer = this.createLabelInputContainer(localizedConstants.PathText, this.filePathTextBox);
-		pathContainer.addItems([this.filePathButton], { flex: '10 0 auto' });
-		containers.push(pathContainer);
+		this.pathContainer = this.createLabelInputContainer(localizedConstants.PathText, this.filePathTextBox);
+		this.pathContainer.addItems([this.filePathButton], { flex: '10 0 auto' });
+		containers.push(this.pathContainer);
 
 		// File Name
 		const fileNameWithExtension = this.createInputBox(localizedConstants.FileNameText, async (newValue) => {
@@ -133,31 +136,6 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(fileNameWithExtensionContainer);
 
 		return this.createGroup('', containers, false);
-	}
-
-	private async UpdateOptionsForSelectedFileType(selectedOption: string): Promise<void> {
-		// Row Data defaults
-		let fileGroupDdOptions = this.options.viewInfo.fileGroupsOptions;
-		let fileGroupDdValue = this.options.viewInfo.fileGroupsOptions[0];
-		let visibility = 'visible';
-		// Log
-		if (selectedOption === this.options.viewInfo.fileTypesOptions[1]) {
-			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
-			fileGroupDdValue = localizedConstants.FileGroupForLogTypeText;
-		}
-		// File Stream
-		else if (selectedOption === this.options.viewInfo.fileTypesOptions[2]) {
-			fileGroupDdOptions = [localizedConstants.FileGroupForFilestreamTypeText];
-			fileGroupDdValue = localizedConstants.FileGroupForFilestreamTypeText;
-			visibility = 'hidden';
-		}
-
-		// Update the propertie
-		await this.fileGroupDropdown.updateProperties({
-			values: fileGroupDdOptions, value: fileGroupDdValue
-		});
-		await this.enableAutoGrowthCheckbox.updateProperties({ 'visibility': visibility });
-		await this.fileGrowthGroup.updateCssStyles({ 'visibility': visibility });
 	}
 
 	private InitializeAutogrowthSection(): azdata.GroupContainer {
@@ -192,12 +170,13 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}, String(defaultMaxFileSizeLimitedToInMb), true, 'number', DefaultInputWidth - 20);
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
 
-		return this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], false);
+		this.maxSizeGroup = this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], false);
+		return this.maxSizeGroup;
 	}
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
 		this.autoFilegrowthInput.value = this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue?.toString() : this.autogrowthInMegabytesValue?.toString();
-		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? localizedConstants.PercentText : this.defaultNewDatabaseFile.autoFileGrowthType;
+		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : this.defaultNewDatabaseFile.autoFileGrowthType;
 	}
 
 	private async handleMaxFileSizeTypeChange(checked: boolean): Promise<void> {
@@ -230,6 +209,36 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.result.path = fileUri.fsPath;
 	}
 
+	private async UpdateOptionsForSelectedFileType(selectedOption: string): Promise<void> {
+		// Row Data defaults
+		let fileGroupDdOptions = this.options.viewInfo.rowDataFileGroupsOptions;
+		let fileGroupDdValue = fileGroupDdOptions[0];
+		let visibility = 'visible';
+		let maxSizeGroupMarginTop = '0px';
+		let pathContainerMarginTop = '0px';
+		// Log
+		if (selectedOption === this.options.viewInfo.fileTypesOptions[1]) {
+			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
+			fileGroupDdValue = localizedConstants.FileGroupForLogTypeText;
+		}
+		// File Stream
+		else if (selectedOption === this.options.viewInfo.fileTypesOptions[2]) {
+			fileGroupDdOptions = this.options.viewInfo.fileStreamFileGroupsOptions;
+			fileGroupDdValue = fileGroupDdOptions[0];
+			visibility = 'hidden';
+			maxSizeGroupMarginTop = '-130px';
+			pathContainerMarginTop = '-40px';
+		}
+
+		// Update the propertie
+		await this.fileGroupDropdown.updateProperties({
+			values: fileGroupDdOptions, value: fileGroupDdValue
+		});
+		await this.enableAutoGrowthCheckbox.updateCssStyles({ 'visibility': visibility });
+		await this.fileGrowthGroup.updateCssStyles({ 'visibility': visibility });
+		await this.maxSizeGroup.updateCssStyles({ 'margin-top': maxSizeGroupMarginTop });
+		await this.pathContainer.updateCssStyles({ 'margin-top': pathContainerMarginTop });
+	}
 
 	public override async onFormFieldChange(): Promise<void> {
 		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(this.defaultNewDatabaseFile);

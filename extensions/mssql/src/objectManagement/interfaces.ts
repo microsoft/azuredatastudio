@@ -475,7 +475,8 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	dscOnOffOptions: string[];
 	dscElevateOptions: string[];
 	dscEnableDisableOptions: string[];
-	fileGroupsOptions: string[];
+	rowDataFileGroupsOptions: string[];
+	fileStreamFileGroupsOptions: string[];
 	fileTypesOptions: string[];
 }
 
@@ -528,6 +529,7 @@ export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> 
 }
 
 export interface DatabaseFile {
+	id: number;
 	name: string;
 	type: string;
 	path: string;
