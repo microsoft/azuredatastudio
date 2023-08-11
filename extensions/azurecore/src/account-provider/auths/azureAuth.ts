@@ -27,6 +27,7 @@ import { getProxyEnabledHttpClient, getTenantIgnoreList, updateTenantIgnoreList 
 import { errorToPromptFailedResult } from './networkUtils';
 import { MsalCachePluginProvider } from '../utils/msalCachePlugin';
 import { isErrorResponseBodyWithError } from '../../azureResource/utils';
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 const localize = nls.loadMessageBundle();
 
 export abstract class AzureAuth implements vscode.Disposable {
@@ -473,6 +474,22 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region network functions
+
+	private async makeGetRequest(url: string, token: string): Promise<AxiosResponse<any>> {
+		const config: AxiosRequestConfig = {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			validateStatus: () => true // Never throw
+		};
+
+		const response = await axios.get(url, config);
+		// ADAL is being deprecated so just ignoring these for now
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
+		return response;
+	}
 
 	//#endregion
 
