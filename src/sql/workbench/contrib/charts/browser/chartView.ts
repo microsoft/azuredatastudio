@@ -11,7 +11,7 @@ import { Extensions, IInsightData, IInsightRegistry } from 'sql/platform/dashboa
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import { ConfigureChartAction, CopyAction, CreateInsightAction, IChartActionContext, SaveImageAction } from 'sql/workbench/contrib/charts/browser/actions';
 import { getChartMaxRowCount } from 'sql/workbench/contrib/charts/browser/utils';
-import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import * as DOM from 'vs/base/browser/dom';
@@ -234,7 +234,7 @@ export class ChartView extends Disposable implements IPanelView {
 			if (batch) {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
-					this._queryRunner.getQueryRows(0, Math.min(getChartMaxRowCount(this._configurationService), summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
+					this._queryRunner.getQueryRowsPaged(0, Math.min(getChartMaxRowCount(this._configurationService), summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
 						let rows = d.rows;
 						let columns = summary.columnInfo.map(c => c.columnName);
 						this.setData(rows, columns);
@@ -326,7 +326,7 @@ export class ChartView extends Disposable implements IPanelView {
 		let value = this.state ? this.state.options[entry] || option.default : option.default;
 		switch (option.type) {
 			case ControlType.checkbox:
-				let checkbox = new Checkbox(optionInput, {
+				let checkbox = this._register(new Checkbox(optionInput, {
 					label: option.label,
 					ariaLabel: option.label,
 					checked: value,
@@ -338,25 +338,25 @@ export class ChartView extends Disposable implements IPanelView {
 							}
 						}
 					}
-				});
+				}));
 				setFunc = (val: boolean) => {
 					checkbox.checked = val;
 				};
 				break;
 			case ControlType.combo:
 				//pass options into changeAltNames in order for SelectBox to show user-friendly names.
-				let dropdown = new SelectBox(option.displayableOptions || this.changeToAltNames(option.options!), undefined!, defaultSelectBoxStyles, this._contextViewService);
+				let dropdown = this._register(new SelectBox(option.displayableOptions || this.changeToAltNames(option.options!), undefined!, defaultSelectBoxStyles, this._contextViewService));
 				dropdown.setAriaLabel(option.label);
 				dropdown.select(option.options!.indexOf(value));
 				dropdown.render(optionInput);
-				dropdown.onDidSelect(e => {
+				this._register(dropdown.onDidSelect(e => {
 					if (this._options[entry] !== option.options![e.index]) {
 						(this._options[entry] as any) = option.options![e.index];
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						dropdown.select(option.options!.indexOf(val));
@@ -364,19 +364,19 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.input:
-				let input = new InputBox(optionInput, this._contextViewService, {
+				let input = this._register(new InputBox(optionInput, this._contextViewService, {
 					ariaLabel: option.label,
 					inputBoxStyles: defaultInputBoxStyles
-				});
+				}));
 				input.value = value || '';
-				input.onDidChange(e => {
+				this._register(input.onDidChange(e => {
 					if (this._options[entry] !== e) {
 						(this._options[entry] as any) = e;
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						input.value = val;
@@ -384,13 +384,13 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.numberInput:
-				let numberInput = new InputBox(optionInput, this._contextViewService, {
+				let numberInput = this._register(new InputBox(optionInput, this._contextViewService, {
 					type: 'number',
 					ariaLabel: option.label,
 					inputBoxStyles: defaultInputBoxStyles
-				});
+				}));
 				numberInput.value = value || '';
-				numberInput.onDidChange(e => {
+				this._register(numberInput.onDidChange(e => {
 					if (this._options[entry] !== e) {
 						// When user clears the input box, the value we get from the input box will be empty string.
 						(this._options[entry] as any) = (e === '' ? undefined : Number(e));
@@ -398,7 +398,7 @@ export class ChartView extends Disposable implements IPanelView {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						numberInput.value = val;
@@ -406,21 +406,21 @@ export class ChartView extends Disposable implements IPanelView {
 				};
 				break;
 			case ControlType.dateInput:
-				let dateInput = new InputBox(optionInput, this._contextViewService, {
+				let dateInput = this._register(new InputBox(optionInput, this._contextViewService, {
 					type: 'datetime-local',
 					ariaLabel: option.label,
 					inputBoxStyles: defaultInputBoxStyles
-				});
+				}));
 
 				dateInput.value = value || '';
-				dateInput.onDidChange(e => {
+				this._register(dateInput.onDidChange(e => {
 					if (this._options[entry] !== e) {
 						(this._options[entry] as any) = e;
 						if (this.insight) {
 							this.insight.options = this._options;
 						}
 					}
-				});
+				}));
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
 						dateInput.value = val;

@@ -170,7 +170,7 @@ import 'vs/workbench/contrib/remoteTunnel/electron-sandbox/remoteTunnel.contribu
 
 // {{SQL CARBON EDIT}} - SQL added contributions
 // Telemetry Opt Out
-import 'sql/workbench/contrib/welcome/telemetryOptOut/electron-sandbox/telemetryOptOut.contribution';
+import 'sql/workbench/contrib/telemetry/electron-sandbox/telemetryOptOut.contribution';
 
 //#endregion
 
@@ -178,9 +178,9 @@ export { main } from 'vs/workbench/electron-sandbox/desktop.main';
 
 // {{SQL CARBON EDIT}} - SQL-specific services
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
-import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
+import { SqlOAuthService } from 'sql/platform/oAuth/electron-sandbox/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
+import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-sandbox/clipboardService';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
@@ -196,7 +196,7 @@ registerSingleton(IAzureAccountService, AzureAccountService, InstantiationType.D
 // getting started
 
 // CLI
-import 'sql/workbench/contrib/commandLine/electron-browser/commandLine.contribution';
+import 'sql/workbench/contrib/commandLine/electron-sandbox/commandLine.contribution';
 
 //getting started
-import 'sql/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
+import 'sql/workbench/contrib/welcome/electron-sandbox/gettingStarted.contribution';

@@ -305,7 +305,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	private accountNeedsRefresh(error: AuthError): boolean {
 		return error instanceof InteractionRequiredAuthError
 			|| error.errorMessage.includes(Constants.AADSTS70043)
-			|| error.errorMessage.includes(Constants.AADSTS50173);
+			|| error.errorMessage.includes(Constants.AADSTS50173)
+			|| error.errorMessage.includes(Constants.AADSTS50078)
+			|| error.errorMessage.includes(Constants.AADSTS50085)
+			|| error.errorMessage.includes(Constants.AADSTS50089)
+			|| error.errorMessage.includes(Constants.AADSTS700084);
 	}
 
 	/**

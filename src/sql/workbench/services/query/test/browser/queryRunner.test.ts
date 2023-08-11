@@ -57,8 +57,8 @@ suite('Query Runner', () => {
 		// get query rows
 		const rowResults: ResultSetSubset = { rowCount: 100, rows: range(100).map(r => range(1).map(c => ({ displayValue: `${r}${c}` }))) };
 		const getRowStub = sinon.stub().returns(Promise.resolve(rowResults));
-		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowStub);
-		const resultReturn = await runner.getQueryRows(0, 100, 0, 0);
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRowsPaged', getRowStub);
+		const resultReturn = await runner.getQueryRowsPaged(0, 100, 0, 0);
 		assert(getRowStub.calledWithExactly({ ownerUri: uri, batchIndex: 0, resultSetIndex: 0, rowsStartIndex: 0, rowsCount: 100 }, undefined, undefined));
 		assert.deepStrictEqual(resultReturn, rowResults);
 		// batch complete
@@ -121,7 +121,7 @@ suite('Query Runner', () => {
 		assert(runQueryStub.calledWithExactly(uri, undefined, { displayEstimatedQueryPlan: true }));
 		const xmlPlan = 'xml plan';
 		const getRowsStub = sinon.stub().returns(Promise.resolve({ rowCount: 1, rows: [[{ displayValue: xmlPlan }]] } as ResultSetSubset));
-		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowsStub);
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRowsPaged', getRowsStub);
 		runner.handleBatchStart({ id: 0, executionStart: '' });
 		runner.handleResultSetAvailable({ id: 0, batchId: 0, complete: true, rowCount: 1, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
 		const plan = await runner.planXml;
@@ -143,7 +143,7 @@ suite('Query Runner', () => {
 		runner.handleResultSetAvailable({ id: 0, batchId: 0, complete: false, rowCount: 0, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
 		const xmlPlan = 'xml plan';
 		const getRowsStub = sinon.stub().returns(Promise.resolve({ rowCount: 1, rows: [[{ displayValue: xmlPlan }]] } as ResultSetSubset));
-		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRows', getRowsStub);
+		(instantiationService as TestInstantiationService).stub(IQueryManagementService, 'getQueryRowsPaged', getRowsStub);
 		runner.handleResultSetUpdated({ id: 0, batchId: 0, complete: true, rowCount: 1, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
 		const plan = await runner.planXml;
 		assert(getRowsStub.calledOnce);
