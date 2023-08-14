@@ -96,6 +96,12 @@
         "icon": "$(edit)"
       },
       {
+        "command": "mssql.deleteDatabase",
+        "category": "MSSQL",
+        "title": "%title.deleteObject%",
+        "icon": "$(trash)"
+      },
+      {
         "command": "mssql.deleteObject",
         "category": "MSSQL",
         "title": "%title.deleteObject%",
@@ -510,6 +516,10 @@
           "when": "false"
         },
         {
+          "command": "mssql.deleteDatabase",
+          "when": "false"
+        },
+        {
           "command": "mssql.deleteObject",
           "when": "false"
         },
@@ -579,8 +589,13 @@
           "group": "1_objectManagement@2"
         },
         {
+          "command": "mssql.deleteDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {
@@ -629,8 +644,13 @@
           "group": "inline@2"
         },
         {
+          "command": "mssql.deleteDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "inline@3"
+        },
+        {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/)  && config.workbench.enablePreviewFeatures",
           "group": "inline@3"
         }
       ],
@@ -676,8 +696,13 @@
           "group": "1_objectManagement@1"
         },
         {
+          "command": "mssql.deleteDatabase",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "group": "1_objectManagement@3"
+        },
+        {
           "command": "mssql.deleteObject",
-          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole|Database)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType =~ /^(ServerLevelLogin|User|ServerLevelServerRole|ApplicationRole|DatabaseRole)$/ && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@3"
         },
         {

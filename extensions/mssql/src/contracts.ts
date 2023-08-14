@@ -1646,6 +1646,18 @@ export namespace DetachDatabaseRequest {
 	export const type = new RequestType<DetachDatabaseRequestParams, string, void, void>('objectManagement/detachDatabase');
 }
 
+export interface DropDatabaseRequestParams {
+	connectionUri: string;
+	objectUrn: string;
+	dropConnections: boolean;
+	deleteBackupHistory: boolean;
+	generateScript: boolean;
+}
+
+export namespace DropDatabaseRequest {
+	export const type = new RequestType<DropDatabaseRequestParams, string, void, void>('objectManagement/dropDatabase');
+}
+
 export interface AttachDatabaseRequestParams {
 	connectionUri: string;
 	databases: DatabaseFileData[];

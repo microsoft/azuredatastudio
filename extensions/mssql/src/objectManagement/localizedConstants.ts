@@ -104,6 +104,13 @@ export function OpenDetachDatabaseDialogError(error: string): string {
 	}, "An error occurred while opening the detach database dialog. {0}", error);
 }
 
+export function OpenDeleteDatabaseDialogError(error: string): string {
+	return localize({
+		key: 'objectManagement.openDeleteDatabaseDialogError',
+		comment: ['{0}: error message.']
+	}, "An error occurred while opening the delete database dialog. {0}", error);
+}
+
 export function OpenAttachDatabaseDialogError(error: string): string {
 	return localize({
 		key: 'objectManagement.openAttachDatabaseDialogError',
@@ -198,6 +205,12 @@ export const MdfFileLocation = localize('objectManagement.mdfFileLocation', "MDF
 export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
 export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
 export const DetachButtonLabel = localize('objectManagement.detachButtonLabel', "Detach");
+export const DeleteDatabaseDialogTitle = (dbName: string) => localize('objectManagement.deleteDatabaseDialogTitle', "Delete Database - {0} (Preview)", dbName);
+export const DeleteButtonLabel = localize('objectManagement.deleteButtonLabel', "Delete");
+export const DeleteDatabaseOptions = localize('objectManagement.deleteDatabaseOptions', "Delete Database Options");
+export const DeleteDropConnections = localize('objectManagement.deleteDropConnections', "Close existing connections");
+export const DeleteDropBackupHistory = localize('objectManagement.deleteDropBackupHistory', "Delete backup and restore history information for database");
+export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
 
 // Login
 export const BlankPasswordConfirmationText: string = localize('objectManagement.blankPasswordConfirmation', "Creating a login with a blank password is a security risk.  Are you sure you want to continue?");

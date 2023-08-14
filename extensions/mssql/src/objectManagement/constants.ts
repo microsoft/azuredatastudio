@@ -34,6 +34,7 @@ export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=224
 export const AttachDatabaseDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/attach-a-database#to-attach-a-database';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
 export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
+export const DeleteDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/drop-database-transact-sql';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
@@ -43,6 +44,7 @@ export const enum TelemetryActions {
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
 	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
+	OpenDeleteDatabaseDialog = 'OpenDeleteDatabaseDialog',
 	OpenAttachDatabaseDialog = 'OpenAttachDatabaseDialog'
 }
 
