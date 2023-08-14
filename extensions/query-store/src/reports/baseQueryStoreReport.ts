@@ -13,8 +13,8 @@ import { ConfigureDialog } from '../settings/configureDialog';
 export abstract class BaseQueryStoreReport {
 	protected editor: azdata.workspace.ModelViewEditor;
 	protected flexModel?: azdata.FlexContainer;
-
-	//public configureDialog: ConfigureDialog;
+	protected configureDialog?: ConfigureDialog;
+	protected configureButton?: azdata.ButtonComponent;
 
 	constructor(reportName: string, private reportTitle: string, protected resizeable: boolean, private extensionContext: vscode.ExtensionContext) {
 		this.editor = azdata.workspace.createModelViewEditor(reportName, { retainContextWhenHidden: true, supportsSave: false }, reportName);
@@ -106,7 +106,7 @@ export abstract class BaseQueryStoreReport {
 			CSSStyles: { 'margin-top': '5px', 'margin-bottom': '5px', 'margin-right': '15px' }
 		}).component();
 
-		const configureButton = view.modelBuilder.button().withProps({
+		this.configureButton = view.modelBuilder.button().withProps({
 			label: constants.configure,
 			title: constants.configure,
 			iconPath: {
@@ -114,14 +114,13 @@ export abstract class BaseQueryStoreReport {
 				dark: path.join(this.extensionContext.extensionPath, 'images', 'dark', 'gear.svg')
 			}
 		}).component();
-		configureButton.enabled = true;
+		this.configureButton.enabled = true;
 
-		configureButton.onDidClick(async () => {
-			let configureDialog = new ConfigureDialog();
-			await configureDialog.openDialog();
+		this.configureButton.onDidClick(async () => {
+			await this.configureButtonClick(view);
 		});
 
-		await configureButton.updateCssStyles({ 'margin-top': '5px' });
+		await this.configureButton.updateCssStyles({ 'margin-top': '5px' });
 
 		toolBar.addToolbarItems([
 			{
@@ -133,7 +132,7 @@ export abstract class BaseQueryStoreReport {
 				toolbarSeparatorAfter: true
 			},
 			{
-				component: configureButton
+				component: this.configureButton
 			}
 		]);
 
@@ -141,5 +140,7 @@ export abstract class BaseQueryStoreReport {
 	}
 
 	protected abstract createViews(_view: azdata.ModelView): Promise<azdata.FlexContainer[]>;
+	protected abstract configureButtonClick(_view: azdata.ModelView): Promise<void>;
+	//protected abstract updateTimePeriod(_view: azdata.ModelView): Promise<void>;
 }
 

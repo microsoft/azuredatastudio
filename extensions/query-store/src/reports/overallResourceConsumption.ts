@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
+import { ConfigureDialog } from '../settings/configureDialog';
 
 
 export class OverallResourceConsumption extends BaseQueryStoreReport {
@@ -31,5 +32,11 @@ export class OverallResourceConsumption extends BaseQueryStoreReport {
 		const logicalReadsContainer = await this.logicalReads.createViewContainer(view);
 
 		return [durationContainer, executionCountContainer, cpuTimeContainer, logicalReadsContainer];
+	}
+
+	public override async configureButtonClick(view: azdata.ModelView): Promise<void> {
+		this.configureDialog = new ConfigureDialog(view);
+		await this.configureDialog.openDialog();
+		await this.configureDialog.addConsumptionCriteriaComponent();
 	}
 }

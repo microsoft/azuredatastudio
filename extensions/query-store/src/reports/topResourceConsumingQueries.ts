@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { BaseQueryStoreReport } from './baseQueryStoreReport';
 import { QueryStoreView } from './queryStoreView';
+import { ConfigureDialog } from '../settings/configureDialog';
 
 export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 	private queries: QueryStoreView;
@@ -27,5 +28,11 @@ export class TopResourceConsumingQueries extends BaseQueryStoreReport {
 		const planContainer = await this.plan.createViewContainer(view);
 
 		return [queriesContainer, planSummaryContainer, planContainer];
+	}
+
+	public override async configureButtonClick(view: azdata.ModelView): Promise<void> {
+		this.configureDialog = new ConfigureDialog(view);
+		await this.configureDialog.openDialog();
+		await this.configureDialog.addConsumptionCriteriaComponent();
 	}
 }
