@@ -2012,7 +2012,12 @@ declare module 'azdata' {
 			isPrimary: boolean;
 		}
 
-		export function openFileBrowserDialog(): Thenable<string>;
+		export interface FileFilters {
+			label: string;
+			filters: string[];
+		}
+
+		export function openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string>;
 	}
 
 	export interface TableComponent {

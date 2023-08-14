@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdata from 'azdata';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostWindowShape, MainThreadWindowShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -16,7 +17,7 @@ export class ExtHostWindow implements ExtHostWindowShape {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadWindow);
 	}
 
-	$openFileBrowserDialog(): Promise<string> {
-		return this._proxy.$openFileBrowserDialog();
+	$openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string> {
+		return this._proxy.$openFileBrowserDialog(connectionUri, targetPath, fileFilters);
 	}
 }

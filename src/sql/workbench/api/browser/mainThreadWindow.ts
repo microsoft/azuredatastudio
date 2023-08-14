@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdata from 'azdata';
 import { MainThreadWindowShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -14,11 +15,18 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IFileBrowserDialogController fileBrowserDialogService: IFileBrowserDialogController
+		@IFileBrowserDialogController private _fileBrowserDialogService: IFileBrowserDialogController
 	) {
 		super();
 	}
-	$openFileBrowserDialog(): Promise<string> {
-		throw new Error('Method not implemented.');
+
+	public async $openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string> {
+		let completion = new Promise<string>(resolve => {
+			let handleOk = (path: string) => {
+				resolve(path);
+			};
+			this._fileBrowserDialogService.showDialog(connectionUri, targetPath, fileFilters, '', true, handleOk);
+		});
+		return await completion;
 	}
 }
