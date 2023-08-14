@@ -33,6 +33,7 @@ export const ViewMemoryServerPropertiesDocUrl = 'https://learn.microsoft.com/sql
 export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
 export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
+export const DeleteDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/drop-database-transact-sql';
 export const DatabaseScopedConfigurationPropertiesDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/alter-database-scoped-configuration-transact-sql'
 export const DatabaseFilesPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-files-page'
 
@@ -43,7 +44,8 @@ export const enum TelemetryActions {
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
-	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog'
+	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
+	OpenDeleteDatabaseDialog = 'OpenDeleteDatabaseDialog'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
