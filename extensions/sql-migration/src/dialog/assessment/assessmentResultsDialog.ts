@@ -14,8 +14,6 @@ import { MigrationTargetType } from '../../api/utils';
 import * as fs from 'fs';
 import path = require('path');
 import { SqlMigrationImpactedObjectInfo } from '../../service/contracts';
-import { parseAssessmentReport } from './assessmentUtils';
-
 
 export type Issues = {
 	description: string,
@@ -31,7 +29,6 @@ export class AssessmentResultsDialog {
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
 	private _model: MigrationStateModel;
-	private _loadButton!: azdata.window.Button;
 	private _saveButton!: azdata.window.Button;
 	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
 	private _title: string;
@@ -80,39 +77,11 @@ export class AssessmentResultsDialog {
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this.dialog.okButton.position = 'left';
-			//if (disabled) this.dialog.okButton.enabled = false;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
 			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
-
-			this._loadButton = azdata.window.createButton(
-				constants.LOAD_ASSESSMENT_REPORT,
-				'right');
-			this._disposables.push(
-				this._loadButton.onClick(async () => {
-					const filepath = await utils.promptUserForFile({ 'Json (*.json)': ['json'] });
-					if (filepath) {
-						try {
-							const assessmentReportJson = fs.readFileSync(filepath, 'utf-8');
-							const assessmentReport = JSON.parse(assessmentReportJson);
-
-							this._title = constants.ASSESSMENT_TITLE(this.serverName);
-							const savedInfo = parseAssessmentReport(assessmentReport);
-							this._model.savedInfo = savedInfo;
-							await this._model.loadSavedInfo();
-
-							if (this.dialog !== undefined) {
-								azdata.window.closeDialog(this.dialog);
-								this._isOpen = false;
-							}
-							await this.openDialog(dialogName);
-						} catch (err) {
-							void vscode.window.showInformationMessage(`Selected invalid format import file: ${filepath}`);
-						}
-					}
-				}));
 
 			this._saveButton = azdata.window.createButton(
 				constants.SAVE_ASSESSMENT_REPORT,
@@ -135,7 +104,7 @@ export class AssessmentResultsDialog {
 						}
 					}
 				}));
-			this.dialog.customButtons = [this._loadButton, this._saveButton];
+			this.dialog.customButtons = [this._saveButton];
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 
