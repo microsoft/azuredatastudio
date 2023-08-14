@@ -21,5 +21,4 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 	$openFileBrowserDialog(): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
-
 }
