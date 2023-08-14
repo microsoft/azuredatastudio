@@ -417,15 +417,13 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
+		const databaseFilesButtonContainer = this.addTripleButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.AddButton, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button),
+			(button) => this.onEditDatabaseFilesButtonClicked(button),
+			(button) => this.onRemoveDatabaseFilesButtonClicked(button));
 
-		const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
-		// this.disposables.push(
-		// 	this.dscTable.onRowSelected(
-		// 		async () => {
-		// 		}
-		// 	)
-		// );
+		// const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
+		// 	(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
 		const databaseFilesContainer = this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 
 		return databaseFilesContainer;
@@ -455,8 +453,47 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
 		}
 	}
+	private async onEditDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+		if (this.databaseFilesTable.selectedRows.length === 1) {
+			const result = await this.openDatabaseFileDialog();
+			if (!isUndefinedOrNull(result)) {
+				this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1, result);
+				var newData = this.objectInfo.files?.map(file => {
+					return this.convertToDataView(file);
+				})
+				await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+			}
+		}
+	}
 
-	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
+	private async onRemoveDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+		if (this.databaseFilesTable.selectedRows.length === 1) {
+			this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1);
+			var newData = this.objectInfo.files?.map(file => {
+				return this.convertToDataView(file);
+			})
+			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
+		}
+	}
+
+	protected override removeButtonOnRowSelected(): boolean {
+		let isEnabled = true;
+		const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
+		// Cannot delete a row file if the Id is 1.
+		if (this.databaseFilesTable.selectedRows.length === 1 && selectedRowId === 1) {
+			isEnabled = false;
+		}
+		// Cannot remove a log file if there are no other log files
+		else if (this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].type === this.viewInfo.fileTypesOptions[1]) {
+			isEnabled = false;
+			this.objectInfo.files.forEach(file => {
+				if (file.id !== selectedRowId && file.type === this.viewInfo.fileTypesOptions[1]) {
+					isEnabled = true;
+				}
+			});
+		}
+
+		return isEnabled;
 	}
 
 	private async openDatabaseFileDialog(): Promise<DatabaseFile> {
