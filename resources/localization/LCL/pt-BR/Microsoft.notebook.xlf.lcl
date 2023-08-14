@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LCX SchemaVersion="6.0" Name="notebook.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
+<LCX SchemaVersion="6.0" Name="Microsoft.notebook.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
   <Props>
     <Str Name="BranchName" Val="" />
     <Str Name="BuildNumber" Val="" />
@@ -15,7 +15,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/notebook/dist/common/constants.managePackages.localhost" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/constants.managePackages.localhost" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[localhost]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +24,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/constants.managePackages.packageNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/constants.managePackages.packageNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the specified package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +33,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.Invalid toc.yml" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.Invalid toc.yml" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error: {0} has an incorrect toc.yml file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +42,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.InvalidError.tocFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.InvalidError.tocFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid toc file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,7 +51,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.add" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.add" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -60,7 +60,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.addRemoteBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.addRemoteBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Remote Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -72,7 +72,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.allFiles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.allFiles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -81,7 +81,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.book" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.book" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -93,7 +93,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.bookDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books are used to organize Notebooks.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -102,7 +102,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookInitializeFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.bookInitializeFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find a Table of Contents file in the specified Jupyter Book.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -114,7 +114,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.booksNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.booksNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently available on the provided link]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -126,7 +126,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.browse" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.browse" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Browse]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -135,7 +135,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.close" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.close" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -144,7 +144,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.closeBookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.closeBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Jupyter Book {0} failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -156,7 +156,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.configFileError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.configFileError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration file missing]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -165,7 +165,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.confirmOverwrite" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.confirmOverwrite" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File already exists. Are you sure you want to overwrite this file?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -174,7 +174,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.confirmReplace" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.confirmReplace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Folder already exists. Are you sure you want to delete and replace this folder?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -183,7 +183,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.contentFolder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.contentFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Content folder]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -195,7 +195,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.contentFolderOptional" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.contentFolderOptional" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Content folder (Optional)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -204,7 +204,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.create" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.create" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -213,7 +213,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.duplicateFileError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.duplicateFileError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File {0} already exists in the destination folder {1} ]D;]A; The file has been renamed to {2} to prevent data loss.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -222,7 +222,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.editBookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.editBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while editing Jupyter Book {0}: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -234,7 +234,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.fileExtension" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.fileExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File Extension]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -243,7 +243,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.fileName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.fileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -252,7 +252,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.httpRequestError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.httpRequestError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Http Request failed with error: {0} {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -261,7 +261,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.invalidTextPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.invalidTextPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[-]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -270,7 +270,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelAddToLevel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.labelAddToLevel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add to this level]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -279,7 +279,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookFolder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.labelBookFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -291,7 +291,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookSection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.labelBookSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book Section]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -303,7 +303,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelSelectFolder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.labelSelectFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Folder]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -312,7 +312,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.language" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.language" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Language]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -321,7 +321,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.learnMore" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.learnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -330,7 +330,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.location" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -339,7 +339,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.missingFileError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.missingFileError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing file : {0} from {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -348,7 +348,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyTrusted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookAlreadyTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already trusted in this workspace.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -360,7 +360,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyUntrusted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookAlreadyUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already untrusted in this workspace.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -372,7 +372,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books not Found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -384,7 +384,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookPinned" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookPinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is now pinned in the workspace.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -396,7 +396,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookTrusted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is now trusted in the workspace.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -408,7 +408,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUnpinned" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookUnpinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is no longer pinned in this workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -420,7 +420,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUntrusted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgBookUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is no longer trusted in this workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -432,7 +432,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgContentFolderError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgContentFolderError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Content folder path does not exist]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -441,7 +441,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgCreateBookWarningMsg" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgCreateBookWarningMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while trying to access: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -450,7 +450,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgDownloadLocation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgDownloadLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading to {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -459,7 +459,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgDuplicateFileName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgDuplicateFileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File {0} already exists in the destination folder]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -468,7 +468,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgInvalidSaveFolder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgInvalidSaveFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path is not valid.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -477,7 +477,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgNo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgNo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -486,7 +486,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgReleaseNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgReleaseNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Releases not Found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -495,7 +495,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDirectoryError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgRemoteBookDirectoryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while creating remote Jupyter Book directory]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -507,7 +507,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgRemoteBookDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is complete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -519,7 +519,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgRemoteBookDownloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading remote Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -531,7 +531,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadProgress" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgRemoteBookDownloadProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is in progress]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -543,7 +543,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookUnpackingError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgRemoteBookUnpackingError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while decompressing remote Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -555,7 +555,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgResourceNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgResourceNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource not Found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -564,7 +564,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgSampleCodeDataFrame" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgSampleCodeDataFrame" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This sample code loads the file into a data frame and shows the first 10 results.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -573,7 +573,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgSaveFolderError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgSaveFolderError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path does not exist.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -585,7 +585,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading Remote Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -597,7 +597,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgUndefinedAssetError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgUndefinedAssetError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected Jupyter Book is not valid]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -609,7 +609,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgYes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.msgYes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -618,7 +618,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -627,7 +627,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.newBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Jupyter Book (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -636,7 +636,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newMarkdown" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.newMarkdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Markdown (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -645,7 +645,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.newNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Notebook (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -654,7 +654,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newSection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.newSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Section (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -663,7 +663,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.noBDCConnectionError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.noBDCConnectionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Spark kernels require a connection to a SQL Server Big Data Cluster master instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -672,7 +672,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.noBooksSelected" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.noBooksSelected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently selected in the viewlet.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -684,7 +684,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.onGitHub" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.onGitHub" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[GitHub]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -693,7 +693,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.onsharedFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.onsharedFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Shared File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -702,7 +702,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openBookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Jupyter Book {0} failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -714,7 +714,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openExternalLinkCommand" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openExternalLinkCommand" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open External Link]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -723,7 +723,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openExternalLinkError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openExternalLinkError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open link {0} failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -732,7 +732,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openMarkdownCommand" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openMarkdownCommand" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -741,7 +741,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openMarkdownError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openMarkdownError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open markdown {0} failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -750,7 +750,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openNotebookCommand" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openNotebookCommand" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -759,7 +759,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openNotebookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openNotebookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open notebook {0} failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -768,7 +768,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openUntitledNotebookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.openUntitledNotebookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open untitled notebook {0} as untitled failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -777,7 +777,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.providerNotValidError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.providerNotValidError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Non-MSSQL providers are not supported for spark kernels.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -786,7 +786,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.readBookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.readBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to read Jupyter Book {0}: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -798,7 +798,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.releases" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.releases" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Releases]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -807,7 +807,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.repoUrl" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.repoUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Repository URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -816,7 +816,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.saveLocation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.saveLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -825,7 +825,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.search" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.search" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -834,7 +834,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.sectionNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.sectionNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find section {0} in {1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -843,7 +843,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.selectBookError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.selectBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while selecting a Jupyter Book or a section to edit: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -855,7 +855,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Title]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -864,7 +864,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.url" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.url" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -873,7 +873,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.urlGithubError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.urlGithubError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The url provided is not a Github release url]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -882,7 +882,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.version" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.version" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -891,7 +891,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/notebookUtils.msgSampleCodeDataFrame" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/notebookUtils.msgSampleCodeDataFrame" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This sample code loads the file into a data frame and shows the first 10 results.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -900,7 +900,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/notebookUtils.noNotebookVisible" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/notebookUtils.noNotebookVisible" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No notebook editor is active]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -909,7 +909,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/notebookUtils.notebookFiles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/notebookUtils.notebookFiles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -918,7 +918,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/utils.ensureDirOutputMsg" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/utils.ensureDirOutputMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[... Ensuring {0} exists]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -927,7 +927,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/utils.executeCommandProcessExited" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/common/utils.executeCommandProcessExited" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Process exited with error code: {0}. StdErr Output: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -939,7 +939,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.browseButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.browseButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Browse]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -948,7 +948,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -960,7 +960,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithoutKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithoutKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook kernels require a Python runtime to be configured and dependencies to be installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -969,7 +969,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.existingInstall" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.existingInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Use existing Python installation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -978,7 +978,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.installationType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.installationType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installation Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -987,7 +987,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.locationTextBoxText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.locationTextBoxText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python Install Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -996,7 +996,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.newInstall" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.newInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Python installation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1005,7 +1005,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.pythonConfigured" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.pythonConfigured" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python runtime configured!]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1014,7 +1014,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.selectFileLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.selectFileLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1023,7 +1023,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.customPathLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.customPathLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} (Custom)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1032,7 +1032,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.defaultPathLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.defaultPathLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} (Default)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1041,7 +1041,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.dropdownPathLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.dropdownPathLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} (Python {1})]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1050,7 +1050,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.noVersionsFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePythyon.noVersionsFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No supported Python versions found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1059,7 +1059,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.invalidLocationMsg" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.invalidLocationMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The specified install location is invalid.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1068,7 +1068,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.okButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.okButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1077,7 +1077,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.page0Name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.page0Name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure Python Runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1086,7 +1086,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.page1Name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.page1Name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install Dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1095,7 +1095,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonInstallDeclined" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonInstallDeclined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python installation was declined.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1104,7 +1104,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonNotFoundMsg" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonNotFoundMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Python installation was found at the specified location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1113,7 +1113,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure Python to run {0} kernel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1122,7 +1122,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithoutKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithoutKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure Python to run kernels]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1131,7 +1131,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.existingVersionColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.existingVersionColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Existing Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1140,7 +1140,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.kernelLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.kernelLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kernel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1149,7 +1149,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.pkgNameColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.pkgNameColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1158,7 +1158,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.requiredDependencies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.requiredDependencies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install required kernel dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1167,7 +1167,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.requiredVersionColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/pickPackagesPage.configurePython.requiredVersionColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Required Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1176,7 +1176,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgNoRequirementsForKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/pickPackagesPage.msgNoRequirementsForKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No packages are required by default for the kernel '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1185,7 +1185,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.addNewTabTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.addNewTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add new]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1194,7 +1194,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.backgroundInstallComplete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.backgroundInstallComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Completed install for {0} {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1203,7 +1203,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.backgroundInstallFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.backgroundInstallFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to install {0} {1}. Error: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1212,7 +1212,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.backgroundInstallStarted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.backgroundInstallStarted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing {0} {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1221,7 +1221,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.installButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.installButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1230,7 +1230,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.installCompleteText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.installCompleteText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1239,7 +1239,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.installProgressText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.installProgressText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1248,7 +1248,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.invalidTextPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.invalidTextPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[N/A]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1257,7 +1257,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.noVersionsFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.noVersionsFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find any valid versions for the specified package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1266,7 +1266,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageNameTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageNameTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1275,7 +1275,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageSummaryTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageSummaryTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package Summary]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1284,7 +1284,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageVersionTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.packageVersionTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Supported Package Versions for Python {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1296,7 +1296,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.searchBarPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.searchBarPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search {0} packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1305,7 +1305,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.searchButtonLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/addNewPackageTab.managePackages.searchButtonLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1314,7 +1314,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallComplete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Completed uninstall for {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1323,7 +1323,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to uninstall {0}. Error: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1332,7 +1332,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallStarted" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallStarted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Uninstalling {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1341,7 +1341,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.confirmUninstall" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.confirmUninstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to uninstall the specified packages?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1350,7 +1350,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.deleteColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.deleteColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1359,7 +1359,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.installedTabTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.installedTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1368,7 +1368,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.location" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.location" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1377,7 +1377,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.newPkgVersionColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.newPkgVersionColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1386,7 +1386,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.packageCount" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.packageCount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} {1} packages found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1395,7 +1395,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.packageType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.packageType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1404,7 +1404,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.pkgNameColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.pkgNameColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1413,7 +1413,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.uninstallButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.uninstallButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Uninstall selected packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1422,7 +1422,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.uninstallCompleteText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.uninstallCompleteText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package uninstalled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1431,7 +1431,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.uninstallProgressText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.uninstallProgressText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Uninstalling package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1440,7 +1440,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/managePackagesDialog.managePackages.cancelButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/managePackagesDialog.managePackages.cancelButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1449,7 +1449,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/managePackages/managePackagesDialog.managePackages.dialogName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/managePackagesDialog.managePackages.dialogName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manage Packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1458,7 +1458,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/extension.codeCellName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/extension.codeCellName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Code]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1467,7 +1467,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/extension.selectCellType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/extension.selectCellType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[What type of cell do you want to add?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1476,7 +1476,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/extension.textCellName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/extension.textCellName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1485,7 +1485,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterController.confirmReinstall" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterController.confirmReinstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to reinstall?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1494,7 +1494,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterController.notebookFileType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterController.notebookFileType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1503,7 +1503,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterController.unsupportedFileType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterController.unsupportedFileType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Only .ipynb Notebooks are supported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1512,7 +1512,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterExecuteProvider.errNotebookUriMissing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterExecuteProvider.errNotebookUriMissing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A notebook path is required]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1521,7 +1521,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.dontAskAgain" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.dontAskAgain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Don't Ask Again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1530,7 +1530,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgDependenciesInstallationFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgDependenciesInstallationFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Notebook dependencies failed with error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1539,7 +1539,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgDownloadPython" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgDownloadPython" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading local python for platform: {0} to {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1548,7 +1548,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgGetPythonUserDirFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgGetPythonUserDirFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Encountered an error when getting Python user path: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1557,7 +1557,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgInstallPkgFinish" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgInstallPkgFinish" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook dependencies installation is complete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1566,7 +1566,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgInstallPkgProgress" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgInstallPkgProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook dependencies installation is in progress]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1575,7 +1575,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgInstallPkgStart" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgInstallPkgStart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Notebook dependencies, see Tasks view for more information]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1584,7 +1584,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPackageRetrievalFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPackageRetrievalFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Encountered an error when trying to retrieve list of installed packages: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1593,7 +1593,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonDirectoryError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDirectoryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while creating python installation directory]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1602,7 +1602,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python download is complete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1611,7 +1611,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading python setup]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1620,7 +1620,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadPending" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonDownloadPending" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading python package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1629,7 +1629,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonRunningError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonRunningError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1638,7 +1638,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonUnpackError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonUnpackError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while unpacking python bundle]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1647,7 +1647,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonUnpackPending" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonUnpackPending" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unpacking python package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1656,7 +1656,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdatePrompt" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdatePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1665,7 +1665,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdateWarning" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdateWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1674,7 +1674,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgShutdownNotebookSessions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgShutdownNotebookSessions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1683,7 +1683,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Notebook dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1692,7 +1692,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgWaitingForInstall" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.msgWaitingForInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Another Python installation is currently in progress. Waiting for it to complete.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1701,7 +1701,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.no" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.no" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1710,7 +1710,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.yes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerInstallation.yes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1719,7 +1719,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerManager.shutdownError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterServerManager.shutdownError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Shutdown of Notebook server failed: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1728,7 +1728,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterSessionManager.bdcConnectError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.bdcConnectError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error: {0}. ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1737,7 +1737,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterSessionManager.clusterControllerConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.clusterControllerConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A connection to the cluster controller is required to run Spark jobs]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1746,7 +1746,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterSessionManager.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot start a session, the manager is not yet initialized]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1755,7 +1755,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterSessionManager.notebook.couldNotFindKnoxGateway" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.notebook.couldNotFindKnoxGateway" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Knox gateway endpoint]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1764,7 +1764,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterSessionManager.promptBDCPassword" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.promptBDCPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please provide the password to connect to the BDC Controller]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1773,7 +1773,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterSessionManager.promptBDCUsername" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.promptBDCUsername" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0}Please provide the username to connect to the BDC Controller:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1782,7 +1782,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/pypiClient.managePackages.packageRequestError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/pypiClient.managePackages.packageRequestError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package info request failed with error: {0} {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1791,7 +1791,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/serverInstance.jupyterError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/serverInstance.jupyterError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error sent from Jupyter: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1800,7 +1800,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/serverInstance.jupyterOutputMsgStart" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/serverInstance.jupyterOutputMsgStart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[... Starting Notebook server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1809,7 +1809,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/serverInstance.jupyterOutputMsgStartSuccessful" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/serverInstance.jupyterOutputMsgStartSuccessful" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[... Jupyter is running at {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1818,7 +1818,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/serverInstance.notebookStartProcessExitPremature" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/serverInstance.notebookStartProcessExitPremature" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook process exited prematurely with error code: {0}. StdErr Output: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1830,7 +1830,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/serverInstance.serverStopError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/serverInstance.serverStopError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error stopping Notebook Server: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1839,7 +1839,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.notebook.confirmOpen" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/protocol/notebookUriHandler.notebook.confirmOpen" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Download and open '{0}'?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1848,7 +1848,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.notebook.fileDownloadError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/protocol/notebookUriHandler.notebook.fileDownloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File open request failed with error: {0} {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1857,7 +1857,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.notebook.fileNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/protocol/notebookUriHandler.notebook.fileNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the specified file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1866,7 +1866,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.notebook.unsupportedAction" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/protocol/notebookUriHandler.notebook.unsupportedAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Action {0} is not supported for this handler]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1875,7 +1875,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.unsupportedScheme" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/dist/protocol/notebookUriHandler.unsupportedScheme" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot open link {0} as only HTTP, HTTPS, and File links are supported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1887,7 +1887,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.books-preview-category" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.books-preview-category" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1896,7 +1896,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.config.jupyter.extraKernelsDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.config.jupyter.extraKernelsDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[IDs of the extra kernels to enable]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1905,7 +1905,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.config.jupyter.extraKernelsTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.config.jupyter.extraKernelsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extra kernels]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1914,7 +1914,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.config.jupyter.kernelConfigValuesDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.config.jupyter.kernelConfigValuesDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration options for Jupyter kernels. This is automatically managed and not recommended to be manually edited.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1923,7 +1923,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Defines the Data-procotol based Notebook contribution and many Notebook commands and contributions.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1932,7 +1932,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook Core Extensions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1941,7 +1941,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.allowRoot.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.allowRoot.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Allow Jupyter server to run as root user]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1950,7 +1950,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.analyzeJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.analyzeJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Analyze in Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1959,7 +1959,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.collapseBookItems.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.collapseBookItems.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collapse Book items at root level in the Notebooks Viewlet]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1968,7 +1968,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.addcell" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.addcell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1977,7 +1977,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.addcode" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.addcode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Code Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1986,7 +1986,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.addtext" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.addtext" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Text Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1995,7 +1995,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.boldText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.boldText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Bold Markdown Text]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2004,7 +2004,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.clearactivecellresult" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.clearactivecellresult" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear Cell Result]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2013,7 +2013,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.codeBlock" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.codeBlock" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Code Block]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2022,7 +2022,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.highlightText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.highlightText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Highlight Markdown Text]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2031,7 +2031,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.italicizeText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.italicizeText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Italicize Markdown Text]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2040,7 +2040,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.new" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.new" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2049,7 +2049,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.open" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.open" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2058,7 +2058,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.runactivecell" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.runactivecell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2067,7 +2067,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.runallcells" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.runallcells" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Cells]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2076,7 +2076,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.command.underlineText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.command.underlineText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Underline Markdown Text]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2085,7 +2085,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.configuration.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.configuration.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook configuration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2094,7 +2094,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.dontPromptPythonUpdate.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.dontPromptPythonUpdate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do not show prompt to update Python.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2103,7 +2103,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.jupyterServerShutdownTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.jupyterServerShutdownTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2112,7 +2112,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.maxBookSearchDepth.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.maxBookSearchDepth.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum depth of subdirectories to search for Books (Enter 0 for infinite)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2121,7 +2121,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.maxTableRows.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.maxTableRows.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum number of rows returned per table in the Notebook editor]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2130,7 +2130,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.overrideEditorTheming.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.overrideEditorTheming.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Override editor default settings in the Notebook editor. Settings include background color, current line color and border]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2139,7 +2139,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.pinnedNotebooks.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.pinnedNotebooks.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebooks that are pinned by the user for the current workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2148,7 +2148,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.pythonPath.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.pythonPath.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local path to python installation used by Notebooks.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2157,7 +2157,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.remoteBookDownloadTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.remoteBookDownloadTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Download timeout in milliseconds for GitHub books]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2166,7 +2166,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.trustedBooks.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.trustedBooks.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebooks contained in these books will automatically be trusted.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2175,7 +2175,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.notebook.useExistingPython.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.notebook.useExistingPython.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local path to a preexisting python installation used by Notebooks.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2184,7 +2184,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.PinnedBooks" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.PinnedBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pinned notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2193,7 +2193,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.PreviewLocalizedBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.PreviewLocalizedBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Get localized SQL Server 2019 guide]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2202,7 +2202,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.ProvidedBooks" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.ProvidedBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provided Jupyter Books]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2214,7 +2214,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.SQL19PreviewBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.SQL19PreviewBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server 2019 Guide]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2223,7 +2223,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.SavedBooks" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.SavedBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2235,7 +2235,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.addMarkdown" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.addMarkdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Markdown File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2244,7 +2244,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.addNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.addNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2253,7 +2253,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.addSection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.addSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Section]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2262,7 +2262,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.analyzeJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.analyzeJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Analyze in Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2271,7 +2271,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.closeJupyterBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.closeJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2280,7 +2280,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.closeNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.closeNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2289,7 +2289,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.configurePython" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.configurePython" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure Python for Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2298,7 +2298,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.createJupyterBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.createJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2310,7 +2310,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.jupyter.setContext" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.jupyter.setContext" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Set context for Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2319,7 +2319,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.jupyter.setKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.jupyter.setKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Set kernel for Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2328,7 +2328,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.managePackages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.managePackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manage Packages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2337,7 +2337,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.moveTo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.moveTo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Move to ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2346,7 +2346,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.newJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.newJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2355,7 +2355,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.openJupyterBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.openJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2364,7 +2364,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.openJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.openJupyterNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2373,7 +2373,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.openNotebookFolder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.openNotebookFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Notebooks in Folder]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2382,7 +2382,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.openRemoteJupyterBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.openRemoteJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Remote Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2391,7 +2391,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.pinNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.pinNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pin Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2400,7 +2400,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.reinstallNotebookDependencies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.reinstallNotebookDependencies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reinstall Notebook dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2409,7 +2409,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.removeNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.removeNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2418,7 +2418,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.revealInBooksViewlet" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.revealInBooksViewlet" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reveal in Books]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2427,7 +2427,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.saveJupyterBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.saveJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2439,7 +2439,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.searchJupyterBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.searchJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2451,7 +2451,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.trustBook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.trustBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Trust Jupyter Book]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2463,7 +2463,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/package.title.unpinNotebook" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.notebook/package.title.unpinNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unpin Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

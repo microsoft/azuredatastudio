@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LCX SchemaVersion="6.0" Name="cms.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
+<LCX SchemaVersion="6.0" Name="Microsoft.cms.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
   <Props>
     <Str Name="BranchName" Val="" />
     <Str Name="BuildNumber" Val="" />
@@ -15,7 +15,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.AddServerGroup" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.AddServerGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Server Group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +24,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.Cancel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.Cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +33,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.OK" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.OK" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OK]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +42,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.ServerGroupDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.ServerGroupDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Group Description]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,7 +51,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.ServerGroupName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.ServerGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Group Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -60,7 +60,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.confirmDeleteGroup" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.confirmDeleteGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -69,7 +69,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.confirmDeleteServer" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.confirmDeleteServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -78,7 +78,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.errors.azureNotAllowed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.errors.azureNotAllowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Servers cannot be used as Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -87,7 +87,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.errors.sameCmsServerName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.errors.sameCmsServerName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Central Management Server Group already has a Registered Server with the name {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -96,7 +96,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.errors.sameServerGroupName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.errors.sameServerGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} already has a Server Group with the name {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -105,7 +105,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.no" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.no" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -114,7 +114,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.yes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.yes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -123,7 +123,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServerLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServerLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Central Management Server...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -132,7 +132,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No resources found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -141,7 +141,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unexpected error occurred while loading saved servers {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -150,7 +150,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadingLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadingLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -159,7 +159,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/dist/cmsUtils.cms.errors.sameServerUnderCms" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/dist/cmsUtils.cms.errors.sameServerUnderCms" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You cannot add a shared registered server with the same name as the Configuration Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -168,7 +168,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cloud.databaseProperties.azureEdition" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cloud.databaseProperties.azureEdition" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edition]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -177,7 +177,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cloud.databaseProperties.compatibilityLevel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cloud.databaseProperties.compatibilityLevel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compatibility Level]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -186,7 +186,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cloud.databaseProperties.owner" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cloud.databaseProperties.owner" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Owner]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -195,7 +195,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cloud.databaseProperties.serviceLevelObjective" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cloud.databaseProperties.serviceLevelObjective" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pricing Tier]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -204,7 +204,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cloud.serverProperties.serverEdition" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cloud.serverProperties.serverEdition" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -213,7 +213,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cloud.serverProperties.serverVersion" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cloud.serverProperties.serverVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -222,7 +222,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.configuration.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.configuration.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[MSSQL configuration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -231,7 +231,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.applicationIntent.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.applicationIntent.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Declares the application workload type when connecting to a server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -240,7 +240,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.applicationIntent.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.applicationIntent.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Application intent]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -249,7 +249,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.applicationName.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.applicationName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the application]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -258,7 +258,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.applicationName.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.applicationName.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Application name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -267,7 +267,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachDbFilename.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.attachDbFilename.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the primary file, including the full path name, of an attachable database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -276,7 +276,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.attachDbFilename.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attach DB filename]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -285,7 +285,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.authType.categoryValues.azureMFA" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.authType.categoryValues.azureMFA" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Active Directory - Universal with MFA support]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -294,7 +294,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.authType.categoryValues.integrated" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.authType.categoryValues.integrated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Windows Authentication]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -303,7 +303,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.authType.categoryValues.sqlLogin" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.authType.categoryValues.sqlLogin" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Login]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -312,7 +312,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.authType.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.authType.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies the method of authenticating with SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -321,7 +321,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.authType.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.authType.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authentication type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -330,7 +330,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.columnEncryptionSetting.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.columnEncryptionSetting.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables or disables Always Encrypted for the connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -342,7 +342,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.columnEncryptionSetting.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.columnEncryptionSetting.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always Encrypted]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -354,7 +354,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.commandTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The length of time (in seconds) to wait for a command to execute before terminating the attempt and generating an error]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -363,7 +363,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.commandTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.commandTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Command timeout]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -372,7 +372,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectRetryCount.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectRetryCount.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of attempts to restore connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -381,7 +381,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectRetryCount.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectRetryCount.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect retry count]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -390,7 +390,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectRetryInterval.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectRetryInterval.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delay between attempts to restore connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -399,7 +399,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectRetryInterval.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectRetryInterval.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect retry interval]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -408,7 +408,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -417,7 +417,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect timeout]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -426,7 +426,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectionName.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectionName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Custom name of the connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -435,7 +435,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.connectionName.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.connectionName.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name (optional)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -444,7 +444,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.contextConnection.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.contextConnection.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -453,7 +453,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.contextConnection.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.contextConnection.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Context connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -462,7 +462,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.currentLanguage.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.currentLanguage.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The SQL Server language record name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -471,7 +471,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.currentLanguage.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.currentLanguage.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Current language]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -480,7 +480,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Attestation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -489,7 +489,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host Guardian Service]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -498,7 +498,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationProtocol.categoryValues.None" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[None]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -507,7 +507,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationProtocol.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -516,7 +516,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attestation protocol]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -525,7 +525,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationUrl.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationUrl.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -534,7 +534,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.enclaveAttestationUrl.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.enclaveAttestationUrl.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attestation URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -543,7 +543,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.categoryValues.false" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.false" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Optional (False)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -552,7 +552,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.categoryValues.strict" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.strict" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Strict]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -561,7 +561,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.categoryValues.true" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.categoryValues.true" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Mandatory (True)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -570,7 +570,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When 'Mandatory' or 'Strict', SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed. When set to 'Strict', SQL Server uses TDS 8.0 for all data transfer between the client and server. 'Strict' is supported on SQL Server 2022 onwards.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -582,7 +582,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.encrypt.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.encrypt.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Encrypt]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -591,7 +591,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.failoverPartner.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.failoverPartner.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name or network address of the instance of SQL Server that acts as a failover partner]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -600,7 +600,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.failoverPartner.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.failoverPartner.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failover partner]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -609,7 +609,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.advanced" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.advanced" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Advanced]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -618,7 +618,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.connectionResiliency" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.connectionResiliency" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection Resiliency]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -627,7 +627,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.context" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Context]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -636,7 +636,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.initialization" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.initialization" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Initialization]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -645,7 +645,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.pooling" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.pooling" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pooling]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -654,7 +654,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.replication" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.replication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Replication]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -663,7 +663,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.security" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.security" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Security]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -672,7 +672,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.groupName.source" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.groupName.source" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -681,7 +681,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.hostNameInCertificate.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.hostNameInCertificate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indicates the host name specified in TLS certificate that will be used by SQL Server to validate server certificate. When not specified, the server name is used by default for certificate validation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -690,7 +690,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.hostNameInCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.hostNameInCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host name in certificate]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -699,7 +699,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.loadBalanceTimeout.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.loadBalanceTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -708,7 +708,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.loadBalanceTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.loadBalanceTimeout.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Load balance timeout]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -717,7 +717,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.maxPoolSize.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.maxPoolSize.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The maximum number of connections allowed in the pool]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -726,7 +726,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.maxPoolSize.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.maxPoolSize.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Max pool size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -735,7 +735,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.minPoolSize.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.minPoolSize.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The minimum number of connections allowed in the pool]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -744,7 +744,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.minPoolSize.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.minPoolSize.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Min pool size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -753,7 +753,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.multiSubnetFailover.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.multiSubnetFailover.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Multi subnet failover]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -762,7 +762,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.multipleActiveResultSets.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.multipleActiveResultSets.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true, multiple result sets can be returned and read from one connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -771,7 +771,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.multipleActiveResultSets.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.multipleActiveResultSets.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Multiple active result sets]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -780,7 +780,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.packetSize.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.packetSize.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Size in bytes of the network packets used to communicate with an instance of SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -789,7 +789,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.packetSize.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.packetSize.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Packet size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -798,7 +798,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.password.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.password.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indicates the password to be used when connecting to the data source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -807,7 +807,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.password.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.password.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -816,7 +816,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.persistSecurityInfo.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.persistSecurityInfo.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When false, security-sensitive information, such as the password, is not returned as part of the connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -825,7 +825,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.persistSecurityInfo.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.persistSecurityInfo.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Persist security info]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -834,7 +834,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.pooling.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.pooling.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -843,7 +843,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.pooling.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.pooling.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pooling]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -852,7 +852,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.port.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.port.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Port]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -861,7 +861,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.replication.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.replication.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Used by SQL Server in Replication]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -870,7 +870,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.replication.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.replication.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Replication]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -879,7 +879,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.secureEnclaves.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.secureEnclaves.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables or disables Secure enclaves for the connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -888,7 +888,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.secureEnclaves.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.secureEnclaves.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -897,7 +897,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverDescription.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.serverDescription.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Description of the SQL Server instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -906,7 +906,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverDescription.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.serverDescription.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Description]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -915,7 +915,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverName.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.serverName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name of the SQL Server instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -924,7 +924,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverName.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.serverName.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -933,7 +933,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.serverName.placeholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.serverName.placeholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[e.g. tcp:servername,1433]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -942,7 +942,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.trustServerCertificate.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.trustServerCertificate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate. This property is not supported with Encrypt=Strict.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -954,7 +954,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.trustServerCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.trustServerCertificate.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Trust server certificate]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -963,7 +963,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.typeSystemVersion.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.typeSystemVersion.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indicates which server type system then provider will expose through the DataReader]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -972,7 +972,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.typeSystemVersion.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.typeSystemVersion.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type system version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -981,7 +981,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.userName.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.userName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indicates the user ID to be used when connecting to the data source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -990,7 +990,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.userName.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.userName.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -999,7 +999,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.workstationId.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.workstationId.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the workstation connecting to SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1008,7 +1008,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionOptions.workstationId.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionOptions.workstationId.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Workstation Id]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1017,7 +1017,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.connectionProvider.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.connectionProvider.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1026,7 +1026,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Support for managing SQL Server Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1035,7 +1035,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.disabled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1044,7 +1044,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1053,7 +1053,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.enabled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.enabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1062,7 +1062,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.format.alignColumnDefinitionsInColumns" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.format.alignColumnDefinitionsInColumns" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should column definitions be aligned?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1071,7 +1071,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.format.datatypeCasing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.format.datatypeCasing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1080,7 +1080,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.format.keywordCasing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.format.keywordCasing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1089,7 +1089,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.format.placeCommasBeforeNextStatement" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.format.placeCommasBeforeNextStatement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[should commas be placed at the beginning of each statement in a list e.g. ', mycolumn2' instead of at the end e.g. 'mycolumn1,']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1098,7 +1098,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.format.placeSelectStatementReferencesOnNewLine" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.format.placeSelectStatementReferencesOnNewLine" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1107,7 +1107,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.logDebugInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.logDebugInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Optional]5D; Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1116,7 +1116,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.logFilesRemovalLimit" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.logFilesRemovalLimit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1125,7 +1125,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.logRetentionMinutes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.logRetentionMinutes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of minutes to retain log files for backend services. Default is 1 week.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1134,7 +1134,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.provider.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.provider.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1143,7 +1143,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.query.displayBitAsNumber" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.query.displayBitAsNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1152,7 +1152,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.addRegisteredServer.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.addRegisteredServer.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Server Registration...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1161,7 +1161,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.addServerGroup.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.addServerGroup.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Server Group...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1170,7 +1170,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.deleteCmsServer.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.deleteCmsServer.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1179,7 +1179,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.deleteRegisteredServer.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.deleteRegisteredServer.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1188,7 +1188,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.deleteServerGroup.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.deleteServerGroup.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1197,7 +1197,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.explorer.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.explorer.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1206,7 +1206,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.refresh.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.refresh.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1215,7 +1215,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.refreshServerGroup.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.refreshServerGroup.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh Server Group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1224,7 +1224,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.resource.registerCmsServer.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.resource.registerCmsServer.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Central Management Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1233,7 +1233,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1242,7 +1242,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.cms.tracingLevel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.cms.tracingLevel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Optional]5D; Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1251,7 +1251,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.ignorePlatformWarning" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.ignorePlatformWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Optional]5D; Do not show unsupported platform warnings]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1260,7 +1260,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.databaseProperties.compatibilityLevel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.databaseProperties.compatibilityLevel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compatibility Level]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1269,7 +1269,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.databaseProperties.lastBackupDate" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.databaseProperties.lastBackupDate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last Database Backup]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1278,7 +1278,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.databaseProperties.lastLogBackupDate" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.databaseProperties.lastLogBackupDate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last Log Backup]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1287,7 +1287,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.databaseProperties.owner" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.databaseProperties.owner" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Owner]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1296,7 +1296,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.databaseProperties.recoveryModel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.databaseProperties.recoveryModel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Recovery Model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1305,7 +1305,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.serverProperties.machineName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.serverProperties.machineName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Computer Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1314,7 +1314,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.serverProperties.osVersion" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.serverProperties.osVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OS Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1323,7 +1323,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.serverProperties.serverEdition" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.serverProperties.serverEdition" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edition]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1332,7 +1332,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/package.onprem.serverProperties.serverVersion" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.cms/package.onprem.serverProperties.serverVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

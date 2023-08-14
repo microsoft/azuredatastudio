@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LCX SchemaVersion="6.0" Name="D:\a\1\s\resources\xlf\en\machine-learning.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
+<LCX SchemaVersion="6.0" Name="D:\a\1\s\resources\xlf\en\Microsoft.machine-learning.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
   <OwnedComments>
     <Cmt Name="Dev" />
     <Cmt Name="LcxAdmin" />
@@ -10,7 +10,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.azure.resource.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.azure.resource.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -19,7 +19,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.dashboardDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.dashboardDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning for SQL databases]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -28,7 +28,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.dashboardLinksTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.dashboardLinksTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Useful links]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -37,7 +37,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.dashboardTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.dashboardTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -46,7 +46,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.dashboardVideoLinksTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.dashboardVideoLinksTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Video tutorials]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -55,7 +55,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.databaseName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.databaseName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -64,7 +64,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.databaseToStoreInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.databaseToStoreInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a database to store the new model.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -73,7 +73,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.editTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.editTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -82,7 +82,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.existingTableName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.existingTableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Existing table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -91,7 +91,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.CancelButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.CancelButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -100,7 +100,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.DialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.DialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Languages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -109,7 +109,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.DoneButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.DoneButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -118,7 +118,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.Local" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.Local" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[localhost]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -127,7 +127,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.OkButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.OkButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OK]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -136,7 +136,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.SaveButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.SaveButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -145,7 +145,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.Target" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.Target" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -154,7 +154,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.delete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.delete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -163,7 +163,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.envVariables" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.envVariables" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Environment variables]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -172,7 +172,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.extensionFileLocation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.extensionFileLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Language extension location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -181,7 +181,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.extensionFileName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.extensionFileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extension file Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -190,7 +190,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.extensionFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.extensionFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Language extension path]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -199,7 +199,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.fileBrowserTabTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.fileBrowserTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File Browser]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -208,7 +208,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.installButtonText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.installButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -217,7 +217,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.installFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.installFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to install language]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -226,7 +226,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.installTabTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.installTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -235,7 +235,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.languageCreatedDate" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.languageCreatedDate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -244,7 +244,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.languageName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.languageName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -253,7 +253,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.languagePlatform" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.languagePlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Platform]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -262,7 +262,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.newLanguageTabTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.newLanguageTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add new]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -271,7 +271,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.parameters" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.parameters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Parameters]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -280,7 +280,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.selectedPath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.selectedPath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Selected Path]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -289,7 +289,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.extLang.updateFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.extLang.updateFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to update language]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -298,7 +298,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.learnMoreTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.learnMoreTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -307,7 +307,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.ml.dataCount" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.ml.dataCount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Showing {0} model(s)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -316,7 +316,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.cannotFindPython.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.cannotFindPython.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -325,7 +325,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.cannotFindR.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.cannotFindR.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot find R executable '{0}'. Please make sure R is installed and configured correctly]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -334,7 +334,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.configAction" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.configAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Action]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -343,7 +343,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.configStatus" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.configStatus" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -352,7 +352,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.configTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.configTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Config]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -361,7 +361,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.configUpdateFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.configUpdateFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to modify Machine Learning Services configurations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -370,7 +370,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.confirmEnableExternalScripts" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.confirmEnableExternalScripts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External script is required for package management. Are you sure you want to enable that.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -379,7 +379,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.confirmInstallPythonPackages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.confirmInstallPythonPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to install required packages?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -388,7 +388,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.disableButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.disableButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -397,7 +397,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.downloadError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.downloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -406,7 +406,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.downloadingProgress" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.downloadingProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -415,7 +415,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.enableButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.enableButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -424,7 +424,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.enableExternalScriptsError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.enableExternalScriptsError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to enable External script.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -433,7 +433,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.enabledMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.enabledMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning Services Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -442,7 +442,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.externalExecuteScriptTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.externalExecuteScriptTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Execute Script]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -451,7 +451,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.externalScriptsIsRequiredError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.externalScriptsIsRequiredError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External script configuration is required for this action.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -460,7 +460,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.httpGetRequestError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.httpGetRequestError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package info request failed with error: {0} {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -469,7 +469,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installDependencies.confirmInstallPythonPackages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installDependencies.confirmInstallPythonPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The following Python packages are required to install: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -478,7 +478,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installDependencies.confirmInstallRPackages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installDependencies.confirmInstallRPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The following R packages are required to install: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -487,7 +487,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installDependencies.getPackagesError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installDependencies.getPackagesError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to get installed python packages. Error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -496,7 +496,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installDependencies.packages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installDependencies.packages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing required packages ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -505,7 +505,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installDependencies.packagesAlreadyInstalled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installDependencies.packagesAlreadyInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Required packages are already installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -514,7 +514,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installModelMngDependencies.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installModelMngDependencies.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Verifying model management dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -523,7 +523,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installPackageMngDependencies.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installPackageMngDependencies.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Verifying package management dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -532,7 +532,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.installingDependencies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.installingDependencies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing dependencies ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -541,7 +541,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.invalidModelIdError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.invalidModelIdError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid model id. model url: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -550,7 +550,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.latestVersion" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.latestVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Latest]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -559,7 +559,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.managePackages.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.managePackages.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Package management is not supported for the server. Make sure you have Python or R installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -568,7 +568,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.mssqlExtensionNotLoaded" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.mssqlExtensionNotLoaded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[MSSQL extension is not loaded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -577,7 +577,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.noArtifactError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.noArtifactError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model doesn't have any artifact. model url: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -586,7 +586,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.noResultError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.noResultError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Result returned]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -595,7 +595,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.notebookExtensionNotLoaded" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.notebookExtensionNotLoaded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook extension is not loaded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -604,7 +604,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.packageManager.NoConnection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.packageManager.NoConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No connection selected]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -613,7 +613,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.pythonConfigError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.pythonConfigError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python executable is not configured]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -622,7 +622,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.pythonLanguageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.pythonLanguageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -631,7 +631,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.rConfigError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.rConfigError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R executable is not configured]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -640,7 +640,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.rLanguageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.rLanguageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -649,7 +649,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.requiredPackagesNotInstalled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.requiredPackagesNotInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The required packages are not installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -658,7 +658,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.resourceNotFound" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.resourceNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the specified resource]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -667,7 +667,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.taskFailedError.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.taskFailedError.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to complete task '{0}'. Error: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -676,7 +676,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.verifyOdbcDriverError.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mls.verifyOdbcDriverError.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA['{0}' is required  for package management. Please make sure it is installed and set up correctly.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -685,7 +685,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mlsInstallObdcDocTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mlsInstallObdcDocTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install the Microsoft ODBC driver for SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -694,7 +694,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.mlsInstallOdbcDocDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.mlsInstallOdbcDocDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This document explains how to install the Microsoft ODBC Driver for SQL Server.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -703,7 +703,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.modelDatabaseInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.modelDatabaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a database where existing / imported models are stored.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -712,7 +712,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.modelTableInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.modelTableInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a model table to view the list of existing / imported models.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -721,7 +721,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.RegisterWizard" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.RegisterWizard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -730,7 +730,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureAccount" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure account]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -739,7 +739,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureGroup" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -748,7 +748,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelFilter" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelFilter" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filter]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -757,7 +757,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelPageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import from Azure Machine Learning]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -766,7 +766,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Machine Learning]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -775,7 +775,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelSourceDescriptionForImport" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelSourceDescriptionForImport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[‘Azure Machine Learning’ is selected. This allows you to import models stored in Azure Machine Learning workspaces in a model database in this SQL instance. Click ‘Next’ to continue.​​]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -784,7 +784,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelSourceDescriptionForPredict" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelSourceDescriptionForPredict" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[‘Azure Machine Learning’ is selected. This allows you to choose from models stored in Azure Machine Learning workspaces. Click ‘Next’ to continue.​]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -793,7 +793,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelWorkspace" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelWorkspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure ML workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -802,7 +802,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModels" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModels" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -811,7 +811,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelsListEmptyDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelsListEmptyDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select another Azure ML workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -820,7 +820,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelsListEmptyTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelsListEmptyTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No models found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -829,7 +829,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureModelsTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureModelsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -838,7 +838,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureSignIn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureSignIn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure sign in or refresh account]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -847,7 +847,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.azureSubscription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.azureSubscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -856,13 +856,13 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.browseButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.browseButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[...]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.columnDataTypeMismatchWarning" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.columnDataTypeMismatchWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The data type of the source table column does not match the required input field’s type.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -871,7 +871,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.columnDataTypeMismatchWarningHeading" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.columnDataTypeMismatchWarningHeading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Differences in data type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -880,7 +880,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.columnDataTypeMismatchWarningHelper" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.columnDataTypeMismatchWarningHelper" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click to review warning details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -889,7 +889,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.columnSelectionPageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.columnSelectionPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Map source data to model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -898,7 +898,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.confirmDeleteModel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.confirmDeleteModel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to delete model '{0}?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -907,7 +907,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.createNotebookDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.createNotebookDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run experiments and create models in a notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -916,7 +916,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.createNotebookTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.createNotebookTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -925,7 +925,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.created" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.created" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Date created]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -934,7 +934,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.currentModelsTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.currentModelsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -943,7 +943,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Description]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -952,7 +952,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.downloadModelMsgTaskName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.downloadModelMsgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading Model from Azure]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -961,7 +961,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.editModelTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.editModelTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -970,7 +970,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.fileName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.fileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -979,7 +979,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.framework" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.framework" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Framework]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -988,7 +988,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.frameworkVersion" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.frameworkVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Framework version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -997,7 +997,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.importModelDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.importModelDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import or view machine learning models stored in database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1006,7 +1006,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.importModelDoneButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.importModelDoneButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1015,7 +1015,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.importModelFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.importModelFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to register the model: {0} ,file: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1024,7 +1024,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.importModelTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.importModelTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import or view models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1033,7 +1033,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.imported" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.imported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Date imported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1042,7 +1042,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.importedModelSourceDescriptionForPredict" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.importedModelSourceDescriptionForPredict" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[‘Imported Models’ is selected. This allows you to choose from models stored in a model table in your database.  Click ‘Next’ to continue.​]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1051,7 +1051,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.importedModelsPageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.importedModelsPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select imported model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1060,7 +1060,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidAzureResourceError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidAzureResourceError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid Azure resource]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1069,7 +1069,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidImportTableError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidImportTableError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid table for importing models. database name: {0} ,table name: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1078,7 +1078,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidImportTableSchemaError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidImportTableSchemaError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table schema is not supported for model import. Database name: {0}, table name: {1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1087,7 +1087,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidModelImportTargetError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidModelImportTargetError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select a valid table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1096,7 +1096,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidModelParametersError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidModelParametersError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select valid source table and model parameters]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1105,7 +1105,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidModelToPredictError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidModelToPredictError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid model to predict]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1114,7 +1114,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidModelToRegisterError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidModelToRegisterError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid model to register]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1123,7 +1123,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.invalidModelToSelectError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.invalidModelToSelectError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select a valid model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1132,7 +1132,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.learnMoreLink" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.learnMoreLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1141,7 +1141,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.loadModelParameterFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.loadModelParameterFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to load model parameters']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1150,7 +1150,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.localModelPageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.localModelPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Upload model file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1159,7 +1159,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.localModelSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.localModelSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File upload]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1168,7 +1168,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.localModelSourceDescriptionForImport" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.localModelSourceDescriptionForImport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[‘File Upload’ is selected. This allows you to import a model file from your local machine into a model database in this SQL instance. Click ‘Next’ to continue.​]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1177,7 +1177,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.localModelSourceDescriptionForPredict" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.localModelSourceDescriptionForPredict" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[‘File Upload’ is selected. This allows you to upload a model file from your local machine.  Click ‘Next’ to continue.​​]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1186,7 +1186,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.localModelsTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.localModelsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1195,7 +1195,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.makePredictionDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.makePredictionDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate a predicted value or scores using a managed model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1204,7 +1204,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.makePredictionTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.makePredictionTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Make predictions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1213,7 +1213,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelDetailsPageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelDetailsPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter model details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1222,7 +1222,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelFailedToRegistered" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelFailedToRegistered" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model failed to register]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1231,7 +1231,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelImportTargetPageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelImportTargetPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select or enter the location to import the models to]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1240,7 +1240,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelLocalSourceTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelLocalSourceTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1249,7 +1249,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelLocalSourceTooltip" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelLocalSourceTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File paths of the models to import]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1258,7 +1258,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelNameRequiredError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelNameRequiredError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model name is required.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1267,7 +1267,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelRegisteredSuccessfully" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelRegisteredSuccessfully" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model registered successfully]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1276,7 +1276,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelSchemaIsAcceptedMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelSchemaIsAcceptedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table meets requirements!]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1285,7 +1285,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelSchemaIsNotAcceptedMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelSchemaIsNotAcceptedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid table structure!]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1294,7 +1294,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelSourcePageTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelSourcePageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select model source type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1303,7 +1303,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelSourcesTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelSourcesTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1312,7 +1312,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelUpdateFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelUpdateFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to update the model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1321,7 +1321,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelUpdatedSuccessfully" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelUpdatedSuccessfully" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model updated successfully]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1330,7 +1330,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelsListEmptyDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelsListEmptyDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select another database or table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1339,7 +1339,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelsListEmptyMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelsListEmptyMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No models found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1348,7 +1348,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.modelsRequiredError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.modelsRequiredError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select at least one model to import.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1357,7 +1357,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1366,7 +1366,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.onnxNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.onnxNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ONNX runtime is not supported in current server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1375,7 +1375,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.outputColumnDataTypeNotSupportedWarning" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.outputColumnDataTypeNotSupportedWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The data type of output column does not match the output field’s type.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1384,7 +1384,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.predictModel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.predictModel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Predict]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1393,7 +1393,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.registeredModelsSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.registeredModelsSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Imported models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1402,7 +1402,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.selectModelDatabaseMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.selectModelDatabaseMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1411,7 +1411,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.selectModelDatabaseTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.selectModelDatabaseTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select database with models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1420,7 +1420,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.selectModelTableMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.selectModelTableMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1429,7 +1429,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.selectModelTableTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.selectModelTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select tables with models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1438,7 +1438,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.selectModelsTableMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.selectModelsTableMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select models table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1447,7 +1447,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.unsupportedModelParameterType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.unsupportedModelParameterType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[unsupported]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1456,7 +1456,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.updateModelFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.updateModelFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to update the model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1465,7 +1465,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.version" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.version" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1474,7 +1474,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.viewImportModeledForPredictDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.viewImportModeledForPredictDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The models are stored in one or more databases and tables. Select the model database and table to view models in them.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1483,7 +1483,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.viewImportModelsDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.viewImportModelsDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning models can be stored in one or more databases and tables. Select the model database and table to view the models within them.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1492,7 +1492,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.models.viewImportModelsTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.models.viewImportModelsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View and import models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1501,7 +1501,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.msgNo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.msgNo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1510,7 +1510,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.msgYes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.msgYes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1519,7 +1519,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.newTableName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.newTableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1528,7 +1528,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.notSupportedEventArg" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.notSupportedEventArg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Not supported event args]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1537,7 +1537,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.notebookExtensionFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.notebookExtensionFailedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The extension failed to load because of it's dependency to Notebook extension. Please check the output log for Notebook extension to get more details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1546,7 +1546,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.onnxOnEdgeOdbcDocDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.onnxOnEdgeOdbcDocDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Get started with machine learning in Azure SQL Database Edge]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1555,7 +1555,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.onnxOnEdgeOdbcDocTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.onnxOnEdgeOdbcDocTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine learning and AI with ONNX in SQL Database Edge Preview]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1564,7 +1564,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.columnDatabase" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.columnDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1573,7 +1573,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.columnDatabaseInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.columnDatabaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the database containing the dataset to apply the prediction.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1582,7 +1582,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.columnName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.columnName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source columns]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1591,7 +1591,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.columnTable" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.columnTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1600,7 +1600,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.columnTableInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.columnTableInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the table containing the dataset to apply the prediction.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1609,7 +1609,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.dataTypeName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.dataTypeName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1618,7 +1618,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Display  name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1627,7 +1627,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.inputColumns" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.inputColumns" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model Input mapping]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1636,7 +1636,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.inputName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.inputName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model input]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1645,7 +1645,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.outputColumns" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.outputColumns" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Model output]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1654,7 +1654,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.outputName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.outputName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1663,7 +1663,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.selectColumnTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.selectColumnTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select column...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1672,7 +1672,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.selectDatabaseTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.selectDatabaseTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1681,7 +1681,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.predict.selectTableTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.predict.selectTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1690,7 +1690,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.showLessTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.showLessTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show less]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1699,7 +1699,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.showMoreTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.showMoreTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show more]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1708,7 +1708,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlDocDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlDocDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1717,7 +1717,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlDocTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlDocTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL machine learning documentation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1726,7 +1726,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlExtDocDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlExtDocDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn how to use Machine Learning extension in Azure Data Studio, to manage packages, make predictions, and import models.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1735,7 +1735,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlExtDocTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlExtDocTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning extension in Azure Data Studio]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1744,7 +1744,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlsDocDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlsDocDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1753,7 +1753,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlsDocTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlsDocTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Machine Learning Services (Python and R)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1762,7 +1762,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlsMIDocDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlsMIDocDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Get started with Machine Learning Services in Azure SQL Managed Instances.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1771,7 +1771,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.sqlMlsMIDocTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.sqlMlsMIDocTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning Services in Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1780,7 +1780,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.tableName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.tableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1789,7 +1789,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/dist/common/constants.tableToStoreInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/dist/common/constants.tableToStoreInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select an existing table that conforms the model schema or create a new one to store the imported model.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1798,7 +1798,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1807,7 +1807,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1816,7 +1816,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.dependencies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.dependencies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install Machine Learning Dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1825,7 +1825,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.enableExternalScript" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.enableExternalScript" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable External script]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1834,7 +1834,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.importModel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.importModel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import model]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1843,7 +1843,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.manageLanguages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.manageLanguages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manage external languages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1852,7 +1852,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.manageModels" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.manageModels" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manage models]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1861,7 +1861,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.managePackages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.managePackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manage packages in database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1870,7 +1870,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.command.predictModel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.command.predictModel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Make prediction]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1879,7 +1879,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.configuration.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.configuration.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning Configurations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1888,7 +1888,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.enablePython.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.enablePython.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable Python package management in database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1897,7 +1897,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.enableR.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.enableR.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable R package management in database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1906,7 +1906,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.pythonPath.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.pythonPath.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local path to a preexisting Python installation used by Machine Learning.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1915,7 +1915,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.ml.rPath.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.ml.rPath.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local path to a preexisting R installation used by Machine Learning.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1924,7 +1924,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.title.configurations" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.title.configurations" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configurations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1933,7 +1933,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.title.documents" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.title.documents" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Documents]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1942,7 +1942,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.title.endpoints" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.title.endpoints" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Endpoints]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1951,7 +1951,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/machine-learning/package.title.tasks" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.machine-learning/package.title.tasks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tasks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

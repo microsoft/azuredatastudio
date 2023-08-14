@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LCX SchemaVersion="6.0" Name="D:\a\1\s\resources\xlf\en\data-workspace.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
+<LCX SchemaVersion="6.0" Name="D:\a\1\s\resources\xlf\en\Microsoft.data-workspace.xlf" PsrId="308" FileType="1" SrcCul="en-US" TgtCul="pt-BR" xmlns="http://schemas.microsoft.com/locstudio/2006/6/lcx">
   <OwnedComments>
     <Cmt Name="Dev" />
     <Cmt Name="LcxAdmin" />
@@ -10,7 +10,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.AllProjectTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.AllProjectTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All Project Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -19,7 +19,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.LocalDevInfo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.LocalDevInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click "Learn more" button for more information about local development experience to {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -28,7 +28,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.SelectProjectFileActionName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.SelectProjectFileActionName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -37,7 +37,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.UnknownProjectTypeError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.UnknownProjectTypeError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No provider was found for project type with id: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -46,7 +46,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.UnknownProjectsError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.UnknownProjectsError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No provider was found for the following projects: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -55,7 +55,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.activateExtensionFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.activateExtensionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to load the project provider extension '{0}'. Error message: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -64,7 +64,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworksapce.local" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworksapce.local" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -73,7 +73,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworksapce.refresh" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworksapce.refresh" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -82,7 +82,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.NewProjectDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.NewProjectDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new database project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -94,7 +94,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.Type" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.Type" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -103,7 +103,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.browse" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.browse" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Browse]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -112,7 +112,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.browseEllipsis" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.browseEllipsis" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Browse...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -121,7 +121,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.cloneParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.cloneParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected clone path '{0}' does not exist or is not a directory.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -130,7 +130,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.create" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.create" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -139,7 +139,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.default" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.default" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -148,7 +148,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.enterProjectName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.enterProjectName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter Project Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -157,7 +157,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.fileNotExistError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.fileNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected {0} file '{1}' does not exist or is not a file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -166,7 +166,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.gitRepoUrlPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.gitRepoUrlPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter remote git repository URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -175,7 +175,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.gitRepoUrlTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.gitRepoUrlTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Git repository URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -184,7 +184,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.learnMore" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.learnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn More]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -193,7 +193,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.localClonePathPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.localClonePathPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to clone repository locally]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -202,7 +202,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.localClonePathTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.localClonePathTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local clone path]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -211,7 +211,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.locationSelectorTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.locationSelectorTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -220,7 +220,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.nameCannotBeEmpty" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.nameCannotBeEmpty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name cannot be empty]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -229,7 +229,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.no" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.no" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -238,7 +238,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.ok" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.ok" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OK]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -247,7 +247,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.open" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.open" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -256,7 +256,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.openExistingDialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.openExistingDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Existing Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -265,7 +265,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.project" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.project" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -274,7 +274,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectAlreadyOpened" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectAlreadyOpened" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project '{0}' is already opened.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -283,7 +283,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There is already a directory named '{0}' in the selected location: '{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -292,7 +292,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistErrorShort" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistErrorShort" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Directory '{0}' already exists in the selected location, please choose another]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -301,7 +301,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectFilePlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectFilePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select project file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -310,7 +310,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectFileTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectFileTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -319,7 +319,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectLocationPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectLocationPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to create project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -328,7 +328,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectLocationTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectLocationTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -337,7 +337,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectNamePlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectNamePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter project name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -346,7 +346,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectNameTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectNameTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -355,7 +355,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.projectParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected project location '{0}' does not exist or is not a directory.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -364,7 +364,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.remoteGitRepo" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.remoteGitRepo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote git repository]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -373,7 +373,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -385,7 +385,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.sdkLearnMorePlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.sdkLearnMorePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click "Learn More" button for more information about SDK-style projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -394,7 +394,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.sdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.sdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SDK-style project (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -403,7 +403,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.select" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.select" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -412,7 +412,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectLocation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.selectProjectLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Project Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -421,7 +421,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Database Project Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -433,7 +433,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectTargetPlatform" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.selectTargetPlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Target Platform]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -442,7 +442,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.targetPlatform" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.targetPlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Platform]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -451,7 +451,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.workspacePlaceholder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.workspacePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select workspace ({0}) file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -460,7 +460,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.yesRecommended" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dataworkspace.yesRecommended" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes (Recommended)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -469,7 +469,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.dragAndDropNotSupported" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.dragAndDropNotSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This project type does not support drag and drop.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -478,7 +478,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.fileDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.fileDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' doesn't exist]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -487,7 +487,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.filenameEndingInPeriodErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.filenameEndingInPeriodErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot end with a period]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -496,7 +496,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.gitCloneError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.gitCloneError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error during git clone. View git output for more details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -505,7 +505,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.gitCloneMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.gitCloneMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cloning git repository '{0}'...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -514,7 +514,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.invalidFileCharsErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.invalidFileCharsErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid file characters]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -523,7 +523,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.noPreviousData" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.noPreviousData" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Prior {0} for the current project will appear here, please run to see the results.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -532,7 +532,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.noProjectProvidingExtensionsInstalled" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.noProjectProvidingExtensionsInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No database project extensions are installed. Please install a database project extension to use this feature.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -541,7 +541,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.onlyMovingOneFileIsSupported" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.onlyMovingOneFileIsSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Only moving one file at a time is supported.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -550,7 +550,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.openedProjectsUndefinedAfterRefresh" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.openedProjectsUndefinedAfterRefresh" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[List of opened projects should not be undefined after refresh from disk.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -559,7 +559,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.projectFailedToLoad" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.projectFailedToLoad" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project '{0}' failed to load: {1}  To view more details, [open the developer console]5D;(command:workbench.action.toggleDevTools).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -568,7 +568,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.projectNameNull" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.projectNameNull" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project name is null]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -577,7 +577,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.reservedValueErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.reservedValueErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reserved file name. Choose another name and try again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -586,7 +586,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.reservedWindowsFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.reservedWindowsFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This file name is reserved for use by Windows. Choose another name and try again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -595,7 +595,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.tooLongFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.tooLongFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot be over 255 characters]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -604,7 +604,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.trailingWhitespaceErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.trailingWhitespaceErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot start or end with whitespace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -616,7 +616,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.undefinedFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.undefinedFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Undefined name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -625,7 +625,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/dist/common/constants.whitespaceFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.whitespaceFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot be whitespace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -634,7 +634,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.close-workspace-command" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.close-workspace-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Workspace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -643,7 +643,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.data-workspace-view-container-name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.data-workspace-view-container-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -655,7 +655,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.main-view-name" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.main-view-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -667,7 +667,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.manage-project-command" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.manage-project-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manage]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -676,7 +676,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.new-command" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.new-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -685,7 +685,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.open-existing-command" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.open-existing-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open existing]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -694,7 +694,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.projects-view-no-project-content" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.projects-view-no-project-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No projects open in current workspace.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -703,7 +703,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.projects-view-no-workspace-content" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.projects-view-no-workspace-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new or open existing to get started.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -712,7 +712,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.projects.defaultProjectSaveLocation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.projects.defaultProjectSaveLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to folder where new projects are saved by default.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -721,7 +721,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.projects.excludedProjectsDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.projects.excludedProjectsDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[List of projects in the workspace to exclude from the projects viewlet]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -730,7 +730,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.projects.showNotAddedProjectsInWorkspacePrompt" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.projects.showNotAddedProjectsInWorkspacePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -739,7 +739,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.refresh-workspace-command" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.refresh-workspace-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -748,7 +748,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/data-workspace/package.remove-project-command" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/Microsoft.data-workspace/package.remove-project-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
