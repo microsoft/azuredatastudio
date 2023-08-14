@@ -682,18 +682,27 @@ export class SqlDatabaseTree {
 			}).component();
 	}
 
-	private createPlatformComponent(): azdata.TextComponent {
-		const target = (this._targetType === MigrationTargetType.SQLVM)
-			? constants.SUMMARY_VM_TYPE
-			: (this._targetType === MigrationTargetType.SQLMI)
-				? constants.SUMMARY_MI_TYPE
-				: constants.SUMMARY_SQLDB_TYPE;
-
-		return this._view.modelBuilder.text()
-			.withProps({
-				value: target,
-				CSSStyles: { ...styles.PAGE_SUBTITLE_CSS }
+	private createPlatformComponent(): azdata.Component {
+		if (this._targetType === undefined) {
+			const targetTypes = ['Azure Sql Database', 'Azure Sql Managed Instance', 'Azure Sql Virtual Machine'];
+			return this._view.modelBuilder.dropDown().withProps({
+				value: '',
+				values: targetTypes,
+				width: '100%'
 			}).component();
+		} else {
+			const target = (this._targetType === MigrationTargetType.SQLVM)
+				? constants.SUMMARY_VM_TYPE
+				: (this._targetType === MigrationTargetType.SQLMI)
+					? constants.SUMMARY_MI_TYPE
+					: constants.SUMMARY_SQLDB_TYPE;
+
+			return this._view.modelBuilder.text()
+				.withProps({
+					value: target,
+					CSSStyles: { ...styles.PAGE_SUBTITLE_CSS }
+				}).component();
+		}
 	}
 
 	private createRecommendationComponent(): azdata.TextComponent {

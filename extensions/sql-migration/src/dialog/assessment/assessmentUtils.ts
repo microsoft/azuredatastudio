@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { MigrationTargetType } from '../../api/utils';
 import { Page, SavedInfo } from '../../models/stateMachine';
 
 export function parseAssessmentReport(assessmentReport: any): any {
@@ -30,6 +31,29 @@ export function parseAssessmentReport(assessmentReport: any): any {
 	};
 
 	if (assessmentReport.DmaVersion !== undefined) { //DMA assessment format import
+		switch (assessmentReport.TargetPlatform) {
+			case "VMSqlServer": {
+				saveInfo.migrationTargetType = MigrationTargetType.SQLVM;
+				break;
+			}
+			case "ManagedSqlServer": {
+				saveInfo.migrationTargetType = MigrationTargetType.SQLMI;
+				break;
+			}
+			case "AzureSqlDatabase": {
+				saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
+				break;
+			}
+			default: {
+				if (assessmentReport.TargetPlatform.startsWith("SqlServer")) {
+					saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
+				}
+				saveInfo.migrationTargetType = "Unknown";
+			}
+		}
+
+		saveInfo.migrationTargetType = MigrationTargetType.SQLDB; //???
+
 		saveInfo.serverAssessment = {
 			issues: assessmentReport.ServerInstances[0].AssessmentRecommendations || [],
 			databaseAssessments: assessmentReport.Databases?.map((d: any) => {
