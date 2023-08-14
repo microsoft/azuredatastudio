@@ -30,6 +30,10 @@ import { isErrorResponseBodyWithError } from '../../azureResource/utils';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 const localize = nls.loadMessageBundle();
 
+export type ResponseData = {
+	value: TenantResponse[];
+}
+
 export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly memdb = new MemoryDatabase<string>();
 	protected readonly loginEndpointUrl: string;
@@ -245,14 +249,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			const tenantResponse = await this.makeGetRequest(tenantUri, token);
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const data = tenantResponse.data;
+			const data = tenantResponse.data as ResponseData;
 			if (isErrorResponseBodyWithError(data)) {
 				Logger.error(`Error fetching tenants :${data.error?.code} - ${data.error?.message}`);
 				throw new Error(`${data.error?.code} - ${data.error?.message}`);
 			}
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const tenants: Tenant[] = data.value.map((tenantInfo: TenantResponse) => {
 				if (tenantInfo.displayName) {
 					tenantList.push(tenantInfo.displayName);
@@ -484,7 +486,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			validateStatus: () => true // Never throw
 		};
 
-		const response = await axios.get(url, config);
+		const response: AxiosResponse = await axios.get(url, config);
 		// ADAL is being deprecated so just ignoring these for now
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
