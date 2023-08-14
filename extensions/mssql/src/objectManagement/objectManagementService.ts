@@ -71,7 +71,7 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 
-	async deleteDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+	async dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
 		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
 		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
 	}
@@ -256,7 +256,7 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	deleteDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
 	}
 

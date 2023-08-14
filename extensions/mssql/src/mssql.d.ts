@@ -984,8 +984,6 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		detachDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, updateStatistics: boolean, generateScript: boolean): Thenable<string>;
-
-		deleteDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
 		/**
 		 * Attach a database.
 		 * @param connectionUri The URI of the server connection.
@@ -994,6 +992,16 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Thenable<string>;
+		/**
+		 * Drop a database.
+		 * @param connectionUri The URI of the server connection.
+		 * @param objectUrn SMO Urn of the database to be detached. More information: https://learn.microsoft.com/sql/relational-databases/server-management-objects-smo/overview-smo
+		 * @param dropConnections Whether to drop active connections to this database.
+		 * @param deleteBackupHistory Whether to delete backup and restore history information for this database.
+		 * @param generateScript Whether to generate a TSQL script for the operation instead of detaching the database.
+		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
+		 */
+		dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
 
 		getDataFolder(connectionUri: string): Thenable<string>;
 	}
