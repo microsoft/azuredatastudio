@@ -338,6 +338,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	}
 
 	private initializeSecuritySection(): void {
+		// cannot change auth mode in sql managed instance or non windows instances
 		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance || this.objectInfo.platform !== 'Windows';
 		const radioServerGroupName = 'serverAuthenticationRadioGroup';
 		this.onlyWindowsAuthRadioButton = this.createRadioButton(localizedConstants.onlyWindowsAuthModeText, radioServerGroupName, true, async (checked) => { await this.handleTypeChange(checked); });
