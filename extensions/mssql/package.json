@@ -585,12 +585,12 @@
         },
         {
           "command": "mssql.detachDatabase",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Database && !isCloud && !(nodePath =~ /^.*\\/System Databases\\/.*$/) && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
           "group": "1_objectManagement@2"
         },
         {
           "command": "mssql.testFileDialog",
-          "when": "connectionProvider == MSSQL && nodeType == Database && objectType == Databases && config.workbench.enablePreviewFeatures && (productQualityType =~ /^(insider|dev)$/ || isDevelopment)",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Databases && config.workbench.enablePreviewFeatures",
           "group": "1_objectManagement@2"
         },
         {
