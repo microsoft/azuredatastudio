@@ -365,7 +365,7 @@ export class ProfilerEditor extends EditorPane {
 		let editorContainer = this._createProfilerEditor();
 		let tabbedPanelContainer = document.createElement('div');
 		tabbedPanelContainer.className = 'profiler-tabbedPane';
-		this._tabbedPanel = new TabbedPanel(tabbedPanelContainer);
+		this._tabbedPanel = this._register(new TabbedPanel(tabbedPanelContainer));
 		attachTabbedPanelStyler(this._tabbedPanel, this.themeService);
 
 		const expandPanel = () => {
@@ -415,7 +415,7 @@ export class ProfilerEditor extends EditorPane {
 		});
 
 		const detailTableCopyKeybind = new CopyKeybind<IDetailData>();
-		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
+		this._register(detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
 				handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, ranges[0], (row, cell) => {
@@ -424,7 +424,7 @@ export class ProfilerEditor extends EditorPane {
 					return cell === 0 ? item.label : item.value;
 				});
 			}
-		});
+		}));
 		this._detailTable.setSelectionModel(new CellSelectionModel());
 		this._detailTable.registerPlugin(detailTableCopyKeybind);
 		this._register(this._componentContextService.registerTable(this._detailTable));
@@ -553,7 +553,7 @@ export class ProfilerEditor extends EditorPane {
 					this._profilerService.launchCreateSessionDialog(this.input);
 				}
 
-				if (previousSessionName) {		// skip updating session selector if there is no previous session name
+				if (!this.input.isFileSession) {		// skip updating session selector for File session to block starting another session from a non-connected file session
 					this._updateSessionSelector(previousSessionName);
 				}
 			} else {
@@ -581,7 +581,7 @@ export class ProfilerEditor extends EditorPane {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				if (!this.input.isFileSession) {		// skip updating session selector for File sessions
+				if (!this.input.isFileSession) {		// skip updating session selector for File sessions to block starting another session from a non-connected file session
 					this._updateSessionSelector();
 				}
 			}

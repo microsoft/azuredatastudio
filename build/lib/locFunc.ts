@@ -154,12 +154,13 @@ export function modifyI18nPackFiles(existingTranslationFolder: string, resulting
 				for (let extension in extensionsPacks) {
 					const translatedExtFile = i18n.createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
 					this.queue(translatedExtFile);
-
-					// exclude altered vscode extensions from having a new path even if we provide a new I18n file.
-					if (alteredVSCodeExtensions.indexOf(extension) === -1) {
-						let adsExtensionId = 'Microsoft.' + extension;
-						resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
+					let adsExtensionId = 'Microsoft.' + extension;
+					// Exclude altered vscode extensions from having a new id, as it's identified this way in ADS.
+					// We will use ADS's i18n file for actual translations.
+					if (alteredVSCodeExtensions.indexOf(extension) !== -1) {
+						adsExtensionId = 'vscode.' + extension;
 					}
+					resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
 				}
 				this.queue(null);
 			})
@@ -186,12 +187,12 @@ const VSCODEExtensions = [
 	"builtin-notebook-renderers", // notebook renderers
 	"configuration-editing",
 	"docker",
-	"git",
 	"git-base",
 	"github",
 	"github-authentication",
 	"image-preview",
 	"ipynb",
+	"javascript",
 	"json",
 	"json-language-features",
 	"markdown", // markdown-basics
