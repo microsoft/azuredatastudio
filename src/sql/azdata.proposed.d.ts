@@ -2011,6 +2011,8 @@ declare module 'azdata' {
 			 */
 			isPrimary: boolean;
 		}
+
+		export function openFileBrowserDialog(): Thenable<string>;
 	}
 
 	export interface TableComponent {
