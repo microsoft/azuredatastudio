@@ -21,11 +21,15 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 	}
 
 	public async $openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string> {
-		let completion = new Promise<string>(resolve => {
-			let handleOk = (path: string) => {
-				resolve(path);
-			};
-			this._fileBrowserDialogService.showDialog(connectionUri, targetPath, fileFilters, '', true, handleOk);
+		let completion = new Promise<string>((resolve, reject) => {
+			try {
+				let handleOk = (path: string) => {
+					resolve(path);
+				};
+				this._fileBrowserDialogService.showDialog(connectionUri, targetPath, fileFilters, '', true, handleOk);
+			} catch (error) {
+				reject(error);
+			}
 		});
 		return await completion;
 	}
