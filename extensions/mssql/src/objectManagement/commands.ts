@@ -50,6 +50,12 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleDeleteDatabase(context, service);
 	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.testFileDialog', async (context: azdata.ObjectExplorerContext) => {
+		const connectionUri = await getConnectionUri(context);
+		const targetPath = 'E:\\SQLDIRS\\IN\\MSSQL16.MSSQLSERVER\\MSSQL\\DATA';
+		let path = await azdata.window.openFileBrowserDialog(connectionUri, targetPath, [{ label: 'Data Files', filters: ['*.mdf'] }, { label: 'Log Files', filters: ['*.ldf'] }]);
+		await vscode.window.showInformationMessage(`Received this path from file dialog: ${path ?? 'undefined'}`);
+	}));
 }
 
 function getObjectManagementService(appContext: AppContext, useTestService: boolean): IObjectManagementService {
