@@ -152,6 +152,12 @@ export abstract class DialogBase<DialogResult> {
 		});
 	}
 
+	/**
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: input type is text, width is DefaultInputWidth, value is empty and the inputbox is enabled.
+	 * @param textChangeHandler - Function called on text changed.
+	 * @param properties - Inputbox properties.
+	 * @param customValidation - Dynamic validation function.
+	 */
 	protected createInputBox(textChangeHandler: (newValue: string) => Promise<void>, properties: azdata.InputBoxProperties, customValidation?: () => Promise<boolean>): azdata.InputBoxComponent {
 		properties.width = properties.width ?? DefaultInputWidth;
 		properties.inputType = properties.inputType ?? 'text';
