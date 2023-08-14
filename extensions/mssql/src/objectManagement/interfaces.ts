@@ -459,6 +459,8 @@ export interface Database extends ObjectManagement.SqlObject {
 
 export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Database> {
 	isAzureDB: boolean;
+	isManagedInstance: boolean;
+	isSqlOnDemand: boolean;
 	loginNames?: OptionsCollection;
 	collationNames?: OptionsCollection;
 	compatibilityLevels?: OptionsCollection;
