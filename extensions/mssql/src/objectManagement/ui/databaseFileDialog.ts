@@ -121,7 +121,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				= this.unlimitedFileSize.enabled
 				= this.result.isAutoGrowthEnabled = checked;
 		}, true, true);
-		const autogrowthContainer = this.createGroup(localizedConstants.AutogrowthMaxsizeText, [this.enableAutoGrowthCheckbox, this.InitializeAutogrowthSection(), this.InitializeMaxFileSizeSection()], true, false);
+		const autogrowthContainer = this.createGroup(localizedConstants.AutogrowthMaxsizeText, [this.enableAutoGrowthCheckbox, this.InitializeAutogrowthSection(), this.InitializeMaxFileSizeSection()], true);
 		containers.push(autogrowthContainer);
 
 		// Path
@@ -249,7 +249,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			fileGroupDdValue = fileGroupDdOptions[0];
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';
-			pathContainerMarginTop = '-40px';
+			pathContainerMarginTop = '-10px';
 		}
 
 		// Update the propertie
