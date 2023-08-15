@@ -19,11 +19,6 @@ import * as vfs from 'vinyl-fs';
  * If you need to compile this file for any changes, please run: yarn tsc -p ./build/tsconfig.json
  */
 
-//List of extensions that we changed from vscode, so we can exclude them from having "Microsoft." appended in front.
-const alteredVSCodeExtensions = [
-	'git'
-];
-
 const root = path.dirname(path.dirname(__dirname));
 
 // Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
@@ -154,13 +149,7 @@ export function modifyI18nPackFiles(existingTranslationFolder: string, resulting
 				for (let extension in extensionsPacks) {
 					const translatedExtFile = i18n.createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
 					this.queue(translatedExtFile);
-					let adsExtensionId = 'Microsoft.' + extension;
-					// Exclude altered vscode extensions from having a new id, as it's identified this way in ADS.
-					// We will use ADS's i18n file for actual translations.
-					if (alteredVSCodeExtensions.indexOf(extension) !== -1) {
-						adsExtensionId = 'vscode.' + extension;
-					}
-					resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
+					resultingTranslationPaths.push({ id: extension, resourceName: `extensions/${extension}.i18n.json` });
 				}
 				this.queue(null);
 			})
@@ -190,7 +179,6 @@ const VSCODEExtensions = [
 	"git-base",
 	"github",
 	"github-authentication",
-	"image-preview",
 	"ipynb",
 	"javascript",
 	"json",
