@@ -233,6 +233,10 @@ export class SqlDatabaseTree {
 		return tableContainer;
 	}
 
+	private async onTargetChange(): Promise<void> {
+		await this.refreshResults();
+	}
+
 	private createSearchComponent(): azdata.DivContainer {
 		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
 			stopEnterPropagation: true,
@@ -707,7 +711,7 @@ export class SqlDatabaseTree {
 							break;
 						}
 					}
-					await this.refreshResults();
+					await this.onTargetChange();
 				}
 			});
 
