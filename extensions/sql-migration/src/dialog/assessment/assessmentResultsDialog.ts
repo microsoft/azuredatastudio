@@ -25,6 +25,7 @@ export class AssessmentResultsDialog {
 
 	private static readonly SelectButtonText: string = 'Select';
 	private static readonly CancelButtonText: string = 'Cancel';
+	private static readonly OkButtonText: string = 'OK';
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
@@ -77,10 +78,17 @@ export class AssessmentResultsDialog {
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this.dialog.okButton.position = 'left';
-			this.dialog.okButton.enabled = !this._readOnly;
-			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+			if (this._readOnly) {
+				this.dialog.okButton.enabled = false;
+				this.dialog.okButton.hidden = true;
 
-			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
+				this.dialog.cancelButton.label = AssessmentResultsDialog.OkButtonText;
+			} else {
+				this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+
+				this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
+			}
+
 			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
