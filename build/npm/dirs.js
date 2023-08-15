@@ -19,6 +19,7 @@ const dirs = [
 	'extensions/azuremonitor',
 	'extensions/cms',
 	'extensions/configuration-editing',
+	'extensions/context-builder',
 	'extensions/dacpac',
 	'extensions/data-workspace',
 	'extensions/datavirtualization',

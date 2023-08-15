@@ -154,7 +154,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			maxLength: maxLengthDatabaseName
 		};
 
-		this.nameInput = this.createInputBoxWithProperties(async () => {
+		this.nameInput = this.createInputBox(async () => {
 			this.objectInfo.name = this.nameInput.value;
 		}, props);
 		containers.push(this.createLabelInputContainer(localizedConstants.NameText, this.nameInput));
@@ -221,11 +221,21 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	//#region Database Properties - General Tab
 	private initializeBackupSection(): void {
 		// Last Database Backup
-		this.lastDatabaseBackupInput = this.createInputBox(localizedConstants.LastDatabaseBackupText, async () => { }, this.objectInfo.lastDatabaseBackup, this.options.isNewObject);
+		this.lastDatabaseBackupInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.LastDatabaseBackupText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.lastDatabaseBackup
+		});
 		const lastDatabaseBackupContainer = this.createLabelInputContainer(localizedConstants.LastDatabaseBackupText, this.lastDatabaseBackupInput);
 
 		// Last Database Log Backup
-		this.lastDatabaseLogBackupInput = this.createInputBox(localizedConstants.LastDatabaseLogBackupText, async () => { }, this.objectInfo.lastDatabaseLogBackup, this.options.isNewObject);
+		this.lastDatabaseLogBackupInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.LastDatabaseLogBackupText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.lastDatabaseLogBackup
+		});
 		const lastDatabaseLogBackupContainer = this.createLabelInputContainer(localizedConstants.LastDatabaseLogBackupText, this.lastDatabaseLogBackupInput);
 
 		this.backupSection = this.createGroup(localizedConstants.BackupSectionHeader, [
@@ -236,43 +246,93 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	private initializeDatabaseSection(): void {
 		// Database Name
-		this.nameInput = this.createInputBox(localizedConstants.NamePropertyText, async () => { }, this.objectInfo.name, this.options.isNewObject);
+		this.nameInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.NamePropertyText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NamePropertyText, this.nameInput);
 
 		// Database Status
-		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
+		this.statusInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.StatusText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.status
+		});
 		const statusContainer = this.createLabelInputContainer(localizedConstants.StatusText, this.statusInput);
 
 		// Database Owner
-		this.ownerInput = this.createInputBox(localizedConstants.OwnerPropertyText, async () => { }, this.objectInfo.owner, this.options.isNewObject);
+		this.ownerInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.OwnerPropertyText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.owner
+		});
 		const ownerContainer = this.createLabelInputContainer(localizedConstants.OwnerPropertyText, this.ownerInput);
 
 		// Created Date
-		this.dateCreatedInput = this.createInputBox(localizedConstants.DateCreatedText, async () => { }, this.objectInfo.dateCreated, this.options.isNewObject);
+		this.dateCreatedInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.DateCreatedText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.dateCreated
+		});
 		const dateCreatedContainer = this.createLabelInputContainer(localizedConstants.DateCreatedText, this.dateCreatedInput);
 
 		// Size
-		this.sizeInput = this.createInputBox(localizedConstants.SizeText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.sizeInMb), this.options.isNewObject);
+		this.sizeInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.SizeText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: convertNumToTwoDecimalStringInMB(this.objectInfo.sizeInMb)
+		});
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.SizeText, this.sizeInput);
 
 		// Space Available
-		this.spaceAvailabeInput = this.createInputBox(localizedConstants.SpaceAvailableText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.spaceAvailableInMb), this.options.isNewObject);
+		this.spaceAvailabeInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.SpaceAvailableText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: convertNumToTwoDecimalStringInMB(this.objectInfo.spaceAvailableInMb)
+		});
 		const spaceAvailabeContainer = this.createLabelInputContainer(localizedConstants.SpaceAvailableText, this.spaceAvailabeInput);
 
 		// Number of Users
-		this.numberOfUsersInput = this.createInputBox(localizedConstants.NumberOfUsersText, async () => { }, this.objectInfo.numberOfUsers.toString(), this.options.isNewObject);
+		this.numberOfUsersInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.NumberOfUsersText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.numberOfUsers.toString()
+		});
 		const numberOfUsersContainer = this.createLabelInputContainer(localizedConstants.NumberOfUsersText, this.numberOfUsersInput);
 
 		// Memory Allocated To Memory Optimized Objects
-		this.memoryAllocatedInput = this.createInputBox(localizedConstants.MemoryAllocatedText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.memoryAllocatedToMemoryOptimizedObjectsInMb), this.options.isNewObject);
+		this.memoryAllocatedInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.MemoryAllocatedText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: convertNumToTwoDecimalStringInMB(this.objectInfo.memoryAllocatedToMemoryOptimizedObjectsInMb)
+		});
 		const memoryAllocatedContainer = this.createLabelInputContainer(localizedConstants.MemoryAllocatedText, this.memoryAllocatedInput);
 
 		// Memory Used By Memory Optimized Objects
-		this.memoryUsedInput = this.createInputBox(localizedConstants.MemoryUsedText, async () => { }, convertNumToTwoDecimalStringInMB(this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb), this.options.isNewObject);
+		this.memoryUsedInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.MemoryUsedText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: convertNumToTwoDecimalStringInMB(this.objectInfo.memoryUsedByMemoryOptimizedObjectsInMb)
+		});
 		const memoryUsedContainer = this.createLabelInputContainer(localizedConstants.MemoryUsedText, this.memoryUsedInput);
 
 		// Collation
-		this.collationInput = this.createInputBox(localizedConstants.CollationText, async () => { }, this.objectInfo.collationName, this.options.isNewObject);
+		this.collationInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.CollationText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.collationName
+		});
 		const collationContainer = this.createLabelInputContainer(localizedConstants.CollationText, this.collationInput);
 
 		this.databaseSection = this.createGroup(localizedConstants.DatabaseSectionHeader, [
@@ -384,10 +444,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}, this.viewInfo.pageVerifyOptions, this.objectInfo.pageVerify, true);
 		const pageVerifyContainer = this.createLabelInputContainer(localizedConstants.PageVerifyText, this.pageVerifyInput);
 
+		const props: azdata.InputBoxProperties = {
+			ariaLabel: localizedConstants.TargetRecoveryTimeInSecondsText,
+			inputType: 'number',
+			enabled: true,
+			min: 0,
+			required: true
+		};
 		// Recovery Time In Seconds
-		this.targetRecoveryTimeInSecInput = this.createInputBox(localizedConstants.TargetRecoveryTimeInSecondsText, async (newValue) => {
+		this.targetRecoveryTimeInSecInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.targetRecoveryTimeInSec = Number(newValue);
-		}, this.objectInfo.targetRecoveryTimeInSec.toString(), true, 'number', DefaultInputWidth, true, 0);
+		}, props);
 		const targetRecoveryTimeContainer = this.createLabelInputContainer(localizedConstants.TargetRecoveryTimeInSecondsText, this.targetRecoveryTimeInSecInput);
 
 		const recoverySection = this.createGroup(localizedConstants.RecoverySectionHeader, [
@@ -409,7 +476,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 
 		// Database Status
-		this.statusInput = this.createInputBox(localizedConstants.StatusText, async () => { }, this.objectInfo.status, this.options.isNewObject);
+		this.statusInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.StatusText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.status
+		});
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseStateText, this.statusInput));
 
 		// Encryption Enabled

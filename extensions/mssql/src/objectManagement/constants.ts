@@ -34,6 +34,7 @@ export const ViewProcessorsServerPropertiesDocUrl = 'https://learn.microsoft.com
 export const DetachDatabaseDocUrl = 'https://go.microsoft.com/fwlink/?linkid=2240322';
 export const DatabaseGeneralPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-general-page';
 export const DatabaseOptionsPropertiesDocUrl = 'https://learn.microsoft.com/sql/relational-databases/databases/database-properties-options-page'
+export const DropDatabaseDocUrl = 'https://learn.microsoft.com/sql/t-sql/statements/drop-database-transact-sql';
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
@@ -42,7 +43,8 @@ export const enum TelemetryActions {
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
-	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog'
+	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
+	OpenDeleteDatabaseDialog = 'OpenDeleteDatabaseDialog'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
