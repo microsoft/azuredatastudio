@@ -52,10 +52,14 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.testFileDialog', async (context: azdata.ObjectExplorerContext) => {
 		const connectionUri = await getConnectionUri(context);
-		const targetPath = 'E:\\SQLDIRS\\IN\\MSSQL16.MSSQLSERVER\\MSSQL\\DATA';
+		const targetPath = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQLEXPRESS\\MSSQL\\DATA';
 		const fileFilters = [{ label: 'Data Files', filters: ['*.mdf'] }, { label: 'Log Files', filters: ['*.ldf'] }];
-		let path = await azdata.window.openFileBrowserDialog(connectionUri, targetPath, fileFilters);
-		await vscode.window.showInformationMessage(`Received this path from file dialog: ${path ?? 'undefined'}`);
+		try {
+			let path = await azdata.window.openFileBrowserDialog(connectionUri, targetPath, fileFilters);
+			await vscode.window.showInformationMessage(`Received this path from file dialog: ${path ?? 'undefined'}`);
+		} catch (error) {
+			await vscode.window.showErrorMessage(error.toString());
+		}
 	}));
 }
 
