@@ -153,7 +153,11 @@ export abstract class DialogBase<DialogResult> {
 	}
 
 	/**
-	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: input type is text, width is DefaultInputWidth, value is empty and the inputbox is enabled.
+	 * Creates an input box. If properties are not passed in, then an input box is created with the following default properties: 
+	 * inputType - text
+	 * width - DefaultInputWidth
+	 * value - empty
+	 * enabled - true
 	 * @param textChangeHandler - Function called on text changed.
 	 * @param properties - Inputbox properties.
 	 * @param customValidation - Dynamic validation function.
