@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.query-store/dist/common/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cpuTime">
+      <source xml:lang="en">CPU Time</source>
+    </trans-unit>
+    <trans-unit id="configure">
+      <source xml:lang="en">Configure</source>
+    </trans-unit>
+    <trans-unit id="duration">
+      <source xml:lang="en">Duration</source>
+    </trans-unit>
+    <trans-unit id="executionCount">
+      <source xml:lang="en">Execution Count</source>
+    </trans-unit>
+    <trans-unit id="logicalReads">
+      <source xml:lang="en">Logical Reads</source>
+    </trans-unit>
+    <trans-unit id="overallResourceConsumption">
+      <source xml:lang="en">Overall Resource Consumption</source>
+    </trans-unit>
+    <trans-unit id="overallResourceConsumptionToolbarLabel">
+      <source xml:lang="en">Overall resource consumption for database {0}</source>
+    </trans-unit>
+    <trans-unit id="planSummary">
+      <source xml:lang="en">Plan Summary for query {0}</source>
+    </trans-unit>
+    <trans-unit id="plan">
+      <source xml:lang="en">Plan {0}</source>
+    </trans-unit>
+    <trans-unit id="queries">
+      <source xml:lang="en">Queries</source>
+    </trans-unit>
+    <trans-unit id="topResourceConsumingQueriesToolbarLabel">
+      <source xml:lang="en">Top 25 resource consumers for database {0}</source>
+    </trans-unit>
+    <trans-unit id="topResourceConsumingQueries">
+      <source xml:lang="en">Top Resource Consuming Queries</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/Microsoft.query-store/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryStore.overallResourceConsumptionOpen">
+      <source xml:lang="en">Open Overall Resource Consumption</source>
+    </trans-unit>
+    <trans-unit id="queryStore.topResourceConsumingQueriesOpen">
+      <source xml:lang="en">Open Top Resource Consuming Queries</source>
+    </trans-unit>
+    <trans-unit id="queryStore.category">
+      <source xml:lang="en">Query Store</source>
+    </trans-unit>
+    <trans-unit id="queryStore.displayName">
+      <source xml:lang="en">Query Store</source>
+    </trans-unit>
+    <trans-unit id="queryStore.description">
+      <source xml:lang="en">Query Store extension for Azure Data Studio.</source>
+    </trans-unit>
+  </body></file>
+</xliff>
