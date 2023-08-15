@@ -31,7 +31,6 @@ import { getSourceConnectionId, getSourceConnectionProfile } from '../api/sqlUti
 import { openRetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { Page } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessment/assessmentResultsDialog';
-import { MigrationTargetType } from '../api/utils';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -553,7 +552,7 @@ export class DashboardWidget {
 							await this.stateModel.loadSavedInfo();
 						}
 
-						const dbDialog = new AssessmentResultsDialog('ownerUri', this.stateModel, serverName, wizardController.skuRecommendationPage, MigrationTargetType.SQLDB);
+						const dbDialog = new AssessmentResultsDialog('ownerUri', this.stateModel, serverName, wizardController.skuRecommendationPage, undefined, true);
 						await dbDialog.openDialog();
 					} else {
 						const savedAssessmentDialog = new SavedAssessmentDialog(

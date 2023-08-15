@@ -38,7 +38,7 @@ export class AssessmentResultsDialog {
 	private _tree: SqlDatabaseTree;
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor(public ownerUri: string, public model: MigrationStateModel, public serverName: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
+	constructor(public ownerUri: string, public model: MigrationStateModel, public serverName: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType?: MigrationTargetType, private _readOnly = false) {
 		this._model = model;
 		this._title = constants.ASSESSMENT_TITLE(serverName);
 		this._tree = new SqlDatabaseTree(this._model, this._targetType);
@@ -77,6 +77,7 @@ export class AssessmentResultsDialog {
 
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this.dialog.okButton.position = 'left';
+			this.dialog.okButton.enabled = !this._readOnly;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;

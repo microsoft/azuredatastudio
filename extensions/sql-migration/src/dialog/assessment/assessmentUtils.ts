@@ -48,7 +48,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 				if (assessmentReport.TargetPlatform.startsWith("SqlServer")) {
 					saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
 				}
-				saveInfo.migrationTargetType = "Unknown";
+				saveInfo.migrationTargetType = null;
 			}
 		}
 
