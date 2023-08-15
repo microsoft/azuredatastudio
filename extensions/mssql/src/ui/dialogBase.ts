@@ -10,6 +10,7 @@ import * as uiLoc from '../ui/localizedConstants';
 
 export const DefaultLabelWidth = 150;
 export const DefaultInputWidth = 300;
+export const DefaultColumnCheckboxWidth = 150;
 export const DefaultTableWidth = DefaultInputWidth + DefaultLabelWidth;
 export const DefaultMaxTableRowCount = 10;
 export const DefaultMinTableRowCount = 1;

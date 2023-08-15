@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
-import { DefaultInputWidth } from '../../ui/dialogBase';
+import { DefaultColumnCheckboxWidth, DefaultInputWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
@@ -233,7 +232,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				for (let i = 0; i < table.data.length; i++) {
 					if (newValue) {
 						// if affinity mask for all is checked, then uncheck the individual processors
-						newData[i][1] = false;
+						newData[i][AffinityType.ProcessorAffinity] = false;
 					}
 				}
 				await this.setTableData(table, newData);
@@ -247,7 +246,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				for (let i = 0; i < table.data.length; i++) {
 					if (newValue) {
 						// if IO affinity mask for all is checked, then uncheck the individual processors
-						newData[i][2] = false;
+						newData[i][AffinityType.IOAffinity] = false;
 					}
 				}
 				await this.setTableData(table, newData);
@@ -279,7 +278,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					name: localizedConstants.processorAffinityColumnText,
 					value: localizedConstants.processorAffinityColumnText,
 					type: azdata.ColumnType.checkBox,
-					width: DefaultInputWidth / 2,
+					width: DefaultColumnCheckboxWidth,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					cssClass: cssClass,
 					headerCssClass: cssClass,
@@ -288,7 +287,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					name: localizedConstants.processorIOAffinityColumnText,
 					value: localizedConstants.processorIOAffinityColumnText,
 					type: azdata.ColumnType.checkBox,
-					width: DefaultInputWidth / 2,
+					width: DefaultColumnCheckboxWidth,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					cssClass: cssClass,
 					headerCssClass: cssClass,
@@ -299,14 +298,14 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			if (processorTable.selectedRows.length > 0) {
 				const result = processorTable.data;
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>row;
-				let columnToAdjust = checkboxState.column === 1 ? 2 : 1;
+				let columnToAdjust = checkboxState.column === AffinityType.ProcessorAffinity ? AffinityType.IOAffinity : AffinityType.ProcessorAffinity;
 				if (result[checkboxState.row][columnToAdjust]) {
 					result[checkboxState.row][columnToAdjust] = !checkboxState.checked;
 					processorTable.updateCells = result[checkboxState.row];
 					this.onFormFieldChange();
 				}
 				// uncheck the set all processors checkbox
-				if (checkboxState.column === 1) {
+				if (checkboxState.column === AffinityType.ProcessorAffinity) {
 					this.autoSetProcessorAffinityMaskForAllCheckbox.checked = false;
 					this.objectInfo.autoProcessorAffinityMaskForAll = false;
 					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = checkboxState.checked;
@@ -319,4 +318,9 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}));
 		return processorTable;
 	}
+}
+
+export enum AffinityType {
+	ProcessorAffinity = 1,
+	IOAffinity = 2,
 }
