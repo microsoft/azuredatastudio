@@ -8,7 +8,7 @@ import { DefaultColumnCheckboxWidth, DefaultInputWidth } from '../../ui/dialogBa
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo, NumaNode } from '../interfaces';
+import { Server, ServerViewInfo, NumaNode, AffinityType } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -318,9 +318,4 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		}));
 		return processorTable;
 	}
-}
-
-export enum AffinityType {
-	ProcessorAffinity = 1,
-	IOAffinity = 2,
 }

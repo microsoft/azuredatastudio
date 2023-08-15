@@ -493,6 +493,11 @@ export interface NumaNode {
 	processors: ProcessorAffinity[]
 }
 
+export enum AffinityType {
+	ProcessorAffinity = 1,
+	IOAffinity = 2,
+}
+
 export interface Server extends ObjectManagement.SqlObject {
 	hardwareGeneration: string;
 	language: string;
