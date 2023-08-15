@@ -24,3 +24,4 @@ import './mainThreadResourceProvider';
 import './mainThreadErrorDiagnostics';
 import './mainThreadTasks';
 import './mainThreadWorkspace';
+import './mainThreadWindow';
