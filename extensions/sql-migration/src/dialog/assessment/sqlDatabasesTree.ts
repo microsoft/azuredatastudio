@@ -75,6 +75,7 @@ export class SqlDatabaseTree {
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
+	private _allActiveIssues!: SqlMigrationAssessmentResultItem[];
 
 	private _serverName!: string;
 	private _dbNames!: string[];
@@ -206,21 +207,10 @@ export class SqlDatabaseTree {
 		}));
 
 		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
-			if (this._targetType === MigrationTargetType.SQLMI ||
-				this._targetType === MigrationTargetType.SQLDB) {
-				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this._targetType);
-			} else {
-				this._activeIssues = [];
-			}
 			this._dbName.value = this._dbNames[e.row];
-			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues?.length);
-			this._recommendation.value = constants.ISSUES_DETAILS;
-			await this._resultComponent.updateCssStyles({
-				'display': 'block'
-			});
-			await this._dbMessageContainer.updateCssStyles({
-				'display': 'none'
-			});
+			this._allActiveIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
+			this._activeIssues = this._allActiveIssues.filter(i => i.appliesToMigrationTargetPlatform === this._targetType);
+
 			await this.refreshResults();
 		}));
 
@@ -231,10 +221,6 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 		return tableContainer;
-	}
-
-	private async onTargetChange(): Promise<void> {
-		await this.refreshResults();
 	}
 
 	private createSearchComponent(): azdata.DivContainer {
@@ -313,9 +299,8 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-
 		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
-			this._activeIssues = this._model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType);
+			this._activeIssues = this._allActiveIssues.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType);
 			this._dbName.value = this._serverName;
 			await this._resultComponent.updateCssStyles({
 				'display': 'block'
@@ -325,6 +310,7 @@ export class SqlDatabaseTree {
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues?.length);
+
 			await this.refreshResults();
 		}));
 
@@ -711,7 +697,8 @@ export class SqlDatabaseTree {
 							break;
 						}
 					}
-					await this.onTargetChange();
+					this._activeIssues = this._allActiveIssues.filter(i => i.appliesToMigrationTargetPlatform === this._targetType);
+					await this.refreshResults();
 				}
 			});
 
@@ -804,6 +791,15 @@ export class SqlDatabaseTree {
 	}
 
 	public async refreshResults(): Promise<void> {
+		this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues?.length);
+		this._recommendation.value = constants.ISSUES_DETAILS;
+		await this._resultComponent.updateCssStyles({
+			'display': 'block'
+		});
+		await this._dbMessageContainer.updateCssStyles({
+			'display': 'none'
+		});
+
 		if (this._targetType === MigrationTargetType.SQLMI ||
 			this._targetType === MigrationTargetType.SQLDB) {
 			if (this._activeIssues?.length === 0) {
@@ -844,6 +840,10 @@ export class SqlDatabaseTree {
 		if (this._assessmentResultsList.options.length) {
 			this._assessmentResultsList.selectedOptionId = '0';
 		}
+
+		// Refreshes Issue details
+		const selectedIssue = this._activeIssues[parseInt(this._assessmentResultsList.selectedOptionId!)];
+		await this.refreshAssessmentDetails(selectedIssue);
 	}
 
 	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
