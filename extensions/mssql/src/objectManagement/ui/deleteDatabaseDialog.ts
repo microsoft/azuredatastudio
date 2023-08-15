@@ -6,7 +6,7 @@
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
-import { DeleteDatabaseDocUrl } from '../constants';
+import { DropDatabaseDocUrl } from '../constants';
 import { DeleteButtonLabel, DeleteDatabaseDialogTitle, DeleteDropBackupHistory, DeleteDropConnections, DeleteDatabaseOptions, NameText, OwnerText, StatusText, DatabaseDetailsLabel } from '../localizedConstants';
 
 export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
@@ -45,15 +45,15 @@ export class DeleteDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override get helpUrl(): string {
-		return DeleteDatabaseDocUrl;
+		return DropDatabaseDocUrl;
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		await this.objectManagementService.deleteDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, false);
+		await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		return await this.objectManagementService.deleteDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, true);
+		return await this.objectManagementService.dropDatabase(this.options.connectionUri, this.options.objectUrn, this._dropConnections, this._deleteBackupHistory, true);
 	}
 
 	protected override async validateInput(): Promise<string[]> {

@@ -474,9 +474,9 @@ export interface DatabaseViewInfo extends ObjectManagement.ObjectViewInfo<Databa
 	azureMaxSizes?: AzureEditionDetails[];
 	pageVerifyOptions?: string[];
 	restrictAccessOptions?: string[];
-	dscOnOffOptions: string[];
-	dscElevateOptions: string[];
-	dscEnableDisableOptions: string[];
+	dscOnOffOptions?: string[];
+	dscElevateOptions?: string[];
+	dscEnableDisableOptions?: string[];
 	rowDataFileGroupsOptions: string[];
 	fileStreamFileGroupsOptions: string[];
 	fileTypesOptions: string[];
