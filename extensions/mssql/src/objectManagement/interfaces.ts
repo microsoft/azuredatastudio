@@ -526,7 +526,6 @@ export interface NumericServerProperty {
 
 
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
-	processorList: NumaNode[];
 }
 
 export interface DatabaseFile {

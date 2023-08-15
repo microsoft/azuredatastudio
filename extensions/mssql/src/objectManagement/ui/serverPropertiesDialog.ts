@@ -313,8 +313,12 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				// uncheck the set all processors checkbox
 				if (checkboxState.column === 1) {
 					this.autoSetProcessorAffinityMaskForAllCheckbox.checked = false;
+					this.objectInfo.autoProcessorAffinityMaskForAll = false;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = checkboxState.checked;
 				} else {
 					this.autoSetProcessorIOAffinityMaskForAllCheckbox.checked = false;
+					this.objectInfo.autoProcessorAffinityIOMaskForAll = false;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].ioAffinity = checkboxState.checked;
 				}
 			}
 		}));
