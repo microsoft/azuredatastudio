@@ -128,7 +128,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.filePathTextBox = this.createInputBox(localizedConstants.PathText, async (newValue) => {
 			this.result.path = newValue;
 		}, this.options.defaultDatabaseFile.path, this.options.isNewFile, 'text', DefaultInputWidth - 30, true);
-		this.filePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() });
+		this.filePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() }, this.options.isNewFile);
 		this.filePathButton.width = 25;
 		this.pathContainer = this.createLabelInputContainer(localizedConstants.PathText, this.filePathTextBox);
 		this.pathContainer.addItems([this.filePathButton], { flex: '10 0 auto' });
@@ -210,12 +210,11 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private async createFileBrowser(): Promise<void> {
 		let fileUris = await vscode.window.showOpenDialog(
 			{
-				canSelectFiles: true,
-				canSelectFolders: false,
+				canSelectFiles: false,
+				canSelectFolders: true,
 				canSelectMany: false,
 				defaultUri: vscode.Uri.file(this.options.defaultDatabaseFile.path),
-				openLabel: 'Select Path',
-				filters: {}
+				openLabel: localizedConstants.SelectText
 			}
 		);
 
