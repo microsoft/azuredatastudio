@@ -47,7 +47,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private processorsSection: azdata.GroupContainer;
 	private autoSetProcessorAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
 	private autoSetProcessorIOAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
-	private _disposables: vscode.Disposable[] = [];
 	private activeTabId: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -74,10 +73,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	protected override onFormFieldChange(): void {
 		this.dialogObject.customButtons[1].enabled = false;
 		this.dialogObject.okButton.enabled = this.isDirty;
-	}
-
-	protected override get isDirty(): boolean {
-		return true;
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -300,7 +295,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				}
 			], tableData);
 
-		this._disposables.push(processorTable.onCellAction(async (row) => {
+		this.disposables.push(processorTable.onCellAction(async (row) => {
 			if (processorTable.selectedRows.length > 0) {
 				const result = processorTable.data;
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>row;
