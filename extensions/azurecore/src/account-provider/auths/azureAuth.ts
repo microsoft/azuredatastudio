@@ -489,7 +489,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const response: AxiosResponse = await axios.get(url, config);
 		// ADAL is being deprecated so just ignoring these for now
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value ?? response.data }], [], url,);
 		return response;
 	}
 
