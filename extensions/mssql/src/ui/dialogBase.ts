@@ -302,7 +302,7 @@ export abstract class DialogBase<DialogResult> {
 			updateButtons();
 		});
 		editButton = this.createButton(uiLoc.EditText, editBurronAriaLabel, async () => {
-			await addHandler(editButton);
+			await editHandler(editButton);
 			updateButtons();
 		}, false);
 		removeButton = this.createButton(uiLoc.RemoveText, removeButtonAriaLabel, async () => {

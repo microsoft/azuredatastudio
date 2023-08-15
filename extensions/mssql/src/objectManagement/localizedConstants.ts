@@ -327,6 +327,7 @@ export const FileNameText = localize('objectManagement.databaseProperties.fileNa
 export const DatabaseFilesText = localize('objectManagement.databaseProperties.databaseFilesText', "Database files");
 export const AddDatabaseFilesText = localize('objectManagement.databaseProperties.addDatabaseFilesText', "Add Database file");
 export const AddButton = localize('objectManagement.databaseProperties.addButton', "Add");
+export const EditButton = localize('objectManagement.databaseProperties.editButton', "Edit");
 export const RemoveButton = localize('objectManagement.databaseProperties.removeButton', "Remove");
 export const SizeInMbText = localize('objectManagement.databaseProperties.size', "Size (MB)");
 export const EnableAutogrowthText = localize('objectManagement.databaseProperties.enableAutogrowthText', "Enable Autogrowth");

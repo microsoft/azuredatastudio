@@ -417,18 +417,17 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 				'margin-left': '10px'
 			}
 		}).component();
-		const databaseFilesButtonContainer = this.addTripleButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.AddButton, localizedConstants.RemoveButton,
-			(button) => this.onAddDatabaseFilesButtonClicked(button),
-			(button) => this.onEditDatabaseFilesButtonClicked(button),
-			(button) => this.onRemoveDatabaseFilesButtonClicked(button));
+		const databaseFilesButtonContainer = this.addTripleButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.EditButton, localizedConstants.RemoveButton,
+			(button) => this.onAddDatabaseFilesButtonClicked(button), (button) => this.onEditDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
 
-		// const databaseFilesButtonContainer = this.addButtonsForTable(this.databaseFilesTable, localizedConstants.AddButton, localizedConstants.RemoveButton,
-		// 	(button) => this.onAddDatabaseFilesButtonClicked(button), () => this.onRemoveDatabaseFilesButtonClicked());
-		const databaseFilesContainer = this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
-
-		return databaseFilesContainer;
+		return this.createGroup(localizedConstants.DatabaseFilesText, [this.databaseFilesTable, databaseFilesButtonContainer], true);
 	}
 
+	/**
+	 * Converts the file object to a data view object
+	 * @param file database file object
+	 * @returns data view object
+	 */
 	private convertToDataView(file: DatabaseFile): any[] {
 		return [file.name,
 		file.type,
@@ -444,7 +443,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 	private async onAddDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
 		// Open file dialog to create file
-		const result = await this.openDatabaseFileDialog();
+		const result = await this.openDatabaseFileDialog(button);
 		if (!isUndefinedOrNull(result)) {
 			this.objectInfo.files?.push(result);
 			var newData = this.objectInfo.files?.map(file => {
@@ -453,11 +452,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			await this.setTableData(this.databaseFilesTable, newData, DefaultMaxTableRowCount)
 		}
 	}
+
 	private async onEditDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
 		if (this.databaseFilesTable.selectedRows.length === 1) {
-			const result = await this.openDatabaseFileDialog();
+			const result = await this.openDatabaseFileDialog(button);
 			if (!isUndefinedOrNull(result)) {
-				this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1, result);
+				this.objectInfo.files[this.databaseFilesTable.selectedRows[0]] = result;
 				var newData = this.objectInfo.files?.map(file => {
 					return this.convertToDataView(file);
 				})
@@ -466,7 +466,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
-	private async onRemoveDatabaseFilesButtonClicked(button: azdata.ButtonComponent): Promise<void> {
+	/**
+	 * Removes the selected database file from the table
+	 */
+	private async onRemoveDatabaseFilesButtonClicked(): Promise<void> {
 		if (this.databaseFilesTable.selectedRows.length === 1) {
 			this.objectInfo.files?.splice(this.databaseFilesTable.selectedRows[0], 1);
 			var newData = this.objectInfo.files?.map(file => {
@@ -476,6 +479,10 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		}
 	}
 
+	/**
+	 * Validate the selected row to enable/disable the remove button
+	 * @returns true if the remove button should be enabled, false otherwise
+	 */
 	protected override removeButtonOnRowSelected(): boolean {
 		let isEnabled = true;
 		const selectedRowId = this.objectInfo.files[this.databaseFilesTable.selectedRows[0]].id;
@@ -496,11 +503,39 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		return isEnabled;
 	}
 
-	private async openDatabaseFileDialog(): Promise<DatabaseFile> {
+	private async openDatabaseFileDialog(button: azdata.ButtonComponent): Promise<DatabaseFile> {
+		const defaultFileSizeInMb: number = 8
+		const defaultFileGrowthInMb: number = 64
+		const defaultFileGrowthInPercent: number = 10;
+		const defaultMaxFileSizeLimitedToInMb: number = 100;
+		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
+		const selectedFile = this.databaseFilesTable.selectedRows !== undefined ? this.objectInfo.files[this.databaseFilesTable?.selectedRows[0]] : undefined;
+		const defaultDatabaseFile: DatabaseFile = isnewFile ? {
+			id: undefined,
+			name: '',
+			type: this.viewInfo.fileTypesOptions[0],
+			path: this.objectInfo.files[0].path,
+			fileGroup: this.viewInfo.rowDataFileGroupsOptions[0],
+			fileNameWithExtension: '',
+			sizeInMb: defaultFileSizeInMb,
+			isAutoGrowthEnabled: true,
+			autoFileGrowth: defaultFileGrowthInMb,
+			autoFileGrowthType: 'KB',
+			maxSizeLimit: defaultMaxFileSizeLimitedToInMb
+		} : selectedFile;
+
 		const dialog = new DatabaseFileDialog({
 			title: localizedConstants.AddDatabaseFilesText,
 			viewInfo: this.viewInfo,
-			files: this.objectInfo.files
+			files: this.objectInfo.files,
+			isNewFile: isnewFile,
+			defaultDatabaseFile: defaultDatabaseFile,
+			defaultFileConstants: {
+				defaultFileSizeInMb: isnewFile ? defaultFileSizeInMb : selectedFile.sizeInMb,
+				defaultFileGrowthInMb: isnewFile ? defaultFileGrowthInMb : selectedFile.autoFileGrowth,
+				defaultFileGrowthInPercent: isnewFile ? defaultFileGrowthInPercent : selectedFile.autoFileGrowth,
+				defaultMaxFileSizeLimitedToInMb: isnewFile ? defaultMaxFileSizeLimitedToInMb : selectedFile.maxSizeLimit
+			}
 		});
 		await dialog.open();
 		return await dialog.waitForClose();
