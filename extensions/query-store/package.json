@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@microsoft/azdata-test": "^3.0.1",
-    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
     "@types/mocha": "^7.0.2",
     "should": "^13.2.1",
     "typemoq": "^2.1.0"
