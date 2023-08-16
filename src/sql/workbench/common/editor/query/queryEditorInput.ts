@@ -21,6 +21,7 @@ import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 const MAX_SIZE = 13;
 
@@ -153,7 +154,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
-		@IServerMetadataService private readonly serverMetadataService: IServerMetadataService
+		@IServerMetadataService private readonly serverMetadataService: IServerMetadataService,
+		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super();
 
@@ -240,12 +242,18 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get resource(): URI { return this._text.resource; }
 
 	public async getServerMetadata(): Promise<string[]> {
-		if (!this._serverMetadata) {
-			const result = await this.serverMetadataService.getServerTableMetadata(this.uri);
-			this._serverMetadata = result.scripts;
+		const copilotExt = await this.extensionService.getExtension('github.copilot');
+
+		if (copilotExt && this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
+			if (!this._serverMetadata) {
+				const result = await this.serverMetadataService.getServerTableMetadata(this.uri);
+				this._serverMetadata = result.scripts;
+			}
+
+			return this._serverMetadata;
 		}
 
-		return this._serverMetadata;
+		return Promise.resolve([]);
 	}
 
 	public override getName(longForm?: boolean): string {
