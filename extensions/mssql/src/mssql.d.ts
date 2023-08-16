@@ -994,6 +994,8 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Thenable<string>;
+
+		getDataFolder(connectionUri: string): Thenable<string>;
 	}
 
 	export interface DatabaseFileData {

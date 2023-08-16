@@ -1668,6 +1668,14 @@ export namespace AttachDatabaseRequest {
 	export const type = new RequestType<AttachDatabaseRequestParams, string, void, void>('objectManagement/attachDatabase');
 }
 
+export interface GetDataFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetDataFolderRequest {
+	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
