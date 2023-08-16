@@ -219,6 +219,12 @@
     <trans-unit id="objectManagement.DatabaseRoleTypeDisplayNameInTitle">
       <source xml:lang="en">Database Role</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.databaseProperties.databaseScopedConfigurationTabHeader">
+      <source xml:lang="en">Database Scoped Configuration</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.databaseScopedOptionsColumnHeader">
+      <source xml:lang="en">Database Scoped Options</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.databaseStateText">
       <source xml:lang="en">Database State</source>
     </trans-unit>
@@ -563,6 +569,9 @@
     <trans-unit id="objectManagement.serviceTier">
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.setSecondaryText">
+      <source xml:lang="en">Set Secondary same as Primary</source>
+    </trans-unit>
     <trans-unit id="objectManagement.databaseProperties.size">
       <source xml:lang="en">Size</source>
     </trans-unit>
@@ -608,6 +617,12 @@
     </trans-unit>
     <trans-unit id="objectManagement.login.mustChangePasswordLabel">
       <source xml:lang="en">User must change password at next login</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.valueForPrimaryColumnHeader">
+      <source xml:lang="en">Value for Primary</source>
+    </trans-unit>
+    <trans-unit id="objectManagement.databaseProperties.valueForSecondaryColumnHeader">
+      <source xml:lang="en">Value for Secondary</source>
     </trans-unit>
     <trans-unit id="objectManagement.versionText">
       <source xml:lang="en">Version</source>
