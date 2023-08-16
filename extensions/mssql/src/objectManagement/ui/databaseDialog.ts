@@ -707,8 +707,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			ariaLabel: localizedConstants.TargetRecoveryTimeInSecondsText,
 			inputType: 'number',
 			enabled: true,
-			min: 0,
-			required: true
+			min: 0
 		};
 		// Recovery Time In Seconds
 		this.targetRecoveryTimeInSecInput = this.createInputBox(async (newValue) => {
