@@ -2024,13 +2024,14 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Opens a file dialog to select a file path on the specified server's machine.
+		 * Opens a dialog to select a file path on the specified server's machine. Note: The dialog for just browsing local
+		 * files without any connection is opened via vscode.window.showOpenDialog.
 		 * @param connectionUri The URI of the connection to the target server
 		 * @param targetPath The file path on the server machine to open by default in the dialog
 		 * @param fileFilters The filters used to limit which files are displayed in the file browser
 		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
-		export function openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string | undefined>;
+		export function openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string | undefined>;
 	}
 
 	export interface TableComponent {

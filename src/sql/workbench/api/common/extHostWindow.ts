@@ -17,7 +17,7 @@ export class ExtHostWindow implements ExtHostWindowShape {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadWindow);
 	}
 
-	$openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined> {
-		return this._proxy.$openFileBrowserDialog(connectionUri, targetPath, fileFilters);
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined> {
+		return this._proxy.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters);
 	}
 }

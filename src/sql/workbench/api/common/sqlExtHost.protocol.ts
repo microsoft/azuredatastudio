@@ -828,7 +828,7 @@ export interface ExtHostWorkspaceShape {
 }
 
 export interface ExtHostWindowShape {
-	$openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
 }
 
 export interface MainThreadWorkspaceShape {
@@ -838,7 +838,7 @@ export interface MainThreadWorkspaceShape {
 }
 
 export interface MainThreadWindowShape {
-	$openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
+	$openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

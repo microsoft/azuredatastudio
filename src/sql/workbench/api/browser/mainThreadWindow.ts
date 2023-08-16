@@ -20,7 +20,7 @@ export class MainThreadWindow extends Disposable implements MainThreadWindowShap
 		super();
 	}
 
-	public async $openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined> {
+	public async $openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Promise<string | undefined> {
 		let completion = new Promise<string | undefined>((resolve, reject) => {
 			try {
 				let handleOk = (path: string | undefined) => {
