@@ -81,6 +81,7 @@ export class SqlDatabaseTree {
 	private _dbNames!: string[];
 	private _databaseCount!: azdata.TextComponent;
 	private _disposables: vscode.Disposable[] = [];
+	private _targetPlatforms: string[] = [];
 
 	constructor(
 		private _model: MigrationStateModel,
@@ -118,6 +119,7 @@ export class SqlDatabaseTree {
 			default: {
 			}
 		}
+
 		if (this._model._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === this._targetType))) {
 			if (warningMessage) {
 				dialog.message = {
@@ -206,6 +208,7 @@ export class SqlDatabaseTree {
 			await this.updateValuesOnSelection();
 		}));
 
+		//Database Level Issues
 		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
 			this._dbName.value = this._dbNames[e.row];
 			this._allActiveIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
@@ -299,7 +302,9 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
+		//Server Level Issues
 		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
+			this._allActiveIssues = this._model._assessmentResults?.issues;
 			this._activeIssues = this._allActiveIssues.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType);
 			this._dbName.value = this._serverName;
 			await this._resultComponent.updateCssStyles({
@@ -670,17 +675,42 @@ export class SqlDatabaseTree {
 
 	private createPlatformComponent(): azdata.Component {
 		if (this._targetType === undefined) {
-			const targetTypes = [constants.SUMMARY_SQLDB_TYPE, constants.SUMMARY_MI_TYPE, constants.SUMMARY_VM_TYPE];
+
+			const targetPlatforms = new Set<string>();
+			const issues = this._model._assessmentResults?.issues;
+			for (let j = 0; j < issues.length; ++j) {
+				targetPlatforms.add(issues[j].appliesToMigrationTargetPlatform);
+			}
+
+			for (let i = 0; i < this._model._assessmentResults?.databaseAssessments.length; ++i) {
+				const issues = this._model._assessmentResults?.databaseAssessments[i].issues;
+				for (let j = 0; j < issues.length; ++j) {
+					targetPlatforms.add(issues[j].appliesToMigrationTargetPlatform);
+				}
+			}
+			this._targetPlatforms = Array.from(targetPlatforms).sort();
+
+			const targetTypes = this._targetPlatforms.map(v => {
+				switch (v) {
+					case MigrationTargetType.SQLDB: return constants.SUMMARY_SQLDB_TYPE;
+					case MigrationTargetType.SQLMI: return constants.SUMMARY_MI_TYPE;
+					case MigrationTargetType.SQLVM: return constants.SUMMARY_VM_TYPE;
+					default: return v.toString();
+				}
+			});
+
 			const dropDown = this._view.modelBuilder.dropDown().withProps({
 				value: '',
 				values: targetTypes,
 				width: '300px',
 				CSSStyles: {
-					...styles.PAGE_SUBTITLE_CSS,
-					'border': 'none'
+					...styles.PAGE_TITLE_CSS,
+					'border': 'none',
+					'outline': 'none'
 				}
 			}).component();
 
+			//TargetType Combobox Switch within current level: Server or Database
 			dropDown.onValueChanged(async () => {
 				if (dropDown.value !== undefined) {
 					switch (dropDown.value) {

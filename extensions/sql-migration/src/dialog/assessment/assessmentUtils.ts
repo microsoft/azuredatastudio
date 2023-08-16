@@ -48,14 +48,39 @@ export function parseAssessmentReport(assessmentReport: any): any {
 				if (assessmentReport.TargetPlatform.startsWith("SqlServer")) {
 					saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
 				}
-				saveInfo.migrationTargetType = null;
+				saveInfo.migrationTargetType = MigrationTargetType.SQLDB;
 			}
 		}
 
-		saveInfo.migrationTargetType = MigrationTargetType.SQLDB; //???
-
 		saveInfo.serverAssessment = {
-			issues: assessmentReport.ServerInstances[0].AssessmentRecommendations || [],
+			issues: assessmentReport.ServerInstances[0].AssessmentRecommendations.map((ar: any) => {
+				return {
+					rulesetVersion: "N/A",
+					rulesetName: "N/A",
+					ruleId: ar.RuleId,
+					targetType: saveInfo.migrationTargetType,
+					checkId: ar.Title,
+					tags: [],
+					displayName: ar.Title,
+					description: ar.Recommendation,
+					helpLink: ar.MoreInfo,
+					level: ar.Severity,
+					timestamp: "N/A",
+					kind: ar.Category,
+					message: ar.Impact,
+					appliesToMigrationTargetPlatform: saveInfo.migrationTargetType,
+					issueCategory: ar.ChangeCategory,
+					impactedObjects: ar.ImpactedObjects.map((io: any) => {
+						return {
+							name: io.Name,
+							objectType: io.ObjectType,
+							impactDetail: io.ImpactDetail,
+							databaseObjectType: io.DatabaseObjectType,
+						}
+					}),
+					databaseRestoreFails: [],
+				}
+			}),
 			databaseAssessments: assessmentReport.Databases?.map((d: any) => {
 				return {
 					name: d.Name,
@@ -64,9 +89,9 @@ export function parseAssessmentReport(assessmentReport: any): any {
 							rulesetVersion: "N/A",
 							rulesetName: "N/A",
 							ruleId: ar.RuleId,
-							targetType: "AzureSqlDatabase",
+							targetType: saveInfo.migrationTargetType,
 							checkId: ar.Title,
-							tags: "N/A",
+							tags: [],
 							displayName: ar.Title,
 							description: ar.Recommendation,
 							helpLink: ar.MoreInfo,
@@ -74,7 +99,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 							timestamp: "N/A",
 							kind: ar.Category,
 							message: ar.Impact,
-							appliesToMigrationTargetPlatform: "AzureSqlDatabase",
+							appliesToMigrationTargetPlatform: saveInfo.migrationTargetType,
 							issueCategory: ar.ChangeCategory,
 							databaseName: d.Name,
 							impactedObjects: ar.ImpactedObjects.map((io: any) => {
@@ -163,6 +188,12 @@ export function parseAssessmentReport(assessmentReport: any): any {
 			errors: assessmentReport.Errors ?? [],
 		};
 	}
+
+	const databaseList = [];
+	for (const d in assessmentReport.Databases) {
+		databaseList.push(assessmentReport.Databases[d].Name);
+	}
+	saveInfo.databaseList = databaseList.sort();
 
 	return saveInfo;
 }
