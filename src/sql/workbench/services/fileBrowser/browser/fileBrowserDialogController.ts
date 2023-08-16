@@ -43,6 +43,7 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 			this._fileBrowserDialog.dispose();
 			this._fileBrowserDialog = undefined;
 		});
+
 		this._fileBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
 	}
 }
