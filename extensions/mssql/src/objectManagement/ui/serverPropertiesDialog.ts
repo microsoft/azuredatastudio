@@ -342,7 +342,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			this.objectInfo.autoProcessorAffinityIOMaskForAll = newValue;
 			for (let table of nodeTableList) {
 				let newData = table.data;
-				for (let i = 0; i < table.data.length; i++) {
+				for (let i = 0; i < newData.length; i++) {
 					if (newValue) {
 						// if IO affinity mask for all is checked, then uncheck the individual processors
 						newData[i][AffinityType.IOAffinity] = false;
