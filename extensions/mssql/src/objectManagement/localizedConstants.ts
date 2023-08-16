@@ -349,7 +349,8 @@ export function AutoGrowthValueStringGenerator(isFileGrowthSupported: boolean, f
 }
 export const FileGroupForLogTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "Not Applicable");
 export const FileGroupForFilestreamTypeText = localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "No Applicable Filegroup");
-export const DuplicateLogicalNameError = (name: string) => localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "DataFile {0} could not be added to the collection, because it already exists.", name);
+export const DuplicateLogicalNameError = (name: string) => localize('objectManagement.databaseProperties.fileGroupNotApplicableText', "DataFile '{0}' could not be added to the collection, because it already exists.", name);
+export const FileNameExistsError = (name: string) => localize('objectManagement.databaseProperties.fileNameExistsError', "The Logical file name '{0}' is already in use. Choose a different name.", name);
 export const FileSizeLimitError = localize('objectManagement.databaseProperties.fileSizeLimitError', "Maximum file size cannot be less than size");
 export const FilegrowthLimitError = localize('objectManagement.databaseProperties.filegrowthLimitError', "Filegrowth cannot be greater than the Maximum file size for a file");
 

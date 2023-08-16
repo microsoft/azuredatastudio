@@ -16,7 +16,7 @@ export interface NewDatabaseFileDialogOptions {
 	viewInfo: DatabaseViewInfo;
 	files: DatabaseFile[];
 	isNewFile: boolean;
-	defaultDatabaseFile: DatabaseFile;
+	databaseFile: DatabaseFile;
 	defaultFileConstants: {
 		defaultFileSizeInMb: number,
 		defaultFileGrowthInPercent: number,
@@ -53,7 +53,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.dialogObject.okButton.enabled = false;
 		this.autogrowthInPercentValue = this.options.defaultFileConstants.defaultFileGrowthInPercent;
 		this.autogrowthInMegabytesValue = this.options.defaultFileConstants.defaultFileGrowthInMb;
-		this.result = deepClone(this.options.defaultDatabaseFile);
+		this.result = deepClone(this.options.databaseFile);
 		components.push(this.InitializeAddDatabaseFileDialog());
 		this.formContainer.addItems(components);
 	}
@@ -64,15 +64,19 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	protected override async validateInput(): Promise<string[]> {
 		const errors = await super.validateInput();
-		// name should not be duplicate
+		// Name should not be duplicate
 		if (!!this.options.files.find(file => { return this.result.id === undefined && file.name === this.result.name.trim() })) {
 			errors.push(localizedConstants.DuplicateLogicalNameError(this.result.name.trim()));
 		}
-		// when maxsize is limited and size should not be greater than maxSize allowed
+		// Cannot rename with other file name
+		if (!!this.options.files.find(file => { return this.result.id !== file.id && file.name === this.result.name.trim() })) {
+			errors.push(localizedConstants.FileNameExistsError(this.result.name.trim()));
+		}
+		// When maxsize is limited and size should not be greater than maxSize allowed
 		if (this.result.maxSizeLimit !== -1 && this.result.maxSizeLimit < this.result.sizeInMb) {
 			errors.push(localizedConstants.FileSizeLimitError);
 		}
-		// when maxsize is limited and fileGrowth should not be greater than maxSize allowed
+		// When maxsize is limited and fileGrowth should not be greater than maxSize allowed
 		if (this.result.maxSizeLimit !== -1 && this.result.autoFileGrowthType !== localizedConstants.PercentText
 			&& this.result.maxSizeLimit < this.result.autoFileGrowth) {
 			errors.push(localizedConstants.FilegrowthLimitError);
@@ -83,9 +87,14 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private InitializeAddDatabaseFileDialog(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 		// Logical Name of the file
-		const filename = this.createInputBox(localizedConstants.LogicalNameText, async (newValue) => {
+		const filename = this.createInputBox(async (newValue) => {
 			this.result.name = newValue;
-		}, this.options.defaultDatabaseFile.name, true, 'text', DefaultInputWidth, true);
+		}, {
+			ariaLabel: localizedConstants.LogicalNameText,
+			inputType: 'text',
+			enabled: true,
+			value: this.options.databaseFile.name
+		});
 		const filenameContainer = this.createLabelInputContainer(localizedConstants.LogicalNameText, filename);
 		containers.push(filenameContainer);
 
@@ -105,9 +114,14 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(sizeContainer);
 
 		// File Size in MB
-		const fileSize = this.createInputBox(localizedConstants.SizeInMbText, async (newValue) => {
+		const fileSize = this.createInputBox(async (newValue) => {
 			this.result.sizeInMb = Number(newValue);
-		}, String(this.options.defaultFileConstants.defaultFileSizeInMb), true, 'number', DefaultInputWidth);
+		}, {
+			ariaLabel: localizedConstants.SizeInMbText,
+			inputType: 'number',
+			enabled: true,
+			value: String(this.options.databaseFile.sizeInMb)
+		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, fileSize);
 		containers.push(fileSizeContainer);
 
@@ -125,9 +139,15 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(autogrowthContainer);
 
 		// Path
-		this.filePathTextBox = this.createInputBox(localizedConstants.PathText, async (newValue) => {
+		this.filePathTextBox = this.createInputBox(async (newValue) => {
 			this.result.path = newValue;
-		}, this.options.defaultDatabaseFile.path, this.options.isNewFile, 'text', DefaultInputWidth - 30, true);
+		}, {
+			ariaLabel: localizedConstants.PathText,
+			inputType: 'text',
+			enabled: this.options.isNewFile,
+			value: this.options.databaseFile.path,
+			width: DefaultInputWidth - 30
+		});
 		this.filePathButton = this.createButton('...', '...', async () => { await this.createFileBrowser() }, this.options.isNewFile);
 		this.filePathButton.width = 25;
 		this.pathContainer = this.createLabelInputContainer(localizedConstants.PathText, this.filePathTextBox);
@@ -135,9 +155,15 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(this.pathContainer);
 
 		// File Name
-		const fileNameWithExtension = this.createInputBox(localizedConstants.FileNameText, async (newValue) => {
+		const fileNameWithExtension = this.createInputBox(async (newValue) => {
 			this.result.fileNameWithExtension = newValue;
-		}, this.options.defaultDatabaseFile.fileNameWithExtension, this.options.isNewFile, 'text', DefaultInputWidth);
+		}, {
+			ariaLabel: localizedConstants.FileNameText,
+			inputType: 'text',
+			enabled: this.options.isNewFile,
+			value: this.options.databaseFile.fileNameWithExtension,
+			width: DefaultInputWidth
+		});
 		const fileNameWithExtensionContainer = this.createLabelInputContainer(localizedConstants.FileNameText, fileNameWithExtension);
 		containers.push(fileNameWithExtensionContainer);
 
@@ -150,10 +176,10 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	private InitializeAutogrowthSection(): azdata.GroupContainer {
 		const radioGroupName = 'autogrowthRadioGroup';
-		const isFileAutoGrowthInKB = this.options.defaultDatabaseFile.autoFileGrowthType === 'KB';
+		const isFileAutoGrowthInKB = this.options.databaseFile.autoFileGrowthType === 'KB';
 		this.inPercentAutogrowth = this.createRadioButton(localizedConstants.InPercentAutogrowthText, radioGroupName, !isFileAutoGrowthInKB, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
 		this.inMegabytesAutogrowth = this.createRadioButton(localizedConstants.InMegabytesAutogrowthText, radioGroupName, isFileAutoGrowthInKB, async (checked) => { await this.handleAutogrowthTypeChange(checked); });
-		this.autoFilegrowthInput = this.createInputBox(localizedConstants.FileGrowthText, async (newValue) => {
+		this.autoFilegrowthInput = this.createInputBox(async (newValue) => {
 			if (!isUndefinedOrNull(newValue) && newValue !== '') {
 				if (this.inPercentAutogrowth.checked) {
 					this.autogrowthInPercentValue = Number(newValue);
@@ -162,7 +188,13 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				}
 				this.result.autoFileGrowth = this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue : this.autogrowthInMegabytesValue;
 			}
-		}, String(this.options.defaultFileConstants.defaultFileGrowthInMb), true, 'number', DefaultInputWidth - 20);
+		}, {
+			ariaLabel: localizedConstants.FileGrowthText,
+			inputType: 'number',
+			enabled: true,
+			value: String(this.options.databaseFile.autoFileGrowth),
+			width: DefaultInputWidth - 20
+		});
 		const autogrowthContainer = this.createLabelInputContainer(localizedConstants.FileGrowthText, this.autoFilegrowthInput);
 
 		this.fileGrowthGroup = this.createGroup('', [autogrowthContainer, this.inPercentAutogrowth, this.inMegabytesAutogrowth], false);
@@ -175,15 +207,21 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	 */
 	private InitializeMaxFileSizeSection(): azdata.GroupContainer {
 		const radioGroupName = 'maxFileSizeRadioGroup';
-		const isFileSizeLimited = this.options.defaultDatabaseFile.maxSizeLimit !== -1;
+		const isFileSizeLimited = this.options.databaseFile.maxSizeLimit !== -1;
 		this.limitedToMbFileSize = this.createRadioButton(localizedConstants.LimitedToMBFileSizeText, radioGroupName, isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.unlimitedFileSize = this.createRadioButton(localizedConstants.UnlimitedFileSizeText, radioGroupName, !isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
-		this.limitedToMbFileSizeInput = this.createInputBox(localizedConstants.MaximumFileSizeText, async (newValue) => {
+		this.limitedToMbFileSizeInput = this.createInputBox(async (newValue) => {
 			this.result.maxSizeLimit = Number(newValue);
 			if (this.unlimitedFileSize.checked) {
 				this.result.maxSizeLimit = -1;
 			}
-		}, String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb), true, 'number', DefaultInputWidth - 20);
+		}, {
+			ariaLabel: localizedConstants.MaximumFileSizeText,
+			inputType: 'number',
+			enabled: true,
+			value: String(this.options.defaultFileConstants.defaultMaxFileSizeLimitedToInMb),
+			width: DefaultInputWidth - 20
+		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.MaximumFileSizeText, this.limitedToMbFileSizeInput);
 
 		this.maxSizeGroup = this.createGroup('', [fileSizeContainer, this.limitedToMbFileSize, this.unlimitedFileSize], false);
@@ -191,8 +229,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	}
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
-		this.autoFilegrowthInput.value = this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue?.toString() : this.autogrowthInMegabytesValue?.toString();
-		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : this.options.defaultDatabaseFile.autoFileGrowthType;
+		this.autoFilegrowthInput.value = this.options.isNewFile ? (this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue?.toString() : this.autogrowthInMegabytesValue?.toString()) : this.options.databaseFile.autoFileGrowth?.toString();
+		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : this.options.databaseFile.autoFileGrowthType;
 	}
 
 	private async handleMaxFileSizeTypeChange(checked: boolean): Promise<void> {
@@ -213,7 +251,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: vscode.Uri.file(this.options.defaultDatabaseFile.path),
+				defaultUri: vscode.Uri.file(this.options.databaseFile.path),
 				openLabel: localizedConstants.SelectText
 			}
 		);
@@ -263,7 +301,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	}
 
 	public override async onFormFieldChange(): Promise<void> {
-		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(this.options.defaultDatabaseFile);
+		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(this.options.databaseFile);
 	}
 
 	protected override get dialogResult(): DatabaseFile | undefined {

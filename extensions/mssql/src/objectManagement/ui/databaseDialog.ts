@@ -422,7 +422,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 	private initializeFilesGeneralSection(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 		// Database name
-		this.nameInput = this.createInputBox(localizedConstants.DatabaseNameText, async () => { }, this.objectInfo.name, this.options.isNewObject);
+		this.nameInput = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.DatabaseNameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 		containers.push(this.createLabelInputContainer(localizedConstants.DatabaseNameText, this.nameInput));
 
 		// Owner
@@ -571,7 +576,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const defaultMaxFileSizeLimitedToInMb: number = 100;
 		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
 		const selectedFile = this.databaseFilesTable.selectedRows !== undefined ? this.objectInfo.files[this.databaseFilesTable?.selectedRows[0]] : undefined;
-		const defaultDatabaseFile: DatabaseFile = isnewFile ? {
+		const databaseFile: DatabaseFile = isnewFile ? {
 			id: undefined,
 			name: '',
 			type: this.viewInfo.fileTypesOptions[0],
@@ -590,12 +595,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			viewInfo: this.viewInfo,
 			files: this.objectInfo.files,
 			isNewFile: isnewFile,
-			defaultDatabaseFile: defaultDatabaseFile,
+			databaseFile: databaseFile,
 			defaultFileConstants: {
-				defaultFileSizeInMb: isnewFile ? defaultFileSizeInMb : selectedFile.sizeInMb,
-				defaultFileGrowthInMb: isnewFile ? defaultFileGrowthInMb : selectedFile.autoFileGrowth,
-				defaultFileGrowthInPercent: isnewFile ? defaultFileGrowthInPercent : selectedFile.autoFileGrowth,
-				defaultMaxFileSizeLimitedToInMb: isnewFile ? defaultMaxFileSizeLimitedToInMb : selectedFile.maxSizeLimit
+				defaultFileSizeInMb: defaultFileSizeInMb,
+				defaultFileGrowthInMb: defaultFileGrowthInMb,
+				defaultFileGrowthInPercent: defaultFileGrowthInPercent,
+				defaultMaxFileSizeLimitedToInMb: defaultMaxFileSizeLimitedToInMb
 			}
 		});
 		await dialog.open();
