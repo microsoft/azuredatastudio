@@ -2028,6 +2028,7 @@ declare module 'azdata' {
 		 * @param connectionUri The URI of the connection to the target server
 		 * @param targetPath The file path on the server machine to open by default in the dialog
 		 * @param fileFilters The filters used to limit which files are displayed in the file browser
+		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
 		export function openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string>;
 	}
