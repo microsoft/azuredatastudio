@@ -72,14 +72,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.engineEdition = serverInfo.engineEditionId;
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
-		const serverPropertiesTabGroup = <azdata.TabGroup>{
-			title: '',
-			tabs: [this.generalTab, this.memoryTab],
-			dispose: () => {
-				this.generalTab.dispose();
-				this.memoryTab.dispose();
-			},
-		};
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({

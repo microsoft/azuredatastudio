@@ -3976,7 +3976,7 @@ declare module 'azdata' {
 		enabled?: boolean;
 	}
 
-	export interface DeclarativeTableMenuCellValue extends vscode.Disposable {
+	export interface DeclarativeTableMenuCellValue {
 		/**
 		 * commands for the menu. Use an array for a group and menu separators will be added.
 		 */

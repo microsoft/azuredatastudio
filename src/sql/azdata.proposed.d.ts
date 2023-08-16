@@ -1943,25 +1943,32 @@ declare module 'azdata' {
 		NotEndsWith = 13
 	}
 
-	export interface Tab extends vscode.Disposable { }
+	export interface DisposableTab extends Tab, vscode.Disposable { }
 
-	export interface TabGroup extends vscode.Disposable { }
+	export interface DisposableDashboardTab extends DashboardTab, vscode.Disposable { }
 
-	export interface DashboardTabGroup extends vscode.Disposable { }
+	export interface DisposableTabGroup extends TabGroup, vscode.Disposable { }
+
+	export interface DisposableDashboardTabGroup extends DashboardTabGroup, vscode.Disposable {
+
+		/**
+		 * Child tabs of the tab group
+		 */
+		tabs: DisposableDashboardTab[];
+	}
 
 	export interface ModelView extends vscode.Disposable { }
 
-	export interface ModelViewDashboard extends vscode.Disposable { }
+	export interface DeclarativeTableMenuCellValue extends vscode.Disposable { }
 
 	export namespace window {
-		export interface Wizard extends LoadingComponentBase {
-		}
+		export interface Wizard extends LoadingComponentBase { }
 
-		export interface Dialog extends LoadingComponentBase {
-		}
+		export interface Dialog extends LoadingComponentBase, vscode.Disposable { }
 
-		export interface ModelViewPanel extends vscode.Disposable {
-		}
+		export interface ModelViewPanel extends vscode.Disposable { }
+
+		export interface ModelViewDashboard extends vscode.Disposable { }
 
 		/**
 		 * Opens the error dialog with customization options provided.

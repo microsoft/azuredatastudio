@@ -100,39 +100,24 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			this.initializeStateSection();
 
 			// Initilaize general Tab
-			const generalTabContent = this.createGroup('', [
-				this.databaseSection,
-				this.backupSection
-			], false);
 			this.generalTab = {
 				title: localizedConstants.GeneralSectionHeader,
 				id: this.generalTabId,
-				content: generalTabContent,
-				dispose: () => {
-					generalTabContent.dispose();
-				}
+				content: this.createGroup('', [
+					this.databaseSection,
+					this.backupSection
+				], false)
 			};
 
 			// Initilaize Options Tab
-			const optionTabContent = this.createGroup('', this.optionsTabSectionsContainer, false);
 			this.optionsTab = {
 				title: localizedConstants.OptionsSectionHeader,
 				id: this.optionsTabId,
-				content: optionTabContent,
-				dispose: () => {
-					optionTabContent.dispose();
-				}
+				content: this.createGroup('', this.optionsTabSectionsContainer, false)
 			};
 
 			// Initilaize tab group with tabbed panel
-			const propertiesTabGroup = <azdata.TabGroup>{
-				title: '',
-				tabs: [this.generalTab, this.optionsTab],
-				dispose: () => {
-					this.generalTab.dispose();
-					this.optionsTab.dispose();
-				}
-			};
+			const propertiesTabGroup = { title: '', tabs: [this.generalTab, this.optionsTab] };
 			const propertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 				.withTabs([propertiesTabGroup])
 				.withProps({

@@ -43,7 +43,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 
 	abstract descriptor: IComponentDescriptor;
 	abstract modelStore: IModelStore;
-	protected _onEventEmitter = new Emitter<IComponentEventArgs>();
+	protected _onEventEmitter = this._register(new Emitter<IComponentEventArgs>());
 
 	public layout(): void {
 		if (!this._changeRef['destroyed']) {
