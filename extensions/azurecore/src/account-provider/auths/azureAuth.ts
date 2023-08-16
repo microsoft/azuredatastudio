@@ -30,7 +30,7 @@ import { isErrorResponseBodyWithError } from '../../azureResource/utils';
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
 const localize = nls.loadMessageBundle();
 
-export type ResponseData = {
+export type GetTenantsResponseData = {
 	value: TenantResponse[];
 }
 
@@ -247,9 +247,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.verbose(`Fetching tenants with uri: ${tenantUri}`);
 			let tenantList: string[] = [];
 
-			const tenantResponse = await this.makeGetRequest(tenantUri, token);
+			const tenantResponse = await this.makeGetRequest<GetTenantsResponseData>(tenantUri, token);
 
-			const data = tenantResponse.data as ResponseData;
+			const data = tenantResponse.data;
 			if (isErrorResponseBodyWithError(data)) {
 				Logger.error(`Error fetching tenants :${data.error?.code} - ${data.error?.message}`);
 				throw new Error(`${data.error?.code} - ${data.error?.message}`);
@@ -487,7 +487,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const response: AxiosResponse = await axios.get<T>(url, config);
-		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as ResponseData }], [], url,);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as GetTenantsResponseData }], [], url,);
 		return response;
 	}
 
