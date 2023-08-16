@@ -75,11 +75,6 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
 		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
 	}
-
-	async getDataFolder(connectionUri: string): Promise<string> {
-		const params: contracts.GetDataFolderRequestParams = { connectionUri };
-		return this.runWithErrorHandling(contracts.GetDataFolderRequest.type, params);
-	}
 }
 
 const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
@@ -252,10 +247,6 @@ export class TestObjectManagementService implements IObjectManagementService {
 	}
 
 	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
-		return this.delayAndResolve('');
-	}
-
-	getDataFolder(connectionUri: string): Promise<string> {
 		return this.delayAndResolve('');
 	}
 

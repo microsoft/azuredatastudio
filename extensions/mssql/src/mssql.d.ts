@@ -994,8 +994,6 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
-
-		getDataFolder(connectionUri: string): Thenable<string>
 	}
 	// Object Management - End.
 }
