@@ -193,7 +193,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			inputType: 'number',
 			enabled: true,
 			value: String(this.options.databaseFile.autoFileGrowth),
-			width: DefaultInputWidth - 20
+			width: DefaultInputWidth - 20,
+			min: 1
 		});
 		const autogrowthContainer = this.createLabelInputContainer(localizedConstants.FileGrowthText, this.autoFilegrowthInput);
 
@@ -230,7 +231,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 
 	private async handleAutogrowthTypeChange(checked: boolean): Promise<void> {
 		this.autoFilegrowthInput.value = this.options.isNewFile ? (this.inPercentAutogrowth.checked ? this.autogrowthInPercentValue?.toString() : this.autogrowthInMegabytesValue?.toString()) : this.options.databaseFile.autoFileGrowth?.toString();
-		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : this.options.databaseFile.autoFileGrowthType;
+		this.result.autoFileGrowthType = this.inPercentAutogrowth.checked ? 'Percent' : 'KB';
 	}
 
 	private async handleMaxFileSizeTypeChange(checked: boolean): Promise<void> {
