@@ -1657,6 +1657,14 @@ export namespace DropDatabaseRequest {
 	export const type = new RequestType<DropDatabaseRequestParams, string, void, void>('objectManagement/dropDatabase');
 }
 
+export interface GetDataFolderRequestParams {
+	connectionUri: string;
+}
+
+export namespace GetDataFolderRequest {
+	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------
