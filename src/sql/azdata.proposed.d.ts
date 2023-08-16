@@ -2030,7 +2030,7 @@ declare module 'azdata' {
 		 * @param fileFilters The filters used to limit which files are displayed in the file browser
 		 * @returns The path of the file chosen from the dialog, and undefined if the dialog is closed without selecting anything.
 		 */
-		export function openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string>;
+		export function openFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: FileFilters[]): Thenable<string | undefined>;
 	}
 
 	export interface TableComponent {
