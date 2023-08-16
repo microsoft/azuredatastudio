@@ -531,7 +531,6 @@ export interface NumericServerProperty {
 	value: number;
 }
 
-
 export interface ServerViewInfo extends ObjectManagement.ObjectViewInfo<Server> {
 }
 
