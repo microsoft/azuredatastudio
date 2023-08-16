@@ -477,7 +477,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region network functions
 
-	private async makeGetRequest(url: string, token: string): Promise<AxiosResponse<any>> {
+	private async makeGetRequest<T>(url: string, token: string): Promise<AxiosResponse<T>> {
 		const config: AxiosRequestConfig = {
 			headers: {
 				'Content-Type': 'application/json',
@@ -486,10 +486,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			validateStatus: () => true // Never throw
 		};
 
-		const response: AxiosResponse = await axios.get(url, config);
-		// ADAL is being deprecated so just ignoring these for now
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value ?? response.data }], [], url,);
+		const response: AxiosResponse = await axios.get<T>(url, config);
+		Logger.piiSanitized('GET request ', [{ name: 'response', objOrArray: response.data?.value as TenantResponse[] ?? response.data as ResponseData }], [], url,);
 		return response;
 	}
 
