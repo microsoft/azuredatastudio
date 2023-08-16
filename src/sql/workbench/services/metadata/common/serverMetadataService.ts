@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
