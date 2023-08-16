@@ -98,7 +98,7 @@
   },
   "devDependencies": {
     "@microsoft/azdata-test": "^3.0.1",
-    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/vscodetestcover": "^1.2.2",
     "@types/htmlparser2": "^3.10.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",

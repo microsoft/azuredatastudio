@@ -65,7 +65,10 @@ export class FindObjectDialog extends DialogBase<FindObjectDialogResult> {
 			}, (item1, item2) => {
 				return item1.name === item2.name;
 			});
-		this.searchTextInputBox = this.createInputBox(localizedConstants.SearchTextLabel, async () => { });
+		this.searchTextInputBox = this.createInputBox(async () => { }, {
+			ariaLabel: localizedConstants.SearchTextLabel,
+			inputType: 'text'
+		});
 		const searchTextRow = this.createLabelInputContainer(localizedConstants.SearchTextLabel, this.searchTextInputBox);
 		this.findButton = this.createButton(localizedConstants.FindText, localizedConstants.FindText, async () => {
 			await this.onFindObjectButtonClick();

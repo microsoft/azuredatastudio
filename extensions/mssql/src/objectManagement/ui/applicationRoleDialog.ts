@@ -61,9 +61,14 @@ export class ApplicationRoleDialog extends PrincipalDialogBase<ApplicationRoleIn
 	}
 
 	private initializeGeneralSection(): void {
-		this.nameInput = this.createInputBox(localizedConstants.NameText, async (newValue) => {
+		this.nameInput = this.createInputBox(async (newValue) => {
 			this.objectInfo.name = newValue;
-		}, this.objectInfo.name, this.options.isNewObject);
+		}, {
+			ariaLabel: localizedConstants.NameText,
+			inputType: 'text',
+			enabled: this.options.isNewObject,
+			value: this.objectInfo.name
+		});
 		const nameContainer = this.createLabelInputContainer(localizedConstants.NameText, this.nameInput);
 
 		this.defaultSchemaDropdown = this.createDropdown(localizedConstants.DefaultSchemaText, async (newValue) => {

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/Microsoft.data-workspace/dist/common/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="AllProjectTypes">
+      <source xml:lang="en">All Project Types</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.restartConfirmation">
+      <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.browse">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.browseEllipsis">
+      <source xml:lang="en">Browse...</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.sdkLearnMorePlaceholder">
+      <source xml:lang="en">Click &quot;Learn More&quot; button for more information about SDK-style projects</source>
+    </trans-unit>
+    <trans-unit id="LocalDevInfo">
+      <source xml:lang="en">Click &quot;Learn more&quot; button for more information about local development experience to {0}</source>
+    </trans-unit>
+    <trans-unit id="gitCloneMessage">
+      <source xml:lang="en">Cloning git repository &apos;{0}&apos;...</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.create">
+      <source xml:lang="en">Create</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.NewProjectDialogTitle">
+      <source xml:lang="en">Create new database project</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.default">
+      <source xml:lang="en">Default</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
+      <source xml:lang="en">Directory &apos;{0}&apos; already exists in the selected location, please choose another</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.enterProjectName">
+      <source xml:lang="en">Enter Project Name</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectNamePlaceholder">
+      <source xml:lang="en">Enter project name</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
+      <source xml:lang="en">Enter remote git repository URL</source>
+    </trans-unit>
+    <trans-unit id="gitCloneError">
+      <source xml:lang="en">Error during git clone. View git output for more details</source>
+    </trans-unit>
+    <trans-unit id="activateExtensionFailed">
+      <source xml:lang="en">Failed to load the project provider extension &apos;{0}&apos;. Error message: {1}</source>
+    </trans-unit>
+    <trans-unit id="fileDoesNotExist">
+      <source xml:lang="en">File &apos;{0}&apos; doesn&apos;t exist</source>
+    </trans-unit>
+    <trans-unit id="tooLongFilenameErrorMessage">
+      <source xml:lang="en">File name cannot be over 255 characters</source>
+    </trans-unit>
+    <trans-unit id="whitespaceFilenameErrorMessage">
+      <source xml:lang="en">File name cannot be whitespace</source>
+    </trans-unit>
+    <trans-unit id="filenameEndingInPeriodErrorMessage">
+      <source xml:lang="en">File name cannot end with a period</source>
+    </trans-unit>
+    <trans-unit id="trailingWhitespaceErrorMessage">
+      <source xml:lang="en">File name cannot start or end with whitespace</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.gitRepoUrlTitle">
+      <source xml:lang="en">Git repository URL</source>
+    </trans-unit>
+    <trans-unit id="invalidFileCharsErrorMessage">
+      <source xml:lang="en">Invalid file characters</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.learnMore">
+      <source xml:lang="en">Learn More</source>
+    </trans-unit>
+    <trans-unit id="openedProjectsUndefinedAfterRefresh">
+      <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
+    </trans-unit>
+    <trans-unit id="dataworksapce.local">
+      <source xml:lang="en">Local</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.localClonePathTitle">
+      <source xml:lang="en">Local clone path</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.locationSelectorTitle">
+      <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectLocationTitle">
+      <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectNameTitle">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.nameCannotBeEmpty">
+      <source xml:lang="en">Name cannot be empty</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="noProjectProvidingExtensionsInstalled">
+      <source xml:lang="en">No database project extensions are installed. Please install a database project extension to use this feature.</source>
+    </trans-unit>
+    <trans-unit id="UnknownProjectTypeError">
+      <source xml:lang="en">No provider was found for project type with id: &apos;{0}&apos;</source>
+    </trans-unit>
+    <trans-unit id="UnknownProjectsError">
+      <source xml:lang="en">No provider was found for the following projects: {0}</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="onlyMovingOneFileIsSupported">
+      <source xml:lang="en">Only moving one file at a time is supported.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.open">
+      <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.openExistingDialogTitle">
+      <source xml:lang="en">Open Existing Project</source>
+    </trans-unit>
+    <trans-unit id="noPreviousData">
+      <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.project">
+      <source xml:lang="en">Project</source>
+    </trans-unit>
+    <trans-unit id="projectFailedToLoad">
+      <source xml:lang="en">Project &apos;{0}&apos; failed to load: {1}  To view more details, [open the developer console](command:workbench.action.toggleDevTools).</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectAlreadyOpened">
+      <source xml:lang="en">Project &apos;{0}&apos; is already opened.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectFileTitle">
+      <source xml:lang="en">Project file</source>
+    </trans-unit>
+    <trans-unit id="projectNameNull">
+      <source xml:lang="en">Project name is null</source>
+    </trans-unit>
+    <trans-unit id="dataworksapce.refresh">
+      <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.remoteGitRepo">
+      <source xml:lang="en">Remote git repository</source>
+    </trans-unit>
+    <trans-unit id="reservedValueErrorMessage">
+      <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.sdkStyleProject">
+      <source xml:lang="en">SDK-style project (Preview)</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.select">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="++CODE++60dc6b3745804caa2d48a35dbb7306bb3f4f05286e7f9de259423f6abe87ec8f">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.selectProjectType">
+      <source xml:lang="en">Select Database Project Type</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.selectProjectLocation">
+      <source xml:lang="en">Select Project Location</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.selectTargetPlatform">
+      <source xml:lang="en">Select Target Platform</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.localClonePathPlaceholder">
+      <source xml:lang="en">Select location to clone repository locally</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectLocationPlaceholder">
+      <source xml:lang="en">Select location to create project</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectFilePlaceholder">
+      <source xml:lang="en">Select project file</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.workspacePlaceholder">
+      <source xml:lang="en">Select workspace ({0}) file</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.targetPlatform">
+      <source xml:lang="en">Target Platform</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
+      <source xml:lang="en">The selected clone path &apos;{0}&apos; does not exist or is not a directory.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+      <source xml:lang="en">The selected project location &apos;{0}&apos; does not exist or is not a directory.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.fileNotExistError">
+      <source xml:lang="en">The selected {0} file &apos;{1}&apos; does not exist or is not a file.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+      <source xml:lang="en">There is already a directory named &apos;{0}&apos; in the selected location: &apos;{1}&apos;.</source>
+    </trans-unit>
+    <trans-unit id="reservedWindowsFilenameErrorMessage">
+      <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+    </trans-unit>
+    <trans-unit id="dragAndDropNotSupported">
+      <source xml:lang="en">This project type does not support drag and drop.</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.Type">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="undefinedFilenameErrorMessage">
+      <source xml:lang="en">Undefined name</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.yesRecommended">
+      <source xml:lang="en">Yes (Recommended)</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/Microsoft.data-workspace/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
+      <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace&apos;s projects.</source>
+    </trans-unit>
+    <trans-unit id="close-workspace-command">
+      <source xml:lang="en">Close Workspace</source>
+    </trans-unit>
+    <trans-unit id="projects-view-no-workspace-content">
+      <source xml:lang="en">Create new or open existing to get started.&#10;[Create new](command:projects.new)&#10;[Open existing](command:projects.openExisting)&#10;To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
+    </trans-unit>
+    <trans-unit id="main-view-name">
+      <source xml:lang="en">Database Projects</source>
+    </trans-unit>
+    <trans-unit id="data-workspace-view-container-name">
+      <source xml:lang="en">Database Projects</source>
+    </trans-unit>
+    <trans-unit id="projects.defaultProjectSaveLocation">
+      <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
+    </trans-unit>
+    <trans-unit id="projects.excludedProjectsDescription">
+      <source xml:lang="en">List of projects in the workspace to exclude from the projects viewlet</source>
+    </trans-unit>
+    <trans-unit id="manage-project-command">
+      <source xml:lang="en">Manage</source>
+    </trans-unit>
+    <trans-unit id="new-command">
+      <source xml:lang="en">New</source>
+    </trans-unit>
+    <trans-unit id="projects-view-no-project-content">
+      <source xml:lang="en">No projects open in current workspace.&#10;[Create new](command:projects.new)&#10;[Open existing](command:projects.openExisting)&#10;To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).&#10;</source>
+    </trans-unit>
+    <trans-unit id="open-existing-command">
+      <source xml:lang="en">Open existing</source>
+    </trans-unit>
+    <trans-unit id="refresh-workspace-command">
+      <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="remove-project-command">
+      <source xml:lang="en">Remove Project</source>
+    </trans-unit>
+  </body></file>
+</xliff>
