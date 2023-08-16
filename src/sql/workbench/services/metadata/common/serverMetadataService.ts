@@ -4,23 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
-
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 export class ServerMetadataService extends Disposable implements IServerMetadataService {
 	public _serviceBrand: undefined;
 	private _providers = new Map<string, azdata.metadata.ServerMetadataProvider>();
 
 	constructor(
-		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IExtensionService private readonly _extensionService: IExtensionService
 	) {
 		super();
 
 		this._register(this._connectionManagementService.onConnect(async (e: IConnectionParams) => {
-			const ownerUri = e.connectionUri;
-			await this.generateServerTableMetadata(ownerUri);
+			const copilotExt = await this._extensionService.getExtension('github.copilot');
+
+			if (copilotExt && this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
+				const ownerUri = e.connectionUri;
+				await this.generateServerTableMetadata(ownerUri);
+			}
 		}));
 	}
 
