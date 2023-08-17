@@ -188,7 +188,7 @@
 	"title.newObject": "New (Preview)",
 	"title.newDatabase": "New Database (Preview)",
 	"title.objectProperties": "Properties (Preview)",
-	"title.deleteObject": "Delete (Preview)",
+	"title.dropObject": "Drop (Preview)",
 	"title.renameObject": "Rename (Preview)",
 	"title.detachDatabase": "Detach (Preview)"
 }
