@@ -52,9 +52,11 @@ export function parseAssessmentReport(assessmentReport: any): any {
 			}
 		}
 
+		const serverInstance = assessmentReport.ServerInstances[0];
 		saveInfo.serverAssessment = {
-			issues: assessmentReport.ServerInstances[0].AssessmentRecommendations.map((ar: any) => {
+			issues: serverInstance.AssessmentRecommendations.map((ar: any) => {
 				return {
+					serverName: serverInstance.ServerName,
 					rulesetVersion: "N/A",
 					rulesetName: "N/A",
 					ruleId: ar.RuleId,
@@ -86,6 +88,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 					name: d.Name,
 					issues: d.AssessmentRecommendations.map((ar: any) => {
 						return {
+							serverName: serverInstance.ServerName,
 							rulesetVersion: "N/A",
 							rulesetName: "N/A",
 							ruleId: ar.RuleId,
@@ -123,6 +126,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 		saveInfo.serverAssessment = {
 			issues: server.ServerAssessments.map((a: any) => {
 				return {
+					serverName: a.ServerName,
 					rulesetVersion: "N/A",
 					rulesetName: "N/A",
 					ruleId: a.RuleMetadata.Id,
@@ -155,6 +159,7 @@ export function parseAssessmentReport(assessmentReport: any): any {
 					name: d.Properties.Name,
 					issues: d.DatabaseAssessments.map((a: any) => {
 						return {
+							serverName: a.ServerName,
 							rulesetVersion: "N/A",
 							rulesetName: "N/A",
 							ruleId: a.RuleMetadata.Id,

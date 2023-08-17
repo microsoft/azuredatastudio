@@ -23,6 +23,7 @@ export interface SqlMigrationImpactedObjectInfo {
 }
 
 export interface SqlMigrationAssessmentResultItem {
+	serverName: string;
 	rulesetVersion: string;
 	rulesetName: string;
 	ruleId: string;

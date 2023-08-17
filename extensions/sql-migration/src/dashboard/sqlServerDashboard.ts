@@ -550,6 +550,9 @@ export class DashboardWidget {
 						if (savedInfo.serverAssessment !== null) {
 							this.stateModel._assessmentResults = savedInfo.serverAssessment;
 							await this.stateModel.loadSavedInfo();
+
+							serverName = savedInfo.serverAssessment?.issues[0].serverName;
+							this.stateModel.serverName = serverName;
 						}
 
 						const dbDialog = new AssessmentResultsDialog('ownerUri', this.stateModel, serverName, wizardController.skuRecommendationPage, undefined, true);

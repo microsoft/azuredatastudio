@@ -42,12 +42,12 @@ export class AssessmentResultsDialog {
 	constructor(public ownerUri: string, public model: MigrationStateModel, public serverName: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType?: MigrationTargetType, private _readOnly = false) {
 		this._model = model;
 		this._title = constants.ASSESSMENT_TITLE(serverName);
-		this._tree = new SqlDatabaseTree(this._model, this._targetType);
+		this._tree = new SqlDatabaseTree(this._model, this._targetType, _readOnly);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			this._tree = new SqlDatabaseTree(this._model, this._targetType);
+			this._tree = new SqlDatabaseTree(this._model, this._targetType, this._readOnly);
 			dialog.registerContent(async (view) => {
 				try {
 					const flex = view.modelBuilder.flexContainer().withLayout({
@@ -76,6 +76,8 @@ export class AssessmentResultsDialog {
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(this._title, 'AssessmentResults', 'wide');
 
+			this.dialog.customButtons = [];
+
 			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this.dialog.okButton.position = 'left';
 			if (this._readOnly) {
@@ -87,33 +89,34 @@ export class AssessmentResultsDialog {
 				this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 				this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
+
+				this._saveButton = azdata.window.createButton(
+					constants.SAVE_ASSESSMENT_REPORT,
+					'right');
+				this._disposables.push(
+					this._saveButton.onClick(async () => {
+						const folder = await utils.promptUserForFolder();
+						if (folder) {
+							const destinationFilePath = path.join(folder, AssessmentResultsDialog._assessmentReportName);
+							if (this.model._assessmentReportFilePath) {
+								fs.copyFile(this.model._assessmentReportFilePath, destinationFilePath, (err) => {
+									if (err) {
+										console.log(err);
+									} else {
+										void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
+									}
+								});
+							} else {
+								console.log('assessment report not found');
+							}
+						}
+					}));
+
+				this.dialog.customButtons.push(this._saveButton);
 			}
 
 			this.dialog.cancelButton.position = 'left';
 			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
-
-			this._saveButton = azdata.window.createButton(
-				constants.SAVE_ASSESSMENT_REPORT,
-				'right');
-			this._disposables.push(
-				this._saveButton.onClick(async () => {
-					const folder = await utils.promptUserForFolder();
-					if (folder) {
-						const destinationFilePath = path.join(folder, AssessmentResultsDialog._assessmentReportName);
-						if (this.model._assessmentReportFilePath) {
-							fs.copyFile(this.model._assessmentReportFilePath, destinationFilePath, (err) => {
-								if (err) {
-									console.log(err);
-								} else {
-									void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
-								}
-							});
-						} else {
-							console.log('assessment report not found');
-						}
-					}
-				}));
-			this.dialog.customButtons = [this._saveButton];
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 
