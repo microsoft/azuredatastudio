@@ -85,7 +85,8 @@ export class SqlDatabaseTree {
 
 	constructor(
 		private _model: MigrationStateModel,
-		private _targetType?: MigrationTargetType
+		private _targetType?: MigrationTargetType,
+		private _readOnly: boolean = false
 	) {
 	}
 
@@ -180,8 +181,8 @@ export class SqlDatabaseTree {
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
 						width: 20,
-						isReadOnly: false,
-						showCheckAll: true,
+						isReadOnly: this._readOnly,
+						showCheckAll: !this._readOnly,
 						headerCssStyles: headerLeft,
 					},
 					{
@@ -397,7 +398,6 @@ export class SqlDatabaseTree {
 
 	private createNoIssuesText(): azdata.FlexContainer {
 		const failedAssessment = this.handleFailedAssessment();
-
 
 		const value = failedAssessment
 			? constants.NO_RESULTS_AVAILABLE
@@ -699,14 +699,23 @@ export class SqlDatabaseTree {
 				}
 			});
 
+			const label = this._view.modelBuilder.text()
+				.withProps({
+					value: "Select target type for assessment:",
+					width: '200px',
+					CSSStyles: {
+						...styles.BODY_CSS,
+						'margin': '4px 0 4px 0'
+					}
+				}).component();
+
 			const dropDown = this._view.modelBuilder.dropDown().withProps({
 				value: '',
 				values: targetTypes,
-				width: '300px',
+				width: '250px',
 				CSSStyles: {
-					...styles.PAGE_TITLE_CSS,
-					'border': 'none',
-					'outline': 'none'
+					...styles.BODY_CSS,
+					'margin': '0 0 4px 0'
 				}
 			}).component();
 
@@ -732,7 +741,13 @@ export class SqlDatabaseTree {
 				}
 			});
 
-			return dropDown;
+			const row = this._view.modelBuilder.flexContainer().withItems([label, dropDown], { flex: '0 0 auto' }).withLayout({
+				flexFlow: 'row',
+				width: '100%',
+				height: '100%'
+			}).component();
+
+			return row;
 		} else {
 			const target = (this._targetType === MigrationTargetType.SQLVM)
 				? constants.SUMMARY_VM_TYPE
