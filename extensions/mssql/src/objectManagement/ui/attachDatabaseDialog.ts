@@ -11,12 +11,14 @@ import { AttachDatabaseDocUrl } from '../constants';
 import { AddFileAriaLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
+import path = require('path');
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
 	private _databasesTable: azdata.TableComponent;
 	// private _associatedFilesTable: azdata.TableComponent;
 	private _databaseFiles: any[] = [];
+	private readonly fileFilters: azdata.window.FileFilters[] = [{ label: 'Data files', filters: ['*.mdf'] }, { label: 'Log files', filters: ['*.ldf'] }];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, AttachDatabaseDialogTitle, 'AttachDatabase');
@@ -51,15 +53,16 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	private async onAddFilesButtonClicked(): Promise<void> {
 		// const fileFolder = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL2019\\MSSQL\\DATA';
-		let files: DatabaseFile[] = [{ name: 'Test', type: 'Data', path: 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL2019\\MSSQL\\DATA\\Test.mdf', fileGroup: '' }];
-		let owner = this.objectInfo.owner ?? 'sa';
+		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
+		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this.fileFilters);
+		if (filePath) {
+			let owner = this.objectInfo.owner ?? 'sa';
+			let fileName = path.basename(filePath, path.extname(filePath));
+			let tableRow = [filePath, fileName, fileName, owner];
 
-		let tableRows = files.map(file => {
-			return [file.path, file.name, file.name, owner];
-		});
-
-		this._databaseFiles.push(tableRows);
-		await this.updateTableData();
+			this._databaseFiles.push(tableRow);
+			await this.updateTableData();
+		}
 	}
 
 	private async onRemoveFilesButtonClicked(): Promise<void> {
