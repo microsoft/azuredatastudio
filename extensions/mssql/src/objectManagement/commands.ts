@@ -24,7 +24,7 @@ import { ApplicationRoleDialog } from './ui/applicationRoleDialog';
 import { DatabaseDialog } from './ui/databaseDialog';
 import { ServerPropertiesDialog } from './ui/serverPropertiesDialog';
 import { DetachDatabaseDialog } from './ui/detachDatabaseDialog';
-import { DeleteDatabaseDialog } from './ui/deleteDatabaseDialog';
+import { DropDatabaseDialog } from './ui/dropDatabaseDialog';
 import { AttachDatabaseDialog } from './ui/attachDatabaseDialog';
 
 export function registerObjectManagementCommands(appContext: AppContext) {
@@ -39,8 +39,8 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.objectProperties', async (context: azdata.ObjectExplorerContext) => {
 		await handleObjectPropertiesDialogCommand(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteObject', async (context: azdata.ObjectExplorerContext) => {
-		await handleDeleteObjectCommand(context, service);
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.dropObject', async (context: azdata.ObjectExplorerContext) => {
+		await handleDropObjectCommand(context, service);
 	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.renameObject', async (context: azdata.ObjectExplorerContext) => {
 		await handleRenameObjectCommand(context, service);
@@ -48,11 +48,11 @@ export function registerObjectManagementCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.detachDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleDetachDatabase(context, service);
 	}));
-	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.deleteDatabase', async (context: azdata.ObjectExplorerContext) => {
-		await handleDeleteDatabase(context, service);
-	}));
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.attachDatabase', async (context: azdata.ObjectExplorerContext) => {
 		await handleAttachDatabase(context, service);
+	}));
+	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.dropDatabase', async (context: azdata.ObjectExplorerContext) => {
+		await handleDropDatabase(context, service);
 	}));
 }
 
@@ -162,7 +162,7 @@ async function handleObjectPropertiesDialogCommand(context: azdata.ObjectExplore
 	}
 }
 
-async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+async function handleDropObjectCommand(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
 	if (!connectionUri) {
 		return;
@@ -170,13 +170,13 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 	let additionalConfirmationMessage: string | undefined = undefined;
 	switch (context.nodeInfo!.nodeType) {
 		case ObjectManagement.NodeType.ServerLevelLogin:
-			additionalConfirmationMessage = objectManagementLoc.DeleteLoginConfirmationText;
+			additionalConfirmationMessage = objectManagementLoc.DropLoginConfirmationText;
 			break;
 		default:
 			break;
 	}
 	const nodeTypeDisplayName = objectManagementLoc.getNodeTypeDisplayName(context.nodeInfo!.nodeType);
-	let confirmMessage = objectManagementLoc.DeleteObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
+	let confirmMessage = objectManagementLoc.DropObjectConfirmationText(nodeTypeDisplayName, context.nodeInfo!.label);
 	if (additionalConfirmationMessage) {
 		confirmMessage = `${additionalConfirmationMessage} ${confirmMessage}`;
 	}
@@ -185,22 +185,22 @@ async function handleDeleteObjectCommand(context: azdata.ObjectExplorerContext, 
 		return;
 	}
 	azdata.tasks.startBackgroundOperation({
-		displayName: objectManagementLoc.DeleteObjectOperationDisplayName(nodeTypeDisplayName, context.nodeInfo!.label),
+		displayName: objectManagementLoc.DropObjectOperationDisplayName(nodeTypeDisplayName, context.nodeInfo!.label),
 		description: '',
 		isCancelable: false,
 		operation: async (operation) => {
 			try {
 				const startTime = Date.now();
 				await service.drop(connectionUri, context.nodeInfo.nodeType as ObjectManagement.NodeType, context.nodeInfo!.metadata!.urn);
-				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DeleteObject, {
+				TelemetryReporter.sendTelemetryEvent(TelemetryActions.DropObject, {
 					objectType: context.nodeInfo!.nodeType
 				}, {
 					elapsedTimeMs: Date.now() - startTime
 				});
 			}
 			catch (err) {
-				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DeleteObjectError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
-				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DeleteObject, err).withAdditionalProperties({
+				operation.updateStatus(azdata.TaskStatus.Failed, objectManagementLoc.DropObjectError(nodeTypeDisplayName, context.nodeInfo!.label, getErrorMessage(err)));
+				TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.DropObject, err).withAdditionalProperties({
 					objectType: context.nodeInfo!.nodeType
 				}).send();
 				console.error(err);
@@ -294,7 +294,7 @@ async function handleDetachDatabase(context: azdata.ObjectExplorerContext, servi
 	}
 }
 
-async function handleDeleteDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
+async function handleDropDatabase(context: azdata.ObjectExplorerContext, service: IObjectManagementService): Promise<void> {
 	const connectionUri = await getConnectionUri(context);
 	if (!connectionUri) {
 		return;
@@ -311,15 +311,15 @@ async function handleDeleteDatabase(context: azdata.ObjectExplorerContext, servi
 			objectUrn: context.nodeInfo!.metadata!.urn,
 			objectExplorerContext: context
 		};
-		const dialog = new DeleteDatabaseDialog(service, options);
+		const dialog = new DropDatabaseDialog(service, options);
 		await dialog.open();
 	}
 	catch (err) {
-		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDeleteDatabaseDialog, err).withAdditionalProperties({
+		TelemetryReporter.createErrorEvent2(ObjectManagementViewName, TelemetryActions.OpenDropDatabaseDialog, err).withAdditionalProperties({
 			objectType: context.nodeInfo!.nodeType
 		}).send();
 		console.error(err);
-		await vscode.window.showErrorMessage(objectManagementLoc.OpenDeleteDatabaseDialogError(getErrorMessage(err)));
+		await vscode.window.showErrorMessage(objectManagementLoc.OpenDropDatabaseDialogError(getErrorMessage(err)));
 	}
 }
 

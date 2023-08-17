@@ -39,14 +39,14 @@ export const DatabaseScopedConfigurationPropertiesDocUrl = 'https://learn.micros
 
 export const enum TelemetryActions {
 	CreateObject = 'CreateObject',
-	DeleteObject = 'DeleteObject',
+	DropObject = 'DropObject',
 	OpenNewObjectDialog = 'OpenNewObjectDialog',
 	OpenPropertiesDialog = 'OpenPropertiesDialog',
 	RenameObject = 'RenameObject',
 	UpdateObject = 'UpdateObject',
 	OpenDetachDatabaseDialog = 'OpenDetachDatabaseDialog',
-	OpenDeleteDatabaseDialog = 'OpenDeleteDatabaseDialog',
-	OpenAttachDatabaseDialog = 'OpenAttachDatabaseDialog'
+	OpenAttachDatabaseDialog = 'OpenAttachDatabaseDialog',
+	OpenDropDatabaseDialog = 'OpenDropDatabaseDialog'
 }
 
 export const ObjectManagementViewName = 'ObjectManagement';
