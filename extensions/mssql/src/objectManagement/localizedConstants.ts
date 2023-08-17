@@ -193,7 +193,7 @@ export const DropDatabaseDialogTitle = (dbName: string) => localize('objectManag
 export const DropButtonLabel = localize('objectManagement.dropButtonLabel', "Drop");
 export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOptions', "Drop Database Options");
 export const CloseConnections = localize('objectManagement.closeConnections', "Close existing connections");
-export const DeleteBackupHistory = localize('objectManagement.deleteDropBackupHistory', "Delete backup and restore history information for database");
+export const DeleteBackupHistory = localize('objectManagement.deleteBackupHistory', "Delete backup and restore history information for database");
 export const DatabaseDetailsLabel = localize('objectManagement.databaseDetails', "Database Details");
 
 // Login
