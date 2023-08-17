@@ -1002,7 +1002,11 @@ declare module 'mssql' {
 		 * @returns A string value representing the generated TSQL query if generateScript was set to true, and an empty string otherwise.
 		 */
 		dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
-
+		/**
+		 * Gets the file path for the default database file folder for a SQL Server instance.
+		 * @param connectionUri The URI of the connection for the specific server.
+		 * @returns The file path to the data folder.
+		 */
 		getDataFolder(connectionUri: string): Thenable<string>;
 	}
 
