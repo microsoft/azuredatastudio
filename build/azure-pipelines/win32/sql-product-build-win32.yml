@@ -189,6 +189,7 @@ steps:
         Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll
         MicrosoftSqlToolsCredentials.dll
         MicrosoftSqlToolsServiceLayer.dll
+        MicrosoftSqlToolsSqlCore.dll
         Newtonsoft.Json.dll,SqlSerializationService.dll
         SqlToolsResourceProviderService.dll
         Microsoft.SqlServer.*.dll
