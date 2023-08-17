@@ -507,14 +507,15 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	/**
-	 * Replace the line breaks with space.
+	 * Replace the line breaks with enter arrow.
 	 */
 	private replaceLinebreaks(inputStr: string): string {
 		let newlineMatches = inputStr.match(/(\r\n|\n|\r)/g);
 		if (newlineMatches && newlineMatches.length > 0) {
 			this.newlinePattern = newlineMatches[0];
 		}
-		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
+		// allow-any-unicode-next-line
+		return inputStr.replace(/(\r\n|\n|\r)/g, '↵');
 	}
 
 	/**
@@ -710,8 +711,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
-
-				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(/\u0000/g, this.newlinePattern) : self.currentEditCellValue;
+				// allow-any-unicode-next-line
+				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(/↵/g, this.newlinePattern) : self.currentEditCellValue;
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, restoredValue);
 			}).then(
 				result => {
@@ -1273,7 +1274,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
 			// We use it's displayValue and remove newlines for display purposes only.
 			valueToDisplay = (value.displayValue + '');
-			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '\u0000');
+			// allow-any-unicode-next-line
+			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '↵');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
