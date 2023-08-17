@@ -17,11 +17,15 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _databasesToAttach: DatabaseFileData[] = [];
 	private _databasesTable: azdata.TableComponent;
 	// private _associatedFilesTable: azdata.TableComponent;
-	private _databaseFiles: any[] = [];
+	private _databaseFiles: string[][] = [];
 	private readonly fileFilters: azdata.window.FileFilters[] = [{ label: 'Data files', filters: ['*.mdf'] }, { label: 'Log files', filters: ['*.ldf'] }];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, AttachDatabaseDialogTitle, 'AttachDatabase');
+	}
+
+	protected override get isDirty(): boolean {
+		return this._databasesToAttach.length > 0;
 	}
 
 	protected async initializeUI(): Promise<void> {
@@ -60,6 +64,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			let tableRow = [filePath, fileName, fileName, owner];
 
 			this._databaseFiles.push(tableRow);
+			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: [filePath] });
 			await this.updateTableData();
 		}
 	}
@@ -70,6 +75,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		for (let row of selectedRows) {
 			let index = row - deletedRowCount;
 			this._databaseFiles.splice(index, 1);
+			this._databasesToAttach.splice(index, 1);
 			deletedRowCount++;
 		}
 		await this.updateTableData();
@@ -96,11 +102,10 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	protected override async saveChanges(contextId: string, object: ObjectManagement.SqlObject): Promise<void> {
-		// await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, false);
+		await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, false);
 	}
 
 	protected override async generateScript(): Promise<string> {
-		// return await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, true);
-		return '';
+		return await this.objectManagementService.attachDatabases(this.options.connectionUri, this._databasesToAttach, true);
 	}
 }
