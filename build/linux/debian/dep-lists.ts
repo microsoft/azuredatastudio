@@ -66,7 +66,8 @@ export const referenceGeneratedDepsByArch = {
 		'libxkbcommon0 (>= 0.4.1)',
 		'libxkbfile1 (>= 1:1.1.0)',
 		'libxrandr2',
-		'xdg-utils (>= 1.0.2)'
+		'xdg-utils (>= 1.0.2)',
+		'xsel'
 	],
 	'armhf': [
 		'ca-certificates',
