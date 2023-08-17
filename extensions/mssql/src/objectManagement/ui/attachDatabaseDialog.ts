@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
 import { DatabaseFileData, IObjectManagementService, ObjectManagement } from 'mssql';
-import { Database, DatabaseViewInfo } from '../interfaces';
+import { Database, DatabaseFile, DatabaseViewInfo } from '../interfaces';
 import { AttachDatabaseDocUrl } from '../constants';
 import { AddFileAriaLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
@@ -50,8 +50,15 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
-		let testLabel = `Test${this._databaseFiles.length}`;
-		this._databaseFiles.push([testLabel, testLabel, testLabel, testLabel]);
+		// const fileFolder = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL2019\\MSSQL\\DATA';
+		let files: DatabaseFile[] = [{ name: 'Test', type: 'Data', path: 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL2019\\MSSQL\\DATA\\Test.mdf', fileGroup: '' }];
+		let owner = this.objectInfo.owner ?? 'sa';
+
+		let tableRows = files.map(file => {
+			return [file.path, file.name, file.name, owner];
+		});
+
+		this._databaseFiles.push(tableRows);
 		await this.updateTableData();
 	}
 

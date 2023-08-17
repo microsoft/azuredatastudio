@@ -71,9 +71,19 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		return this.runWithErrorHandling(contracts.DetachDatabaseRequest.type, params);
 	}
 
+	async dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Promise<string> {
+		const params: contracts.DropDatabaseRequestParams = { connectionUri, objectUrn, dropConnections, deleteBackupHistory, generateScript };
+		return this.runWithErrorHandling(contracts.DropDatabaseRequest.type, params);
+	}
+
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		const params: contracts.AttachDatabaseRequestParams = { connectionUri, databases, generateScript };
 		return this.runWithErrorHandling(contracts.AttachDatabaseRequest.type, params);
+	}
+
+	async getDataFolder(connectionUri: string): Promise<string> {
+		const params: contracts.GetDataFolderRequestParams = { connectionUri };
+		return this.runWithErrorHandling(contracts.GetDataFolderRequest.type, params);
 	}
 }
 
@@ -246,7 +256,15 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
+	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+		return this.delayAndResolve('');
+	}
+
 	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+		return this.delayAndResolve('');
+	}
+
+	async getDataFolder(connectionUri: string): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
@@ -467,6 +485,15 @@ export class TestObjectManagementService implements IObjectManagementService {
 				azureServiceLevelObjective: ''
 			}
 		} : <DatabaseViewInfo>{
+			collationNames: { defaultValueIndex: 0, options: ['Latin1_General_100_CI_AS_KS_WS', 'Latin1_General_100_CI_AS_KS_WS_SC'] },
+			compatibilityLevels: { defaultValueIndex: 0, options: ['SQL Server 2008', 'SQL Server 2012', 'SQL Server 2014', 'SQL Server 2016', 'SQL Server 2017', 'SQL Server 2019'] },
+			containmentTypes: { defaultValueIndex: 0, options: ['NONE', 'PARTIAL'] },
+			restrictAccessOptions: ['MULTI_USER', 'RESTRICTED_USER', 'SINGLE_USER'],
+			recoveryModels: { defaultValueIndex: 0, options: ['FULL', 'SIMPLE', 'BULK_LOGGED'] },
+			pageVerifyOptions: ['CHECKSUM', 'NONE', 'TORN_PAGE_DETECTION'],
+			dscElevateOptions: ['OFF', 'WHEN_SUPPORTED', 'FAIL_UNSUPPORTED'],
+			dscEnableDisableOptions: ['ENABLED', 'DISABLED'],
+			dscOnOffOptions: ['ON', 'OFF'],
 			objectInfo: {
 				name: 'Database Properties1',
 				collationName: 'Latin1_General_100_CI_AS_KS_WS',
@@ -491,8 +518,19 @@ export class TestObjectManagementService implements IObjectManagementService {
 				databaseReadOnly: true,
 				encryptionEnabled: false,
 				restrictAccess: 'SINGLE_USER',
+				databaseScopedConfigurations: [
+					{ name: 'MAXDOP', valueForPrimary: '', valueForSecondary: '' },
+					{ name: 'legacy_cardinality_estimation', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'parameter_sniffing', valueForPrimary: 'ON', valueForSecondary: 'OFF' },
+					{ name: 'query_optimizer_hotfixes', valueForPrimary: 'ON', valueForSecondary: 'OFF' },
+					{ name: 'identity_cache', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'interleaved_execution_tvf', valueForPrimary: 'ON', valueForSecondary: 'ON' },
+					{ name: 'batch_mode_memory_grant_feedback', valueForPrimary: 'OFF', valueForSecondary: 'OFF' },
+					{ name: 'batch_mode_adaptive_joins', valueForPrimary: 'OFF', valueForSecondary: 'ON' },
+					{ name: 'tsql_scalar_udf_inlining', valueForPrimary: 'ON', valueForSecondary: 'ON' }
+				]
 			}
-		};
+		}
 	}
 
 	private delayAndResolve(obj?: any): Promise<any> {

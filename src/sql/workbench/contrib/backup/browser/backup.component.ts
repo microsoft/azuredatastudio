@@ -766,7 +766,7 @@ export class BackupComponent extends AngularDisposable {
 		}
 	}
 
-	private handleFilePathAdded(filepath: string): void {
+	private handleFilePathAdded(filepath?: string): void {
 		if (filepath && !this.backupPathTypePairs![filepath]) {
 			if ((this.getBackupPathCount() < BackupConstants.maxDevices)) {
 				this.backupPathTypePairs![filepath] = BackupConstants.MediaDeviceType.File;
