@@ -39,7 +39,7 @@ import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { localize } from 'vs/nls';
 import { defaultTableStyles } from 'sql/platform/theme/browser/defaultStyles';
 
-const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character which is currently not supported for editing.");
+const cellWithNullCharMessage = localize('editData.cellWithNullCharMessage', "This cell contains the Unicode null character or enter arrow character which is currently not supported for editing.");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -507,15 +507,14 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	/**
-	 * Replace the line breaks with enter arrow.
+	 * Replace the line breaks with desired newline character replacement.
 	 */
 	private replaceLinebreaks(inputStr: string): string {
 		let newlineMatches = inputStr.match(/(\r\n|\n|\r)/g);
 		if (newlineMatches && newlineMatches.length > 0) {
 			this.newlinePattern = newlineMatches[0];
 		}
-		// allow-any-unicode-next-line
-		return inputStr.replace(/(\r\n|\n|\r)/g, '↵');
+		return inputStr.replace(/(\r\n|\n|\r)/g, this.newlineCharacter);
 	}
 
 	/**
@@ -711,8 +710,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
-				// allow-any-unicode-next-line
-				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(/↵/g, this.newlinePattern) : self.currentEditCellValue;
+				let restoredValue = this.newlinePattern ? self.currentEditCellValue.replace(new RegExp(this.newlineCharacter), this.newlinePattern) : self.currentEditCellValue;
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, restoredValue);
 			}).then(
 				result => {
@@ -1237,7 +1235,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private hasNullAndLinebreak(inputString: string): boolean {
 		if (inputString) {
 			let linebreakMatch = inputString.match(/(\r\n|\n|\r)/);
-			return linebreakMatch?.length > 0 && inputString.indexOf('\u0000') !== -1;
+			return linebreakMatch?.length > 0 && inputString.indexOf(this.newlineCharacter) !== -1;
 		}
 		return false;
 	}
@@ -1274,8 +1272,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			// If a cell is not edited and retrieved direct from the SQL server, it would be in the form of a DBCellValue.
 			// We use it's displayValue and remove newlines for display purposes only.
 			valueToDisplay = (value.displayValue + '');
-			// allow-any-unicode-next-line
-			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, '↵');
+			valueToDisplay = valueToDisplay.replace(/(\r\n|\n|\r)/g, this.newlineCharacter);
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
