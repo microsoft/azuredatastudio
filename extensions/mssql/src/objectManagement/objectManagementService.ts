@@ -256,11 +256,11 @@ export class TestObjectManagementService implements IObjectManagementService {
 		return this.delayAndResolve('');
 	}
 
-	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
+	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
 		return this.delayAndResolve('');
 	}
 
-	async attachDatabases(connectionUri: string, databases: DatabaseFileData[], generateScript: boolean): Promise<string> {
+	dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string> {
 		return this.delayAndResolve('');
 	}
 
