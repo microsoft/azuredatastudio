@@ -42,6 +42,7 @@ import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { ExtHostWindow } from 'sql/workbench/api/common/extHostWindow';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -102,6 +103,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
+	const extHostWindow = rpcProtocol.set(SqlExtHostContext.ExtHostWindow, new ExtHostWindow(rpcProtocol));
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
 			// namespace: connection
@@ -480,6 +482,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				MessageLevel: sqlExtHostTypes.MessageLevel,
 				openCustomErrorDialog(options: sqlExtHostTypes.IErrorDialogOptions): Thenable<string | undefined> {
 					return extHostModelViewDialog.openCustomErrorDialog(options);
+				},
+				openServerFileBrowserDialog(connectionUri: string, targetPath: string, fileFilters: azdata.window.FileFilters[]): Thenable<string | undefined> {
+					return extHostWindow.$openServerFileBrowserDialog(connectionUri, targetPath, fileFilters);
 				}
 			};
 

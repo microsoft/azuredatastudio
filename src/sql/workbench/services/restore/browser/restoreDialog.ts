@@ -725,16 +725,18 @@ export class RestoreDialog extends Modal {
 			.then(url => this._urlInputBox!.value = url);
 	}
 
-	private onFileBrowsed(filepath: string): void {
-		const oldFilePath = this._filePathInputBox!.value;
-		if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
-			this._filePathInputBox!.value = filepath;
-		} else {
-			this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
-		}
+	private onFileBrowsed(filepath?: string): void {
+		if (filepath) {
+			const oldFilePath = this._filePathInputBox!.value;
+			if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
+				this._filePathInputBox!.value = filepath;
+			} else {
+				this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
+			}
 
-		if (oldFilePath !== this._filePathInputBox!.value) {
-			this.onFilePathChanged(this._filePathInputBox!.value);
+			if (oldFilePath !== this._filePathInputBox!.value) {
+				this.onFilePathChanged(this._filePathInputBox!.value);
+			}
 		}
 	}
 
