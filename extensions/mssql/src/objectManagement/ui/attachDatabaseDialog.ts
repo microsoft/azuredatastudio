@@ -52,7 +52,6 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
-		// const fileFolder = 'C:\\Program Files\\Microsoft SQL Server\\MSSQL15.SQL2019\\MSSQL\\DATA';
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
 		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this.fileFilters);
 		if (filePath) {
