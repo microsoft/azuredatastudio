@@ -1784,8 +1784,6 @@ declare module 'azdata' {
 		}
 
 		export interface DatabaseServerContextualizationProvider extends DataProvider {
-			// database server contextualization service methods
-
 			/**
 			 * Generates all database server scripts in the form of create scripts.
 			 * @param ownerUri The URI of the connection to generate context scripts for.
