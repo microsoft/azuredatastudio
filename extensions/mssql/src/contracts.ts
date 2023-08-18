@@ -1567,11 +1567,11 @@ export interface DatabaseServerContextualizationParams {
 }
 
 export namespace GenerateDatabaseServerContextualizationNotification {
-	export const type = new NotificationType<DatabaseServerContextualizationParams, void>('metadata/generateDatabaseServerContextScripts');
+	export const type = new NotificationType<DatabaseServerContextualizationParams, void>('metadata/generateDatabaseServerContext');
 }
 
 export namespace GetDatabaseServerContextualizationRequest {
-	export const type = new RequestType<DatabaseServerContextualizationParams, azdata.contextualization.GetDatabaseServerContextualizationResult, void, void>('metadata/getDatabaseServerContextScripts');
+	export const type = new RequestType<DatabaseServerContextualizationParams, azdata.contextualization.GetDatabaseServerContextualizationResult, void, void>('metadata/getDatabaseServerContext');
 }
 
 // ------------------------------- < Database Server Contextualization API > ------------------------------------
