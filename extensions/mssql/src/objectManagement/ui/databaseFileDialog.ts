@@ -29,6 +29,8 @@ export interface NewDatabaseFileDialogOptions {
 
 export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private result: DatabaseFile;
+	private fileSizeInput: azdata.InputBoxComponent;
+	private fileNameWithExtension: azdata.InputBoxComponent;
 	private fileGroupDropdown: azdata.DropDownComponent;
 	private fileGrowthGroup: azdata.GroupContainer;
 	private maxSizeGroup: azdata.GroupContainer;
@@ -71,7 +73,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// Name validations
 		if (this.result.name !== this.originalName) {
 			// If adding a new file, can check if no exisiting file should have the same name
-			// If editing a new file, modified name shoulg not be matched in the collection, if length != 0 means some other file has the name already
+			// If editing a new file, modified name should not be matched in the collection, if length != 0 means some other file has the name already
 			if ((this.options.isNewFile && !!this.options.files.find(file => { return file.name === this.result.name.trim() })) ||
 				(this.options.isEditingNewFile && this.options.files.filter(file => { return file.name === this.result.name.trim() }).length !== 0)) {
 				errors.push(localizedConstants.DuplicateLogicalNameError(this.result.name.trim()));
@@ -80,7 +82,12 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			if (!this.options.isNewFile && !this.options.isEditingNewFile && !!this.options.files.find(file => { return this.result.id !== file.id && file.name === this.result.name.trim() })) {
 				errors.push(localizedConstants.FileNameExistsError(this.result.name.trim()));
 			}
+			// If new file, verify if the file name with extension already exists
+			if (this.options.isNewFile && !!this.options.files.find(file => { return (file.path + '\\' + file.fileNameWithExtension) === (this.result.path + '\\' + this.result.fileNameWithExtension) })) {
+				errors.push(localizedConstants.FileAlreadyExistsError(this.result.path + '\\' + this.result.fileNameWithExtension));
+			}
 		}
+
 		// When maxsize is limited and size should not be greater than maxSize allowed
 		if (this.result.maxSizeLimit !== -1 && this.result.maxSizeLimit < this.result.sizeInMb) {
 			errors.push(localizedConstants.FileSizeLimitError);
@@ -96,8 +103,11 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private InitializeAddDatabaseFileDialog(): azdata.GroupContainer {
 		let containers: azdata.Component[] = [];
 		// Logical Name of the file
-		const filename = this.createInputBox(async (newValue) => {
-			this.result.name = newValue.trim() !== '' ? newValue.trim() : this.result.name;
+		const logicalname = this.createInputBox(async (newValue) => {
+			if (newValue.trim() !== '') {
+				this.result.name = newValue.trim();
+				this.fileNameWithExtension.value = this.generateFileNameWithExtension();
+			}
 		}, {
 			ariaLabel: localizedConstants.LogicalNameText,
 			inputType: 'text',
@@ -105,13 +115,14 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			value: this.options.databaseFile.name,
 			required: true
 		});
-		const filenameContainer = this.createLabelInputContainer(localizedConstants.LogicalNameText, filename);
+		const filenameContainer = this.createLabelInputContainer(localizedConstants.LogicalNameText, logicalname);
 		containers.push(filenameContainer);
 
 		// File Type
 		const fileType = this.createDropdown(localizedConstants.FileTypeText, async (newValue) => {
 			await this.updateOptionsForSelectedFileType(newValue);
 			this.result.type = newValue;
+			this.fileNameWithExtension.value = this.generateFileNameWithExtension();
 		}, this.options.viewInfo.fileTypesOptions, this.result.type, this.options.isNewFile || this.options.isEditingNewFile, DefaultInputWidth);
 		const fileTypeContainer = this.createLabelInputContainer(localizedConstants.FileTypeText, fileType);
 		containers.push(fileTypeContainer);
@@ -119,12 +130,12 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// Filegroup
 		this.fileGroupDropdown = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
-		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.viewInfo.rowDataFileGroupsOptions[0], this.options.isNewFile || this.options.isEditingNewFile, DefaultInputWidth);
+		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.databaseFile.fileGroup, this.options.isNewFile || this.options.isEditingNewFile, DefaultInputWidth);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, this.fileGroupDropdown);
 		containers.push(sizeContainer);
 
 		// File Size in MB
-		const fileSize = this.createInputBox(async (newValue) => {
+		this.fileSizeInput = this.createInputBox(async (newValue) => {
 			this.result.sizeInMb = Number(newValue);
 		}, {
 			ariaLabel: localizedConstants.SizeInMbText,
@@ -132,7 +143,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			enabled: this.options.databaseFile.type !== this.options.viewInfo.fileTypesOptions[2],
 			value: String(this.options.databaseFile.sizeInMb)
 		});
-		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, fileSize);
+		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, this.fileSizeInput);
 		containers.push(fileSizeContainer);
 
 		// Auto Growth and Max Size
@@ -165,16 +176,16 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(this.pathContainer);
 
 		// File Name
-		const fileNameWithExtension = this.createInputBox(async (newValue) => {
+		this.fileNameWithExtension = this.createInputBox(async (newValue) => {
 			this.result.fileNameWithExtension = newValue;
 		}, {
 			ariaLabel: localizedConstants.FileNameText,
 			inputType: 'text',
-			enabled: this.options.isNewFile || this.options.isEditingNewFile,
+			enabled: !(this.result.type === this.options.viewInfo.fileTypesOptions[2]) || (this.options.isNewFile || this.options.isEditingNewFile),
 			value: this.options.databaseFile.fileNameWithExtension,
 			width: DefaultInputWidth
 		});
-		const fileNameWithExtensionContainer = this.createLabelInputContainer(localizedConstants.FileNameText, fileNameWithExtension);
+		const fileNameWithExtensionContainer = this.createLabelInputContainer(localizedConstants.FileNameText, this.fileNameWithExtension);
 		containers.push(fileNameWithExtensionContainer);
 
 		return this.createGroup('', containers, false);
@@ -286,10 +297,11 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private async updateOptionsForSelectedFileType(selectedOption: string): Promise<void> {
 		// Row Data defaults
 		let fileGroupDdOptions = this.options.viewInfo.rowDataFileGroupsOptions;
-		let fileGroupDdValue = fileGroupDdOptions[0];
+		let fileGroupDdValue = this.result.fileGroup;
 		let visibility = 'visible';
 		let maxSizeGroupMarginTop = '0px';
 		let pathContainerMarginTop = '0px';
+		let enableInputs = true;
 		// Log
 		if (selectedOption === this.options.viewInfo.fileTypesOptions[1]) {
 			fileGroupDdOptions = [localizedConstants.FileGroupForLogTypeText];
@@ -298,10 +310,12 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		// File Stream
 		else if (selectedOption === this.options.viewInfo.fileTypesOptions[2]) {
 			fileGroupDdOptions = this.options.viewInfo.fileStreamFileGroupsOptions;
-			fileGroupDdValue = fileGroupDdOptions[0];
+			fileGroupDdValue = this.result.fileGroup;
 			visibility = 'hidden';
 			maxSizeGroupMarginTop = '-130px';
 			pathContainerMarginTop = '-10px';
+			enableInputs = false;
+			this.fileNameWithExtension.value = '';
 		}
 
 		// Update the propertie
@@ -312,7 +326,31 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		await this.fileGrowthGroup.updateCssStyles({ 'visibility': visibility });
 		await this.maxSizeGroup.updateCssStyles({ 'margin-top': maxSizeGroupMarginTop });
 		await this.pathContainer.updateCssStyles({ 'margin-top': pathContainerMarginTop });
+		this.fileNameWithExtension.enabled = this.fileSizeInput.enabled = enableInputs;
 	}
+
+	/**
+	 * Generates the file name with extension on logical name update
+	 */
+	private generateFileNameWithExtension(): string {
+		let fileNameWithExtenstion = this.result.fileNameWithExtension;
+		// if new file, then update the generate the fileNameWithExtenison
+		if (this.result.name !== '' && this.options.isNewFile) {
+			switch (this.result.type) {
+				case this.options.viewInfo.fileTypesOptions[0]:
+					fileNameWithExtenstion = this.result.name + '.ndf';
+					break;
+				case this.options.viewInfo.fileTypesOptions[1]:
+					fileNameWithExtenstion = this.result.name + '.ldf';
+					break;
+				case this.options.viewInfo.fileTypesOptions[2]:
+					fileNameWithExtenstion = '';
+					break;
+			}
+		}
+		return fileNameWithExtenstion;
+	}
+
 
 	public override async onFormFieldChange(): Promise<void> {
 		this.dialogObject.okButton.enabled = JSON.stringify(this.result) !== JSON.stringify(this.options.databaseFile);
