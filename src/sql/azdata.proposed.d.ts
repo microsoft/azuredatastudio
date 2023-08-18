@@ -894,6 +894,11 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
 		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
+		/**
+		 * Registers a server contextualization provider, which can provide context about a server to extensions like GitHub
+		 * Copilot for improved suggestions.
+		 * @param provider The provider to register
+		 */
 		export function registerDatabaseServerContextualizationProvider(provider: contextualization.DatabaseServerContextualizationProvider): vscode.Disposable
 	}
 

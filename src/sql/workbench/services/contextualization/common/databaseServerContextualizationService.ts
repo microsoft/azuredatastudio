@@ -87,7 +87,7 @@ export class DatabaseServerContextualizationService extends Disposable implement
 		}
 		else {
 			return Promise.resolve({
-				scripts: []
+				context: []
 			});
 		}
 	}
