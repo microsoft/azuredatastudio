@@ -1676,6 +1676,15 @@ export namespace GetDataFolderRequest {
 	export const type = new RequestType<GetDataFolderRequestParams, string, void, void>('admin/getdatafolder');
 }
 
+export interface GetAssociatedFilesRequestParams {
+	connectionUri: string;
+	primaryFilePath: string;
+}
+
+export namespace GetAssociatedFilesRequest {
+	export const type = new RequestType<GetAssociatedFilesRequestParams, string[], void, void>('admin/getassociatedfiles');
+}
+
 // ------------------------------- < Object Management > ------------------------------------
 
 // ------------------------------- < Encryption IV/KEY updation Event > ------------------------------------

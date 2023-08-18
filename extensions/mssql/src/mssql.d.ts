@@ -1008,6 +1008,8 @@ declare module 'mssql' {
 		 * @returns The file path to the data folder.
 		 */
 		getDataFolder(connectionUri: string): Thenable<string>;
+
+		getAssociatedFiles(connectionUri: string, primaryFilePath: string): Thenable<string[]>;
 	}
 
 	export interface DatabaseFileData {

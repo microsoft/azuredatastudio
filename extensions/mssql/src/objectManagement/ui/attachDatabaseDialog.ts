@@ -63,8 +63,11 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			let fileName = path.basename(filePath, path.extname(filePath));
 			let tableRow = [filePath, fileName, fileName, owner];
 
+			let associatedFiles = await this.objectManagementService.getAssociatedFiles(this.options.connectionUri, filePath) ?? [];
+			let allFiles = [filePath, ...associatedFiles];
+
 			this._databaseFiles.push(tableRow);
-			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: [filePath] });
+			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: allFiles });
 			await this.updateTableData();
 		}
 	}

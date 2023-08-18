@@ -85,6 +85,11 @@ export class ObjectManagementService extends BaseService implements IObjectManag
 		const params: contracts.GetDataFolderRequestParams = { connectionUri };
 		return this.runWithErrorHandling(contracts.GetDataFolderRequest.type, params);
 	}
+
+	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		const params: contracts.GetAssociatedFilesRequestParams = { connectionUri, primaryFilePath };
+		return this.runWithErrorHandling(contracts.GetAssociatedFilesRequest.type, params);
+	}
 }
 
 const ServerLevelSecurableTypes: SecurableTypeMetadata[] = [
@@ -266,6 +271,10 @@ export class TestObjectManagementService implements IObjectManagementService {
 
 	async getDataFolder(connectionUri: string): Promise<string> {
 		return this.delayAndResolve('');
+	}
+
+	async getAssociatedFiles(connectionUri: string, primaryFilePath: string): Promise<string[]> {
+		return this.delayAndResolve([]);
 	}
 
 	private generateSearchResult(objectType: ObjectManagement.NodeType, schema: string | undefined, count: number): ObjectManagement.SearchResultItem[] {
