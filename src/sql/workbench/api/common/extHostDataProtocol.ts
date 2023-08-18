@@ -212,7 +212,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$registerDatabaseServerContextualizationProvider(provider: azdata.contextualization.DatabaseServerContextualizationProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
-		this._proxy.$registerDatabaseServercontextualizationProvider(provider.providerId, provider.handle);
+		this._proxy.$registerDatabaseServerContextualizationProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
