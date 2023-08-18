@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/flexContainer';
+import * as DOM from 'vs/base/browser/dom';
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy } from '@angular/core';
 
 import { FlexItemLayout, SplitViewLayout, SplitViewContainer, CssStyles } from 'azdata';
@@ -13,6 +14,7 @@ import { SplitView, Orientation, Sizing, IView } from 'vs/base/browser/ui/splitv
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
+import { debounce } from 'vs/base/common/decorators';
 
 class SplitPane implements IView {
 	orientation: Orientation;
@@ -60,6 +62,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 	private _splitView: SplitView;
 	private _orientation: Orientation;
 	private _splitViewSize: number;
+	private _resizeable: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -70,6 +73,10 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 		this._orientation = Orientation.VERTICAL; // default
+
+		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
+			this.resizeSplitview();
+		}));
 	}
 
 	override ngOnDestroy(): void {
@@ -92,6 +99,25 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		return basicView;
 	}
 
+	@debounce(300)
+	private resizeSplitview() {
+		if (this._resizeable) {
+			this._splitViewSize = this.calculateSplitViewSize(this.orientation);
+			this._splitView.layout(this._splitViewSize);
+		}
+	}
+
+	/**
+	 * Calculates the size of the split view based on the dimensions of the model view container and orientation of the splitview
+	 * @param orientation
+	 * @returns
+	 */
+	private calculateSplitViewSize(orientation: string): number {
+		const modelViewContainer = document.getElementsByClassName('model-view-container')[0] as HTMLDivElement;
+		const modelViewContainerRect = modelViewContainer.getBoundingClientRect();
+		return orientation.toLowerCase() === 'vertical' ? modelViewContainerRect.height : modelViewContainerRect.width;
+	}
+
 	/// IComponent implementation
 
 	public setLayout(layout: SplitViewLayout): void {
@@ -106,10 +132,10 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 
 		if (!layout.splitViewSize) {
 			// if no size was passed in for the split view, use the dimensions of the model view container
-			const modelViewContainer = document.getElementsByClassName('model-view-container')[0] as HTMLDivElement;
-			const modelViewContainerRect = modelViewContainer.getBoundingClientRect();
-			this._splitViewSize = layout.orientation.toLowerCase() === 'vertical' ? modelViewContainerRect.height : modelViewContainerRect.width;
+			this._resizeable = true;
+			this._splitViewSize = this.calculateSplitViewSize(layout.orientation);
 		} else {
+			this._resizeable = false;
 			this._splitViewSize = convertSizeToNumber(layout.splitViewSize);
 		}
 
