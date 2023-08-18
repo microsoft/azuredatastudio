@@ -432,8 +432,14 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 
 		// Owner
 		let loginNames = this.viewInfo.loginNames?.options;
-		loginNames[0] = this.objectInfo.owner;
+
 		if (loginNames?.length > 0) {
+			// Removing <default> login name from the list and adding current owner if not exists
+			if (!this.viewInfo.loginNames?.options.find(owner => owner === this.objectInfo.owner)) {
+				loginNames[0] = this.objectInfo.owner;
+			} else {
+				loginNames.splice(0, 1);
+			}
 			let ownerDropbox = this.createDropdown(localizedConstants.OwnerText, async () => {
 				this.objectInfo.owner = ownerDropbox.value as string;
 			}, loginNames, this.objectInfo.owner);
@@ -574,8 +580,12 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		const defaultFileGrowthInMb: number = 64
 		const defaultFileGrowthInPercent: number = 10;
 		const defaultMaxFileSizeLimitedToInMb: number = 100;
-		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
 		const selectedFile = this.databaseFilesTable.selectedRows !== undefined ? this.objectInfo.files[this.databaseFilesTable?.selectedRows[0]] : undefined;
+		if (!isUndefinedOrNull(selectedFile) && selectedFile.type === this.viewInfo.fileTypesOptions[2]) {
+			selectedFile.autoFileGrowth = defaultFileGrowthInMb;
+		}
+		const isnewFile: boolean = button.ariaLabel === localizedConstants.AddButton;
+		const isEditingNewFile: boolean = button.ariaLabel === localizedConstants.EditButton && selectedFile.id === undefined;
 		const databaseFile: DatabaseFile = isnewFile ? {
 			id: undefined,
 			name: '',
@@ -595,6 +605,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 			viewInfo: this.viewInfo,
 			files: this.objectInfo.files,
 			isNewFile: isnewFile,
+			isEditingNewFile: isEditingNewFile,
 			databaseFile: databaseFile,
 			defaultFileConstants: {
 				defaultFileSizeInMb: defaultFileSizeInMb,
