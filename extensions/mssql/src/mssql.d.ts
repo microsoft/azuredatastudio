@@ -1004,186 +1004,164 @@ declare module 'mssql' {
 
 	export interface IQueryStoreService {
 		/**
-		 * Gets the Regressed Queries summary
-		 * @param connectionOwnerUri
-		 * @param timeIntervalRecent
-		 * @param timeIntervalHistory
-		 * @param minExecutionCount
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
-		 */
+	 * Gets the query for a Regressed Queries report
+	 * @param connectionOwnerUri Connection URI for the database
+	 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
+	 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
+	 * @param minExecutionCount Minimum number of executions for a query to be included
+	 * @param selectedMetric Metric to check
+	 * @param selectedStatistic Statistic to calculate on SelecticMetric
+	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+	 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+	 */
 		getRegressedQueriesSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the Regressed Queries summary
-		 * @param connectionOwnerUri
-		 * @param timeIntervalRecent
-		 * @param timeIntervalHistory
-		 * @param minExecutionCount
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for a detailed Regressed Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
+		 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
+		 * @param minExecutionCount Minimum number of executions for a query to be included
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getRegressedQueriesDetailedSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the report for a Forced Plan Queries summary
-		 * @param querySearchText
+		 * Gets the query for a Tracked Queries report
+		 * @param querySearchText Search text for a query
 		 */
 		getTrackedQueriesReport(querySearchText: string): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the High Variation Queries summary
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for a High Variation Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getHighVariationQueriesSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the High Variation Queries detailed summary
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for a detailed High Variation Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getHighVariationQueriesDetailedSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the High Variation Queries detailed summary with wait stats
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
-		 */
-		getHighVariationQueriesDetailedSummaryWithWaitStats(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
-
-		/**
-		 * Gets a Forced Plan Queries summary
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for a Top Resource Consumers report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getTopResourceConsumersSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets a Forced Plan Queries detailed summary
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for a detailed Top Resource Consumers report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getTopResourceConsumersDetailedSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets a Forced Plan Queries detailed summary with wait stats
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
-		 */
-		getTopResourceConsumersDetailedSummaryWithWaitStats(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
-
-		/**
 		 * Gets the query for a Plan Summary chart view
-		 * @param connectionOwnerUri
-		 * @param queryId
-		 * @param timeIntervalMode
-		 * @param timeInterval
-		 * @param selectedMetric
-		 * @param selectedStatistic
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param queryId Query ID to view a summary of plans for
+		 * @param timeIntervalMode Mode of the time interval search
+		 * @param timeInterval Time interval for the report
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 */
 		getPlanSummaryChartView(connectionOwnerUri: string, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
 
 		/**
 		 * Gets the query for a Plan Summary grid view
-		 * @param connectionOwnerUri
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param queryId
-		 * @param timeIntervalMode
-		 * @param timeInterval
-		 * @param selectedMetric
-		 * @param selectedStatistic
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param queryId Query ID to view a summary of plans for
+		 * @param timeIntervalMode Mode of the time interval search
+		 * @param timeInterval Time interval for the report
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 */
 		getPlanSummaryGridView(connectionOwnerUri: string, orderByColumnId: string, descending: boolean, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the query for a forced plan query
-		 * @param connectionOwnerUri
-		 * @param queryId
-		 * @param planId
+		 * Gets the query to view a forced plan
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param queryId Query ID to view the plan for
+		 * @param planId Plan ID to view
 		 */
 		getForcedPlan(connectionOwnerUri: string, queryId: number, planId: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the report for a Forced Plan Queries summary
-		 * @param connectionOwnerUri
-		 * @param timeInterval
-		 * @param orderByColumnId
-		 * @param descending
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for a Forced Plan Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeInterval Time interval for the report
+		 * @param orderByColumnId Name of the column to order results by
+		 * @param descending Direction of the result ordering
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getForcedPlanQueriesReport(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
-		 * Gets the report for a Forced Plan Queries summary
-		 * @param connectionOwnerUri
-		 * @param specifiedTimeInterval
-		 * @param specifiedBucketInterval
-		 * @param selectedMetric
-		 * @param selectedStatistic
-		 * @param topQueriesReturned
-		 * @param returnAllQueries
-		 * @param minNumberOfQueryPlans
+		 * Gets the query for an Overall Resource Consumption report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param specifiedTimeInterval Time interval for the report
+		 * @param specifiedBucketInterval Bucket interval for the report
+		 * @param selectedMetric Metric to check
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
 		 */
 		getOverallResourceConsumptionReport(connectionOwnerUri: string, specifiedTimeInterval: TimeInterval, specifiedBucketInterval: BucketInterval, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 	}
 
 	//#region Results
 
+	/**
+	 * Result containing a finalized query for a report
+	 */
 	export interface QueryStoreQueryResult extends azdata.ResultStatus {
+		/**
+		 * Finalized query for a report
+		 */
 		query: string;
 	}
 

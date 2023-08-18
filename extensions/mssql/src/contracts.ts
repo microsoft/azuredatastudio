@@ -1746,69 +1746,181 @@ export namespace GetOverallResourceConsumptionReportRequest {
 
 //#region Parameters
 
+/**
+ * Base class for a Query Store report parameters
+ */
 export interface QueryStoreReportParams {
+	/**
+	 * Connection URI for the database
+	 */
 	connectionOwnerUri: string;
 }
 
+/**
+ * Base class for parameters for a report type that uses QueryConfigurationBase for its configuration
+ */
 export interface QueryConfigurationParams extends QueryStoreReportParams {
+	/**
+	 * Metric to check
+	 */
 	selectedMetric: mssql.Metric;
+	/**
+	 * Statistic to calculate on SelecticMetric
+	 */
 	selectedStatistic: mssql.Statistic;
+	/**
+	 * Number of queries to return if ReturnAllQueries is not set
+	 */
 	topQueriesReturned: number;
+	/**
+	 * True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+	 */
 	returnAllQueries: boolean;
+	/**
+	 * Minimum number of query plans for a query to included in the report
+	 */
 	minNumberOfQueryPlans: number;
 }
 
+/**
+ * Parameters for getting a Regressed Queries report
+ */
 export interface GetRegressedQueriesReportParams extends QueryConfigurationParams {
+	/**
+	 * Time interval during which to look for performance regressions for the report
+	 */
 	timeIntervalRecent: mssql.TimeInterval;
+	/**
+	 * Time interval during which to establish baseline performance for the report
+	 */
 	timeIntervalHistory: mssql.TimeInterval;
+	/**
+	 * Minimum number of executions for a query to be included
+	 */
 	minExecutionCount: number;
 }
 
+/**
+ * Base class for parameters for a report that can be ordered by a specified column
+ */
+export interface OrderableQueryConfigurationParams extends QueryConfigurationParams {
+	/**
+	 * Name of the column to order results by
+	 */
+	orderByColumnId: string;
+	/**
+	 * Direction of the result ordering
+	 */
+	descending: boolean;
+}
+
+/**
+ * Parameters for getting a Tracked Queries report
+ */
 export interface GetTrackedQueriesReportParams {
+	/**
+	 * Search text for a query
+	 */
 	querySearchText: string;
 }
 
-export interface GetHighVariationQueriesReportParams extends QueryConfigurationParams {
+/**
+ * Parameters for getting a High Variation Queries report
+ */
+export interface GetHighVariationQueriesReportParams extends OrderableQueryConfigurationParams {
+	/**
+	 * Time interval for the report
+	 */
 	timeInterval: mssql.TimeInterval;
-	orderByColumnId: string;
-	descending: boolean;
 }
 
-export interface GetTopResourceConsumersReportParams extends QueryConfigurationParams {
+/**
+ * Parameters for getting an Overall Resource Consumption report
+ */
+export interface GetTopResourceConsumersReportParams extends OrderableQueryConfigurationParams {
+	/**
+	 * Time interval for the report
+	 */
 	timeInterval: mssql.TimeInterval;
-	orderByColumnId: string;
-	descending: boolean;
 }
 
+/**
+ * Parameters for getting a Plan Summary
+ */
 export interface GetPlanSummaryParams extends QueryStoreReportParams {
+	/**
+	 * Query ID to view a summary of plans for
+	 */
 	queryId: number;
+	/**
+	 * Mode of the time interval search
+	 */
 	timeIntervalMode: mssql.PlanTimeIntervalMode;
+	/**
+	 * Time interval for the report
+	 */
 	timeInterval: mssql.TimeInterval;
+	/**
+	 * Metric to check
+	 */
 	selectedMetric: mssql.Metric;
+	/**
+	 * Statistic to calculate on SelecticMetric
+	 */
 	selectedStatistic: mssql.Statistic;
 }
 
+/**
+ * Parameters for getting the grid view of a Plan Summary
+ */
 export interface GetPlanSummaryGridViewParams extends GetPlanSummaryParams {
+	/**
+	 * Name of the column to order results by
+	 */
 	orderByColumnId: string;
+	/**
+	 * Direction of the result ordering
+	 */
 	descending: boolean;
 }
 
+/**
+ * Parameters for getting the forced plan for a query
+ */
 export interface GetForcedPlanParams extends QueryStoreReportParams {
+	/**
+	 * Query ID to view the plan for
+	 */
 	queryId: number;
+	/**
+	 * Plan ID to view
+	 */
 	planId: number;
 }
 
-export interface GetForcedPlanQueriesReportParams extends QueryConfigurationParams {
+/**
+ * Parameters for getting a Forced Plan Queries report
+ */
+export interface GetForcedPlanQueriesReportParams extends OrderableQueryConfigurationParams {
+	/**
+	 * Time interval for the report
+	 */
 	timeInterval: mssql.TimeInterval;
-	orderByColumnId: string;
-	descending: boolean;
 }
 
+/**
+ * Parameters for getting an Overall Resource Consumption report
+ */
 export interface GetOverallResourceConsumptionReportParams extends QueryConfigurationParams {
+	/**
+	 * Time interval for the report
+	 */
 	specifiedTimeInterval: mssql.TimeInterval;
+	/**
+	 * Bucket interval for the report
+	 */
 	specifiedBucketInterval: mssql.BucketInterval;
 }
-
 
 //#endregion
 
