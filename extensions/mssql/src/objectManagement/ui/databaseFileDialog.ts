@@ -42,6 +42,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private limitedToMbFileSize: azdata.RadioButtonComponent;
 	private unlimitedFileSize: azdata.RadioButtonComponent;
 	private limitedToMbFileSizeInput: azdata.InputBoxComponent;
+	private fileSizeValue: number;
 	protected filePathButton: azdata.ButtonComponent;
 	protected filePathTextBox: azdata.InputBoxComponent;
 	private originalName: string;
@@ -128,7 +129,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}, {
 			ariaLabel: localizedConstants.SizeInMbText,
 			inputType: 'number',
-			enabled: true,
+			enabled: this.options.databaseFile.type !== this.options.viewInfo.fileTypesOptions[2],
 			value: String(this.options.databaseFile.sizeInMb)
 		});
 		const fileSizeContainer = this.createLabelInputContainer(localizedConstants.SizeInMbText, fileSize);
@@ -221,7 +222,8 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.limitedToMbFileSize = this.createRadioButton(localizedConstants.LimitedToMBFileSizeText, radioGroupName, isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.unlimitedFileSize = this.createRadioButton(localizedConstants.UnlimitedFileSizeText, radioGroupName, !isFileSizeLimited, async (checked) => { await this.handleMaxFileSizeTypeChange(checked); });
 		this.limitedToMbFileSizeInput = this.createInputBox(async (newValue) => {
-			this.result.maxSizeLimit = Number(newValue);
+			this.fileSizeValue = Number(newValue);
+			this.result.maxSizeLimit = this.fileSizeValue;
 			if (this.unlimitedFileSize.checked) {
 				this.result.maxSizeLimit = -1;
 			}
@@ -247,7 +249,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	private async handleMaxFileSizeTypeChange(checked: boolean): Promise<void> {
 		if (this.limitedToMbFileSize.checked) {
 			this.limitedToMbFileSizeInput.enabled = true;
-			this.result.maxSizeLimit = this.options.databaseFile.maxSizeLimit;
+			this.result.maxSizeLimit = this.fileSizeValue;
 		} else if (this.unlimitedFileSize.checked) {
 			this.limitedToMbFileSizeInput.enabled = false;
 			this.result.maxSizeLimit = -1; //Unlimited
