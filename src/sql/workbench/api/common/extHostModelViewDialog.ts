@@ -463,6 +463,20 @@ export interface WizardPageEventInfo {
 	pages?: azdata.window.WizardPage[];
 }
 
+interface DisposableTab extends azdata.Tab, vscode.Disposable { }
+
+interface DisposableDashboardTab extends azdata.DashboardTab, vscode.Disposable { }
+
+interface DisposableTabGroup extends azdata.TabGroup, vscode.Disposable { }
+
+interface DisposableDashboardTabGroup extends azdata.DashboardTabGroup, vscode.Disposable {
+
+	/**
+	 * Child tabs of the tab group
+	 */
+	tabs: DisposableDashboardTab[];
+}
+
 class WizardImpl implements azdata.window.Wizard {
 	private _currentPage: number = undefined;
 	public pages: azdata.window.WizardPage[] = [];
@@ -615,7 +629,7 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		this._register(this._editor);
 	}
 
-	updateTabs(tabs: (azdata.DisposableDashboardTab | azdata.DisposableDashboardTabGroup)[]): void {
+	updateTabs(tabs: (DisposableDashboardTab | DisposableDashboardTabGroup)[]): void {
 		if (this._tabbedPanel === undefined || this._view === undefined) {
 			throw new Error(nls.localize('dashboardNotInitialized', "Tabs are not initialized"));
 		}
@@ -623,7 +637,7 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		this._tabbedPanel.updateTabs(this.createTabs(tabs, this._view));
 	}
 
-	registerTabs(handler: (view: azdata.ModelView) => Thenable<(azdata.DisposableDashboardTab | azdata.DisposableDashboardTabGroup)[]>): void {
+	registerTabs(handler: (view: azdata.ModelView) => Thenable<(DisposableDashboardTab | DisposableDashboardTabGroup)[]>): void {
 		this._editor.registerContent(async (view) => {
 			this._view = view;
 			const dashboardTabs = await handler(view);
@@ -646,8 +660,8 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		return this._editor.closeEditor();
 	}
 
-	createTab(dashboardTab: azdata.DisposableDashboardTab, view: azdata.ModelView): azdata.DisposableTab {
-		let tab: azdata.DisposableTab;
+	createTab(dashboardTab: DisposableDashboardTab, view: azdata.ModelView): DisposableTab {
+		let tab: DisposableTab;
 		if (dashboardTab.toolbar) {
 			const flexContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			flexContainer.addItem(dashboardTab.toolbar, { flex: '0 0 auto' });
@@ -669,11 +683,11 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		return tab;
 	}
 
-	createTabs(dashboardTabs: (azdata.DisposableDashboardTab | azdata.DisposableDashboardTabGroup)[], view: azdata.ModelView): (azdata.DisposableTabGroup | azdata.DisposableTab)[] {
-		const tabs: (azdata.DisposableTabGroup | azdata.DisposableTab)[] = [];
-		dashboardTabs.forEach((item: azdata.DisposableDashboardTab | azdata.DisposableDashboardTabGroup) => {
+	createTabs(dashboardTabs: (DisposableDashboardTab | DisposableDashboardTabGroup)[], view: azdata.ModelView): (DisposableTabGroup | DisposableTab)[] {
+		const tabs: (DisposableTabGroup | DisposableTab)[] = [];
+		dashboardTabs.forEach((item: DisposableDashboardTab | DisposableDashboardTabGroup) => {
 			if ('tabs' in item) {
-				tabs.push(<azdata.DisposableTabGroup>{
+				tabs.push(<DisposableTabGroup>{
 					title: item.title,
 					tabs: item.tabs.map(tab => {
 						return this.createTab(tab, view);

@@ -1943,20 +1943,6 @@ declare module 'azdata' {
 		NotEndsWith = 13
 	}
 
-	export interface DisposableTab extends Tab, vscode.Disposable { }
-
-	export interface DisposableDashboardTab extends DashboardTab, vscode.Disposable { }
-
-	export interface DisposableTabGroup extends TabGroup, vscode.Disposable { }
-
-	export interface DisposableDashboardTabGroup extends DashboardTabGroup, vscode.Disposable {
-
-		/**
-		 * Child tabs of the tab group
-		 */
-		tabs: DisposableDashboardTab[];
-	}
-
 	export interface ModelView extends vscode.Disposable { }
 
 	export interface DeclarativeTableMenuCellValue extends vscode.Disposable { }
