@@ -1306,15 +1306,15 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 }
 
 /**
- * Server Metadata Service Feature
+ * Database Server Contextualization Service Feature
  */
-export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
+export class DatabaseServerContextualizationServiceFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
 		contracts.GenerateDatabaseServerContextualizationNotification.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
-		super(client, ServerMetadataServiceFeature.messagesTypes);
+		super(client, DatabaseServerContextualizationServiceFeature.messagesTypes);
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {

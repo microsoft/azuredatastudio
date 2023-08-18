@@ -888,7 +888,7 @@ declare module 'azdata' {
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
 		ExecutionPlanProvider = 'ExecutionPlanProvider',
-		AllServerMetadataProvider = 'AllServerMetadataProvider'
+		DatabaseServerContextualizationProvider = 'DatabaseServerContextualizationProvider'
 	}
 
 	export namespace dataprotocol {

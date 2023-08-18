@@ -144,7 +144,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
-	private _serverMetadata: string[];
+	private _databaseServerContext: string[];
 
 	constructor(
 		private _description: string | undefined,
@@ -245,16 +245,19 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		const copilotExt = await this.extensionService.getExtension('github.copilot');
 
 		if (copilotExt && this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
-			if (!this._serverMetadata) {
+			if (!this._databaseServerContext) {
 				const result = await this.databaseServerContextualizationService.getDatabaseServerContextualization(this.uri);
-				this._serverMetadata = result.scripts;
+				this._databaseServerContext = result.scripts;
+
+				return this._databaseServerContext;
 			}
 			else {
-				return this._serverMetadata;
+				return this._databaseServerContext;
 			}
 		}
-
-		return Promise.resolve([]);
+		else {
+			return Promise.resolve([]);
+		}
 	}
 
 	public override getName(longForm?: boolean): string {

@@ -7,24 +7,24 @@ import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 
-export const SERVICE_ID = 'serverMetadataService';
+export const SERVICE_ID = 'databaseServerContextualizationService';
 export const IDatabaseServerContextualizationService = createDecorator<IDatabaseServerContextualizationService>(SERVICE_ID);
 
 export interface IDatabaseServerContextualizationService {
 	_serviceBrand: undefined;
 
 	/**
-	 * Register a server metadata service provider
+	 * Register a database server contextualization service provider
 	 */
 	registerProvider(providerId: string, provider: azdata.contextualization.DatabaseServerContextualizationProvider): void;
 
 	/**
-	 * Unregister a server metadata service provider
+	 * Unregister a database server contextualization service provider
 	 */
 	unregisterProvider(providerId: string): void;
 
 	/**
-	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
+	 * Gets a registered database server contextualization service provider. An exception is thrown if a provider isn't registered with the specified ID
 	 * @param providerId The ID of the registered provider
 	 */
 	getProvider(providerId: string): azdata.contextualization.DatabaseServerContextualizationProvider;

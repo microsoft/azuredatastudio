@@ -38,7 +38,7 @@ export class DatabaseServerContextualizationService extends Disposable implement
 	 */
 	public registerProvider(providerId: string, provider: azdata.contextualization.DatabaseServerContextualizationProvider): void {
 		if (this._providers.has(providerId)) {
-			throw new Error(`An all server metadata provider with ID "${providerId}" is already registered`);
+			throw new Error(`A database server contextualization provider with ID "${providerId}" is already registered`);
 		}
 		this._providers.set(providerId, provider);
 	}

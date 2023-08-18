@@ -229,7 +229,7 @@ import { TableDesignerService } from 'sql/workbench/services/tableDesigner/brows
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
 import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
-import { DatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/serverMetadataService';
+import { DatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/databaseServerContextualizationService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
