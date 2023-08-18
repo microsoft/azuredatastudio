@@ -7,14 +7,14 @@ import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
-export class DatabaseServerContextualizationService extends Disposable implements IDatabaseServerContextualizationService {
+export class ServerContextualizationService extends Disposable implements IServerContextualizationService {
 	public _serviceBrand: undefined;
-	private _providers = new Map<string, azdata.contextualization.DatabaseServerContextualizationProvider>();
+	private _providers = new Map<string, azdata.contextualization.ServerContextualizationProvider>();
 
 	constructor(
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
@@ -28,33 +28,33 @@ export class DatabaseServerContextualizationService extends Disposable implement
 
 			if (copilotExt && this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 				const ownerUri = e.connectionUri;
-				await this.generateDatabaseServerContextualization(ownerUri);
+				await this.generateServerContextualization(ownerUri);
 			}
 		}));
 	}
 
 	/**
-	 * Register a database server contextualization service provider
+	 * Register a server contextualization service provider
 	 */
-	public registerProvider(providerId: string, provider: azdata.contextualization.DatabaseServerContextualizationProvider): void {
+	public registerProvider(providerId: string, provider: azdata.contextualization.ServerContextualizationProvider): void {
 		if (this._providers.has(providerId)) {
-			throw new Error(`A database server contextualization provider with ID "${providerId}" is already registered`);
+			throw new Error(`A server contextualization provider with ID "${providerId}" is already registered`);
 		}
 		this._providers.set(providerId, provider);
 	}
 
 	/**
-	 * Unregister a database server contextualization service provider.
+	 * Unregister a server contextualization service provider.
 	 */
 	public unregisterProvider(providerId: string): void {
 		this._providers.delete(providerId);
 	}
 
 	/**
-	 * Gets a registered database server contextualization service provider. An exception is thrown if a provider isn't registered with the specified ID.
+	 * Gets a registered server contextualization service provider. An exception is thrown if a provider isn't registered with the specified ID.
 	 * @param providerId The ID of the registered provider.
 	 */
-	public getProvider(providerId: string): azdata.contextualization.DatabaseServerContextualizationProvider {
+	public getProvider(providerId: string): azdata.contextualization.ServerContextualizationProvider {
 		const provider = this._providers.get(providerId);
 		if (provider) {
 			return provider;
@@ -64,26 +64,26 @@ export class DatabaseServerContextualizationService extends Disposable implement
 	}
 
 	/**
-	 * Generates all database server scripts in the form of create scripts.
-	 * @param ownerUri The URI of the connection to generate context scripts for.
+	 * Generates server context
+	 * @param ownerUri The URI of the connection to generate context for.
 	 */
-	public generateDatabaseServerContextualization(ownerUri: string): void {
+	public generateServerContextualization(ownerUri: string): void {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			handler.generateDatabaseServerContextualization(ownerUri);
+			handler.generateServerContextualization(ownerUri);
 		}
 	}
 
 	/**
-	 * Gets all database server scripts in the form of create scripts.
-	 * @param ownerUri The URI of the connection to get context scripts for.
+	 * Gets all database context.
+	 * @param ownerUri The URI of the connection to get context for.
 	 */
-	public async getDatabaseServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetDatabaseServerContextualizationResult> {
+	public async getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			return await handler.getDatabaseServerContextualization(ownerUri);
+			return await handler.getServerContextualization(ownerUri);
 		}
 		else {
 			return Promise.resolve({

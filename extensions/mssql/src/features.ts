@@ -1306,15 +1306,15 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 }
 
 /**
- * Database Server Contextualization Service Feature
+ * Server Contextualization Service Feature
  */
-export class DatabaseServerContextualizationServiceFeature extends SqlOpsFeature<undefined> {
+export class ServerContextualizationServiceFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.GenerateDatabaseServerContextualizationNotification.type
+		contracts.GenerateServerContextualizationNotification.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
-		super(client, DatabaseServerContextualizationServiceFeature.messagesTypes);
+		super(client, ServerContextualizationServiceFeature.messagesTypes);
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -1330,32 +1330,32 @@ export class DatabaseServerContextualizationServiceFeature extends SqlOpsFeature
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const generateDatabaseServerContextualization = (ownerUri: string): void => {
-			const params: contracts.DatabaseServerContextualizationParams = {
+		const generateServerContextualization = (ownerUri: string): void => {
+			const params: contracts.ServerContextualizationParams = {
 				ownerUri: ownerUri
 			};
 
-			return client.sendNotification(contracts.GenerateDatabaseServerContextualizationNotification.type, params);
+			return client.sendNotification(contracts.GenerateServerContextualizationNotification.type, params);
 		};
 
-		const getDatabaseServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetDatabaseServerContextualizationResult> => {
-			const params: contracts.DatabaseServerContextualizationParams = {
+		const getServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> => {
+			const params: contracts.ServerContextualizationParams = {
 				ownerUri: ownerUri
 			};
 
-			return client.sendRequest(contracts.GetDatabaseServerContextualizationRequest.type, params).then(
+			return client.sendRequest(contracts.GetServerContextualizationRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.GetDatabaseServerContextualizationRequest.type, e);
+					client.logFailedRequest(contracts.GetServerContextualizationRequest.type, e);
 					return Promise.reject(e);
 				}
 			);
 		};
 
-		return azdata.dataprotocol.registerDatabaseServerContextualizationProvider({
+		return azdata.dataprotocol.registerServerContextualizationProvider({
 			providerId: client.providerId,
-			generateDatabaseServerContextualization,
-			getDatabaseServerContextualization
+			generateServerContextualization: generateServerContextualization,
+			getServerContextualization: getServerContextualization
 		});
 	}
 }

@@ -888,7 +888,7 @@ declare module 'azdata' {
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
 		ExecutionPlanProvider = 'ExecutionPlanProvider',
-		DatabaseServerContextualizationProvider = 'DatabaseServerContextualizationProvider'
+		ServerContextualizationProvider = 'ServerContextualizationProvider'
 	}
 
 	export namespace dataprotocol {
@@ -899,7 +899,7 @@ declare module 'azdata' {
 		 * Copilot for improved suggestions.
 		 * @param provider The provider to register
 		 */
-		export function registerDatabaseServerContextualizationProvider(provider: contextualization.DatabaseServerContextualizationProvider): vscode.Disposable
+		export function registerServerContextualizationProvider(provider: contextualization.ServerContextualizationProvider): vscode.Disposable
 	}
 
 	export namespace designers {
@@ -1781,25 +1781,25 @@ declare module 'azdata' {
 	}
 
 	export namespace contextualization {
-		export interface GetDatabaseServerContextualizationResult {
+		export interface GetServerContextualizationResult {
 			/**
 			 * An array containing the generated server context.
 			 */
 			context: string[];
 		}
 
-		export interface DatabaseServerContextualizationProvider extends DataProvider {
+		export interface ServerContextualizationProvider extends DataProvider {
 			/**
-			 * Generates all database server scripts in the form of create scripts.
-			 * @param ownerUri The URI of the connection to generate context scripts for.
+			 * Generates server context.
+			 * @param ownerUri The URI of the connection to generate context for.
 			 */
-			generateDatabaseServerContextualization(ownerUri: string): void;
+			generateServerContextualization(ownerUri: string): void;
 
 			/**
-			 * Gets all database server scripts in the form of create scripts.
-			 * @param ownerUri The URI of the connection to get context scripts for.
+			 * Gets server context, which can be in the form of create scripts but is left up each provider.
+			 * @param ownerUri The URI of the connection to get context for.
 			 */
-			getDatabaseServerContextualization(ownerUri: string): Thenable<GetDatabaseServerContextualizationResult>;
+			getServerContextualization(ownerUri: string): Thenable<GetServerContextualizationResult>;
 		}
 	}
 

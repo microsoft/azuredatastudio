@@ -7,37 +7,37 @@ import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 
-export const SERVICE_ID = 'databaseServerContextualizationService';
-export const IDatabaseServerContextualizationService = createDecorator<IDatabaseServerContextualizationService>(SERVICE_ID);
+export const SERVICE_ID = 'serverContextualizationService';
+export const IServerContextualizationService = createDecorator<IServerContextualizationService>(SERVICE_ID);
 
-export interface IDatabaseServerContextualizationService {
+export interface IServerContextualizationService {
 	_serviceBrand: undefined;
 
 	/**
-	 * Register a database server contextualization service provider
+	 * Register a server contextualization service provider
 	 */
-	registerProvider(providerId: string, provider: azdata.contextualization.DatabaseServerContextualizationProvider): void;
+	registerProvider(providerId: string, provider: azdata.contextualization.ServerContextualizationProvider): void;
 
 	/**
-	 * Unregister a database server contextualization service provider
+	 * Unregister a server contextualization service provider
 	 */
 	unregisterProvider(providerId: string): void;
 
 	/**
-	 * Gets a registered database server contextualization service provider. An exception is thrown if a provider isn't registered with the specified ID
+	 * Gets a registered server contextualization service provider. An exception is thrown if a provider isn't registered with the specified ID
 	 * @param providerId The ID of the registered provider
 	 */
-	getProvider(providerId: string): azdata.contextualization.DatabaseServerContextualizationProvider;
+	getProvider(providerId: string): azdata.contextualization.ServerContextualizationProvider;
 
 	/**
-	 * Generates all database server scripts in the form of create scripts.
-	 * @param ownerUri The URI of the connection to generate context scripts for.
+	 * Generates server context
+	 * @param ownerUri The URI of the connection to generate context for.
 	 */
-	generateDatabaseServerContextualization(ownerUri: string): void;
+	generateServerContextualization(ownerUri: string): void;
 
 	/**
-	 * Gets all database server scripts in the form of create scripts.
-	 * @param ownerUri The URI of the connection to get context scripts for.
+	 * Gets all database context.
+	 * @param ownerUri The URI of the connection to get context for.
 	 */
-	getDatabaseServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetDatabaseServerContextualizationResult>;
+	getServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetServerContextualizationResult>;
 }

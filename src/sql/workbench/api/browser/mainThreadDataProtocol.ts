@@ -33,7 +33,7 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -66,7 +66,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
-		@IDatabaseServerContextualizationService private _databaseServerContextualizationService: IDatabaseServerContextualizationService
+		@IServerContextualizationService private _serverContextualizationService: IServerContextualizationService
 	) {
 		super();
 		if (extHostContext) {
@@ -574,10 +574,10 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Database server contextualization handler
-	public $registerDatabaseServerContextualizationProvider(providerId: string, handle: number): void {
-		this._databaseServerContextualizationService.registerProvider(providerId, <azdata.contextualization.DatabaseServerContextualizationProvider>{
-			generateDatabaseServerContextualization: (ownerUri: string) => this._proxy.$generateDatabaseServerContextualization(handle, ownerUri),
-			getDatabaseServerContextualization: (ownerUri: string) => this._proxy.$getDatabaseServerContextualization(handle, ownerUri)
+	public $registerServerContextualizationProvider(providerId: string, handle: number): void {
+		this._serverContextualizationService.registerProvider(providerId, <azdata.contextualization.ServerContextualizationProvider>{
+			generateServerContextualization: (ownerUri: string) => this._proxy.$generateServerContextualization(handle, ownerUri),
+			getServerContextualization: (ownerUri: string) => this._proxy.$getServerContextualization(handle, ownerUri)
 		});
 	}
 

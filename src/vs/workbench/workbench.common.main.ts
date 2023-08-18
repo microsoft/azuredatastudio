@@ -228,8 +228,8 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanService } from 'sql/workbench/services/executionPlan/common/executionPlanService';
-import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
-import { DatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/databaseServerContextualizationService';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
+import { ServerContextualizationService } from 'sql/workbench/services/contextualization/common/serverContextualizationService';
 import { IErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/common/errorDiagnosticsService';
 import { ErrorDiagnosticsService } from 'sql/workbench/services/diagnostics/browser/errorDiagnosticsService';
 import { IComponentContextService, ComponentContextService } from 'sql/workbench/services/componentContext/browser/componentContextService';
@@ -277,7 +277,7 @@ registerSingleton(IAssessmentService, AssessmentService, InstantiationType.Eager
 registerSingleton(IDataGridProviderService, DataGridProviderService, InstantiationType.Eager);
 registerSingleton(ITableDesignerService, TableDesignerService, InstantiationType.Eager);
 registerSingleton(IExecutionPlanService, ExecutionPlanService, InstantiationType.Eager);
-registerSingleton(IDatabaseServerContextualizationService, DatabaseServerContextualizationService, InstantiationType.Eager);
+registerSingleton(IServerContextualizationService, ServerContextualizationService, InstantiationType.Eager);
 registerSingleton(IErrorDiagnosticsService, ErrorDiagnosticsService, InstantiationType.Eager);
 registerSingleton(IComponentContextService, ComponentContextService, InstantiationType.Eager);
 //#endregion

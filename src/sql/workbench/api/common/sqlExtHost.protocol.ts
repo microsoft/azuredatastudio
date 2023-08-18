@@ -596,13 +596,13 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
 	/**
-	 * Generates database server context in the form of create scripts.
+	 * Generates server context.
 	 */
-	$generateDatabaseServerContextualization(handle: number, ownerUri: string): void { throw ni(); }
+	$generateServerContextualization(handle: number, ownerUri: string): void { throw ni(); }
 	/**
-	 * Gets database server context in the form of create scripts.
+	 * Gets server context.
 	 */
-	$getDatabaseServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetDatabaseServerContextualizationResult> { throw ni(); }
+	$getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> { throw ni(); }
 }
 
 /**
@@ -695,7 +695,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$registerExecutionPlanProvider(providerId: string, handle: number): void;
-	$registerDatabaseServerContextualizationProvider(providerId: string, handle: number): void;
+	$registerServerContextualizationProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

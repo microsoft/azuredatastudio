@@ -20,7 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
+import { IServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 const MAX_SIZE = 13;
@@ -154,7 +154,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
-		@IDatabaseServerContextualizationService private readonly databaseServerContextualizationService: IDatabaseServerContextualizationService,
+		@IServerContextualizationService private readonly serverContextualizationService: IServerContextualizationService,
 		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super();
@@ -246,7 +246,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		if (copilotExt && this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 			if (!this._serverContext) {
-				const result = await this.databaseServerContextualizationService.getDatabaseServerContextualization(this.uri);
+				const result = await this.serverContextualizationService.getServerContextualization(this.uri);
 				// TODO lewissanchez - Remove this from here once Copilot starts pulling context. That isn't implemented yet, so
 				// getting scripts this way for now.
 				this._serverContext = result.context;

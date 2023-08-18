@@ -210,9 +210,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerDatabaseServerContextualizationProvider(provider: azdata.contextualization.DatabaseServerContextualizationProvider): vscode.Disposable {
+	$registerServerContextualizationProvider(provider: azdata.contextualization.ServerContextualizationProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ServerContextualizationProvider);
-		this._proxy.$registerDatabaseServerContextualizationProvider(provider.providerId, provider.handle);
+		this._proxy.$registerServerContextualizationProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -972,11 +972,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Database Server Contextualization API
 
-	public override $generateDatabaseServerContextualization(handle: number, ownerUri: string): void {
-		this._resolveProvider<azdata.contextualization.DatabaseServerContextualizationProvider>(handle).generateDatabaseServerContextualization(ownerUri);
+	public override $generateServerContextualization(handle: number, ownerUri: string): void {
+		this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).generateServerContextualization(ownerUri);
 	}
 
-	public override $getDatabaseServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetDatabaseServerContextualizationResult> {
-		return this._resolveProvider<azdata.contextualization.DatabaseServerContextualizationProvider>(handle).getDatabaseServerContextualization(ownerUri);
+	public override $getServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetServerContextualizationResult> {
+		return this._resolveProvider<azdata.contextualization.ServerContextualizationProvider>(handle).getServerContextualization(ownerUri);
 	}
 }
