@@ -1778,9 +1778,9 @@ declare module 'azdata' {
 	export namespace contextualization {
 		export interface GetDatabaseServerContextualizationResult {
 			/**
-			 * Generated create scripts for things like tables and views that pertain to a database server.
+			 * An array containing the generated server context.
 			 */
-			scripts: string[];
+			context: string[];
 		}
 
 		export interface DatabaseServerContextualizationProvider extends DataProvider {
@@ -1796,10 +1796,6 @@ declare module 'azdata' {
 			 */
 			getDatabaseServerContextualization(ownerUri: string): Thenable<GetDatabaseServerContextualizationResult>;
 		}
-	}
-
-	export namespace dataprotocol {
-		export function registerDatabaseServerContextualizationProvider(provider: contextualization.DatabaseServerContextualizationProvider): vscode.Disposable;
 	}
 
 	/**

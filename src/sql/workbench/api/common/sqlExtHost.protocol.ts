@@ -695,7 +695,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$registerExecutionPlanProvider(providerId: string, handle: number): void;
-	$registerDatabaseServercontextualizationProvider(providerId: string, handle: number): void;
+	$registerDatabaseServerContextualizationProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
