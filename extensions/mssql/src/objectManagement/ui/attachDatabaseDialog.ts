@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DatabaseFileData, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { AttachDatabaseDocUrl } from '../constants';
-import { AddFileAriaLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
+import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import path = require('path');
@@ -16,7 +16,7 @@ import path = require('path');
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
 	private _databasesTable: azdata.TableComponent;
-	// private _associatedFilesTable: azdata.TableComponent;
+	private _associatedFilesTable: azdata.TableComponent;
 	private _databaseFiles: string[][] = [];
 	private readonly fileFilters: azdata.window.FileFilters[] = [{ label: 'Database Data Files', filters: ['*.mdf'] }];
 
@@ -30,8 +30,8 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	protected async initializeUI(): Promise<void> {
 		let filesSection = this.initializeAttachSection();
-		// let associatedFilesSection = this.initializeAssociatedFilesSection();
-		this.formContainer.addItems([filesSection]);
+		let associatedSection = this.initializeAssociatedFilesSection();
+		this.formContainer.addItems([filesSection, associatedSection]);
 	}
 
 	private initializeAttachSection(): azdata.GroupContainer {
@@ -45,14 +45,34 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		return this.createGroup(DatabasesToAttachLabel, [this._databasesTable, buttonContainer], false);
 	}
 
-	// private initializeAssociatedFilesSection(): azdata.GroupContainer {
-	// 	const columns = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFileGroupLabel, DatabaseFilePathLabel];
-	// 	this._associatedFilesTable = this.createTable(DatabaseFilesLabel, columns, []);
-	// 	return this.createGroup(AssociatedFilesLabel, [this._associatedFilesTable], false);
-	// }
+	private initializeAssociatedFilesSection(): azdata.GroupContainer {
+		const columns = [DatabaseFileNameLabel, DatabaseFileTypeLabel, DatabaseFilePathLabel];
+		this._associatedFilesTable = this.createTable(DatabaseFilesLabel, columns, []);
+		return this.createGroup(AssociatedFilesLabel, [this._associatedFilesTable], false);
+	}
 
-	private onFileRowSelected(): void {
-		// TODO: load selected file's data
+	private async onFileRowSelected(): Promise<void> {
+		if (this._databasesTable.selectedRows?.length > 0) {
+			let selectedRow = this._databasesTable.selectedRows[0];
+			let dbFile = this._databasesToAttach[selectedRow];
+			let filePaths = dbFile.databaseFilePaths.slice(1);
+			await this.updateAssociatedFilesTable(filePaths);
+		} else {
+			await this.updateAssociatedFilesTable([]);
+		}
+	}
+
+	private async updateAssociatedFilesTable(filePaths: string[]): Promise<void> {
+		let tableRows = filePaths.map(filePath => {
+			let ext = path.extname(filePath);
+			let fileType = ext === 'mdf' ? 'Data' : 'Log';
+			let fileName = path.basename(filePath, ext);
+			return [fileName, fileType, filePath];
+		});
+		await this._databasesTable.updateProperties({
+			data: tableRows,
+			height: getTableHeight(tableRows.length, DefaultMinTableRowCount)
+		});
 	}
 
 	private async onAddFilesButtonClicked(): Promise<void> {
@@ -69,6 +89,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			this._databaseFiles.push(tableRow);
 			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: allFiles });
 			await this.updateTableData();
+			await this.updateAssociatedFilesTable(associatedFiles);
 		}
 	}
 
