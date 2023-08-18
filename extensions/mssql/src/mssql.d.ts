@@ -56,7 +56,7 @@ declare module 'mssql' {
 		getChildren(refreshChildren: boolean): ITreeNode[] | Thenable<ITreeNode[]>;
 	}
 
-	//#region --- schema compare
+	//#region --- Schema Compare
 	export interface SchemaCompareResult extends azdata.ResultStatus {
 		operationId: string;
 		areEqual: boolean;
@@ -203,7 +203,7 @@ declare module 'mssql' {
 
 	//#endregion
 
-	//#region --- dacfx
+	//#region --- DacFx
 	export const enum ExtractTarget {
 		dacpac = 0,
 		file = 1,
@@ -294,7 +294,7 @@ declare module 'mssql' {
 
 	//#endregion
 
-	//#region --- Sql Projects
+	//#region --- SQL Projects
 
 	/**
 	 * Interface for working with .sqlproj files
@@ -621,7 +621,6 @@ declare module 'mssql' {
 		moveNoneItem(projectUri: string, path: string, destinationPath: string): Promise<azdata.ResultStatus>;
 	}
 
-
 	//#region Results
 
 	export interface GetDatabaseReferencesResult extends azdata.ResultStatus {
@@ -847,6 +846,8 @@ declare module 'mssql' {
 	}
 	//#endregion
 
+	//#region --- Blob storage
+
 	export interface CreateSasResponse {
 		sharedAccessSignature: string;
 	}
@@ -864,7 +865,9 @@ declare module 'mssql' {
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
 	}
 
-	// Object Management - Begin.
+	//#endregion
+
+	//#region --- Object Management
 	export namespace ObjectManagement {
 
 		/**
@@ -995,5 +998,265 @@ declare module 'mssql' {
 		 */
 		dropDatabase(connectionUri: string, objectUrn: string, dropConnections: boolean, deleteBackupHistory: boolean, generateScript: boolean): Thenable<string>;
 	}
-	// Object Management - End.
+	//#endregion
+
+	//#region --- Query Store
+
+	export interface IQueryStoreService {
+		/**
+		 * Gets the Regressed Queries summary
+		 * @param connectionOwnerUri
+		 * @param timeIntervalRecent
+		 * @param timeIntervalHistory
+		 * @param minExecutionCount
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getRegressedQueriesSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the Regressed Queries summary
+		 * @param connectionOwnerUri
+		 * @param timeIntervalRecent
+		 * @param timeIntervalHistory
+		 * @param minExecutionCount
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getRegressedQueriesDetailedSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the report for a Forced Plan Queries summary
+		 * @param querySearchText
+		 */
+		getTrackedQueriesReport(querySearchText: string): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the High Variation Queries summary
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getHighVariationQueriesSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the High Variation Queries detailed summary
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getHighVariationQueriesDetailedSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the High Variation Queries detailed summary with wait stats
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getHighVariationQueriesDetailedSummaryWithWaitStats(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets a Forced Plan Queries summary
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getTopResourceConsumersSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets a Forced Plan Queries detailed summary
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getTopResourceConsumersDetailedSummary(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets a Forced Plan Queries detailed summary with wait stats
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getTopResourceConsumersDetailedSummaryWithWaitStats(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Plan Summary chart view
+		 * @param connectionOwnerUri
+		 * @param queryId
+		 * @param timeIntervalMode
+		 * @param timeInterval
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 */
+		getPlanSummaryChartView(connectionOwnerUri: string, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a Plan Summary grid view
+		 * @param connectionOwnerUri
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param queryId
+		 * @param timeIntervalMode
+		 * @param timeInterval
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 */
+		getPlanSummaryGridView(connectionOwnerUri: string, orderByColumnId: string, descending: boolean, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the query for a forced plan query
+		 * @param connectionOwnerUri
+		 * @param queryId
+		 * @param planId
+		 */
+		getForcedPlan(connectionOwnerUri: string, queryId: number, planId: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the report for a Forced Plan Queries summary
+		 * @param connectionOwnerUri
+		 * @param timeInterval
+		 * @param orderByColumnId
+		 * @param descending
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getForcedPlanQueriesReport(connectionOwnerUri: string, timeInterval: TimeInterval, orderByColumnId: string, descending: boolean, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+
+		/**
+		 * Gets the report for a Forced Plan Queries summary
+		 * @param connectionOwnerUri
+		 * @param specifiedTimeInterval
+		 * @param specifiedBucketInterval
+		 * @param selectedMetric
+		 * @param selectedStatistic
+		 * @param topQueriesReturned
+		 * @param returnAllQueries
+		 * @param minNumberOfQueryPlans
+		 */
+		getOverallResourceConsumptionReport(connectionOwnerUri: string, specifiedTimeInterval: TimeInterval, specifiedBucketInterval: BucketInterval, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
+	}
+
+	//#region Results
+
+	export interface QueryStoreQueryResult extends azdata.ResultStatus {
+		query: string;
+	}
+
+	//#endregion
+
+	//#region Types
+
+	export const enum BucketInterval { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\BucketInterval.cs
+		Minute = 0,
+		Hour = 1,
+		Day = 2,
+		Week = 3,
+		Month = 4,
+		Automatic = 5
+	}
+
+	export const enum PlanTimeIntervalMode { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\PlanSummary\PlanSummaryConfiguration.cs
+		SpecifiedRange = 0,
+		AllHistory = 1
+	}
+
+	export const enum Metric { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\Metric.cs
+		CPUTime = 0,
+		Duration = 1,
+		LogicalWrites = 2,
+		LogicalReads = 3,
+		MemoryConsumption = 4,
+		PhysicalReads = 5,
+		ExecutionCount = 6,
+		ClrTime = 7,
+		Dop = 8,
+		RowCount = 9,
+		LogMemoryUsed = 10,
+		TempDbMemoryUsed = 11,
+		WaitTime = 12
+	}
+
+	export const enum Statistic { // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\Statistic.cs
+		Avg = 0,
+		Min = 1,
+		Max = 2,
+		Stdev = 3,
+		Last = 4,
+		Total = 5,
+		Variation = 6
+	}
+
+	export const enum TimeIntervalOptions // values from SSMS: $\Sql\ssms\core\QueryStoreModel\Common\TimeInterval.cs
+	{
+		Last5Minutes = 0,
+		Last15Minutes = 1,
+		Last30Minutes = 2,
+		LastHour = 3,
+		Last12Hours = 4,
+		LastDay = 5,
+		Last2Days = 6,
+		LastWeek = 7,
+		Last2Weeks = 8,
+		LastMonth = 9,
+		Last3Months = 10,
+		Last6Months = 11,
+		LastYear = 12,
+		AllTime = 13,
+		Custom = 14
+	}
+
+	export interface TimeInterval {
+		startDateTimeInUtc?: string,
+		endDateTimeInUtc?: string,
+		timeIntervalOptions?: TimeIntervalOptions
+	}
+
+	//#endregion
+
+	//#endregion
 }

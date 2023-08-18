@@ -1680,3 +1680,137 @@ export class DidChangeEncryptionIVKeyParams {
 export namespace EncryptionKeysChangedNotification {
 	export const type = new NotificationType<DidChangeEncryptionIVKeyParams, void>('connection/encryptionKeysChanged');
 }
+
+// ------------------------------- < Query Store > ------------------------------------
+//#region Query Store
+
+//#region Functions
+
+export namespace GetRegressedQueriesSummaryRequest {
+	export const type = new RequestType<GetRegressedQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getRegressedQueriesSummary');
+}
+
+export namespace GetRegressedQueriesDetailedSummaryRequest {
+	export const type = new RequestType<GetRegressedQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getRegressedQueriesDetailedSummary');
+}
+
+export namespace GetTrackedQueriesReportRequest {
+	export const type = new RequestType<GetTrackedQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getTrackedQueriesReport');
+}
+
+export namespace GetHighVariationQueriesSummaryRequest {
+	export const type = new RequestType<GetHighVariationQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getHighVariationQueriesSummary');
+}
+
+export namespace GetHighVariationQueriesDetailedSummaryRequest {
+	export const type = new RequestType<GetHighVariationQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getHighVariationQueriesDetailedSummary');
+}
+
+export namespace GetHighVariationQueriesDetailedSummaryWithWaitStatsRequest {
+	export const type = new RequestType<GetHighVariationQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getHighVariationQueriesDetailedSummaryWithWaitStats');
+}
+
+export namespace GetTopResourceConsumersSummaryRequest {
+	export const type = new RequestType<GetTopResourceConsumersReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getTopResourceConsumersSummary');
+}
+
+export namespace GetTopResourceConsumersDetailedSummaryRequest {
+	export const type = new RequestType<GetTopResourceConsumersReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getTopResourceConsumersDetailedSummary');
+}
+
+export namespace GetTopResourceConsumersDetailedSummaryWithWaitStatsRequest {
+	export const type = new RequestType<GetTopResourceConsumersReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getTopResourceConsumersDetailedSummaryWithWaitStats');
+}
+
+export namespace GetPlanSummaryChartViewRequest {
+	export const type = new RequestType<GetPlanSummaryParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getPlanSummaryChartView');
+}
+
+export namespace GetPlanSummaryGridViewRequest {
+	export const type = new RequestType<GetPlanSummaryGridViewParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getPlanSummaryGridView');
+}
+
+export namespace GetForcedPlanRequest {
+	export const type = new RequestType<GetForcedPlanParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getForcedPlan');
+}
+
+export namespace GetForcedPlanQueriesReportRequest {
+	export const type = new RequestType<GetForcedPlanQueriesReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getForcedPlanQueriesReport');
+}
+
+export namespace GetOverallResourceConsumptionReportRequest {
+	export const type = new RequestType<GetOverallResourceConsumptionReportParams, mssql.QueryStoreQueryResult, void, void>('queryStore/getOverallResourceConsumptionReport');
+}
+
+//#endregion
+
+//#region Parameters
+
+export interface QueryStoreReportParams {
+	connectionOwnerUri: string;
+}
+
+export interface QueryConfigurationParams extends QueryStoreReportParams {
+	selectedMetric: mssql.Metric;
+	selectedStatistic: mssql.Statistic;
+	topQueriesReturned: number;
+	returnAllQueries: boolean;
+	minNumberOfQueryPlans: number;
+}
+
+export interface GetRegressedQueriesReportParams extends QueryConfigurationParams {
+	timeIntervalRecent: mssql.TimeInterval;
+	timeIntervalHistory: mssql.TimeInterval;
+	minExecutionCount: number;
+}
+
+export interface GetTrackedQueriesReportParams {
+	querySearchText: string;
+}
+
+export interface GetHighVariationQueriesReportParams extends QueryConfigurationParams {
+	timeInterval: mssql.TimeInterval;
+	orderByColumnId: string;
+	descending: boolean;
+}
+
+export interface GetTopResourceConsumersReportParams extends QueryConfigurationParams {
+	timeInterval: mssql.TimeInterval;
+	orderByColumnId: string;
+	descending: boolean;
+}
+
+export interface GetPlanSummaryParams extends QueryStoreReportParams {
+	queryId: number;
+	timeIntervalMode: mssql.PlanTimeIntervalMode;
+	timeInterval: mssql.TimeInterval;
+	selectedMetric: mssql.Metric;
+	selectedStatistic: mssql.Statistic;
+}
+
+export interface GetPlanSummaryGridViewParams extends GetPlanSummaryParams {
+	orderByColumnId: string;
+	descending: boolean;
+}
+
+export interface GetForcedPlanParams extends QueryStoreReportParams {
+	queryId: number;
+	planId: number;
+}
+
+export interface GetForcedPlanQueriesReportParams extends QueryConfigurationParams {
+	timeInterval: mssql.TimeInterval;
+	orderByColumnId: string;
+	descending: boolean;
+}
+
+export interface GetOverallResourceConsumptionReportParams extends QueryConfigurationParams {
+	specifiedTimeInterval: mssql.TimeInterval;
+	specifiedBucketInterval: mssql.BucketInterval;
+}
+
+
+//#endregion
+
+//#endregion
+// ------------------------------- </ Query Store > -----------------------------------
