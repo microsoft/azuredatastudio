@@ -99,7 +99,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		return basicView;
 	}
 
-	@debounce(300)
+	@debounce(20)
 	private resizeSplitview() {
 		if (this._resizeable) {
 			this._splitViewSize = this.calculateSplitViewSize(this.orientation);
@@ -113,7 +113,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 	 * @returns
 	 */
 	private calculateSplitViewSize(orientation: string): number {
-		const modelViewContainer = document.getElementsByClassName('model-view-container')[0] as HTMLDivElement;
+		const modelViewContainer = DOM.findParentWithClass(this._el.nativeElement, 'model-view-container');
 		const modelViewContainerRect = modelViewContainer.getBoundingClientRect();
 		return orientation.toLowerCase() === 'vertical' ? modelViewContainerRect.height : modelViewContainerRect.width;
 	}
