@@ -894,7 +894,7 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
 		export function registerExecutionPlanProvider(provider: executionPlan.ExecutionPlanProvider): vscode.Disposable;
-		export function registerServerMetadataProvider(provider: metadata.ServerMetadataProvider): vscode.Disposable
+		export function registerDatabaseServerContextualizationProvider(provider: contextualization.DatabaseServerContextualizationProvider): vscode.Disposable
 	}
 
 	export namespace designers {
@@ -1775,33 +1775,33 @@ declare module 'azdata' {
 		}
 	}
 
-	export namespace metadata {
-		export interface GetServerTableMetadataResult {
+	export namespace contextualization {
+		export interface GetDatabaseServerContextualizationResult {
 			/**
-			 * The generated create scripts for all tables in every database for a single server.
+			 * Generated create scripts for things like tables and views that pertain to a database server.
 			 */
 			scripts: string[];
 		}
 
-		export interface ServerMetadataProvider extends DataProvider {
-			// metadata service methods
+		export interface DatabaseServerContextualizationProvider extends DataProvider {
+			// database server contextualization service methods
 
 			/**
-			 * Generates create scripts for all tables in every database for a single server.
-			 * @param ownerUri Owner URI specifying the server for which metadata will be generated for.
+			 * Generates all database server scripts in the form of create scripts.
+			 * @param ownerUri The URI of the connection to generate context scripts for.
 			 */
-			generateServerTableMetadata(ownerUri: string): Thenable<boolean>;
+			generateDatabaseServerContextualization(ownerUri: string): void;
 
 			/**
-			 * Gets the create scripts for all tables in every database for a single server.
-			 * @param ownerUri Owner URI specifying the server for which metadata will be retrieved for.
+			 * Gets all database server scripts in the form of create scripts.
+			 * @param ownerUri The URI of the connection to get context scripts for.
 			 */
-			getServerTableMetadata(ownerUri: string): Thenable<GetServerTableMetadataResult>;
+			getDatabaseServerContextualization(ownerUri: string): Thenable<GetDatabaseServerContextualizationResult>;
 		}
 	}
 
 	export namespace dataprotocol {
-		export function registerServerMetadataProvider(provider: metadata.ServerMetadataProvider): vscode.Disposable;
+		export function registerDatabaseServerContextualizationProvider(provider: contextualization.DatabaseServerContextualizationProvider): vscode.Disposable;
 	}
 
 	/**

@@ -1310,7 +1310,7 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
  */
 export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
-		contracts.GenerateServerTableMetadataRequest.type
+		contracts.GenerateDatabaseServerContextualizationNotification.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -1330,38 +1330,32 @@ export class ServerMetadataServiceFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const generateServerTableMetadata = (ownerUri: string): Thenable<boolean> => {
-			const params: contracts.ServerTableMetadataParams = {
+		const generateDatabaseServerContextualization = (ownerUri: string): void => {
+			const params: contracts.DatabaseServerContextualizationParams = {
 				ownerUri: ownerUri
 			};
 
-			return client.sendRequest(contracts.GenerateServerTableMetadataRequest.type, params).then(
+			return client.sendNotification(contracts.GenerateDatabaseServerContextualizationNotification.type, params);
+		};
+
+		const getDatabaseServerContextualization = (ownerUri: string): Thenable<azdata.contextualization.GetDatabaseServerContextualizationResult> => {
+			const params: contracts.DatabaseServerContextualizationParams = {
+				ownerUri: ownerUri
+			};
+
+			return client.sendRequest(contracts.GetDatabaseServerContextualizationRequest.type, params).then(
 				r => r,
 				e => {
-					client.logFailedRequest(contracts.GenerateServerTableMetadataRequest.type, e);
+					client.logFailedRequest(contracts.GetDatabaseServerContextualizationRequest.type, e);
 					return Promise.reject(e);
 				}
 			);
 		};
 
-		const getServerTableMetadata = (ownerUri: string): Thenable<azdata.metadata.GetServerTableMetadataResult> => {
-			const params: contracts.ServerTableMetadataParams = {
-				ownerUri: ownerUri
-			};
-
-			return client.sendRequest(contracts.GetServerTableMetadataRequest.type, params).then(
-				r => r,
-				e => {
-					client.logFailedRequest(contracts.GetServerTableMetadataRequest.type, e);
-					return Promise.reject(e);
-				}
-			);
-		};
-
-		return azdata.dataprotocol.registerServerMetadataProvider({
+		return azdata.dataprotocol.registerDatabaseServerContextualizationProvider({
 			providerId: client.providerId,
-			generateServerTableMetadata,
-			getServerTableMetadata
+			generateDatabaseServerContextualization,
+			getDatabaseServerContextualization
 		});
 	}
 }

@@ -7,13 +7,14 @@ import * as azdata from 'azdata';
 import { invalidProvider } from 'sql/base/common/errors';
 import { IConnectionManagementService, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-export class ServerMetadataService extends Disposable implements IServerMetadataService {
+
+export class DatabaseServerContextualizationService extends Disposable implements IDatabaseServerContextualizationService {
 	public _serviceBrand: undefined;
-	private _providers = new Map<string, azdata.metadata.ServerMetadataProvider>();
+	private _providers = new Map<string, azdata.contextualization.DatabaseServerContextualizationProvider>();
 
 	constructor(
 		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
@@ -27,15 +28,15 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 
 			if (copilotExt && this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 				const ownerUri = e.connectionUri;
-				await this.generateServerTableMetadata(ownerUri);
+				await this.generateDatabaseServerContextualization(ownerUri);
 			}
 		}));
 	}
 
 	/**
-	 * Register a server metadata service provider
+	 * Register a database server contextualization service provider
 	 */
-	public registerProvider(providerId: string, provider: azdata.metadata.ServerMetadataProvider): void {
+	public registerProvider(providerId: string, provider: azdata.contextualization.DatabaseServerContextualizationProvider): void {
 		if (this._providers.has(providerId)) {
 			throw new Error(`An all server metadata provider with ID "${providerId}" is already registered`);
 		}
@@ -43,17 +44,17 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	}
 
 	/**
-	 * Unregister a server metadata service provider.
+	 * Unregister a database server contextualization service provider.
 	 */
 	public unregisterProvider(providerId: string): void {
 		this._providers.delete(providerId);
 	}
 
 	/**
-	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID.
+	 * Gets a registered database server contextualization service provider. An exception is thrown if a provider isn't registered with the specified ID.
 	 * @param providerId The ID of the registered provider.
 	 */
-	public getProvider(providerId: string): azdata.metadata.ServerMetadataProvider {
+	public getProvider(providerId: string): azdata.contextualization.DatabaseServerContextualizationProvider {
 		const provider = this._providers.get(providerId);
 		if (provider) {
 			return provider;
@@ -63,29 +64,26 @@ export class ServerMetadataService extends Disposable implements IServerMetadata
 	}
 
 	/**
-	 * Generates all database server metadata in the form of create table scripts for all tables.
-	 * @param ownerUri The URI of the connection to generate metadata for.
+	 * Generates all database server scripts in the form of create scripts.
+	 * @param ownerUri The URI of the connection to generate context scripts for.
 	 */
-	public async generateServerTableMetadata(ownerUri: string): Promise<boolean> {
+	public generateDatabaseServerContextualization(ownerUri: string): void {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			return await handler.generateServerTableMetadata(ownerUri);
-		}
-		else {
-			return Promise.resolve(false);
+			handler.generateDatabaseServerContextualization(ownerUri);
 		}
 	}
 
 	/**
-	 * Gets all database server metadata in the form of create table scripts for all tables in a server.
-	 * @param ownerUri The URI of the connection to get metadata for.
+	 * Gets all database server scripts in the form of create scripts.
+	 * @param ownerUri The URI of the connection to get context scripts for.
 	 */
-	public async getServerTableMetadata(ownerUri: string): Promise<azdata.metadata.GetServerTableMetadataResult> {
+	public async getDatabaseServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetDatabaseServerContextualizationResult> {
 		const providerName = this._connectionManagementService.getProviderIdFromUri(ownerUri);
 		const handler = this.getProvider(providerName);
 		if (handler) {
-			return await handler.getServerTableMetadata(ownerUri);
+			return await handler.getDatabaseServerContextualization(ownerUri);
 		}
 		else {
 			return Promise.resolve({

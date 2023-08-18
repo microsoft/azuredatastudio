@@ -20,7 +20,7 @@ import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/text
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 const MAX_SIZE = 13;
@@ -154,7 +154,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
-		@IServerMetadataService private readonly serverMetadataService: IServerMetadataService,
+		@IDatabaseServerContextualizationService private readonly databaseServerContextualizationService: IDatabaseServerContextualizationService,
 		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super();
@@ -246,7 +246,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		if (copilotExt && this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').githubCopilotContextualizationEnabled) {
 			if (!this._serverMetadata) {
-				const result = await this.serverMetadataService.getServerTableMetadata(this.uri);
+				const result = await this.databaseServerContextualizationService.getDatabaseServerContextualization(this.uri);
 				this._serverMetadata = result.scripts;
 			}
 			else {

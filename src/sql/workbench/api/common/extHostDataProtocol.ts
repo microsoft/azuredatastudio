@@ -210,9 +210,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerServerMetadataProvider(provider: azdata.metadata.ServerMetadataProvider): vscode.Disposable {
+	$registerDatabaseServerContextualizationProvider(provider: azdata.contextualization.DatabaseServerContextualizationProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
-		this._proxy.$registerServerMetadataProvider(provider.providerId, provider.handle);
+		this._proxy.$registerDatabaseServercontextualizationProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
@@ -970,13 +970,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.executionPlan.ExecutionPlanProvider>(handle).isExecutionPlan(value);
 	}
 
-	// Server Metadata API
+	// Database Server Contextualization API
 
-	public override $generateServerTableMetadata(handle: number, ownerUri: string): Thenable<boolean> {
-		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).generateServerTableMetadata(ownerUri);
+	public override $generateDatabaseServerContextualization(handle: number, ownerUri: string): void {
+		this._resolveProvider<azdata.contextualization.DatabaseServerContextualizationProvider>(handle).generateDatabaseServerContextualization(ownerUri);
 	}
 
-	public override $getServerTableMetadata(handle: number, ownerUri: string): Thenable<azdata.metadata.GetServerTableMetadataResult> {
-		return this._resolveProvider<azdata.metadata.ServerMetadataProvider>(handle).getServerTableMetadata(ownerUri);
+	public override $getDatabaseServerContextualization(handle: number, ownerUri: string): Thenable<azdata.contextualization.GetDatabaseServerContextualizationResult> {
+		return this._resolveProvider<azdata.contextualization.DatabaseServerContextualizationProvider>(handle).getDatabaseServerContextualization(ownerUri);
 	}
 }

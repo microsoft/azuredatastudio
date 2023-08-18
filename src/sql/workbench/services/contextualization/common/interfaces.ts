@@ -8,15 +8,15 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 
 export const SERVICE_ID = 'serverMetadataService';
-export const IServerMetadataService = createDecorator<IServerMetadataService>(SERVICE_ID);
+export const IDatabaseServerContextualizationService = createDecorator<IDatabaseServerContextualizationService>(SERVICE_ID);
 
-export interface IServerMetadataService {
+export interface IDatabaseServerContextualizationService {
 	_serviceBrand: undefined;
 
 	/**
 	 * Register a server metadata service provider
 	 */
-	registerProvider(providerId: string, provider: azdata.metadata.ServerMetadataProvider): void;
+	registerProvider(providerId: string, provider: azdata.contextualization.DatabaseServerContextualizationProvider): void;
 
 	/**
 	 * Unregister a server metadata service provider
@@ -27,17 +27,17 @@ export interface IServerMetadataService {
 	 * Gets a registered server metadata service provider. An exception is thrown if a provider isn't registered with the specified ID
 	 * @param providerId The ID of the registered provider
 	 */
-	getProvider(providerId: string): azdata.metadata.ServerMetadataProvider;
+	getProvider(providerId: string): azdata.contextualization.DatabaseServerContextualizationProvider;
 
 	/**
-	 * Generates all database server metadata in the form of create table scripts for all tables
-	 * @param ownerUri The URI of the connection to get metadata for
+	 * Generates all database server scripts in the form of create scripts.
+	 * @param ownerUri The URI of the connection to generate context scripts for.
 	 */
-	generateServerTableMetadata(ownerUri: string): Promise<boolean>;
+	generateDatabaseServerContextualization(ownerUri: string): void;
 
 	/**
-	 * Gets all database server metadata in the form of create table scripts for all tables in a server
-	 * @param ownerUri The URI of the connection to get metadata for
+	 * Gets all database server scripts in the form of create scripts.
+	 * @param ownerUri The URI of the connection to get context scripts for.
 	 */
-	getServerTableMetadata(ownerUri: string): Promise<azdata.metadata.GetServerTableMetadataResult>;
+	getDatabaseServerContextualization(ownerUri: string): Promise<azdata.contextualization.GetDatabaseServerContextualizationResult>;
 }

@@ -1560,21 +1560,21 @@ export namespace ExecutionPlanComparisonRequest {
 
 // ------------------------------- < Execution Plan > ------------------------------------
 
-// ------------------------------- < Metadata API > ------------------------------------
+// ------------------------------- < Database Server Contextualization API > ------------------------------------
 
-export interface ServerTableMetadataParams {
+export interface DatabaseServerContextualizationParams {
 	ownerUri: string;
 }
 
-export namespace GenerateServerTableMetadataRequest {
-	export const type = new RequestType<ServerTableMetadataParams, boolean, void, void>('metadata/generateServerTableMetadata');
+export namespace GenerateDatabaseServerContextualizationNotification {
+	export const type = new NotificationType<DatabaseServerContextualizationParams, void>('metadata/generateDatabaseServerContextScripts');
 }
 
-export namespace GetServerTableMetadataRequest {
-	export const type = new RequestType<ServerTableMetadataParams, azdata.metadata.GetServerTableMetadataResult, void, void>('metadata/getServerTableMetadata');
+export namespace GetDatabaseServerContextualizationRequest {
+	export const type = new RequestType<DatabaseServerContextualizationParams, azdata.contextualization.GetDatabaseServerContextualizationResult, void, void>('metadata/getDatabaseServerContextScripts');
 }
 
-// ------------------------------- < Metadata API > ------------------------------------
+// ------------------------------- < Database Server Contextualization API > ------------------------------------
 
 // ------------------------------- < Object Management > ------------------------------------
 export interface InitializeViewRequestParams {

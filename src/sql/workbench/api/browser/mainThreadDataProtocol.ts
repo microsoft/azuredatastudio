@@ -33,7 +33,7 @@ import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/comm
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IServerMetadataService } from 'sql/workbench/services/metadata/common/interfaces';
+import { IDatabaseServerContextualizationService } from 'sql/workbench/services/contextualization/common/interfaces';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -66,7 +66,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 		@ITableDesignerService private _tableDesignerService: ITableDesignerService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
-		@IServerMetadataService private _serverMetadataService: IServerMetadataService
+		@IDatabaseServerContextualizationService private _databaseServerContextualizationService: IDatabaseServerContextualizationService
 	) {
 		super();
 		if (extHostContext) {
@@ -573,11 +573,11 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		});
 	}
 
-	// All server metadata handler
-	public $registerServerMetadataProvider(providerId: string, handle: number): void {
-		this._serverMetadataService.registerProvider(providerId, <azdata.metadata.ServerMetadataProvider>{
-			generateServerTableMetadata: (ownerUri: string) => this._proxy.$generateServerTableMetadata(handle, ownerUri),
-			getServerTableMetadata: (ownerUri: string) => this._proxy.$getServerTableMetadata(handle, ownerUri)
+	// Database server contextualization handler
+	public $registerDatabaseServercontextualizationProvider(providerId: string, handle: number): void {
+		this._databaseServerContextualizationService.registerProvider(providerId, <azdata.contextualization.DatabaseServerContextualizationProvider>{
+			generateDatabaseServerContextualization: (ownerUri: string) => this._proxy.$generateDatabaseServerContextualization(handle, ownerUri),
+			getDatabaseServerContextualization: (ownerUri: string) => this._proxy.$getDatabaseServerContextualization(handle, ownerUri)
 		});
 	}
 

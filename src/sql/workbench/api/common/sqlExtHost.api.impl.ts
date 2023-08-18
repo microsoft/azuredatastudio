@@ -406,8 +406,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerExecutionPlanProvider(provider);
 			};
 
-			let registerServerMetadataProvider = (provider: azdata.metadata.ServerMetadataProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerServerMetadataProvider(provider);
+			let registerDatabaseServerContextualizationProvider = (provider: azdata.contextualization.DatabaseServerContextualizationProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerDatabaseServerContextualizationProvider(provider);
 			};
 
 			// namespace: dataprotocol
@@ -432,7 +432,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerDataGridProvider,
 				registerTableDesignerProvider,
 				registerExecutionPlanProvider: registerExecutionPlanProvider,
-				registerServerMetadataProvider: registerServerMetadataProvider,
+				registerDatabaseServerContextualizationProvider: registerDatabaseServerContextualizationProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
