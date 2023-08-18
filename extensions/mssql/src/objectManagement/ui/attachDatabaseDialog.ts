@@ -18,7 +18,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 	private _databasesTable: azdata.TableComponent;
 	// private _associatedFilesTable: azdata.TableComponent;
 	private _databaseFiles: string[][] = [];
-	private readonly fileFilters: azdata.window.FileFilters[] = [{ label: 'Data files', filters: ['*.mdf'] }, { label: 'Log files', filters: ['*.ldf'] }];
+	private readonly fileFilters: azdata.window.FileFilters[] = [{ label: 'Database Data Files', filters: ['*.mdf'] }];
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, AttachDatabaseDialogTitle, 'AttachDatabase');
