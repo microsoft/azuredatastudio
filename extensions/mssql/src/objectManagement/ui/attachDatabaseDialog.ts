@@ -69,7 +69,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			let fileName = path.basename(filePath, ext);
 			return [fileName, fileType, filePath];
 		});
-		await this._databasesTable.updateProperties({
+		await this._associatedFilesTable.updateProperties({
 			data: tableRows,
 			height: getTableHeight(tableRows.length, DefaultMinTableRowCount)
 		});
