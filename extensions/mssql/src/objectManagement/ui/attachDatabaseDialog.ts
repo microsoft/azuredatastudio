@@ -12,6 +12,7 @@ import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachButtonLabel
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import path = require('path');
+import * as os from 'os';
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
@@ -80,8 +81,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
 		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this.fileFilters);
 		if (filePath) {
-			let connInfo = await azdata.connection.getConnection(this.options.connectionUri);
-			let owner = this.objectInfo.owner ?? connInfo.userName;
+			let owner = this.objectInfo.owner ?? this.options.objectExplorerContext?.connectionProfile?.userName;
 			let fileName = path.basename(filePath, path.extname(filePath));
 			let tableRow = [filePath, fileName, fileName, owner];
 
@@ -89,7 +89,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 			let associatedFiles = await this.objectManagementService.getAssociatedFiles(this.options.connectionUri, filePath) ?? [];
 
 			this._databaseFiles.push(tableRow);
-			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: associatedFiles });
+			this._databasesToAttach.push({ databaseName: fileName, databaseFilePaths: associatedFiles, owner });
 			await this.updateTableData();
 			await this.updateAssociatedFilesTable(associatedFiles);
 		}

@@ -1015,6 +1015,7 @@ declare module 'mssql' {
 	export interface DatabaseFileData {
 		databaseName: string;
 		databaseFilePaths: string[];
+		owner: string;
 	}
 	// Object Management - End.
 }
