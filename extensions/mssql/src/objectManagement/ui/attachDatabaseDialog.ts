@@ -8,7 +8,7 @@ import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './obj
 import { DatabaseFileData, IObjectManagementService, ObjectManagement } from 'mssql';
 import { Database, DatabaseViewInfo } from '../interfaces';
 import { AttachDatabaseDocUrl } from '../constants';
-import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachDatabaseDialogTitle, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
+import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachButtonLabel, AttachDatabaseDialogTitle, DatabaseFileNameLabel, DatabaseFilePathLabel, DatabaseFileTypeLabel, DatabaseFilesLabel, DatabaseName, DatabasesToAttachLabel, MdfFileLocation, NoDatabaseFilesError, OwnerText } from '../localizedConstants';
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import path = require('path');
@@ -22,6 +22,7 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
 		super(objectManagementService, options, AttachDatabaseDialogTitle, 'AttachDatabase');
+		this.dialogObject.okButton.label = AttachButtonLabel;
 	}
 
 	protected override get isDirty(): boolean {
@@ -79,7 +80,8 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		let dataFolder = await this.objectManagementService.getDataFolder(this.options.connectionUri);
 		let filePath = await azdata.window.openServerFileBrowserDialog(this.options.connectionUri, dataFolder, this.fileFilters);
 		if (filePath) {
-			let owner = this.objectInfo.owner ?? 'sa';
+			let connInfo = await azdata.connection.getConnection(this.options.connectionUri);
+			let owner = this.objectInfo.owner ?? connInfo.userName;
 			let fileName = path.basename(filePath, path.extname(filePath));
 			let tableRow = [filePath, fileName, fileName, owner];
 

@@ -197,6 +197,7 @@ export const DatabaseFileTypeLabel = localize('objectManagement.databaseFileType
 export const DatabaseFilePathLabel = localize('objectManagement.databaseFilePath', "Path");
 export const DatabaseFileGroupLabel = localize('objectManagement.databaseFileGroup', "File Group");
 export const DetachDatabaseOptions = localize('objectManagement.detachDatabaseOptions', "Detach Database Options");
+export const DetachButtonLabel = localize('objectManagement.detachButtonLabel', "Detach");
 export const AttachDatabaseDialogTitle = localize('objectManagement.attachDatabaseDialogTitle', "Attach Database (Preview)");
 export const NoDatabaseFilesError = localize('objectManagement.doDatabaseFilesError', "No database files were specified to attach to the server.");
 export const DatabasesToAttachLabel = localize('objectManagement.databasesToAttach', "Databases to Attach");
@@ -204,7 +205,7 @@ export const AssociatedFilesLabel = localize('objectManagement.associatedDatabas
 export const MdfFileLocation = localize('objectManagement.mdfFileLocation', "MDF File Location");
 export const DatabaseName = localize('objectManagement.databaseName', "DB Name");
 export const AttachAsText = localize('objectManagement.attachAsText', "Attach As");
-export const DetachButtonLabel = localize('objectManagement.detachButtonLabel', "Detach");
+export const AttachButtonLabel = localize('objectManagement.attachButtonLabel', "Attach");
 export const DropDatabaseDialogTitle = (dbName: string) => localize('objectManagement.dropDatabaseDialogTitle', "Drop Database - {0} (Preview)", dbName);
 export const DropButtonLabel = localize('objectManagement.dropButtonLabel', "Drop");
 export const DropDatabaseOptions = localize('objectManagement.dropDatabaseOptions', "Drop Database Options");
