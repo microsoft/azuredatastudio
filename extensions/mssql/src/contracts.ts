@@ -1761,7 +1761,7 @@ export interface QueryStoreReportParams {
  */
 export interface QueryConfigurationParams extends QueryStoreReportParams {
 	/**
-	 * Metric to check
+	 * Metric to summarize
 	 */
 	selectedMetric: mssql.Metric;
 	/**
@@ -1835,7 +1835,7 @@ export interface GetHighVariationQueriesReportParams extends OrderableQueryConfi
 }
 
 /**
- * Parameters for getting an Overall Resource Consumption report
+ * Parameters for getting a Top Resource Consumers report
  */
 export interface GetTopResourceConsumersReportParams extends OrderableQueryConfigurationParams {
 	/**
@@ -1861,7 +1861,7 @@ export interface GetPlanSummaryParams extends QueryStoreReportParams {
 	 */
 	timeInterval: mssql.TimeInterval;
 	/**
-	 * Metric to check
+	 * Metric to summarize
 	 */
 	selectedMetric: mssql.Metric;
 	/**

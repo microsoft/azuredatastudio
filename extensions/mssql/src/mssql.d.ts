@@ -1004,17 +1004,17 @@ declare module 'mssql' {
 
 	export interface IQueryStoreService {
 		/**
-	 * Gets the query for a Regressed Queries report
-	 * @param connectionOwnerUri Connection URI for the database
-	 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
-	 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
-	 * @param minExecutionCount Minimum number of executions for a query to be included
-	 * @param selectedMetric Metric to check
-	 * @param selectedStatistic Statistic to calculate on SelecticMetric
-	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
-	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
-	 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
-	 */
+		 * Gets the query for a Regressed Queries report
+		 * @param connectionOwnerUri Connection URI for the database
+		 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
+		 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
+		 * @param minExecutionCount Minimum number of executions for a query to be included
+		 * @param selectedMetric Metric to summarize
+		 * @param selectedStatistic Statistic to calculate on SelecticMetric
+		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
+		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
+		 * @param minNumberOfQueryPlans Minimum number of query plans for a query to included in the report
+		 */
 		getRegressedQueriesSummary(connectionOwnerUri: string, timeIntervalRecent: TimeInterval, timeIntervalHistory: TimeInterval, minExecutionCount: number, selectedMetric: Metric, selectedStatistic: Statistic, topQueriesReturned: number, returnAllQueries: boolean, minNumberOfQueryPlans: number): Promise<QueryStoreQueryResult>;
 
 		/**
@@ -1023,7 +1023,7 @@ declare module 'mssql' {
 		 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
 		 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
 		 * @param minExecutionCount Minimum number of executions for a query to be included
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -1043,7 +1043,7 @@ declare module 'mssql' {
 		 * @param timeInterval Time interval for the report
 		 * @param orderByColumnId Name of the column to order results by
 		 * @param descending Direction of the result ordering
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -1057,7 +1057,7 @@ declare module 'mssql' {
 		 * @param timeInterval Time interval for the report
 		 * @param orderByColumnId Name of the column to order results by
 		 * @param descending Direction of the result ordering
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -1071,7 +1071,7 @@ declare module 'mssql' {
 		 * @param timeInterval Time interval for the report
 		 * @param orderByColumnId Name of the column to order results by
 		 * @param descending Direction of the result ordering
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -1085,7 +1085,7 @@ declare module 'mssql' {
 		 * @param timeInterval Time interval for the report
 		 * @param orderByColumnId Name of the column to order results by
 		 * @param descending Direction of the result ordering
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -1099,7 +1099,7 @@ declare module 'mssql' {
 		 * @param queryId Query ID to view a summary of plans for
 		 * @param timeIntervalMode Mode of the time interval search
 		 * @param timeInterval Time interval for the report
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 */
 		getPlanSummaryChartView(connectionOwnerUri: string, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
@@ -1112,7 +1112,7 @@ declare module 'mssql' {
 		 * @param queryId Query ID to view a summary of plans for
 		 * @param timeIntervalMode Mode of the time interval search
 		 * @param timeInterval Time interval for the report
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 */
 		getPlanSummaryGridView(connectionOwnerUri: string, orderByColumnId: string, descending: boolean, queryId: number, timeIntervalMode: PlanTimeIntervalMode, timeInterval: TimeInterval, selectedMetric: Metric, selectedStatistic: Statistic): Promise<QueryStoreQueryResult>;
@@ -1131,7 +1131,7 @@ declare module 'mssql' {
 		 * @param timeInterval Time interval for the report
 		 * @param orderByColumnId Name of the column to order results by
 		 * @param descending Direction of the result ordering
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -1144,7 +1144,7 @@ declare module 'mssql' {
 		 * @param connectionOwnerUri Connection URI for the database
 		 * @param specifiedTimeInterval Time interval for the report
 		 * @param specifiedBucketInterval Bucket interval for the report
-		 * @param selectedMetric Metric to check
+		 * @param selectedMetric Metric to summarize
 		 * @param selectedStatistic Statistic to calculate on SelecticMetric
 		 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 		 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned

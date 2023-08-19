@@ -39,7 +39,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
 	 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
 	 * @param minExecutionCount Minimum number of executions for a query to be included
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -56,7 +56,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeIntervalRecent Time interval during which to look for performance regressions for the report
 	 * @param timeIntervalHistory Time interval during which to establish baseline performance for the report
 	 * @param minExecutionCount Minimum number of executions for a query to be included
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -82,7 +82,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeInterval Time interval for the report
 	 * @param orderByColumnId Name of the column to order results by
 	 * @param descending Direction of the result ordering
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -99,7 +99,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeInterval Time interval for the report
 	 * @param orderByColumnId Name of the column to order results by
 	 * @param descending Direction of the result ordering
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -116,7 +116,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeInterval Time interval for the report
 	 * @param orderByColumnId Name of the column to order results by
 	 * @param descending Direction of the result ordering
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -133,7 +133,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeInterval Time interval for the report
 	 * @param orderByColumnId Name of the column to order results by
 	 * @param descending Direction of the result ordering
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -150,7 +150,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param queryId Query ID to view a summary of plans for
 	 * @param timeIntervalMode Mode of the time interval search
 	 * @param timeInterval Time interval for the report
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 */
 	public async getPlanSummaryChartView(connectionOwnerUri: string, queryId: number, timeIntervalMode: mssql.PlanTimeIntervalMode, timeInterval: mssql.TimeInterval, selectedMetric: mssql.Metric, selectedStatistic: mssql.Statistic): Promise<mssql.QueryStoreQueryResult> {
@@ -166,7 +166,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param queryId Query ID to view a summary of plans for
 	 * @param timeIntervalMode Mode of the time interval search
 	 * @param timeInterval Time interval for the report
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 */
 	public async getPlanSummaryGridView(connectionOwnerUri: string, orderByColumnId: string, descending: boolean, queryId: number, timeIntervalMode: mssql.PlanTimeIntervalMode, timeInterval: mssql.TimeInterval, selectedMetric: mssql.Metric, selectedStatistic: mssql.Statistic): Promise<mssql.QueryStoreQueryResult> {
@@ -191,7 +191,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param timeInterval Time interval for the report
 	 * @param orderByColumnId Name of the column to order results by
 	 * @param descending Direction of the result ordering
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
@@ -207,7 +207,7 @@ export class QueryStoreService extends BaseService implements mssql.IQueryStoreS
 	 * @param connectionOwnerUri Connection URI for the database
 	 * @param specifiedTimeInterval Time interval for the report
 	 * @param specifiedBucketInterval Bucket interval for the report
-	 * @param selectedMetric Metric to check
+	 * @param selectedMetric Metric to summarize
 	 * @param selectedStatistic Statistic to calculate on SelecticMetric
 	 * @param topQueriesReturned Number of queries to return if ReturnAllQueries is not set
 	 * @param returnAllQueries True to include all queries in the report; false to only include the top queries, up to the value specified by TopQueriesReturned
