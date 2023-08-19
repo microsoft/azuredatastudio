@@ -55,7 +55,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Reset]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Reimposta]]></Val>
+            <Val><![CDATA[Reimpostare]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -373,7 +373,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Include]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Includi]]></Val>
+            <Val><![CDATA[Includere]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -499,7 +499,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Select connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Selezionare connessione]]></Val>
+            <Val><![CDATA[Selezionare la connessione]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

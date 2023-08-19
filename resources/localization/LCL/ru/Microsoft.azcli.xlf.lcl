@@ -228,10 +228,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.failedToParseReleaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]A;File contents:]A;{1}]A;Error: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось проанализировать JSON содержимого: в {0}.]D;]A;Содержимое файла:]D;]A;{1}]D;]A;Ошибка: {2}]]></Val>
+            <Val><![CDATA[Не удалось проанализировать JSON содержимого: в: {0}.]A;Содержимое файла:]A;{1}]A;Ошибка: {2}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -345,19 +348,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noDownloadLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Val><![CDATA[No download link available for platform '{0}']A;Release info: ${1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ссылка для скачивания недоступна для платформы \"{0}\"]D;]A;Сведения о выпуске: ${1}]]></Val>
+            <Val><![CDATA[Нет доступной ссылки для скачивания для платформы "{0}"]A;Сведения о выпуске: ${1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noReleaseVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Val><![CDATA[No release version available for platform '{0}']A;Release info: ${1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Версия выпуска недоступна для платформы \"{0}\"]D;]A;Сведения о выпуске: ${1}]]></Val>
+            <Val><![CDATA[Нет доступной версии выпуска для платформы "{0}"]A;Версия выпуска: ${1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

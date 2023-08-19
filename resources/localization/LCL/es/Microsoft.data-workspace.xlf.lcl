@@ -10,6 +10,18 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";@extensions/Microsoft.data-workspace/dist/common/constants.++CODE++60dc6b3745804caa2d48a35dbb7306bb3f4f05286e7f9de" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) 259423f6abe87ec8f" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Seleccionar]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.AllProjectTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All Project Types]]></Val>
@@ -24,15 +36,6 @@
           <Val><![CDATA[Click "Learn more" button for more information about local development experience to {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Haga clic en el botón "Más información" para informarse sobre la experiencia de desarrollo local para {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.data-workspace/dist/common/constants.SelectProjectFileActionName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Seleccionar]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -116,7 +119,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Browse...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Examinar...]]></Val>
+            <Val><![CDATA[Examine...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -188,7 +191,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn More]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Más información]]></Val>
+            <Val><![CDATA[Obtener más información]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -696,19 +699,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.data-workspace/package.projects-view-no-project-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No projects open in current workspace.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
+          <Val><![CDATA[No projects open in current workspace.]A;[Create new]5D;(command:projects.new)]A;[Open existing]5D;(command:projects.openExisting)]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]A;]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No hay ningún proyecto abierto en el área de trabajo actual.]D;]A;[Crear una nueva]5D;(command:projects.new)]D;]A;[Abrir existente]5D;(command:projects.openExisting)]D;]A;Para obtener más información sobre los proyectos, [le la documentación]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
+            <Val><![CDATA[No hay proyectos abiertos en el área de trabajo actual.]A;[Crear nuevo]5D;(command:projects.new)]A;[Abrir existente]5D;(command:projects.openExisting)]A;Para obtener más información sobre los proyectos [lea la documentación]5D;(https://aka.ms/azuredatastudio-projects).]A;]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No projects open in current workspace.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.data-workspace/package.projects-view-no-workspace-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Create new or open existing to get started.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
+          <Val><![CDATA[Create new or open existing to get started.]A;[Create new]5D;(command:projects.new)]A;[Open existing]5D;(command:projects.openExisting)]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Para empezar, cree un elemento o abra uno existente.]D;]A;[Crear]5D;(command:projects.new)]D;]A;[Abrir existente]5D;(command:projects.openExisting)]D;]A;Para obtener más información sobre los proyectos, [lea la documentación]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
+            <Val><![CDATA[Cree una nueva o abra una existente para empezar.]A;[Crear nuevo]5D;(command:projects.new)]A;[Abrir existente]5D;(command:projects.openExisting)]A;Para obtener más información sobre los proyectos [lea la documentación]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Create new or open existing to get started.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

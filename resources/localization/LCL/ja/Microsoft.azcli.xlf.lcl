@@ -228,10 +228,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.failedToParseReleaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]A;File contents:]A;{1}]A;Error: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} でコンテンツの JSON を解析できませんでした。]D;]A;ファイル コンテンツ: ]D;]A;{1}]D;]A;エラー: {2}]]></Val>
+            <Val><![CDATA[{0} でコンテンツの JSON を解析できませんでした。]A;ファイル コンテンツ:]A;{1}]A;エラー: {2}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -329,7 +332,7 @@
         <Str Cat="Text">
           <Val><![CDATA[No Azure CLI is available, [install the Azure CLI]5D;(command:az.install) to enable the features that require it.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[使用可能な Azure CLI がありません。[Azure CLI の更新]5D; (コマンド: az.install) を行い、それを必要とする機能を有効にします。]]></Val>
+            <Val><![CDATA[使用可能な Azure CLI がありません。[Azure CLI の更新]5D;(コマンド: az.install) を行い、それを必要とする機能を有効にします。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -345,19 +348,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noDownloadLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Val><![CDATA[No download link available for platform '{0}']A;Release info: ${1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プラットフォーム '{0}']D;]A;リリース情報に利用可能なダウンロード リンクがありません: ${1}]]></Val>
+            <Val><![CDATA[プラットフォーム'{0}']A;リリース情報に利用可能なダウンロード リンクがありません: ${1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noReleaseVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Val><![CDATA[No release version available for platform '{0}']A;Release info: ${1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プラットフォーム '{0}']D;]A;リリース情報に利用可能なリリース バージョンがありません: ${1}]]></Val>
+            <Val><![CDATA[プラットフォーム '{0}']A;リリース情報に利用可能なリリース バージョンがありません: ${1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
