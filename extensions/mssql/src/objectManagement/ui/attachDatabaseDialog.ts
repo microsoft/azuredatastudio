@@ -12,7 +12,6 @@ import { AddFileAriaLabel, AssociatedFilesLabel, AttachAsText, AttachButtonLabel
 import { RemoveText } from '../../ui/localizedConstants';
 import { DefaultMinTableRowCount, getTableHeight } from '../../ui/dialogBase';
 import path = require('path');
-import * as os from 'os';
 
 export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, DatabaseViewInfo> {
 	private _databasesToAttach: DatabaseFileData[] = [];
