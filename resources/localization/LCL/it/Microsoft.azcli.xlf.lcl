@@ -228,10 +228,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.failedToParseReleaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]A;File contents:]A;{1}]A;Error: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non è stato possibile analizzare il JSON dei contenuti in: {0}.]D;]A;Contenuti file:]D;]A;{1}]D;]A;Errore: {2}]]></Val>
+            <Val><![CDATA[Non è stato possibile analizzare il JSON dei contenuti in: {0}.]A;Contenuti file:]A;{1}]A;Errore: {2}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -345,19 +348,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noDownloadLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Val><![CDATA[No download link available for platform '{0}']A;Release info: ${1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nessun collegamento di download disponibile per la piattaforma '{0}']D;]A;Informazioni sulla versione: ${1}]]></Val>
+            <Val><![CDATA[Nessun collegamento di download disponibile per la piattaforma '{0}']A;Informazioni sulla versione: ${1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.azcli/dist/localizedConstants.az.noReleaseVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Val><![CDATA[No release version available for platform '{0}']A;Release info: ${1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nessuna versione release disponibile per la piattaforma '{0}']D;]A;Informazioni sulla versione: ${1}]]></Val>
+            <Val><![CDATA[Nessuna versione release disponibile per la piattaforma '{0}']A;Informazioni sulla versione: ${1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
