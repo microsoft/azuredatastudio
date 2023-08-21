@@ -9,6 +9,8 @@ import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
 import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
 import { Server, ServerViewInfo, NumaNode, AffinityType } from '../interfaces';
+import { equals } from '../../util/objects';
+
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -404,7 +406,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				if (result[checkboxState.row][columnToAdjust]) {
 					result[checkboxState.row][columnToAdjust] = !checkboxState.checked;
 					processorTable.updateCells = result[checkboxState.row];
-					this.onFormFieldChange();
 				}
 				// uncheck the set all processors checkbox
 				if (checkboxState.column === AffinityType.ProcessorAffinity) {
@@ -419,6 +420,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].ioAffinity = checkboxState.checked;
 					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = false;
 				}
+				this.onFormFieldChange();
 			}
 		}));
 		return processorTable;
