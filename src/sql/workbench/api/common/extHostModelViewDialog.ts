@@ -677,7 +677,13 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 				},
 			};
 		} else {
-			tab = dashboardTab;
+			tab = {
+				content: dashboardTab.content,
+				id: dashboardTab.id,
+				title: dashboardTab.title,
+				icon: dashboardTab.icon,
+				dispose: () => dashboardTab.content.dispose()
+			}
 		}
 		this._register(tab);
 		return tab;
@@ -687,13 +693,14 @@ class ModelViewDashboardImpl extends Disposable implements azdata.window.ModelVi
 		const tabs: (DisposableTabGroup | DisposableTab)[] = [];
 		dashboardTabs.forEach((item: DisposableDashboardTab | DisposableDashboardTabGroup) => {
 			if ('tabs' in item) {
+				let disposableTabs = item.tabs.map(tab => {
+					return this.createTab(tab, view);
+				});
 				tabs.push(<DisposableTabGroup>{
 					title: item.title,
-					tabs: item.tabs.map(tab => {
-						return this.createTab(tab, view);
-					}),
+					tabs: disposableTabs,
 					dispose: () => {
-						item.tabs.forEach(t => t.dispose());
+						disposableTabs.forEach(t => t.dispose());
 					},
 				});
 			} else {

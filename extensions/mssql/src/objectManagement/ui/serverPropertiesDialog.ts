@@ -80,7 +80,6 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 					'margin': '-10px 0px 0px -10px'
 				}
 			}).component();
-		this.disposables.push(serverPropertiesTabbedPannel);
 		this.disposables.push(
 			serverPropertiesTabbedPannel.onTabChanged(async tabId => {
 				this.activeTabId = tabId;
