@@ -52,14 +52,18 @@ export class AttachDatabaseDialog extends ObjectManagementDialogBase<Database, D
 		this.nameField = this.createInputBox(async newValue => {
 			let selectedRow = this._databasesTable.selectedRows[0];
 			let dbFile = this._databasesToAttach[selectedRow];
-			dbFile.databaseName = newValue;
+			if (dbFile) {
+				dbFile.databaseName = newValue;
+			}
 		}, {});
 		this.nameContainer = this.createLabelInputContainer(loc.AttachAsText, this.nameField);
 
 		this.ownerDropdown = this.createDropdown(loc.OwnerText, async newValue => {
 			let selectedRow = this._databasesTable.selectedRows[0];
 			let dbFile = this._databasesToAttach[selectedRow];
-			dbFile.owner = newValue;
+			if (dbFile) {
+				dbFile.owner = newValue;
+			}
 		}, this.viewInfo.loginNames.options, this.viewInfo.loginNames.options[this.viewInfo.loginNames.defaultValueIndex]);
 		this.ownerContainer = this.createLabelInputContainer(loc.OwnerText, this.ownerDropdown);
 
