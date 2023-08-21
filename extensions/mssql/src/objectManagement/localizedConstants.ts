@@ -326,6 +326,7 @@ export const PathText = localize('objectManagement.databaseProperties.pathText',
 export const FileNameText = localize('objectManagement.databaseProperties.fileNameText', "File Name");
 export const DatabaseFilesText = localize('objectManagement.databaseProperties.databaseFilesText', "Database files");
 export const AddDatabaseFilesText = localize('objectManagement.databaseProperties.addDatabaseFilesText', "Add Database file");
+export const EditDatabaseFilesText = (fileName: string) => localize('objectManagement.databaseProperties.editDatabaseFilesText', "Edit Database file - {0}", fileName);
 export const AddButton = localize('objectManagement.databaseProperties.addButton', "Add");
 export const EditButton = localize('objectManagement.databaseProperties.editButton', "Edit");
 export const RemoveButton = localize('objectManagement.databaseProperties.removeButton', "Remove");

@@ -53,6 +53,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 	protected filePathTextBox: azdata.InputBoxComponent;
 	private originalName: string;
 	private originalFileName: string;
+	private isEditingFile: boolean;
 
 	constructor(private readonly options: NewDatabaseFileDialogOptions) {
 		super(options.title, 'DatabaseFileDialog');
@@ -65,6 +66,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		this.result = deepClone(this.options.databaseFile);
 		this.originalName = this.options.databaseFile.name;
 		this.originalFileName = this.options.databaseFile.fileNameWithExtension;
+		this.isEditingFile = this.options.isNewFile || this.options.isEditingNewFile;
 		await this.InitializeAddDatabaseFileDialog();
 	}
 
@@ -134,14 +136,14 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 			await this.updateOptionsForSelectedFileType(newValue);
 			this.result.type = newValue;
 			this.fileNameWithExtension.value = this.generateFileNameWithExtension();
-		}, this.options.viewInfo.fileTypesOptions, this.result.type, this.options.isNewFile || this.options.isEditingNewFile, DefaultInputWidth);
+		}, this.options.viewInfo.fileTypesOptions, this.result.type, this.isEditingFile, DefaultInputWidth);
 		const fileTypeContainer = this.createLabelInputContainer(localizedConstants.FileTypeText, fileType);
 		containers.push(fileTypeContainer);
 
 		// Filegroup
 		this.fileGroupDropdown = this.createDropdown(localizedConstants.FilegroupText, async (newValue) => {
 			this.result.fileGroup = newValue;
-		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.databaseFile.fileGroup, this.options.isNewFile || this.options.isEditingNewFile, DefaultInputWidth);
+		}, this.options.viewInfo.rowDataFileGroupsOptions, this.options.databaseFile.fileGroup, this.isEditingFile, DefaultInputWidth);
 		const sizeContainer = this.createLabelInputContainer(localizedConstants.FilegroupText, this.fileGroupDropdown);
 		containers.push(sizeContainer);
 
@@ -166,7 +168,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		}, {
 			ariaLabel: localizedConstants.PathText,
 			inputType: 'text',
-			enabled: this.options.isNewFile || this.options.isEditingNewFile,
+			enabled: this.isEditingFile,
 			value: this.options.databaseFile.path,
 			width: DefaultInputWidth - 30
 		});
@@ -177,12 +179,16 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		containers.push(this.pathContainer);
 
 		// File Name
+		let fileNameEnabled = this.isEditingFile;
+		if (fileNameEnabled) {
+			fileNameEnabled = !(this.result.type === this.options.viewInfo.fileTypesOptions[2]);
+		}
 		this.fileNameWithExtension = this.createInputBox(async (newValue) => {
 			this.result.fileNameWithExtension = newValue;
 		}, {
 			ariaLabel: localizedConstants.FileNameText,
 			inputType: 'text',
-			enabled: !(this.result.type === this.options.viewInfo.fileTypesOptions[2]) || (this.options.isNewFile || this.options.isEditingNewFile),
+			enabled: fileNameEnabled, // false for edit old file and for filestream type
 			value: this.options.databaseFile.fileNameWithExtension,
 			width: DefaultInputWidth
 		});
@@ -339,7 +345,7 @@ export class DatabaseFileDialog extends DialogBase<DatabaseFile> {
 		await this.fileGrowthGroup.updateCssStyles({ 'visibility': visibility });
 		await this.maxSizeGroup.updateCssStyles({ 'margin-top': maxSizeGroupMarginTop });
 		await this.pathContainer.updateCssStyles({ 'margin-top': pathContainerMarginTop });
-		this.fileNameWithExtension.enabled = this.fileSizeInput.enabled = enableInputs;
+		this.fileNameWithExtension.enabled = this.fileSizeInput.enabled = this.isEditingFile && enableInputs;
 		this.autoFilegrowthInput.max = this.inPercentAutogrowth.checked ? fileSizeInputMaxValueInPercent : fileSizeInputMaxValue / 2;
 		this.fileSizeInput.max = fileSizeInputMaxValue;
 	}

@@ -601,7 +601,7 @@ export class DatabaseDialog extends ObjectManagementDialogBase<Database, Databas
 		} : selectedFile;
 
 		const dialog = new DatabaseFileDialog({
-			title: localizedConstants.AddDatabaseFilesText,
+			title: (isnewFile || isEditingNewFile) ? localizedConstants.AddDatabaseFilesText : localizedConstants.EditDatabaseFilesText(databaseFile.name),
 			viewInfo: this.viewInfo,
 			files: this.objectInfo.files,
 			isNewFile: isnewFile,
