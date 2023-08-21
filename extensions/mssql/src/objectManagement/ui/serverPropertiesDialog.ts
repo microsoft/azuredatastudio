@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { ObjectManagementDialogBase, ObjectManagementDialogOptions } from './objectManagementDialogBase';
+import { DefaultColumnCheckboxWidth } from '../../ui/dialogBase';
 import { IObjectManagementService } from 'mssql';
 import * as localizedConstants from '../localizedConstants';
-import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl } from '../constants';
-import { Server, ServerViewInfo } from '../interfaces';
+import { ViewGeneralServerPropertiesDocUrl, ViewMemoryServerPropertiesDocUrl, ViewProcessorsServerPropertiesDocUrl } from '../constants';
+import { Server, ServerViewInfo, NumaNode, AffinityType } from '../interfaces';
 
 export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, ServerViewInfo> {
 	private generalTab: azdata.Tab;
@@ -40,6 +41,11 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 	private maxServerMemoryInput: azdata.InputBoxComponent;
 	private engineEdition: azdata.DatabaseEngineEdition;
 
+	private processorsTab: azdata.Tab;
+	private readonly processorsTabId: string = 'processorsId';
+	private processorsSection: azdata.GroupContainer;
+	private autoSetProcessorAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
+	private autoSetProcessorIOAffinityMaskForAllCheckbox: azdata.CheckBoxComponent;
 	private activeTabId: string;
 
 	constructor(objectManagementService: IObjectManagementService, options: ObjectManagementDialogOptions) {
@@ -55,6 +61,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 				break;
 			case this.memoryTabId:
 				helpUrl = ViewMemoryServerPropertiesDocUrl;
+			case this.processorsTabId:
+				helpUrl = ViewProcessorsServerPropertiesDocUrl;
 			default:
 				break;
 		}
@@ -71,7 +79,8 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 		this.engineEdition = serverInfo.engineEditionId;
 		this.initializeGeneralSection();
 		this.initializeMemorySection();
-		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab] };
+		this.initializeProcessorsSection();
+		const serverPropertiesTabGroup = { title: '', tabs: [this.generalTab, this.memoryTab, this.processorsTab] };
 		const serverPropertiesTabbedPannel = this.modelView.modelBuilder.tabbedPanel()
 			.withTabs([serverPropertiesTabGroup])
 			.withProps({
@@ -269,6 +278,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			enabled: isEnabled,
 			max: this.objectInfo.minServerMemory.maximumValue,
 			min: this.objectInfo.minServerMemory.minimumValue,
+			value: this.objectInfo.minServerMemory.value.toString(),
 			required: true
 		};
 		this.minServerMemoryInput = this.createInputBox(async (newValue) => {
@@ -282,6 +292,7 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			enabled: isEnabled,
 			max: this.objectInfo.maxServerMemory.maximumValue,
 			min: this.objectInfo.maxServerMemory.minimumValue,
+			value: this.objectInfo.maxServerMemory.value.toString(),
 			required: true
 		};
 		this.maxServerMemoryInput = this.createInputBox(async (newValue) => {
@@ -303,5 +314,121 @@ export class ServerPropertiesDialog extends ObjectManagementDialogBase<Server, S
 			errors.push(localizedConstants.serverMemoryMaxLowerThanMinInputError);
 		}
 		return errors;
+	}
+
+	private initializeProcessorsSection(): void {
+		const isEnabled = this.engineEdition !== azdata.DatabaseEngineEdition.SqlManagedInstance;
+		let nodes: NumaNode[] = this.objectInfo.numaNodes;
+		let nodeTableList: azdata.TableComponent[] = [];
+		let tableGroups: azdata.GroupContainer[] = [];
+		for (let node of nodes) {
+			let table = this.createProcessorTable(node);
+			nodeTableList.push(table);
+			tableGroups.push(this.createGroup(localizedConstants.serverNumaNodeLabel(node.numaNodeId), [table], true));
+		}
+		this.autoSetProcessorAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityMaskForAllText, async (newValue) => {
+			this.objectInfo.autoProcessorAffinityMaskForAll = newValue;
+			for (let table of nodeTableList) {
+				let newData = table.data;
+				for (let i = 0; i < newData.length; i++) {
+					if (newValue) {
+						// if affinity mask for all is checked, then uncheck the individual processors
+						newData[i][AffinityType.ProcessorAffinity] = false;
+					}
+				}
+				await this.setTableData(table, newData);
+			}
+		}, this.objectInfo.autoProcessorAffinityMaskForAll, isEnabled);
+
+		this.autoSetProcessorIOAffinityMaskForAllCheckbox = this.createCheckbox(localizedConstants.autoSetProcessorAffinityIOMaskForAllText, async (newValue) => {
+			this.objectInfo.autoProcessorAffinityIOMaskForAll = newValue;
+			for (let table of nodeTableList) {
+				let newData = table.data;
+				for (let i = 0; i < newData.length; i++) {
+					if (newValue) {
+						// if IO affinity mask for all is checked, then uncheck the individual processors
+						newData[i][AffinityType.IOAffinity] = false;
+					}
+				}
+				await this.setTableData(table, newData);
+				this.resetNumaNodes();
+			}
+		}, this.objectInfo.autoProcessorAffinityIOMaskForAll, isEnabled);
+
+		this.processorsSection = this.createGroup('', [
+			this.autoSetProcessorAffinityMaskForAllCheckbox,
+			this.autoSetProcessorIOAffinityMaskForAllCheckbox,
+		], false);
+
+		this.processorsSection.addItems(tableGroups);
+		this.processorsTab = this.createTab(this.processorsTabId, localizedConstants.ProcessorsText, this.processorsSection);
+	}
+
+	private createProcessorTable(numaNode: NumaNode): azdata.TableComponent {
+		const cssClass = 'no-borders';
+		let tableData = numaNode.processors.map(row => [localizedConstants.serverCPULabel(row.processorId), row.affinity, row.ioAffinity]);
+		let processorTable = this.createTable(localizedConstants.processorLabel,
+			[
+				<azdata.TableColumn>{
+					name: localizedConstants.processorColumnText,
+					value: localizedConstants.processorColumnText,
+					type: azdata.ColumnType.text,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				},
+				<azdata.TableColumn>{
+					name: localizedConstants.processorAffinityColumnText,
+					value: localizedConstants.processorAffinityColumnText,
+					type: azdata.ColumnType.checkBox,
+					width: DefaultColumnCheckboxWidth,
+					action: azdata.ActionOnCellCheckboxCheck.customAction,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				},
+				<azdata.TableColumn>{
+					name: localizedConstants.processorIOAffinityColumnText,
+					value: localizedConstants.processorIOAffinityColumnText,
+					type: azdata.ColumnType.checkBox,
+					width: DefaultColumnCheckboxWidth,
+					action: azdata.ActionOnCellCheckboxCheck.customAction,
+					cssClass: cssClass,
+					headerCssClass: cssClass,
+				}
+			], tableData);
+
+		this.disposables.push(processorTable.onCellAction(async (row) => {
+			if (processorTable.selectedRows.length > 0) {
+				const result = processorTable.data;
+				let checkboxState = <azdata.ICheckboxCellActionEventArgs>row;
+				let columnToAdjust = checkboxState.column === AffinityType.ProcessorAffinity ? AffinityType.IOAffinity : AffinityType.ProcessorAffinity;
+				if (result[checkboxState.row][columnToAdjust]) {
+					result[checkboxState.row][columnToAdjust] = !checkboxState.checked;
+					processorTable.updateCells = result[checkboxState.row];
+				}
+				// uncheck the set all processors checkbox
+				if (checkboxState.column === AffinityType.ProcessorAffinity) {
+					this.autoSetProcessorAffinityMaskForAllCheckbox.checked = false;
+					this.objectInfo.autoProcessorAffinityMaskForAll = false;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = checkboxState.checked;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].ioAffinity = false;
+				}
+				if (checkboxState.column === AffinityType.IOAffinity) {
+					this.autoSetProcessorIOAffinityMaskForAllCheckbox.checked = false;
+					this.objectInfo.autoProcessorAffinityIOMaskForAll = false;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].ioAffinity = checkboxState.checked;
+					this.objectInfo.numaNodes[+numaNode.numaNodeId].processors[checkboxState.row].affinity = false;
+				}
+				this.onFormFieldChange();
+			}
+		}));
+		return processorTable;
+	}
+
+	private resetNumaNodes(): void {
+		for (let node of this.objectInfo.numaNodes) {
+			for (let cpu of node.processors) {
+				cpu.ioAffinity = false;
+			}
+		}
 	}
 }
