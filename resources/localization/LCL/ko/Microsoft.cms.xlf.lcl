@@ -15,6 +15,30 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";@extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Add Central Management Server...]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[중앙 관리 서버 추가...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No resources found]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[리소스를 찾을 수 없음]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/cmsResourceCommands.cms.AddServerGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Server Group]]></Val>
@@ -119,24 +143,6 @@
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[예]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServerLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Add Central Management Server...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[중앙 관리 서버 추가...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No resources found]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[리소스를 찾을 수 없음]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -892,7 +898,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Secure enclaves]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[보안 enclave]]></Val>
+            <Val><![CDATA[보안 Enclave]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

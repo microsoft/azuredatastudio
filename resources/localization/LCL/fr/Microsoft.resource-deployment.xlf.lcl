@@ -15,9 +15,111 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.AddingAzureCliRepositoryIn" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceDeployment.discoverPathOrAdditionalInfor" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) formation" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) mation" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Discovered Path or Additional Information]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Chemin découvert ou informations supplémentaires]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceSearchPlacehold" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) er" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Filter resources...]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Filtrer les ressources...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoriesS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) qlServer" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[SQL Server]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Serveur langage SQL]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnC" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) loud" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Cloud]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cloud]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnH" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ybrid" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Hybrid]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Hybride]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnP" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ostgreSql" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[PostgreSQL]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[PostgreSQL]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) rem" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[On-premises]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Local]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/platformService.platformService.RunStreamedCommand.ExitedW" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ithCode" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[    >>> {0}    … exited with code: {1}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[    >>> {0}    … a quitté avec le code : {1}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ithSignal" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[    >>> {0}   … exited with signal: {1}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[    >>> {0}   … a quitté avec le signal : {1}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.AddingAzureCliRe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) positoryInformation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the azure-cli repository information …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -27,9 +129,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DeletingPreviousAzureCli.m" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DeletingPrevious" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) si" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) AzureCli.msi" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded azurecli.msi if one exists …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -39,9 +141,21 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DownloadAndInstallingSigni" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DisplayingInstal" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ngKey" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) lationLog" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[displaying the installation log …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[affichage du journal d'installation...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DownloadAndInsta" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) llingSigningKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for azure-cli …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,9 +165,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DownloadingAndInstallingAz" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DownloadingAndIn" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ureCli" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) stallingAzureCli" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading azurecli.msi and installing azure-cli …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -63,9 +177,33 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.AddingKubectlRepository" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.InstallingAzureC" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Information" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) li" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[installing azure-cli …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[installation d'azure-cli...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.UpdatingBrewRepo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sitory" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[updating your brew repository for azure-cli installation …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[mise à jour de votre dépôt brew pour l'installation d'azure-cli...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.AddingKubectl" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) RepositoryInformation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the kubectl repository information …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -75,9 +213,33 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DeletePreviousDownloade" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.BackupCurrent" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) dKubectl" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) Binary" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[backing up any existing kubectl in the install location …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[sauvegarde de tout kubectl existant dans l'emplacement d'installation...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.CleaningUpOld" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Backups" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[cleaning up any previously backed up version in the install location if they exist …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[nettoyage des versions précédemment sauvegardées dans l'emplacement d'installation, le cas échéant...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DeletePreviou" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sDownloadedKubectl" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded kubectl if one exists …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -86,7 +248,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) dKubectl.exe" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sDownloadedKubectl.exe" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded kubectl.exe if one exists …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -96,9 +258,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadAndInstallingSi" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadAndIn" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) gningKey" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) stallingSigningKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for kubectl …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -108,9 +270,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadingAndInstallin" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadingAn" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) gKubectl" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) dInstallingKubectl" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the latest kubectl.exe …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -120,9 +282,114 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.toolBase.addInstallationSearchPathsToSystemPath.Searc" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadingKu" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) hPaths" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) bectl" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[downloading the latest kubectl release …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[téléchargement de la dernière mise en production de kubectl...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.InstallingKub" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eCtl" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[installing kubectl …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[installation de kubectl...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ectl" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[installing kubectl …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[installation de kubectl...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.MakingExecuta" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ble" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[making kubectl executable …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[création de l'exécutable kubectl...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.MoveToSystemP" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ath" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[moving kubectl into the install location in the PATH …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[déplacement de kubectl dans l'emplacement d'installation dans PATH...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.UpdatingBrewR" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) epository" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[updating your brew repository for kubectl installation …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[mise à jour de votre dépôt brew pour l'installation de kubectl...]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.invalidKubectlVersion" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Output" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Unable to parse the kubectl version command output: "{0}"]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Impossible d'analyser la sortie de la commande de version kubectl : « {0} »]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.deploymentDialog.ToolInformationalMessage.B" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rew" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[•	brew est nécessaire pour le déploiement des outils et doit être préinstallé pour pouvoir déployer les outils nécessaires]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.deploymentDialog.ToolInformationalMessage.C" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) url" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[•	curl est nécessaire pour l'installation et doit être préinstallé pour pouvoir déployer les outils nécessaires]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.toolBase.addInstallationSearchPathsToSystem" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Path.SearchPaths" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Search Paths for tool '{0}': {1}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -132,9 +399,33 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureDatabaseServersDrop" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.toolBase.getPip3InstallationLocation.Locati" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) downLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) onNotFound" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[   Could not find 'Location' in the output:]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[   « Location » est introuvable dans la sortie :]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureAccountDr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) opdownLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure account]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Compte Azure]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureDatabaseS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) erversDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Server]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -144,9 +435,21 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSettingsSummaryPage" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSettingsP" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Title" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ageTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure SQL Database - Azure account settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure SQL Database - Paramètres de compte Azure]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSettingsS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ummaryPageTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure account settings]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -156,9 +459,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSubscriptionDropdow" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSubscript" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ionDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Subscription]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -168,21 +471,183 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/azureSettingsPage.deployAzureSQLDB.NoServerEr" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.CollationNameL" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[No servers found in current subscription.]D;]A;Select a different subscription containing at least one server]]></Val>
+            <Val><![CDATA[Database collation]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Aucun serveur dans l'abonnement actuel.]D;]A;Sélectionnez un autre abonnement contenant au moins un serveur]]></Val>
+              <Val><![CDATA[Classement de base de données]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/azureSettingsPage.deployAzureSQLDB.NoServerLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.CollationNameS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ummaryLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Collation for database]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Classement de la base de données]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.DatabaseNameLa" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[SQL database name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Nom de la base de données SQL]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.DatabaseSettin" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) gsPageTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Paramètres de base de données]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.EndIpAddressLa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Max IP address in firewall IP range]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Adresse IP max. dans la plage IP du pare-feu]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.EndIpAddressSh" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ortLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Max IP address]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Adresse IP max.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallRuleDe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) scription" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Créez une règle de pare-feu pour votre IP de client local afin de vous connecter à votre base de données via Azure Data Studio une fois la création effectuée.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallRuleNa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) meLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Firewall rule name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Nom de la règle de pare-feu]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallToggle" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Label" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Create a firewall rule]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Créer une règle de pare-feu]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.IpAddressInfoL" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Enter IP addresses in IPv4 format.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Entrez les adresses IP au format IPv4.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.MissingRequire" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) dInfoError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Please fill out the required fields marked with red asterisks.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Remplissez les champs obligatoires marqués d'un astérisque rouge.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.ScriptToNotebo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ok" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Script to Notebook]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Exécuter un script sur un notebook]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.StartIpAddress" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Label" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Min IP address in firewall IP range]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Adresse IP min. dans la plage IP du pare-feu]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ShortLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Min IP address]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Adresse IP min.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/azureSettingsPage.deployAzureSQLDB." ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) NoServerError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[No servers found in current subscription.]A;Select a different subscription containing at least one server]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Aucun serveur trouvé dans la souscription actuelle.]A;Sélectionnez une autre souscription contenant au moins un serveur]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) NoServerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No servers found]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -191,10 +656,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/azureSettingsPage.deployAzureSQLDB.azureSignI" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) azureSignInError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Sign in to an Azure account first]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -204,9 +666,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBColla" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQL" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) tionLengthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBCollationLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Collation name must be between 1 and 100 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -215,7 +677,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) tionOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBCollationOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Collation name cannot contain only numbers.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -224,7 +686,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) tionSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBCollationSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Collation name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -233,10 +695,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBFirew" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) allLengthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBFirewallLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Firewall name must be between 1 and 100 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -245,7 +704,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) allOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBFirewallOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Firewall name cannot contain only numbers.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -254,7 +713,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) allSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBFirewallSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Firewall name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -263,7 +722,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) allUpperCaseError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBFirewallUpperCaseError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Upper case letters are not allowed for firewall name]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -272,10 +731,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBMaxIp" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) InvalidError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBMaxIpInvalidError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Max Ip address is invalid]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -284,10 +740,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBMinIp" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) InvalidError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBMinIpInvalidError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Min Ip address is invalid]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -296,10 +749,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBNameE" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) xistsError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBNameExistsError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name must be unique in the current server.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -308,10 +758,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBNameL" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) engthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBNameLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name must be between 1 and 100 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -320,10 +767,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBNameO" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBNameOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name cannot contain only numbers.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -332,10 +776,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/pages/databaseSettingsPage.deployAzureSQLDB.DBNameS" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) pecialCharError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) DB.DBNameSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -345,9 +786,45 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureSubscriptionDropdow" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureAccountDr" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) opdownLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure Account]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Compte Azure]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureRegionDro" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) pdownLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Region]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Région]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureSettingsP" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ageTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Paramètres Azure]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureSubscript" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ionDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Subscription]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -357,9 +834,30 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NetworkSettingsNewVirtua" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.MissingRequire" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) lNetwork" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) dInfoError" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Please fill out the required fields marked with red asterisks.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Remplissez les champs obligatoires marqués d'un astérisque rouge.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NetworkSetting" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sNewSubnet" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[New subnet]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Nouveau sous-réseau]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) sNewVirtualNetwork" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[New virtual network]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -368,10 +866,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NetworkSettingsPageDescr" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) iption" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sPageDescription" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Configure network settings]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -380,10 +875,16 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NetworkSettingsUseExisti" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ngPublicIp" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sPageTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Networking]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Réseau]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) sUseExistingPublicIp" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[New public ip]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -393,9 +894,33 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlAuthenticationConfirm" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.PublicIPDropdo" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) PasswordLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) wnLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Public IP]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[IP publique]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.ScriptToNotebo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ok" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Script to Notebook]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Exécuter un script sur un notebook]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlAuthenticat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ionConfirmPasswordLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Confirm password]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -404,10 +929,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlAuthenticationPasswor" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) dLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ionPasswordLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -416,10 +938,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlAuthenticationUsernam" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) eLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ionUsernameLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -429,9 +948,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlConnectivityTypeDropd" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlConnectivit" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ownLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) yTypeDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL connectivity]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -441,9 +960,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlEnableSQLAuthenticati" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlEnableSQLAu" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) onLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) thenticationLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enable SQL authentication]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -453,9 +972,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlServerSettingsPageTit" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlServerSetti" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) le" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ngsPageTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL Servers settings]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -465,9 +984,21 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VirtualNetworkDropdownLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SubnetDropdown" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) Label" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Subnet]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Sous-réseau]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VirtualNetwork" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) DropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual Network]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -477,9 +1008,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmAdminConfirmPasswordTe" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmAdminConfirm" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) xtBoxLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) PasswordTextBoxLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Confirm password]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -489,9 +1020,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmAdminPasswordTextBoxLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmAdminPasswor" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) dTextBoxLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Administrator account password]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -501,9 +1032,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmAdminUsernameTextBoxLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmAdminUsernam" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) eTextBoxLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Administrator account username]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -513,9 +1044,21 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmImageVersionDropdownLa" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmImageDropdow" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) nLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Image]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Image]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmImageVersion" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) DropdownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Image Version]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -525,9 +1068,81 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/deployAzureSQLVMWizardModel.sqlVMDeploymentWizard.P" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmNameTextBoxL" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) asswordLengthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Virtual machine name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Nom de la machine virtuelle]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmRDPAllowChec" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) kboxLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Enable Remote Desktop (RDP) inbound port (3389)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Activer le port d'entrée Bureau à distance (RDP) (3389)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmSizeDropdown" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Label" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Taille]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmSkuDropdownL" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Image SKU]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Référence SKU de l'image]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployeAzureSQLVM.VmSettingsPag" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Virtual machine settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Paramètres de la machine virtuelle]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployeAzureSQLVM.VmSizeLearnMo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) reLabel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Click here to learn more about pricing and supported VM sizes]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cliquer ici pour en savoir plus sur les prix et les tailles de VM prises en charge]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/deployAzureSQLVMWizardModel.sqlVMDeployme" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ntWizard.PasswordLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password must be between 12 and 123 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -536,7 +1151,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) asswordSpecialCharRequirementError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ntWizard.PasswordSpecialCharRequirementError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -546,9 +1161,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.NewPipEr" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLV" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.NewPipError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Create a new new public Ip]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -557,10 +1172,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.NewPipPl" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) aceholder" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.NewPipPlaceholder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enter name for new public IP]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -569,10 +1181,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.NewSubne" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) tError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.NewSubnetError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Create a new sub network]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -581,7 +1190,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) tPlaceholder" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.NewSubnetPlaceholder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enter name for new subnet]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -590,10 +1199,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.NewVnetE" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.NewVnetError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Create a new virtual network]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -602,10 +1208,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.NewVnetP" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) laceholder" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.NewVnetPlaceholder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enter name for new virtual network]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -614,10 +1217,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.PipNameE" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.PipNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Public IP name must be between 1 and 80 characters long]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -626,10 +1226,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.SubnetNa" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) meLengthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.SubnetNameLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Subnet name must be between 1 and 80 characters long]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -638,10 +1235,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/networkSettingsPage.deployAzureSQLVM.VnetName" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) LengthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) M.VnetNameLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual Network name must be between 2 and 64 characters long]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -651,9 +1245,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/sqlServerSettingsPage.deployAzureSQLVM.LocalC" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/sqlServerSettingsPage.deployAzureSQ" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) onnectivityDropdownOption" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) LVM.LocalConnectivityDropdownOption" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Local (inside VM only)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -662,10 +1256,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/sqlServerSettingsPage.deployAzureSQLVM.Privat" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) eConnectivityDropdownOptionDefault" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) LVM.PrivateConnectivityDropdownOptionDefault" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Private (within Virtual Network)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -674,10 +1265,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/sqlServerSettingsPage.deployAzureSQLVM.Public" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ConnectivityDropdownOption" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) LVM.PublicConnectivityDropdownOption" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Public (Internet)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -686,10 +1274,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/sqlServerSettingsPage.deployAzureSQLVM.SqlCon" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) firmPasswordError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) LVM.SqlConfirmPasswordError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password and confirm password must match.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -698,10 +1283,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/sqlServerSettingsPage.deployAzureSQLVM.SqlUse" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) rnameLengthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) LVM.SqlUsernameLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username must be between 2 and 128 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -710,7 +1292,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) rnameSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) LVM.SqlUsernameSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username cannot contain special characters \/""[]5D;:|<>+=;,?* .]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -720,9 +1302,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMConfirmPass" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMC" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) wordError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) onfirmPasswordError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password and confirm password must match.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -732,9 +1314,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMUsernameLen" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMU" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) gthError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sernameLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username must be between 1 and 20 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -743,10 +1325,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMUsernameRes" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ervedWordsError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sernameReservedWordsError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username must not include reserved words.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -755,10 +1334,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMUsernameSpe" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) cialCharError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sernameSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username cannot contain special characters \/""[]5D;:|<>+=;,?*@& .]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -767,10 +1343,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VMUsernameSuf" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) fixError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) sernameSuffixError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username cannot end with period]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -780,9 +1353,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VNameExistsEr" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VNa" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) meExistsError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name must be unique in the current resource group.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -791,10 +1364,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VNameOnlyNume" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ricNameError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) meOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name cannot contain only numbers.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -803,10 +1373,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VNamePrefixSu" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ffixError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) mePrefixSuffixError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name Can't start with underscore. Can't end with period or hyphen]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -815,10 +1382,7 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-      </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VNameSpecialC" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) harError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) meSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -828,9 +1392,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.VnameLengthEr" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.Vna" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) meLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name must be between 1 and 15 characters long.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -840,9 +1404,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.vmDropdownSiz" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/pages/vmSettingsPage.deployAzureSQLVM.vmD" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) eError" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ropdownSizeError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select a valid virtual machine size.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -852,13 +1416,61 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/notebookWizard/notebookWizardAutoSummaryPage.notebookWizard.autoSummaryPag" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/notebookWizard/notebookWizardAutoSummaryPage.notebookWizard.auto" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) eTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) SummaryPageTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Review your configuration]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Vérifier votre configuration]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/pageLessDeploymentModel.resourceDeployment.DownloadAndLaunchTask" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Name" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Download and launch installer, URL: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Télécharger et lancer le programme d'installation, URL : {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.ToolDoesNotMeetVersion" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Requirement" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA['{0}' [ {1} ]5D; does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[« {0} » [ {1} ]5D; ne respecte pas la version minimale requise, désinstallez-le et redémarrez Azure Data Studio.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.VersionInformationDebu" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) gHint" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Si les outils sont installés manuellement, vous devez redémarrer Azure Data Studio pour appliquer le changement. Des détails supplémentaires sont disponibles dans les canaux de sortie « Déploiements » et « Azure Data CLI »]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.loadingRequiredToolsCo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) mpleted" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Loading required tools information completed]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Les informations d'outils nécessaires ont été téléchargées]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1224,15 +1836,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceDeployment.discoverPathOrAdditionalInformation" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Discovered Path or Additional Information]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Chemin découvert ou informations supplémentaires]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceDeployment.extensionRequiredPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' extension is required to deploy this resource, do you want to install it now?]]></Val>
@@ -1278,65 +1881,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceSearchPlaceholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Filter resources...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Filtrer les ressources...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoriesSqlServer" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Server]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryAll" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Tout]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnCloud" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cloud]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cloud]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnHybrid" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Hybrid]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Hybride]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnPostgreSql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[PostgreSQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PostgreSQL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceTypeCategoryOnPrem" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[On-premises]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Local]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1372,7 +1921,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Script]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Exécuter le script]]></Val>
+            <Val><![CDATA[Script]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1444,7 +1993,7 @@
         <Str Cat="Text">
           <Val><![CDATA[    stderr: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[    stderr : ]]></Val>
+            <Val><![CDATA[    stderr : ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1453,25 +2002,7 @@
         <Str Cat="Text">
           <Val><![CDATA[    stdout: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[    stdout : ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/platformService.platformService.RunStreamedCommand.ExitedWithCode" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[    >>> {0}    … exited with code: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[    >>> {0}    … a quitté avec le code : {1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/platformService.platformService.RunStreamedCommand.ExitedWithSignal" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[    >>> {0}   … exited with signal: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[    >>> {0}   … a quitté avec le signal : {1}]]></Val>
+            <Val><![CDATA[    stdout : ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1542,38 +2073,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DisplayingInstallationLog" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[displaying the installation log …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[affichage du journal d'installation...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.InstallingAzureCli" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[installing azure-cli …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[installation d'azure-cli...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.ScriptedInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[download and invoking script to install azure-cli …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[télécharger et appeler un script pour installer azure-cli...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[updating your brew repository for azure-cli installation …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[mise à jour de votre dépôt brew pour l'installation d'azure-cli...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1638,87 +2142,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.BackupCurrentBinary" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[backing up any existing kubectl in the install location …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[sauvegarde de tout kubectl existant dans l'emplacement d'installation...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.CleaningUpOldBackups" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[cleaning up any previously backed up version in the install location if they exist …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[nettoyage des versions précédemment sauvegardées dans l'emplacement d'installation, le cas échéant...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadingKubectl" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[downloading the latest kubectl release …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[téléchargement de la dernière mise en production de kubectl...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.InstallingKubeCtl" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[installing kubectl …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[installation de kubectl...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.InstallingKubectl" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[installing kubectl …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[installation de kubectl...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.MakingExecutable" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[making kubectl executable …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[création de l'exécutable kubectl...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.MoveToSystemPath" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[moving kubectl into the install location in the PATH …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[déplacement de kubectl dans l'emplacement d'installation dans PATH...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[updating your brew repository for kubectl installation …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[mise à jour de votre dépôt brew pour l'installation de kubectl...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.invalidKubectlVersionOutput" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Unable to parse the kubectl version command output: "{0}"]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Impossible d'analyser la sortie de la commande de version kubectl : « {0} »]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.deployCluster.GetToolVersionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ]]></Val>
@@ -1736,24 +2159,6 @@
           <Val><![CDATA[Error retrieving version information. See output channel '{0}' for more details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Erreur de récupération des informations de version. Voir le canal de sortie « {0} » pour plus de détails]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.deploymentDialog.ToolInformationalMessage.Brew" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[•	brew est nécessaire pour le déploiement des outils et doit être préinstallé pour pouvoir déployer les outils nécessaires]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.deploymentDialog.ToolInformationalMessage.Curl" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[•	curl est nécessaire pour l'installation et doit être préinstallé pour pouvoir déployer les outils nécessaires]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1857,15 +2262,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.toolBase.getPip3InstallationLocation.LocationNotFound" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[   Could not find 'Location' in the output:]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[   « Location » est introuvable dans la sortie :]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/services/tools/toolBase.toolBase.getPip3InstallationLocation.Output" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[   output:]]></Val>
@@ -1880,123 +2276,6 @@
           <Val><![CDATA[Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Impossible d'installer l'outil : {0}::{1}, car les commandes d'installation sont inconnues pour la distribution de votre système d'exploitation. Installez {0} manuellement avant de continuer]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureAccountDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Compte Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSettingsPageTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database - Azure account settings]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database - Paramètres de compte Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.CollationNameLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Database collation]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Classement de base de données]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.CollationNameSummaryLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Collation for database]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Classement de la base de données]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.DatabaseNameLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL database name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nom de la base de données SQL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.DatabaseSettingsPageTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Database settings]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Paramètres de base de données]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.EndIpAddressLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Max IP address in firewall IP range]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Adresse IP max. dans la plage IP du pare-feu]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.EndIpAddressShortLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Max IP address]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Adresse IP max.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallRuleDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Créez une règle de pare-feu pour votre IP de client local afin de vous connecter à votre base de données via Azure Data Studio une fois la création effectuée.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallRuleNameLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Firewall rule name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nom de la règle de pare-feu]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallToggleLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Create a firewall rule]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Créer une règle de pare-feu]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.IpAddressInfoLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter IP addresses in IPv4 format.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Entrez les adresses IP au format IPv4.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.MissingRequiredInfoError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please fill out the required fields marked with red asterisks.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Remplissez les champs obligatoires marqués d'un astérisque rouge.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2019,101 +2298,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.ScriptToNotebook" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Script to Notebook]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Exécuter un script sur un notebook]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.StartIpAddressLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Min IP address in firewall IP range]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Adresse IP min. dans la plage IP du pare-feu]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.StartIpAddressShortLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Min IP address]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Adresse IP min.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureAccountDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Compte Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureRegionDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Region]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Région]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureSettingsPageTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure settings]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Paramètres Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.MissingRequiredInfoError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please fill out the required fields marked with red asterisks.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Remplissez les champs obligatoires marqués d'un astérisque rouge.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NetworkSettingsNewSubnet" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New subnet]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nouveau sous-réseau]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NetworkSettingsPageTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Networking]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Réseau]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NewSQLVMTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy Azure SQL VM]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Déployer Azure SQL VM]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.PublicIPDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Public IP]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[IP publique]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2127,92 +2316,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.ScriptToNotebook" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Script to Notebook]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Exécuter un script sur un notebook]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SqlPortLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Port]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Port]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.SubnetDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Subnet]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sous-réseau]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmImageDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Image]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Image]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmNameTextBoxLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Virtual machine name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nom de la machine virtuelle]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmRDPAllowCheckboxLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enable Remote Desktop (RDP) inbound port (3389)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Activer le port d'entrée Bureau à distance (RDP) (3389)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmSizeDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Size]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Taille]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmSkuDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Image SKU]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Référence SKU de l'image]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployeAzureSQLVM.VmSettingsPageTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Virtual machine settings]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Paramètres de la machine virtuelle]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployeAzureSQLVM.VmSizeLearnMoreLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Click here to learn more about pricing and supported VM sizes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cliquer ici pour en savoir plus sur les prix et les tailles de VM prises en charge]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2246,10 +2354,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/modelViewUtils.azure.accessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[]D;]A; Error Details: {0}.]]></Val>
+          <Val><![CDATA[]A; Error Details: {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[]D;]A; Détails de l'erreur : {0}.]]></Val>
+            <Val><![CDATA[]A; Détails de l'erreur : {0}.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[]D;]A; Error Details: {0}.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2348,15 +2459,6 @@
           <Val><![CDATA[Unexpected error fetching available kubectl storage classes : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Erreur inattendue pendant la récupération des classes de stockage kubectl disponibles : {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/pageLessDeploymentModel.resourceDeployment.DownloadAndLaunchTaskName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Download and launch installer, URL: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Télécharger et lancer le programme d'installation, URL : {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2469,15 +2571,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.ToolDoesNotMeetVersionRequirement" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA['{0}' [ {1} ]5D; does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[« {0} » [ {1} ]5D; ne respecte pas la version minimale requise, désinstallez-le et redémarrez Azure Data Studio.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.ToolInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA['{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}]5D; .]]></Val>
@@ -2487,29 +2580,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.VersionInformationDebugHint" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Si les outils sont installés manuellement, vous devez redémarrer Azure Data Studio pour appliquer le changement. Des détails supplémentaires sont disponibles dans les canaux de sortie « Déploiements » et « Azure Data CLI »]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.loadingRequiredTools" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading required tools information]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Chargement des informations d'outils nécessaires]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.loadingRequiredToolsCompleted" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Loading required tools information completed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Les informations d'outils nécessaires ont été téléchargées]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2842,7 +2917,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Administrator account]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Compte Administrateur]]></Val>
+            <Val><![CDATA[Compte administrateur]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

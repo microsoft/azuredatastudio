@@ -266,7 +266,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Add new]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Añadir nuevo]]></Val>
+            <Val><![CDATA[Añadir nuevos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -401,7 +401,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error al descargar]]></Val>
+            <Val><![CDATA[Error durante la descarga]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1136,7 +1136,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Obtenga más información.]]></Val>
+            <Val><![CDATA[Más información.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

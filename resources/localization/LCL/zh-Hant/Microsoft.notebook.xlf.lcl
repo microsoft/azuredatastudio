@@ -15,6 +15,90 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithoutKer" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Notebook kernels require a Python runtime to be configured and dependencies to be installed.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Notebook 核心需要設定 Python 執行階段並安裝相依性。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonInstallDecl" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ined" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Python installation was declined.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Python 安裝已遭拒。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithKer" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Configure Python to run {0} kernel]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[將 Python 設定為執行 {0} 核心]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithout" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Kernel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Configure Python to run kernels]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[將 Python 設定為執行核心]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallC" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) omplete" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Completed uninstall for {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[已解除安裝 {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallF" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ailed" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Failed to uninstall {0}. Error: {1}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[無法將 {0} 解除安裝。錯誤: {1}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tarted" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Uninstalling {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[正在將 {0} 解除安裝]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/common/constants.managePackages.localhost" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[localhost]]></Val>
@@ -215,10 +299,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.duplicateFileError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[File {0} already exists in the destination folder {1} ]D;]A; The file has been renamed to {2} to prevent data loss.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[File {0} already exists in the destination folder {1} ]A; The file has been renamed to {2} to prevent data loss.]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[檔案 {0} 已存在於目的地資料夾 {1} 中 ]D;]A; 檔案已重新命名為 {2}，以避免資料遺失。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[File {0} already exists in the destination folder {1} ]D;]A; The file has been renamed to {2} to prevent data loss.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -663,15 +750,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.noBDCConnectionError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Spark kernels require a connection to a SQL Server Big Data Cluster master instance.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Spark 核心需要對 SQL Server 巨量資料叢集主要執行個體的連線。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.noBooksSelected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently selected in the viewlet.]]></Val>
@@ -773,15 +851,6 @@
           <Val><![CDATA[Open untitled notebook {0} as untitled failed: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[無法將未命名的書籍 {0} 以未命名開啟: {1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/common/localizedConstants.providerNotValidError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Non-MSSQL providers are not supported for spark kernels.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Spark 核心不支援非 MSSQL 提供者。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -891,15 +960,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/common/notebookUtils.msgSampleCodeDataFrame" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[This sample code loads the file into a data frame and shows the first 10 results.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[這個範例程式碼會將檔案載入資料框架，並顯示前 10 個結果。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/common/notebookUtils.noNotebookVisible" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No notebook editor is active]]></Val>
@@ -957,15 +1017,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithoutKernel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Notebook kernels require a Python runtime to be configured and dependencies to be installed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Notebook 核心需要設定 Python 執行階段並安裝相依性。]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1095,38 +1146,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonInstallDeclined" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Python installation was declined.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Python 安裝已遭拒。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.pythonNotFoundMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Python installation was found at the specified location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[在指定的位置找不到任何 Python 安裝。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithKernel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Configure Python to run {0} kernel]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[將 Python 設定為執行 {0} 核心]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/configurePython/configurePythonWizard.configurePython.wizardNameWithoutKernel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Configure Python to run kernels]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[將 Python 設定為執行核心]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1310,33 +1334,6 @@
           <Val><![CDATA[Search]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[搜尋]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallComplete" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Completed uninstall for {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已解除安裝 {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallFailed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Failed to uninstall {0}. Error: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[無法將 {0} 解除安裝。錯誤: {1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/dialog/managePackages/installedPackagesTab.managePackages.backgroundUninstallStarted" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Uninstalling {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在將 {0} 解除安裝]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1728,56 +1725,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.bdcConnectError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error: {0}. ]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[錯誤: {0}。 ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.clusterControllerConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[A connection to the cluster controller is required to run Spark jobs]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[必須連線至叢集控制器，才能執行 Spark 作業]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot start a session, the manager is not yet initialized]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[無法啟動工作階段，管理員尚未初始化]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.notebook.couldNotFindKnoxGateway" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Could not find Knox gateway endpoint]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[找不到 Knox 閘道端點]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.promptBDCPassword" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please provide the password to connect to the BDC Controller]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[請提供密碼以連線至 BDC 控制器]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.notebook/dist/jupyter/jupyterSessionManager.promptBDCUsername" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}Please provide the username to connect to the BDC Controller:]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}請提供使用者名稱以連線至 BDC 控制器:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2227,7 +2179,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Notebooks]]></Val>
+            <Val><![CDATA[筆記本]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Saved Books]]></Val>
@@ -2350,7 +2302,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新增 Notebook]]></Val>
+            <Val><![CDATA[新的 Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2368,7 +2320,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開啟 Notebook]]></Val>
+            <Val><![CDATA[開啟筆記本]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

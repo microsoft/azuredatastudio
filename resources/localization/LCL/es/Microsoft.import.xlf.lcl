@@ -496,7 +496,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Extracted {0} ({1}/{2})]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Elementos extraídos {0} ({1} de {2})]]></Val>
+            <Val><![CDATA[Elementos extraídos: {0} ({1} de {2})]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

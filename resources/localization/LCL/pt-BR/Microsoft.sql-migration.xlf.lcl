@@ -10,9 +10,30 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.migrate.server.roles.and.set.permissions.fail" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.placehold" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ed" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) er" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Enter AAD Domain Name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Insira o Nome de Domínio do AAD]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.migrate.server.roles.and.set.permis" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sions" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Establishing user mappings completed.]A;]A;Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[O estabelecimento de mapeamentos de usuários foi concluído.]A;]A;Atualmente, migrando as funções de servidor, estabelecendo mapeamentos de servidores e definindo permissões. Isso levará algum tempo.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) sions.failed" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Migrating server roles, establishing server mappings and setting permissions failed.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -22,9 +43,69 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.target.instance.database.name.to" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.results.and.recommendations.ti" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ol.tip" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) tle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Assessment results and recommendations]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Resultados e recomendações da avaliação]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.dashboard.login.migrate.task.button.descr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) iption" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Migrate SQL Server logins to Azure SQL.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Migrar os logons do SQL Server para o SQL do Azure.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.mode.offline.descripti" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Application downtime will start when the migration starts.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[O tempo de inatividade do aplicativo será iniciado quando a migração for iniciada.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.service.authentication" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) .keys" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Database Migration Service authentication keys]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Chaves de autenticação do Serviço de Migração de Banco de Dados]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.service.created.succes" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) sfully" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Successfully created a Database Migration Service.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Um Serviço de Migração de Banco de Dados foi criado com êxito.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.target.instance.databa" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) se.name.tool.tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The target database name]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -34,9 +115,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.target.instance.server.name.tool" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.target.instance.server" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .tip" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) .name.tool.tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The target server name]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -46,9 +127,69 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.collectDataSelectFolder.ins" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.cancelled.tables.la" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) tructions" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Cancelled]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cancelada]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.inprogress.tables.l" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[In progress]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Em andamento]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.successful.tables.l" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) abel" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Successful]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Bem-sucedido]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.premiumSeriesMemor" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) yOptimized" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Memory optimized premium-series]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Série premium otimizada para memória]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.chooseMethod.inst" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ructions" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Choose how you want to provide performance data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Escolha como você deseja fornecer dados de desempenho]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.collectDataSelect" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Folder.instructions" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select a folder on your local drive where performance data will be saved]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -58,9 +199,21 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.openExistingSelectFolder.in" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.openExisting.meth" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) structions" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) od" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[I already have the performance data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Já tenho os dados de desempenho]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.openExistingSelec" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tFolder.instructions" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select a folder on your local drive where previously collected performance data was saved]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -70,9 +223,90 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.recommendedStorageCo" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.autoRefres" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nfiguration" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) hTimer" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Initial recommendations will automatically refresh in approximately {0} minute(s).]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[As recomendações iniciais serão atualizadas automaticamente em aproximadamente {0} minuto(s).]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.manualRefr" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) eshTimer" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Verifique periodicamente para obter recomendações atualizadas pressionando o botão 'Atualizar recomendação'.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.parameters.percentage.utilization.too" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Percentile of data points to be used during aggregation of the performance data.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Percentual de pontos de dados a serem usados durante a agregação dos dados de desempenho.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.caching.no" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ne" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[None]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Nenhum]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.caching.re" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) adOnly" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Read-only]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Somente leitura]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) adWrite" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Read/write]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Leitura/gravação]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.ephemeralT" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) empdb" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Place tempdb on the local ephemeral SSD (default D:\) drive]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Coloque tempdb na unidade SSD efêmera local (padrão D:)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.recommende" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) dStorageConfiguration" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Recommended storage configuration]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -82,29 +316,53 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}']]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ocorreu um erro ao acessar a conta selecionada '{0}' e o locatário '{1}'. Selecione “Vincular conta” e atualize a conta, ou selecione uma conta diferente. Erro '{2}']]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}']]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.netwo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) rkshare" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Network share connectivity: '{0}' ]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Conectividade de compartilhamento de rede: '{0}' ]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O token de acesso para a conta selecionada '{0}' e o locatário '{1}' não são mais válidos. Selecione “Vincular conta” e atualize a conta, ou selecione uma conta diferente.]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.sourc" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) e.database" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Source database connectivity: '{0}']]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Conectividade do banco de dados de origem: '{0}']]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.stora" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ge" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Azure storage connectivity]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Conectividade de armazenamento do Azure]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.targe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) t.database" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Target database connectivity: '{0}']]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Conectividade de banco de dados de destino: '{0}']]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.serviceCrashMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
@@ -178,15 +436,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.aad.domain.name.input.box.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter AAD Domain Name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Insira o Nome de Domínio do AAD]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.collecting.target.logins.failed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collecting target login failed with error code {0}]]></Val>
@@ -234,10 +483,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.establish.user.mappings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Validating and migrating logins completed.]D;]A;]D;]A;Establishing user mappings.]]></Val>
+          <Val><![CDATA[Validating and migrating logins completed.]A;]A;Establishing user mappings.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A validação e a migração de logons foram concluídas.]D;]D;]A;Estabelecendo os mapeamentos de usuários.]]></Val>
+            <Val><![CDATA[A validação e a migração de logons foram concluídas.]A;]A;Estabelecendo os mapeamentos de usuários.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Validating and migrating logins completed.]D;]A;]D;]A;Establishing user mappings.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -322,15 +574,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.migrate.server.roles.and.set.permissions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Establishing user mappings completed.]D;]A;]D;]A;Currently, migrating server roles, establishing server mappings and setting permissions. This will take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O estabelecimento de mapeamentos de usuários foi concluído.]D;]D;]A;Atualmente, migrando as funções de servidor, estabelecendo mapeamentos de servidores e definindo permissões. Isso levará algum tempo.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.migration.status.column" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration Status]]></Val>
@@ -407,7 +650,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falhou]]></Val>
+            <Val><![CDATA[Ocorreu um erro]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -479,17 +722,20 @@
         <Str Cat="Text">
           <Val><![CDATA[Succeeded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Êxito]]></Val>
+            <Val><![CDATA[Com êxito]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.steps.migrate.logins" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migrate logins]]></Val>
+          <Val><![CDATA[Login migration completed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Migrar logons]]></Val>
+            <Val><![CDATA[Migração de logon concluída]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migrate logins]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -549,12 +795,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.data.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[We recommend migrating your databases(s) to the Azure SQL target before starting the login migration to avoid failures in the process. Nevertheless, you can run this migration process whenever want you want if your goal is to update the user mapping for recently migrated databases.]A;]A; If the source and database names are not the same, then it is possible that some permissions may not be applied properly.]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[Observe que o recurso de migração de logon está no modo de visualização pública.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Please note that login migration feature is in private preview mode.]]></Val>
+            <Val><![CDATA[Please note that login migration feature is in public preview mode.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -570,10 +816,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.login.migration.wizard.target.permission.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Please ensure that the current user ({0}) has sysadmin permissions to get all login information for the current instance ({1}).]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[Verifique se o usuário atual tem permissões de administrador de sistema para obter todas as informações de logon da instância atual ({0}).]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please ensure that the current user has sysadmin permissions to get all login information for the current instance ({0}).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -720,12 +969,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
+          <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]A;]A;This may take some time.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Estamos avaliando os bancos de dados em sua instância do SQL Server {0} para identificar o alvo SQL do Azure correto.]D;]A;]D;]A;Isto pode levar algum tempo.]]></Val>
+            <Val><![CDATA[Estamos avaliando os bancos de dados em sua instância do SQL Server {0} para identificar o alvo SQL do Azure correto.]A;]A;Isto pode levar algum tempo.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
+            <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -769,15 +1018,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[Assessment Results]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.assessment.results.and.recommendations.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Assessment results and recommendations]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Resultados e recomendações da avaliação]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1251,10 +1491,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.cannot.retry" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration cannot be retried.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Migration cannot be restarted.]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[A migração não pode ser repetida.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration cannot be retried.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1843,15 +2086,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.dashboard.login.migrate.task.button.description" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server logins to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Migrar os logons do SQL Server para o SQL do Azure.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.dashboard.migrate.task.button" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migrate to Azure SQL]]></Val>
@@ -1916,7 +2150,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de dados]]></Val>
+            <Val><![CDATA[Base de dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2098,15 +2332,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.mode.offline.description" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Application downtime will start when the migration starts.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O tempo de inatividade do aplicativo será iniciado quando a migração for iniciada.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.mode.offline.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Offline migration]]></Val>
@@ -2146,30 +2371,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.service.authentication.keys" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Database Migration Service authentication keys]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Chaves de autenticação do Serviço de Migração de Banco de Dados]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Database migration service authentication keys]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.service.created.successfully" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Successfully created a Database Migration Service.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Um Serviço de Migração de Banco de Dados foi criado com êxito.]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Database migration service has been created successfully]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.start.time.tool.tip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The start time for the migration]]></Val>
@@ -2193,10 +2394,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.database.migration.status.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration status: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Login migration status: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[Status de migração de banco de dados: {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration status: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2479,15 +2683,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.cancelled.tables.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cancelled]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cancelada]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.failed.tables.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
@@ -2524,29 +2719,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.inprogress.tables.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[In progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Em andamento]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server objects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Objetos do servidor]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.details.serverobjects.successful.tables.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Successful]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bem-sucedido]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3449,7 +3626,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Local]]></Val>
+            <Val><![CDATA[Localização]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4178,7 +4355,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Online]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Online]]></Val>
+            <Val><![CDATA[On-line]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4637,7 +4814,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fracassado]]></Val>
+            <Val><![CDATA[Com falha]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4734,10 +4911,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.retry.migration.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while retrying the migration.]]></Val>
+          <Val><![CDATA[An error occurred while restarting the migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Erro ao tentar novamente a migração.]]></Val>
+            <Val><![CDATA[Erro ao reiniciar a migração.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while retrying the migration.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4914,12 +5094,12 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.select.database.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select 1 or more logins for migration]]></Val>
+          <Val><![CDATA[Please select 1 or more databases to assess for migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Selecione 1 ou mais logons para migração]]></Val>
+            <Val><![CDATA[Selecione um ou mais bancos de dados para avaliar a migração]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Please select 1 or more databases to assess for migration]]></Val>
+            <Val><![CDATA[Please select 1 or more logins for migration]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5132,7 +5312,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Serviço de migração de banco de dados do Azure]]></Val>
+            <Val><![CDATA[Serviço de Migração de Banco de Dados do Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5252,7 +5432,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Database Migration Service]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Serviço de Migração de Banco de Dados do Azure]]></Val>
+            <Val><![CDATA[Serviço de migração de banco de dados do Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5322,10 +5502,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.not.ready.below" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]D;]A;]D;]A;See below for registration instructions.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]A;]A;See below for registration instructions.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O Serviço de Migração de Banco de Dados do Azure não está registrado. O Serviço de Migração de Banco de Dados do Azure “{0}” precisa ser registrado com o runtime de integração auto-hospedada em qualquer nó.]D;]A;]D;]A;Confira abaixo as instruções de registro.]]></Val>
+            <Val><![CDATA[O Serviço de Migração de Banco de Dados do Azure não está registrado. O Serviço de Migração de Banco de Dados do Azure “{0}” precisa ser registrado com o runtime de integração auto-hospedado em qualquer nó.]A;]A;Confira abaixo as instruções de registro.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]D;]A;]D;]A;See below for registration instructions.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5340,22 +5523,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O Serviço de Migração de Banco de Dados do Azure “{0}” está conectado ao runtime de integração auto-hospedada em execução nos nós – {1}]D;]A;]D;]A;Para melhorar o desempenho e alta disponibilidade, você pode registrar nós adicionais.]]></Val>
+            <Val><![CDATA[O Serviço de Migração de Banco de Dados do Azure “{0}” está conectado ao runtime de integração auto-hospedado em execução no(s) nó(s) – {1}]A;]A;Para melhorar o desempenho e alta disponibilidade, você pode registrar nós adicionais.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}]]></Val>
+            <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.service.ready.below" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]A;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O Serviço de Migração de Banco de Dados do Azure “{0}” está conectado ao runtime de integração auto-hospedada em execução nos nós – {1}]D;]A;]D;]A;Para melhorar o desempenho e a alta disponibilidade, você pode registrar nós adicionais. Confira abaixo as instruções de registro.]]></Val>
+            <Val><![CDATA[O Serviço de Migração de Banco de Dados do Azure “{0}” está conectado ao runtime de integração auto-hospedado em execução no(s) nó(s) – {1}]A;]A;Para melhorar o desempenho e a alta disponibilidade, você pode registrar nós adicionais. Confira abaixo as instruções de registro.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on node(s) - {1}]D;]A;]D;]A;For improved performance and high availability, you can register additional nodes. See below for registration instructions.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5608,15 +5794,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.premiumSeriesMemoryOptimized" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Memory optimized premium-series]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Série premium otimizada para memória]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - {1} vCore]]></Val>
@@ -5662,15 +5839,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.chooseMethod.instructions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose how you want to provide performance data]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Escolha como você deseja fornecer dados de desempenho]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.collectData.method" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collect performance data now]]></Val>
@@ -5698,15 +5866,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.openExisting.method" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[I already have the performance data]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Já tenho os dados de desempenho]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.start" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start]]></Val>
@@ -5725,15 +5884,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.autoRefreshTimer" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Initial recommendations will automatically refresh in approximately {0} minute(s).]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[As recomendações iniciais serão atualizadas automaticamente em aproximadamente {0} minuto(s).]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.imported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure recommendation has been applied using the provided data. Import or collect additional data to refine the recommendation.]]></Val>
@@ -5748,15 +5898,6 @@
           <Val><![CDATA[Data collection in progress. Generating initial recommendations...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Coleta de dados em andamento. Gerando as recomendações iniciais...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.azureRecommendation.status.manualRefreshTimer" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Verifique periodicamente para obter recomendações atualizadas pressionando o botão 'Atualizar recomendação'.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6049,15 +6190,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.parameters.percentage.utilization.tooltip" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Percentile of data points to be used during aggregation of the performance data.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Percentual de pontos de dados a serem usados durante a agregação dos dados de desempenho.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.parameters.scale.factor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Scale factor]]></Val>
@@ -6191,7 +6323,7 @@
         <Str Cat="Text">
           <Val><![CDATA[-]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[-]]></Val>
+            <Val><![CDATA[–]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6341,7 +6473,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de Dados SQL do Azure]]></Val>
+            <Val><![CDATA[Banco de dados SQL do Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6414,42 +6546,6 @@
           <Val><![CDATA[Not applicable]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Não aplicável]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.caching.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[None]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nenhum]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.caching.readOnly" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Read-only]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Somente leitura]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.caching.readWrite" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Read/write]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Leitura/gravação]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.sku.targetStorageConfiguration.ephemeralTempdb" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Place tempdb on the local ephemeral SSD (default D:\) drive]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Coloque tempdb na unidade SSD efêmera local (padrão D:)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7535,7 +7631,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Destino]]></Val>
+            <Val><![CDATA[Alvo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7654,6 +7750,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.migration.info" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[You must click the '{0}' button before proceeding to the next page of the wizard.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Você deve clicar no botão ''{0}'' antes de prosseguir para a próxima página do assistente.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.cert.network.info" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Please enter a network path where SQL Server will export the certificates. Also verify that SQL Server service has write access to this path and the current user should have administrator privileges on the computer where this network path is.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Insira um caminho de rede para onde o SQL Server exportará os certificados. Verifique também se o serviço do SQL Server tem acesso de gravação a esse caminho e se o usuário atual deve ter privilégios de administrador no computador onde está esse caminho de rede.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.migrate.canceled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates migration was canceled. Please run and complete the certificates migration to continue.]]></Val>
@@ -7732,6 +7846,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[A migração de certificados não foi executada para a configuração atual. Execute e conclua a migração de certificados para continuar.]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.migrate.required" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[TDE certificate migration must be successful before continuing.]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7836,19 +7956,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.manual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[You have chosen to manually migrate certificates.]]></Val>
+          <Val><![CDATA[You have not given Azure Data Studio access to migrate the encryption certificates.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Você optou por migrar os certificados manualmente.]]></Val>
+            <Val><![CDATA[Você não concedeu acesso ao Azure Data Studio para migrar os certificados de criptografia.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[You have chosen to manually migrate certificates.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.msg.tde" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[You have given access to Azure Data Studio to migrate the encryption certificates and database.]]></Val>
+          <Val><![CDATA[You have given Azure Data Studio access to migrate the encryption certificates and database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Você deu acesso ao Azure Data Studio para migrar os certificados de criptografia e o banco de dados.]]></Val>
+            <Val><![CDATA[Você concedeu acesso ao Azure Data Studio para migrar os certificados de criptografia e o banco de dados.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[You have given access to Azure Data Studio to migrate the encryption certificates and database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7908,10 +8034,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionads" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Export my certificates and private key to the target.]]></Val>
+          <Val><![CDATA[Export my certificates and private keys to the target.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Exporte meus certificados e minha chave privada para o destino.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Export my certificates and private key to the target.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7926,19 +8055,25 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[I don't want Azure Data Studio to export the certificates.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[I have already migrated my certificates and private keys to the target.]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[Não quero que o Azure Data Studio exporte os certificados.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[I don't want Azure Data Studio to export the certificates.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.tde.wizard.optionmanual.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.]]></Val>
+          <Val><![CDATA[Certificates must be migrated before proceeding with the database migration otherwise a failure will occur. {0} about manually migrating TDE certificates.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Você deve migrar os certificados antes de prosseguir com a migração, caso contrário, a migração falhará. {0}.]]></Val>
+            <Val><![CDATA[Os certificados devem ser migrados antes de prosseguir com a migração do banco de dados, caso contrário, ocorrerá uma falha. {0} sobre a migração manual de certificados TDE.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[You must migrate the certificates before proceeding with the migration otherwise the migration will fail. {0}.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8215,47 +8350,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.networkshare" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Network share connectivity: '{0}' ]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conectividade de compartilhamento de rede: '{0}' ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.shir" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Integration runtime connectivity]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Conectividade de runtime de integração]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.source.database" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Source database connectivity: '{0}']]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conectividade do banco de dados de origem: '{0}']]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.storage" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure storage connectivity]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conectividade de armazenamento do Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validate.ir.validation.result.label.target.database" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Target database connectivity: '{0}']]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conectividade de banco de dados de destino: '{0}']]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8280,10 +8379,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.validation.dialog.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Running validation]]></Val>
+          <Val><![CDATA[Certificates Migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Executando validação..]]></Val>
+            <Val><![CDATA[Migração de Certificados]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Running validation]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8336,7 +8438,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Succeeded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Com êxito]]></Val>
+            <Val><![CDATA[Êxito]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8520,10 +8622,13 @@
       </Item>
       <Item ItemId=";extensions/Microsoft.sql-migration/dist/constants/strings.sql.migration.wizard.perfCollection.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]D;]A;]D;]A;{1}]]></Val>
+          <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]A;]A;{1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ocorreram erros ao coletar os dados de desempenho do servidor '{0}'. Se esses problemas persistirem, tente reiniciar o processo de coleta de dados:]D;]A;]D;]A;{1}]]></Val>
+            <Val><![CDATA[Ocorreram erros ao coletar os dados de desempenho do servidor ''{0}''. Se esses problemas persistirem, tente reiniciar o processo de coleta de dados:]A;]A;{1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:]D;]A;]D;]A;{1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8876,7 +8981,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Extracted {0} ({1}/{2})]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Extraído {0} ({1}/{2})]]></Val>
+            <Val><![CDATA[{0} extraído ({1}/{2})]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

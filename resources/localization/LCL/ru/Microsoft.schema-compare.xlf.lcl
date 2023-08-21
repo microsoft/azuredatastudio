@@ -55,7 +55,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Reset]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сброс]]></Val>
+            <Val><![CDATA[Сбросить]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -634,7 +634,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Исходная база данных]]></Val>
+            <Val><![CDATA[Источник]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -679,7 +679,7 @@
         <Str Cat="Text">
           <Val><![CDATA[default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[По умолчанию]]></Val>
+            <Val><![CDATA[по умолчанию]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
